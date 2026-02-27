@@ -13,7 +13,7 @@
 define('DB_HOST', 'localhost');        // Cambia esto por tu host
 define('DB_USER', 'visionwe');             // Cambia esto por tu usuario
 define('DB_PASS', 'Guate25#');                 // Cambia esto por tu contraseña
-define('DB_NAME', 'Emagro');           // Nombre de la base de datos
+define('DB_NAME', 'visionwe_Emagro');           // Nombre de la base de datos
 define('DB_CHARSET', 'utf8mb4');
 
 // Zona horaria
