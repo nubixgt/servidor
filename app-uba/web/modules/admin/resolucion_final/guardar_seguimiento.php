@@ -69,7 +69,7 @@ try {
 
     // Procesar archivos adjuntos si los hay
     if (isset($_FILES['archivos']) && !empty($_FILES['archivos']['name'][0])) {
-        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/AppUBA/backend/uploads/seguimiento/';
+        $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/app-uba/backend/uploads/seguimiento/';
 
         // Crear directorio si no existe
         if (!is_dir($uploadDir)) {

@@ -260,7 +260,7 @@ try {
                                     class="btn-action btn-ver" title="Ver detalle">
                                     <i class="fas fa-eye"></i> Ver
                                 </button>
-                                <a href="/AppUBA/web/modules/admin/resolucion_final/procesar.php?id=<?php echo $denuncia['id_denuncia']; ?>"
+                                <a href="/app-uba/web/modules/admin/resolucion_final/procesar.php?id=<?php echo $denuncia['id_denuncia']; ?>"
                                     class="btn-action btn-procesar" title="Procesar denuncia">
                                     <i class="fas fa-clipboard-check"></i> Procesar
                                 </a>
@@ -285,7 +285,7 @@ try {
                 timer: 1000,
                 showConfirmButton: false
             }).then(() => {
-                window.location.href = '/AppUBA/web/modules/admin/resolucion_final/detalle_denuncia.php?id=' + id;
+                window.location.href = '/app-uba/web/modules/admin/resolucion_final/detalle_denuncia.php?id=' + id;
             });
         }
     </script>

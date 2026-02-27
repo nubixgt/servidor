@@ -47,7 +47,7 @@ try {
                 $imagen_url = $row['imagen_url'];
             } else {
                 // Construir URL completa
-                $imagen_url = 'http://159.65.168.91/AppUBA/backend/' . $row['imagen_url'];
+                $imagen_url = 'https://m.nubix.gt/app-uba/backend/' . $row['imagen_url'];
             }
         }
 

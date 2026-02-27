@@ -51,12 +51,12 @@ function obtenerRutaArchivo($rutaBD)
         return '';
     $rutaLimpia = str_replace(['../', './'], '', $rutaBD);
     if (strpos($rutaLimpia, 'uploads/') === 0) {
-        return "/AppUBA/backend/" . $rutaLimpia;
+        return "/app-uba/backend/" . $rutaLimpia;
     }
     if (strpos($rutaLimpia, 'backend/') === 0) {
-        return "/AppUBA/" . $rutaLimpia;
+        return "/app-uba/" . $rutaLimpia;
     }
-    return "/AppUBA/backend/" . $rutaLimpia;
+    return "/app-uba/backend/" . $rutaLimpia;
 }
 ?>
 <!DOCTYPE html>

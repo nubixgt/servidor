@@ -13,7 +13,7 @@
 
     <!-- Navegación Principal -->
     <nav class="sidebar-nav">
-        <a href="/AppUBA/web/modules/tecnico_4/dashboard.php"
+        <a href="/app-uba/web/modules/tecnico_4/dashboard.php"
             class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
@@ -75,7 +75,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = '/AppUBA/logout.php';
+                window.location.href = '/app-uba/logout.php';
             }
         });
     }

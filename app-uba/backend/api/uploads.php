@@ -115,7 +115,7 @@ try {
         
         // Construir URL completa del archivo
         $urlBase = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-        $rutaRelativa = str_replace('../', '/AppUBA/backend/', $rutaDestino);
+        $rutaRelativa = str_replace('../', '/app-uba/backend/', $rutaDestino);
         $urlCompleta = $urlBase . $rutaRelativa;
         
         http_response_code(201);

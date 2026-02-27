@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Verificar si hay sesión activa
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /AppUBA/login.php");
+    header("Location: /app-uba/login.php");
     exit;
 }
 
@@ -17,12 +17,12 @@ function verificarRol($rolRequerido) {
     // Permitir múltiples roles
     if (is_array($rolRequerido)) {
         if (!in_array($_SESSION['usuario_rol'], $rolRequerido)) {
-            header("Location: /AppUBA/login.php");
+            header("Location: /app-uba/login.php");
             exit;
         }
     } else {
         if ($_SESSION['usuario_rol'] !== $rolRequerido) {
-            header("Location: /AppUBA/login.php");
+            header("Location: /app-uba/login.php");
             exit;
         }
     }

@@ -13,19 +13,19 @@
 
     <!-- Navegación Principal -->
     <nav class="sidebar-nav">
-        <a href="/AppUBA/web/modules/admin/dashboard.php"
+        <a href="/app-uba/web/modules/admin/dashboard.php"
             class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : ''; ?>">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
 
-        <a href="/AppUBA/web/modules/admin/noticias/index.php"
+        <a href="/app-uba/web/modules/admin/noticias/index.php"
             class="nav-item <?php echo strpos($_SERVER['PHP_SELF'], 'noticias') !== false ? 'active' : ''; ?>">
             <i class="fas fa-newspaper"></i>
             <span>Noticias</span>
         </a>
 
-        <a href="/AppUBA/web/modules/admin/servicios/index.php"
+        <a href="/app-uba/web/modules/admin/servicios/index.php"
             class="nav-item <?php echo strpos($_SERVER['PHP_SELF'], 'servicios') !== false ? 'active' : ''; ?>">
             <i class="fas fa-store"></i>
             <span>Servicios</span>
@@ -39,23 +39,23 @@
                 <i class="fas fa-chevron-down dropdown-icon"></i>
             </div>
             <div class="submenu">
-                <a href="/AppUBA/web/modules/admin/area_legal/index.php" class="submenu-item">
+                <a href="/app-uba/web/modules/admin/area_legal/index.php" class="submenu-item">
                     <i class="fas fa-balance-scale"></i>
                     <span>Área Legal</span>
                 </a>
-                <a href="/AppUBA/web/modules/admin/area_tecnica/index.php" class="submenu-item">
+                <a href="/app-uba/web/modules/admin/area_tecnica/index.php" class="submenu-item">
                     <i class="fas fa-tools"></i>
                     <span>Área Técnica</span>
                 </a>
-                <a href="/AppUBA/web/modules/admin/emitir_dictamen/index.php" class="submenu-item">
+                <a href="/app-uba/web/modules/admin/emitir_dictamen/index.php" class="submenu-item">
                     <i class="fas fa-file-signature"></i>
                     <span>Emitir Dictamen</span>
                 </a>
-                <a href="/AppUBA/web/modules/admin/opinion_legal/index.php" class="submenu-item">
+                <a href="/app-uba/web/modules/admin/opinion_legal/index.php" class="submenu-item">
                     <i class="fas fa-gavel"></i>
                     <span>Opinión Legal</span>
                 </a>
-                <a href="/AppUBA/web/modules/admin/resolucion_final/index.php" class="submenu-item">
+                <a href="/app-uba/web/modules/admin/resolucion_final/index.php" class="submenu-item">
                     <i class="fas fa-stamp"></i>
                     <span>Resolución Final</span>
                 </a>
@@ -121,7 +121,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = '/AppUBA/logout.php';
+                window.location.href = '/app-uba/logout.php';
             }
         });
     }

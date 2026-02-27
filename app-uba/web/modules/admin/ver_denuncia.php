@@ -67,16 +67,16 @@ function obtenerRutaArchivo($rutaBD) {
 
     // Si empieza con 'uploads/', agregar el backend/
     if (strpos($rutaLimpia, 'uploads/') === 0) {
-        return "/AppUBA/backend/" . $rutaLimpia;
+        return "/app-uba/backend/" . $rutaLimpia;
     }
 
-    // Si ya tiene backend/, solo agregar /AppUBA/
+    // Si ya tiene backend/, solo agregar /app-uba/
     if (strpos($rutaLimpia, 'backend/') === 0) {
-        return "/AppUBA/" . $rutaLimpia;
+        return "/app-uba/" . $rutaLimpia;
     }
 
     // Por defecto
-    return "/AppUBA/backend/" . $rutaLimpia;
+    return "/app-uba/backend/" . $rutaLimpia;
 }
 ?>
 <!DOCTYPE html>
