@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>App Uba</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>app_uba</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- ====== PERMISOS DE CÁMARA / FOTOS ====== -->
+	<key>NSCameraUsageDescription</key>
+	<string>Usaré la cámara para adjuntar evidencias de la denuncia.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Necesito acceder a tus fotos para adjuntar evidencias.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Guardaré las fotos tomadas desde la app.</string>
+	<!-- Si grabaras video con audio, agrega también:
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Para grabar video con audio.</string>
+	-->
+
+	<!-- ====== ATS: PERMITIR HTTP EN DESARROLLO (LAN) ====== -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Opción amplia (solo para desarrollo) -->
+		<key>NSAllowsArbitraryLoads</key><true/>
+
+		<!-- Opción específica por IP (puedes dejar ambas si quieres): -->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>192.168.0.23</key>
+			<dict>
+				<key>NSIncludesSubdomains</key><true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key><true/>
+			</dict>
+		</dict>
+	</dict>
+
+	<!-- ====== NUEVO: PERMISOS DE UBICACIÓN ====== -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>La aplicación necesita acceder a tu ubicación para marcar el lugar de la denuncia en el mapa</string>
+	
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>La aplicación necesita acceder a tu ubicación para marcar el lugar de la denuncia en el mapa</string>
+	
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>La aplicación necesita acceder a tu ubicación para marcar el lugar de la denuncia en el mapa</string>
+
+</dict>
+</plist>

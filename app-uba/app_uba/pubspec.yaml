@@ -1,0 +1,31 @@
+#app_uba/pubspec.yaml
+
+name: app_uba
+description: "A new Flutter project."
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  image_picker: ^1.1.2
+  file_picker: ^8.1.2 # <— NUEVO
+  open_filex: ^4.4.0
+  http: ^1.1.0
+  mime: ^1.0.4
+  http_parser: ^4.0.2
+  google_maps_flutter: ^2.5.0 # ← NUEVO
+  geolocator: ^10.1.0
+  url_launcher: ^6.2.2 # ← Para llamadas y Google Maps
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
