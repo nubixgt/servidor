@@ -7,7 +7,7 @@
 // Configuración de la base de datos
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'visionwe_DPI');
-define('DB_USER', 'visionwe_dpi'); // Cambiar según tus credenciales
+define('DB_USER', 'visionwe'); // Cambiar según tus credenciales
 define('DB_PASS', 'Guate25#');     // Cambiar según tus credenciales
 define('DB_PORT', '3306'); // Puerto por defecto de MySQL
 define('DB_CHARSET', 'utf8mb4');
