@@ -102,7 +102,7 @@ function initLogout() {
             console.error('❌ SweetAlert2 no está cargado');
             // Fallback: confirmación nativa del navegador
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                window.location.href = '/SistemaSupervision/logout.php?logout=success';
+                window.location.href = '/sistema-supervision/logout.php?logout=success';
             }
             return;
         }
@@ -141,7 +141,7 @@ function initLogout() {
                 
                 // Redirigir después de 1 segundo
                 setTimeout(() => {
-                    window.location.href = '/SistemaSupervision/logout.php?logout=success';
+                    window.location.href = '/sistema-supervision/logout.php?logout=success';
                 }, 1000);
             }
         });

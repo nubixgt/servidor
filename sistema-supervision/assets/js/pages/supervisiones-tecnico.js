@@ -6,7 +6,7 @@
  */
 
 // Detectar la URL base del sistema
-const BASE_URL = window.location.origin + '/SistemaSupervision';
+const BASE_URL = window.location.origin + '/sistema-supervision';
 
 let tablaSupervisiones;
 

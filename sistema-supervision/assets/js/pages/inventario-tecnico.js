@@ -5,7 +5,7 @@
  * Los técnicos solo ven SUS propios equipos
  */
 
-const BASE_URL = window.location.origin + '/SistemaSupervision';
+const BASE_URL = window.location.origin + '/sistema-supervision';
 let dataTable;
 let archivosSeleccionados = [];
 let modoEdicion = false;

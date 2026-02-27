@@ -4,7 +4,7 @@
  * Sistema de Supervisión v6.0.5
  */
 
-const BASE_URL = window.location.origin + "/SistemaSupervision";
+const BASE_URL = window.location.origin + "/sistema-supervision";
 let dataTable;
 let archivosSeleccionados = [];
 let modoEdicion = false;

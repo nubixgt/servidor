@@ -4,7 +4,7 @@
  */
 
 let dataTable;
-const BASE_URL = window.location.origin + '/SistemaSupervision';
+const BASE_URL = window.location.origin + '/sistema-supervision';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Módulo de Proveedores cargado');

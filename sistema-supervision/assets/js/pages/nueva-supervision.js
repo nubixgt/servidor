@@ -4,7 +4,7 @@
  */
 
 // Detectar la URL base del sistema
-const BASE_URL = window.location.origin + '/SistemaSupervision';
+const BASE_URL = window.location.origin + '/sistema-supervision';
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Módulo de Nueva Supervisión cargado');

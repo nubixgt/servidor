@@ -136,8 +136,8 @@ function getBaseUrl() {
     const path = window.location.pathname;
     const segments = path.split('/');
     
-    // Buscar el segmento "SistemaSupervision" o similar
-    const baseIndex = segments.findIndex(seg => seg.includes('Sistema') || seg === 'SistemaSupervision');
+    // Buscar el segmento "sistema-supervision" o similar
+    const baseIndex = segments.findIndex(seg => seg.includes('Sistema') || seg === 'sistema-supervision');
     
     if (baseIndex !== -1) {
         return window.location.origin + segments.slice(0, baseIndex + 1).join('/');

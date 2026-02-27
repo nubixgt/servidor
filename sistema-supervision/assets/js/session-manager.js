@@ -176,7 +176,7 @@
         
         // Redirigir al logout
         setTimeout(() => {
-            window.location.href = '/SistemaSupervision/logout.php?logout=manual';
+            window.location.href = '/sistema-supervision/logout.php?logout=manual';
         }, 1000);
     }
     
@@ -198,7 +198,7 @@
                 confirmButton: 'swal-button-glass'
             }
         }).then(() => {
-            window.location.href = '/SistemaSupervision/logout.php?logout=timeout';
+            window.location.href = '/sistema-supervision/logout.php?logout=timeout';
         });
     }
     

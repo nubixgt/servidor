@@ -21,7 +21,7 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // Determinar la ruta base del proyecto (solo 1 nivel arriba desde /api/)
-$baseDir = dirname(__DIR__); // Sube 1 nivel desde /api/ hasta /SistemaSupervision/
+$baseDir = dirname(__DIR__); // Sube 1 nivel desde /api/ hasta /sistema-supervision/
 
 // Verificar que el archivo config existe
 $configPath = $baseDir . '/config/config.php';
