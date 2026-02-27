@@ -1,0 +1,782 @@
+# 📊 Sistema SICO GT - Documentación Actualizada v3.0 🎨
+**Sistema de Control de Guatemala - Registro de Empadronados**
+**🆕 Actualización: Diseño Premium Dorado Completo**
+
+---
+
+## 🎨 ACTUALIZACIÓN MAYOR v3.0 - REDISEÑO PREMIUM DORADO
+
+### **🌟 Sistema de Diseño Completo**
+
+**Cambios Globales Implementados:**
+- ✨ **Nuevo sistema de diseño premium** con paleta dorada (#d4a574, #c9a167)
+- 🎯 **Glassmorphism** en todos los componentes (backdrop-filter, transparencias)
+- 💎 **Gradientes elegantes** en botones, badges y elementos destacados
+- 🎪 **Animaciones suaves** con cubic-bezier y transiciones optimizadas
+- 📱 **Diseño responsive** mejorado con grids adaptativos
+
+---
+
+## 📂 Estructura del Proyecto
+
+### **📁 assets/css/** - Sistema de Estilos Premium
+
+#### **🆕 base.css** - Sistema de Diseño Fundacional
+**Variables CSS modernas:**
+```css
+:root {
+    /* Colores primarios dorados */
+    --color-primary: #d4a574;
+    --color-primary-dark: #c9a167;
+    --color-primary-light: #e0b787;
+    
+    /* Gradientes premium */
+    --gradient-primary: linear-gradient(135deg, #d4a574, #c9a167);
+    --gradient-gold: linear-gradient(135deg, #d4a574 0%, #c9a167 100%);
+    
+    /* Backgrounds con glassmorphism */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-glass: rgba(255, 255, 255, 0.95);
+    
+    /* Sistema de colores semánticos */
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #3b82f6;
+    
+    /* Tipografía */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    
+    /* Espaciado consistente */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-full: 9999px;
+    
+    /* Sombras premium */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+    
+    /* Transiciones */
+    --transition-base: all 0.3s ease;
+    --transition-fast: all 0.15s ease;
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+```
+
+**Efectos de glassmorphism:**
+- Backdrop-filter: blur(20px)
+- Transparencias con rgba
+- Bordes sutiles con colores translúcidos
+- Sombras suaves y profundas
+
+#### **🆕 dashboard.css** - Diseño del Dashboard Premium
+**Componentes principales:**
+
+**1. Sidebar Premium:**
+```css
+.sidebar {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    width: 280px;
+    border-right: 1px solid rgba(212, 165, 116, 0.1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #d4a574, #c9a167);
+    padding: 2rem;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: rgba(212, 165, 116, 0.1);
+    border-left-color: var(--color-primary);
+    transform: translateX(4px);
+}
+```
+
+**2. Topbar Premium:**
+```css
+.topbar {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+```
+
+**3. Stats Cards Premium:**
+```css
+.stat-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    transform: translate(40%, -40%);
+}
+
+.stat-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, color1, color2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+```
+
+#### **🆕 components.css** - Componentes Reutilizables
+**Componentes incluidos:**
+- Botones premium con gradientes
+- Cards con glassmorphism
+- Formularios estilizados
+- Badges y alerts
+- Tablas responsive
+- Modales premium
+- Tooltips y popovers
+
+---
+
+### **📁 vistas/** - Páginas Principales REDISEÑADAS
+
+#### **✨ dashboard.php** - v3.0 DISEÑO PREMIUM COMPLETO
+
+**🎨 Cambios Visuales Principales:**
+
+**1. Topbar Premium:**
+- ✅ Avatar circular con iniciales del usuario
+- ✅ Nombre y rol del usuario
+- ✅ Botón "Registrar Nuevo" con gradiente dorado
+- ✅ Glassmorphism y sombra suave
+
+**2. Stats Cards Mejoradas (4 tarjetas):**
+
+**Total Empadronados (Azul):**
+```
+┌────────────────────────┐
+│ ┌──────┐         💫   │
+│ │ 👥  │               │
+│ └──────┘               │
+│                        │
+│  1,234                 │
+│  (Gradiente azul)      │
+│                        │
+│ TOTAL EMPADRONADOS     │
+│                        │
+│ ┌────────────────────┐ │
+│ │ ✓ 100% del total  │ │
+│ └────────────────────┘ │
+└────────────────────────┘
+```
+
+**Características de cada tarjeta:**
+- 🎨 Icono grande (70x70px) con gradiente
+- 🔢 Número gigante (3rem) con gradiente de texto
+- 📊 Label en mayúsculas con tracking
+- 💫 Info box con blur y badge
+- ✨ Círculo decorativo animado
+- 🎯 Hover: Elevación + escala + rotación de icono
+
+**3. Mapa Premium:**
+- ✅ Card con glassmorphism
+- ✅ Border radius redondeado
+- ✅ Sombra profunda
+- ✅ Efectos hover en departamentos
+
+**4. Gráficas Mejoradas:**
+- ✅ Cards con glassmorphism
+- ✅ Headers con iconos dorados
+- ✅ Animaciones suaves
+- ✅ Tooltips estilizados
+
+**5. Tabla Top 5:**
+- ✅ Header con gradiente dorado sutil
+- ✅ Hover effect con desplazamiento
+- ✅ Badges dorados
+- ✅ Medallas para top 3
+
+---
+
+#### **✨ usuarios.php** - v3.0 GESTIÓN PREMIUM DE USUARIOS
+
+**🎨 Mejoras Visuales:**
+
+**1. Stats Cards Premium (3 tarjetas):**
+
+**Total Usuarios (Azul):**
+- Icono: 👥 en gradiente azul
+- Número con gradiente azul
+- Info: "Sistema completo"
+- Hover: Elevación + escala + rotación
+
+**Usuarios Activos (Verde):**
+- Icono: ✓ en gradiente verde
+- Número con gradiente verde
+- Info: "X% del total" (calculado dinámicamente)
+- Hover: Efectos premium
+
+**Usuarios Inactivos (Dorado):**
+- Icono: ⚠️ en gradiente dorado
+- Número con gradiente dorado
+- Info: "Requieren atención"
+- Hover: Efectos premium
+
+**2. Tabla Premium:**
+- ✅ Header con gradiente dorado sutil
+- ✅ Hover con desplazamiento horizontal
+- ✅ Badge ID dorado
+- ✅ Badge Rol dorado
+- ✅ Estados coloreados (Activo/Suspendido/Inactivo)
+- ✅ Botones de acción agrupados
+
+**3. Funcionalidades Mantenidas:**
+- ✅ Crear usuarios con generación automática de credenciales
+- ✅ Editar usuarios (nombres, apellidos, rol, etc.)
+- ✅ Cambiar estado (Activar/Suspender/Desactivar)
+- ✅ Validaciones en tiempo real
+- ✅ DataTables para búsqueda y paginación
+- ✅ Confirmaciones con SweetAlert2
+
+---
+
+#### **✨ logs.php** - v3.0 LOGS PREMIUM
+
+**🎨 Mejoras Visuales:**
+
+**1. Filtros Card:**
+- ✅ Glassmorphism background
+- ✅ Campos de fecha inicio/fin
+- ✅ Filtro por usuario
+- ✅ Botón "Filtrar" dorado
+
+**2. Stats Cards Premium (3 tarjetas):**
+
+**Total de Registros (Azul):**
+- Icono: ✓ Lista en gradiente azul
+- Número con gradiente azul
+- Info: "Base de datos completa"
+
+**Registros Mostrados (Verde):**
+- Icono: 📅 en gradiente verde
+- Número con gradiente verde
+- Info: "Filtro actual"
+
+**Días de Rango (Naranja):**
+- Icono: 📅 en gradiente naranja
+- Número con gradiente naranja
+- Info: "Período seleccionado"
+
+**3. Tabla Premium:**
+- ✅ Columnas: ID, Fecha/Hora, Usuario, Rol, Acción, Descripción
+- ✅ Badge ID gris
+- ✅ Badge Rol cian
+- ✅ Badge Acción dorado
+- ✅ Hover effect con desplazamiento
+- ✅ DataTables para búsqueda (50 por página)
+
+**4. Info Card:**
+- ✅ Background dorado translúcido
+- ✅ Borde dorado de 2px
+- ✅ Icono grande de información
+- ✅ Texto explicativo sobre logs
+
+**5. Funcionalidades Mantenidas:**
+- ✅ Filtrado por rango de fechas
+- ✅ Filtrado por usuario
+- ✅ Estadísticas dinámicas
+- ✅ Exportar (Excel/PDF) con SweetAlert2
+- ✅ Límite de 500 registros
+
+---
+
+### **📁 admin/** - Panel de Administración
+
+#### **usuarios.php** - Gestión Completa de Usuarios v3.0
+**Funcionalidades:**
+- ✨ **Generación automática de credenciales:**
+  - Usuario: primera letra del nombre + primer apellido (ej: `mfuentes`)
+  - Contraseña: usuario + número aleatorio de 2 dígitos (ej: `mfuentes47`)
+- ✏️ **Editar usuarios:** nombres, apellidos, rol, DPI, teléfono, departamento, municipio
+- 🔄 **Cambio de estado inteligente:**
+  - Usuario Activo → [Editar] [Suspender] [Desactivar]
+  - Usuario Suspendido → [Editar] [Activar] [Desactivar]
+  - Usuario Inactivo → [Editar] [Activar]
+- 🔒 Cambio de contraseña opcional al editar
+- 📊 Vista de tabla con DataTables y estadísticas premium
+- ✅ Confirmación con SweetAlert2 estilizado
+
+**🆕 Diseño Premium:**
+- 3 stats cards con efectos hover espectaculares
+- Tabla con glassmorphism y badges dorados
+- Modal premium (pendiente de implementación completa)
+- Animaciones suaves en todas las interacciones
+
+#### **logs.php** - Registro de Actividades v3.0
+**Funcionalidades:**
+- 📋 Registro completo de actividades del sistema
+- 👤 Muestra quién hizo qué y cuándo
+- 📅 Filtrado por rango de fechas y usuario
+- 📊 Estadísticas: Total registros, Mostrados, Días de rango
+- 💾 Exportación a Excel/PDF
+- 🔍 Tabla con DataTables para filtrado y búsqueda
+
+**🆕 Diseño Premium:**
+- 3 stats cards con efectos premium
+- Filtros en card glassmorphism
+- Tabla con badges coloridos
+- Info card con diseño dorado
+- Animaciones y transiciones suaves
+
+---
+
+### **📁 ajax/** - Peticiones Asíncronas
+
+#### **graficas_datos.php** - ⭐ ACTUALIZADO CON SISTEMA DE FILTROS COMPLETO
+**Funcionalidades originales:**
+- Devuelve datos en formato JSON para Chart.js
+- Endpoints para: género, edades, alfabetismo, departamentos, municipios
+
+**🆕 NUEVAS FUNCIONALIDADES - Sistema de Filtros Cruzados:**
+- **Endpoint `tipo=filtrado`** - Maneja filtros interactivos en tiempo real
+- **Filtros de EDAD:**
+  - Al hacer click en un rango de edad, muestra SOLO ese rango
+  - Suma únicamente `edad_18a25`, `mujeres_edad_18a25`, `hombres_edad_18a25`, etc.
+  - Actualiza todas las visualizaciones mostrando solo ese rango
+- **Filtros de GÉNERO:**
+  - Al hacer click en "Mujeres" o "Hombres", muestra solo ese género
+  - Suma únicamente `total_mujeres` o `total_hombres`
+  - Actualiza tarjetas, gráficas y tabla Top 5
+- **Filtros de ALFABETISMO:**
+  - Al hacer click en categorías (ej: "Hombres Alfabetas"), filtra específicamente
+  - Suma únicamente la categoría seleccionada (ej: `hombres_alfabetas`)
+  - Muestra solo esa barra en la gráfica de alfabetismo
+- **🆕 Filtros de DEPARTAMENTO (Solo desde Mapa):**
+  - **Endpoint `tipo=filtro_departamento`** - Filtra datos por departamento específico
+  - Click directo en el mapa aplica el filtro automáticamente
+  - Actualiza todas las tarjetas, gráficas y tabla Top 5
+  - Suma datos únicamente del departamento seleccionado
+  - Funciona con WHERE clause en SQL: `WHERE departamento = :departamento`
+- **Respuesta JSON incluye:**
+  - `estadisticas`: Datos filtrados para las 4 tarjetas
+  - `edades`: Arrays con datos filtrados por rango
+  - `genero`: Valores filtrados por género
+  - `alfabetismo`: Datos de alfabetización filtrados
+  - `top_municipios`: Top 5 municipios según el filtro aplicado
+  - `_debug`: Información de debug para desarrollo
+
+#### **obtener_datos.php** - ⭐⭐ ACTUALIZADO CON ENDPOINT DE MAPA
+Endpoint para datos dinámicos sin recargar:
+- Estadísticas generales
+- Datos por departamento y municipio
+- **🆕 `accion=datos_mapa_departamentos`** - Devuelve datos de población por departamento para colorear el mapa
+  - Total de empadronados por departamento
+  - Desglose por género (mujeres/hombres)
+  - Número de municipios por departamento
+  - Total general para calcular porcentajes
+  - Formato JSON indexado por nombre de departamento
+- Lista de municipios filtrados por departamento
+- Top municipios
+- Datos de alfabetismo y rangos de edad
+- Búsqueda general
+- Verificación de sesión activa
+
+---
+
+### **📁 assets/** - Recursos Estáticos
+
+#### **📂 css/**
+- **`base.css`** - 🆕 Sistema de diseño fundacional con variables CSS
+- **`dashboard.css`** - 🆕 Estilos premium del dashboard
+- **`components.css`** - 🆕 Componentes reutilizables premium
+
+#### **📂 data/** - Datos Geográficos
+- **`guatemala.geojson`** - Archivo GeoJSON con coordenadas precisas de los 22 departamentos de Guatemala
+  - Descargado de GADM (Database of Global Administrative Areas)
+  - Nivel 1: Departamentos
+  - Contiene límites geográficos precisos
+  - Propiedades incluyen: NAME_1 (nombre), GID_1 (ID único), TYPE_1 (tipo)
+  - Formato: MultiPolygon con coordenadas en WGS84
+
+#### **📂 js/**
+
+**graficas.js** - Utilidades para Chart.js
+- Funciones para crear gráficas (barras, líneas, pie, dona)
+- Configuraciones base reutilizables
+- Colores predefinidos del tema
+- Funciones de actualización y exportación
+
+**main.js** - JavaScript Principal
+- Funciones globales (formatear números, fechas)
+- Validaciones de formularios
+- Alertas y notificaciones (SweetAlert2)
+- Verificación automática de sesión cada 5 minutos
+- Inicialización de tooltips y DataTables
+- Funciones de exportación (Excel, PDF)
+- Auto-ocultar alertas
+
+**dashboard_interactivo.js** - ⭐⭐ v2.3 - Sistema de Filtros Cruzados Simplificado
+**Funcionalidades principales:**
+- **Estado global de filtros:**
+```javascript
+  FiltrosDashboard = {
+      activo: boolean,
+      tipo: 'edad' | 'genero' | 'alfabetismo' | 'departamento',
+      valor: string,
+      label: string
+  }
+```
+- **Creación de gráficas interactivas:**
+  - `crearGraficaEdadesInteractiva()` - Barras clickeables por rango de edad
+  - `crearGraficaGeneroInteractiva()` - Dona clickeable por género
+  - `crearGraficaAlfabetismoInteractiva()` - Barras clickeables por categoría
+- **Sistema de eventos onClick:**
+  - Detecta click en cualquier segmento de las gráficas
+  - Captura el valor clickeado (rango, género o categoría)
+  - Aplica el filtro llamando a `aplicarFiltro(tipo, valor, label)`
+- **Actualización dinámica:**
+  - `actualizarDashboard(datos)` - Actualiza todas las visualizaciones
+  - `actualizarTarjetas(estadisticas)` - Actualiza las 4 tarjetas superiores
+  - `actualizarTablaTop5(municipios)` - Actualiza tabla de Top 5
+- **Indicador visual de filtro activo:**
+  - Badge azul degradado que muestra el filtro aplicado
+  - Botón "Limpiar Filtros" para volver a vista general
+- **Tooltips informativos:**
+  - Mensaje "👆 Click para filtrar" en hover
+  - Cursor pointer en elementos clickeables
+- **Efectos visuales:**
+  - Animaciones suaves en transiciones de datos
+  - Loader con SweetAlert2 durante carga
+  - Toast de confirmación al aplicar filtro
+
+**usuarios.js** - Gestión de Usuarios
+- Generación automática de usuario y contraseña
+- Formateo automático de DPI y teléfono
+- Carga dinámica de municipios por departamento
+- Toggle de contraseña
+- Validaciones en tiempo real
+
+**cerrar_sesion.js** - Confirmación Global
+- Función `confirmarCerrarSesion()` compartida
+- Confirmación con SweetAlert2 estilizado
+- Detección automática de rutas
+
+#### **📂 img/**
+- Carpeta para imágenes y logos del sistema
+
+---
+
+### **📁 config/** - Configuración
+
+#### **db.php**
+Conexión a base de datos MySQL con PDO:
+- Host: localhost
+- Base de datos: RegistroEmpadronados
+- Charset: utf8mb4
+- Zona horaria: America/Guatemala
+- Manejo de errores con PDO
+
+---
+
+### **📁 includes/** - Archivos Incluibles
+
+#### **funciones.php**
+Funciones generales del sistema:
+- Formatear números con separadores de miles
+- Formatear fechas al formato guatemalteco
+- Limpiar datos de entrada (prevención XSS)
+- Validaciones diversas
+- **🆕 `obtenerIniciales($nombre)`** - Obtiene iniciales para avatar
+
+#### **permisos.php**
+Control de acceso por roles:
+- Verificar permisos según rol (Administrador, Presidente, Diputado, Alcalde)
+- Validar autenticación de usuarios
+- Restricción de acceso a páginas según rol
+
+#### **sidebar.php** - 🆕 REDISEÑADO v3.0 - Menú Lateral Premium
+**Características del nuevo diseño:**
+- ✨ Sidebar oscuro con gradiente (azul oscuro)
+- 🎨 Header dorado con gradiente
+- 💫 Hover effects con desplazamiento
+- 🎯 Border izquierdo dorado en item activo
+- 📱 Responsive y colapsable
+- ✅ Detección automática de página activa
+- 🚪 Confirmación premium con SweetAlert2
+
+---
+
+## 🎨 GUÍA DE DISEÑO PREMIUM
+
+### **Paleta de Colores**
+
+**Dorados (Principal):**
+- Primary: #d4a574
+- Primary Dark: #c9a167
+- Primary Light: #e0b787
+
+**Colores Semánticos:**
+- Success: #10b981 (Verde)
+- Warning: #f59e0b (Naranja)
+- Danger: #ef4444 (Rojo)
+- Info: #3b82f6 (Azul)
+
+**Neutrales:**
+- Text Primary: #1f2937
+- Text Secondary: #6b7280
+- Text Disabled: #9ca3af
+- Border: #e5e7eb
+- Border Light: #f3f4f6
+
+### **Efectos Visuales**
+
+**Glassmorphism:**
+```css
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(20px);
+border: 1px solid rgba(0, 0, 0, 0.05);
+```
+
+**Hover Effect para Cards:**
+```css
+transform: translateY(-12px) scale(1.02);
+box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+```
+
+**Gradientes:**
+```css
+/* Dorado */
+background: linear-gradient(135deg, #d4a574, #c9a167);
+
+/* Azul */
+background: linear-gradient(135deg, #3b82f6, #2563eb);
+
+/* Verde */
+background: linear-gradient(135deg, #10b981, #059669);
+```
+
+---
+
+## 📊 CARACTERÍSTICAS PREMIUM
+
+### **Stats Cards**
+- ✅ Glassmorphism con blur
+- ✅ Iconos grandes (70x70px) con gradiente
+- ✅ Números gigantes (3rem) con gradiente de texto
+- ✅ Info box con blur y badge
+- ✅ Círculo decorativo animado
+- ✅ Hover: Elevación + escala + rotación
+
+### **Tablas**
+- ✅ Header con gradiente sutil
+- ✅ Hover con desplazamiento horizontal
+- ✅ Badges con gradientes
+- ✅ Bordes suaves
+- ✅ DataTables integrado
+
+### **Formularios**
+- ✅ Inputs con border radius grande
+- ✅ Focus states con color dorado
+- ✅ Labels con iconos
+- ✅ Validaciones visuales
+
+### **Botones**
+- ✅ Gradiente dorado
+- ✅ Sombras suaves
+- ✅ Hover con elevación
+- ✅ Icons integrados
+
+---
+
+## 📝 CHANGELOG v3.0
+
+### **✨ Nuevas Características**
+- 🎨 Sistema de diseño completo premium dorado
+- 💎 Glassmorphism en todos los componentes
+- ✨ Stats cards con efectos espectaculares
+- 🎯 Sidebar rediseñado completamente
+- 💫 Topbar con avatar de usuario
+- 🎪 Animaciones suaves con cubic-bezier
+
+### **🔧 Mejoras**
+- ⚡ Performance optimizada en transiciones
+- 📱 Mejor responsive design
+- ♿ Mejoras de accesibilidad
+- 🎨 Consistencia visual en todo el sistema
+- 💅 Refinamiento de colores y espaciados
+
+### **🐛 Correcciones**
+- ✅ Alineación de elementos en topbar
+- ✅ Espaciado consistente en cards
+- ✅ Bordes y sombras uniformes
+- ✅ Transiciones más suaves
+
+---
+
+## 🚀 PRÓXIMAS ACTUALIZACIONES
+
+### **En Desarrollo**
+- 🎨 Modal de usuario con diseño premium completo
+- 📊 Más gráficas interactivas
+- 🔔 Sistema de notificaciones en tiempo real
+- 📱 App móvil nativa
+
+### **Planificado**
+- 🌐 Modo oscuro completo
+- 🎯 Dashboard personalizable
+- 📈 Reportes avanzados con exportación
+- 🔐 Autenticación de dos factores
+
+---
+
+## 📚 DOCUMENTACIÓN TÉCNICA
+
+### **Requisitos del Sistema**
+- PHP 7.4+
+- MySQL 5.7+ / MariaDB 10.3+
+- Apache / Nginx
+- Módulos PHP: PDO, mbstring, json
+
+### **Dependencias Frontend**
+- Bootstrap 5.3.0
+- Bootstrap Icons 1.11.0
+- Chart.js 4.4.0
+- DataTables 1.13.7
+- SweetAlert2 11.x
+- Leaflet 1.9.4 (para mapas)
+
+### **Navegadores Soportados**
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Opera 76+
+
+---
+
+## 👥 ROLES Y PERMISOS
+
+### **Administrador**
+- ✅ Acceso completo al sistema
+- ✅ Gestión de usuarios
+- ✅ Visualización de logs
+- ✅ Dashboard completo
+- ✅ Configuración del sistema
+
+### **Presidente**
+- ✅ Dashboard completo
+- ✅ Reportes nacionales
+- ✅ Estadísticas generales
+- ❌ No puede crear usuarios
+
+### **Diputado**
+- ✅ Dashboard filtrado por departamento
+- ✅ Reportes departamentales
+- ❌ No accede a gestión de usuarios
+
+### **Alcalde**
+- ✅ Dashboard filtrado por municipio
+- ✅ Reportes municipales
+- ❌ Acceso limitado
+
+---
+
+## 📧 CONTACTO Y SOPORTE
+
+**Desarrollado por:** Sistema SICO GT Team
+**Versión:** 3.0 Premium Edition
+**Última Actualización:** Octubre 2025
+
+---
+
+**🎨 ¡Sistema completamente rediseñado con estilo premium dorado!**
+
+
+
+
+
+
+
+
+TRUNCATE TABLE prueba;
+
+MESA,DEPARTAMENTO,ID_DEPARTAMENTO,MUNICIPIO,ID_MUNICIPIO,COMUNIDAD,CENTRO_DE_VOTACION,PADRON,UNE,AZUL,VALOR_UNIONISTA,CABAL,TODOS_VAMOS,PHG,PR,PIN,ELEFANTE,VICTORIA,SEMILLA,FCN_NACION,PPN,UR,URNG_MAIZ,WINAQ,CREO,BIEN,VIVA,MI_FAMILIA,CAMBIO,VOS,VALIDOS,NULOS,BLANCO,EMITIDOS,INVALIDOS,TOTAL
+
+mesa,departamento,id_departamento,municipio,id_municipio,comunidad,centro_de_votacion,padron,une,azul,valor_unionista,cabal,todos,vamos,phg,pr,pin,elefante,victoria,semilla,fcn_nacion,ppn,ur,urng_maiz_winaq,creo,bien,viva,mi_familia,cambio,vos,validos,nulos,blanco,emitidos,invalidos,total
