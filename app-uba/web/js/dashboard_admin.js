@@ -13,7 +13,7 @@ function cerrarSesion() {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/AppUBA/logout.php';  // Ruta absoluta
+            window.location.href = '/app-uba/logout.php';  // Ruta absoluta
         }
     });
 }
