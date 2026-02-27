@@ -23,7 +23,7 @@ date_default_timezone_set('America/Guatemala');
 // ✨ PASO 3: Definir constantes (antes de usarlas)
 define('SITE_NAME', 'Sistema de Supervisión');
 define('SITE_URL', 'https://m.nubix.gt/sistema-supervision/');
-define('BASE_PATH', '/home/visionwe/public_html/sistema-supervision/');
+define('BASE_PATH', '/home/visionwe/m.nubix.gt/sistema-supervision/');
 
 // ✨ PASO 4: Verificar expiración de sesión (solo si está logueado)
 if (isset($_SESSION['user_id'])) {
