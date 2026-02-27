@@ -1,0 +1,679 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1deb3
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: localhost:3306
+-- Tiempo de generación: 24-02-2026 a las 13:52:40
+-- Versión del servidor: 8.0.45-0ubuntu0.24.04.1
+-- Versión de PHP: 8.3.6
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `SistemaSupervision`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `contratistas`
+--
+
+CREATE TABLE `contratistas` (
+  `id` int NOT NULL,
+  `nombre` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nit` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `direccion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contactoPrincipal` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `estado` enum('activo','inactivo','suspendido') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'activo',
+  `fechaCreacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fechaModificacion` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `contratistas`
+--
+
+INSERT INTO `contratistas` (`id`, `nombre`, `nit`, `direccion`, `telefono`, `email`, `contactoPrincipal`, `estado`, `fechaCreacion`, `fechaModificacion`) VALUES
+(1, 'Vinicio Fuentes', 'POR-DEFINIR-001', NULL, '42194951', NULL, 'Vinicio Fuentes', 'activo', '2025-10-28 18:53:17', NULL),
+(2, 'Capitan Fuentes', 'POR-DEFINIR-002', NULL, '51172127', NULL, 'Capitan Fuentes', 'activo', '2025-10-28 18:53:17', NULL),
+(3, 'Alejandrina', 'POR-DEFINIR-003', NULL, '42606421', NULL, 'Alejandrina', 'activo', '2025-10-28 18:53:17', '2025-11-25 22:01:36'),
+(4, 'Arturo Chew', 'POR-DEFINIR-004', NULL, '33477896', NULL, 'Arturo Chew', 'activo', '2025-10-28 18:53:17', '2025-10-29 00:25:26'),
+(5, 'Sergio Garcia', 'POR-DEFINIR-005', NULL, '42572235', NULL, 'Sergio Garcia', 'activo', '2025-10-28 18:53:17', NULL),
+(6, 'Gilberto Rodriguez', 'POR-DEFINIR-006', NULL, '50697084', NULL, 'Gilberto Rodriguez', 'activo', '2025-10-28 18:53:17', NULL),
+(7, 'Genaro Siguantay', 'POR-DEFINIR-007', NULL, '52290539', NULL, 'Genaro Siguantay', 'activo', '2025-10-28 18:53:17', NULL),
+(8, 'CONCRETO DE ORIENTE', '12345678-9', NULL, '+502-1234-5678', 'contacto@concretooriente.com', 'Gerente General', 'activo', '2025-10-28 19:30:11', NULL),
+(9, 'Prueba', 'Prueba', NULL, NULL, NULL, 'Prueba', 'activo', '2025-10-29 02:49:12', '2025-10-29 02:49:12');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventario`
+--
+
+CREATE TABLE `inventario` (
+  `id` int NOT NULL,
+  `tipo_equipo` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cantidad` int DEFAULT '1',
+  `costo_equipo` decimal(10,2) DEFAULT NULL,
+  `proveedor_id` int DEFAULT NULL,
+  `fecha_compra` date DEFAULT NULL,
+  `proyecto_id` int DEFAULT NULL,
+  `contratista_id` int DEFAULT NULL,
+  `usuario_id` int DEFAULT NULL,
+  `observaciones` text COLLATE utf8mb4_unicode_ci,
+  `estado` enum('activo','en_mantenimiento','fuera_servicio','dado_baja') COLLATE utf8mb4_unicode_ci DEFAULT 'activo',
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `fecha_modificacion` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `inventario`
+--
+
+INSERT INTO `inventario` (`id`, `tipo_equipo`, `cantidad`, `costo_equipo`, `proveedor_id`, `fecha_compra`, `proyecto_id`, `contratista_id`, `usuario_id`, `observaciones`, `estado`, `fecha_creacion`, `fecha_modificacion`) VALUES
+(27, 'Vibrador de Mochila, Marca Honda', 1, NULL, NULL, NULL, NULL, NULL, 3, 'Equipo Nuevo', 'activo', '2025-12-09 18:07:24', '2026-01-15 19:08:14'),
+(28, 'Vibrador de Mochila, Marca Honda', 1, NULL, NULL, NULL, NULL, NULL, 3, 'Nuevo', 'activo', '2025-12-09 18:09:41', '2025-12-09 18:09:41');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventario_fotografias`
+--
+
+CREATE TABLE `inventario_fotografias` (
+  `id` int NOT NULL,
+  `inventario_id` int NOT NULL,
+  `nombre_archivo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ruta_archivo` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_archivo` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tamanio_bytes` int NOT NULL,
+  `orden` int DEFAULT '1',
+  `fecha_subida` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `inventario_fotografias`
+--
+
+INSERT INTO `inventario_fotografias` (`id`, `inventario_id`, `nombre_archivo`, `ruta_archivo`, `tipo_archivo`, `tamanio_bytes`, `orden`, `fecha_subida`) VALUES
+(11, 27, 'Vivrador-mochila-H-01.jpg', 'public/uploads/inventario/inv_27_1765303644_1.jpg', 'image/jpeg', 28565, 1, '2025-12-09 18:07:24'),
+(12, 28, 'Vivrador-mochila-H-01.jpg', 'public/uploads/inventario/inv_28_1765303781_1.jpg', 'image/jpeg', 28565, 1, '2025-12-09 18:09:41');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `manejo_inventario`
+--
+
+CREATE TABLE `manejo_inventario` (
+  `id` int NOT NULL,
+  `usuario_id` int DEFAULT NULL,
+  `producto` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_gestion` enum('Salida de Bodega','Ingreso de Bodega') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `proyecto_id` int NOT NULL,
+  `trabajador_id` int NOT NULL,
+  `fecha_entrega` date NOT NULL,
+  `observaciones` text COLLATE utf8mb4_unicode_ci,
+  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_modificacion` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `manejo_inventario`
+--
+
+INSERT INTO `manejo_inventario` (`id`, `usuario_id`, `producto`, `tipo_gestion`, `proyecto_id`, `trabajador_id`, `fecha_entrega`, `observaciones`, `fecha_creacion`, `fecha_modificacion`) VALUES
+(10, 1, 'Patrol', 'Salida de Bodega', 95, 6, '2026-01-16', 'Esto es una prueba para saber si todo carga perfectamente', '2026-01-15 19:50:06', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `manejo_inventario_fotografias`
+--
+
+CREATE TABLE `manejo_inventario_fotografias` (
+  `id` int NOT NULL,
+  `manejo_id` int NOT NULL,
+  `nombre_archivo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ruta_archivo` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo_archivo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tamanio_bytes` int NOT NULL,
+  `orden` int NOT NULL DEFAULT '1',
+  `fecha_subida` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `manejo_inventario_fotografias`
+--
+
+INSERT INTO `manejo_inventario_fotografias` (`id`, `manejo_id`, `nombre_archivo`, `ruta_archivo`, `tipo_archivo`, `tamanio_bytes`, `orden`, `fecha_subida`) VALUES
+(9, 10, 'login-background.png', '/public/uploads/manejo_inventario/manejo_10_1768506606_1.png', 'image/png', 582829, 1, '2026-01-15 19:50:06');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedores`
+--
+
+CREATE TABLE `proveedores` (
+  `id` int NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nit` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `telefono` varchar(8) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `observaciones` text COLLATE utf8mb4_unicode_ci,
+  `estado` enum('activo','inactivo') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'activo',
+  `fechaCreacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fechaModificacion` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `proveedores`
+--
+
+INSERT INTO `proveedores` (`id`, `nombre`, `nit`, `telefono`, `observaciones`, `estado`, `fechaCreacion`, `fechaModificacion`) VALUES
+(1, 'Prueba de Proveedor', '1234567-8', '54487878', 'Prueba de descripcion de Proveedores', 'activo', '2025-11-25 21:30:46', '2025-11-25 22:00:19');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proyectos`
+--
+
+CREATE TABLE `proyectos` (
+  `id` int NOT NULL,
+  `nombre` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` enum('Edificio Residencial','Edificio Comercial','Carretera','Puente','Infraestructura Hidráulica','Otro') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ubicacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `estado` enum('activo','inactivo','suspendido') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'activo',
+  `fecha_inicio` date DEFAULT NULL,
+  `fecha_fin_estimada` date DEFAULT NULL,
+  `fecha_fin_real` date DEFAULT NULL,
+  `presupuesto` decimal(15,2) DEFAULT NULL,
+  `consejo` decimal(15,2) DEFAULT NULL COMMENT 'Aporte del Consejo',
+  `muni` decimal(15,2) DEFAULT NULL COMMENT 'Aporte Municipal',
+  `odc` decimal(15,2) DEFAULT NULL COMMENT 'ODC',
+  `cliente` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_modificacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `proyectos`
+--
+
+INSERT INTO `proyectos` (`id`, `nombre`, `tipo`, `ubicacion`, `descripcion`, `estado`, `fecha_inicio`, `fecha_fin_estimada`, `fecha_fin_real`, `presupuesto`, `consejo`, `muni`, `odc`, `cliente`, `fecha_creacion`, `fecha_modificacion`) VALUES
+(1, 'Edificio Plaza Central', 'Edificio Comercial', 'Zona 10, Ciudad de Guatemala', 'Construcción de edificio comercial de 10 niveles', 'activo', '2024-01-15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-27 00:28:42', '2025-10-27 00:28:42'),
+(2, 'Carretera CA-1 Tramo 3', 'Carretera', 'Km 45, Carretera CA-1', 'Ampliación y remodelación de carretera', 'activo', '2024-02-01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-27 00:28:42', '2025-10-27 00:28:42'),
+(3, 'Puente Rio Grande', 'Puente', 'Zona 12, Ciudad de Guatemala', 'Construcción de puente vehicular', 'activo', '2024-03-10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-27 00:28:42', '2025-10-27 00:28:42'),
+(4, 'MEJORAMIENTO CAMINO RURAL CASERIO PICHAL, ALDEA LOS PAJALES CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(5, 'MEJORAMIENTO CAMINO RURAL CASERIO XEUL CANCHEL CUBULCO BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(6, 'MEJORAMIENTO CAMINO RURAL ALDEA PACHOJOP CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(7, 'MEJORAMIENTO CAMINO RURAL DE ALDEA LOS AMATES HACIA RIO LOS GAVILANES, EL CHOL, BAJA VERAPAZ', 'Edificio Residencial', 'EL CHOL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(8, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE ALDEA LOS CHUYES, EL CHOL, BAJA VERAPAZ', 'Edificio Residencial', 'EL CHOL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(9, 'MEJORAMIENTO CALLE PRINCIPAL COLONIA BELLA VISTA, LAS ANONAS,  EL JICARO, EL PROGRESO', 'Edificio Residencial', 'EL JICARO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(10, 'MEJORAMIENTO CALLE CASERIO LOS REGADILLOS ALDEA MARAJUMA MORAZAN, EL PROGRESO', 'Edificio Residencial', 'MORAZAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(11, 'MEJORAMIENTO CAMINO RURAL SECTOR CAMPO DE FUT BOL ALDEA CONCUL RABINAL, BAJA VERAPAZ', 'Edificio Residencial', 'RABINAL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(12, 'MEJORAMIENTO CAMINO RURAL DEL PUENTE AL  PUESTO DE SALUD ALDEA CHIAC RABINAL, BAJA VERAPAZ', 'Edificio Residencial', 'RABINAL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(13, 'MEJORAMIENTO CALLE RUTA 2 DIAGONAL 5 ZONA 5, BARRIO LA ESTANCIA, SALAMA, BAJA VERAPAZ', 'Edificio Residencial', 'SALAMA', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(14, 'MEJORAMIENTO CALLE 1ra. ZONA 5 BARRIO LAS PIEDRECITAS, SALAMA, BAJA VERAPAZ SALAMA POZO DEL TEMPISQUE', 'Edificio Residencial', 'SALAMA', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(15, 'MEJORAMIENTO CAMINO RURALSECTOR EL ORATORIO, BARRIO GUAYTAN ,  SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(16, 'MEJORAMIENTO CAMINO RURAL SECTOR LOS TRUENOS ALDEA IXCANAL,  SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(17, 'MEJORAMIENTO CAMINO RURAl SECTOR CORONADO ALDEA LOS GRACIANOS, SAN ANTONIO LA PAZ, EL PROGRESO', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(18, 'MEJORAMIENTO CALLE RURAL PIEDRAS BLANCAS , SAN CRISTOBAL ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN CRISTOBAL ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(19, 'MEJORAMIENTO CALLE SECTOR POLIDEPORTIVO Y CAIMI CANTON SAN JUAN SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(20, 'MEJORAMIENTO CAMINO RURAL SECTOR PUENTE EL JUTE ALDEA DOLORES SAN MIGUEL CHICAJ, NAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(21, 'MEJORAMIENTO CAMINO RURAL SECTOR ESCUELA PRIMARIA ALDEA EL PROGRESO SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(22, 'MEJORAMIENTO CAMINO RURAL SECTOR ESCUELA PRIMARIA CASERIO LOS HERNANDEZ SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(23, 'MEJORAMIENTO CAMINO RURAL SECTOR ENTRADA PRINCIPAL ALDEA RINCON DE JESUS SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(24, 'MEJORAMIENTO CAMINO RURAL CASERIO RINCON SAN PEDRO SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(25, 'MEJORAMIENTO CAMINO RURAL SECTOR EL  GANCHO CASERIO PACHALUM SAN MIGUEL CHICAJ, BAJA VERAPAZ', 'Edificio Residencial', 'SAN MIGUEL CHICAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(26, 'Mejoramiento escuela Primaria oficial, Aldea Upayon', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(27, 'Mejoramienbto Sistema de Agua Potable, Cabecera (Pozo mecanico Las Guacamayas)', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(28, 'MEJORAMIENTO CALLE RURAL ALDEA AGUA SALOBREGA SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(29, 'MEJORAMIENTO CALLE URBANA SECTOR ESTADIO, CABECERA MUNCICIPAL , SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(30, 'Mejoramiento calle rural sector el centro, Aldea sansirisay el llano, Sanarate, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(31, 'MEJORAMIENTO CALLE  URBANA 1ra, Avenida Zona 3,  SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(32, 'Mejoramiento Escuela Preprimaria zona 4 Sanarate (shalom)', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(33, 'Mejoramiento Calle Rural Aldea el Upayon', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(34, 'CENTRO DE SALUD SAN MIGUEL DUEÑAS', 'Edificio Residencial', 'SAN MIGUEL DUEÑAS', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(35, 'AMPLIACION SISTEMA DE AGUA POTABLE ALDEA LAS LOMAS JOYABAJ QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(36, 'CONSTRUCCION SISTEMA DE AGUA POTABLE CUARTO CENTRO LA ESTANZUELA JOYABAJ QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(37, 'CONSTRUCCION SISTEMA DE AGUA POTABLE ALDEA PACHILIP JOYABAJ QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(38, 'CONSTRUCCION SISTEMA DE AGUA POTABLE ALDEA LAGUNA SECA JOYABAJ QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(39, 'CONSTRUCCION SISTEMA DE AGUA POTABLE PARAJE SUNALA MUCAJ JOYABAJ QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(40, 'MEJORAMIENTO CALLE  SECTOR EL TEXPICAL', 'Edificio Residencial', 'Jocotenango', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(41, 'MEJORAMIENTO SISTEMA DE ALCANTARRILLADO COLONIA MONTEREY', 'Edificio Residencial', 'Jocotenango', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(42, 'MEJOTAMIENTO SISTEMA DE AGUA POTABLE SAN JOSE LA RINCONADA', 'Edificio Residencial', 'Jocotenango', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(43, 'MEJORAMIENTO CALLE RURAL DEL PUENTE HACIA LA IGLESIA ALDEA SINACA, SANARATE, EL PROGRESO.', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(44, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE ALDEA SANSIRISAY EL LLANO SECTOR TRES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(45, 'MEJORAMIENTO CENTRO DE SALUD CABECERA MUNICIPAL, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(46, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE ALDEA CERRO BLANCO SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(47, ' MEJORAMIENTO CALLE RURAL COLONIA EL ROSARIO ALDEA EL CONACASTON, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(48, 'MEJORAMIENTO CALLE RURAL SECTOR EL CENTRO ALDEA SAN MIGUEL CONACASTE, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(49, 'MEJORAMIENTO ESCUELA PRIMARIA OFICIAL URBANA MIXTA SHALON, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(50, 'MEJORAMIENTO CALLE RURAL SECTOR EL CENTRO ALDEA SANTA LUCIA LOS OCOTES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(51, 'MEJORAMIENTO CALLE RURAL ALDEA SAN JUAN LAS FLORES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(52, 'MEJORAMIENTO CALLE URBANA  ZONA 1 . CABECERA MUNICIPAL DE SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(53, 'MEJORAMIENTO CALLE RURAL SECTOR EL PARQUE, ALDEA AGUA SALOBREGA, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(54, 'MEJORAMIENTO CALLE  RURAL SECTOR CANTE HACIA EL PUENTE, ALDEA SANTA LUCIA LOS OCOTES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(55, 'MEJORAMIENTO CALLE RURAL ALDEA EL CARMEN , SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(56, 'MEJORAMIENTO CALLE RURAL SECTOR 2,  ALDEA EL SINACA, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(57, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE COLONIA SAN CARLOS, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(58, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE SECTOR 1, ALDEA SAN JUAN LAS FLORES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(59, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE SECTOR 1, ALDEA AGUA SALOBREGA, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(60, 'MEJORAMIENTO CALLE RURAL SECTOR 2, ALDEA SAN JUAN LAS FLORES, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(61, 'MEJORAMIENTO CALLE RURAL SECTOR HACIA EL RIO, ALDEA EL SINACA SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(62, 'CONSTRUCCION EDIFICIO DE USOS MULTIPLES ALDEA SAN MIGUEL CONACASTE, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(63, 'MEJORAMIENTO CALLE URBANA -1ERA. CALLE ZONA 3- CABECERA MUNICIPAL SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(64, 'CONSTRUCCION EDIFICIO  DE USOS MULTIPLES, ALDEA EL BARRANQUILLO, SANARATE, EL PROGRESO', 'Edificio Residencial', 'SANARATE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(65, 'MEJORAMIENTO CALLE RURAL SECTOR LA CARRETERA, ALDEA LOS CERRITOS, SANSARE, EL PROGRESO', 'Edificio Residencial', 'SANSARE', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(66, 'MEJORAMIENTO CAMINO RURAL BARRIO AGUAHIEL, SECTOR LOS CONTRERAS, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(67, 'MEJORAMIENTO CAMINO RURAL ALDEA PASASAGUA, SECTOR IGLESIA CATOLICA, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(68, 'MEJORAMIENTO CAMINO RURAL ALDEA EL RANCHO, BARRIO LA ASUNCION, SECTOR CANCHA SINTETICA, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(69, 'MEJORAMIENTO CAMINO RURAL ALDEA EL RANCHO, BARRIO LA ASUNCION, SECTOR LA CRUZ, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(70, 'MEJORAMIENTO CAMINO RURAL ALDEA EL RANCHO, BARRIO BUENOS AIRES, SECTOR LOS BURGOS, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(71, 'MEJORAMIENTO CAMINO RURAL ALDEA IXCANAL, CASERIO GUAYASCO, SECTOR ENTRADA PRINCIPAL, SAN AGUSTIN ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN AGUSTIN ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(72, 'MEJORAMIENTO CALLE RURAL CANTON GUISAJO ALDEA ESTANCIA DE LA VIRGEN SAN CRISTOBAL ACASAGUASTLAN', 'Edificio Residencial', 'SAN CRISTOBAL ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(73, 'MEJORAMIENTO CAMINO RURAL HACIA CASERIO EL PALMO, ALDEA ESTANCIA DE LA VIRGEN, SAN CRISTOBAL ACASAGUASTLAN, EL PROGRESO', 'Edificio Residencial', 'SAN CRISTOBAL ACASAGUASTLAN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(74, 'MEJORAMIENTO CAMINO RURAL SALIDA ALTERNA, ALDEA EL CHORRO, SAN ANTONIO LA PAZ, EL PROGRESO', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(75, 'MEJORAMIENTO CAMINO RURAL ALDEA LOS PLANES, SAN ANTONIO LA PAZ, EL PROGRESO', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(76, 'MEJORAMIENTO CAMINO RURAL ALDEA PRADOS DE CANAAN, SAN ANTONIO LA PAZ, EL PROGRESO', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(77, 'MEJORAMIENTO CAMINO RURAL ALDEA AGUA CALIENTE, SAN ANTONIO LA PAZ, EL PROGRESO.', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(78, 'MEJORAMIENTO CAMINO RURAL ALDEA LOS GRACIANOS, SAN ANTONIO LA PAZ, EL PROGREO', 'Edificio Residencial', 'SAN ANTONIO LA PAZ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(79, 'MEJORAMIENTO CAMINO RURAL BARRIO EL CALVARIO, HACIA ALDEA ALLEGOS, MORAZAN, EL PROGRESO', 'Edificio Residencial', 'MORAZAN/PAVIMENTO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(80, 'MEJORAMIENTO CALLE URBANA  BARRIO EL REDUCTO CABECERA MUNICIPAL, MORAZAN, EL PROGRESO', 'Edificio Residencial', 'MORAZAN/ADOQUINADO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(81, 'MEJORAMIENTO CALLE URBANA  CABECERA MUNICIPAL , MORAZAN, EL PROGRESO', 'Edificio Residencial', 'MORAZAN/ADOQUINADO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(82, 'MEJORAMIENTO CALLE RURAL POR VIVIENDA DE HUGO CHACON, COLONIA LOS RIVERA, ALDEA EL PASO DE LOS JALAPAS, EL JICARO, EL PROGRESO.', 'Edificio Residencial', 'JICARO/ADOQUIN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(83, 'MEJORAMIENTO CALLE RURAL DE LA IGLESIA CATOLICA HACIA VIVIENDA DE DAVID MARROQUIN ALDEA EL PASO DE LOS JALAPAS, EL JICARO, EL PROGRESO', 'Edificio Residencial', 'JICARO/PAVIMENTO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(84, 'MEJORAMIENTO CALLE RURAL DEL SALON COMUNAL HACIA REGADILLOS, ALDEA ESPIRITU SANTO, EL JICARO EL PROGRESO.', 'Edificio Residencial', 'JICARO/ADOQUIN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(85, 'MEJORAMIENTO CAMINO RURAL SEGUNDO INGRESO ALDEA ESPIRITU SANTO, EL JICARO EL PROGRESO. ', 'Edificio Residencial', 'JICARO/ADOQUIN', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(86, 'MEJORAMIENTO CALLE RURAL ALDEA LAS ANONAS, EL JICARO EL PROGRESO.', 'Edificio Residencial', 'JICARO/adoquin', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(87, 'MEJORAMIENTO CAMINO RURAL ACCESO PRINCIPAL ALDEA AGUA CALIENTE, EL JICARO EL PROGRESO', 'Edificio Residencial', 'JICARO/pavimento', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(88, 'MEJORAMIENTO CALLE SECTOR OASIS, BARRIO LA LIBERTAD, JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(89, 'MEJORAMIENTO CAMINO RURAL SECTOR PUENTE, ALDEA CHOSAVIC, JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(90, 'MEJORAMIENTO CAMINO RURAL COLONIA LOS ANGELES, JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(91, 'MEJORAMIENTO ESCUELA PRIMARIA CASERIO TZITZIL JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(92, 'MEJORAMIENTO CAMINO RURAL CASERIOS CHIAJ TRES CRUCES, JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(93, 'MEJORAMIENTO SISTEMA DE AGUA POTABLE CON PERFORACION DE POZO AREA URBANA JOYABAJ, QUICHE', 'Edificio Residencial', 'JOYABAJ', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(94, 'MEJORAMIENTO CALLE DIAGONAL 3 Y 7A. CALLE ZONA 2 BARRIO SAN JOSE SALAMA, BAJA VERAPAZ', 'Edificio Residencial', 'SALAMA', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(95, 'AMPLIACION HOSPITAL NACIONAL DE SALAMA BARRIO EL CALVARIO SALAMA, BAJA VERAPAZ.', 'Edificio Residencial', 'SALAMA', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(96, 'MEJORAMIENTO DE CALLE PICHEC, RABINAL, BAJA VERAPAZ.', 'Edificio Residencial', 'RABINAL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(97, 'MEJORAMIENTO CALLE EL REPOLLAL, RABINAL BAJA VERAPAZ', 'Edificio Residencial', 'RABINAL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(98, 'MEJORAMIENTO CAMINO RURAL CASERIO PALA SECTOR LA CUMBRE CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(99, 'MEJORAMIENTO CAMINO RURAL CASERIO XEYOCH CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(100, 'MEJORAMIENTO CAMINO RURAL CASERIO XEMES CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(101, 'MEJORAMIENTO CAMINO RURAL CASERIO CHIUL ALDEA LA LAGUNA CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(102, 'MEJORAMIENTO CAMINO RURAL CASERIO MALENA CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(103, 'MEJORAMIENTO CAMINO RURAL CASERIO PACHIPAC ALDEA TRES CRUCES CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(104, 'MEJORAMIENTO CAMINO RURAL CASERIO VEGA DE CHUAPEC CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(105, 'MEJORAMIENTO CAMINO RURAL CASERIO CHIMACHO ALDEA GUATZILEP CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(106, 'MEJORAMIENTO CAMINO RURAL CASERIO TUNCAJ SECTOR LA LAGUNA CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(107, 'MEJORAMIENTO CAMINO RURAL ALDEA EL VOLCANCILLO CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(108, 'MEJORAMIENTO CAMINO RURAL CASERIO CHIVAQUITO CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(109, 'MEJORAMIENTO CAMINO RURAL CASERIO EL RODEO ALDEA LAS VEGAS CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(110, 'MEJORAMIENTO CAMINO RURAL CASERIO XINACATI II CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(111, 'MEJORAMIENTO CAMINO RURAL CASERIO PICHAL SECTOR MORENTES CUBULCO, BAJA VERAPAZ', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(112, 'MEJORAMIENTO CAMINO RURAL CASERIO PACHOJOP, CUBULCO BAJA VERAPAZ.', 'Edificio Residencial', 'CUBULCO', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(113, 'MEJORAMIENTO CAMINO RURAL CASERIO LA LIBERTAD PANPA, PURULHA, BAJA VERAPAZ.', 'Edificio Residencial', 'PURULA  28013441', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(114, 'Pavimento de lo de Reyes al ojo de agua', 'Edificio Residencial', 'CHOL', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(115, 'CENTRO DE SALUD SAN MIGUEL DUEÑAS', 'Edificio Residencial', 'SAN MIGUEL DUEÑAS', NULL, 'activo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-10-28 13:16:41', '2025-10-28 13:16:41'),
+(116, 'prueba', 'Puente', 'Prueba de ubicacion', 'Prueba de descripcion', 'activo', '2025-11-01', '2025-11-20', '2025-11-28', 3500.00, 3000.00, 500.00, 2500.00, 'Prueba de Cliente', '2025-11-27 18:39:42', '2025-11-27 18:40:13');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `supervisiones`
+--
+
+CREATE TABLE `supervisiones` (
+  `id` int NOT NULL,
+  `proyecto_id` int NOT NULL,
+  `contratista_id` int NOT NULL,
+  `trabajador_id` int NOT NULL,
+  `usuario_id` int DEFAULT NULL,
+  `fecha_supervision` datetime DEFAULT CURRENT_TIMESTAMP,
+  `estado` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
+  `observaciones` text COLLATE utf8mb4_unicode_ci,
+  `telefono` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,
+  `fecha_modificacion` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `supervisiones`
+--
+
+INSERT INTO `supervisiones` (`id`, `proyecto_id`, `contratista_id`, `trabajador_id`, `usuario_id`, `fecha_supervision`, `estado`, `observaciones`, `telefono`, `fecha_creacion`, `fecha_modificacion`) VALUES
+(1, 95, 3, 31, 1, '2025-10-29 14:45:50', 'pendiente', NULL, NULL, '2025-10-29 14:45:50', '2025-11-05 00:49:35'),
+(2, 35, 2, 12, 1, '2025-10-29 15:01:34', 'pendiente', NULL, NULL, '2025-10-29 15:01:34', '2025-11-05 00:49:35'),
+(3, 47, 3, 27, 1, '2025-10-29 15:06:33', 'pendiente', NULL, NULL, '2025-10-29 15:06:33', '2025-11-05 00:49:35'),
+(4, 34, 2, 11, 1, '2025-10-30 04:58:17', 'pendiente', NULL, NULL, '2025-10-30 04:58:17', '2025-11-05 00:49:35'),
+(5, 95, 2, 12, 1, '2025-10-30 06:07:06', 'pendiente', NULL, NULL, '2025-10-30 06:07:06', '2025-11-05 00:49:35'),
+(6, 19, 2, 6, 1, '2025-11-03 00:34:12', 'pendiente', 'Prueba de descripcion de observaciones', '4528-9012', '2025-11-03 00:34:12', '2025-11-05 00:49:35'),
+(7, 2, 6, 13, 1, '2025-11-05 01:47:09', 'pendiente', 'prueba de observaciones', '0321-3206', '2025-11-05 01:47:09', '2025-11-05 01:47:09'),
+(8, 2, 6, 5, 2, '2025-11-05 15:37:34', 'pendiente', 'prueba de observaciones', '0123-8742', '2025-11-05 15:37:34', '2025-11-05 15:37:34'),
+(9, 43, 5, 13, 3, '2025-11-05 15:39:11', 'pendiente', 'prueba de descripcion de observaciones', '1025-8742', '2025-11-05 15:39:11', '2025-11-05 15:39:11'),
+(10, 35, 8, 9, 1, '2025-11-22 02:09:29', 'pendiente', NULL, '4213-4234', '2025-11-22 02:09:29', '2025-11-22 02:09:29'),
+(11, 35, 2, 6, 1, '2025-11-24 19:07:57', 'pendiente', 'prueba de observaciones', '5454-5454', '2025-11-24 19:07:57', '2025-11-24 19:07:57'),
+(12, 34, 2, 32, 3, '2025-12-16 20:39:59', 'pendiente', 'prueba', '2222-1628', '2025-12-16 20:39:59', '2025-12-16 20:39:59');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `trabajadores`
+--
+
+CREATE TABLE `trabajadores` (
+  `id` int NOT NULL,
+  `contratista_id` int NOT NULL,
+  `nombre` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `fecha_contratacion` date DEFAULT NULL,
+  `salario` decimal(10,2) DEFAULT NULL,
+  `horas_extra` int DEFAULT '0',
+  `modalidad` enum('Plan 24','Mes','Destajo') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `puesto` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dpi` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `estado` enum('activo','inactivo','suspendido') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'activo',
+  `fechaCreacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fechaModificacion` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Trabajadores/empleados asociados a cada contratista';
+
+--
+-- Volcado de datos para la tabla `trabajadores`
+--
+
+INSERT INTO `trabajadores` (`id`, `contratista_id`, `nombre`, `telefono`, `fecha_nacimiento`, `fecha_contratacion`, `salario`, `horas_extra`, `modalidad`, `puesto`, `dpi`, `estado`, `fechaCreacion`, `fechaModificacion`) VALUES
+(1, 8, 'HENRY VAZQUEZ', '32259705', NULL, NULL, NULL, 0, NULL, 'CARGADOR FRONTAL', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(2, 8, 'OSCAR CHOC', '56767033', NULL, NULL, NULL, 0, NULL, 'JOHN DEERE 1', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(3, 8, 'VICTOR RUANO', '53462838', NULL, NULL, NULL, 0, NULL, 'PATROL 2', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(4, 8, 'EDIN JALAL', '54638487', NULL, NULL, NULL, 0, NULL, 'RODO 1', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(5, 8, 'ULISES RUANO', '31764372', NULL, NULL, NULL, 0, NULL, 'PATROL 1', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(6, 8, 'ALEX TUX', '37338751', NULL, NULL, NULL, 0, NULL, 'RODO 1', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(7, 8, 'CARLOS MANCILLA', '54247808', NULL, NULL, NULL, 0, NULL, 'CAT 416', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(8, 8, 'GABRIEL TUN', '35722500', NULL, NULL, NULL, 0, NULL, 'JOHN DEERE 2', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(9, 8, 'ALVARO ANTONIO ASTUAC', '46669216', NULL, NULL, NULL, 0, NULL, 'MAQUINARIA', NULL, 'activo', '2025-10-28 19:43:44', '2025-11-25 22:02:13'),
+(10, 8, 'EMILIO POP', '47896106', NULL, NULL, NULL, 0, NULL, 'GONDOLA BLANCA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(11, 8, 'JUAN CARLOS', '47512932', NULL, NULL, NULL, 0, NULL, 'PALANGANA ROJA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(12, 8, 'ALEJANDRO DEL CID', '40307215', NULL, NULL, NULL, 0, NULL, 'LOWBOY', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(13, 8, 'VIRGILIO DE LA CRUZ', '31547962', NULL, NULL, NULL, 0, NULL, 'PALANGANA STERLING', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(14, 8, 'MARIO CHE', '46969013', NULL, NULL, NULL, 0, NULL, 'PALANGANA PETER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(15, 8, 'JAVIER OCHOA', '55704105', NULL, NULL, NULL, 0, NULL, 'PALANGANA AMARILLA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(16, 8, 'EFRAIN MAQUIN', '33207932', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(17, 8, 'MOISES COC', '45662328', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(18, 8, 'NERY CAJBON', '39178526', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(19, 8, 'JOSE MAQUIN', '56374487', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(20, 8, 'FERNANDO', '41451186', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(21, 8, 'JOEL PASCUAL', '51779823', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(22, 8, 'FERNANDO SANTAMARIA', '33351037', NULL, NULL, NULL, 0, NULL, 'MIXER', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(23, 8, 'SERGIO GARCIA', '42572235', NULL, NULL, NULL, 0, NULL, 'DOLSIFICADORA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(24, 8, 'GILBERTO RODRIGUEZ', '50697084', NULL, NULL, NULL, 0, NULL, 'DOLSIFICADORA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(25, 8, 'WILSON ICAL', '48889019', NULL, NULL, NULL, 0, NULL, 'ROMPESACOS', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(26, 8, 'FIDEL PAUU', '53575113', NULL, NULL, NULL, 0, NULL, 'ROMPESACOS', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(27, 8, 'ABELARDO COS', '48173990', NULL, NULL, NULL, 0, NULL, 'ROMPESACOS', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(28, 8, 'JORGE CHOCOL', '45395393', NULL, NULL, NULL, 0, NULL, 'ROMPESACOS', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(29, 8, 'KEVIN CABRERA', '42911656', NULL, NULL, NULL, 0, NULL, 'BODEGUERO', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(30, 8, 'ANTONIO GONZALEZ', '36695958', NULL, NULL, NULL, 0, NULL, 'GUARDIAN', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(31, 8, 'ALEJANDRINA', '42606421', NULL, NULL, NULL, 0, NULL, 'INGENIERA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(32, 8, 'ARTURO CHEW', '33477896', NULL, NULL, NULL, 0, NULL, 'ENCARGADO PROYECTOS', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(33, 8, 'MARIO DEL CID', '45328575', NULL, NULL, NULL, 0, NULL, 'ENCARGADO BODEGA', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(34, 8, 'VINICIO FUENTES', '42194951', NULL, NULL, NULL, 0, NULL, 'ARQUITECTO JOYABAJ', NULL, 'activo', '2025-10-28 19:43:44', NULL),
+(35, 3, 'Prueba', '45289012', NULL, NULL, NULL, 0, NULL, 'Prueba', '1234567890101', 'activo', '2025-10-28 23:08:08', '2025-10-28 23:08:08'),
+(36, 1, 'Prueba', NULL, NULL, NULL, NULL, 0, NULL, 'Prueba', NULL, 'activo', '2025-10-29 02:48:54', '2025-10-29 02:48:54'),
+(37, 4, 'Prueba 3', '36262584', NULL, NULL, 4000.00, 12, 'Plan 24', 'Prueba 3', '0201514848484', 'activo', '2025-11-25 21:27:48', '2025-11-27 14:09:56'),
+(38, 5, 'Prueba 4', '32136056', '1999-02-23', '2025-01-28', 4000.00, 22, 'Destajo', 'Tecnico', '0321649848946', 'activo', '2025-11-27 14:11:32', '2025-11-27 14:11:53');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id` int NOT NULL,
+  `usuario` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contrasena` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rol` enum('administrador','tecnico') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nivel_acceso` enum('basico','completo') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telefono` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `estado` enum('activo','pendiente','suspendido','inactivo') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pendiente',
+  `fechaCreacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ultimoAcceso` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `usuario`, `contrasena`, `rol`, `nivel_acceso`, `email`, `telefono`, `estado`, `fechaCreacion`, `ultimoAcceso`) VALUES
+(1, 'admin', '$2y$10$J38/SBjK2c8YwxL7/ix/Nu4igeEVql0VHXpkHKxP2ZplWalbUa6zu', 'administrador', NULL, 'admin@ejemplo.com', '12345678', 'activo', '2025-10-28 18:52:45', '2026-01-18 19:43:41'),
+(2, 'tecnico_basico', '$2y$10$KnwVEOTn2oLEZ70dmy5jheMRuUBR8b/ZVg5ebTvIzzmNAkqtpP3VC', 'tecnico', 'basico', 'tecnico.basico@supervision.com', '5555-1234', 'activo', '2025-11-03 16:26:13', '2026-01-14 15:34:01'),
+(3, 'Nelson', '$2y$10$UwXp4RmYTbZBVgeJmehWj.AQO1UOka.387eywkmKG47.02Frzuu2O', 'tecnico', 'completo', 'tecnico.completo@supervision.com', '5555-5678', 'activo', '2025-11-03 16:26:30', '2026-01-14 15:34:27'),
+(4, 'crodas', '$2y$10$4htXBk13ZeaHlsKvY6yYReBeknUeEhTwdl.ItkAZDuIQP1MJszbcq', 'administrador', NULL, '', '', 'activo', '2026-01-14 15:54:45', '2026-01-19 16:45:30');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `contratistas`
+--
+ALTER TABLE `contratistas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nit` (`nit`),
+  ADD KEY `idx_nit` (`nit`),
+  ADD KEY `idx_nombre` (`nombre`),
+  ADD KEY `idx_estado` (`estado`);
+
+--
+-- Indices de la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_tipo_equipo` (`tipo_equipo`),
+  ADD KEY `idx_estado` (`estado`),
+  ADD KEY `idx_proyecto` (`proyecto_id`),
+  ADD KEY `idx_contratista` (`contratista_id`),
+  ADD KEY `idx_inventario_usuario` (`usuario_id`),
+  ADD KEY `fk_inventario_proveedor` (`proveedor_id`);
+
+--
+-- Indices de la tabla `inventario_fotografias`
+--
+ALTER TABLE `inventario_fotografias`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_inventario` (`inventario_id`);
+
+--
+-- Indices de la tabla `manejo_inventario`
+--
+ALTER TABLE `manejo_inventario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_manejo_usuario` (`usuario_id`),
+  ADD KEY `fk_manejo_proyecto` (`proyecto_id`),
+  ADD KEY `fk_manejo_trabajador` (`trabajador_id`);
+
+--
+-- Indices de la tabla `manejo_inventario_fotografias`
+--
+ALTER TABLE `manejo_inventario_fotografias`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_foto_manejo` (`manejo_id`);
+
+--
+-- Indices de la tabla `proveedores`
+--
+ALTER TABLE `proveedores`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `proyectos`
+--
+ALTER TABLE `proyectos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_nombre` (`nombre`),
+  ADD KEY `idx_estado` (`estado`);
+ALTER TABLE `proyectos` ADD FULLTEXT KEY `idx_busqueda_proyectos` (`nombre`,`descripcion`);
+
+--
+-- Indices de la tabla `supervisiones`
+--
+ALTER TABLE `supervisiones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `proyecto_id` (`proyecto_id`),
+  ADD KEY `contratista_id` (`contratista_id`),
+  ADD KEY `trabajador_id` (`trabajador_id`),
+  ADD KEY `idx_supervisiones_usuario` (`usuario_id`);
+
+--
+-- Indices de la tabla `trabajadores`
+--
+ALTER TABLE `trabajadores`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_contratista_id` (`contratista_id`),
+  ADD KEY `idx_nombre` (`nombre`),
+  ADD KEY `idx_telefono` (`telefono`),
+  ADD KEY `idx_estado` (`estado`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario` (`usuario`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `idx_usuario` (`usuario`),
+  ADD KEY `idx_email` (`email`),
+  ADD KEY `idx_estado` (`estado`),
+  ADD KEY `idx_rol` (`rol`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `contratistas`
+--
+ALTER TABLE `contratistas`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT de la tabla `inventario_fotografias`
+--
+ALTER TABLE `inventario_fotografias`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `manejo_inventario`
+--
+ALTER TABLE `manejo_inventario`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `manejo_inventario_fotografias`
+--
+ALTER TABLE `manejo_inventario_fotografias`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `proveedores`
+--
+ALTER TABLE `proveedores`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `proyectos`
+--
+ALTER TABLE `proyectos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
+
+--
+-- AUTO_INCREMENT de la tabla `supervisiones`
+--
+ALTER TABLE `supervisiones`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `trabajadores`
+--
+ALTER TABLE `trabajadores`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  ADD CONSTRAINT `fk_inventario_proveedor` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_inventario_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `inventario_ibfk_1` FOREIGN KEY (`proyecto_id`) REFERENCES `proyectos` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `inventario_ibfk_2` FOREIGN KEY (`contratista_id`) REFERENCES `contratistas` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `inventario_fotografias`
+--
+ALTER TABLE `inventario_fotografias`
+  ADD CONSTRAINT `inventario_fotografias_ibfk_1` FOREIGN KEY (`inventario_id`) REFERENCES `inventario` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `manejo_inventario`
+--
+ALTER TABLE `manejo_inventario`
+  ADD CONSTRAINT `fk_manejo_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `proyectos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_manejo_trabajador` FOREIGN KEY (`trabajador_id`) REFERENCES `trabajadores` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_manejo_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `manejo_inventario_fotografias`
+--
+ALTER TABLE `manejo_inventario_fotografias`
+  ADD CONSTRAINT `fk_foto_manejo` FOREIGN KEY (`manejo_id`) REFERENCES `manejo_inventario` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `supervisiones`
+--
+ALTER TABLE `supervisiones`
+  ADD CONSTRAINT `fk_supervisiones_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `supervisiones_ibfk_1` FOREIGN KEY (`proyecto_id`) REFERENCES `proyectos` (`id`),
+  ADD CONSTRAINT `supervisiones_ibfk_2` FOREIGN KEY (`contratista_id`) REFERENCES `contratistas` (`id`),
+  ADD CONSTRAINT `supervisiones_ibfk_3` FOREIGN KEY (`trabajador_id`) REFERENCES `trabajadores` (`id`);
+
+--
+-- Filtros para la tabla `trabajadores`
+--
+ALTER TABLE `trabajadores`
+  ADD CONSTRAINT `fk_trabajador_contratista` FOREIGN KEY (`contratista_id`) REFERENCES `contratistas` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
