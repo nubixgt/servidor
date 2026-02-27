@@ -11,7 +11,7 @@ import '../../modelos/clinica.dart';
 /// URL base del backend en tu servidor
 class ClienteAPI {
   // ⚠️ IMPORTANTE: Cambia esta URL por la IP/dominio de tu servidor
-  static const String baseUrl = 'http://159.65.168.91/AppUBA/backend/api';
+  static const String baseUrl = 'https://m.nubix.gt/app-uba/backend/api';
 }
 
 /// Sube un archivo individual (foto o documento) al backend
