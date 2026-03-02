@@ -9,4 +9,6 @@ class User
     public $contrasena;
     public $rol;
     public $estado;
+    public $fecha_creacion;
+    public $fecha_actualizacion;
 }
