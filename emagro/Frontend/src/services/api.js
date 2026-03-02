@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api/v1/index.php',
+    baseURL: 'https://m.nubix.gt/emagro/Backend/api/v1/index.php',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

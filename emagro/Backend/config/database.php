@@ -1,9 +1,9 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'emagro',
-    'username' => 'root',
-    'password' => '',
+    'dbname' => 'visionweb_Emagro',
+    'username' => 'visionwe',
+    'password' => 'Guate25#',
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
