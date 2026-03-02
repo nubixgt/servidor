@@ -21,16 +21,23 @@ class Router
     public function dispatch($method, $uri)
     {
         $originalUri = $uri;
-        // Simple URI matching for now (ignores query params in matching logic)
+        // Remove query string
         $uri = strtok($uri, '?');
 
-        // Strip exact known script paths to get just the API route path
-        $uri = str_replace('/api/v1/index.php', '', $uri);
-        $uri = str_replace('/index.php', '', $uri);
+        // Strip everything up to and including 'index.php' to get just the route path
+        // e.g. /emagro/Backend/api/v1/index.php/login  →  /login
+        if (strpos($uri, 'index.php') !== false) {
+            $uri = substr($uri, strpos($uri, 'index.php') + strlen('index.php'));
+        }
 
         // Ensure URI starts with /
         if ($uri === '' || $uri[0] !== '/') {
             $uri = '/' . ltrim($uri, '/');
+        }
+
+        // If nothing after index.php, treat as root
+        if ($uri === '') {
+            $uri = '/';
         }
 
         foreach ($this->controllers as $controllerClass) {
