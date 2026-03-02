@@ -5,4 +5,8 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
     base: '/emagro/',
     plugins: [vue()],
+    build: {
+        outDir: '../',
+        emptyOutDir: false
+    }
 })
