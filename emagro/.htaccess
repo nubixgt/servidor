@@ -2,6 +2,7 @@
   RewriteEngine On
   RewriteBase /emagro/
   RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_URI} !^/emagro/Backend/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /emagro/index.html [L]
