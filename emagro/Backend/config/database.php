@@ -1,7 +1,7 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'your_database_name',
+    'dbname' => 'emagro',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8mb4',

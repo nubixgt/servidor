@@ -1,5 +1,5 @@
 <template>
-  <PageLayout title="Estadísticas de Ventas" subtitle="Resumen general del rendimiento comercial">
+  <PageLayout title="Tablero Principal" subtitle="Información general de ventas, cobros y rendimiento">
     <div v-if="loading" class="flex justify-center items-center h-64">
       <svg class="animate-spin h-8 w-8 text-[#2E7D32]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -7,135 +7,198 @@
       </svg>
     </div>
     
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <KpiCard
-        title="Ventas Totales"
-        :value="'Q ' + formatMoney(stats.ventas_totales)"
-        trend="Calculado en vivo"
-        :trendUp="true"
-        color="green"
-      >
-        <template #icon><span class="font-bold text-xl">Q</span></template>
-      </KpiCard>
-      <KpiCard
-        title="Clientes Activos"
-        :value="stats.clientes_activos"
-        trend="Registrados"
-        :trendUp="true"
-        color="blue"
-      >
-        <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </template>
-      </KpiCard>
-      <KpiCard
-        title="Stock Bajo"
-        :value="stats.stock_bajo + ' Items'"
-        trend="Agotados"
-        :trendUp="false"
-        color="red"
-      >
-         <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
-        </template>
-      </KpiCard>
-      <KpiCard
-        title="Promedio Venta"
-        :value="'Q ' + formatMoney(stats.promedio_venta)"
-        trend="Ticket Promedio"
-        :trendUp="null"
-        color="orange"
-      >
-        <template #icon>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-        </template>
-      </KpiCard>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <div class="flex items-center justify-between mb-8">
+    <div v-else class="space-y-6">
+      <!-- KPIs -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Ventas del Mes -->
+        <div class="bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-between hover:-translate-y-1 transition-transform duration-300 group">
           <div>
-            <h3 class="text-lg font-bold text-gray-800">Tendencia de Ventas</h3>
-            <p class="text-sm text-gray-500">Enero - Junio 2026</p>
-          </div>
-          <select class="bg-gray-50 border border-gray-200 text-sm rounded-lg py-2 px-3 focus:ring-1 focus:ring-[#2E7D32] focus:border-[#2E7D32] text-gray-600 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors outline-none">
-            <option>Últimos 6 meses</option>
-            <option>Este año</option>
-            <option>Todo el tiempo</option>
-          </select>
-        </div>
-        <!-- Chart Placeholder -->
-        <div class="h-72 flex items-end justify-between gap-2">
-            <div v-for="(h, i) in [40, 55, 45, 70, 60, 85]" :key="i" class="flex-1 flex flex-col items-center gap-2 group">
-                <div :class="`w-full max-w-[3rem] rounded-t-lg transition-all relative ${i === 5 ? 'bg-[#2E7D32]' : 'bg-gray-100 group-hover:bg-[#2E7D32]/60'}`" :style="`height: ${h}%`">
-                    <div v-if="i === 5" class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs font-bold py-1 px-2 rounded-full">Q32k</div>
-                </div>
-                <span :class="`text-xs font-medium ${i === 5 ? 'text-[#2E7D32] font-bold' : 'text-gray-500'}`">
-                    {{ ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'][i] }}
-                </span>
+            <p class="text-sm font-semibold text-gray-500 mb-1">Ventas (30 Días)</p>
+            <h3 class="text-2xl font-bold text-gray-800 tracking-tight">Q {{ formatMoney(stats.ventas_mes) }}</h3>
+            <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-700">
+              Período Actual
             </div>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-green-50 text-[#2E7D32] flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 border border-green-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+        </div>
+
+        <!-- Cobros del Mes -->
+        <div class="bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-between hover:-translate-y-1 transition-transform duration-300 group">
+          <div>
+            <p class="text-sm font-semibold text-gray-500 mb-1">Cobros (30 Días)</p>
+            <h3 class="text-2xl font-bold text-gray-800 tracking-tight">Q {{ formatMoney(stats.cobros_mes) }}</h3>
+            <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+              Recaudado
+            </div>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transform group-hover:-rotate-12 transition-transform duration-300 border border-blue-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+
+        <!-- Deuda Total Pendiente -->
+        <div class="bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-between hover:-translate-y-1 transition-transform duration-300 group">
+          <div>
+            <p class="text-sm font-semibold text-gray-500 mb-1">Cuentas por Cobrar</p>
+            <h3 class="text-2xl font-bold text-gray-800 tracking-tight">Q {{ formatMoney(stats.deuda_total) }}</h3>
+            <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700">
+              Global
+            </div>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 border border-orange-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+        </div>
+
+        <!-- Clientes Activos -->
+        <div class="bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex items-center justify-between hover:-translate-y-1 transition-transform duration-300 group">
+          <div>
+            <p class="text-sm font-semibold text-gray-500 mb-1">Clientes Activos</p>
+            <h3 class="text-2xl font-bold text-gray-800 tracking-tight">{{ stats.clientes_activos }}</h3>
+            <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
+              Cartera
+            </div>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center transform group-hover:-translate-y-1 transition-transform duration-300 border border-purple-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
-        <h3 class="text-lg font-bold text-gray-800 mb-6">Ventas por Categoría</h3>
-        <div class="flex-1 flex items-center justify-center relative py-4">
-          <div class="w-48 h-48 rounded-full border-[1.5rem] border-[#2E7D32] relative flex items-center justify-center shadow-sm bg-white" style="border-right-color: #81C784; border-bottom-color: #FFB74D; border-left-color: #EEEEEE; transform: rotate(-45deg);">
+      <!-- Charts & Tables Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Tendencias (6 Meses) -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col">
+          <div class="mb-8 flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-gray-800">Tendencia de Ventas vs Cobros</h3>
+              <p class="text-sm text-gray-500">Últimos 6 meses</p>
+            </div>
+            <div class="flex gap-4 items-center">
+              <div class="flex items-center gap-2 text-sm"><span class="w-3 h-3 rounded-full bg-[#2E7D32]"></span>Ventas</div>
+              <div class="flex items-center gap-2 text-sm"><span class="w-3 h-3 rounded-full bg-blue-500"></span>Cobros</div>
+            </div>
           </div>
-          <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span class="text-3xl font-bold text-gray-800">1,204</span>
-            <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Items Vendidos</span>
+          
+          <div class="flex-1 flex items-end justify-between gap-4 h-64 relative mt-auto z-10">
+            <div v-for="(mesAbrev, i) in ultimos6MesesAbrev" :key="i" class="flex-1 flex flex-col items-center justify-end h-full group relative z-10">
+                  <!-- Barras superpuestas / juntas -->
+                  <div class="w-full flex justify-center items-end h-[85%] gap-1">
+                      <div class="w-1/3 bg-blue-500 rounded-t-sm transition-all hover:brightness-110 relative" 
+                           :style="{ height: getBarHeight(mergedTrend[i]?.cobros) + '%' }">
+                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Q{{ formatMoney(mergedTrend[i]?.cobros) }}</div>
+                      </div>
+                      <div class="w-1/3 bg-[#2E7D32] rounded-t-sm transition-all hover:brightness-110 relative" 
+                           :style="{ height: getBarHeight(mergedTrend[i]?.ventas) + '%' }">
+                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs font-bold py-1 px-2 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Q{{ formatMoney(mergedTrend[i]?.ventas) }}</div>
+                      </div>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-500 mt-3 whitespace-nowrap">{{ mesAbrev }}</span>
+            </div>
+            <!-- Líneas de fondo -->
+            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-[15%]">
+              <div class="border-b border-gray-100 w-full h-0"></div>
+              <div class="border-b border-gray-100 w-full h-0"></div>
+              <div class="border-b border-gray-100 w-full h-0"></div>
+              <div class="border-b border-gray-100 w-full h-0"></div>
+            </div>
           </div>
         </div>
-        <div class="mt-6 space-y-4">
-          <CategoryStat 
-            v-for="(cat, i) in stats.ventas_por_categoria || []" 
-            :key="i"
-            :name="cat.category" 
-            :percentage="cat.items_sold + ' items'" 
-            :color="getCategoryColor(i)" 
-          />
-        </div>
-      </div>
-    </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-        <h3 class="text-lg font-bold text-gray-800">Ventas Recientes</h3>
-        <button class="text-[#2E7D32] text-sm font-semibold hover:text-[#1B5E20] transition-colors flex items-center gap-1 hover:underline">
-          Ver todas <ArrowRightSVG />
-        </button>
+        <!-- Ventas por Categoría -->
+        <div class="bg-white p-6 rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col h-full">
+          <h3 class="text-lg font-bold text-gray-800 mb-6">Top Productos Vendidos</h3>
+          <div class="flex-1 flex flex-col justify-center">
+            <div class="space-y-4">
+              <template v-if="stats.ventas_por_categoria && stats.ventas_por_categoria.length">
+                <div v-for="(cat, i) in stats.ventas_por_categoria" :key="i" class="group">
+                  <div class="flex items-center justify-between text-sm mb-1">
+                    <span class="font-medium text-gray-700 truncate pr-4">{{ cat.category }}</span>
+                    <span class="font-bold text-gray-900 border bg-gray-50 px-2 py-0.5 rounded-md">{{ cat.items_sold }} un.</span>
+                  </div>
+                  <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div :class="['h-2 rounded-full transition-all duration-700 delay-100', getCategoryColor(i)]" :style="{ width: Math.min(100, (cat.items_sold / maxCategorySold) * 100) + '%' }"></div>
+                  </div>
+                </div>
+              </template>
+              <div v-else class="text-center text-gray-500 py-8">
+                No hay datos de productos vendidos aún.
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-white text-gray-500 border-b border-gray-100">
-            <tr>
-              <th class="px-6 py-4 font-semibold w-32 bg-gray-50/50">ID</th>
-              <th class="px-6 py-4 font-semibold bg-gray-50/50">Cliente</th>
-              <th class="px-6 py-4 font-semibold bg-gray-50/50">Fecha</th>
-              <th class="px-6 py-4 font-semibold bg-gray-50/50">Monto</th>
-              <th class="px-6 py-4 font-semibold bg-gray-50/50">Estado</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <RecentSaleRow 
-              v-for="sale in stats.ventas_recientes" 
-              :key="sale.id"
-              :id="sale.invoice_number" 
-              name="Cliente API" 
-              location="Registrado" 
-              :date="sale.sale_date.substring(0,10)" 
-              :amount="'Q ' + formatMoney(sale.total_amount)" 
-              :status="sale.status" 
-              initials="CA" 
-              :color="sale.status === 'Completado' ? 'green' : 'blue'" 
-            />
-            <tr v-if="!stats.ventas_recientes || stats.ventas_recientes.length === 0">
-              <td colspan="5" class="px-6 py-8 text-center text-gray-500">No hay ventas recientes.</td>
-            </tr>
-          </tbody>
-        </table>
+
+      <!-- Second Row of Tables -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Últimas Ventas -->
+        <div class="bg-white rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden flex flex-col">
+          <div class="px-6 py-5 border-b border-gray-50 flex justify-between items-center bg-white">
+            <h3 class="text-base font-bold text-gray-800">Últimas Ventas Registradas</h3>
+            <router-link to="/ventas" class="text-sm font-semibold text-[#2E7D32] hover:text-[#1B5E20] transition-colors hover:underline">Ir a Ventas</router-link>
+          </div>
+          <div class="flex-1 p-0 overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <tbody>
+                <tr v-for="sale in stats.ventas_recientes" :key="sale.id" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-green-50 text-[#2E7D32] border border-green-100 flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+                        {{ sale.cliente_nombre?.substring(0,2) || 'CL' }}
+                      </div>
+                      <div>
+                        <p class="font-bold text-gray-900 leading-tight truncate max-w-[150px]">{{ sale.cliente_nombre || 'Consumidor Final' }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5 font-medium">Nota: {{ sale.numero_nota }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-500">{{ sale.fecha.substring(0,10) }}</td>
+                  <td class="px-6 py-4 text-right font-bold text-gray-900">Q {{ formatMoney(sale.total) }}</td>
+                </tr>
+                <tr v-if="!stats.ventas_recientes?.length">
+                  <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">No hay ventas registradas.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Últimos Pagos -->
+        <div class="bg-white rounded-2xl shadow-[4px_0_24px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden flex flex-col">
+          <div class="px-6 py-5 border-b border-gray-50 flex justify-between items-center bg-white">
+            <h3 class="text-base font-bold text-gray-800">Últimos Pagos Recibidos</h3>
+            <router-link to="/pagos" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors hover:underline">Ir a Pagos</router-link>
+          </div>
+          <div class="flex-1 p-0 overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+              <tbody>
+                <tr v-for="pago in stats.pagos_recientes" :key="pago.id" class="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold text-xs shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                      </div>
+                      <div>
+                        <p class="font-bold text-gray-900 leading-tight truncate max-w-[150px]">{{ pago.cliente_nombre || 'Varios' }}</p>
+                        <p class="text-xs text-blue-600 mt-0.5 font-semibold bg-blue-50 inline-block px-1.5 rounded">{{ pago.banco }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-500">{{ pago.fecha_pago.substring(0,10) }}</td>
+                  <td class="px-6 py-4 text-right font-bold text-gray-900 whitespace-nowrap">
+                    <span class="text-green-600">+</span> Q {{ formatMoney(pago.monto_pago) }}
+                  </td>
+                </tr>
+                <tr v-if="!stats.pagos_recientes?.length">
+                  <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">No hay pagos registrados.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </PageLayout>
@@ -148,12 +211,15 @@ import api from '../../services/api';
 
 const loading = ref(true);
 const stats = ref({
-  ventas_totales: 0,
+  ventas_mes: 0,
+  cobros_mes: 0,
+  deuda_total: 0,
   clientes_activos: 0,
-  stock_bajo: 0,
-  promedio_venta: 0,
   ventas_por_categoria: [],
-  ventas_recientes: []
+  ventas_recientes: [],
+  pagos_recientes: [],
+  tendencia_ventas: [],
+  tendencia_cobros: []
 });
 
 onMounted(async () => {
@@ -174,103 +240,66 @@ const formatMoney = (val) => {
 };
 
 const getCategoryColor = (i) => {
-    const colors = ['bg-[#2E7D32]', 'bg-[#81C784]', 'bg-[#FFB74D]', 'bg-[#EEEEEE]'];
+    const colors = ['bg-[#2E7D32]', 'bg-[#81C784]', 'bg-[#FFB74D]', 'bg-blue-400', 'bg-gray-300'];
     return colors[i % colors.length];
 };
 
-// Subcomponents as local components or simple components within the file
+const maxCategorySold = computed(() => {
+    if (!stats.value.ventas_por_categoria?.length) return 1;
+    return Math.max(...stats.value.ventas_por_categoria.map(c => Number(c.items_sold)));
+});
 
-const KpiCard = {
-  props: ['title', 'value', 'trend', 'trendUp', 'color'],
-  setup(props) {
-    const colorMap = {
-      green: { bg: 'bg-green-50', text: 'text-[#2E7D32]', border: 'border-green-100', trendText: 'text-green-700', trendBg: 'bg-green-50' },
-      blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-100', trendText: 'text-blue-700', trendBg: 'bg-blue-50' },
-      red: { bg: 'bg-red-50', text: 'text-red-500', border: 'border-red-100', trendText: 'text-red-700', trendBg: 'bg-red-50' },
-      orange: { bg: 'bg-orange-50', text: 'text-orange-500', border: 'border-orange-100', trendText: 'text-gray-500', trendBg: 'bg-gray-100' },
-    };
-    const c = computed(() => colorMap[props.color]);
-    return { c };
-  },
-  template: `
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-all duration-300">
-      <div>
-        <p class="text-sm font-medium text-gray-500 mb-1">{{ title }}</p>
-        <h3 class="text-2xl font-bold text-gray-800">{{ value }}</h3>
-        <div class="flex items-center gap-1 mt-2">
-          <svg v-if="trendUp === true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-          <svg v-else-if="trendUp === false" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          <span :class="['text-xs font-medium px-2 py-0.5 rounded-full', c.trendBg, c.trendText]">
-            {{ trend }}
-          </span>
-        </div>
-      </div>
-      <div :class="['w-12 h-12 rounded-full flex items-center justify-center shadow-sm border', c.bg, c.text, c.border]">
-        <slot name="icon"></slot>
-      </div>
-    </div>
-  `
-};
+// Chart Logic
+const ultimos6MesesAbrev = computed(() => {
+    const nombres = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const result = [];
+    const d = new Date();
+    d.setDate(1);
+    for (let i = 5; i >= 0; i--) {
+        const past = new Date(d);
+        past.setMonth(d.getMonth() - i);
+        result.push(nombres[past.getMonth()]);
+    }
+    return result;
+});
 
-const CategoryStat = {
-  props: ['name', 'percentage', 'color'],
-  template: `
-    <div class="flex items-center justify-between text-sm group p-2 hover:bg-gray-50 rounded-lg transition-colors">
-      <div class="flex items-center gap-3">
-        <span :class="['w-3 h-3 rounded-full shadow-sm', color]"></span>
-        <span class="text-gray-600 font-medium">{{ name }}</span>
-      </div>
-      <span class="font-bold text-gray-800">{{ percentage }}</span>
-    </div>
-  `
-};
+const mergedTrend = computed(() => {
+    // Return an array of 6 elements corresponding to the last 6 months
+    const d = new Date();
+    d.setDate(1);
+    const monthsKeys = [];
+    for (let i = 5; i >= 0; i--) {
+        const past = new Date(d);
+        past.setMonth(d.getMonth() - i);
+        const yyyy = past.getFullYear();
+        const mm = String(past.getMonth() + 1).padStart(2, '0');
+        monthsKeys.push(`${yyyy}-${mm}`);
+    }
 
-const RecentSaleRow = {
-  props: ['id', 'name', 'location', 'date', 'amount', 'status', 'initials', 'color'],
-  setup(props) {
-    const colorMap = {
-      green: 'bg-green-100 text-[#2E7D32] border-green-200',
-      blue: 'bg-blue-100 text-blue-600 border-blue-200',
-      purple: 'bg-purple-100 text-purple-600 border-purple-200',
-    };
-    const rowColor = computed(() => colorMap[props.color]);
-    const statusColor = computed(() => props.status === 'Completado' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200');
-    const statusDot = computed(() => props.status === 'Completado' ? 'bg-green-500' : 'bg-yellow-500');
+    const ventasMap = {};
+    (stats.value.tendencia_ventas || []).forEach(v => ventasMap[v.mes] = Number(v.total));
 
-    return { rowColor, statusColor, statusDot };
-  },
-  template: `
-    <tr class="group hover:bg-gray-50 transition-colors">
-      <td class="px-6 py-4 font-medium text-gray-900">{{ id }}</td>
-      <td class="px-6 py-4">
-        <div class="flex items-center gap-3">
-          <div :class="['w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border shadow-sm', rowColor]">
-            {{ initials }}
-          </div>
-          <div>
-            <div class="font-semibold text-gray-900">{{ name }}</div>
-            <div class="text-xs text-gray-500">{{ location }}</div>
-          </div>
-        </div>
-      </td>
-      <td class="px-6 py-4 text-gray-500">{{ date }}</td>
-      <td class="px-6 py-4 font-bold text-gray-900">{{ amount }}</td>
-      <td class="px-6 py-4">
-        <span :class="['px-2.5 py-1 rounded-full text-xs font-semibold border flex w-fit items-center gap-1', statusColor]">
-          <span :class="['w-1.5 h-1.5 rounded-full', statusDot]"></span> {{ status }}
-        </span>
-      </td>
-    </tr>
-  `
-};
+    const cobrosMap = {};
+    (stats.value.tendencia_cobros || []).forEach(c => cobrosMap[c.mes] = Number(c.total));
 
-const ArrowRightSVG = {
-  template: `
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-      <polyline points="12 5 19 12 12 19"></polyline>
-    </svg>
-  `
+    return monthsKeys.map(k => ({
+        mes: k,
+        ventas: ventasMap[k] || 0,
+        cobros: cobrosMap[k] || 0
+    }));
+});
+
+const maxTrendValue = computed(() => {
+    let max = 0;
+    mergedTrend.value.forEach(t => {
+        if (t.ventas > max) max = t.ventas;
+        if (t.cobros > max) max = t.cobros;
+    });
+    return max > 0 ? max : 1; 
+});
+
+const getBarHeight = (value) => {
+    const pct = (Number(value) / maxTrendValue.value) * 100;
+    return Math.max(5, Math.min(100, pct)); // Min 5% so it's visible, Max 100%
 };
 </script>

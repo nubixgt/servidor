@@ -13,31 +13,39 @@ class AuthService
         $this->userRepo = new UserRepository();
     }
 
-    public function login($username, $password)
+    public function login($usuario, $contrasena)
     {
-        $user = $this->userRepo->findByUsername($username);
+        $user = $this->userRepo->findByUsername($usuario);
 
         if (!$user) {
             throw new \Exception("Invalid credentials");
         }
 
-        // Hardcoding bypass for template auth testing since seeders are not permitted
-        // In reality: if (!password_verify($password, $user->password_hash)) throw exception
+        if (!password_verify($contrasena, $user->contrasena)) {
+            throw new \Exception("Credenciales inválidas");
+        }
 
-        if ($user->status !== 'Activo') {
-            throw new \Exception("Account is inactive or blocked");
+        if ($user->estado !== 'activo') {
+            throw new \Exception("La cuenta está inactiva o de baja");
         }
 
         $authData = $this->userRepo->getRoleWithPrivileges($user->id);
 
         $payload = [
             'id' => $user->id,
-            'username' => $user->username,
-            'role_id' => $user->role_id,
-            'role' => $authData['role'],
+            'nombre' => $user->nombre,
+            'usuario' => $user->usuario,
+            'rol' => $authData['role'],
             'privileges' => $authData['privileges']
         ];
 
-        return JwtUtils::generate($payload);
+        return [
+            'token' => JwtUtils::generate($payload),
+            'user' => [
+                'id' => $user->id,
+                'nombre' => $user->nombre,
+                'rol' => $authData['role']
+            ]
+        ];
     }
 }

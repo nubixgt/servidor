@@ -51,10 +51,10 @@
               </svg>
             </div>
             <input
-              v-model="username"
+              v-model="usuario"
               class="focus:ring-[#43a047] focus:border-[#43a047] block w-full pl-10 pr-3 py-3 sm:text-sm border border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 outline-none transition-colors"
-              id="username"
-              name="username"
+              id="usuario"
+              name="usuario"
               placeholder="nombre.apellido"
               required
               type="text"
@@ -73,10 +73,10 @@
               </svg>
             </div>
             <input
-              v-model="password"
+              v-model="contrasena"
               class="focus:ring-[#43a047] focus:border-[#43a047] block w-full pl-10 pr-10 py-3 sm:text-sm border border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 outline-none transition-colors"
-              id="password"
-              name="password"
+              id="contrasena"
+              name="contrasena"
               placeholder="••••••••"
               required
               :type="showPassword ? 'text' : 'password'"
@@ -156,8 +156,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../../services/api';
 
-const username = ref('');
-const password = ref('');
+const usuario = ref('');
+const contrasena = ref('');
 const showPassword = ref(false);
 const isLoading = ref(false);
 const errorMsg = ref('');
@@ -168,12 +168,13 @@ const handleLogin = async () => {
   errorMsg.value = '';
   try {
     const response = await api.post('/login', {
-      username: username.value,
-      password: password.value
+      usuario: usuario.value,
+      contrasena: contrasena.value
     });
     
     if (response.data.status === 'success') {
       localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
       router.push('/dashboard');
     }
   } catch (error) {

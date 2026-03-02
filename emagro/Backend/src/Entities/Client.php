@@ -4,13 +4,15 @@ namespace App\Entities;
 class Client
 {
     public $id;
-    public $client_code;
-    public $name;
-    public $company_name;
+    public $nombre;
     public $nit;
-    public $phone;
-    public $address;
-    public $credit_limit;
-    public $status;
-    public $avatar_url;
+    public $telefono;
+    public $departamento;
+    public $municipio;
+    public $direccion;
+    public $email;
+    public $bloquear_ventas;
+    public $usuario_id;
+    public $fecha_creacion;
+    public $fecha_actualizacion;
 }

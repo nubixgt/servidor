@@ -4,10 +4,10 @@ namespace App\Entities;
 class Payment
 {
     public $id;
-    public $payment_number;
-    public $client_id;
-    public $concept;
-    public $due_date;
-    public $amount;
-    public $status;
+    public $factura_id;
+    public $fecha_pago;
+    public $banco;
+    public $monto_pago;
+    public $referencia_transaccion;
+    public $usuario_id;
 }

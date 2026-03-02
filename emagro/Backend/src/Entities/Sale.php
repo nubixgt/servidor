@@ -4,10 +4,17 @@ namespace App\Entities;
 class Sale
 {
     public $id;
-    public $invoice_number;
-    public $client_id;
-    public $seller_id;
-    public $sale_date;
-    public $total_amount;
-    public $status;
+    public $numero_nota;
+    public $fecha;
+    public $vendedor;
+    public $cliente_id;
+    public $cliente_nombre;
+    public $nit;
+    public $direccion;
+    public $tipo_venta;
+    public $dias_credito;
+    public $subtotal;
+    public $descuento_total;
+    public $total;
+    public $usuario_id;
 }
