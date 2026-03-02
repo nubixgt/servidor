@@ -1,7 +1,7 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'visionweb_Emagro',
+    'dbname' => 'visionwe_Emagro',
     'username' => 'visionwe',
     'password' => 'Guate25#',
     'charset' => 'utf8mb4',
