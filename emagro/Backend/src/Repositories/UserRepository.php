@@ -16,27 +16,26 @@ class UserRepository
 
     public function findByUsername($username)
     {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
-        $stmt->execute(['username' => $username]);
+        $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE usuario = :usuario LIMIT 1");
+        $stmt->execute(['usuario' => $username]);
         return $stmt->fetchObject(User::class);
     }
 
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT * FROM users");
+        $stmt = $this->db->query("SELECT * FROM usuarios");
         return $stmt->fetchAll(PDO::FETCH_CLASS, User::class);
     }
 
     public function create(User $user)
     {
-        $stmt = $this->db->prepare("INSERT INTO users (username, password_hash, email, role_id, status, avatar_url) VALUES (:username, :password_hash, :email, :role_id, :status, :avatar_url)");
+        $stmt = $this->db->prepare("INSERT INTO usuarios (nombre, usuario, contrasena, rol, estado) VALUES (:nombre, :usuario, :contrasena, :rol, :estado)");
         $stmt->execute([
-            'username' => $user->username,
-            'password_hash' => $user->password_hash,
-            'email' => $user->email,
-            'role_id' => $user->role_id,
-            'status' => $user->status ?? 'Activo',
-            'avatar_url' => $user->avatar_url
+            'nombre' => $user->nombre,
+            'usuario' => $user->usuario,
+            'contrasena' => $user->contrasena,
+            'rol' => $user->rol ?? 'vendedor',
+            'estado' => $user->estado ?? 'activo'
         ]);
         return $this->db->lastInsertId();
     }
@@ -45,30 +44,66 @@ class UserRepository
     {
         // 1. Get User's Role Name
         $stmtRole = $this->db->prepare("
-            SELECT r.name as role_name 
-            FROM users u
-            JOIN roles r ON u.role_id = r.id
-            WHERE u.id = :user_id
+            SELECT rol 
+            FROM usuarios
+            WHERE id = :user_id
         ");
         $stmtRole->execute(['user_id' => $userId]);
         $roleResult = $stmtRole->fetch(PDO::FETCH_ASSOC);
 
-        $roleName = $roleResult ? $roleResult['role_name'] : 'guest';
+        $roleName = $roleResult ? $roleResult['rol'] : 'guest';
 
-        // 2. Get User's Privileges Array
-        $stmtPrivs = $this->db->prepare("
-            SELECT p.name as privilege_name
-            FROM users u
-            JOIN role_privileges rp ON u.role_id = rp.role_id
-            JOIN privileges p ON rp.privilege_id = p.id
-            WHERE u.id = :user_id
-        ");
-        $stmtPrivs->execute(['user_id' => $userId]);
-        $privileges = $stmtPrivs->fetchAll(PDO::FETCH_COLUMN);
+        // 2. We don't have privileges table in Emagro database, so we mock privileges based on role
+        $privileges = [];
+        if ($roleName === 'admin') {
+            $privileges = ['view_dashboard', 'manage_users', 'manage_clients', 'manage_sales', 'manage_inventory'];
+        } else if ($roleName === 'vendedor') {
+            $privileges = ['view_dashboard', 'manage_clients', 'manage_sales'];
+        }
 
         return [
             'role' => $roleName,
             'privileges' => $privileges
         ];
+    }
+
+    public function update(User $user)
+    {
+        if (!empty($user->contrasena)) {
+            $stmt = $this->db->prepare("UPDATE usuarios SET nombre = :nombre, usuario = :usuario, contrasena = :contrasena, rol = :rol, estado = :estado WHERE id = :id");
+            return $stmt->execute([
+                'id' => $user->id,
+                'nombre' => $user->nombre,
+                'usuario' => $user->usuario,
+                'contrasena' => $user->contrasena,
+                'rol' => $user->rol,
+                'estado' => $user->estado
+            ]);
+        } else {
+            $stmt = $this->db->prepare("UPDATE usuarios SET nombre = :nombre, usuario = :usuario, rol = :rol, estado = :estado WHERE id = :id");
+            return $stmt->execute([
+                'id' => $user->id,
+                'nombre' => $user->nombre,
+                'usuario' => $user->usuario,
+                'rol' => $user->rol,
+                'estado' => $user->estado
+            ]);
+        }
+    }
+
+    public function updateStatus($id, $estado)
+    {
+        $stmt = $this->db->prepare("UPDATE usuarios SET estado = :estado WHERE id = :id");
+        return $stmt->execute([
+            'id' => $id,
+            'estado' => $estado
+        ]);
+    }
+
+    public function findById($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchObject(User::class);
     }
 }

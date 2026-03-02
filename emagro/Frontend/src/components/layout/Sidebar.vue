@@ -56,18 +56,14 @@
 
     <div class="p-4 border-t border-gray-100 flex flex-col gap-2">
       <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
-        <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden ring-2 ring-white shadow-sm">
-          <img
-            alt="Profile"
-            class="w-full h-full object-cover"
-            src="https://picsum.photos/seed/user/100/100"
-          />
+        <div class="w-10 h-10 rounded-full bg-[#1B5E20] flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-white uppercase">
+          {{ userInitials }}
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-gray-900 group-hover:text-[#2E7D32] transition-colors truncate">
-            Admin Agro
+            {{ userName }}
           </p>
-          <p class="text-xs text-gray-500 truncate">Administrador</p>
+          <p class="text-xs text-gray-500 truncate capitalize">{{ userRole }}</p>
         </div>
         <!-- ChevronDown -->
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
@@ -99,11 +95,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const isMobileOpen = ref(false);
+
+const userName = ref('Usuario');
+const userRole = ref('Rol');
+
+onMounted(() => {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      userName.value = user.nombre || 'Usuario';
+      userRole.value = user.rol || 'Rol';
+    } catch (e) {
+      console.error('Error parsing user data', e);
+    }
+  }
+});
+
+const userInitials = computed(() => {
+  if (!userName.value) return 'U';
+  const names = userName.value.trim().split(' ');
+  if (names.length >= 2) {
+    return (names[0][0] + names[1][0]).toUpperCase();
+  }
+  return userName.value.substring(0, 2).toUpperCase();
+});
 
 const navItems = [
   { 
@@ -127,7 +148,7 @@ const navItems = [
     iconSVG: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 17V7"></path></svg>`
   },
   { 
-    name: 'Catálogo', 
+    name: 'Productos', 
     path: '/catalogo', 
     iconSVG: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`
   },
@@ -139,6 +160,8 @@ const navItems = [
 ];
 
 const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
   router.push('/login');
 };
 </script>

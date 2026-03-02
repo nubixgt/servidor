@@ -20,24 +20,17 @@ class Router
 
     public function dispatch($method, $uri)
     {
+        $originalUri = $uri;
         // Simple URI matching for now (ignores query params in matching logic)
         $uri = strtok($uri, '?');
 
-        // Strip the base path if we are running in a subdirectory
-        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /project/api/v1/index.php
-        $scriptDir = dirname($scriptName);     // e.g., /project/api/v1
-
-        // Normalize slashes
-        $scriptDir = str_replace('\\', '/', $scriptDir);
-
-        // If URI starts with scriptDir, remove it
-        if ($scriptDir !== '/' && strpos($uri, $scriptDir) === 0) {
-            $uri = substr($uri, strlen($scriptDir));
-        }
+        // Strip exact known script paths to get just the API route path
+        $uri = str_replace('/api/v1/index.php', '', $uri);
+        $uri = str_replace('/index.php', '', $uri);
 
         // Ensure URI starts with /
         if ($uri === '' || $uri[0] !== '/') {
-            $uri = '/' . $uri;
+            $uri = '/' . ltrim($uri, '/');
         }
 
         foreach ($this->controllers as $controllerClass) {
@@ -87,7 +80,7 @@ class Router
         // Default: 404 Endpoint Not Found
         // You can make a generic Response class or just echo json
         http_response_code(404);
-        echo json_encode(["status" => "error", "message" => "Endpoint not found"]);
+        echo json_encode(["status" => "error", "message" => "Endpoint not found: " . $originalUri . " -> " . $uri]);
     }
 
     private function checkPermissions(array $requiredRoles)
@@ -97,7 +90,7 @@ class Router
 
         $payload = $this->validateToken(); // Reuse validation logic
 
-        $userRole = $payload['role'] ?? 'guest';
+        $userRole = $payload['rol'] ?? 'guest';
 
         if (!in_array($userRole, $requiredRoles)) {
             http_response_code(403);

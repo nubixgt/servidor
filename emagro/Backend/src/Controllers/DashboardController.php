@@ -10,7 +10,7 @@ use App\Utils\Response;
 class DashboardController extends Controller
 {
     #[Route('/dashboard/stats', 'GET')]
-    #[Authorize(['Administrador', 'Vendedor'])]
+    #[Authorize(['admin', 'vendedor'])]
     public function index()
     {
         $service = new DashboardService();
