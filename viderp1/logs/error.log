@@ -1,0 +1,78 @@
+[19-Jan-2026 17:12:06 America/Guatemala] PHP Fatal error:  Uncaught Exception: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión in C:\Users\anthony\Desktop\viderp1\includes\config.php:51
+Stack trace:
+#0 C:\Users\anthony\Desktop\viderp1\includes\config.php(57): Database->__construct()
+#1 C:\Users\anthony\Desktop\viderp1\datos.php(7): Database::getInstance()
+#2 {main}
+  thrown in C:\Users\anthony\Desktop\viderp1\includes\config.php on line 51
+[19-Jan-2026 17:12:23 America/Guatemala] PHP Fatal error:  Uncaught Exception: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión in C:\Users\anthony\Desktop\viderp1\includes\config.php:51
+Stack trace:
+#0 C:\Users\anthony\Desktop\viderp1\includes\config.php(57): Database->__construct()
+#1 C:\Users\anthony\Desktop\viderp1\datos.php(7): Database::getInstance()
+#2 {main}
+  thrown in C:\Users\anthony\Desktop\viderp1\includes\config.php on line 51
+[19-Jan-2026 17:12:44 America/Guatemala] PHP Fatal error:  Uncaught Exception: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión in C:\Users\anthony\Desktop\viderp1\includes\config.php:51
+Stack trace:
+#0 C:\Users\anthony\Desktop\viderp1\includes\config.php(57): Database->__construct()
+#1 C:\Users\anthony\Desktop\viderp1\datos.php(7): Database::getInstance()
+#2 {main}
+  thrown in C:\Users\anthony\Desktop\viderp1\includes\config.php on line 51
+[19-Jan-2026 17:12:56 America/Guatemala] PHP Fatal error:  Uncaught Exception: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión in C:\Users\anthony\Desktop\viderp1\includes\config.php:51
+Stack trace:
+#0 C:\Users\anthony\Desktop\viderp1\includes\config.php(57): Database->__construct()
+#1 C:\Users\anthony\Desktop\viderp1\datos.php(7): Database::getInstance()
+#2 {main}
+  thrown in C:\Users\anthony\Desktop\viderp1\includes\config.php on line 51
+[19-Jan-2026 17:13:58 America/Guatemala] PHP Fatal error:  Uncaught Exception: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión in C:\Users\anthony\Desktop\viderp1\includes\config.php:51
+Stack trace:
+#0 C:\Users\anthony\Desktop\viderp1\includes\config.php(57): Database->__construct()
+#1 C:\Users\anthony\Desktop\viderp1\datos.php(7): Database::getInstance()
+#2 {main}
+  thrown in C:\Users\anthony\Desktop\viderp1\includes\config.php on line 51
+[27-Jan-2026 12:38:38 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:38:56 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:39:04 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:39:14 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:16 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:41 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:51 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:54 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:57 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:40:59 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:41:01 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:41:05 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:41:08 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:41:22 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:27 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:38 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:47 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:50 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:53 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:56 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:48:58 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:49:01 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:49:10 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:52:21 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:52:43 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:53:40 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:54:01 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:54:12 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 12:54:58 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:26:50 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:26:54 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:27:56 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:38:46 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:39:05 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:39:07 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:39:23 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:39:25 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:39:26 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in /var/www/html/viderp1/includes/auth.php on line 12
+[27-Jan-2026 15:58:43 America/Guatemala] PHP Fatal error:  Uncaught Error: Call to undefined function isTecnico() in /var/www/html/viderp1/includes/sidebar.php:112
+Stack trace:
+#0 /var/www/html/viderp1/index.php(1292): include()
+#1 {main}
+  thrown in /var/www/html/viderp1/includes/sidebar.php on line 112
+[27-Jan-2026 15:58:59 America/Guatemala] PHP Fatal error:  Uncaught Error: Call to undefined function isTecnico() in /var/www/html/viderp1/includes/sidebar.php:112
+Stack trace:
+#0 /var/www/html/viderp1/index.php(1292): include()
+#1 {main}
+  thrown in /var/www/html/viderp1/includes/sidebar.php on line 112

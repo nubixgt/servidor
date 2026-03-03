@@ -1,0 +1,114 @@
+2026-01-15 14:26:09 - Upload iniciado - Context: {"method":"POST","files":"presente","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-15 14:26:09 - Archivo recibido - Context: {"name":"VIDER 2025-4.xlsx","size":392122,"tmp":"\/tmp\/phpwaZWdL"}
+2026-01-15 14:26:09 - Intentando guardar archivo - Context: {"destino":"\/var\/www\/html\/viderp1\/uploads\/import_20260115142609_69694d612f3f5.xlsx"}
+2026-01-15 14:26:09 - Archivo guardado exitosamente - Context: {"path":"\/var\/www\/html\/viderp1\/uploads\/import_20260115142609_69694d612f3f5.xlsx"}
+2026-01-15 14:26:09 - Importación registrada - Context: {"import_id":"1"}
+2026-01-15 14:26:09 - Proceso de importación iniciado - Context: {"import_id":"1","file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260115142609_69694d612f3f5.xlsx"}
+2026-01-15 14:26:09 - Archivo a procesar - Context: {"file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260115142609_69694d612f3f5.xlsx","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-15 14:26:09 - Intentando leer Excel - Context: {"file":"\/var\/www\/html\/viderp1\/uploads\/import_20260115142609_69694d612f3f5.xlsx"}
+2026-01-15 14:26:12 - Datos leídos del Excel - Context: {"total_filas":1611}
+2026-01-15 14:26:12 - Columnas encontradas en Excel - Context: {"columnas":["Unidad Ejecutora","Dependencia","Programa","Subprograma","Actividad","Producto","Subproducto","Intervención","Medida","Departamento","Municipio","Programado","Ejectutado","de Ejecución","Hombres","Mujeres","Total Personas","Beneficiarios","Vigente Financiera","Financiera Ejecutado","Financiera %"]}
+2026-01-15 14:26:18 - Importación completada - Context: {"total":1611,"importados":1609,"duplicados":1,"errores":0}
+2026-01-16 12:05:58 - Upload iniciado - Context: {"method":"POST","files":"presente","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-16 12:05:58 - Archivo recibido - Context: {"name":"VIDER 2025-4.xlsx","size":392122,"tmp":"\/tmp\/php7QfEQV"}
+2026-01-16 12:05:58 - Intentando guardar archivo - Context: {"destino":"\/var\/www\/html\/viderp1\/uploads\/import_20260116120558_696a7e0671549.xlsx"}
+2026-01-16 12:05:58 - Archivo guardado exitosamente - Context: {"path":"\/var\/www\/html\/viderp1\/uploads\/import_20260116120558_696a7e0671549.xlsx"}
+2026-01-16 12:05:58 - Importación registrada - Context: {"import_id":"1"}
+2026-01-16 12:05:58 - Proceso de importación iniciado - Context: {"import_id":"1","file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260116120558_696a7e0671549.xlsx"}
+2026-01-16 12:05:58 - Archivo a procesar - Context: {"file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260116120558_696a7e0671549.xlsx","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-16 12:05:58 - Intentando leer Excel - Context: {"file":"\/var\/www\/html\/viderp1\/uploads\/import_20260116120558_696a7e0671549.xlsx"}
+2026-01-16 12:06:01 - Datos leídos del Excel - Context: {"total_filas":1611}
+2026-01-16 12:06:01 - Columnas encontradas en Excel - Context: {"columnas":["Unidad Ejecutora","Dependencia","Programa","Subprograma","Actividad","Producto","Subproducto","Intervención","Medida","Departamento","Municipio","Programado","Ejectutado","de Ejecución","Hombres","Mujeres","Total Personas","Beneficiarios","Vigente Financiera","Financiera Ejecutado","Financiera %"]}
+2026-01-16 12:06:08 - Intentando leer hoja TOBANIK
+2026-01-16 12:06:08 - Hoja TOBANIK encontrada - Context: {"filas":16}
+2026-01-16 12:06:08 - Columnas TOBANIK - Context: {"columnas":["NOMBRE","SEDE","MONTO COLOCADO POR INSTITUCIÓN","CANTIDAD DE PRODUCTORES","MONTO TOTAL OTORGADO A PRODUCTORES AL 18 DE AGOSTO 2025","DEPARTAMENTO","MONTO FINANCIERO","CANTIDAD PRODUCTORES POR DEPARTAMENTO"]}
+2026-01-16 12:06:08 - TOBANIK procesado - Context: {"total":11,"importados":11,"duplicados":0,"errores":0}
+2026-01-16 12:06:08 - Importación completada - Context: {"datos_total":1611,"datos_importados":1609,"datos_duplicados":1,"datos_errores":0,"tobanik":{"total":11,"importados":11,"duplicados":0,"errores":0}}
+2026-01-19 17:14:02 - Error en get_dashboard_stats: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+2026-01-19 17:14:06 - Error en get_filtered_data: Error de conexión: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión
+2026-01-22 15:42:03 - Upload iniciado - Context: {"method":"POST","files":"presente","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-22 15:42:03 - Archivo recibido - Context: {"name":"VIDER 2025-4.xlsx","size":392122,"tmp":"\/tmp\/phpNFxJwv"}
+2026-01-22 15:42:03 - Intentando guardar archivo - Context: {"destino":"\/var\/www\/html\/viderp1\/uploads\/import_20260122154203_697299abbad34.xlsx"}
+2026-01-22 15:42:03 - Archivo guardado exitosamente - Context: {"path":"\/var\/www\/html\/viderp1\/uploads\/import_20260122154203_697299abbad34.xlsx"}
+2026-01-22 15:42:03 - Importación registrada - Context: {"import_id":"1"}
+2026-01-22 15:42:03 - Proceso de importación iniciado - Context: {"import_id":"1","file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260122154203_697299abbad34.xlsx"}
+2026-01-22 15:42:03 - Archivo a procesar - Context: {"file_path":"\/var\/www\/html\/viderp1\/uploads\/import_20260122154203_697299abbad34.xlsx","upload_path":"\/var\/www\/html\/viderp1\/uploads\/"}
+2026-01-22 15:42:03 - Intentando leer Excel - Context: {"file":"\/var\/www\/html\/viderp1\/uploads\/import_20260122154203_697299abbad34.xlsx"}
+2026-01-22 15:42:07 - Datos leídos del Excel - Context: {"total_filas":1611}
+2026-01-22 15:42:07 - Columnas encontradas en Excel - Context: {"columnas":["Unidad Ejecutora","Dependencia","Programa","Subprograma","Actividad","Producto","Subproducto","Intervención","Medida","Departamento","Municipio","Programado","Ejectutado","de Ejecución","Hombres","Mujeres","Total Personas","Beneficiarios","Vigente Financiera","Financiera Ejecutado","Financiera %"]}
+2026-01-22 15:42:12 - Intentando leer hoja TOBANIK
+2026-01-22 15:42:12 - Hoja TOBANIK encontrada - Context: {"filas":16}
+2026-01-22 15:42:12 - Columnas TOBANIK - Context: {"columnas":["NOMBRE","SEDE","MONTO COLOCADO POR INSTITUCIÓN","CANTIDAD DE PRODUCTORES","MONTO TOTAL OTORGADO A PRODUCTORES AL 18 DE AGOSTO 2025","DEPARTAMENTO","MONTO FINANCIERO","CANTIDAD PRODUCTORES POR DEPARTAMENTO"]}
+2026-01-22 15:42:12 - TOBANIK procesado - Context: {"total":11,"importados":11,"duplicados":0,"errores":0}
+2026-01-22 15:42:12 - Importación completada - Context: {"datos_total":1611,"datos_importados":1609,"datos_duplicados":1,"datos_errores":0,"tobanik":{"total":11,"importados":11,"duplicados":0,"errores":0}}
+2026-01-27 15:27:26 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-27 15:37:06 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-27 15:43:03 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-27 15:44:26 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-27 15:44:36 - Login exitoso: admin (ID: 1)
+2026-01-27 15:44:55 - Login exitoso: admin (ID: 1)
+2026-01-27 15:45:49 - Login exitoso: admin (ID: 1)
+2026-01-27 15:50:53 - Login exitoso: admin (ID: 1)
+2026-01-27 15:57:57 - Login exitoso: admin (ID: 1)
+2026-01-27 15:58:59 - Login exitoso: admin (ID: 1)
+2026-01-27 16:15:11 - Login exitoso: admin (ID: 1)
+2026-01-27 16:23:23 - Login exitoso: admin (ID: 1)
+2026-01-27 16:27:32 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-27 16:28:46 - Login exitoso: admin (ID: 1)
+2026-01-27 21:31:07 - Login exitoso: admin (ID: 1)
+2026-01-27 23:53:39 - Login exitoso: admin (ID: 1)
+2026-01-28 09:33:25 - Login exitoso: admin (ID: 1)
+2026-01-28 09:35:38 - Login exitoso: admin (ID: 1)
+2026-01-28 09:48:27 - Login exitoso: admin (ID: 1)
+2026-01-28 10:03:29 - Login exitoso: admin (ID: 1)
+2026-01-28 10:10:37 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:10:45 - Login exitoso: admin (ID: 1)
+2026-01-28 10:28:53 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:29:00 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:29:17 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:29:27 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:31:01 - Intento de login fallido - Contraseña incorrecta: tecnico
+2026-01-28 10:31:16 - Intento de login fallido - Contraseña incorrecta: ADMIN
+2026-01-28 10:31:32 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:33:29 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-28 10:34:02 - Intento de login fallido - Contraseña incorrecta: tecnico
+2026-01-28 10:38:20 - Intento de login fallido - Usuario no existe: admin
+2026-01-28 10:40:10 - Intento de login fallido - Usuario no existe: admin
+2026-01-28 10:40:27 - Intento de login fallido - Usuario no existe: admin
+2026-01-28 10:44:01 - Login exitoso: admin (ID: 6)
+2026-01-28 10:45:05 - Login exitoso: admin (ID: 6)
+2026-01-29 10:26:13 - Login exitoso: admin (ID: 6)
+2026-01-29 11:10:42 - Login exitoso: admin (ID: 6)
+2026-01-29 11:16:14 - Login exitoso: admin (ID: 6)
+2026-01-29 11:17:17 - Login exitoso: tecnico (ID: 3)
+2026-01-29 11:21:22 - Login exitoso: admin (ID: 6)
+2026-01-29 11:31:16 - Login exitoso: admin (ID: 6) a las 2026-01-29 11:31:16
+2026-01-29 11:37:42 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-29 11:38:05 - Login exitoso: admin (ID: 6) a las 2026-01-29 11:38:05
+2026-01-29 11:40:08 - Login exitoso: admin (ID: 6) a las 2026-01-29 11:40:08
+2026-01-29 11:42:21 - Login exitoso: admin (ID: 6) a las 2026-01-29 11:42:21
+2026-01-29 13:17:42 - Login exitoso: admin (ID: 6) a las 2026-01-29 13:17:42
+2026-01-29 14:00:38 - Login exitoso: admin (ID: 6) a las 2026-01-29 14:00:38
+2026-01-29 14:24:46 - Login exitoso: admin (ID: 6) a las 2026-01-29 14:24:46
+2026-01-29 18:34:10 - Intento de login fallido - Usuario no existe: prueba 
+2026-01-29 18:34:15 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-29 18:34:21 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-29 18:34:30 - Intento de login fallido - Usuario no existe: prueba 
+2026-01-30 09:42:25 - Intento de login fallido - Contraseña incorrecta: admin
+2026-01-30 09:42:34 - Login exitoso: admin (ID: 6) a las 2026-01-30 09:42:34
+2026-01-30 14:05:06 - Login exitoso: admin (ID: 6) a las 2026-01-30 14:05:06
+2026-01-30 19:07:01 - Login exitoso: admin (ID: 6) a las 2026-01-30 19:07:01
+2026-02-03 12:35:05 - Login exitoso: admin (ID: 6) a las 2026-02-03 12:35:05
+2026-02-21 00:49:38 - Intento de login fallido - Contraseña incorrecta: admin
+2026-02-21 00:49:43 - Intento de login fallido - Usuario no existe: admin@maga.gob.gt
+2026-02-21 00:49:51 - Intento de login fallido - Usuario no existe: admin@maga.gob.gt
+2026-02-21 00:50:02 - Intento de login fallido - Contraseña incorrecta: admin
+2026-02-21 10:06:01 - Intento de login fallido - Usuario no existe: admin@maga.gob.gt
+2026-02-21 10:06:11 - Intento de login fallido - Contraseña incorrecta: admin
+2026-02-21 10:06:20 - Intento de login fallido - Usuario no existe: usuarioprueba@maga.gt
+2026-02-23 22:41:51 - Intento de login fallido - Contraseña incorrecta: admin
+2026-02-23 22:42:41 - Login exitoso: admin (ID: 6) a las 2026-02-23 22:42:41
+2026-02-23 23:12:15 - Login exitoso: admin (ID: 6) a las 2026-02-23 23:12:15
+2026-02-23 23:16:56 - Intento de login fallido - Usuario no existe: admin@maga.gob.gt
+2026-02-23 23:17:34 - Login exitoso: admin (ID: 6) a las 2026-02-23 23:17:34
+2026-02-24 00:21:33 - Login exitoso: admin (ID: 6) a las 2026-02-24 00:21:33

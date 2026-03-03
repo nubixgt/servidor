@@ -1,0 +1,18 @@
+{
+    "name": "maga/vider",
+    "description": "VIDER - Sistema de Monitoreo y Evaluación del Viceministerio de Desarrollo Económico Rural",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpoffice/phpspreadsheet": "^1.29"
+    },
+    "autoload": {
+        "psr-4": {
+            "VIDER\\": "includes/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
