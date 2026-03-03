@@ -1,0 +1,344 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                          ║
+║     SISTEMA DE VOTACIONES DEL CONGRESO DE GUATEMALA                    ║
+║     Dashboard Completo en PHP + MySQL                                   ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+¡Bienvenido! Este sistema te permite:
+
+✓ Cargar archivos PDF de votaciones automáticamente
+✓ Almacenar toda la información en base de datos MySQL
+✓ Visualizar estadísticas con gráficas interactivas  
+✓ Analizar el historial de votación de cada congresista
+✓ Comparar bloques políticos
+✓ Identificar patrones y tendencias
+
+═══════════════════════════════════════════════════════════════════════════
+
+ARCHIVOS INCLUIDOS:
+
+📄 DOCUMENTACIÓN:
+   • README.md ................... Documentación completa del sistema
+   • GUIA_RAPIDA.md .............. Guía de inicio rápido
+   • LEEME_PRIMERO.txt ........... Este archivo
+
+🔧 INSTALACIÓN:
+   • install.sh .................. Script de instalación automática
+   • database.sql ................ Estructura de base de datos
+   • .htaccess ................... Configuración de Apache
+
+⚙️  CONFIGURACIÓN:
+   • config.php .................. Archivo de configuración principal
+
+🎯 SISTEMA PRINCIPAL:
+   • index.php ................... Dashboard principal
+   • cargar.php .................. Página para cargar PDFs
+   • eventos.php ................. Listado de eventos
+   • congresistas.php ............ Listado de congresistas
+   • bloques.php ................. Análisis por bloques
+   • estadisticas.php ............ Gráficas y análisis
+
+🔨 PROCESAMIENTO:
+   • procesar_pdf.php ............ Motor de procesamiento de PDFs
+   • test_pdf.php ................ Script de prueba
+
+═══════════════════════════════════════════════════════════════════════════
+
+INSTALACIÓN RÁPIDA:
+
+1. REQUISITOS PREVIOS:
+   - PHP 7.4+
+   - MySQL 5.7+
+   - Apache/Nginx
+   - pdftotext (poppler-utils) o Python + pdfplumber
+
+2. INSTALACIÓN AUTOMÁTICA (Linux/Mac):
+   
+   chmod +x install.sh
+   ./install.sh
+
+3. INSTALACIÓN MANUAL:
+
+   a) Crear base de datos:
+      mysql -u root -p < database.sql
+
+   b) Configurar conexión:
+      Editar config.php con tus credenciales
+
+   c) Dar permisos:
+      chmod 755 uploads/
+
+4. ACCEDER AL SISTEMA:
+   http://localhost/congreso/
+
+═══════════════════════════════════════════════════════════════════════════
+
+PRIMER USO:
+
+1. Abre tu navegador en: http://localhost/congreso/
+2. Ve al menú "Cargar PDF"
+3. Sube el PDF de votación que incluiste
+4. El sistema procesará automáticamente todos los datos
+5. Explora las estadísticas en el Dashboard
+
+═══════════════════════════════════════════════════════════════════════════
+
+CARACTERÍSTICAS PRINCIPALES:
+
+🎨 INTERFAZ MODERNA:
+   • Diseño responsive con Bootstrap 5
+   • Sidebar de navegación
+   • Tarjetas de estadísticas
+   • Tablas interactivas
+   • Tema profesional
+
+📊 VISUALIZACIÓN:
+   • Gráficas con Chart.js
+   • Estadísticas en tiempo real
+   • Distribución de votos
+   • Comparativas entre bloques
+
+🔍 ANÁLISIS:
+   • Historial por congresista
+   • Patrones de votación
+   • Identificación de ausentismo
+   • Eventos polémicos
+   • Tendencias temporales
+
+⚡ PROCESAMIENTO:
+   • Extracción automática de PDFs
+   • Detección inteligente de datos
+   • Almacenamiento estructurado
+   • Actualización de duplicados
+   • Cálculo automático de estadísticas
+
+═══════════════════════════════════════════════════════════════════════════
+
+FUNCIONALIDADES IMPLEMENTADAS:
+
+✓ Carga y procesamiento automático de PDFs
+✓ Base de datos relacional completa
+✓ Dashboard con estadísticas generales
+✓ Vista detallada por evento
+✓ Perfil de cada congresista
+✓ Análisis por bloque político
+✓ Gráficas interactivas
+✓ Sistema de búsqueda
+✓ Paginación
+✓ Manejo de errores
+✓ Logs de sistema
+✓ Seguridad básica
+✓ Diseño responsive
+
+═══════════════════════════════════════════════════════════════════════════
+
+ESTRUCTURA DE LA BASE DE DATOS:
+
+📊 TABLAS PRINCIPALES:
+   • eventos_votacion ............ Información de cada evento
+   • congresistas ................ Registro de diputados
+   • bloques ..................... Partidos políticos
+   • votos ....................... Cada voto individual
+   • resumen_eventos ............. Estadísticas por evento
+
+📊 VISTAS:
+   • vista_estadisticas_congresista
+   • vista_estadisticas_bloque
+   • vista_detalle_eventos
+
+═══════════════════════════════════════════════════════════════════════════
+
+COMANDOS ÚTILES:
+
+• Procesar PDF desde terminal:
+  php procesar_pdf.php /ruta/archivo.pdf
+
+• Probar procesamiento:
+  php test_pdf.php
+
+• Ver logs:
+  tail -f error.log
+
+• Backup de BD:
+  mysqldump -u root -p congreso_votaciones > backup.sql
+
+═══════════════════════════════════════════════════════════════════════════
+
+FORMATO DE PDF ESPERADO:
+
+El sistema procesa PDFs con este formato:
+
+EVENTO DE VOTACIÓN # 2
+APROBACIÓN DEL ACTA DE LA SESIÓN ANTERIOR SESIÓN No. 42
+Fecha y Hora: 23-10-2025 10:10:36
+
+No.  NOMBRE                    BLOQUE              VOTO EMITIDO
+1    Felipe Alejos Lorenzana  TODOS               A FAVOR
+2    Cristian Alvarez         COMPROMISO...       EN CONTRA
+...
+
+Tipos de voto reconocidos:
+• A FAVOR
+• EN CONTRA
+• AUSENTE
+• LICENCIA
+
+═══════════════════════════════════════════════════════════════════════════
+
+CAPACIDADES DEL SISTEMA:
+
+✓ Procesa PDFs con múltiples páginas
+✓ Detecta automáticamente congresistas nuevos
+✓ Identifica bloques políticos
+✓ Maneja eventos duplicados
+✓ Calcula estadísticas en tiempo real
+✓ Genera gráficas interactivas
+✓ Permite búsqueda y filtros
+✓ Exportable a reportes
+✓ Escalable a miles de registros
+
+═══════════════════════════════════════════════════════════════════════════
+
+SEGURIDAD:
+
+✓ Prepared statements (previene SQL injection)
+✓ Sanitización de entradas
+✓ Validación de archivos subidos
+✓ .htaccess configurado
+✓ Protección de archivos sensibles
+✓ Manejo seguro de sesiones
+
+NOTA: Para producción, además debes:
+• Usar HTTPS
+• Implementar autenticación
+• Restringir acceso al directorio uploads/
+• Configurar firewall
+• Habilitar backups automáticos
+
+═══════════════════════════════════════════════════════════════════════════
+
+SOLUCIÓN DE PROBLEMAS COMUNES:
+
+❌ "Error al extraer texto del PDF"
+   → Instalar: sudo apt-get install poppler-utils
+   → O: pip3 install pdfplumber
+
+❌ "Error de conexión a la base de datos"
+   → Verificar credenciales en config.php
+   → Verificar que MySQL está corriendo
+
+❌ "No aparecen datos"
+   → Verificar que el PDF se procesó correctamente
+   → Revisar error.log
+
+❌ "Gráficas no aparecen"
+   → Verificar conexión a internet (CDN de Chart.js)
+   → Ver consola del navegador (F12)
+
+═══════════════════════════════════════════════════════════════════════════
+
+PRÓXIMOS PASOS:
+
+1. Instala el sistema siguiendo las instrucciones
+2. Carga el PDF de ejemplo incluido
+3. Explora las diferentes secciones
+4. Revisa la documentación completa en README.md
+5. Lee GUIA_RAPIDA.md para tips de uso diario
+
+═══════════════════════════════════════════════════════════════════════════
+
+SOPORTE:
+
+📖 Documentación completa: README.md
+🚀 Guía rápida: GUIA_RAPIDA.md
+🔧 Script de prueba: test_pdf.php
+📝 Logs del sistema: error.log
+
+═══════════════════════════════════════════════════════════════════════════
+
+TECNOLOGÍAS UTILIZADAS:
+
+Backend:
+• PHP 7.4+
+• MySQL/MariaDB
+• PDO para base de datos
+
+Frontend:
+• HTML5 / CSS3
+• Bootstrap 5.3
+• Chart.js 4.4
+• Bootstrap Icons
+• Google Fonts (Inter)
+
+Procesamiento:
+• pdftotext (poppler-utils)
+• pdfplumber (Python)
+
+═══════════════════════════════════════════════════════════════════════════
+
+CARACTERÍSTICAS DESTACADAS:
+
+🎯 ANÁLISIS POR CONGRESISTA:
+   • Ver historial completo de votaciones
+   • Gráficas de distribución (favor/contra/ausencias)
+   • Porcentaje de ausentismo
+   • Comparar con otros congresistas
+
+🏛️  ANÁLISIS POR BLOQUE:
+   • Estadísticas de cada partido
+   • Total de congresistas por bloque
+   • Distribución de votos
+   • Comparación entre bloques
+
+📊 EVENTOS:
+   • Listado completo de votaciones
+   • Resultados (aprobado/rechazado)
+   • Eventos más polémicos
+   • Búsqueda y filtros
+
+📈 DASHBOARD:
+   • Vista general del sistema
+   • Estadísticas clave
+   • Últimos eventos
+   • Top ausentismo
+
+═══════════════════════════════════════════════════════════════════════════
+
+LICENCIA Y USO:
+
+Este sistema es de código abierto y puede ser usado libremente.
+Desarrollado específicamente para el análisis de votaciones del
+Congreso de la República de Guatemala.
+
+Puedes:
+• Usar el sistema para análisis de votaciones
+• Modificar el código según tus necesidades
+• Adaptarlo a otros parlamentos o sistemas
+• Distribuir copias
+• Usar con fines educativos o comerciales
+
+═══════════════════════════════════════════════════════════════════════════
+
+CRÉDITOS:
+
+Sistema desarrollado para facilitar el análisis y transparencia de las
+votaciones del Congreso de la República de Guatemala.
+
+Versión: 1.0.0
+Fecha: Octubre 2025
+
+═══════════════════════════════════════════════════════════════════════════
+
+¿LISTO PARA EMPEZAR?
+
+1. Lee README.md para documentación completa
+2. Ejecuta install.sh o sigue la instalación manual
+3. Carga tu primer PDF
+4. ¡Explora las estadísticas!
+
+═══════════════════════════════════════════════════════════════════════════
+
+¡Gracias por usar el Sistema de Votaciones del Congreso GT! 🇬🇹
+
+═══════════════════════════════════════════════════════════════════════════

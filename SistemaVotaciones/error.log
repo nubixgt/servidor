@@ -1,0 +1,1196 @@
+[30-Oct-2025 20:46:17 Europe/Berlin] PHP Parse error:  syntax error, unexpected identifier "ta" in C:\xampp\htdocs\votaciones\estadisticas.php on line 20
+[30-Oct-2025 13:57:35 America/Guatemala] PHP Warning:  Undefined array key "mensaje" in C:\xampp\htdocs\votaciones\cargar.php on line 40
+[30-Oct-2025 13:57:35 America/Guatemala] PHP Warning:  Undefined array key "total_votos" in C:\xampp\htdocs\votaciones\cargar.php on line 40
+[02-Nov-2025 22:00:18 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'congreso_votaciones.eventos_votacion' doesn't exist in C:\Users\anthony\Documents\votaciones1\votaciones\cargar.php:54
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\cargar.php(54): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\cargar.php on line 54
+[02-Nov-2025 22:00:18 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'congreso_votaciones.eventos_votacion' doesn't exist in C:\Users\anthony\Documents\votaciones1\votaciones\index.php:8
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\index.php(8): PDO->query('\n    SELECT COU...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\index.php on line 8
+[02-Nov-2025 22:56:12 America/Guatemala] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in C:\Users\anthony\Documents\votaciones1\votaciones\procesar.php on line 83
+[03-Nov-2025 00:45:53 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php:59
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php(59): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php on line 59
+[03-Nov-2025 00:45:57 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php:59
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php(59): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php on line 59
+[03-Nov-2025 00:46:19 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php:59
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php(59): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php on line 59
+[03-Nov-2025 00:46:34 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php:59
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php(59): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php on line 59
+[03-Nov-2025 00:47:13 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:49:05 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php:59
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php(59): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\congresistas.php on line 59
+[03-Nov-2025 00:50:01 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:55:01 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:55:04 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:55:07 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:55:28 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 00:55:41 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'b.siglas' in 'field list' in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php:36
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php(36): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\votaciones\bloques.php on line 36
+[03-Nov-2025 17:35:10 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[03-Nov-2025 17:35:10 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[03-Nov-2025 17:35:12 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[03-Nov-2025 17:35:13 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[03-Nov-2025 17:38:01 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:01 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:02 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:03 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:04 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:04 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:06 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:08 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:38:08 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.resultado' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:131
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(131): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 131
+[03-Nov-2025 17:41:51 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:52 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:53 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:53 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:54 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:54 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:55 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:57 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[03-Nov-2025 17:41:57 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[04-Nov-2025 09:04:10 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[04-Nov-2025 09:04:12 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[04-Nov-2025 09:04:12 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'votos_abstencion' in 'field list' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:132
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(132): PDO->query('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 132
+[04-Nov-2025 09:04:22 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[04-Nov-2025 09:04:22 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[04-Nov-2025 09:04:23 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[04-Nov-2025 09:04:23 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'on clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php:120
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php(120): PDO->prepare('\n    SELECT \n  ...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 120
+[04-Nov-2025 11:31:19 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php:86
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php(86): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php on line 86
+[04-Nov-2025 11:40:22 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php:88
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php(88): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php on line 88
+[04-Nov-2025 11:40:30 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php:88
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php(88): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php on line 88
+[04-Nov-2025 11:40:57 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php:88
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php(88): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php on line 88
+[04-Nov-2025 11:43:18 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php:86
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php(86): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\eventos.php on line 86
+[04-Nov-2025 12:10:25 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:179
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(179): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 179
+[04-Nov-2025 12:10:32 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:179
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(179): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 179
+[04-Nov-2025 12:10:44 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:179
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(179): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 179
+[04-Nov-2025 12:14:19 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:224
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(224): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 224
+[04-Nov-2025 12:14:28 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:224
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(224): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 224
+[04-Nov-2025 12:18:44 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:226
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(226): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 226
+[04-Nov-2025 13:29:12 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:226
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(226): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 226
+[04-Nov-2025 13:30:06 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:230
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(230): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 230
+[04-Nov-2025 13:31:21 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:230
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(230): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 230
+[04-Nov-2025 13:35:04 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:226
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(226): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 226
+[04-Nov-2025 13:37:14 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:229
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(229): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 229
+[04-Nov-2025 13:37:22 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:229
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(229): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 229
+[04-Nov-2025 13:37:33 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:229
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(229): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 229
+[04-Nov-2025 13:47:18 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:232
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(232): PDOStatement->execute()
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 232
+[04-Nov-2025 14:07:50 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[04-Nov-2025 14:07:58 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[04-Nov-2025 14:08:05 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[04-Nov-2025 14:09:44 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[05-Nov-2025 09:25:55 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:163
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(163): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 163
+[05-Nov-2025 09:26:08 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[05-Nov-2025 09:26:16 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[05-Nov-2025 09:26:31 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:157
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(157): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 157
+[05-Nov-2025 09:33:17 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY093]: Invalid parameter number in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:163
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(163): PDOStatement->execute(Array)
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 163
+[05-Nov-2025 09:40:53 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:40:59 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:58:57 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:59:04 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:59:16 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:59:27 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 09:59:35 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 10:01:38 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.bloque_id' in 'where clause' in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php:158
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php(158): PDO->prepare('\n        SELECT...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\congresistas.php on line 158
+[05-Nov-2025 12:13:38 America/Guatemala] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\login.php on line 2) in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 100
+[05-Nov-2025 12:21:29 America/Guatemala] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\login.php on line 2) in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 100
+[05-Nov-2025 12:22:00 America/Guatemala] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\login.php on line 2) in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 100
+[05-Nov-2025 12:24:30 America/Guatemala] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\login.php on line 2) in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 100
+[05-Nov-2025 12:24:31 America/Guatemala] PHP Notice:  session_start(): Ignoring session_start() because a session is already active (started from C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\login.php on line 2) in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 100
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:36:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:18 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:37:34 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:49 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:38:50 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:04 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:39:33 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:30 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:44 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:41:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:37 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 12:42:38 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:36:54 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:38:50 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:38:59 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:43:52 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:44:56 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:45:14 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:46:38 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 13:49:52 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:57 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:09:59 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:34 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:35 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:35 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:35 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:35 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:35 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:36 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:36 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:36 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:36 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:37 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:39 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:45 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:45 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:45 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:46 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:47 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:48 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:50 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:51 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:51 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:51 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:10:52 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:54 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:10:55 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:10:55 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:25 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:26 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:28 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:28 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "tipo_evento" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 233
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "iniciativa" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Deprecated:  substr(): Passing null to parameter #1 ($string) of type string is deprecated in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 235
+[05-Nov-2025 17:11:29 America/Guatemala] PHP Warning:  Undefined array key "ausencias" in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\index.php on line 244
+[05-Nov-2025 17:12:31 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[05-Nov-2025 17:12:36 America/Guatemala] Error obteniendo últimos eventos: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'e.tipo_evento' in 'field list'
+[06-Nov-2025 12:40:48 America/Guatemala] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 34
+[06-Nov-2025 12:41:57 America/Guatemala] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in C:\Users\anthony\Documents\votaciones1\SistemaVotaciones\config.php on line 34
+[08-Nov-2025 00:50:59 America/Guatemala] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 2006 MySQL server has gone away in C:\Users\anthony\Documents\votaciones1\Nueva carpeta con elementos\SistemaVotaciones\index.php:11
+Stack trace:
+#0 C:\Users\anthony\Documents\votaciones1\Nueva carpeta con elementos\SistemaVotaciones\index.php(11): PDO->query('SELECT COUNT(*)...')
+#1 {main}
+  thrown in C:\Users\anthony\Documents\votaciones1\Nueva carpeta con elementos\SistemaVotaciones\index.php on line 11

@@ -1,0 +1,37 @@
+# ====================================================================
+# CONFIGURACIÓN APACHE PARA SISTEMA DE VOTACIONES
+# Versión 2.0 - Corregido límite de archivos
+# ====================================================================
+# Este archivo configura PHP sin necesidad de editar php.ini
+# Coloca este archivo en la raíz de tu proyecto
+
+# ⚠️ IMPORTANTE: Si este archivo no funciona, debes editar php.ini
+
+# Aumentar tiempo de ejecución
+php_value max_execution_time 0
+php_value max_input_time 600
+
+# AUMENTAR LÍMITE DE ARCHIVOS SIMULTÁNEOS (CRÍTICO)
+php_value max_file_uploads 100
+
+# Aumentar límites de memoria y tamaño
+php_value memory_limit 512M
+php_value post_max_size 500M
+php_value upload_max_filesize 50M
+
+# Habilitar errores (solo en desarrollo)
+php_flag display_errors On
+php_flag display_startup_errors On
+php_value error_reporting E_ALL
+
+# Deshabilitar límites de output
+php_flag output_buffering Off
+php_flag implicit_flush On
+
+# Configuración de sesión
+php_value session.gc_maxlifetime 3600
+php_value session.cookie_lifetime 3600
+
+# NOTA: Si sigues viendo el error de "Maximum number of allowable file uploads"
+# significa que .htaccess no puede sobrescribir esta configuración.
+# En ese caso, DEBES editar php.ini manualmente.

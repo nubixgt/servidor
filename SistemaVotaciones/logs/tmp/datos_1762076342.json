@@ -1,0 +1,970 @@
+{
+  "evento": {
+    "numero": "1",
+    "sesion": "19",
+    "fecha_hora": "2025-04-29 14:04:07",
+    "titulo": "APROBACIÓN DE PROPUESTA PARA MODIFICAR EL"
+  },
+  "votos": [
+    {
+      "numero": 1,
+      "nombre": "Luis Fernando Aguirre Estrada",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 2,
+      "nombre": "Cristian Rodolfo Alvarez y Alvarez",
+      "bloque": "COMPROMISO, RENOVACIÓN Y ORDEN",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 3,
+      "nombre": "Manuel de Jesús Archila Cordón",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 4,
+      "nombre": "Gerson Geovanny Barragán Morales",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 5,
+      "nombre": "Raúl Amilcar Barrera Robles",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 6,
+      "nombre": "Orlando Joaquín Blanco Lapola",
+      "bloque": "VOLUNTAD, OPORTUNIDAD Y SOLIDARIDAD",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 7,
+      "nombre": "Victor Vicente Bonilla González",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 8,
+      "nombre": "Luis Antonio Cáceres Gamarro",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 9,
+      "nombre": "Manfredo Duvalier Castañón González",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 10,
+      "nombre": "Román Wilfredo Castellanos Caal",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 11,
+      "nombre": "Sergio Leonel Celis Navas",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 12,
+      "nombre": "José Alberto Chic Cardona",
+      "bloque": "VOLUNTAD, OPORTUNIDAD Y SOLIDARIDAD",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 13,
+      "nombre": "Pablo Leonel Cifuentes Ovalle",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 14,
+      "nombre": "Raúl Arnulfo Cuá Tumin",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 15,
+      "nombre": "Kevyn Luis Carlo Escobar Castillo",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 16,
+      "nombre": "Julio Héctor Estrada Domínguez",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 17,
+      "nombre": "Jairo Joaquín Flores Divas",
+      "bloque": "VOLUNTAD, OPORTUNIDAD Y SOLIDARIDAD",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 18,
+      "nombre": "Julio Pedro Gómez Gómez",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 19,
+      "nombre": "Alma Luz Guerrero de la Cruz",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 20,
+      "nombre": "Rolando Guzmán Figueroa",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 21,
+      "nombre": "David Mauricio Illescas Sandoval",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 22,
+      "nombre": "Julio César López Escobar",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 23,
+      "nombre": "Jaime Octavio Augusto Lucero Vásquez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 24,
+      "nombre": "Ivanna María Luján Padilla",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 25,
+      "nombre": "Mercedes del Rosario Monzón Escobedo",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 26,
+      "nombre": "Elena Sofia Motta Kolleff",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 27,
+      "nombre": "Byron Alesky Obregón Castañeda",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 28,
+      "nombre": "Ronalth Ivan Ochaeta Aguilar",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 29,
+      "nombre": "Jairo Danilo Orellana Sandoval",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 30,
+      "nombre": "Karina Alexandra Paz Rosales",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 31,
+      "nombre": "Samuel Andrés Pérez Alvarez",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 32,
+      "nombre": "José Orlando Pérez Marroquín",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 33,
+      "nombre": "Nery Abilio Ramos y Ramos",
+      "bloque": "PARTIDO AZUL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 34,
+      "nombre": "Andrea María Reyes Zeceña",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 35,
+      "nombre": "Nery Mamfredo Rodas Méndez",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 36,
+      "nombre": "Faver Emilio Salazar Cordero",
+      "bloque": "PARTIDO VALOR",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 37,
+      "nombre": "Raúl Antonio Solórzano Quevedo",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 38,
+      "nombre": "Byron Leonidas Tejeda Marroquín",
+      "bloque": "CABAL",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 39,
+      "nombre": "José Diego Toledo Cruz",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 40,
+      "nombre": "Luis Enrique Ventura Urbina",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 41,
+      "nombre": "Andrea Beatríz Villagrán Antón de Pantoja",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 42,
+      "nombre": "Olga Isabel Villalta Pereira",
+      "bloque": "INDEPENDIENTES",
+      "voto": "A FAVOR"
+    },
+    {
+      "numero": 1,
+      "nombre": "Hellen Magaly Alexandrá Ajcip Canel",
+      "bloque": "COMUNIDAD ELEFANTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 2,
+      "nombre": "Héctor Adolfo Aldana Reyes",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 3,
+      "nombre": "Felipe Alejos Lorenzana",
+      "bloque": "TODOS",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 4,
+      "nombre": "Manuel Geovany Alvarado Vásquez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 5,
+      "nombre": "Alvaro Enrique Arzú Escobar",
+      "bloque": "PARTIDO UNIONISTA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 6,
+      "nombre": "Jorge Estuardo Ayala Marroquín",
+      "bloque": "PARTIDO VALOR",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 7,
+      "nombre": "Carlos Roberto Calderon Galvez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 8,
+      "nombre": "José Inés Castillo Martínez",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 9,
+      "nombre": "Jorge Romeo Castro Delgado",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 10,
+      "nombre": "Dámaris Carolina Cerna Acevedo",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 11,
+      "nombre": "Gustavo Adolfo Cifuentes Navarro",
+      "bloque": "TODOS",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 12,
+      "nombre": "Luis Alberto Contreras Colíndres",
+      "bloque": "COMPROMISO, RENOVACIÓN Y ORDEN",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 13,
+      "nombre": "Alberto Eduardo De León Benítez",
+      "bloque": "CABAL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 14,
+      "nombre": "Greicy Domenica De León De León",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 15,
+      "nombre": "Nadia Lorena De León Torres",
+      "bloque": "PARTIDO POLÍTICO NOSOTROS",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 16,
+      "nombre": "Lourdes Teresita De León Torres",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 17,
+      "nombre": "Herman Otoniel Echeverría Casado",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 18,
+      "nombre": "Manrique Obel Gálvez De León",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 19,
+      "nombre": "Mario Ernesto Gálvez Muñóz",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 20,
+      "nombre": "Mercedes Cristabel Guardado Linares de Nájera",
+      "bloque": "PARTIDO VALOR",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 21,
+      "nombre": "Sofía Jeanetth Hernández Herrera",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 22,
+      "nombre": "Benjamin Ipiña Leiva",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 23,
+      "nombre": "Francisco Vitelio Lam Ruano",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 24,
+      "nombre": "Candido Fernando Leal Gómez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 25,
+      "nombre": "Josué Edmundo Lemus Cifuentes",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 26,
+      "nombre": "Carlos Enrique López Girón",
+      "bloque": "PARTIDO VALOR",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 27,
+      "nombre": "Carlos Enrique López Maldonado",
+      "bloque": "CABAL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 28,
+      "nombre": "Darwin Alberto Lucas Paz",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 29,
+      "nombre": "Danilo Madrazo Mazariegos",
+      "bloque": "TODOS",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 30,
+      "nombre": "Vasny Adiel Maldonado Alonzo",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 31,
+      "nombre": "Ana Lucrecia Marroquín Godoy de Palomo",
+      "bloque": "PARTIDO UNIONISTA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 32,
+      "nombre": "Julio Daniel Marroquín Ordoñez",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 33,
+      "nombre": "Maynor Gabriel Mejía Popol",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 34,
+      "nombre": "José Pablo Mendoza Franco",
+      "bloque": "COMPROMISO, RENOVACIÓN Y ORDEN",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 35,
+      "nombre": "Evelyn Oddeth Morataya Marroquín",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 36,
+      "nombre": "Martín Nicolás Segundo",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 37,
+      "nombre": "Rolando Miguel Ovalle Barrios",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 38,
+      "nombre": "Elmer Josué Palencia Reyes",
+      "bloque": "PARTIDO VALOR",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 39,
+      "nombre": "Rodrigo Antonio Pellecer Rodríguez",
+      "bloque": "COMUNIDAD ELEFANTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 40,
+      "nombre": "Julio César Portillo Paz",
+      "bloque": "CABAL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 41,
+      "nombre": "Edgar Raúl Reyes Lee",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 42,
+      "nombre": "Mynor Francisco Rivera Salazar",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 43,
+      "nombre": "César Augusto Rodas Cardona",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 44,
+      "nombre": "Byron Bladimiro Rodríguez Palacios",
+      "bloque": "TODOS",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 45,
+      "nombre": "Marcos Eduardo Tebelán Pantzay",
+      "bloque": "CABAL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 46,
+      "nombre": "Erick José Mario Tzún De León",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 47,
+      "nombre": "Victor Alfredo Valenzuela Argueta",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 48,
+      "nombre": "Sabino Sebastián Velásquez Bámaca",
+      "bloque": "BIENESTAR NACIONAL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 49,
+      "nombre": "Jorge Mario Villagrán Alvarez",
+      "bloque": "PARTIDO AZUL",
+      "voto": "EN CONTRA"
+    },
+    {
+      "numero": 1,
+      "nombre": "César Augusto Amézquita Del Valle",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 2,
+      "nombre": "Sergio David Arana Roca",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 3,
+      "nombre": "Sherol Ivanisse Arévalo Avila",
+      "bloque": "PARTIDO VALOR",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 4,
+      "nombre": "León Felipe Barrera Villanueva",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 5,
+      "nombre": "Ernesto Bran Colindres",
+      "bloque": "PARTIDO VALOR",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 6,
+      "nombre": "Jorge Mario Cabrera Ordóñez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 7,
+      "nombre": "Karla Betzaida Cardona Arreaga",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 8,
+      "nombre": "Obbed Ediberto Castañasa Mendizábal",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 9,
+      "nombre": "Maynor Estuardo Castillo y Castillo",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 10,
+      "nombre": "Bequer Neftali Chocooj de la Cruz",
+      "bloque": "CABAL",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 11,
+      "nombre": "Gladis Carolina Cifuentes Barragán",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 12,
+      "nombre": "Guillermo Alberto Cifuentes Barragán",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 13,
+      "nombre": "Victor Hugo Cifuentes Delgado",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 14,
+      "nombre": "Randy Araely Coc Figueroa",
+      "bloque": "VICTORIA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 15,
+      "nombre": "Oscar Rolando Corleto Rivera",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 16,
+      "nombre": "Gustavo Adolfo Crúz Montoya",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 17,
+      "nombre": "Edín Alexander De Jesús Mejía",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 18,
+      "nombre": "Mynor Alfonso De la Rosa Palacios",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 19,
+      "nombre": "Gerardín Ariel Díaz Mazariegos",
+      "bloque": "PARTIDO VALOR",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 20,
+      "nombre": "Jeovanni Omar Domínguez Orozco",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 21,
+      "nombre": "Boris Roberto España Cáceres",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 22,
+      "nombre": "César Augusto Fión Morales",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 23,
+      "nombre": "José Luis Galindo de León",
+      "bloque": "PARTIDO VALOR",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 24,
+      "nombre": "José Arnulfo García Barrios",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 25,
+      "nombre": "Cornelio Gonzalo García García",
+      "bloque": "TODOS",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 26,
+      "nombre": "Mirna Victoria Godoy Palala",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 27,
+      "nombre": "Sonia Marina Gutierrez Raguay",
+      "bloque": "COALICIÓN MOVIMIENTO POLÍTICO WINAQ - UNIDAD REVOLUCIONARIA NACIONAL GUATEMALTECA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 28,
+      "nombre": "Esduín Jerson Javier Javier",
+      "bloque": "CAMBIO",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 29,
+      "nombre": "Sandra Erica Jovel Polanco",
+      "bloque": "PARTIDO VALOR",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 30,
+      "nombre": "Fidencio Lima Pop",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 31,
+      "nombre": "Luis Javier López Bolaños",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 32,
+      "nombre": "Ervin Adim Maldonado Molina",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 33,
+      "nombre": "Ricardo Leonel Martínez Alarcón",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 34,
+      "nombre": "Erick Geovany Martínez Hernández",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 35,
+      "nombre": "Joél Rubén Martínez Herrera",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 36,
+      "nombre": "Christian Joél Martínez Juárez",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 37,
+      "nombre": "Duay Antoni Martinez Salazar",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 38,
+      "nombre": "Marleni Lineth Matías Santiago",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 39,
+      "nombre": "Nery René Mazariegos López",
+      "bloque": "PARTIDO POLÍTICO VISIÓN CON VALORES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 40,
+      "nombre": "Marco Aurelio Mejía Alfaro",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 41,
+      "nombre": "Brenda Marleny Mejía López",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 42,
+      "nombre": "Sandra Carolina Orellana Cruz",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 43,
+      "nombre": "Rudy Berner Pereira Delgado",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 44,
+      "nombre": "Marco Alejandro Pérez Toribio",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 45,
+      "nombre": "Ronald Yomelfy Portillo Cordón",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 46,
+      "nombre": "Vivian Beatriz Preciado Navarijo",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 47,
+      "nombre": "José Adolfo Quezada Valdéz",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 48,
+      "nombre": "Guillermo Antonio Ralda Conde",
+      "bloque": "CABAL",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 49,
+      "nombre": "Darwin Edgardo Ramírez Cameros",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 50,
+      "nombre": "Thelma Elizabeth Ramírez Retana",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 51,
+      "nombre": "Fidel Reyes Lee",
+      "bloque": "BIENESTAR NACIONAL",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 52,
+      "nombre": "Juan Ramon Rivas García",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 53,
+      "nombre": "Juan Carlos Rivera Estevez",
+      "bloque": "VICTORIA",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 54,
+      "nombre": "Shirley Joanna Rivera Zaldaña",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 55,
+      "nombre": "Luis Alberto Rodríguez Reyes",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 56,
+      "nombre": "Allan Estuardo Rodríguez Reyes",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 57,
+      "nombre": "Carlos Napoleon Rojas Alarcón",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 58,
+      "nombre": "Oswaldo Rosales Polanco",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 59,
+      "nombre": "Leopoldo Salazar Samayoa",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 60,
+      "nombre": "Lucrecia Carola Samayoa Reyes",
+      "bloque": "BIENESTAR NACIONAL",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 61,
+      "nombre": "José Carlos Sanabria Arias",
+      "bloque": "INDEPENDIENTES",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 62,
+      "nombre": "José Carlo Solano",
+      "bloque": "VAMOS POR UNA GUATEMALA DIFERENTE",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 63,
+      "nombre": "Mario Velásquez Pérez",
+      "bloque": "CABAL",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 64,
+      "nombre": "Marvin Adrián Zepeda Zepeda",
+      "bloque": "TODOS",
+      "voto": "AUSENTE"
+    },
+    {
+      "numero": 1,
+      "nombre": "César Roberto Dávila Córdova",
+      "bloque": "BIENESTAR NACIONAL",
+      "voto": "LICENCIA"
+    },
+    {
+      "numero": 2,
+      "nombre": "Sergio Guillermo Enriquez Garzaro",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "LICENCIA"
+    },
+    {
+      "numero": 3,
+      "nombre": "Laura Fabiola Marroquín Cordón",
+      "bloque": "INDEPENDIENTES",
+      "voto": "LICENCIA"
+    },
+    {
+      "numero": 4,
+      "nombre": "Sandra Yanet Milian Gomez",
+      "bloque": "VICTORIA",
+      "voto": "LICENCIA"
+    },
+    {
+      "numero": 5,
+      "nombre": "Juán Ignacio Quijada Heredia",
+      "bloque": "UNIDAD NACIONAL DE LA ESPERANZA",
+      "voto": "LICENCIA"
+    }
+  ]
+}
