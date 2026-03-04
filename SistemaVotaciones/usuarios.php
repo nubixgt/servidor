@@ -142,49 +142,7 @@ $usuariosConectados = $stmt->fetch()['total'];
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-2 sidebar" id="sidebar">
-                <div class="logo text-center">
-                    <img src="logo-congreso.jpg" alt="Congreso de Guatemala" style="max-width: 120px; height: auto; margin-bottom: 1rem;">
-                    <h5 class="mb-1">Congreso de la República</h5>
-                    <small class="text-muted d-block">Sistema de Votaciones</small>
-                </div>
-                <nav class="nav flex-column mt-4">
-                    <a class="nav-link" href="index.php">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                    <a class="nav-link" href="eventos.php">
-                        <i class="bi bi-calendar-event"></i> Eventos
-                    </a>
-                    <a class="nav-link" href="congresistas.php">
-                        <i class="bi bi-people"></i> Congresistas
-                    </a>
-                    <a class="nav-link" href="bloques.php">
-                        <i class="bi bi-diagram-3"></i> Bloques
-                    </a>
-                    <a class="nav-link" href="estadisticas.php">
-                        <i class="bi bi-bar-chart"></i> Estadísticas
-                    </a>
-                    <a class="nav-link" href="cargar.php">
-                        <i class="bi bi-upload"></i> Cargar PDF
-                    </a>
-                    <a class="nav-link active" href="usuarios.php">
-                        <i class="bi bi-person-gear"></i> Usuarios
-                    </a>
-                    <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 1.5rem;">
-                    <div class="px-3 py-2">
-                        <small class="text-muted d-block mb-1">
-                            <i class="bi bi-person-circle me-1"></i>
-                            <?php echo htmlspecialchars($_SESSION['nombre_completo']); ?>
-                        </small>
-                        <small class="text-muted d-block">
-                            <span class="badge bg-info"><?php echo ucfirst($_SESSION['tipo_usuario']); ?></span>
-                        </small>
-                    </div>
-                    <a class="nav-link text-danger" href="logout.php">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                    </a>
-                </nav>
-            </div>
+            <?php include "sidebar.php"; ?>
             
             <!-- Main Content -->
             <div class="col-lg-10 main-content p-4">
@@ -508,62 +466,6 @@ $usuariosConectados = $stmt->fetch()['total'];
 </html>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    // JavaScript para menú móvil responsive
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuBtn = document.getElementById('mobileMenuBtn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (menuBtn && sidebar && overlay) {
-            // Abrir/cerrar menú
-            menuBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-                
-                // Cambiar ícono
-                const icon = this.querySelector('i');
-                if (sidebar.classList.contains('show')) {
-                    icon.className = 'bi bi-x';
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    icon.className = 'bi bi-list';
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Cerrar al hacer clic en overlay
-            overlay.addEventListener('click', function() {
-                sidebar.classList.remove('show');
-                overlay.classList.remove('show');
-                menuBtn.querySelector('i').className = 'bi bi-list';
-                document.body.style.overflow = '';
-            });
-            
-            // Cerrar al hacer clic en un link
-            const navLinks = sidebar.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth < 992) {
-                        sidebar.classList.remove('show');
-                        overlay.classList.remove('show');
-                        menuBtn.querySelector('i').className = 'bi bi-list';
-                        document.body.style.overflow = '';
-                    }
-                });
-            });
-            
-            // Cerrar con ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sidebar.classList.contains('show')) {
-                    sidebar.classList.remove('show');
-                    overlay.classList.remove('show');
-                    menuBtn.querySelector('i').className = 'bi bi-list';
-                    document.body.style.overflow = '';
-                }
-            });
-        }
-    });
-    </script>
+    <script src="responsive.js"></script>
 </body>
 </html>

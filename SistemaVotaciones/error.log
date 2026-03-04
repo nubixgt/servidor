@@ -1194,3 +1194,92 @@ Stack trace:
 #0 C:\Users\anthony\Documents\votaciones1\Nueva carpeta con elementos\SistemaVotaciones\index.php(11): PDO->query('SELECT COUNT(*)...')
 #1 {main}
   thrown in C:\Users\anthony\Documents\votaciones1\Nueva carpeta con elementos\SistemaVotaciones\index.php on line 11
+[04-Mar-2026 13:54:29 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\xampp\htdocs\servidor\SistemaVotaciones\config.php on line 102
+[04-Mar-2026 13:54:29 America/Guatemala] PHP Fatal error:  Uncaught Error: Call to undefined function getPDO() in C:\xampp\htdocs\servidor\SistemaVotaciones\test_db.php:4
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\servidor\SistemaVotaciones\test_db.php on line 4
+[04-Mar-2026 13:54:41 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\xampp\htdocs\servidor\SistemaVotaciones\config.php on line 102
+[04-Mar-2026 13:56:56 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\xampp\htdocs\servidor\SistemaVotaciones\config.php on line 102
+[04-Mar-2026 13:56:56 America/Guatemala] PHP Fatal error:  Uncaught Error: Call to undefined function getPDO() in C:\xampp\htdocs\servidor\SistemaVotaciones\add_foto_col.php:4
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\servidor\SistemaVotaciones\add_foto_col.php on line 4
+[04-Mar-2026 13:57:09 America/Guatemala] PHP Warning:  session_start(): Session cannot be started after headers have already been sent in C:\xampp\htdocs\servidor\SistemaVotaciones\config.php on line 102
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 217
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 372
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:37 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 217
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 372
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:01:59 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 217
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 372
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:03 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 217
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 363
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
+[04-Mar-2026 17:48:20 America/Guatemala] Error login: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'qjf40sgfb173hc7e9no3nrqdjs' for key 'session_id'

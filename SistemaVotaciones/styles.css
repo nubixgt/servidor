@@ -149,8 +149,9 @@ body {
     top: 0;
     width: var(--sidebar-width);
     z-index: 1045;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
 }
@@ -160,24 +161,30 @@ body {
     position: absolute;
     top: -50%;
     right: -50%;
-    width: 200%;
-    height: 200%;
+    width: 150%;
+    height: 150%;
     background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
     animation: pulse 6s ease-in-out infinite;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
+    height: 4px;
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.6);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .sidebar .logo {
@@ -211,19 +218,19 @@ body {
 
 .sidebar .nav-link {
     color: rgba(255, 255, 255, 0.7);
-    padding: 0.75rem 1.25rem;
+    padding: 0.6rem 1rem;
     border-left: 3px solid transparent;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9rem;
-    margin: 0.15rem 0;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    margin: 0.1rem 0;
     position: relative;
 }
 
 .sidebar .nav-link i {
-    font-size: 1.1rem;
+    font-size: 1rem;
     min-width: 22px;
     text-align: center;
 }
@@ -239,6 +246,13 @@ body {
 .sidebar .nav-link.active {
     background: linear-gradient(90deg, rgba(186, 190, 209, 0.2) 0%, transparent 100%);
     font-weight: 600;
+}
+
+.sidebar-footer {
+    padding-bottom: 0.5rem;
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
 }
 
 /* === MAIN CONTENT === */

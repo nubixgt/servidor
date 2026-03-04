@@ -4,7 +4,7 @@
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'votaciones-congreso');
 define('DB_USER', 'root');  // Cambiar según tu configuración
-define('DB_PASS', '$Develop3r2025');      // Cambiar según tu configuración
+define('DB_PASS', '');      // Cambiar según tu configuración
 define('DB_CHARSET', 'utf8mb4');
 
 // Configuración de la aplicación

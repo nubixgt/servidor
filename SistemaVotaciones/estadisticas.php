@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'config.php';
 $db = getDB();
 
@@ -35,7 +35,12 @@ $eventos = $stmt->fetchAll();
 $datosCongresista = null;
 $votosHistorico = [];
 if ($congresistaId) {
-    $stmt = $db->prepare("SELECT * FROM vista_estadisticas_congresista WHERE id = ?");
+    $stmt = $db->prepare("
+        SELECT c.foto, c.nombre, v.* 
+        FROM congresistas c 
+        LEFT JOIN vista_estadisticas_congresista v ON c.id = v.id 
+        WHERE c.id = ?
+    ");
     $stmt->execute([$congresistaId]);
     $datosCongresista = $stmt->fetch();
     
@@ -182,21 +187,7 @@ $eventosPolemicos = $stmt->fetchAll();
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-2 sidebar" id="sidebar">
-                <div class="logo text-center">
-                    <img src="logo-congreso.jpg" alt="Congreso de Guatemala" style="max-width: 120px; height: auto; margin-bottom: 1rem;">
-                    <h5 class="mb-1">Congreso de la República</h5>
-                    <small class="text-muted d-block">Sistema de Votaciones</small>
-                </div>
-                <nav class="nav flex-column mt-4">
-                    <a class="nav-link" href="index.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                    <a class="nav-link" href="eventos.php"><i class="bi bi-calendar-event"></i> Eventos</a>
-                    <a class="nav-link" href="congresistas.php"><i class="bi bi-people"></i> Congresistas</a>
-                    <a class="nav-link" href="bloques.php"><i class="bi bi-diagram-3"></i> Bloques</a>
-                    <a class="nav-link active" href="estadisticas.php"><i class="bi bi-bar-chart"></i> Estadísticas</a>
-                    <a class="nav-link" href="cargar.php"><i class="bi bi-upload"></i> Cargar PDF</a>
-                </nav>
-            </div>
+            <?php include "sidebar.php"; ?>
             
             <div class="col-lg-10 main-content">
                 <div class="page-header">
@@ -269,7 +260,18 @@ $eventosPolemicos = $stmt->fetchAll();
                 <?php if ($datosCongresista): ?>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="mb-3"><i class="bi bi-person-circle me-2"></i><?php echo htmlspecialchars($datosCongresista['nombre']); ?></h5>
+                        <h5 class="mb-3 d-flex align-items-center">
+                            <?php if (!empty($datosCongresista['foto']) && file_exists('uploads/congresistas/' . $datosCongresista['foto'])): ?>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#viewPhotoModal" class="text-decoration-none">
+                                    <img src="uploads/congresistas/<?php echo htmlspecialchars($datosCongresista['foto']); ?>" alt="Foto" class="rounded-circle me-3 border-primary shadow-sm" style="width: 50px; height: 50px; object-fit: cover; border: 2px solid var(--bs-primary); cursor: zoom-in; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                </a>
+                            <?php else: ?>
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; min-width: 50px;">
+                                    <i class="bi bi-person text-primary fs-4"></i>
+                                </div>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($datosCongresista['nombre']); ?>
+                        </h5>
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="text-center p-3 bg-light rounded">
@@ -481,63 +483,7 @@ $eventosPolemicos = $stmt->fetchAll();
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // JavaScript para menú móvil responsive
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuBtn = document.getElementById('mobileMenuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            if (menuBtn && sidebar && overlay) {
-                // Abrir/cerrar menú
-                menuBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('show');
-                    overlay.classList.toggle('show');
-                    
-                    // Cambiar ícono
-                    const icon = this.querySelector('i');
-                    if (sidebar.classList.contains('show')) {
-                        icon.className = 'bi bi-x';
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        icon.className = 'bi bi-list';
-                        document.body.style.overflow = '';
-                    }
-                });
-                
-                // Cerrar al hacer clic en overlay
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('show');
-                    overlay.classList.remove('show');
-                    menuBtn.querySelector('i').className = 'bi bi-list';
-                    document.body.style.overflow = '';
-                });
-                
-                // Cerrar al hacer clic en un link
-                const navLinks = sidebar.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        if (window.innerWidth < 992) {
-                            sidebar.classList.remove('show');
-                            overlay.classList.remove('show');
-                            menuBtn.querySelector('i').className = 'bi bi-list';
-                            document.body.style.overflow = '';
-                        }
-                    });
-                });
-                
-                // Cerrar con ESC
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && sidebar.classList.contains('show')) {
-                        sidebar.classList.remove('show');
-                        overlay.classList.remove('show');
-                        menuBtn.querySelector('i').className = 'bi bi-list';
-                        document.body.style.overflow = '';
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="responsive.js"></script>
     <script>
         <?php if ($datosCongresista): ?>
         new Chart(document.getElementById('chartVotosCongresista'), {
@@ -604,5 +550,22 @@ $eventosPolemicos = $stmt->fetchAll();
         });
         window.addEventListener('pageshow', function() { document.body.style.opacity = '1'; });
     </script>
+    <!-- Photo View Modal -->
+    <?php if ($datosCongresista && !empty($datosCongresista['foto']) && file_exists('uploads/congresistas/' . $datosCongresista['foto'])): ?>
+    <div class="modal fade" id="viewPhotoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0px 0px 2px rgba(0,0,0,0.8));"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img src="uploads/congresistas/<?php echo htmlspecialchars($datosCongresista['foto']); ?>" alt="<?php echo htmlspecialchars($datosCongresista['nombre']); ?>" class="img-fluid rounded shadow-lg" style="max-height: 80vh; border: 3px solid white;">
+                    <h5 class="text-white mt-3" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);"><?php echo htmlspecialchars($datosCongresista['nombre']); ?></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
 </body>
 </html>

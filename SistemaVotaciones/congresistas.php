@@ -1,5 +1,59 @@
+﻿
 <?php
 require_once 'config.php';
+require_once 'auth.php';
+
+// Handle upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_foto']) && isset($_POST['congresista_id']) && esAdmin()) {
+    $id = (int)$_POST['congresista_id'];
+    $response = ['success' => false, 'message' => ''];
+    
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['foto']['tmp_name'];
+        $fileName = $_FILES['foto']['name'];
+        $fileSize = $_FILES['foto']['size'];
+        $fileType = $_FILES['foto']['type'];
+        
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (in_array($fileType, $allowedTypes) && $fileSize <= 2000000) { // 2MB max
+            $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+            $newFileName = 'congresista_' . $id . '_' . time() . '.' . $extension;
+            $uploadDir = 'uploads/congresistas/';
+            $destPath = $uploadDir . $newFileName;
+            
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                $pdo = getDB();
+                // Get old photo to delete it
+                $stmt = $pdo->prepare('SELECT foto FROM congresistas WHERE id = ?');
+                $stmt->execute([$id]);
+                $oldPhoto = $stmt->fetchColumn();
+                if ($oldPhoto && file_exists($uploadDir . $oldPhoto)) {
+                    unlink($uploadDir . $oldPhoto);
+                }
+                
+                // Update DB
+                $stmt = $pdo->prepare('UPDATE congresistas SET foto = ? WHERE id = ?');
+                if ($stmt->execute([$newFileName, $id])) {
+                    $response['success'] = true;
+                    $response['message'] = 'Foto subida correctamente.';
+                } else {
+                    $response['message'] = 'Error al actualizar la base de datos.';
+                }
+            } else {
+                $response['message'] = 'Error al guardar el archivo.';
+            }
+        } else {
+            $response['message'] = 'Archivo no válido o demasiado grande. Usa JPG, PNG o GIF (Max 2MB).';
+        }
+    } else {
+        $response['message'] = 'Error en la subida del archivo. Detalle: ' . $_FILES['foto']['error'];
+    }
+    
+    // Redirect back to avoid resubmitting form
+    header('Location: congresistas.php?msg=' . urlencode($response['message']) . '&type=' . ($response['success'] ? 'success' : 'danger'));
+    exit;
+}
+
 $db = getDB();
 
 // Filtros
@@ -102,7 +156,7 @@ if ($usarFiltroFechas) {
     $stmt->execute($params);
     $congresistas = $stmt->fetchAll();
     
-    // Estadísticas generales - Respetando filtros aplicados (con fechas)
+    // Estadí­sticas generales - Respetando filtros aplicados (con fechas)
     $whereStats = ['c.activo = 1'];
     $paramsStats = [];
     
@@ -207,7 +261,7 @@ if ($usarFiltroFechas) {
     $stmt->execute($paramsConPaginacion);
     $congresistas = $stmt->fetchAll();
     
-    // Estadísticas generales - Respetando filtros aplicados
+    // Estadí­sticas generales - Respetando filtros aplicados
     $statsQuery = "
         SELECT 
             COUNT(*) as total,
@@ -275,44 +329,18 @@ if ($usarFiltroFechas) {
 </style>
 </head>
 <body>
-    <!-- Botón Menú Móvil -->
-    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" aria-label="Abrir menú">
+    <!-- Botón Meníº Móvil -->
+    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" aria-label="Abrir meníº">
         <i class="bi bi-list"></i>
     </button>
 
-    <!-- Overlay para cerrar menú -->
+    <!-- Overlay para cerrar meníº -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-2 sidebar" id="sidebar">
-                <div class="logo text-center">
-                    <img src="logo-congreso.jpg" alt="Congreso de Guatemala" style="max-width: 120px; height: auto; margin-bottom: 1rem;">
-                    <h5 class="mb-1">Congreso de la República</h5>
-                    <small class="text-muted d-block">Sistema de Votaciones</small>
-                </div>
-                <nav class="nav flex-column mt-4">
-                    <a class="nav-link" href="index.php">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                    <a class="nav-link" href="eventos.php">
-                        <i class="bi bi-calendar-event"></i> Eventos
-                    </a>
-                    <a class="nav-link active" href="congresistas.php">
-                        <i class="bi bi-people"></i> Congresistas
-                    </a>
-                    <a class="nav-link" href="bloques.php">
-                        <i class="bi bi-diagram-3"></i> Bloques
-                    </a>
-                    <a class="nav-link" href="estadisticas.php">
-                        <i class="bi bi-bar-chart"></i> Estadísticas
-                    </a>
-                    <a class="nav-link" href="cargar.php">
-                        <i class="bi bi-upload"></i> Cargar PDF
-                    </a>
-                </nav>
-            </div>
+            <?php include "sidebar.php"; ?>
             
             <!-- Contenido Principal -->
             <div class="col-lg-10 main-content">
@@ -331,7 +359,7 @@ if ($usarFiltroFechas) {
                     </div>
                 </div>
                 
-                <!-- Estadísticas Generales -->
+                <!-- Estadí­sticas Generales -->
                 <div class="row g-3">
                     <?php if ($busqueda || $bloqueId || $minAusencias || $minVotaciones || $usarFiltroFechas): ?>
                     <div class="col-12">
@@ -341,7 +369,7 @@ if ($usarFiltroFechas) {
                                 <strong>Filtros Activos:</strong>
                                 <?php 
                                 $filtrosActivos = [];
-                                if ($busqueda) $filtrosActivos[] = "Búsqueda: '$busqueda'";
+                                if ($busqueda) $filtrosActivos[] = "Bíºsqueda: '$busqueda'";
                                 if ($bloqueId) {
                                     $bloqueNombre = '';
                                     foreach ($bloques as $b) {
@@ -354,7 +382,7 @@ if ($usarFiltroFechas) {
                                 }
                                 if ($minAusencias) $filtrosActivos[] = "Min. Ausencias: $minAusencias%";
                                 if ($minVotaciones) $filtrosActivos[] = "Min. Votaciones: $minVotaciones";
-                                if ($usarFiltroFechas) $filtrosActivos[] = "Período: $fecha_inicio a $fecha_fin";
+                                if ($usarFiltroFechas) $filtrosActivos[] = "Perí­odo: $fecha_inicio a $fecha_fin";
                                 echo implode(' | ', $filtrosActivos);
                                 ?>
                             </div>
@@ -416,7 +444,7 @@ if ($usarFiltroFechas) {
                 <div class="filters-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">
-                            <i class="bi bi-funnel me-2"></i>Filtros de Búsqueda
+                            <i class="bi bi-funnel me-2"></i>Filtros de Bíºsqueda
                         </h5>
                     </div>
                     
@@ -533,9 +561,15 @@ if ($usarFiltroFechas) {
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                    <i class="bi bi-person text-primary"></i>
-                                                </div>
+                                                <?php if (!empty($c['foto']) && file_exists('uploads/congresistas/' . $c['foto'])): ?>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#viewPhotoModal" class="text-decoration-none view-photo-btn" data-foto="uploads/congresistas/<?php echo htmlspecialchars($c['foto']); ?>" data-nombre="<?php echo htmlspecialchars($c['nombre']); ?>">
+                                                        <img src="uploads/congresistas/<?php echo htmlspecialchars($c['foto']); ?>" alt="Foto" class="rounded-circle me-3 border-primary shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--bs-primary); cursor: zoom-in; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                                                    </a>
+                                                <?php else: ?>
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; min-width: 40px;">
+                                                        <i class="bi bi-person text-primary fs-5"></i>
+                                                    </div>
+                                                <?php endif; ?>
                                                 <div>
                                                     <strong><?php echo htmlspecialchars($c['nombre']); ?></strong>
                                                 </div>
@@ -563,10 +597,18 @@ if ($usarFiltroFechas) {
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a href="estadisticas.php?congresista=<?php echo $c['id']; ?>" 
+                                                                                        <a href="estadisticas.php?congresista=<?php echo $c['id']; ?>" 
                                                class="btn btn-sm btn-outline-primary" data-tooltip="Ver estadísticas">
                                                 <i class="bi bi-bar-chart"></i>
                                             </a>
+                                            <?php if (esAdmin()): ?>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary ms-1" 
+                                                    data-bs-toggle="modal" data-bs-target="#uploadPhotoModal"
+                                                    data-id="<?php echo $c['id']; ?>" data-nombre="<?php echo htmlspecialchars($c['nombre']); ?>"
+                                                    title="Subir fotografía">
+                                                <i class="bi bi-camera"></i>
+                                            </button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -613,63 +655,7 @@ if ($usarFiltroFechas) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // JavaScript para menú móvil responsive
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuBtn = document.getElementById('mobileMenuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            
-            if (menuBtn && sidebar && overlay) {
-                // Abrir/cerrar menú
-                menuBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('show');
-                    overlay.classList.toggle('show');
-                    
-                    // Cambiar ícono
-                    const icon = this.querySelector('i');
-                    if (sidebar.classList.contains('show')) {
-                        icon.className = 'bi bi-x';
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        icon.className = 'bi bi-list';
-                        document.body.style.overflow = '';
-                    }
-                });
-                
-                // Cerrar al hacer clic en overlay
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('show');
-                    overlay.classList.remove('show');
-                    menuBtn.querySelector('i').className = 'bi bi-list';
-                    document.body.style.overflow = '';
-                });
-                
-                // Cerrar al hacer clic en un link
-                const navLinks = sidebar.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        if (window.innerWidth < 992) {
-                            sidebar.classList.remove('show');
-                            overlay.classList.remove('show');
-                            menuBtn.querySelector('i').className = 'bi bi-list';
-                            document.body.style.overflow = '';
-                        }
-                    });
-                });
-                
-                // Cerrar con ESC
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && sidebar.classList.contains('show')) {
-                        sidebar.classList.remove('show');
-                        overlay.classList.remove('show');
-                        menuBtn.querySelector('i').className = 'bi bi-list';
-                        document.body.style.overflow = '';
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="responsive.js"></script>
     <script>
         document.querySelectorAll('a:not([target="_blank"]):not([href^="#"])').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -683,5 +669,89 @@ if ($usarFiltroFechas) {
         });
         window.addEventListener('pageshow', function() { document.body.style.opacity = '1'; });
     </script>
+    <!-- Photo Upload Modal -->
+    <div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="uploadPhotoModalLabel">
+                        <i class="bi bi-camera me-2"></i>Actualizar Fotografía
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="congresistas.php" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="hidden" name="congresista_id" id="modalCongresistaId" value="">
+                        <input type="hidden" name="upload_foto" value="1">
+                        
+                        <p class="mb-3 text-muted">Seleccione una fotografía para <strong id="modalCongresistaNombre"></strong></p>
+                        
+                        <div class="mb-3">
+                            <label for="fotoInput" class="form-label fw-semibold">Archivo de Imagen (JPG, PNG)</label>
+                            <input class="form-control" type="file" id="fotoInput" name="foto" accept=".jpg,.jpeg,.png,.gif" required>
+                            <div class="form-text text-muted">Tamaño máximo recomendado: 2MB. Formato 1:1 (cuadrado) sugerido.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-cloud-upload me-2"></i>Subir Fotografía
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Photo View Modal -->
+    <div class="modal fade" id="viewPhotoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0px 0px 2px rgba(0,0,0,0.8));"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img id="viewedPhotoImg" src="" alt="Fotografía" class="img-fluid rounded shadow-lg" style="max-height: 80vh; border: 3px solid white;">
+                    <h5 id="viewedPhotoName" class="text-white mt-3" style="text-shadow: 1px 1px 3px rgba(0,0,0,0.8);"></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // View Photo logic
+            const viewButtons = document.querySelectorAll('.view-photo-btn');
+            const viewedImg = document.getElementById('viewedPhotoImg');
+            const viewedName = document.getElementById('viewedPhotoName');
+            
+            viewButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    viewedImg.src = this.getAttribute('data-foto');
+                    viewedName.textContent = this.getAttribute('data-nombre');
+                });
+            });
+            
+            // Upload Photo logic            const uploadModal = document.getElementById('uploadPhotoModal');
+            if (uploadModal) {
+                uploadModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    const nombre = button.getAttribute('data-nombre');
+                    
+                    document.getElementById('modalCongresistaId').value = id;
+                    document.getElementById('modalCongresistaNombre').textContent = nombre;
+                });
+            }
+        });
+    </script>
 </body>
 </html>
+
+
+
+
+
+
+
+

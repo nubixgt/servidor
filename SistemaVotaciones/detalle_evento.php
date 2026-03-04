@@ -145,21 +145,7 @@ $porcentajeContra = $evento['total_votos'] > 0 ? ($evento['votos_contra'] / $eve
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-2 sidebar" id="sidebar">
-                <div class="logo text-center">
-                    <img src="logo-congreso.jpg" alt="Congreso de Guatemala" style="max-width: 120px; height: auto; margin-bottom: 1rem;">
-                    <h5 class="mb-1">Congreso de la República</h5>
-                    <small class="text-muted d-block">Sistema de Votaciones</small>
-                </div>
-                <nav class="nav flex-column mt-4">
-                    <a class="nav-link" href="index.php"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                    <a class="nav-link active" href="eventos.php"><i class="bi bi-calendar-event"></i> Eventos</a>
-                    <a class="nav-link" href="congresistas.php"><i class="bi bi-people"></i> Congresistas</a>
-                    <a class="nav-link" href="bloques.php"><i class="bi bi-diagram-3"></i> Bloques</a>
-                    <a class="nav-link" href="estadisticas.php"><i class="bi bi-bar-chart"></i> Estadísticas</a>
-                    <a class="nav-link" href="cargar.php"><i class="bi bi-upload"></i> Cargar PDF</a>
-                </nav>
-            </div>
+            <?php include "sidebar.php"; ?>
             
             <div class="col-lg-10 main-content">
                 <div class="page-header">
