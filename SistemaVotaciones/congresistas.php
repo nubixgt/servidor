@@ -148,9 +148,7 @@ if ($usarFiltroFechas) {
     $totalPaginas = ceil($totalRegistros / $porPagina);
     
     // Obtener congresistas con paginación
-    $query = $queryBase . " ORDER BY $orderBy LIMIT ? OFFSET ?";
-    $params[] = $porPagina;
-    $params[] = $offset;
+    $query = $queryBase . " ORDER BY $orderBy LIMIT " . (int)$porPagina . " OFFSET " . (int)$offset;
     
     $stmt = $db->prepare($query);
     $stmt->execute($params);
@@ -252,13 +250,11 @@ if ($usarFiltroFechas) {
         LEFT JOIN vista_estadisticas_congresista vc ON c.id = vc.id
         WHERE $whereClause
         ORDER BY $orderBy
-        LIMIT ? OFFSET ?
+        LIMIT " . (int)$porPagina . " OFFSET " . (int)$offset . "
     ";
     
     $stmt = $db->prepare($query);
-    // Agregar parámetros de paginación
-    $paramsConPaginacion = array_merge($params, [$porPagina, $offset]);
-    $stmt->execute($paramsConPaginacion);
+    $stmt->execute($params);
     $congresistas = $stmt->fetchAll();
     
     // Estadí­sticas generales - Respetando filtros aplicados
@@ -732,7 +728,8 @@ if ($usarFiltroFechas) {
                 });
             });
             
-            // Upload Photo logic            const uploadModal = document.getElementById('uploadPhotoModal');
+            // Upload Photo logic
+            const uploadModal = document.getElementById('uploadPhotoModal');
             if (uploadModal) {
                 uploadModal.addEventListener('show.bs.modal', function (event) {
                     const button = event.relatedTarget;

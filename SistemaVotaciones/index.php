@@ -4,7 +4,7 @@ require_once 'auth.php';
 
 $db = getDB();
 
-// EstadÃ­sticas generales
+// Estadísticas generales
 $stmt = $db->query("SELECT COUNT(*) as total FROM eventos_votacion");
 $totalEventos = $stmt->fetch()['total'];
 
@@ -17,7 +17,7 @@ $totalBloques = $stmt->fetch()['total'];
 $stmt = $db->query("SELECT COUNT(*) as total FROM votos");
 $totalVotos = $stmt->fetch()['total'];
 
-// ÃšLTIMOS EVENTOS - CORREGIDO con nombres de columnas reales
+// ÚLTIMOS EVENTOS - CORREGIDO con nombres de columnas reales
 try {
     $stmt = $db->query("
         SELECT 
@@ -39,7 +39,7 @@ try {
     $ultimosEventos = $stmt->fetchAll();
 } catch (Exception $e) {
     $ultimosEventos = [];
-    error_log("Error obteniendo Ãºltimos eventos: " . $e->getMessage());
+    error_log("Error obteniendo últimos eventos: " . $e->getMessage());
 }
 
 // CONGRESISTAS CON MÃS AUSENCIAS - CORREGIDO
@@ -117,7 +117,7 @@ try {
         }
         .stat-card { transition: all 0.3s ease; }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); }
-            /* AnimaciÃ³n del Logo */
+            /* Animación del Logo */
         .logo img {
             animation: logoFloat 3s ease-in-out infinite;
             transition: transform 0.3s ease;
@@ -139,12 +139,12 @@ try {
 </style>
 </head>
 <body>
-    <!-- BotÃ³n MenÃº MÃ³vil -->
-    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" aria-label="Abrir menÃº">
+    <!-- Botón Menú Móvil -->
+    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn" aria-label="Abrir menú">
         <i class="bi bi-list"></i>
     </button>
 
-    <!-- Overlay para cerrar menÃº -->
+    <!-- Overlay para cerrar menú -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="container-fluid">
@@ -221,7 +221,7 @@ try {
                                     </div>
                                     <div class="text-end">
                                         <div class="stat-number"><?php echo number_format($totalBloques); ?></div>
-                                        <small class="text-muted">Bloques PolÃ­ticos</small>
+                                        <small class="text-muted">Bloques Políticos</small>
                                     </div>
                                 </div>
                             </div>
@@ -247,13 +247,13 @@ try {
                     </div>
                 </div>
 
-                <!-- Ãšltimos Eventos -->
+                <!-- Últimos Eventos -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Ãšltimos Eventos de VotaciÃ³n</h5>
+                                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Últimos Eventos de Votación</h5>
                                     <a href="eventos.php" class="btn btn-sm btn-outline-primary">Ver todos</a>
                                 </div>
                                 <div class="table-responsive">
@@ -261,8 +261,8 @@ try {
                                         <thead>
                                             <tr>
                                                 <th style="width: 80px;">Evento</th>
-                                                <th class="d-none d-md-table-cell" style="width: 80px;">SesiÃ³n</th>
-                                                <th>TÃ­tulo</th>
+                                                <th class="d-none d-md-table-cell" style="width: 80px;">Sesión</th>
+                                                <th>Título</th>
                                                 <th class="d-none d-lg-table-cell" style="width: 100px;">Fecha</th>
                                                 <th style="width: 70px;" class="text-center">Favor</th>
                                                 <th style="width: 70px;" class="text-center">Contra</th>
@@ -276,8 +276,8 @@ try {
                                                 <td colspan="8">
                                                     <div class="text-center py-4">
                                                         <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1;"></i>
-                                                        <p class="mt-3 mb-2 text-muted fs-5">No hay eventos registrados aÃºn</p>
-                                                        <p class="text-muted mb-3">Los eventos aparecerÃ¡n aquÃ­ despuÃ©s de cargar PDFs de votaciÃ³n</p>
+                                                        <p class="mt-3 mb-2 text-muted fs-5">No hay eventos registrados aún</p>
+                                                        <p class="text-muted mb-3">Los eventos aparecerán aquí después de cargar PDFs de votación</p>
                                                         <?php if (esAdmin()): ?>
                                                         <a href="cargar.php" class="btn btn-primary">
                                                             <i class="bi bi-upload me-2"></i>Cargar Primer Evento
@@ -297,7 +297,7 @@ try {
                                                 </td>
                                                 <td class="titulo-cell">
                                                     <div class="evento-titulo">
-                                                        <?php echo htmlspecialchars($evento['titulo'] ?? 'Sin tÃ­tulo'); ?>
+                                                        <?php echo htmlspecialchars($evento['titulo'] ?? 'Sin título'); ?>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -330,7 +330,7 @@ try {
                     </div>
                 </div>
 
-                <!-- EstadÃ­sticas RÃ¡pidas -->
+                <!-- Estadísticas Rápidas -->
                 <div class="row">
                     <!-- Top 10 Mayor Ausentismo -->
                     <div class="col-12 col-lg-6 mb-3">
@@ -340,14 +340,14 @@ try {
                                     <h5 class="mb-0">
                                         <i class="bi bi-person-x me-2"></i>Top 10 - Mayor Ausentismo
                                     </h5>
-                                    <a href="congresistas.php" class="btn btn-sm btn-outline-primary">Ver mÃ¡s</a>
+                                    <a href="congresistas.php" class="btn btn-sm btn-outline-primary">Ver más</a>
                                 </div>
                                 
                                 <?php if (empty($congresistasMasAusencias)): ?>
                                     <div class="text-center py-4">
                                         <i class="bi bi-inbox" style="font-size: 2.5rem; color: #cbd5e1;"></i>
                                         <p class="mt-3 mb-0 text-muted">No hay datos de ausentismo disponibles</p>
-                                        <small class="text-muted">Se mostrarÃ¡n despuÃ©s de registrar votaciones</small>
+                                        <small class="text-muted">Se mostrarán después de registrar votaciones</small>
                                     </div>
                                 <?php else: ?>
                                     <div class="table-responsive">
@@ -398,22 +398,22 @@ try {
                         </div>
                     </div>
                     
-                    <!-- Bloques MÃ¡s Activos -->
+                    <!-- Bloques Más Activos -->
                     <div class="col-12 col-lg-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h5 class="mb-0">
-                                        <i class="bi bi-diagram-3 me-2"></i>Bloques MÃ¡s Activos
+                                        <i class="bi bi-diagram-3 me-2"></i>Bloques Más Activos
                                     </h5>
-                                    <a href="bloques.php" class="btn btn-sm btn-outline-primary">Ver mÃ¡s</a>
+                                    <a href="bloques.php" class="btn btn-sm btn-outline-primary">Ver más</a>
                                 </div>
                                 
                                 <?php if (empty($bloquesActivos)): ?>
                                     <div class="text-center py-4">
                                         <i class="bi bi-inbox" style="font-size: 2.5rem; color: #cbd5e1;"></i>
                                         <p class="mt-3 mb-0 text-muted">No hay datos de bloques disponibles</p>
-                                        <small class="text-muted">Se mostrarÃ¡n despuÃ©s de registrar votaciones</small>
+                                        <small class="text-muted">Se mostrarán después de registrar votaciones</small>
                                     </div>
                                 <?php else: ?>
                                     <div class="table-responsive">
@@ -472,19 +472,19 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Script inline para menÃº mÃ³vil (mÃ¡s confiable)
+    // Script inline para menú móvil (más confiable)
     document.addEventListener('DOMContentLoaded', function() {
         const menuBtn = document.getElementById('mobileMenuBtn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         
         if (menuBtn && sidebar && overlay) {
-            // Abrir/cerrar menÃº
+            // Abrir/cerrar menú
             menuBtn.addEventListener('click', function() {
                 sidebar.classList.toggle('show');
                 overlay.classList.toggle('show');
                 
-                // Cambiar Ã­cono
+                // Cambiar ícono
                 const icon = this.querySelector('i');
                 if (sidebar.classList.contains('show')) {
                     icon.className = 'bi bi-x';
