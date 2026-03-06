@@ -1284,3 +1284,4 @@ Stack trace:
 [04-Mar-2026 14:02:32 America/Guatemala] PHP Warning:  Undefined variable $bloqueId in C:\xampp\htdocs\servidor\SistemaVotaciones\congresistas.php on line 467
 [04-Mar-2026 17:48:20 America/Guatemala] Error login: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'qjf40sgfb173hc7e9no3nrqdjs' for key 'session_id'
 [05-Mar-2026 16:06:12 America/Guatemala] Error login: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'h8356dkg1bvmm0amdg61hgkecp' for key 'session_id'
+[06-Mar-2026 15:59:31 America/Guatemala] Error login: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '7t6243f5q4mj6gra5cs32s311j' for key 'session_id'
