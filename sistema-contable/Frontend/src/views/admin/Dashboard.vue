@@ -373,12 +373,36 @@ onMounted(async () => {
     ]);
 
     const d = dashRes.data.data;
+
+    // Calculate month-over-month change from monthlyData
+    const monthly = d.monthlyData ?? [];
+    const calcPct = (curr, prev) => {
+      if (!prev || prev === 0) return curr > 0 ? '+100%' : '0%';
+      const pct = ((curr - prev) / prev * 100).toFixed(1);
+      return (pct >= 0 ? '+' : '') + pct + '%';
+    };
+
+    const currMonth = monthly.length > 0 ? monthly[monthly.length - 1] : null;
+    const prevMonth = monthly.length > 1 ? monthly[monthly.length - 2] : null;
+
+    const currIng = parseFloat(currMonth?.ingresos ?? 0);
+    const prevIng = parseFloat(prevMonth?.ingresos ?? 0);
+    const currEgr = parseFloat(currMonth?.egresos ?? 0);
+    const prevEgr = parseFloat(prevMonth?.egresos ?? 0);
+    const currBal = currIng - currEgr;
+    const prevBal = prevIng - prevEgr;
+
+    const ingPct  = calcPct(currIng, prevIng);
+    const egrPct  = calcPct(currEgr, prevEgr);
+    const balPct  = calcPct(currBal, prevBal);
+
     kpis.value = [
-      { title: 'Ingresos Totales', value: `GTQ ${parseFloat(d.kpis.total_ingresos).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: '+0%', isPositive: true, icon: ArrowTrendingUpIcon },
-      { title: 'Egresos Totales', value: `GTQ ${parseFloat(d.kpis.total_egresos).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: '-0%', isPositive: false, icon: BuildingOffice2Icon },
-      { title: 'Balance Neto', value: `GTQ ${parseFloat(d.kpis.balance_neto).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: '0%', isPositive: true, icon: MapPinIcon },
-      { title: 'Alertas', value: String(d.alerts.length), change: '+0', isPositive: false, icon: ExclamationCircleIcon },
+      { title: 'Ingresos Totales', value: `GTQ ${parseFloat(d.kpis.total_ingresos).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: ingPct, isPositive: !ingPct.startsWith('-'), icon: ArrowTrendingUpIcon },
+      { title: 'Egresos Totales', value: `GTQ ${parseFloat(d.kpis.total_egresos).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: egrPct, isPositive: egrPct.startsWith('-'), icon: BuildingOffice2Icon },
+      { title: 'Balance Neto', value: `GTQ ${parseFloat(d.kpis.balance_neto).toLocaleString('es-GT', {minimumFractionDigits:2})}`, change: balPct, isPositive: !balPct.startsWith('-'), icon: MapPinIcon },
+      { title: 'Alertas', value: String(d.alerts.length), change: `${d.alerts.length} activas`, isPositive: d.alerts.length === 0, icon: ExclamationCircleIcon },
     ];
+
     pendingLeases.value = d.alerts;
     allTransactions.value = trxRes.data.data;
     locations.value = locsRes.data.data;
