@@ -159,6 +159,68 @@ class AdminController extends Controller
         $this->json(['status' => 'success', 'data' => $data]);
     }
 
+    #[Route('/users', 'POST')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('manage_users')]
+    public function createUser()
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        
+        try {
+            $id = $this->service->createUser($data);
+            $this->json(['status' => 'success', 'message' => 'Usuario creado exitosamente', 'id' => $id], 201);
+        } catch (\PDOException $e) {
+            if ($e->getCode() == 23000) {
+                // Posible duplicación de llaves, e.g., username o email unique
+                $this->json(['error' => 'El nombre de usuario o correo electrónico ya existe.'], 400);
+            } else {
+                $this->json(['error' => 'Ocurrió un error en la base de datos al crear el usuario.'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/users/{id}', 'PUT')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('manage_users')]
+    public function updateUser($id)
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        try {
+            $this->service->updateUser($id, $data);
+            $this->json(['status' => 'success', 'message' => 'Usuario actualizado correctamente'], 200);
+        } catch (\PDOException $e) {
+            if ($e->getCode() == 23000) {
+                $this->json(['error' => 'El nombre de usuario o correo electrónico ya existe en oro registro.'], 400);
+            } else {
+                $this->json(['error' => 'Ocurrió un error en la base de datos al actualizar el usuario.'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/users/{id}', 'DELETE')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('manage_users')]
+    public function deleteUser($id)
+    {
+        try {
+            $this->service->deleteUser($id);
+            $this->json(['status' => 'success', 'message' => 'Usuario eliminado permanentemente'], 200);
+        } catch (\PDOException $e) {
+            if ($e->getCode() == 23000) {
+                $this->json(['error' => 'No se puede eliminar el usuario porque ha registrado transacciones o activos. Por favor interviene cambiando su Estado a "Inactivo" en la edición.'], 400);
+            } else {
+                $this->json(['error' => 'Ocurrió un error en la base de datos al eliminar.'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
     #[Route('/transactions', 'POST')]
     #[Authorize(['admin'])]
     #[HasPrivilege('create_financial_transaction')]

@@ -26,6 +26,9 @@ class AuthService
             throw new \Exception("Credenciales inválidas");
         }
 
+        // Registrar tiempo de último acceso
+        $this->userRepo->updateLastLogin($user['id']);
+
         // Fetch DB Privileges mapped to the Role
         $privileges = $this->userRepo->getPrivilegesByRole($user['role']);
 

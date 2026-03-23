@@ -80,4 +80,26 @@ class AdminService
     {
         return $this->locationRepo->findById($id);
     }
+
+    // --- USERS ---
+
+    public function createUser($data)
+    {
+        return $this->userRepo->create($data);
+    }
+    
+    public function updateUser($id, $data)
+    {
+        return $this->userRepo->update($id, $data);
+    }
+    
+    public function deleteUser($id)
+    {
+        return $this->userRepo->delete($id);
+    }
+
+    public function getUserById($id)
+    {
+        return $this->userRepo->findById($id);
+    }
 }
