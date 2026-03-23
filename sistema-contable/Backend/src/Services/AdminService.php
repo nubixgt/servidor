@@ -60,4 +60,24 @@ class AdminService
         $data['created_by'] = $userId;
         return $this->transactionRepo->create($data);
     }
+
+    public function createLocation($data)
+    {
+        return $this->locationRepo->create($data);
+    }
+    
+    public function updateLocation($id, $data)
+    {
+        return $this->locationRepo->update($id, $data);
+    }
+    
+    public function deleteLocation($id)
+    {
+        return $this->locationRepo->delete($id);
+    }
+
+    public function getLocationById($id)
+    {
+        return $this->locationRepo->findById($id);
+    }
 }

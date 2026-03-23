@@ -1,9 +1,9 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'visionwe_SistemaContable',
-    'username' => 'visionwe',
-    'password' => 'Guate25#',
+    'dbname' => 'sistemacontable',
+    'username' => 'root',
+    'password' => '',
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

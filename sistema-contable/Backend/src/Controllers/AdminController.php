@@ -43,6 +43,104 @@ class AdminController extends Controller
         $this->json(['status' => 'success', 'data' => $data]);
     }
 
+    #[Route('/locations', 'POST')]
+    #[Authorize(['admin', 'tech'])]
+    #[HasPrivilege('view_locations')]
+    public function createLocation()
+    {
+        // Using $_POST because we will receive multipart/form-data for file uploads
+        $data = $_POST;
+        
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../uploads/locations/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $filename = uniqid() . '_' . basename($_FILES['photo']['name']);
+            $destination = $uploadDir . $filename;
+            
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+                $data['photo_path'] = '/uploads/locations/' . $filename;
+            }
+        }
+
+        try {
+            $id = $this->service->createLocation($data);
+            $this->json(['status' => 'success', 'message' => 'Propiedad creada', 'id' => $id], 201);
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/locations/{id}', 'POST')]
+    #[Authorize(['admin', 'tech'])]
+    #[HasPrivilege('view_locations')]
+    public function updateLocation($id)
+    {
+        $data = $_POST;
+        $location = $this->service->getLocationById($id);
+        
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            // Delete old photo if it exists
+            if ($location && !empty($location['photo_path'])) {
+                $oldFile = __DIR__ . '/../../' . ltrim($location['photo_path'], '/');
+                if (file_exists($oldFile) && is_file($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+            
+            $uploadDir = __DIR__ . '/../../uploads/locations/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $filename = uniqid() . '_' . basename($_FILES['photo']['name']);
+            $destination = $uploadDir . $filename;
+            
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+                $data['photo_path'] = '/uploads/locations/' . $filename;
+            }
+        }
+
+        try {
+            $this->service->updateLocation($id, $data);
+            $this->json(['status' => 'success', 'message' => 'Propiedad actualizada'], 200);
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/locations/{id}', 'DELETE')]
+    #[Authorize(['admin', 'tech'])]
+    #[HasPrivilege('view_locations')]
+    public function deleteLocation($id)
+    {
+        try {
+            $location = $this->service->getLocationById($id);
+            $this->service->deleteLocation($id);
+            
+            // Si la eliminación en base de datos es exitosa, removemos el archivo físico
+            if ($location && !empty($location['photo_path'])) {
+                $oldFile = __DIR__ . '/../../' . ltrim($location['photo_path'], '/');
+                if (file_exists($oldFile) && is_file($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+
+            $this->json(['status' => 'success', 'message' => 'Propiedad eliminada'], 200);
+        } catch (\PDOException $e) {
+            // Usually error code 23000 indicates a foreign key constraint failure
+            if ($e->getCode() == 23000) {
+                $this->json(['error' => 'No se puede eliminar la propiedad porque tiene transacciones o activos enlazados.'], 400);
+            } else {
+                $this->json(['error' => 'Ocurrió un error en la base de datos al eliminar.'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
     #[Route('/reports', 'GET')]
     #[Authorize(['admin'])]
     #[HasPrivilege('view_reports')]
