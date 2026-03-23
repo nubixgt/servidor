@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /sistema-contable/
+
+  # 1. Allow Backend API to work normally
+  RewriteRule ^Backend/ - [L]
+
+  # 2. Prevent rewrite loops
+  RewriteRule ^Frontend/dist/ - [L]
+
+  # 3. Route specific Vue assets and files to the compiled folder
+  RewriteRule ^assets/(.*)$ Frontend/dist/assets/$1 [L]
+  RewriteRule ^([^/]+\.(png|jpg|jpeg|gif|ico|svg|json|txt|woff|woff2|ttf|eot))$ Frontend/dist/$1 [L]
+
+  # 4. Route all Vue history paths (/, /login, /admin, etc.) to index.html
+  RewriteRule ^(.*)$ Frontend/dist/index.html [L]
+</IfModule>
