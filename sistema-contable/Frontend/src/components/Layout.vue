@@ -23,16 +23,15 @@
           v-for="link in links"
           :key="link.to"
           :to="link.to"
-          :exact="link.to === '/admin' || link.to === '/tech'"
           @click="isMobileMenuOpen = false"
-          v-slot="{ isActive, href, navigate }"
+          v-slot="{ href, navigate }"
         >
           <a
             :href="href"
             @click="navigate"
             :class="[
               'flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group',
-              isActive || (link.to !== '/admin' && link.to !== '/tech' && $route.path.startsWith(link.to))
+              isLinkActive(link.to)
                 ? 'bg-[var(--color-primary-fixed)] text-[var(--color-on-primary-fixed)] font-medium shadow-sm surface-shift-active'
                 : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
             ]"
@@ -41,7 +40,7 @@
               :is="link.icon" 
               :class="[
                 'w-5 h-5 transition-colors',
-                isActive || (link.to !== '/admin' && link.to !== '/tech' && $route.path.startsWith(link.to)) 
+                isLinkActive(link.to)
                   ? 'text-[var(--color-primary)]' 
                   : 'text-outline group-hover:text-on-surface'
               ]" 
@@ -163,4 +162,12 @@ const techLinks = [
 ];
 
 const links = computed(() => user.value.role === 'admin' ? adminLinks : techLinks);
+
+// Dashboard (/admin or /tech) must match exactly; all other links use startsWith
+const isLinkActive = (to) => {
+  if (to === '/admin' || to === '/tech') {
+    return route.path === to;
+  }
+  return route.path.startsWith(to);
+};
 </script>

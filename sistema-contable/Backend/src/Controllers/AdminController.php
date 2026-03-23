@@ -256,4 +256,86 @@ class AdminController extends Controller
             $this->json(['error' => $e->getMessage()], 400);
         }
     }
+
+    #[Route('/transactions', 'GET')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('view_dashboard_admin')]
+    public function getTransactions()
+    {
+        $data = $this->service->getAllTransactions();
+        $this->json(['status' => 'success', 'data' => $data]);
+    }
+
+    #[Route('/transactions/{id}', 'GET')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('view_dashboard_admin')]
+    public function getTransaction($id)
+    {
+        $data = $this->service->getTransactionById($id);
+        if (!$data) {
+            $this->json(['error' => 'Transacción no encontrada'], 404);
+            return;
+        }
+        $this->json(['status' => 'success', 'data' => $data]);
+    }
+
+    #[Route('/transactions/{id}', 'PUT')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('view_dashboard_admin')]
+    public function updateTransaction($id)
+    {
+        // Supports both JSON (for status-only updates) and multipart (for full edit with receipt)
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (str_contains($contentType, 'multipart/form-data')) {
+            $data = $_POST;
+        } else {
+            $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        }
+
+        // Handle new receipt upload
+        if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
+            // Delete old receipt if exists
+            $existing = $this->service->getTransactionById($id);
+            if ($existing && !empty($existing['receipt_path'])) {
+                $oldFile = __DIR__ . '/../../' . ltrim($existing['receipt_path'], '/');
+                if (file_exists($oldFile) && is_file($oldFile)) unlink($oldFile);
+            }
+
+            $uploadDir = __DIR__ . '/../../uploads/transactions/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+            $filename = uniqid() . '_' . basename($_FILES['receipt']['name']);
+            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $uploadDir . $filename)) {
+                $data['receipt_path'] = '/uploads/transactions/' . $filename;
+            }
+        }
+
+        try {
+            $this->service->updateTransaction($id, $data);
+            $this->json(['status' => 'success', 'message' => 'Transacción actualizada']);
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/transactions/{id}', 'DELETE')]
+    #[Authorize(['admin'])]
+    #[HasPrivilege('view_dashboard_admin')]
+    public function deleteTransaction($id)
+    {
+        $trx = $this->service->getTransactionById($id);
+
+        // Delete associated receipt file
+        if ($trx && !empty($trx['receipt_path'])) {
+            $file = __DIR__ . '/../../' . ltrim($trx['receipt_path'], '/');
+            if (file_exists($file) && is_file($file)) unlink($file);
+        }
+
+        try {
+            $this->service->deleteTransaction($id);
+            $this->json(['status' => 'success', 'message' => 'Transacción eliminada']);
+        } catch (\Exception $e) {
+            $this->json(['error' => $e->getMessage()], 400);
+        }
+    }
 }

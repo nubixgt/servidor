@@ -21,21 +21,49 @@ class AdminService
     public function getDashboardData()
     {
         $kpis = $this->transactionRepo->getKPIs();
-        $recentTransactions = $this->transactionRepo->findRecent(5);
-        
-        // Mocking alerts for the dashboard based on the frontend
-        $alerts = [
-            ['id' => 1, 'message' => 'Contrato Local L-01 por vencer en 15 días', 'type' => 'warning'],
-            ['id' => 2, 'message' => '5 ingresos pendientes de revisión', 'type' => 'info']
-        ];
+        $monthlyData = $this->transactionRepo->getMonthlyData(6);
+
+        $alerts = [];
+
+        // Alert 1: Pending transactions
+        $pendingCount = $this->transactionRepo->countByStatus('Pendiente');
+        if ($pendingCount > 0) {
+            $alerts[] = [
+                'id' => 1,
+                'message' => "$pendingCount transacci" . ($pendingCount === 1 ? "ón pendiente" : "ones pendientes") . " de aprobación",
+                'type' => 'warning'
+            ];
+        }
+
+        // Alert 2: Egresos > 80% of Ingresos this month
+        $ingresos = floatval($kpis['total_ingresos'] ?? 0);
+        $egresos = floatval($kpis['total_egresos'] ?? 0);
+        if ($ingresos > 0 && $egresos > 0 && ($egresos / $ingresos) >= 0.8) {
+            $pct = round(($egresos / $ingresos) * 100);
+            $alerts[] = [
+                'id' => 2,
+                'message' => "Los egresos representan el {$pct}% de los ingresos totales",
+                'type' => 'warning'
+            ];
+        }
+
+        // Alert 3: Locations with no transactions this month
+        $inactiveCount = $this->transactionRepo->countLocationsWithoutTransactionsThisMonth();
+        if ($inactiveCount > 0) {
+            $alerts[] = [
+                'id' => 3,
+                'message' => "$inactiveCount locaci" . ($inactiveCount === 1 ? "ón sin" : "ones sin") . " transacciones este mes",
+                'type' => 'info'
+            ];
+        }
 
         return [
             'kpis' => [
                 'total_ingresos' => $kpis['total_ingresos'] ?? 0,
-                'total_egresos' => $kpis['total_egresos'] ?? 0,
-                'balance_neto' => ($kpis['total_ingresos'] ?? 0) - ($kpis['total_egresos'] ?? 0)
+                'total_egresos'  => $kpis['total_egresos'] ?? 0,
+                'balance_neto'   => ($kpis['total_ingresos'] ?? 0) - ($kpis['total_egresos'] ?? 0)
             ],
-            'recentTransactions' => $recentTransactions,
+            'monthlyData' => $monthlyData,
             'alerts' => $alerts
         ];
     }
@@ -59,6 +87,26 @@ class AdminService
     {
         $data['created_by'] = $userId;
         return $this->transactionRepo->create($data);
+    }
+
+    public function getAllTransactions()
+    {
+        return $this->transactionRepo->findAll();
+    }
+
+    public function getTransactionById($id)
+    {
+        return $this->transactionRepo->findById($id);
+    }
+
+    public function updateTransaction($id, $data)
+    {
+        return $this->transactionRepo->update($id, $data);
+    }
+
+    public function deleteTransaction($id)
+    {
+        return $this->transactionRepo->delete($id);
     }
 
     public function createLocation($data)
