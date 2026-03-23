@@ -71,20 +71,9 @@
             </label>
             <select v-model="form.location_id" class="w-full px-4 py-3 bg-[var(--color-surface-container-low)] border border-outline-variant/30 rounded-xl text-on-surface focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 transition-all appearance-none" required>
               <option value="">Selecciona una locación...</option>
-              <optgroup label="Heladerías">
-                <option value="H-01">Heladería CC Pradera</option>
-                <option value="H-02">Heladería Gasolinera Texaco</option>
-                <option value="H-03">Heladería Tecpán</option>
-              </optgroup>
-              <optgroup label="Casas en Arrendamiento">
-                <option value="A-01">Casa en Arrendamiento 1</option>
-                <option value="A-02">Casa en Arrendamiento 2</option>
-                <option value="A-03">Casa en Arrendamiento 3</option>
-              </optgroup>
-              <optgroup label="Propiedad Comercial">
-                <option value="L-01">Local L-01</option>
-                <option value="B-01">Bodega B-01</option>
-              </optgroup>
+              <option v-for="loc in locations" :key="loc.id" :value="loc.id">
+                {{ loc.name || loc.code }} ({{ loc.type }})
+              </option>
             </select>
           </div>
 
@@ -143,12 +132,19 @@
             <label class="text-sm font-medium text-on-surface-variant flex items-center gap-2">
               <DocumentTextIcon class="w-4 h-4 text-outline" /> Comprobante (Imagen o PDF)
             </label>
-            <div class="border-2 border-dashed border-outline-variant/50 rounded-xl p-8 text-center hover:bg-[var(--color-surface-container-low)] transition-colors cursor-pointer group">
+            <div 
+              class="border-2 border-dashed border-outline-variant/50 rounded-xl p-8 text-center hover:bg-[var(--color-surface-container-low)] transition-colors cursor-pointer group"
+              @click="$refs.receiptInput.click()"
+            >
+              <input ref="receiptInput" type="file" accept="image/*,.pdf" class="hidden" @change="handleReceiptChange" />
               <div class="w-12 h-12 bg-[var(--color-surface-container)] rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-[var(--color-primary-fixed)] transition-colors">
                 <CloudArrowUpIcon class="w-6 h-6 text-outline group-hover:text-[var(--color-on-primary-fixed)] transition-colors" />
               </div>
-              <p class="text-sm font-medium text-on-surface">Haz clic para subir o arrastra el archivo aquí</p>
-              <p class="text-xs text-outline mt-1">PNG, JPG o PDF (Máx. 5MB)</p>
+              <p v-if="receiptFile" class="text-sm font-medium text-[var(--color-primary)]">{{ receiptFile.name }}</p>
+              <template v-else>
+                <p class="text-sm font-medium text-on-surface">Haz clic para subir o arrastra el archivo aquí</p>
+                <p class="text-xs text-outline mt-1">PNG, JPG o PDF (Máx. 5MB)</p>
+              </template>
             </div>
           </div>
         </div>
@@ -167,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import api from '../../services/api';
@@ -187,25 +183,52 @@ import {
 const router = useRouter();
 const type = ref('ingreso');
 const isLoading = ref(false);
+const locations = ref([]);
+const receiptFile = ref(null);
 
 const form = ref({
   amount: '',
-  transaction_date: '',
+  transaction_date: new Date().toISOString().split('T')[0],
   location_id: '',
   category: '',
   provider: '',
   description: ''
 });
 
+onMounted(async () => {
+  try {
+    const res = await api.get('/locations');
+    locations.value = res.data.data;
+  } catch (err) {
+    console.error('Error cargando locaciones:', err);
+  }
+});
+
+const handleReceiptChange = (e) => {
+  const file = e.target.files[0];
+  if (file) receiptFile.value = file;
+};
+
 const handleSubmit = async () => {
   isLoading.value = true;
   try {
-    const payload = { ...form.value, type: type.value };
-    if (type.value === 'ingreso') {
-      delete payload.provider;
+    const formData = new FormData();
+    formData.append('type', type.value);
+    formData.append('amount', form.value.amount);
+    formData.append('transaction_date', form.value.transaction_date);
+    formData.append('location_id', form.value.location_id);
+    formData.append('category', form.value.category);
+    formData.append('description', form.value.description);
+    if (type.value === 'egreso' && form.value.provider) {
+      formData.append('provider', form.value.provider);
     }
-    
-    await api.post('/transactions', payload);
+    if (receiptFile.value) {
+      formData.append('receipt', receiptFile.value);
+    }
+
+    await api.post('/transactions', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     
     Swal.fire({
       icon: 'success',
@@ -214,7 +237,8 @@ const handleSubmit = async () => {
       confirmButtonColor: 'var(--color-primary)'
     });
     
-    form.value = { amount: '', transaction_date: '', location_id: '', category: '', provider: '', description: '' };
+    form.value = { amount: '', transaction_date: new Date().toISOString().split('T')[0], location_id: '', category: '', provider: '', description: '' };
+    receiptFile.value = null;
     router.push('/admin');
   } catch (error) {
     Swal.fire({
