@@ -226,16 +226,32 @@ class AdminController extends Controller
     #[HasPrivilege('create_financial_transaction')]
     public function createTransaction()
     {
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        // Use $_POST because we receive multipart/form-data (supports file upload)
+        $data = $_POST;
         $userId = $this->getUserId();
 
         if (!$userId) {
             $this->json(['error' => 'No autorizado'], 401);
+            return;
+        }
+
+        if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../uploads/transactions/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $filename = uniqid() . '_' . basename($_FILES['receipt']['name']);
+            $destination = $uploadDir . $filename;
+
+            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $destination)) {
+                $data['receipt_path'] = '/uploads/transactions/' . $filename;
+            }
         }
 
         try {
             $id = $this->service->createTransaction($data, $userId);
-            $this->json(['status' => 'success', 'message' => 'Transacción creada', 'id' => $id], 201);
+            $this->json(['status' => 'success', 'message' => 'Transacción registrada', 'id' => $id], 201);
         } catch (\Exception $e) {
             $this->json(['error' => $e->getMessage()], 400);
         }
