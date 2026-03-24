@@ -38,6 +38,7 @@ class AuthService
             'username' => $user['username'],
             'role' => $user['role'],
             'name' => $user['name'],
+            'location_id' => $user['location_id'],
             'privileges' => $privileges,
             'exp' => time() + (60 * 60 * 24) // 1 day
         ];
@@ -50,6 +51,7 @@ class AuthService
                 'name' => $user['name'],
                 'email' => $user['email'],
                 'role' => $user['role'],
+                'location_id' => $user['location_id'],
                 'status' => $user['status']
             ]
         ];

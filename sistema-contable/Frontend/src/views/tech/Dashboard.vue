@@ -17,7 +17,7 @@
             <ArrowDownTrayIcon class="w-8 h-8" />
           </div>
           <h2 class="text-2xl font-bold text-on-surface mb-2">Registrar Ingreso</h2>
-          <p class="text-on-surface-variant mb-6">Añade nuevos activos o registra devoluciones al inventario.</p>
+          <p class="text-on-surface-variant mb-6">Añade nuevos fondos o ingresos al sistema.</p>
           <div class="flex items-center text-[var(--color-secondary)] font-semibold group-hover:gap-2 transition-all">
             Comenzar <ChevronRightIcon class="w-5 h-5 ml-1" />
           </div>
@@ -34,7 +34,7 @@
             <ArrowUpTrayIcon class="w-8 h-8" />
           </div>
           <h2 class="text-2xl font-bold text-on-surface mb-2">Registrar Egreso</h2>
-          <p class="text-on-surface-variant mb-6">Asigna activos a personal o registra salidas para mantenimiento.</p>
+          <p class="text-on-surface-variant mb-6">Registra gastos, pagos u otras salidas de dinero.</p>
           <div class="flex items-center text-[var(--color-error)] font-semibold group-hover:gap-2 transition-all">
             Comenzar <ChevronRightIcon class="w-5 h-5 ml-1" />
           </div>
@@ -67,16 +67,16 @@
           <div class="flex items-start sm:items-center gap-4">
             <div :class="[
               'w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm',
-              activity.type === 'Ingreso' ? 'bg-[var(--color-secondary-container)] text-[var(--color-on-secondary-container)]' : 'bg-[var(--color-error-container)] text-[var(--color-on-error-container)]'
+              activity.type === 'ingreso' ? 'bg-[var(--color-secondary-container)] text-[var(--color-on-secondary-container)]' : 'bg-[var(--color-error-container)] text-[var(--color-on-error-container)]'
             ]">
-              <CubeIcon class="w-5 h-5" />
+              <component :is="activity.type === 'ingreso' ? ArrowDownTrayIcon : ArrowUpTrayIcon" class="w-5 h-5" />
             </div>
             <div>
               <div class="flex items-center gap-2 mb-1">
                 <span class="font-bold text-on-surface text-lg">{{ activity.asset }}</span>
                 <span :class="[
                   'px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
-                  activity.type === 'Ingreso' ? 'bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]' : 'bg-[var(--color-error)]/10 text-[var(--color-error)]'
+                  activity.type === 'ingreso' ? 'bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]' : 'bg-[var(--color-error)]/10 text-[var(--color-error)]'
                 ]">
                   {{ activity.type }}
                 </span>
@@ -140,7 +140,7 @@ onMounted(async () => {
     const res = await api.get('/tech/dashboard');
     recentActivity.value = res.data.data.recentActivity.map(act => ({
       ...act,
-      asset: act.asset_name,
+      asset: `GTQ ${act.amount} - ${act.category}`,
       location: act.location_name,
       time: act.transaction_date,
       status: act.status || 'Completado' 
