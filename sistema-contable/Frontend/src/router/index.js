@@ -15,6 +15,8 @@ import AdminReports from '../views/admin/Reports.vue';
 
 // Tech Views
 import TechDashboard from '../views/tech/Dashboard.vue';
+import TechNewTransaction from '../views/tech/NewTransaction.vue';
+import TechHistory from '../views/tech/History.vue';
 
 const routes = [
     {
@@ -38,10 +40,10 @@ const routes = [
         component: Layout,
         children: [
             { path: '', name: 'TechDashboard', component: TechDashboard },
-            // Placeholder routes for tech
-            { path: 'history', name: 'TechHistory', component: () => import('../views/Placeholder.vue') },
-            { path: 'new-ingreso', name: 'TechNewIngreso', component: () => import('../views/Placeholder.vue') },
-            { path: 'new-egreso', name: 'TechNewEgreso', component: () => import('../views/Placeholder.vue') },
+            // Tech explicit routes
+            { path: 'history', name: 'TechHistory', component: TechHistory },
+            { path: 'new-ingreso', name: 'TechNewIngreso', component: TechNewTransaction },
+            { path: 'new-egreso', name: 'TechNewEgreso', component: TechNewTransaction },
         ]
     },
     { path: '/:pathMatch(.*)*', redirect: '/login' }

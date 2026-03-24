@@ -1,21 +1,21 @@
 <?php
 namespace App\Services;
 
-use App\Repositories\AssetRepository;
+use App\Repositories\TransactionRepository;
 
 class TechService
 {
-    private $assetRepo;
+    private $transactionRepo;
 
     public function __construct()
     {
-        $this->assetRepo = new AssetRepository();
+        $this->transactionRepo = new TransactionRepository();
     }
 
-    public function getDashboardData()
+    public function getDashboardData($userId)
     {
-        $recentActivity = $this->assetRepo->findRecentActivity(10);
-        $assets = $this->assetRepo->findAllAssets();
+        $recentActivity = $this->transactionRepo->findRecentByUser(10, $userId);
+        $assets = [];
 
         return [
             'recentActivity' => $recentActivity,
@@ -23,9 +23,14 @@ class TechService
         ];
     }
 
-    public function createAssetTransaction($data, $userId)
+    public function getHistoryData($userId)
     {
-        $data['created_by'] = $userId;
-        return $this->assetRepo->createTransaction($data);
+        $transactions = $this->transactionRepo->findAllByUser($userId);
+        $kpis = $this->transactionRepo->getTechKPIs($userId);
+        
+        return [
+            'transactions' => $transactions,
+            'kpis' => $kpis
+        ];
     }
 }

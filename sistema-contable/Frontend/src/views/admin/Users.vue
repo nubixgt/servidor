@@ -174,6 +174,16 @@
                   </select>
                 </div>
             </div>
+
+            <div v-if="newUser.role === 'tech'">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Locación Asignada <span class="text-red-500">*</span></label>
+              <select v-model="newUser.location_id" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] transition-all cursor-pointer">
+                <option value="">Selecciona una locación...</option>
+                <option v-for="loc in locations" :key="loc.id" :value="loc.id">
+                  {{ loc.name || loc.code }} ({{ loc.type }})
+                </option>
+              </select>
+            </div>
             
           </div>
 
@@ -211,6 +221,7 @@ const searchTerm = ref('');
 const selectedRole = ref('Todos');
 const selectedStatus = ref('Todos');
 const initialUsers = ref([]);
+const locations = ref([]);
 
 const isModalOpen = ref(false);
 const submitting = ref(false);
@@ -222,8 +233,18 @@ const newUser = ref({
   email: '',
   password: '',
   role: 'admin',
+  location_id: '',
   status: 'Activo'
 });
+
+const fetchLocations = async () => {
+  try {
+    const res = await api.get('/locations');
+    locations.value = res.data.data;
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+  }
+};
 
 const fetchUsers = async () => {
   try {
@@ -244,11 +265,12 @@ const fetchUsers = async () => {
 };
 
 onMounted(() => {
+  fetchLocations();
   fetchUsers();
 });
 
 const openModal = () => {
-  newUser.value = { id: null, name: '', username: '', email: '', password: '', role: 'admin', status: 'Activo' };
+  newUser.value = { id: null, name: '', username: '', email: '', password: '', role: 'admin', location_id: '', status: 'Activo' };
   isModalOpen.value = true;
 };
 
@@ -260,6 +282,7 @@ const editUser = (user) => {
     email: user.email,
     password: '',
     role: user.role === 'Administrador' ? 'admin' : 'tech',
+    location_id: user.location_id || '',
     status: user.status
   };
   isModalOpen.value = true;
@@ -289,6 +312,7 @@ const saveUser = async () => {
       username: newUser.value.username,
       email: newUser.value.email,
       role: newUser.value.role,
+      location_id: newUser.value.role === 'tech' ? newUser.value.location_id : null,
       status: newUser.value.status
     };
     

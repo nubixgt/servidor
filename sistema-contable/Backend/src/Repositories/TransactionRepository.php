@@ -103,6 +103,24 @@ class TransactionRepository
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function findRecentByUser($limit = 5, $userId)
+    {
+        $query = "
+            SELECT t.*, l.name as location_name, u.name as user_name 
+            FROM financial_transactions t
+            JOIN locations l ON t.location_id = l.id
+            JOIN users u ON t.created_by = u.id
+            WHERE t.created_by = :user_id
+            ORDER BY t.created_at DESC LIMIT :limit
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', (int)$userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     public function findAll()
     {
@@ -115,6 +133,36 @@ class TransactionRepository
         ";
         $stmt = $this->db->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findAllByUser($userId)
+    {
+        $query = "
+            SELECT t.*, l.name as location_name, u.name as user_name 
+            FROM financial_transactions t
+            JOIN locations l ON t.location_id = l.id
+            JOIN users u ON t.created_by = u.id
+            WHERE t.created_by = :user_id
+            ORDER BY t.transaction_date DESC, t.created_at DESC
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':user_id', (int)$userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function getTechKPIs($userId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                SUM(CASE WHEN type = 'ingreso' AND status = 'Aprobado' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as ingresos_mes,
+                SUM(CASE WHEN type = 'egreso' AND status = 'Aprobado' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as egresos_mes,
+                COUNT(id) as total_transacciones
+            FROM financial_transactions
+            WHERE created_by = :user_id AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE())
+        ");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function countByStatus($status)

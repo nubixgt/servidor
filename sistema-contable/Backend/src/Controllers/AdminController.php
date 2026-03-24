@@ -222,16 +222,30 @@ class AdminController extends Controller
     }
 
     #[Route('/transactions', 'POST')]
-    #[Authorize(['admin'])]
+    #[Authorize(['admin', 'tech'])]
     #[HasPrivilege('create_financial_transaction')]
     public function createTransaction()
     {
         // Use $_POST because we receive multipart/form-data (supports file upload)
         $data = $_POST;
         $userId = $this->getUserId();
+        
+        $headers = getallheaders();
+        $token = str_replace('Bearer ', '', $headers['Authorization'] ?? '');
+        $payload = JwtUtils::validate($token);
 
         if (!$userId) {
             $this->json(['error' => 'No autorizado'], 401);
+            return;
+        }
+
+        // If location is missing and user is tech, use their assigned location
+        if (empty($data['location_id']) && $payload && $payload['role'] === 'tech') {
+            $data['location_id'] = $payload['location_id'];
+        }
+
+        if (empty($data['location_id'])) {
+            $this->json(['error' => 'No se ha provisto una locación y el usuario no tiene una asignada.'], 400);
             return;
         }
 
