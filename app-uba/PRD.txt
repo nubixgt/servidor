@@ -1,0 +1,82 @@
+# Product Requirements Document (PRD) - AppUBA (Sistema MAGA)
+
+## 1. Resumen Ejecutivo
+AppUBA es un sistema integral (Móvil y Web) diseñado para la gestión de denuncias de maltrato animal para el MAGA en Guatemala.
+- **Aplicación Móvil (Pública):** Permite a los ciudadanos enviar denuncias, leer noticias y buscar/calificar servicios veterinarios autorizados.
+- **Aplicación Web (Administrativa):** Panel de gestión y workflow donde administradores y técnicos procesan las denuncias, gestionan contenido y dan seguimiento legal y técnico.
+- **Backend (API API REST):** Desarrollado en PHP para intercomunicar la app móvil con la base de datos centralizada.
+
+El objetivo de este PRD es servir como guía y referencia arquitectónica/funcional para una futura reescritura del frontend web utilizando Vite + Vue.js.
+
+---
+
+## 2. Aplicación Móvil (Ciudadanos)
+**Tecnología actual:** Flutter/Dart (Android e iOS)
+**Autenticación:** Pública (No requiere inicio de sesión)
+
+### 2.1. Casos de Uso Principales
+1. **Envío de Denuncias (Wizard Multistep):**
+   - Captura de información personal del denunciante (Nombre, DPI, Edad, Género, Celular).
+   - Captura fotográfica de DPI (frente y dorso) y fachada del lugar de los hechos.
+   - Selección de ubicación exacta vía Google Maps.
+   - Selección de especie animal, cantidad e infracciones.
+   - Adjuntar evidencias multimedia (imágenes, audios, videos, documentos).
+2. **Tablón de Noticias:**
+   - Visualización de noticias publicadas por el administrador.
+   - Categorizadas por: Campaña, Rescate, Legislación, Alerta, Evento, Otro.
+   - Detalle estructurado.
+3. **Directorio de Servicios Autorizados:**
+   - Búsqueda en tiempo real de clínicas/veterinarias.
+   - Calificación de servicios (1 a 5 estrellas).
+   - Integración con marcación telefónica directa y enrutamiento en Google Maps.
+
+---
+
+## 3. Aplicación Web / Panel Administrativo (Interno)
+**Tecnología actual planeada a migrar:** PHP, Vanilla JS, Bootstrap -> Vite + Vue.js
+
+### 3.1. Sistema de Roles y Permisos (6 Roles)
+El sistema gestiona un *Workflow* secuencial. Cada rol técnico ve un Dashboard personalizado exclusivamente con los casos que le corresponden en su etapa:
+
+1. **Administrador (`admin`):**
+   - Acceso total (Superusuario).
+   - Gestión y asignación general de denuncias en cualquier etapa.
+   - CRUD de Servicios Autorizados (Clínicas).
+   - CRUD de Noticias para la app móvil.
+   - Exportación de reportes (Excel, PDF).
+2. **Técnico Área Legal (`tecnico_1`):**
+   - 1ra Etapa. Revisión de requisitos legales de la denuncia entrante. (Aprobar/Rechazar).
+3. **Técnico Área Técnica (`tecnico_2`):**
+   - 2da Etapa. Evaluación técnica, verificación e inspección de campo.
+4. **Técnico Emitir Dictamen (`tecnico_3`):**
+   - 3ra Etapa. Emisión de dictamen técnico/resolución preliminar.
+5. **Técnico Opinión Legal (`tecnico_4`):**
+   - 4ta Etapa. Revisión de procedimientos y asesoría legal avanzada.
+6. **Técnico Resolución Final (`tecnico_5`):**
+   - 5ta Etapa. Cierre del expediente (Resolver/Rechazar de manera definitiva).
+
+### 3.2. Características Core del Flujo Web
+- **Dashboards Personalizados:** Cada técnico tiene 4 tarjetas clave (Pendientes, Urgentes [+5 días], Procesadas Hoy, Sin Revisar).
+- **Procesamiento de Seguimiento:** Formulario de arrastrar y soltar (drag & drop) para adjuntar informes en cada fase, comentarios obligatorios.
+- **Historial (Timeline):** Todo caso cuenta con una línea de tiempo inalterable que detalla quién lo tocó, qué acción tomó y qué archivos adjuntó.
+- **Visualización Detallada:** Galería de fotos recibidas desde la app móvil, renderizado interactivo de mapas para localizar los incidentes.
+
+---
+
+## 4. Consideraciones para la Migración (Vite + Vue)
+Al recrear el sistema web con **Vue 3 + Vite**, deberás tener en cuenta la siguiente arquitectura modular:
+
+1. **Autenticación Frontend (Vue Router):**
+   - Implementar *Route Guards* basados en el rol del usuario devuelto por el backend.
+   - Redirigir a los usuarios logueados directamente a su respectivo Dashboard (`/dashboard/tecnico_1` vs `/dashboard/admin`).
+2. **Gestión de Estado (Pinia/Vuex):**
+   - Centralizar la información del usuario en sesión, permisos y notificaciones globales.
+   - Mantener catálogos en estado caché (Departamentos, Municipios, Infracciones).
+3. **Componentes Reutilizables:**
+   - Crear un componente genérico de **Timeline de Seguimiento**.
+   - Crear un componente común de **DataTable** paramétrico (para inyectarle las distintas APIs de las fases), con filtros por "Días Pendientes".
+   - Crear componentes visuales de **Tarjetas de Estadísticas** que recibirán props (color, icono, valor).
+4. **Llamadas a la API:**
+   - La nueva versión frontend reemplazará la generación de HTML desde PHP por consumo directo de una API RESTful (Axios/Fetch). Se deberán separar las vistas del manejo lógico de datos (CORS, JWT/Sesiones).
+5. **Diseño (Glassmorphism):**
+   - Mantener el estándar UI actual: Sidebars consolidados, fondos limpios tipo glassmorphism y elementos interactivos homogéneos para todos los dashboards.
