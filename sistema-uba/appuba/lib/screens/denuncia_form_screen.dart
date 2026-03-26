@@ -102,9 +102,61 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
     super.dispose();
   }
 
-  Future<void> _tomarFoto(TipoFoto destino) async {
+
+  Future<void> _subirImagen(TipoFoto destino) async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Seleccionar Medio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildActionOption(Icons.camera_alt_outlined, 'Cámara', () async {
+                  Navigator.pop(context);
+                  await _procesarCaptura(destino, source: ImageSource.camera);
+                }),
+                _buildActionOption(Icons.photo_library_outlined, 'Galería', () async {
+                  Navigator.pop(context);
+                  await _procesarCaptura(destino, source: ImageSource.gallery);
+                }),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionOption(IconData icon, String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+            child: Icon(icon, color: AppColors.primary, size: 32),
+          ),
+          const SizedBox(height: 8),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _procesarCaptura(TipoFoto destino, {required ImageSource source}) async {
     try {
-      final foto = await _media.tomarFotoCamara(imageQuality: 50);
+      final XFile? foto = source == ImageSource.camera 
+          ? await _media.tomarFotoCamara(imageQuality: 50) 
+          : await _media.seleccionarDeGaleria(imageQuality: 50);
+
       if (foto == null) return;
 
       setState(() {
@@ -121,7 +173,9 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
         }
       });
     } catch (e) {
-      _toast('Error al capturar medio: $e');
+      _toast(source == ImageSource.camera && e.toString().contains('not available')
+          ? 'Cámara no disponible en este dispositivo (Simulador)'
+          : 'Error al capturar medio: $e');
     }
   }
 
@@ -318,7 +372,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           subtitle: 'Captura el frente y reverso de tu documento',
           icon: Icons.camera_front,
           files: _fotosDpi,
-          onTap: () => _tomarFoto(TipoFoto.dpi),
+          onTap: () => _subirImagen(TipoFoto.dpi),
           onDelete: (i) => setState(() => _fotosDpi.removeAt(i)),
           max: 2,
         ),
@@ -364,7 +418,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           subtitle: 'Captura el lugar donde ocurrió el hecho',
           icon: Icons.home_outlined,
           files: _fotoFachada != null ? [_fotoFachada!] : [],
-          onTap: () => _tomarFoto(TipoFoto.fachada),
+          onTap: () => _subirImagen(TipoFoto.fachada),
           onDelete: (_) => setState(() => _fotoFachada = null),
           max: 1,
         ),
@@ -427,7 +481,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           subtitle: 'Agrega fotos del estado del animal o el entorno',
           icon: Icons.photo_library_outlined,
           files: _fotosEvidencia,
-          onTap: () => _tomarFoto(TipoFoto.evidencia),
+          onTap: () => _subirImagen(TipoFoto.evidencia),
           onDelete: (i) => setState(() => _fotosEvidencia.removeAt(i)),
           max: 5,
         ),

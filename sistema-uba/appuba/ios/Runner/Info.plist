@@ -66,5 +66,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Esta aplicación necesita acceso a la cámara para que puedas tomar fotos para tu denuncia.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Esta aplicación necesita acceso a la galería para que puedas seleccionar fotos para tu denuncia.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Esta aplicación necesita acceso al micrófono si decides grabar un video para tu denuncia.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Esta aplicación necesita acceso a tu ubicación para mostrarla en el mapa de la denuncia.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Esta aplicación necesita acceso a tu ubicación para mostrarla en el mapa de la denuncia.</string>
 </dict>
 </plist>

@@ -5,8 +5,19 @@ class ServiciosMultimedia {
   final ImagePicker _picker = ImagePicker();
 
   Future<XFile?> tomarFotoCamara({int imageQuality = 80}) async {
+    try {
+      return await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: imageQuality,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<XFile?> seleccionarDeGaleria({int imageQuality = 80}) async {
     return await _picker.pickImage(
-      source: ImageSource.camera,
+      source: ImageSource.gallery,
       imageQuality: imageQuality,
     );
   }
