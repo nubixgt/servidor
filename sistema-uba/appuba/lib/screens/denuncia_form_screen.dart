@@ -12,6 +12,7 @@ import '../utilidades/formateadores_texto.dart';
 import '../utilidades/datos_guatemala.dart';
 import '../utilidades/validadores.dart';
 import '../widgets/selector_ubicacion.dart';
+import '../servicios/api_service.dart';
 
 enum TipoFoto { dpi, fachada, evidencia }
 
@@ -26,6 +27,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   int pasoActual = 1;
   final int totalPasos = 4;
   bool _enviando = false;
+  final ApiService _apiService = ApiService();
 
   final _nombreController = TextEditingController();
   final _dpiController = TextEditingController();
@@ -815,13 +817,48 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   }
   Future<void> _enviarAlBackend() async {
     setState(() => _enviando = true);
-    // Simulación de envío
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      _toast('✅ Denuncia enviada exitosamente (Simulación)');
-      Navigator.pop(context);
+
+    try {
+      final Map<String, String> data = {
+        'nombre_denunciante': _nombreController.text,
+        'dpi_denunciante': _dpiController.text.replaceAll(' ', ''),
+        'edad_denunciante': _edadController.text,
+        'genero_denunciante': generoSeleccionado ?? '',
+        'celular_denunciante': _celularController.text.replaceAll(' ', ''),
+        'correo_denunciante': _correoController.text,
+        'direccion_hecho': _direccionCtrl.text,
+        'departamento_hecho': departamentoSeleccionado ?? '',
+        'municipio_hecho': municipioSeleccionado ?? '',
+        'latitud': _latitud?.toString() ?? '',
+        'longitud': _longitud?.toString() ?? '',
+        'especie': _especieSeleccionada,
+        'cantidad_animales': _cantidadCtrl.text,
+        'descripcion': _descripcionCtrl.text,
+        'infracciones': _infraccionesSeleccionadas.join(','),
+        'acepto_declaracion': _aceptaDeclaracion ? '1' : '0',
+      };
+
+      final success = await _apiService.enviarDenuncia(
+        data: data,
+        fotosDpi: _fotosDpi,
+        fotoFachada: _fotoFachada,
+        fotosEvidencia: _fotosEvidencia,
+        archivosEvidencia: _archivosEvidencia,
+      );
+
+      if (mounted) {
+        if (success) {
+          _toast('✅ Denuncia enviada exitosamente');
+          Navigator.pop(context);
+        } else {
+          _toast('❌ Error al enviar la denuncia. Inténtalo de nuevo.');
+        }
+      }
+    } catch (e) {
+      _toast('❌ Error de conexión: $e');
+    } finally {
+      if (mounted) setState(() => _enviando = false);
     }
-    setState(() => _enviando = false);
   }
 }
 

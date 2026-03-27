@@ -2,6 +2,7 @@
 // imports
 use App\Core\Router;
 use App\Controllers\ExampleController;
+use App\Controllers\DenunciaController;
 
 // Backend/api/v1/index.php
 
@@ -31,7 +32,7 @@ $router = new Router();
 
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
-// $router->registerController(YourController::class);
+$router->registerController(DenunciaController::class);
 
 
 // 6. Dispatch
