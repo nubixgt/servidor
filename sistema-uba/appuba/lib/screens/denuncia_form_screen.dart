@@ -87,6 +87,16 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   List<XFile> _fotosEvidencia = [];
 
   @override
+  void initState() {
+    super.initState();
+    // Forzar barra de estado transparente al entrar
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ));
+  }
+
+  @override
   void dispose() {
     _nombreController.dispose();
     _dpiController.dispose();
@@ -208,26 +218,35 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.surface,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildProgressHeader(),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                children: [
-                  _buildCurrentStep(),
-                  const SizedBox(height: 100), // Espacio para botones
-                ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.surface,
+        appBar: null,
+        extendBodyBehindAppBar: true, // Forzar que el cuerpo suba detrás de la barra de estado
+        resizeToAvoidBottomInset: true,
+        body: Column(
+          children: [
+            _buildProgressHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 32, top: 0),
+                child: Column(
+                  children: [
+                    _buildCurrentStep(),
+                    const SizedBox(height: 32),
+                    _buildBottomNav(),
+                    SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 20 : 100),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      bottomSheet: _buildBottomNav(),
     );
   }
 
@@ -249,30 +268,96 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
 
   Widget _buildProgressHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: const BorderRadius.only(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 16,
+        bottom: 8, // Ajustado para que el texto suba
+        left: 24,
+        right: 24,
+      ),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/BannerFormulario2.png'),
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+        ),
+        borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
         ),
       ),
       child: Column(
         children: [
+          // Nav Bar integrada
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Nueva Denuncia',
+                style: GoogleFonts.plusJakartaSans(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(totalPasos, (i) => _buildStepIndicator(i + 1)),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8), // Reducido de 24 para subir el texto
           Text(
             _getStepTitle(),
             style: GoogleFonts.plusJakartaSans(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSpeciesOption(String label, String? assetPath) {
+    bool selected = _especieSeleccionada == label;
+    return InkWell(
+      onTap: () => setState(() => _especieSeleccionada = label),
+      borderRadius: BorderRadius.circular(32),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: assetPath == null ? (selected ? AppColors.primary : Colors.white) : Colors.transparent,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.outlineVariant.withOpacity(0.5), 
+            width: selected ? 4 : 1.5
+          ),
+          image: assetPath != null
+              ? DecorationImage(
+                  image: AssetImage(assetPath),
+                  fit: BoxFit.fill,
+                )
+              : null,
+          boxShadow: selected ? [BoxShadow(color: AppColors.primary.withOpacity(0.15), blurRadius: 10, offset: const Offset(0, 4))] : [],
+        ),
+        child: assetPath == null
+            ? Center(
+                child: Text(
+                  label,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: selected ? Colors.white : AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -333,6 +418,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
             _buildField('Nombre Completo', _nombreController, Icons.badge_outlined),
             const SizedBox(height: 20),
             _buildField('Número de DPI', _dpiController, Icons.fingerprint, 
+              keyboardType: TextInputType.number,
               formatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(13), FormateadorDPI()]),
             const SizedBox(height: 20),
             Row(
@@ -364,6 +450,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           icon: Icons.contact_phone_outlined,
           children: [
             _buildField('Celular', _celularController, Icons.phone_android,
+              keyboardType: TextInputType.number,
               formatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(8), FormateadorCelular()]),
             const SizedBox(height: 20),
             _buildField('Correo Electrónico', _correoController, Icons.email_outlined),
@@ -437,19 +524,21 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           icon: Icons.pets_outlined,
           children: [
             const Text('Especie', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.onSurfaceVariant)),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: ['Caninos', 'Felinos', 'Equinos', 'Otros'].map((e) {
-                bool selected = _especieSeleccionada == e;
-                return ChoiceChip(
-                  label: Text(e),
-                  selected: selected,
-                  selectedColor: AppColors.primary,
-                  labelStyle: TextStyle(color: selected ? Colors.white : AppColors.primary, fontWeight: FontWeight.bold),
-                  onSelected: (s) => setState(() => _especieSeleccionada = e),
-                );
-              }).toList(),
+            const SizedBox(height: 15),
+            GridView.count(
+              crossAxisCount: 2,
+              mainAxisExtent: 60,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildSpeciesOption('Caninos', 'assets/images/Canino.png'),
+                _buildSpeciesOption('Felinos', 'assets/images/Felino.png'),
+                _buildSpeciesOption('Equinos', 'assets/images/Eqino.png'),
+                _buildSpeciesOption('Otros', 'assets/images/Otros2.png'),
+              ],
             ),
             const SizedBox(height: 20),
             _buildField('Cantidad de Animales', _cantidadCtrl, Icons.numbers, keyboardType: TextInputType.number),
@@ -572,9 +661,10 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   }
 
   Widget _buildInputCard({required String title, required IconData icon, required List<Widget> children}) {
+    const Color sectionColor = Color(0xFFC00000); // Dark Red
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -585,9 +675,9 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.primary, size: 24),
+              Icon(icon, color: sectionColor, size: 24),
               const SizedBox(width: 12),
-              Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.primary)),
+              Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: sectionColor)),
             ],
           ),
           const Divider(height: 48, thickness: 1),
@@ -610,9 +700,10 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   }) {
     int count = isFiles ? platformFiles!.length : files!.length;
 
+    const Color sectionColor = Color(0xFFC00000); // Dark Red
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -623,13 +714,13 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: AppColors.primary, size: 24),
+              Icon(icon, color: sectionColor, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.primary)),
+                    Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: sectionColor)),
                     Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant)),
                   ],
                 ),
@@ -729,7 +820,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
   Widget _buildMapSelectionCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -820,10 +911,9 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
 
   Widget _buildBottomNav() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -10))],
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
       ),
       child: Row(
         children: [

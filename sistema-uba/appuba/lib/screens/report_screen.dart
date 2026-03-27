@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'denuncia_form_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../theme/app_theme.dart';
 
@@ -8,12 +9,30 @@ class ReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHero(context),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Institutional Logos Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset(
+                  'assets/images/LogoUBA3.png',
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+                Image.asset(
+                  'assets/images/maga_logo.png',
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildHero(context),
           const SizedBox(height: 48),
           _buildIdentificationSection(context),
           const SizedBox(height: 48),
@@ -22,6 +41,7 @@ class ReportScreen extends StatelessWidget {
           _buildResources(context),
         ],
       ),
+    ),
     );
   }
 
@@ -37,7 +57,7 @@ class ReportScreen extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             Image.asset(
-              'assets/images/hero_home.jpg',
+              'assets/images/onboarding_3.jpg',
               fit: BoxFit.cover,
             ),
             const DecoratedBox(
@@ -70,18 +90,27 @@ class ReportScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Cada reporte es una oportunidad de salvar una vida silvestre en peligro.',
+                    'Cada reporte es una oportunidad de salvar una vida animal en peligro.',
                     style: TextStyle(color: Colors.white70, fontSize: 18),
                   ),
                   const SizedBox(height: 32),
-                  FilledButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_forward),
-                    label: const Text('Iniciar Reporte Ciudadano'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => DenunciaFormScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.gavel),
+                      label: const Text('Realizar Denuncia', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF8B0000), // Dark Red
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
                     ),
                   ),
                 ],
@@ -105,14 +134,7 @@ class ReportScreen extends StatelessWidget {
           'Aves Silvestres',
           'Incapacidad de vuelo',
           'Alas caídas, plumaje extremadamente erizado o si el ave no se inmuta ante la presencia humana.',
-          'assets/images/onboarding_3.jpg',
-        ),
-        const SizedBox(height: 16),
-        _buildInfoCard(
-          'Mamíferos Pequeños',
-          'Desorientación diurna',
-          'Animales nocturnos vistos a plena luz del día mostrando confusión o movimientos erráticos.',
-          'assets/images/onboarding_4.jpg',
+          'assets/images/hero_home.jpg',
         ),
       ],
     );
@@ -191,7 +213,7 @@ class ReportScreen extends StatelessWidget {
   Widget _buildResources(BuildContext context) {
     return Column(
       children: [
-        _buildActionCard(Icons.help_outline, '¿Necesitas ayuda?', 'Llama a nuestra línea 24/7.', Colors.blue.withOpacity(0.1)),
+        _buildActionCard(Icons.help_outline, '¿Necesitas ayuda?', '', Colors.blue.withOpacity(0.1)),
         const SizedBox(height: 16),
         _buildActionCard(Icons.library_books, 'Guía de Rescate', 'Descarga el manual en PDF.', Colors.orange.withOpacity(0.1)),
       ],

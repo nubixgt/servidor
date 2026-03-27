@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 import 'denuncia_form_screen.dart';
 
@@ -9,54 +10,50 @@ class DenunciasScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Denuncias y Servicios',
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Institutional Logos Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Image.asset(
+                  'assets/images/LogoUBA3.png',
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+                Image.asset(
+                  'assets/images/maga_logo.png',
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: Text(
+                'Información',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const DenunciaFormScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.add_circle_outline),
-                  label: const Text('Iniciar Nueva Denuncia'),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          _buildUrgencyCard(),
-          const SizedBox(height: 32),
-          _buildBentoSections(),
-          const SizedBox(height: 32),
-          _buildEditorialSection(),
-        ],
+            ),
+            const SizedBox(height: 12),
+            _buildContactCard(),
+            const SizedBox(height: 32),
+            _buildEditorialSection(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildUrgencyCard() {
+  Widget _buildContactCard() {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -69,60 +66,56 @@ class DenunciasScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(backgroundColor: Color(0x15FFA454), child: Icon(Icons.emergency, color: AppColors.secondary)),
+              const CircleAvatar(
+                backgroundColor: Color(0x15FFA454),
+                child: Icon(Icons.wb_sunny_outlined, color: Color(0xFFC06C00)),
+              ),
               const SizedBox(width: 12),
-              const Text('URGENCIAS', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, fontSize: 10, color: AppColors.secondary)),
+              const Text('Contacto', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, fontSize: 14, color: Color(0xFFC06C00))),
               const Spacer(),
-              FilledButton.icon(onPressed: () {}, icon: const Icon(Icons.phone), label: const Text('Llamar')),
+              FilledButton.icon(
+                onPressed: () async {
+                  final Uri url = Uri.parse('tel:+50224137070');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
+                  }
+                },
+                icon: const Icon(Icons.phone),
+                label: const Text('Llamar'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F172A), // Dark Navy
+                  foregroundColor: Colors.white,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 24),
-          _buildVetItem('Clínica Central Fauna', 'Especialistas en vida silvestre', 'A 2.4 km'),
-          const Divider(height: 32),
-          _buildVetItem('Hospital Vet-H24', 'Atención inmediata', 'A 5.1 km'),
+          const Text(
+            'UBA',
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF0F172A)),
+          ),
+          const Text(
+            'UNIDAD DE BIENESTAR ANIMAL',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A)),
+          ),
+          const SizedBox(height: 16),
+          RichText(
+            textAlign: TextAlign.center,
+            text: const TextSpan(
+              style: TextStyle(color: Color(0xFF0F172A), fontSize: 14),
+              children: [
+                TextSpan(text: 'Dirección: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: '4A Calle 0-15, Cdad. de Guatemala\n'),
+                TextSpan(text: 'Teléfono: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                TextSpan(text: '2413 7070'),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildVetItem(String name, String desc, String dist) {
-    return Row(
-      children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(desc, style: const TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant)),
-        ])),
-        Text(dist, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary)),
-      ],
-    );
-  }
-
-  Widget _buildBentoSections() {
-    return Column(
-      children: [
-        Container(
-          height: 150,
-          decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(24)),
-          padding: const EdgeInsets.all(24),
-          child: const Row(children: [
-            Icon(Icons.map, size: 40, color: AppColors.primary),
-            SizedBox(width: 20),
-            Expanded(child: Text('Zonas Protegidas\nGPS en tiempo real', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18))),
-          ]),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(24)),
-          child: const Row(children: [
-            Icon(Icons.medical_services, color: Colors.white, size: 40),
-            SizedBox(width: 20),
-            Expanded(child: Text('Primeros Auxilios\nGuías interactivas', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
-          ]),
-        ),
-      ],
-    );
-  }
 
   Widget _buildEditorialSection() {
     return Column(

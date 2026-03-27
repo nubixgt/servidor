@@ -22,25 +22,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       subtitle: 'Unidad de Bienestar Animal — MAGA Guatemala',
       text:
           'Tu herramienta oficial para proteger y defender los derechos de los animales en Guatemala. Reporta, da seguimiento y mantente informado.',
-      imageUrl: 'assets/images/onboarding_1.jpg',
+      imageUrl: 'assets/images/imagen6.jpeg',
     ),
     _Slide(
       title: 'Denuncia un caso de maltrato',
       text:
           '¿Encontraste un animal en situación de abandono, maltrato o peligro? Repórtalo aquí de forma rápida y segura. Nuestros inspectores de la Unidad de Bienestar Animal recibirán tu denuncia y actuarán a la brevedad.\n\nCada denuncia cuenta. Tu reporte puede salvar una vida.',
-      imageUrl: 'assets/images/onboarding_2.jpg',
+      imageUrl: 'assets/images/imagen3.jpeg',
     ),
     _Slide(
       title: 'Servicios de Bienestar Animal',
       text:
           'Accede a los servicios que la Unidad de Bienestar Animal del MAGA pone a tu disposición: registro de mascotas, solicitud de inspecciones, campañas de vacunación, esterilización y atención veterinaria en tu municipio.\n\nTodos los servicios son gratuitos y están disponibles para ciudadanos guatemaltecos.',
-      imageUrl: 'assets/images/onboarding_3.jpg',
+      imageUrl: 'assets/images/imagen4.jpeg',
     ),
     _Slide(
       title: 'Noticias y Actualizaciones',
       text:
           'Mantente al día con las últimas acciones, operativos y campañas de la Unidad de Bienestar Animal. Conoce los casos resueltos, próximas jornadas de vacunación y novedades en la legislación de protección animal en Guatemala.\n\nInformación oficial, directamente desde el MAGA.',
-      imageUrl: 'assets/images/onboarding_4.jpg',
+      imageUrl: 'assets/images/imagen5.jpeg',
     ),
   ];
 

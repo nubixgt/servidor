@@ -34,7 +34,9 @@ class _MainShellState extends State<MainShell> {
     bool isDesktop = MediaQuery.of(context).size.width > 900;
 
     return Scaffold(
-      appBar: isDesktop ? _buildDesktopAppBar() : _buildMobileAppBar(),
+      appBar: (_selectedIndex == 0 || _selectedIndex == 1 || _selectedIndex == 3)
+          ? null
+          : (isDesktop ? _buildDesktopAppBar() : _buildMobileAppBar()),
       body: _screens[_selectedIndex],
       bottomNavigationBar: isDesktop ? null : _buildBottomNav(),
     );
@@ -74,9 +76,9 @@ class _MainShellState extends State<MainShell> {
           ),
           const Spacer(),
           _buildDesktopNavItem('Inicio', 0),
-          _buildDesktopNavItem('Protocolos', 1),
+          _buildDesktopNavItem('Denuncia', 1),
           _buildDesktopNavItem('Noticias', 2),
-          _buildDesktopNavItem('Denuncias', 3),
+          _buildDesktopNavItem('Informacion', 3),
           const Spacer(),
           const CircleAvatar(
             radius: 20,
@@ -118,9 +120,9 @@ class _MainShellState extends State<MainShell> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(Icons.dashboard, 'Inicio', 0),
-          _buildNavItem(Icons.campaign, 'Protocolos', 1),
+          _buildNavItem(Icons.campaign, 'Denuncia', 1),
           _buildNavItem(Icons.newspaper, 'Noticias', 2),
-          _buildNavItem(Icons.gavel, 'Denuncias', 3),
+          _buildNavItem(Icons.gavel, 'Informacion', 3),
         ],
       ),
     );
@@ -128,6 +130,12 @@ class _MainShellState extends State<MainShell> {
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     bool active = _selectedIndex == index;
+    bool isDenuncia = index == 1;
+    
+    Color activeColor = isDenuncia ? const Color(0xFFC00000) : Colors.blue.shade800; // Solid Red for Denuncia
+    Color inactiveColor = isDenuncia ? const Color(0xFFC00000).withOpacity(0.7) : const Color(0xFF94A3B8);
+    Color shadowColor = isDenuncia ? Colors.red.shade200 : Colors.blue.shade200;
+
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: AnimatedContainer(
@@ -135,12 +143,12 @@ class _MainShellState extends State<MainShell> {
         padding: EdgeInsets.symmetric(
             horizontal: active ? 20 : 12, vertical: active ? 8 : 8),
         decoration: BoxDecoration(
-          color: active ? Colors.blue.shade800 : Colors.transparent,
+          color: active ? activeColor : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           boxShadow: active
               ? [
                   BoxShadow(
-                      color: Colors.blue.shade200,
+                      color: shadowColor,
                       offset: const Offset(0, 4),
                       blurRadius: 10)
                 ]
@@ -149,14 +157,14 @@ class _MainShellState extends State<MainShell> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: active ? Colors.white : const Color(0xFF94A3B8), size: 24),
+            Icon(icon, color: active ? Colors.white : inactiveColor, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: active ? Colors.white : const Color(0xFF94A3B8),
+                color: active ? Colors.white : inactiveColor,
                 letterSpacing: 1.1,
               ),
             ),

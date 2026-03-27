@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'denuncia_form_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,34 +10,66 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Institutional Logos Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.asset(
+                'assets/images/LogoUBA3.png',
+                height: 80,
+                fit: BoxFit.contain,
+              ),
+              Image.asset(
+                'assets/images/maga_logo.png',
+                height: 80,
+                fit: BoxFit.contain,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12), // Reduced space
+
           // Hero Story
           _buildHero(context),
-          const SizedBox(height: 48),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DenunciaFormScreen()),
+                );
+              },
+              icon: const Icon(Icons.gavel),
+              label: const Text('Realizar Denuncia', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF8B0000), // Dark Red
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
 
-          // Convivencia Urbana
-          _buildConvivencia(context),
-          const SizedBox(height: 48),
-
-          // Gallery
+          // Gallery (Only remaining section)
           _buildGallery(context),
           const SizedBox(height: 48),
-
-          // Mission Quote
-          _buildQuote(context),
         ],
       ),
+    ),
     );
   }
 
   Widget _buildHero(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 500,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -50,88 +83,42 @@ class HomeScreen extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Stack(
-          fit: StackFit.expand,
+          alignment: Alignment.bottomCenter,
           children: [
             Image.asset(
-              'assets/images/hero_home.jpg',
-              fit: BoxFit.cover,
+              'assets/images/imagen2.jpeg',
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
             ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black87],
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black45],
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(32),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        'Rescate destacado',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Una Nueva Oportunidad para Max',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Tras recibir una denuncia ciudadana, el equipo de AppUBA logró rescatar y rehabilitar a este perrito en situación de abandono.',
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: () {},
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      ),
-                      child: const Text('Leer Historia Completa', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const DenunciaFormScreen()),
-                        );
-                      },
-                      icon: const Icon(Icons.gavel, size: 18),
-                      label: const Text('Cómo hacer una denuncia'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white70),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      ),
-                    ),
-                  ],
+            Positioned(
+              bottom: 50, // Moved significantly higher per user request
+              left: 48,
+              right: 48,
+              child: OutlinedButton(
+                onPressed: () async {
+                  final url = Uri.parse('https://www.facebook.com/share/p/1bPKokgG61/');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.white, width: 2),
+                  shape: const StadiumBorder(),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
+                child: const Text('Ir al enlace', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
           ],
@@ -140,86 +127,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildConvivencia(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Convivencia Urbana',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const Text(
-                    'Guía práctica para proteger nuestra biodiversidad local.',
-                    style: TextStyle(color: AppColors.outline),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            TextButton(onPressed: () {}, child: const Text('Ver todos')),
-          ],
-        ),
-        const SizedBox(height: 24),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: [
-            _buildTipCard(
-              'Iluminación Responsable',
-              'Reduce la contaminación lumínica en tu jardín para ayudar a las aves migratorias.',
-              Icons.lightbulb,
-              const Color(0xFFffa454).withOpacity(0.1),
-              const Color(0xFF904d00),
-            ),
-            _buildTipCard(
-              'Fauna en el Jardín',
-              'Crea refugios naturales con troncos y rocas para pequeños reptiles.',
-              Icons.pets,
-              AppColors.primary.withOpacity(0.1),
-              AppColors.primary,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTipCard(String title, String text, IconData icon, Color bg, Color tint) {
-    return Container(
-      width: 300,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
-            child: Icon(icon, color: tint, size: 28),
-          ),
-          const SizedBox(height: 20),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 8),
-          Text(text, style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14)),
-        ],
-      ),
-    );
-  }
 
   Widget _buildGallery(BuildContext context) {
     return Column(
@@ -233,14 +140,14 @@ class HomeScreen extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 8),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          childAspectRatio: 0.85, // Adjusted for better vertical look
           children: [
             _buildGalleryItem('Felinos', 'Recuperación Exitosa', 'assets/images/gallery_felines.jpg'),
             _buildGalleryItem('Aves', 'Vuelo de Libertad', 'assets/images/onboarding_3.jpg'),
@@ -275,38 +182,6 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuote(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 64, horizontal: 32),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.format_quote, color: Colors.white24, size: 80),
-          Text(
-            '"La naturaleza no es un lugar para visitar. Es nuestro hogar."',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'AppUBA trabaja cada día para educar, proteger y restaurar el vínculo entre la humanidad y el reino animal en Guatemala.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white70, fontSize: 16),
           ),
         ],
       ),
