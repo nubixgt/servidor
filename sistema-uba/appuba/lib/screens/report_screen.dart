@@ -36,8 +36,8 @@ class ReportScreen extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(
-              imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBD5Yna2AYVSXCgmEgm2Y-2233xW4qgj2bFCrsOqaF2XY2iv4AaShAcfgPMVddtMoQjaw4L4ioeMN691SdHb2YTYY6qkCW7hpz3Qkxr9x6CR2_sqOeqOrhh2RQl4SjuM5F5DUxV1EpaXFTcyxk0GgsRnvRIXuSOw5yIUbMbpgdnEVx4dVKbNNbLshpmhbceLxoPlj9ACpyGMH47R6wiA7nTabwiLJWLwiC9yC3pNdyR1PMYv1bAilSfj8L1cj-t6mgbErPFxRm4FxA',
+            Image.asset(
+              'assets/images/hero_home.jpg',
               fit: BoxFit.cover,
             ),
             const DecoratedBox(
@@ -105,14 +105,14 @@ class ReportScreen extends StatelessWidget {
           'Aves Silvestres',
           'Incapacidad de vuelo',
           'Alas caídas, plumaje extremadamente erizado o si el ave no se inmuta ante la presencia humana.',
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBc-gDZYAgxrlMAJYhm5xIfmUGQm8lUL4A5kNmPCCvTk_VxC1R_Bc0HbShk4pxem9xdQeXbhzx-Xrv64kbadZ7IgSQZIjmfggcydyVGfH9kH6CYbJoB7hQP-cYrnohgVrhtwMpg30NYi1dWEaCAFP7g4_6hPgOPNFYvOml2Anw80FYk2JMZ2erUJOJUJem44BtmrDEUSIvOgZiuf7MRNKE0TwvgnCRYhxBxTcLg7LmqQ-Y4YN0hwLP3K7Jn_jBl8h8wN3h5Q0wgFKY',
+          'assets/images/onboarding_3.jpg',
         ),
         const SizedBox(height: 16),
         _buildInfoCard(
           'Mamíferos Pequeños',
           'Desorientación diurna',
           'Animales nocturnos vistos a plena luz del día mostrando confusión o movimientos erráticos.',
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAVoqRxW18EdTZ-Crxlkv--8viOnA4Q_KILFRXsdfwVoogo6VltpkzXeY-DljO-kS60h3R3wii7XiydGruv_jV-vVHDF24fCtUFV6YluWRAaMY57Zy2H7vbYDGiWXcbVuSyaY1K8qxtwW1J3nOkmwYo9cD5xWV1CVLwkuiDD6Q1lgcbcm0lj15erfqPc3zVJkfcVentbZUOHXHXwdsaA7XeXSwUr3XFPoXSDn7Mah9zwk34LpYhJ-d-bRQEOJSBV5i2FsC7KgC8UoY',
+          'assets/images/onboarding_4.jpg',
         ),
       ],
     );
@@ -130,7 +130,7 @@ class ReportScreen extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: CachedNetworkImage(imageUrl: img, width: 100, height: 100, fit: BoxFit.cover),
+            child: Image.asset(img, width: 100, height: 100, fit: BoxFit.cover),
           ),
           const SizedBox(width: 20),
           Expanded(

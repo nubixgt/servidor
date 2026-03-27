@@ -137,8 +137,8 @@ class DenunciasScreen extends StatelessWidget {
           childAspectRatio: 1.6,
           mainAxisSpacing: 24,
           children: [
-            _buildResourceCard('Protección de Quelonios', 'Guía PDF', 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3TbHlbe3JFj47JnLbj--iJXtKzHIUqUg9t9MPjBWCsqJRZCZwZMXOmkWW3htIILcpxYQ8ve1_rysrYuZtWwvGpMfVBBlwnmeuz9_SWlBzLlm9IBDMzX6j1AGpuj1_IUwuh-tysi0j7B8oOfdZEb8VitkXE3E4eoMBnBZk7WxIhFemG8A1UyePiTULqa3TdXSuYkRE9Q7RhWrsI7YM0nxzkrtn6NYEP0SWytpRQ7txYNUNsPEj4K2mu0Ba5xwwcOBc1yJaZi7t2mA'),
-            _buildResourceCard('Aves Caídas del Nido', 'Video Tutorial', 'https://lh3.googleusercontent.com/aida-public/AB6AXuBHyttRB0X25EPVlFUWmGfpSYA6N_d7icgUdOh9z0iFelakS2NWgaSVfE7qWD4hrWtTjr0RxIIpZum3CgsvO2EAswYDxielZkNjq76LsQReo9DFxorHYOtnWMxSX0pwgmMZ_kh_i7e6942-NkksHPklrSgtMK9jTOYw0JR5ckPeJTPt0i5YsbQ7l945PZZkkO7bdqB6ZXjGA6AcuhFSJSIz1RXaf12IuHaNXFmbeHaHUNA_y4GJOjdckPKLshBArtD1Bnew4bZhb1s'),
+            _buildResourceCard('Protección de Quelonios', 'Guía PDF', 'assets/images/onboarding_1.jpg'),
+            _buildResourceCard('Aves Caídas del Nido', 'Video Tutorial', 'assets/images/onboarding_2.jpg'),
           ],
         ),
       ],
@@ -149,7 +149,7 @@ class DenunciasScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(20), child: CachedNetworkImage(imageUrl: img, fit: BoxFit.cover, width: double.infinity))),
+        Expanded(child: ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.asset(img, fit: BoxFit.cover, width: double.infinity))),
         const SizedBox(height: 12),
         Text(tag.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary)),
         Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),

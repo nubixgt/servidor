@@ -52,8 +52,8 @@ class HomeScreen extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(
-              imageUrl: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1200&auto=format&fit=crop',
+            Image.asset(
+              'assets/images/hero_home.jpg',
               fit: BoxFit.cover,
             ),
             const DecoratedBox(
@@ -242,8 +242,8 @@ class HomeScreen extends StatelessWidget {
           crossAxisSpacing: 16,
           childAspectRatio: 1,
           children: [
-            _buildGalleryItem('Felinos', 'Recuperación Exitosa', 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800&auto=format&fit=crop'),
-            _buildGalleryItem('Aves', 'Vuelo de Libertad', 'https://images.unsplash.com/photo-1522911715181-6ce196f07c76?q=80&w=800&auto=format&fit=crop'),
+            _buildGalleryItem('Felinos', 'Recuperación Exitosa', 'assets/images/gallery_felines.jpg'),
+            _buildGalleryItem('Aves', 'Vuelo de Libertad', 'assets/images/onboarding_3.jpg'),
           ],
         ),
       ],
@@ -256,7 +256,7 @@ class HomeScreen extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CachedNetworkImage(imageUrl: img, fit: BoxFit.cover),
+          Image.asset(img, fit: BoxFit.cover),
           Positioned(
             bottom: 12,
             left: 12,

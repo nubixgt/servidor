@@ -43,8 +43,8 @@ class NewsScreen extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: CachedNetworkImage(
-              imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCHNfKqju7FrEltSB3vtAL59XzHqX_gFLzf5EpI_YtcknRZ4JRYm6UAXQ_F6Ovfr1viNer2InBhK3LDHGMlkwfQvRQtvYEILJCDkc8CIAOz7gb3YK2YwGsoLKhPtTaYPulEb1yi3GTr38gfGR544b-7RXaKRF8Z0jKueImO6qJVjzkrnqFxNJqY75uiRxZYesTy326FasE1rUjVbimsPoIphcORuWy5bAjL0Kddn0m4Ryxj4VwuC6Ji0KFw0jlOaE6xjPLCnShfd1E',
+             child: Image.asset(
+              'assets/images/gallery_felines.jpg',
               height: 250, width: double.infinity, fit: BoxFit.cover,
             ),
           ),
@@ -71,8 +71,8 @@ class NewsScreen extends StatelessWidget {
   Widget _buildRecentSection() {
     return Column(
       children: [
-        _buildDiscoveryCard('Avistamiento Raro', 'Hace 2h', 'https://lh3.googleusercontent.com/aida-public/AB6AXuAPWqp_CWB_fJprbJts-ppkGa5nwcVBZR4mP_CVIe1dwZeAiwA8O4OxAnq7BPxWlFNnx-4KblDrm6ESJZS4hcLpm5y5Lzn3YQvcni6n9Kke1Y7r4kMFJL5wrGnrmZXDenk0dECaWzbvNSZ1we6xyT6lZ3fCdzEw-yuabkIUftBcwu_k1s6L5tiFAP1F1_4oR4qA-CsD1h7plm4AguP4ypLvp9-VOKEKgPmgGCdUS7DYrtVicLcIO1jXok-0bJeZ8CNTfsgGQUxtWc8'),
-        _buildDiscoveryCard('Humedales', 'Hace 5h', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCMO-pflygLmfGuqGa4Z3n6iJBtjvAZpW1GFZJuJODdxLR_tD7mEbXbaOWVXcg1InuGJy-vny0F7zXM-Gmxx2K0itnmmDjuCCe4udDAaF4OOdwB8UvUMeVmv0vK5stZx_QTuEpE8o8xdNmUwX6bie6wj1alpaA_px6zSLopBDbB46FffTfMlYsiDG8VDHCSgyFwEtczd5OcQiifDWaaQ-08hqwIwiO0Vju427uZASsNoMxG_N6D3eo2l5PHQ0oWfNKfoKDxITZ44Zw'),
+        _buildDiscoveryCard('Avistamiento Raro', 'Hace 2h', 'assets/images/onboarding_2.jpg'),
+        _buildDiscoveryCard('Humedales', 'Hace 5h', 'assets/images/onboarding_4.jpg'),
       ],
     );
   }
@@ -82,7 +82,7 @@ class NewsScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(
         children: [
-          ClipRRect(borderRadius: BorderRadius.circular(16), child: CachedNetworkImage(imageUrl: img, width: 100, height: 100, fit: BoxFit.cover)),
+          ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.asset(img, width: 100, height: 100, fit: BoxFit.cover)),
           const SizedBox(width: 20),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(time, style: const TextStyle(fontSize: 10, color: AppColors.outline)),
