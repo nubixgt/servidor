@@ -453,6 +453,8 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
             ),
             const SizedBox(height: 20),
             _buildField('Cantidad de Animales', _cantidadCtrl, Icons.numbers, keyboardType: TextInputType.number),
+            const SizedBox(height: 20),
+            _buildField('Raza del Animal', _razaCtrl, Icons.pets_outlined),
             if (_especieSeleccionada == 'Otros') ...[
               const SizedBox(height: 16),
               _buildField('Especificar Otra Especie', _especieOtrosCtrl, Icons.edit_note),
@@ -883,6 +885,7 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
         'especie': _especieSeleccionada,
         'especie_otros': _especieSeleccionada == 'Otros' ? _especieOtrosCtrl.text : '',
         'cantidad_animales': _cantidadCtrl.text,
+        'raza': _razaCtrl.text,
         'descripcion': _descripcionCtrl.text,
         'infracciones': _infraccionesSeleccionadas.join(','),
         'infracciones_otros': _infraccionesSeleccionadas.contains('Otros') ? _otrosInfraccionController.text : '',

@@ -18,8 +18,8 @@ class DenunciaRepository
     {
         $sql = "INSERT INTO denuncias (
             nombre_denunciante, dpi_denunciante, edad_denunciante, genero_denunciante, 
-            celular_denunciante, correo_denunciante, direccion_hecho, departamento_hecho, 
-            municipio_hecho, latitud, longitud, especie, especie_otros, cantidad_animales, 
+            celular_denunciante, correo_denunciante, direccion_hecho, departamento, 
+            municipio, latitud, longitud, especie, especie_otros, cantidad_animales, 
             raza, descripcion_hecho, tipo_infraccion, infracciones_otros, acepto_declaracion
         ) VALUES (
             :nombre, :dpi, :edad, :genero, :celular, :correo, :direccion, :depto, 
@@ -36,8 +36,8 @@ class DenunciaRepository
             'celular' => $denuncia->celularDenunciante,
             'correo' => $denuncia->correoDenunciante,
             'direccion' => $denuncia->direccionHecho,
-            'depto' => $denuncia->departamentoHecho,
-            'muni' => $denuncia->municipioHecho,
+            'depto' => $denuncia->departamento,
+            'muni' => $denuncia->municipio,
             'lat' => $denuncia->latitud,
             'lng' => $denuncia->longitud,
             'especie' => $denuncia->especie,

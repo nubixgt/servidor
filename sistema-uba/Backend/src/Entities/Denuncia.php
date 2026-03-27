@@ -11,8 +11,8 @@ class Denuncia
     public ?string $celularDenunciante;
     public ?string $correoDenunciante;
     public string $direccionHecho;
-    public string $departamentoHecho;
-    public string $municipioHecho;
+    public string $departamento;
+    public string $municipio;
     public ?float $latitud;
     public ?float $longitud;
     public string $especie;
@@ -36,8 +36,8 @@ class Denuncia
             'celular_denunciante' => $this->celularDenunciante,
             'correo_denunciante' => $this->correoDenunciante,
             'direccion_hecho' => $this->direccionHecho,
-            'departamento_hecho' => $this->departamentoHecho,
-            'municipio_hecho' => $this->municipioHecho,
+            'departamento' => $this->departamento,
+            'municipio' => $this->municipio,
             'latitud' => $this->latitud,
             'longitud' => $this->longitud,
             'especie' => $this->especie,
@@ -62,16 +62,16 @@ class Denuncia
         $denuncia->celularDenunciante = $data['celular_denunciante'] ?? null;
         $denuncia->correoDenunciante = $data['correo_denunciante'] ?? null;
         $denuncia->direccionHecho = $data['direccion_hecho'] ?? '';
-        $denuncia->departamentoHecho = $data['departamento_hecho'] ?? '';
-        $denuncia->municipioHecho = $data['municipio_hecho'] ?? '';
+        $denuncia->departamento = $data['departamento_hecho'] ?? ''; // App manda departamento_hecho
+        $denuncia->municipio = $data['municipio_hecho'] ?? ''; // App manda municipio_hecho
         $denuncia->latitud = isset($data['latitud']) ? (float)$data['latitud'] : null;
         $denuncia->longitud = isset($data['longitud']) ? (float)$data['longitud'] : null;
         $denuncia->especie = $data['especie'] ?? '';
         $denuncia->especieOtros = $data['especie_otros'] ?? null;
         $denuncia->cantidadAnimales = isset($data['cantidad_animales']) ? (int)$data['cantidad_animales'] : 1;
         $denuncia->raza = $data['raza'] ?? null;
-        $denuncia->descripcion = $data['descripcion'] ?? ''; // La app manda 'descripcion'
-        $denuncia->infracciones = $data['infracciones'] ?? null; // La app manda 'infracciones'
+        $denuncia->descripcion = $data['descripcion'] ?? '';
+        $denuncia->infracciones = $data['infracciones'] ?? null;
         $denuncia->infraccionesOtros = $data['infracciones_otros'] ?? null;
         $denuncia->aceptoDeclaracion = ($data['acepto_declaracion'] ?? 0) == 1;
         $denuncia->fechaCreacion = $data['fecha_creacion'] ?? null;

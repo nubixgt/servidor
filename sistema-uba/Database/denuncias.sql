@@ -8,8 +8,6 @@ CREATE TABLE IF NOT EXISTS denuncias (
     celular_denunciante VARCHAR(20),
     correo_denunciante VARCHAR(255),
     direccion_hecho TEXT NOT NULL,
-    departamento_hecho VARCHAR(100) NOT NULL,
-    municipio_hecho VARCHAR(100) NOT NULL,
     departamento VARCHAR(50) NOT NULL,
     municipio VARCHAR(50) NOT NULL,
     latitud DECIMAL(10, 8),
