@@ -10,12 +10,17 @@ CREATE TABLE IF NOT EXISTS denuncias (
     direccion_hecho TEXT NOT NULL,
     departamento_hecho VARCHAR(100) NOT NULL,
     municipio_hecho VARCHAR(100) NOT NULL,
+    departamento VARCHAR(50) NOT NULL,
+    municipio VARCHAR(50) NOT NULL,
     latitud DECIMAL(10, 8),
     longitud DECIMAL(11, 8),
     especie VARCHAR(50) NOT NULL,
-    cantidad_animales INT DEFAULT 1,
-    descripcion TEXT NOT NULL,
-    infracciones TEXT, -- Almacenado como JSON o lista separada por comas
+    especie_otros VARCHAR(100), -- Detalle cuando especie es 'Otros'
+    cantidad_animales INT NOT NULL,
+    raza VARCHAR(50),
+    descripcion_hecho TEXT NOT NULL,
+    tipo_infraccion TEXT NOT NULL, -- Lista separada por comas
+    infracciones_otros TEXT, -- Detalle cuando se selecciona 'Otros'
     acepto_declaracion TINYINT(1) DEFAULT 0,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

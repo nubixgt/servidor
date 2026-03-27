@@ -453,6 +453,10 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
             ),
             const SizedBox(height: 20),
             _buildField('Cantidad de Animales', _cantidadCtrl, Icons.numbers, keyboardType: TextInputType.number),
+            if (_especieSeleccionada == 'Otros') ...[
+              const SizedBox(height: 16),
+              _buildField('Especificar Otra Especie', _especieOtrosCtrl, Icons.edit_note),
+            ],
             const SizedBox(height: 20),
             _buildField('Descripción de lo Ocurrido', _descripcionCtrl, Icons.description_outlined, maxLines: 4),
           ],
@@ -470,6 +474,10 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
               dense: true,
               onChanged: (v) => setState(() => v! ? _infraccionesSeleccionadas.add(i) : _infraccionesSeleccionadas.remove(i)),
             )),
+            if (_infraccionesSeleccionadas.contains('Otros')) ...[
+              const Divider(height: 24),
+              _buildField('Especificar Otras Infracciones', _otrosInfraccionController, Icons.edit_note),
+            ],
           ],
         ),
       ],
@@ -873,9 +881,11 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
         'latitud': _latitud?.toString() ?? '',
         'longitud': _longitud?.toString() ?? '',
         'especie': _especieSeleccionada,
+        'especie_otros': _especieSeleccionada == 'Otros' ? _especieOtrosCtrl.text : '',
         'cantidad_animales': _cantidadCtrl.text,
         'descripcion': _descripcionCtrl.text,
         'infracciones': _infraccionesSeleccionadas.join(','),
+        'infracciones_otros': _infraccionesSeleccionadas.contains('Otros') ? _otrosInfraccionController.text : '',
         'acepto_declaracion': _aceptaDeclaracion ? '1' : '0',
       };
 

@@ -16,9 +16,12 @@ class Denuncia
     public ?float $latitud;
     public ?float $longitud;
     public string $especie;
+    public ?string $especieOtros;
     public int $cantidadAnimales;
+    public ?string $raza;
     public string $descripcion;
     public ?string $infracciones;
+    public ?string $infraccionesOtros;
     public bool $aceptoDeclaracion;
     public ?string $fechaCreacion = null;
 
@@ -38,9 +41,12 @@ class Denuncia
             'latitud' => $this->latitud,
             'longitud' => $this->longitud,
             'especie' => $this->especie,
+            'especie_otros' => $this->especieOtros,
             'cantidad_animales' => $this->cantidadAnimales,
-            'descripcion' => $this->descripcion,
-            'infracciones' => $this->infracciones,
+            'raza' => $this->raza,
+            'descripcion_hecho' => $this->descripcion,
+            'tipo_infraccion' => $this->infracciones,
+            'infracciones_otros' => $this->infraccionesOtros,
             'acepto_declaracion' => $this->aceptoDeclaracion ? 1 : 0
         ];
     }
@@ -61,9 +67,12 @@ class Denuncia
         $denuncia->latitud = isset($data['latitud']) ? (float)$data['latitud'] : null;
         $denuncia->longitud = isset($data['longitud']) ? (float)$data['longitud'] : null;
         $denuncia->especie = $data['especie'] ?? '';
+        $denuncia->especieOtros = $data['especie_otros'] ?? null;
         $denuncia->cantidadAnimales = isset($data['cantidad_animales']) ? (int)$data['cantidad_animales'] : 1;
-        $denuncia->descripcion = $data['descripcion'] ?? '';
-        $denuncia->infracciones = $data['infracciones'] ?? null;
+        $denuncia->raza = $data['raza'] ?? null;
+        $denuncia->descripcion = $data['descripcion_hecho'] ?? '';
+        $denuncia->infracciones = $data['tipo_infraccion'] ?? null;
+        $denuncia->infraccionesOtros = $data['infracciones_otros'] ?? null;
         $denuncia->aceptoDeclaracion = ($data['acepto_declaracion'] ?? 0) == 1;
         $denuncia->fechaCreacion = $data['fecha_creacion'] ?? null;
         return $denuncia;

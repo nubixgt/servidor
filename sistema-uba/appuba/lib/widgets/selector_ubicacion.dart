@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class SelectorUbicacion extends StatefulWidget {
   final double? latitudInicial;
@@ -19,12 +20,57 @@ class SelectorUbicacion extends StatefulWidget {
 
 class _SelectorUbicacionState extends State<SelectorUbicacion> {
   LatLng? _selectedLocation;
+  GoogleMapController? _mapController;
+  bool _loadingLocation = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.latitudInicial != null && widget.longitudInicial != null) {
       _selectedLocation = LatLng(widget.latitudInicial!, widget.longitudInicial!);
+    } else {
+      _determinarPosicionActual();
+    }
+  }
+
+  Future<void> _determinarPosicionActual() async {
+    setState(() => _loadingLocation = true);
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw 'Los servicios de ubicación están desactivados.';
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw 'Permisos de ubicación denegados.';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Los permisos de ubicación están denegados permanentemente.';
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      LatLng currentLatLng = LatLng(position.latitude, position.longitude);
+      
+      setState(() {
+        _selectedLocation = currentLatLng;
+        _loadingLocation = false;
+      });
+
+      if (_mapController != null) {
+        _mapController!.animateCamera(CameraUpdate.newLatLngZoom(currentLatLng, 15));
+      }
+    } catch (e) {
+      debugPrint('Error obteniendo ubicación: $e');
+      setState(() => _loadingLocation = false);
+      // Mantener ubicación por defecto si falla
+      if (_selectedLocation == null) {
+        _selectedLocation = const LatLng(14.6349, -90.5069); // Ciudad de Guatemala
+      }
     }
   }
 
@@ -47,22 +93,45 @@ class _SelectorUbicacionState extends State<SelectorUbicacion> {
             ),
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: _selectedLocation ?? const LatLng(14.6349, -90.5069), // Guatemala City
-          zoom: 12,
-        ),
-        onTap: (latLng) {
-          setState(() => _selectedLocation = latLng);
-        },
-        markers: _selectedLocation != null
-            ? {
-                Marker(
-                  markerId: const MarkerId('selected'),
-                  position: _selectedLocation!,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _selectedLocation ?? const LatLng(14.6349, -90.5069),
+              zoom: 15,
+            ),
+            onMapCreated: (controller) => _mapController = controller,
+            onTap: (latLng) {
+              setState(() => _selectedLocation = latLng);
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            markers: _selectedLocation != null
+                ? {
+                    Marker(
+                      markerId: const MarkerId('selected'),
+                      position: _selectedLocation!,
+                    ),
+                  }
+                : {},
+          ),
+          if (_loadingLocation)
+            const Center(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Obteniendo ubicación actual...'),
+                    ],
+                  ),
                 ),
-              }
-            : {},
+              ),
+            ),
+        ],
       ),
     );
   }
