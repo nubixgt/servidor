@@ -72,15 +72,21 @@ class DenunciaService
 
     private function saveFile(int $denunciaId, string $tipo, array $file): void
     {
+        $denunciaDir = $this->uploadDir . $denunciaId . '/';
+        
+        if (!is_dir($denunciaDir)) {
+            mkdir($denunciaDir, 0755, true);
+        }
+
         $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $fileName = $denunciaId . '_' . $tipo . '_' . uniqid() . '.' . $ext;
-        $targetPath = $this->uploadDir . $fileName;
+        $fileName = $tipo . '_' . uniqid() . '.' . $ext;
+        $targetPath = $denunciaDir . $fileName;
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             $archivo = new ArchivoDenuncia();
             $archivo->denunciaId = $denunciaId;
             $archivo->tipoArchivo = $this->normalizeType($tipo);
-            $archivo->rutaArchivo = 'uploads/' . $fileName;
+            $archivo->rutaArchivo = 'uploads/' . $denunciaId . '/' . $fileName;
             $archivo->nombreOriginal = $file['name'];
             $archivo->mimeType = $file['type'];
 

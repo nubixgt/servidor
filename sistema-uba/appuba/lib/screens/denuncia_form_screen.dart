@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../servicios/servicios_multimedia.dart';
 import '../theme/app_theme.dart';
@@ -735,30 +736,70 @@ class _DenunciaFormScreenState extends State<DenunciaFormScreen> {
           ),
           const SizedBox(height: 24),
           InkWell(
-            onTap: () async {
+            onTap: _latitud == null ? () async {
               await Navigator.push(context, MaterialPageRoute(builder: (_) => SelectorUbicacion(onUbicacionSeleccionada: (lat, lng) => setState(() { _latitud = lat; _longitud = lng; }))));
-            },
-            borderRadius: BorderRadius.circular(16),
+            } : null,
+            borderRadius: BorderRadius.circular(24),
             child: Container(
-              height: 120,
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: Colors.blue.shade100),
               ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(_latitud != null ? Icons.location_on : Icons.map, color: _latitud != null ? Colors.green : AppColors.primary, size: 32),
-                    const SizedBox(height: 8),
-                    Text(
-                      _latitud != null ? 'Ubicación seleccionada' : 'Seleccionar ubicación GPS',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: _latitud != null ? Colors.green : AppColors.primary),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: _latitud != null 
+                  ? Stack(
+                      children: [
+                        GoogleMap(
+                          initialCameraPosition: CameraPosition(target: LatLng(_latitud!, _longitud!), zoom: 15),
+                          markers: {
+                            Marker(markerId: const MarkerId('selected'), position: LatLng(_latitud!, _longitud!)),
+                          },
+                          zoomControlsEnabled: false,
+                          myLocationButtonEnabled: false,
+                          scrollGesturesEnabled: false,
+                          rotateGesturesEnabled: false,
+                          tiltGesturesEnabled: false,
+                          zoomGesturesEnabled: false,
+                        ),
+                        Container(color: Colors.transparent), // Overlay para evitar interacciones accidentales
+                        Positioned(
+                          bottom: 12,
+                          right: 12,
+                          child: FilledButton.icon(
+                            onPressed: () async {
+                              await Navigator.push(context, MaterialPageRoute(builder: (_) => SelectorUbicacion(
+                                latitudInicial: _latitud,
+                                longitudInicial: _longitud,
+                                onUbicacionSeleccionada: (lat, lng) => setState(() { _latitud = lat; _longitud = lng; })
+                              )));
+                            },
+                            icon: const Icon(Icons.edit_location_alt_outlined, size: 18),
+                            label: const Text('Cambiar Ubicación'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.primary,
+                              elevation: 4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.map_outlined, color: AppColors.primary, size: 48),
+                          const SizedBox(height: 12),
+                          const Text('Seleccionar ubicación GPS', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                          const SizedBox(height: 4),
+                          const Text('Toca para abrir el mapa', style: TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant)),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
               ),
             ),
           ),
