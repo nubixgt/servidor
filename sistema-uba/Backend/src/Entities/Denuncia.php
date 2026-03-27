@@ -70,8 +70,8 @@ class Denuncia
         $denuncia->especieOtros = $data['especie_otros'] ?? null;
         $denuncia->cantidadAnimales = isset($data['cantidad_animales']) ? (int)$data['cantidad_animales'] : 1;
         $denuncia->raza = $data['raza'] ?? null;
-        $denuncia->descripcion = $data['descripcion_hecho'] ?? '';
-        $denuncia->infracciones = $data['tipo_infraccion'] ?? null;
+        $denuncia->descripcion = $data['descripcion'] ?? ''; // La app manda 'descripcion'
+        $denuncia->infracciones = $data['infracciones'] ?? null; // La app manda 'infracciones'
         $denuncia->infraccionesOtros = $data['infracciones_otros'] ?? null;
         $denuncia->aceptoDeclaracion = ($data['acepto_declaracion'] ?? 0) == 1;
         $denuncia->fechaCreacion = $data['fecha_creacion'] ?? null;
