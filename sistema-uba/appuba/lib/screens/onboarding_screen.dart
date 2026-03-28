@@ -18,28 +18,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<_Slide> _slides = [
     _Slide(
-      title: 'Bienvenido a AppUBA',
+      title: 'Bienvenido a UBApp',
       subtitle: 'Unidad de Bienestar Animal — MAGA Guatemala',
       text:
-          'Tu herramienta oficial para proteger y defender los derechos de los animales en Guatemala. Reporta, da seguimiento y mantente informado.',
+          'Tu canal oficial para contribuir a la protección y bienestar de los animales en Guatemala. Reporta, da seguimiento y mantente informado.',
       imageUrl: 'assets/images/imagen6.jpeg',
     ),
     _Slide(
       title: 'Denuncia un caso de maltrato',
       text:
-          '¿Encontraste un animal en situación de abandono, maltrato o peligro? Repórtalo aquí de forma rápida y segura. Nuestros inspectores de la Unidad de Bienestar Animal recibirán tu denuncia y actuarán a la brevedad.\n\nCada denuncia cuenta. Tu reporte puede salvar una vida.',
+          'Reporta casos de abandono, maltrato o crueldad animal. La Unidad de Bienestar Animal dará seguimiento conforme a la normativa vigente. Cada denuncia cuenta',
       imageUrl: 'assets/images/imagen3.jpeg',
     ),
     _Slide(
       title: 'Servicios de Bienestar Animal',
       text:
-          'Accede a los servicios que la Unidad de Bienestar Animal del MAGA pone a tu disposición: registro de mascotas, solicitud de inspecciones, campañas de vacunación, esterilización y atención veterinaria en tu municipio.\n\nTodos los servicios son gratuitos y están disponibles para ciudadanos guatemaltecos.',
+          'Conoce y accede a los servicios de la Unidad de Bienestar Animal del MAGA: atención de denuncias, jornadas de sensibilización, registros y actividades de divulgación.',
       imageUrl: 'assets/images/imagen4.jpeg',
     ),
     _Slide(
       title: 'Noticias y Actualizaciones',
       text:
-          'Mantente al día con las últimas acciones, operativos y campañas de la Unidad de Bienestar Animal. Conoce los casos resueltos, próximas jornadas de vacunación y novedades en la legislación de protección animal en Guatemala.\n\nInformación oficial, directamente desde el MAGA.',
+          'Mantente informado sobre las acciones y operativos de la Unidad de Bienestar Animal, así como sobre temas relevantes de bienestar animal en Guatemala.',
       imageUrl: 'assets/images/imagen5.jpeg',
     ),
   ];
