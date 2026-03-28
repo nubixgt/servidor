@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'denuncia_form_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import '../theme/app_theme.dart';
 
 class ReportScreen extends StatelessWidget {
@@ -33,8 +33,6 @@ class ReportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildHero(context),
-          const SizedBox(height: 48),
-          _buildIdentificationSection(context),
           const SizedBox(height: 48),
           _buildStepsSection(context),
           const SizedBox(height: 48),
@@ -122,55 +120,6 @@ class ReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildIdentificationSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Cómo identificar un animal en riesgo', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.blue.shade900)),
-        const SizedBox(height: 8),
-        const Text('Observa estos patrones que podrían indicar que un animal necesita ayuda.', style: TextStyle(color: AppColors.onSurfaceVariant)),
-        const SizedBox(height: 24),
-        _buildInfoCard(
-          'Aves Silvestres',
-          'Incapacidad de vuelo',
-          'Alas caídas, plumaje extremadamente erizado o si el ave no se inmuta ante la presencia humana.',
-          'assets/images/hero_home.jpg',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoCard(String tag, String title, String desc, String img) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(img, width: 100, height: 100, fit: BoxFit.cover),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(tag.toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.secondary, letterSpacing: 1.2)),
-                const SizedBox(height: 4),
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(desc, style: const TextStyle(fontSize: 14, color: AppColors.onSurfaceVariant)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildStepsSection(BuildContext context) {
     return Container(
