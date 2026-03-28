@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
           childAspectRatio: 0.85, // Adjusted for better vertical look
           children: [
             _buildGalleryItem('Felinos', 'Recuperación Exitosa', 'assets/images/gallery_felines.jpg'),
-            _buildGalleryItem('Decomiso', 'El Guarda', 'assets/images/onboarding_3.jpg'),
+            _buildGalleryItem('Decomiso', 'El Guarda', 'assets/images/imagen7.jpeg'),
           ],
         ),
       ],
