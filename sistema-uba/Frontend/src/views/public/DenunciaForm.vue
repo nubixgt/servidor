@@ -57,19 +57,36 @@
             <label class="label">Género</label>
             <select v-model="form.genero" class="input">
               <option value="">Seleccionar</option>
-              <option>Masculino</option>
-              <option>Femenino</option>
-              <option>Prefiero no decirlo</option>
+              <option>Hombre</option>
+              <option>Mujer</option>
             </select>
           </div>
         </div>
         <div>
           <label class="label">Celular</label>
-          <input v-model="form.celular" type="tel" class="input" placeholder="+502 0000 0000" />
+          <input v-model="form.celular" type="tel" maxlength="9" class="input" placeholder="4528-9012" @input="formatCelular" />
         </div>
         <div>
           <label class="label">Correo electrónico</label>
           <input v-model="form.correo" type="email" class="input" placeholder="correo@ejemplo.com" />
+        </div>
+
+        <!-- Fotos DPI -->
+        <div>
+          <label class="label">Fotos del DPI <span class="text-red-500">*</span> (frente y reverso)</label>
+          <p class="text-xs text-gray-400 mb-2">Adjunta frente y reverso del DPI (PNG, JPG o PDF)</p>
+          <div class="flex gap-3">
+            <label
+              v-for="n in 2" :key="n"
+              class="flex-1 border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors"
+              :class="fotosDpi[n-1] ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''"
+            >
+              <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="e => onFotoDpi(e, n-1)" />
+              <img v-if="fotosDpi[n-1] && fotosDpi[n-1].preview" :src="fotosDpi[n-1].preview" class="w-full h-20 object-cover rounded-xl" />
+              <span v-else class="material-symbols-outlined text-gray-400 text-4xl">badge</span>
+              <span class="text-xs text-gray-500 font-medium text-center truncate w-full text-center">{{ fotosDpi[n-1] ? fotosDpi[n-1].name : (n === 1 ? 'Frente' : 'Reverso') }}</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -123,6 +140,18 @@
               <input v-model="form.longitud" type="number" step="any" class="input text-sm" placeholder="-90.5069" />
             </div>
           </div>
+        </div>
+
+        <!-- Foto Fachada -->
+        <div>
+          <label class="label">Foto de la Fachada <span class="text-red-500">*</span></label>
+          <p class="text-xs text-gray-400 mb-2">Captura el lugar donde ocurrió el hecho (PNG, JPG o PDF)</p>
+          <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors" :class="fotoFachada ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''">
+            <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="onFotoFachada" />
+            <img v-if="fotoFachada && fotoFachada.preview" :src="fotoFachada.preview" class="w-full h-28 object-cover rounded-xl" />
+            <span v-else class="material-symbols-outlined text-gray-400 text-4xl">home</span>
+            <span class="text-xs text-gray-500 font-medium">{{ fotoFachada ? fotoFachada.name : 'Adjuntar imagen del lugar del hecho' }}</span>
+          </label>
         </div>
       </div>
 
@@ -185,37 +214,8 @@
         </div>
       </div>
 
-      <!-- PASO 4: Documentos y Confirmación -->
+      <!-- PASO 4: Evidencias y Envío -->
       <div v-if="paso === 4" class="flex flex-col gap-5">
-        <!-- Archivos DPI -->
-        <div>
-          <label class="label">Archivos del DPI <span class="text-red-500">*</span> (máx. 2)</label>
-          <p class="text-xs text-gray-400 mb-2">Adjunta frente y reverso del DPI (PNG, JPG o PDF)</p>
-          <div class="flex gap-3">
-            <label
-              v-for="n in 2" :key="n"
-              class="flex-1 border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors"
-              :class="fotosDpi[n-1] ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''"
-            >
-              <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="e => onFotoDpi(e, n-1)" />
-              <img v-if="fotosDpi[n-1] && fotosDpi[n-1].preview" :src="fotosDpi[n-1].preview" class="w-full h-20 object-cover rounded-xl" />
-              <span v-else class="material-symbols-outlined text-gray-400 text-4xl">badge</span>
-              <span class="text-xs text-gray-500 font-medium text-center truncate w-full text-center">{{ fotosDpi[n-1] ? fotosDpi[n-1].name : (n === 1 ? 'Frente' : 'Reverso') }}</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Archivo Fachada -->
-        <div>
-          <label class="label">Foto de la Fachada <span class="text-red-500">*</span> (PNG, JPG o PDF)</label>
-          <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors" :class="fotoFachada ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''">
-            <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="onFotoFachada" />
-            <img v-if="fotoFachada && fotoFachada.preview" :src="fotoFachada.preview" class="w-full h-28 object-cover rounded-xl" />
-            <span v-else class="material-symbols-outlined text-gray-400 text-4xl">home</span>
-            <span class="text-xs text-gray-500 font-medium">{{ fotoFachada ? fotoFachada.name : 'Adjuntar imagen del lugar del hecho' }}</span>
-          </label>
-        </div>
-
         <!-- Evidencia Fotográfica -->
         <div>
           <label class="label">Evidencia Fotográfica (máx. 5 — PNG o JPG)</label>
@@ -411,6 +411,12 @@ function formatDpi(e) {
   if (v.length > 8) v = v.slice(0, 4) + ' ' + v.slice(4, 9) + ' ' + v.slice(9)
   else if (v.length > 4) v = v.slice(0, 4) + ' ' + v.slice(4)
   form.dpi = v
+}
+
+function formatCelular(e) {
+  let v = e.target.value.replace(/\D/g, '').slice(0, 8)
+  if (v.length > 4) v = v.slice(0, 4) + '-' + v.slice(4)
+  form.celular = v
 }
 
 function crearPreview(file) {
