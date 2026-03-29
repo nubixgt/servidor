@@ -93,10 +93,6 @@
       <!-- PASO 2: Ubicación del Hecho -->
       <div v-if="paso === 2" class="flex flex-col gap-4">
         <div>
-          <label class="label">Nombre del responsable</label>
-          <input v-model="form.responsable" type="text" class="input" placeholder="Nombre del responsable del hecho" />
-        </div>
-        <div>
           <label class="label">Dirección del hecho <span class="text-red-500">*</span></label>
           <input v-model="form.direccion" type="text" class="input" placeholder="Zona 1, calle..." />
         </div>
@@ -114,30 +110,26 @@
             <option v-for="m in municipiosDisponibles" :key="m" :value="m">{{ m }}</option>
           </select>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="label">Color de la casa</label>
-            <input v-model="form.colorCasa" type="text" class="input" placeholder="Amarillo" />
-          </div>
-          <div>
-            <label class="label">Color de la puerta</label>
-            <input v-model="form.colorPuerta" type="text" class="input" placeholder="Rojo" />
-          </div>
-        </div>
-        <!-- Coordenadas manuales (sin Maps) -->
+        <!-- Punto en el mapa -->
         <div class="bg-[#f2f4f6] rounded-2xl p-4">
           <p class="font-bold text-sm text-[#0f2a4a] mb-3">
             <span class="material-symbols-outlined text-[16px] align-middle mr-1">location_on</span>
-            Coordenadas (opcional)
+            Punto en el Mapa (opcional)
           </p>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="label text-xs">Latitud</label>
-              <input v-model="form.latitud" type="number" step="any" class="input text-sm" placeholder="14.6349" />
-            </div>
-            <div>
-              <label class="label text-xs">Longitud</label>
-              <input v-model="form.longitud" type="number" step="any" class="input text-sm" placeholder="-90.5069" />
+          <!-- Sin ubicación seleccionada -->
+          <button v-if="!ubicacionSeleccionada" @click="abrirMapa" type="button"
+            class="w-full border-2 border-dashed border-gray-300 rounded-xl p-4 flex items-center justify-center gap-2 hover:border-[#0f2a4a] transition-colors bg-white">
+            <span class="material-symbols-outlined text-gray-400">add_location</span>
+            <span class="text-sm text-gray-500">Seleccionar en el mapa</span>
+          </button>
+          <!-- Ubicación confirmada -->
+          <div v-else class="flex flex-col gap-2">
+            <img :src="staticMapUrl" class="w-full h-36 object-cover rounded-xl" alt="Ubicación seleccionada" />
+            <div class="flex items-center justify-between px-1">
+              <span class="text-xs text-gray-500">{{ ubicacionSeleccionada.lat.toFixed(6) }}, {{ ubicacionSeleccionada.lng.toFixed(6) }}</span>
+              <button @click="abrirMapa" type="button" class="text-xs font-bold text-[#0f2a4a] flex items-center gap-1 hover:underline">
+                <span class="material-symbols-outlined text-[14px]">edit</span> Editar
+              </button>
             </div>
           </div>
         </div>
@@ -294,12 +286,38 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal mapa -->
+  <Teleport to="body">
+    <div v-if="mapaAbierto" class="fixed inset-0 z-[9999] flex flex-col bg-black/60">
+      <div class="bg-white px-4 py-3 flex items-center justify-between shadow">
+        <p class="font-bold text-[#0f2a4a]">Selecciona la ubicación</p>
+        <button @click="cerrarMapa" type="button">
+          <span class="material-symbols-outlined text-gray-500">close</span>
+        </button>
+      </div>
+      <div id="google-map-picker" class="flex-1 w-full"></div>
+      <div class="bg-white p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+        <p class="text-xs text-gray-400 mb-3 text-center">Toca el mapa para marcar la ubicación del hecho</p>
+        <button
+          @click="confirmarUbicacion"
+          :disabled="!mapaLatLngTemp"
+          type="button"
+          class="w-full bg-[#0f2a4a] text-white font-bold py-4 rounded-2xl disabled:opacity-40 transition-opacity"
+        >
+          Confirmar ubicación
+        </button>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
+
+const MAPS_API_KEY = 'AIzaSyDEvRwdbu0NvQHPYKeUjyCYnr7JBXaOhy4'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
@@ -328,8 +346,8 @@ const form = reactive({
   municipio: '',
   colorCasa: '',
   colorPuerta: '',
-  latitud: '',
-  longitud: '',
+  latitud: null,
+  longitud: null,
   especie: 'Caninos',
   especieOtros: '',
   cantidad: '',
@@ -405,6 +423,66 @@ const municipiosDisponibles = computed(() => {
 function onDepartamentoChange() {
   form.municipio = ''
 }
+
+// ── Google Maps ──────────────────────────────────────────────
+const mapaAbierto = ref(false)
+const mapaLatLngTemp = ref(null)
+const ubicacionSeleccionada = ref(null)
+let mapInstance = null
+let markerInstance = null
+
+const staticMapUrl = computed(() => {
+  if (!ubicacionSeleccionada.value) return ''
+  const { lat, lng } = ubicacionSeleccionada.value
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=16&size=600x300&markers=color:red%7C${lat},${lng}&key=${MAPS_API_KEY}`
+})
+
+function loadGoogleMaps() {
+  return new Promise((resolve) => {
+    if (window.google && window.google.maps) { resolve(); return }
+    const script = document.createElement('script')
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${MAPS_API_KEY}`
+    script.onload = resolve
+    document.head.appendChild(script)
+  })
+}
+
+async function abrirMapa() {
+  mapaAbierto.value = true
+  mapaLatLngTemp.value = ubicacionSeleccionada.value ? { ...ubicacionSeleccionada.value } : null
+  await loadGoogleMaps()
+  await nextTick()
+  const center = ubicacionSeleccionada.value ?? { lat: 14.6349, lng: -90.5069 }
+  mapInstance = new window.google.maps.Map(document.getElementById('google-map-picker'), {
+    center,
+    zoom: 13,
+    disableDefaultUI: true,
+    zoomControl: true,
+    clickableIcons: false,
+  })
+  if (ubicacionSeleccionada.value) {
+    markerInstance = new window.google.maps.Marker({ position: center, map: mapInstance })
+  }
+  mapInstance.addListener('click', (e) => {
+    const pos = { lat: e.latLng.lat(), lng: e.latLng.lng() }
+    mapaLatLngTemp.value = pos
+    if (markerInstance) markerInstance.setMap(null)
+    markerInstance = new window.google.maps.Marker({ position: pos, map: mapInstance })
+  })
+}
+
+function confirmarUbicacion() {
+  if (!mapaLatLngTemp.value) return
+  ubicacionSeleccionada.value = { ...mapaLatLngTemp.value }
+  form.latitud = mapaLatLngTemp.value.lat
+  form.longitud = mapaLatLngTemp.value.lng
+  mapaAbierto.value = false
+}
+
+function cerrarMapa() {
+  mapaAbierto.value = false
+}
+// ─────────────────────────────────────────────────────────────
 
 function formatDpi(e) {
   let v = e.target.value.replace(/\D/g, '').slice(0, 13)
