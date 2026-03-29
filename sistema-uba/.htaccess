@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteRule ^$ Frontend/dist/ [R=301,L]
+RewriteRule ^index\.html$ Frontend/dist/index.html [L]
