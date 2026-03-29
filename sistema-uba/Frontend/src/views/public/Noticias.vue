@@ -6,7 +6,7 @@
 
     <!-- Noticia destacada -->
     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#c3c6d6]/30 mb-8">
-      <img src="/images/onboarding_3.jpg" alt="Noticia" class="w-full h-52 object-cover" />
+      <img :src="base + 'images/gallery_felines.jpg'" alt="Noticia" class="w-full h-52 object-cover" />
       <div class="p-6">
         <span class="text-[10px] font-bold uppercase tracking-widest text-[#904d00]">Legislación Urgente</span>
         <h2 class="text-xl font-bold text-[#0f2a4a] mt-2 mb-3">Nueva Ley de Protección Animal en Guatemala</h2>
@@ -52,9 +52,10 @@
 
 <script setup>
 import { ref } from 'vue'
+const base = import.meta.env.BASE_URL
 const email = ref('')
 const recent = [
-  { title: 'Rescate de fauna silvestre en zona 14', img: '/images/onboarding_1.jpg', time: 'Hace 2 días' },
-  { title: 'Campaña de esterilización gratuita en la capital', img: '/images/onboarding_2.jpg', time: 'Hace 5 días' },
+  { title: 'Rescate de fauna silvestre en zona 14', img: base + 'images/onboarding_2.jpg', time: 'Hace 2h' },
+  { title: 'Campaña de esterilización gratuita en la capital', img: base + 'images/onboarding_4.jpg', time: 'Hace 5h' },
 ]
 </script>

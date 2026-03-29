@@ -5,8 +5,8 @@
       <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
         <!-- Logos -->
         <div class="flex items-center gap-4">
-          <img src="/images/LogoUBA3.png" alt="UBA" class="h-12 object-contain" />
-          <img src="/images/maga_logo.png" alt="MAGA" class="h-12 object-contain" />
+          <img :src="base + 'images/LogoUBA3.png'" alt="UBA" class="h-12 object-contain" />
+          <img :src="base + 'images/maga_logo.png'" alt="MAGA" class="h-12 object-contain" />
         </div>
         <!-- Links desktop -->
         <div class="hidden md:flex items-center gap-2">
@@ -27,7 +27,7 @@
       <!-- Mobile menu -->
       <div v-if="menuOpen" class="md:hidden bg-white border-t px-6 pb-4 flex flex-col gap-2">
         <router-link to="/" @click="menuOpen = false" class="nav-link-mobile">Inicio</router-link>
-        <router-link to="/como-reportar" @click="menuOpen = false" class="nav-link-mobile">Cómo Reportar</router-link>
+        <router-link to="/como-reportar" @click="menuOpen = false" class="nav-link-mobile">Denuncia</router-link>
         <router-link to="/noticias" @click="menuOpen = false" class="nav-link-mobile">Noticias</router-link>
         <router-link to="/informacion" @click="menuOpen = false" class="nav-link-mobile">Información</router-link>
         <router-link to="/denuncia" @click="menuOpen = false" class="mt-2 bg-[#8B0000] text-white font-bold px-5 py-3 rounded-full text-center">
@@ -45,7 +45,7 @@
     <footer class="bg-[#0f2a4a] text-white mt-16 py-10 px-6">
       <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-          <img src="/images/LogoUBA3.png" alt="UBA" class="h-12 object-contain brightness-0 invert" />
+          <img :src="base + 'images/LogoUBA3.png'" alt="UBA" class="h-12 object-contain brightness-0 invert" />
           <div>
             <p class="font-bold text-sm">UNIDAD DE BIENESTAR ANIMAL</p>
             <p class="text-white/60 text-xs">4A Calle 0-15, Ciudad de Guatemala</p>
@@ -60,6 +60,7 @@
 <script setup>
 import { ref } from 'vue'
 const menuOpen = ref(false)
+const base = import.meta.env.BASE_URL
 </script>
 
 <style scoped>

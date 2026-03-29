@@ -47,8 +47,9 @@
 </template>
 
 <script setup>
+const base = import.meta.env.BASE_URL
 const resources = [
-  { title: 'Protección de Quelonios', tag: 'Guía PDF', img: '/images/onboarding_1.jpg' },
-  { title: 'Aves Caídas del Nido', tag: 'Video Tutorial', img: '/images/onboarding_2.jpg' },
+  { title: 'Protección de Quelonios', tag: 'Guía PDF', img: base + 'images/onboarding_1.jpg' },
+  { title: 'Aves Caídas del Nido', tag: 'Video Tutorial', img: base + 'images/onboarding_2.jpg' },
 ]
 </script>

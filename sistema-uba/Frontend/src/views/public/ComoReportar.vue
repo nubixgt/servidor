@@ -2,7 +2,7 @@
   <div class="max-w-5xl mx-auto px-6 py-8">
     <!-- Hero -->
     <div class="relative rounded-3xl overflow-hidden h-[450px] shadow-xl mb-12">
-      <img src="/images/onboarding_3.jpg" alt="Reportar" class="w-full h-full object-cover" />
+      <img :src="base + 'images/onboarding_3.jpg'" alt="Reportar" class="w-full h-full object-cover" />
       <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
       <div class="absolute inset-0 flex flex-col justify-end p-8">
         <span class="inline-block bg-[#FFA454]/80 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4 w-fit">
@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+const base = import.meta.env.BASE_URL
 const steps = [
   { num: 1, title: 'Registro Visual', desc: 'Toma fotos o videos desde una distancia segura.' },
   { num: 2, title: 'Ubicación Precisa', desc: 'Identifica puntos de referencia cercanos.' },

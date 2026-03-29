@@ -3,7 +3,7 @@
     <!-- Header con imagen de fondo -->
     <div
       class="relative rounded-b-3xl overflow-hidden mb-8"
-      style="background-image: url('/images/BannerFormulario2.png'); background-size: cover; background-position: top;"
+      :style="`background-image: url('${base}images/BannerFormulario2.png'); background-size: cover; background-position: top;`"
     >
       <div class="absolute inset-0 bg-black/40"></div>
       <div class="relative z-10 px-6 pt-8 pb-6">
@@ -40,17 +40,6 @@
     <div class="px-4 pb-10">
       <!-- PASO 1: Información Personal -->
       <div v-if="paso === 1" class="flex flex-col gap-4">
-        <div>
-          <label class="label">Tipo de Persona</label>
-          <div class="flex gap-3 mt-1">
-            <button
-              v-for="t in ['Individual', 'Empresa']" :key="t"
-              @click="form.tipoPersona = t"
-              class="flex-1 py-3 rounded-xl border-2 font-bold text-sm transition-all"
-              :class="form.tipoPersona === t ? 'border-[#0f2a4a] bg-[#0f2a4a] text-white' : 'border-gray-200 text-gray-600'"
-            >{{ t }}</button>
-          </div>
-        </div>
         <div>
           <label class="label">Nombre completo <span class="text-red-500">*</span></label>
           <input v-model="form.nombre" type="text" class="input" placeholder="Juan Pérez García" />
@@ -198,45 +187,48 @@
 
       <!-- PASO 4: Documentos y Confirmación -->
       <div v-if="paso === 4" class="flex flex-col gap-5">
-        <!-- Fotos DPI -->
+        <!-- Archivos DPI -->
         <div>
-          <label class="label">Fotos del DPI <span class="text-red-500">*</span> (máx. 2)</label>
-          <p class="text-xs text-gray-400 mb-2">Sube frente y reverso del DPI</p>
+          <label class="label">Archivos del DPI <span class="text-red-500">*</span> (máx. 2)</label>
+          <p class="text-xs text-gray-400 mb-2">Adjunta frente y reverso del DPI (PNG, JPG o PDF)</p>
           <div class="flex gap-3">
             <label
               v-for="n in 2" :key="n"
               class="flex-1 border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors"
               :class="fotosDpi[n-1] ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''"
             >
-              <input type="file" accept="image/*" class="hidden" @change="e => onFotoDpi(e, n-1)" />
-              <img v-if="fotosDpi[n-1]" :src="fotosDpi[n-1].preview" class="w-full h-20 object-cover rounded-xl" />
-              <span v-else class="material-symbols-outlined text-gray-400 text-4xl">add_photo_alternate</span>
-              <span class="text-xs text-gray-500 font-medium">{{ n === 1 ? 'Frente' : 'Reverso' }}</span>
+              <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="e => onFotoDpi(e, n-1)" />
+              <img v-if="fotosDpi[n-1] && fotosDpi[n-1].preview" :src="fotosDpi[n-1].preview" class="w-full h-20 object-cover rounded-xl" />
+              <span v-else class="material-symbols-outlined text-gray-400 text-4xl">badge</span>
+              <span class="text-xs text-gray-500 font-medium text-center truncate w-full text-center">{{ fotosDpi[n-1] ? fotosDpi[n-1].name : (n === 1 ? 'Frente' : 'Reverso') }}</span>
             </label>
           </div>
         </div>
 
-        <!-- Foto Fachada -->
+        <!-- Archivo Fachada -->
         <div>
-          <label class="label">Foto de la Fachada <span class="text-red-500">*</span></label>
+          <label class="label">Foto de la Fachada <span class="text-red-500">*</span> (PNG, JPG o PDF)</label>
           <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer hover:border-[#0f2a4a] transition-colors" :class="fotoFachada ? 'border-[#0f2a4a] bg-[#0f2a4a]/5' : ''">
-            <input type="file" accept="image/*" class="hidden" @change="onFotoFachada" />
-            <img v-if="fotoFachada" :src="fotoFachada.preview" class="w-full h-28 object-cover rounded-xl" />
+            <input type="file" accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="onFotoFachada" />
+            <img v-if="fotoFachada && fotoFachada.preview" :src="fotoFachada.preview" class="w-full h-28 object-cover rounded-xl" />
             <span v-else class="material-symbols-outlined text-gray-400 text-4xl">home</span>
-            <span class="text-xs text-gray-500 font-medium">{{ fotoFachada ? fotoFachada.name : 'Foto del lugar del hecho' }}</span>
+            <span class="text-xs text-gray-500 font-medium">{{ fotoFachada ? fotoFachada.name : 'Adjuntar imagen del lugar del hecho' }}</span>
           </label>
         </div>
 
-        <!-- Fotos Evidencia -->
+        <!-- Evidencia Fotográfica -->
         <div>
-          <label class="label">Fotos de Evidencia (máx. 5)</label>
+          <label class="label">Evidencia Fotográfica (máx. 5 — PNG o JPG)</label>
           <div class="flex flex-wrap gap-2 mb-2">
             <div v-for="(f, i) in fotosEvidencia" :key="i" class="relative">
-              <img :src="f.preview" class="w-20 h-20 object-cover rounded-xl" />
+              <img v-if="f.preview" :src="f.preview" class="w-20 h-20 object-cover rounded-xl" />
+              <div v-else class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-gray-400">image</span>
+              </div>
               <button @click="fotosEvidencia.splice(i, 1)" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">✕</button>
             </div>
             <label v-if="fotosEvidencia.length < 5" class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-[#0f2a4a] transition-colors">
-              <input type="file" accept="image/*" class="hidden" @change="onFotoEvidencia" />
+              <input type="file" accept=".png,.jpg,.jpeg" class="hidden" @change="onFotoEvidencia" />
               <span class="material-symbols-outlined text-gray-400 text-2xl">add</span>
             </label>
           </div>
@@ -244,12 +236,12 @@
 
         <!-- Archivos Evidencia -->
         <div>
-          <label class="label">Archivos de Evidencia (máx. 5, 20MB c/u)</label>
+          <label class="label">Archivos de Evidencia (máx. 5, 20MB c/u — PNG, JPG o PDF)</label>
           <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-4 cursor-pointer hover:border-[#0f2a4a] transition-colors">
-            <input type="file" multiple accept=".pdf,.doc,.docx,.mp4,.avi" class="hidden" @change="onArchivosEvidencia" />
+            <input type="file" multiple accept=".png,.jpg,.jpeg,.pdf" class="hidden" @change="onArchivosEvidencia" />
             <div class="flex items-center gap-3">
               <span class="material-symbols-outlined text-gray-400 text-3xl">attach_file</span>
-              <span class="text-sm text-gray-500">Seleccionar documentos o videos</span>
+              <span class="text-sm text-gray-500">Adjuntar archivos de evidencia</span>
             </div>
           </label>
           <div class="flex flex-col gap-1 mt-2">
@@ -310,6 +302,7 @@ import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
 
 const router = useRouter()
+const base = import.meta.env.BASE_URL
 
 const paso = ref(1)
 const enviando = ref(false)
@@ -323,7 +316,6 @@ const stepTitles = [
 ]
 
 const form = reactive({
-  tipoPersona: 'Individual',
   nombre: '',
   dpi: '',
   edad: '',
@@ -355,10 +347,10 @@ const fotosEvidencia = ref([])
 const archivosEvidencia = ref([])
 
 const especies = [
-  { label: 'Caninos', img: '/images/Canino.png' },
-  { label: 'Felinos', img: '/images/Felino.png' },
-  { label: 'Équidos', img: '/images/Eqino.png' },
-  { label: 'Otros', img: '/images/Otros.png' },
+  { label: 'Caninos', img: base + 'images/Canino.png' },
+  { label: 'Felinos', img: base + 'images/Felino.png' },
+  { label: 'Équidos', img: base + 'images/Eqino.png' },
+  { label: 'Otros', img: base + 'images/Otros.png' },
 ]
 
 const infracciones = [
@@ -491,7 +483,6 @@ async function enviarDenuncia() {
     fd.append('genero_denunciante', form.genero)
     fd.append('celular_denunciante', form.celular)
     fd.append('correo_denunciante', form.correo)
-    fd.append('tipo_persona', form.tipoPersona)
     fd.append('responsable', form.responsable)
     fd.append('direccion_hecho', form.direccion)
     fd.append('departamento_hecho', form.departamento)
