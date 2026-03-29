@@ -2,16 +2,13 @@
   <div class="min-h-screen flex flex-col bg-[#f8fafb]">
     <!-- Navbar -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
-      <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-        <!-- Logos -->
-        <div class="flex items-center gap-4">
-          <img :src="base + 'images/LogoUBA3.png'" alt="UBA" class="h-12 object-contain" />
-          <img :src="base + 'images/maga_logo.png'" alt="MAGA" class="h-12 object-contain" />
-        </div>
-        <!-- Links desktop -->
+      <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+        <!-- Logo izquierdo -->
+        <img :src="base + 'images/LogoUBA3.png'" alt="UBA" class="h-12 object-contain" />
+        <!-- Links desktop centro -->
         <div class="hidden md:flex items-center gap-2">
           <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">Inicio</router-link>
-          <router-link to="/como-reportar" class="nav-link" :class="{ active: $route.path === '/como-reportar' }">Cómo Reportar</router-link>
+          <router-link to="/como-reportar" class="nav-link" :class="{ active: $route.path === '/como-reportar' }">Denuncia</router-link>
           <router-link to="/noticias" class="nav-link" :class="{ active: $route.path === '/noticias' }">Noticias</router-link>
           <router-link to="/informacion" class="nav-link" :class="{ active: $route.path === '/informacion' }">Información</router-link>
           <router-link to="/denuncia" class="ml-2 bg-[#8B0000] text-white font-bold px-5 py-2 rounded-full hover:bg-[#6d0000] transition-colors flex items-center gap-2">
@@ -19,10 +16,13 @@
             Realizar Denuncia
           </router-link>
         </div>
-        <!-- Hamburger mobile -->
-        <button @click="menuOpen = !menuOpen" class="md:hidden p-2">
-          <span class="material-symbols-outlined">{{ menuOpen ? 'close' : 'menu' }}</span>
-        </button>
+        <!-- Logo derecho + Hamburger mobile -->
+        <div class="flex items-center gap-3">
+          <img :src="base + 'images/maga_logo.png'" alt="MAGA" class="h-12 object-contain hidden md:block" />
+          <button @click="menuOpen = !menuOpen" class="md:hidden p-2">
+            <span class="material-symbols-outlined">{{ menuOpen ? 'close' : 'menu' }}</span>
+          </button>
+        </div>
       </div>
       <!-- Mobile menu -->
       <div v-if="menuOpen" class="md:hidden bg-white border-t px-6 pb-4 flex flex-col gap-2">

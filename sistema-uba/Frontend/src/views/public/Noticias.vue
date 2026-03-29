@@ -6,7 +6,7 @@
 
     <!-- Noticia destacada -->
     <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#c3c6d6]/30 mb-8">
-      <img :src="base + 'images/gallery_felines.jpg'" alt="Noticia" class="w-full h-52 object-cover" />
+      <img :src="base + 'images/gallery_felines.jpg'" alt="Noticia" class="w-full h-80 object-cover" />
       <div class="p-6">
         <span class="text-[10px] font-bold uppercase tracking-widest text-[#904d00]">Legislación Urgente</span>
         <h2 class="text-xl font-bold text-[#0f2a4a] mt-2 mb-3">Nueva Ley de Protección Animal en Guatemala</h2>

@@ -34,7 +34,7 @@
     <h2 class="text-2xl font-bold text-[#0f2a4a] mb-6">Recursos Destacados</h2>
     <div class="flex flex-col gap-8">
       <div v-for="resource in resources" :key="resource.title">
-        <div class="rounded-2xl overflow-hidden h-52">
+        <div class="rounded-2xl overflow-hidden h-80">
           <img :src="resource.img" :alt="resource.title" class="w-full h-full object-cover" />
         </div>
         <div class="mt-3">
