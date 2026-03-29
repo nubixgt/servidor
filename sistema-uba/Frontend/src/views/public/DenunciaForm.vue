@@ -317,7 +317,7 @@ import { ref, reactive, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api.js'
 
-const MAPS_API_KEY = 'AIzaSyDEvRwdbu0NvQHPYKeUjyCYnr7JBXaOhy4'
+const MAPS_API_KEY = 'AIzaSyDIrJkxlxMCbsyDpMVGEB3HRsy-JaV3AUU'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
