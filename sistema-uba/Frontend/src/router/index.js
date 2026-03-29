@@ -75,7 +75,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory('/sistema-uba/'),
+    history: createWebHistory('/sistema-uba/Frontend/dist/'),
     routes
 });
 

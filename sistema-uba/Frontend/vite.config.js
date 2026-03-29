@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [vue()],
-    base: '/sistema-uba/',
+    base: '/sistema-uba/Frontend/dist/',
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
