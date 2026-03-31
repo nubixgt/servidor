@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 1. Ignorar la carpeta Backend para que sus APIs sigan funcionando normalmente
+RewriteCond %{REQUEST_URI} ^/sysUBA/Backend/ [NC]
+RewriteRule ^ - [L]
+
+# 2. Redirigir silenciosamente todo el tráfico hacia Frontend/dist/
+# (Si la URL solicitada no empieza ya con Frontend/dist/)
+RewriteCond %{REQUEST_URI} !^/sysUBA/Frontend/dist/ [NC]
+RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+
+# 3. Fallback para el Vue Router (Si navegas a /login, debe cargar index.html)
+# Si el archivo/directorio no existe físicamente, mandarlo al index.html del dist
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^Frontend/dist/.*$ Frontend/dist/index.html [L]
+</IfModule>
