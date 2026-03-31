@@ -1,0 +1,15 @@
+
+/sysUBA/assets/index-CAG_vHTC.css doesn't exist at build time, it will remain unchanged to be resolved at runtime
+[31mx[39m Build failed in 172ms
+[31merror during build:
+[31m[vite]: Rollup failed to resolve import "/sysUBA/assets/index-LPKFguFI.js" from "C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/index.html".
+This is most likely unintended because it can break your application at runtime.
+If you do want to externalize this module explicitly add it to
+`build.rollupOptions.external`[31m
+    at viteWarn (file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65855:17)
+    at onRollupWarning (file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65887:5)
+    at onwarn (file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65550:7)
+    at file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/rollup/dist/es/shared/node-entry.js:21383:13
+    at Object.logger [as onLog] (file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/rollup/dist/es/shared/node-entry.js:23364:9)
+    at ModuleLoader.handleInvalidResolvedId (file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/rollup/dist/es/shared/node-entry.js:22108:26)
+    at file:///C:/Users/Migue/OneDrive/Documents/Antigravity/servidor/sysUBA/Frontend/node_modules/rollup/dist/es/shared/node-entry.js:22066:26[39m
