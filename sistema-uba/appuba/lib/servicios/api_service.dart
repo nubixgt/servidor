@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 class ApiService {
   // Ajustar a la URL de tu servidor
   // Para Android Emulator use 10.0.2.2 si es localhost
-  static const String baseUrl = 'https://m.nubix.gt/sistema-uba/Backend/api/v1';
+  static const String baseUrl = 'https://ubapp.maga.gob.gt/sistema-uba/Backend/api/v1';
 
   Future<bool> enviarDenuncia({
     required Map<String, String> data,
