@@ -434,7 +434,7 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
                         height: 220,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/images/BannerEmagro.png'),
+                            image: AssetImage('assets/images/BannerEmagro2.png'),
                             fit: BoxFit.cover,
                             alignment: Alignment.topCenter,
                           ),

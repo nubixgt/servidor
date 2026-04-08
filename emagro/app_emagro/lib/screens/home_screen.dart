@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                             height: 280, // Altura del banner
                             decoration: const BoxDecoration(
                               image: DecorationImage(
-                                image: AssetImage('assets/images/BannerEmagro.png'),
+                                image: AssetImage('assets/images/BannerEmagro2.png'),
                                 fit: BoxFit.cover,
                                 alignment: Alignment.topCenter,
                               ),

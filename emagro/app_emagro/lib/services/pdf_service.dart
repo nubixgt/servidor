@@ -27,7 +27,7 @@ class PdfService {
       final pdf = pw.Document();
       
       // Cargar logo
-      final logoBytes = await rootBundle.load('assets/images/logo_emagro.png');
+      final logoBytes = await rootBundle.load('assets/images/LogoPrincipal.png');
       final logoImage = pw.MemoryImage(logoBytes.buffer.asUint8List());
       
       // Parsear fecha

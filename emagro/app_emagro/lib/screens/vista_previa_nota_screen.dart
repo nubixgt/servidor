@@ -195,7 +195,7 @@ class _VistaPreviaNotaScreenState extends State<VistaPreviaNotaScreen> {
                         height: 220,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/images/BannerEmagro.png'),
+                            image: AssetImage('assets/images/BannerEmagro2.png'),
                             fit: BoxFit.cover,
                             alignment: Alignment.topCenter,
                           ),
@@ -318,7 +318,7 @@ class _VistaPreviaNotaScreenState extends State<VistaPreviaNotaScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                'assets/images/logo_emagro.png',
+                'assets/images/LogoPrincipal.png',
                 width: 100,
                 height: 60,
                 fit: BoxFit.contain,

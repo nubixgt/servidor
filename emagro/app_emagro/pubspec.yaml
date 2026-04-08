@@ -42,6 +42,6 @@ flutter:
 
   # Assets
   assets:
-    - assets/images/logo_emagro.png
+    - assets/images/LogoPrincipal.png
     - assets/images/Fondo.jpeg
-    - assets/images/BannerEmagro.png
+    - assets/images/BannerEmagro2.png

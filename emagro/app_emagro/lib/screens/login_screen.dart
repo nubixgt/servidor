@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     tag: 'logo_emagro',
                     child: Container(
                       child: Image.asset(
-                        'assets/images/logo_emagro.png',
+                        'assets/images/LogoPrincipal.png',
                         width: 250,
                         height: 180,
                         fit: BoxFit.contain,

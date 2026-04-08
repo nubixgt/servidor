@@ -22,8 +22,8 @@ Aplicación móvil multiplataforma (Android & iOS) desarrollada con Flutter que 
 app_emagro/
 ├── assets/
 │   └── images/
-│       ├── logo_emagro.png            # Logo de EMAGRO
-│       └── BannerEmagro.png           # Banner decorativo de cabecera
+│       ├── LogoPrincipal.png            # Logo de EMAGRO
+│       └── BannerEmagro2.png           # Banner decorativo de cabecera
 │       └── Fondo.jpeg                 # Imagen de Fondo Login
 ├── lib/
 │   ├── main.dart                      # Punto de entrada de la app

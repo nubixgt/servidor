@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               // Logo
               Image.asset(
-                'assets/images/logo_emagro.png',
+                'assets/images/LogoPrincipal.png',
                 width: 280,
                 height: 180,
                 fit: BoxFit.contain,
