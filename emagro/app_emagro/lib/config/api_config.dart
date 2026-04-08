@@ -4,7 +4,7 @@ class ApiConfig {
   // - Desarrollo local: 'http://localhost/backend_movil'
   // - XAMPP local: 'http://localhost/Emagro/backend_movil'
   // - Servidor remoto: 'https://tu-dominio.com/backend_movil'
-  static const String baseUrl = 'http://159.65.168.91/Emagro/backend_movil';
+  static const String baseUrl = 'https://m.nubix.gt/emagro/backend_movil';
   
   // Endpoints de autenticación
   static const String loginUrl = '$baseUrl/api/auth/login.php';
