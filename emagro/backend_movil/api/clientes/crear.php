@@ -56,15 +56,7 @@ if (
     exit();
 }
 
-// Validar formato de NIT (11652646-7 o CF)
-if ($data->nit !== 'CF' && !preg_match('/^\d{8}-\d{1}$/', $data->nit)) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Formato de NIT inválido. Debe ser XXXXXXXX-X o "CF"'
-    ]);
-    exit();
-}
+// Validar formato de NIT (se permite formato libre)
 
 // Validar formato de teléfono (4528-9012)
 if (!preg_match('/^\d{4}-\d{4}$/', $data->telefono)) {
