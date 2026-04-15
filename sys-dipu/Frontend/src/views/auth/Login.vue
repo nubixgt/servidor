@@ -157,15 +157,15 @@ const tecnicoCategory = ref('iniciativas');
 
 const handleLogin = () => {
     auth.login('administrador');
-    router.push('/portal/admin/dashboard');
+    router.push('/dashboard-admin');
 };
 
 const quickLogin = (role, category = null) => {
     auth.login(role, category);
     if (role === 'administrador') {
-        router.push('/portal/admin/dashboard');
+        router.push('/dashboard-admin');
     } else {
-        router.push('/portal/tecnico/dashboard');
+        router.push('/dashboard-tecnico');
     }
 };
 </script>

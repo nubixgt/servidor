@@ -37,11 +37,11 @@
 
                 <div class="pt-4 pb-2">
                     <p class="text-[10px] font-bold uppercase tracking-widest text-outline-variant px-4 mb-2">Herramientas</p>
-                    <SidebarItem icon="event" label="Calendario Global" to="/portal/herramientas/calendario" />
-                    <SidebarItem icon="view_kanban" label="Gestor de Tareas" to="/portal/herramientas/kanban" />
-                    <SidebarItem icon="inventory_2" label="Archivo Central" to="/portal/herramientas/archivo" />
-                    <SidebarItem v-if="auth.role === 'administrador'" icon="manage_accounts" label="Gestión de Usuarios" to="/portal/admin/usuarios" />
-                    <SidebarItem v-if="auth.role === 'administrador'" icon="tune" label="Configuración" to="/portal/admin/configuracion" />
+                    <SidebarItem icon="event" label="Calendario Global" to="/calendario" />
+                    <SidebarItem icon="view_kanban" label="Gestor de Tareas" to="/kanban" />
+                    <SidebarItem icon="inventory_2" label="Archivo Central" to="/archivo" />
+                    <SidebarItem v-if="auth.role === 'administrador'" icon="manage_accounts" label="Gestión de Usuarios" to="/usuarios" />
+                    <SidebarItem v-if="auth.role === 'administrador'" icon="tune" label="Configuración" to="/configuracion" />
                 </div>
             </nav>
 
@@ -115,18 +115,18 @@ watch(() => route.path, () => {
 });
 
 const CATEGORIES_DATA = [
-    { id: 'iniciativas', to: '/portal/modulos/iniciativas', icon: 'gavel', label: 'Iniciativas de Ley' },
-    { id: 'citaciones', to: '/portal/modulos/citaciones', icon: 'record_voice_over', label: 'Citaciones' },
-    { id: 'comisiones', to: '/portal/modulos/comisiones', icon: 'groups', label: 'Comisiones' },
-    { id: 'fiscalizacion', to: '/portal/modulos/fiscalizacion', icon: 'policy', label: 'Fiscalización' },
-    { id: 'compromisos', to: '/portal/modulos/compromisos', icon: 'handshake', label: 'Compromisos Distritales' },
-    { id: 'actividades', to: '/portal/modulos/actividades', icon: 'event_available', label: 'Actividades' },
-    { id: 'redes', to: '/portal/modulos/redes', icon: 'public', label: 'Redes Sociales' },
-    { id: 'afiliaciones', to: '/portal/modulos/afiliaciones', icon: 'how_to_reg', label: 'Afiliaciones Políticas' },
+    { id: 'iniciativas', to: '/iniciativas', icon: 'gavel', label: 'Iniciativas de Ley' },
+    { id: 'citaciones', to: '/citaciones', icon: 'record_voice_over', label: 'Citaciones' },
+    { id: 'comisiones', to: '/comisiones', icon: 'groups', label: 'Comisiones' },
+    { id: 'fiscalizacion', to: '/fiscalizacion', icon: 'policy', label: 'Fiscalización' },
+    { id: 'compromisos', to: '/compromisos', icon: 'handshake', label: 'Compromisos Distritales' },
+    { id: 'actividades', to: '/actividades', icon: 'event_available', label: 'Actividades' },
+    { id: 'redes', to: '/redes', icon: 'public', label: 'Redes Sociales' },
+    { id: 'afiliaciones', to: '/afiliaciones', icon: 'how_to_reg', label: 'Afiliaciones Políticas' },
 ];
 
 const dashboardRoute = computed(() => {
-    return auth.role === 'administrador' ? '/portal/admin/dashboard' : '/portal/tecnico/dashboard';
+    return auth.role === 'administrador' ? '/dashboard-admin' : '/dashboard-tecnico';
 });
 
 const visibleCategories = computed(() => {
@@ -135,9 +135,10 @@ const visibleCategories = computed(() => {
 });
 
 const themeClass = computed(() => {
-    const match = route.path.match(/\/portal\/modulos\/([^\/]+)/);
-    if (match) {
-        return `theme-${match[1]}`;
+    const moduleNames = ['iniciativas', 'citaciones', 'comisiones', 'fiscalizacion', 'compromisos', 'actividades', 'redes', 'afiliaciones'];
+    const current = route.path.replace('/', '');
+    if (moduleNames.includes(current)) {
+        return `theme-${current}`;
     }
     return '';
 });
