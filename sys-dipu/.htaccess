@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /sys-dipu/
+
+    # Si es una petición a Backend, no hacer nada (para el futuro)
+    RewriteCond %{REQUEST_URI} ^/sys-dipu/Backend/
+    RewriteRule ^ - [L]
+
+    # Redirigir peticiones de assets al directorio dist
+    RewriteCond %{REQUEST_URI} ^/sys-dipu/assets/
+    RewriteRule ^assets/(.*)$ Frontend/dist/assets/$1 [L]
+
+    # Para cualquier otra ruta, si no existe el archivo real, mandar a index.html (Vue Router)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ Frontend/dist/index.html [L]
+
+    # Ruta base
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>
