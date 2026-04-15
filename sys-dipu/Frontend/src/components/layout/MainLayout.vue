@@ -1,7 +1,10 @@
 <template>
     <div :class="['bg-surface text-on-surface min-h-screen font-body flex transition-colors duration-500', themeClass]">
+        <!-- Mobile Sidebar Overlay -->
+        <div v-if="isMobileMenuOpen" @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"></div>
+        
         <!-- Sidebar -->
-        <aside class="w-72 fixed left-0 top-0 h-full bg-surface-container-lowest flex flex-col p-6 z-40 border-r border-surface-container-low">
+        <aside :class="['w-72 fixed left-0 top-0 h-full bg-surface-container-lowest flex flex-col p-6 z-50 border-r border-surface-container-low transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <div class="mb-8 px-4">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-dim flex items-center justify-center text-on-primary shadow-sm">
@@ -55,11 +58,15 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="ml-72 flex-1 flex flex-col min-h-screen">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-72 w-full transition-all duration-300 overflow-x-hidden">
             <!-- Top Navbar -->
-            <header class="sticky top-0 z-30 glass-header px-10 py-4 flex justify-between items-center border-b border-surface-container-low/50">
-                <div class="flex items-center gap-8">
-                    <span class="text-xl font-bold text-on-surface uppercase tracking-widest font-headline opacity-0">Ethereal Bureau</span>
+            <header class="sticky top-0 z-30 glass-header px-4 lg:px-10 py-4 flex justify-between items-center border-b border-surface-container-low/50">
+                <div class="flex items-center gap-4 lg:gap-8">
+                    <!-- Mobile Menu Button -->
+                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="w-10 h-10 flex lg:hidden items-center justify-center rounded-full hover:bg-surface-container-low transition-all duration-300 text-on-surface-variant">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <span class="text-xl font-bold text-on-surface uppercase tracking-widest font-headline opacity-0 hidden lg:block">Ethereal Bureau</span>
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="relative group hidden md:block">
@@ -83,7 +90,7 @@
             </header>
 
             <!-- View Container -->
-            <main class="p-10 flex-1">
+            <main class="p-4 lg:p-10 flex-1 overflow-x-hidden w-full max-w-full">
                 <router-view></router-view>
             </main>
         </div>
@@ -91,7 +98,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter, useRoute } from 'vue-router';
 import SidebarItem from './SidebarItem.vue';
@@ -99,6 +106,13 @@ import SidebarItem from './SidebarItem.vue';
 const auth = useAuthStore();
 const router = useRouter();
 const route = useRoute();
+
+const isMobileMenuOpen = ref(false);
+
+// Close menu when route changes
+watch(() => route.path, () => {
+    isMobileMenuOpen.value = false;
+});
 
 const CATEGORIES_DATA = [
     { id: 'iniciativas', to: '/portal/modulos/iniciativas', icon: 'gavel', label: 'Iniciativas de Ley' },

@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-10">
         <!-- Header Section -->
-        <div class="flex justify-between items-end">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
                 <h2 class="text-2xl font-extrabold text-on-surface tracking-tight font-headline">Dashboard Administrador</h2>
                 <p class="text-on-surface-variant/60 text-sm font-medium mt-1">Vista global de la gestión legislativa</p>
