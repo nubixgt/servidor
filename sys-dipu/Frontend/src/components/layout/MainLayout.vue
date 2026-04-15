@@ -58,7 +58,7 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-72 w-full transition-all duration-300 overflow-x-hidden">
+        <div class="flex-1 flex flex-col min-h-screen lg:ml-72 w-full transition-all duration-300">
             <!-- Top Navbar -->
             <header class="sticky top-0 z-30 glass-header px-4 lg:px-10 py-4 flex justify-between items-center border-b border-surface-container-low/50">
                 <div class="flex items-center gap-4 lg:gap-8">
@@ -90,7 +90,7 @@
             </header>
 
             <!-- View Container -->
-            <main class="p-4 lg:p-10 flex-1 overflow-x-hidden w-full max-w-full">
+            <main class="p-4 lg:p-10 flex-1">
                 <router-view></router-view>
             </main>
         </div>

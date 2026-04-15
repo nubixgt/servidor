@@ -85,7 +85,9 @@
         <!-- Data Table -->
         <div class="bg-surface-container-lowest rounded-2xl shadow-[0_8px_30px_rgba(43,52,55,0.04)] border border-outline-variant/10 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <div class="w-full overflow-x-auto pb-4">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+
                     <thead>
                         <tr class="bg-surface-container-low/50 border-b border-outline-variant/20">
                             <th class="p-4 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Expediente</th>
@@ -129,7 +131,9 @@
                             </td>
                         </tr>
                     </tbody>
+                
                 </table>
+            </div>
             </div>
             <!-- Pagination -->
             <div class="p-4 border-t border-outline-variant/10 flex items-center justify-between bg-surface-container-lowest">

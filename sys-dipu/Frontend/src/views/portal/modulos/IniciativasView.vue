@@ -70,7 +70,9 @@
         <!-- Table -->
         <div class="bg-surface-container-lowest rounded-2xl overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <div class="w-full overflow-x-auto pb-4">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+
                     <thead>
                         <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest font-bold">
                             <th class="px-8 py-5">Referencia</th>
@@ -167,7 +169,9 @@
                             </td>
                         </tr>
                     </tbody>
+                
                 </table>
+            </div>
             </div>
             <!-- Pagination -->
             <div class="px-8 py-5 border-t border-surface-container flex items-center justify-between">

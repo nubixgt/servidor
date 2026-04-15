@@ -34,7 +34,9 @@
                         </div>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <div class="w-full overflow-x-auto pb-4">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+
                             <thead>
                                 <tr class="bg-surface-container-lowest border-b border-surface-container-high">
                                     <th class="px-8 py-5 text-[10px] font-bold text-outline uppercase tracking-wider">Identidad</th>
@@ -109,7 +111,9 @@
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
+                        
+                </table>
+            </div>
                     </div>
                     <div class="px-8 py-5 border-t border-surface-container-low flex items-center justify-between">
                         <span class="text-xs text-outline font-medium italic">142 registros encontrados</span>
