@@ -6,10 +6,7 @@
                 <p class="text-on-surface-variant text-lg leading-relaxed">Administración de accesos, roles y permisos para el personal del despacho y equipo técnico.</p>
             </div>
             <div class="flex items-center gap-3">
-                <button class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest active:scale-95">
-                    <span class="material-symbols-outlined text-xl">ios_share</span> Exportar
-                </button>
-                <button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl active:scale-95">
+                <button @click="showUserModal = true" class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl active:scale-95">
                     <span class="material-symbols-outlined text-xl">person_add</span> Nuevo Usuario
                 </button>
             </div>
@@ -83,7 +80,7 @@
                                 <p class="text-on-surface-variant font-medium">No se encontraron usuarios que coincidan con la búsqueda...</p>
                             </td>
                         </tr>
-                        <tr v-for="user in paginatedUsuarios" :key="user.id" class="group hover:bg-surface-container-low transition-colors border-b border-outline-variant/10 last:border-0">
+                        <tr v-for="user in paginatedUsuarios" :key="user.id" class="group hover:bg-surface-container-low transition-colors border-b border-outline-variant/10 last:border-0" :class="{'opacity-60 grayscale': user.estado == 0}">
                             <td class="px-8 py-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm shadow-sm ring-1 ring-secondary-container/50">
@@ -114,6 +111,9 @@
                             </td>
                             <td class="px-8 py-6 text-right">
                                 <div class="flex items-center justify-end gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    <button @click="toggleStatus(user)" class="p-2 text-on-surface-variant transition-colors rounded-lg hover:bg-surface-container" :class="user.estado == 1 ? 'hover:text-error' : 'hover:text-primary'" :title="user.estado == 1 ? 'Desactivar Usuario' : 'Activar Usuario'">
+                                        <span class="material-symbols-outlined text-[1.3rem]">{{ user.estado == 1 ? 'block' : 'check_circle' }}</span>
+                                    </button>
                                     <button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container" title="Editar">
                                         <span class="material-symbols-outlined text-[1.3rem]">edit</span>
                                     </button>
@@ -148,6 +148,62 @@
                 </div>
             </div>
         </div>
+
+        <!-- Create User Modal -->
+        <div v-if="showUserModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div class="bg-surface-container-lowest rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+                <div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-on-surface font-headline">Nuevo Usuario</h3>
+                    <button @click="closeModal" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto flex-1">
+                    <form id="createUserForm" @submit.prevent="submitUsuario" class="space-y-5">
+                        <div>
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Nombre Completo</label>
+                            <input v-model="newUser.nombre_completo" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Ej. Carlos Mendoza" type="text" />
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Nombre de Usuario (Para acceder)</label>
+                            <input v-model="newUser.usuario" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none font-mono" placeholder="Ej. carlos_m" type="text" />
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Contraseña Temporal</label>
+                            <input v-model="newUser.password_hash" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="••••••••" type="password" />
+                        </div>
+                        <div>
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Rol de Sistema</label>
+                            <select v-model="newUser.rol" class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 outline-none font-medium">
+                                <option value="tecnico">Técnico</option>
+                                <option value="administrador">Administrador (Puede ver todo)</option>
+                            </select>
+                        </div>
+                        <div v-if="newUser.rol === 'tecnico'">
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Categoría Asignada</label>
+                            <select v-model="newUser.categoria_asignada" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 outline-none text-sm font-medium">
+                                <option value="" disabled selected>Seleccione el módulo permitido...</option>
+                                <option value="iniciativas">Iniciativas de Ley</option>
+                                <option value="citaciones">Citaciones</option>
+                                <option value="comisiones">Comisiones y Gabinetes</option>
+                                <option value="fiscalizacion">Fiscalización Constante</option>
+                                <option value="compromisos">Manejo de Compromisos</option>
+                                <option value="actividades">Actividades Web</option>
+                                <option value="redes">Redes Sociales</option>
+                                <option value="afiliaciones">Afiliaciones</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="p-6 border-t border-outline-variant/20 bg-surface-container flex justify-end gap-3">
+                    <button @click="closeModal" type="button" class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg transition-colors hover:bg-surface-container-highest">Cancelar</button>
+                    <button type="submit" form="createUserForm" :disabled="isSubmitting" class="px-6 py-2.5 bg-primary text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-md transition-all hover:shadow-lg disabled:opacity-50 active:scale-95">
+                        <span v-if="isSubmitting" class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                        <span>Guardar Usuario</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -166,13 +222,22 @@ const filterRole = ref('Todos');
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
+// Estado del Modal de Creación
+const showUserModal = ref(false);
+const isSubmitting = ref(false);
+const newUser = ref({
+    nombre_completo: '',
+    usuario: '',
+    password_hash: '',
+    rol: 'tecnico',
+    categoria_asignada: ''
+});
+
 // Obtener Usuarios (REST GET)
 const fetchUsuarios = async () => {
     try {
         const response = await fetch(`${API_URL}/usuarios`, {
-            headers: {
-                'Authorization': `Bearer ${authStore.token || ''}`
-            }
+            headers: { 'Authorization': `Bearer ${authStore.token || ''}` }
         });
         const result = await response.json();
         if(result.status === 'success') {
@@ -180,7 +245,6 @@ const fetchUsuarios = async () => {
         }
     } catch(err) {
         console.error('Error fetching usuarios:', err);
-        Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Fallo al descargar usuarios', showConfirmButton: false, timer: 3000 });
     }
 };
 
@@ -193,15 +257,94 @@ watch([searchQuery, filterRole], () => {
     currentPage.value = 1;
 });
 
-// Función de Borrado Físico con SweetAlert2
+// Cerrar y limpiar modal
+const closeModal = () => {
+    showUserModal.value = false;
+    newUser.value = {
+        nombre_completo: '', usuario: '', password_hash: '', rol: 'tecnico', categoria_asignada: ''
+    };
+};
+
+// ============================================
+// LÓGICA DE MUTACIONES HTTP (POST / PUT / DELETE)
+// ============================================
+
+const submitUsuario = async () => {
+    isSubmitting.value = true;
+    try {
+        const payload = { ...newUser.value };
+        const response = await fetch(`${API_URL}/usuarios`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authStore.token || ''}` 
+            },
+            body: JSON.stringify(payload)
+        });
+        const resData = await response.json();
+        
+        if (response.ok && resData.status === 'success') {
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Usuario Creado', showConfirmButton: false, timer: 3000 });
+            closeModal();
+            fetchUsuarios();
+        } else {
+            Swal.fire('Atención', resData.error || 'No se pudo crear el usuario.', 'warning');
+        }
+    } catch(e) {
+        Swal.fire('Error', 'Falla en la conexión.', 'error');
+    } finally {
+        isSubmitting.value = false;
+    }
+};
+
+const toggleStatus = async (user) => {
+    const newState = user.estado == 1 ? 0 : 1;
+    const actionText = newState == 1 ? 'activar' : 'desactivar';
+    const confirmBtnColor = newState == 1 ? '#005D6B' : '#BA1A1A';
+
+    Swal.fire({
+        title: `¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} acceso?`,
+        html: `Estás a punto de ${actionText} los accesos de <b>${user.nombre_completo}</b>.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: confirmBtnColor,
+        cancelButtonColor: '#40484C',
+        confirmButtonText: `Sí, ${actionText}`,
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`${API_URL}/usuarios/${user.id}/toggle`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authStore.token || ''}` 
+                    },
+                    body: JSON.stringify({ estado: newState })
+                });
+                const resData = await response.json();
+                
+                if (response.ok && resData.status === 'success') {
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Estado actualizado', showConfirmButton: false, timer: 2000 });
+                    fetchUsuarios();
+                } else {
+                    Swal.fire('Error', resData.error || 'No se pudo actualizar.', 'error');
+                }
+            } catch(e) {
+                Swal.fire('Falla de red', 'No hay conexión con el servidor.', 'error');
+            }
+        }
+    });
+};
+
 const confirmDelete = (user) => {
     Swal.fire({
         title: 'Borrado Definitivo',
         html: `Estás a punto de eliminar a <b>${user.nombre_completo}</b> (@${user.usuario}).<br/><br/>Esta acción borrará físicamente el registro y no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#BA1A1A', // Color Error System
-        cancelButtonColor: '#40484C', // Color Superficie Neutra
+        confirmButtonColor: '#BA1A1A',
+        cancelButtonColor: '#40484C', 
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'No, cancelar'
     }).then(async (result) => {
@@ -214,15 +357,10 @@ const confirmDelete = (user) => {
                 const resData = await response.json();
                 
                 if (response.ok && resData.status === 'success') {
-                    Swal.fire({
-                        title: '¡Eliminado!',
-                        text: 'El usuario ha sido erradicado del sistema.',
-                        icon: 'success',
-                        confirmButtonColor: '#005D6B'
-                    });
-                    fetchUsuarios(); // Recargar la tabla instántaneamente
+                    Swal.fire({ title: '¡Eliminado!', text: 'El usuario ha sido erradicado del sistema.', icon: 'success', confirmButtonColor: '#005D6B' });
+                    fetchUsuarios();
                 } else {
-                    Swal.fire('Error', resData.error || 'No se pudo procesar la solicitud.', 'error');
+                    Swal.fire('Error', resData.error || 'No se pudo procesar.', 'error');
                 }
             } catch(e) {
                 Swal.fire('Falla de red', 'No hay conexión con el servidor MySQL.', 'error');
@@ -232,10 +370,9 @@ const confirmDelete = (user) => {
 };
 
 // ============================================
-// LÓGICA COMPUTADA (CLIENT-SIDE RENDERING MÁGICO)
+// LÓGICA COMPUTADA (CLIENT-SIDE RENDERING)
 // ============================================
 
-// Utilizada para sacar iniciales del nombre
 const getInitials = (name) => {
     if(!name) return 'U';
     const parts = name.trim().split(' ').filter(n => n.length > 0);
@@ -247,10 +384,8 @@ const getInitials = (name) => {
 
 const filteredUsuarios = computed(() => {
     return usuarios.value.filter(user => {
-        // Buscador por nombre de pila y nombre de cuenta
         const matchesSearch = user.nombre_completo.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
                               user.usuario.toLowerCase().includes(searchQuery.value.toLowerCase());
-        // Filtrado por Pestañas
         const matchesRole = filterRole.value === 'Todos' || user.rol === filterRole.value;
         return matchesSearch && matchesRole;
     });
@@ -264,7 +399,6 @@ const paginatedUsuarios = computed(() => {
     return filteredUsuarios.value.slice(start, end);
 });
 
-// KPIs Estadísticas Superiores
 const administradoresCount = computed(() => usuarios.value.filter(u => u.rol === 'administrador').length);
 const tecnicosCount = computed(() => usuarios.value.filter(u => u.rol === 'tecnico').length);
 const inactivosCount = computed(() => usuarios.value.filter(u => u.estado == 0).length);
