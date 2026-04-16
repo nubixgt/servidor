@@ -16,12 +16,3 @@ CREATE TABLE IF NOT EXISTS usuarios (
     ultimo_acceso DATETIME NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Registros Iniciales: admin → "admin123" | tecnico1 → "iniciativas"
-INSERT INTO usuarios (nombre_completo, usuario, password_hash, rol, categoria_asignada)
-VALUES ('Admin General', 'admin', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'administrador', NULL)
-ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);
-
-INSERT INTO usuarios (nombre_completo, usuario, password_hash, rol, categoria_asignada)
-VALUES ('Tecnico Iniciativas', 'tecnico1', '$2y$10$A1BYLelZPMYNy86HrZGNhOKyxKIUCTYoMUfm0.M1BWnO7WpULLdNW', 'tecnico', 'iniciativas')
-ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);

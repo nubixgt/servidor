@@ -77,12 +77,6 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me -->
-                    <div class="flex items-center space-x-2 px-1">
-                        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20 bg-surface-container" />
-                        <label for="remember" class="text-sm text-on-surface-variant cursor-pointer select-none">Recordar mi sesión</label>
-                    </div>
-
                     <!-- Submit Button -->
                     <button type="submit" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-primary-dim text-white font-bold rounded-xl shadow-md hover:shadow-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center space-x-2">
                         <span>Entrar</span>
