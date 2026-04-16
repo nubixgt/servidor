@@ -30,12 +30,6 @@
                     <h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Acceso Administrativo</h2>
                     <p class="text-on-surface-variant text-sm">Ingrese sus credenciales para continuar.</p>
                 </div>
-                
-                <!-- Error Message Alert -->
-                <div v-if="errorMessage" class="mb-6 p-4 bg-error-container/10 border border-error/20 rounded-xl flex items-start gap-3">
-                    <span class="material-symbols-outlined text-error">error</span>
-                    <p class="text-sm font-medium text-error leading-tight mt-0.5">{{ errorMessage }}</p>
-                </div>
 
                 <form class="space-y-6" @submit.prevent="handleLogin">
                     <!-- Username Field -->
@@ -97,41 +91,7 @@
                 </form>
             </div>
 
-            <!-- Test Buttons -->
-            <div class="mt-8 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10 shadow-sm">
-                <h3 class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 text-center">Ingreso Rápido (Pruebas)</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <button
-                        @click="quickLogin('administrador')"
-                        class="py-3 px-4 bg-primary-container text-on-primary-container text-xs font-bold rounded-xl hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2"
-                    >
-                        <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-                        Ingresar como Administrador (Diputado)
-                    </button>
-                    <div class="flex gap-2">
-                        <button
-                            @click="quickLogin('tecnico', tecnicoCategory)"
-                            class="flex-1 py-3 px-4 bg-secondary-container text-on-secondary-container text-xs font-bold rounded-xl hover:bg-secondary hover:text-white transition-colors flex items-center justify-center gap-2"
-                        >
-                            <span class="material-symbols-outlined text-sm">manage_accounts</span>
-                            Ingresar como Técnico
-                        </button>
-                        <select
-                            v-model="tecnicoCategory"
-                            class="bg-surface-container-low border-none rounded-xl text-xs font-bold text-on-surface px-3 focus:ring-2 focus:ring-primary/20 outline-none"
-                        >
-                            <option value="iniciativas">Iniciativas</option>
-                            <option value="citaciones">Citaciones</option>
-                            <option value="comisiones">Comisiones</option>
-                            <option value="fiscalizacion">Fiscalización</option>
-                            <option value="compromisos">Compromisos</option>
-                            <option value="actividades">Actividades</option>
-                            <option value="redes">Redes</option>
-                            <option value="afiliaciones">Afiliaciones</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Footer -->
             <div class="mt-10 text-center space-y-4">
@@ -154,18 +114,15 @@
 import { ref } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const auth = useAuthStore();
 const router = useRouter();
 
 const username = ref('');
 const password = ref('');
-const tecnicoCategory = ref('iniciativas');
-
-const errorMessage = ref('');
 
 const handleLogin = async () => {
-    errorMessage.value = '';
     try {
         const user = await auth.login(username.value, password.value);
         if (user.rol === 'administrador') {
@@ -174,16 +131,12 @@ const handleLogin = async () => {
             router.push('/dashboard-tecnico');
         }
     } catch (err) {
-        errorMessage.value = err.message || 'Error de conexión con el servidor.';
-    }
-};
-
-const quickLogin = (role, category = null) => {
-    auth.quickLogin(role, category);
-    if (role === 'administrador') {
-        router.push('/dashboard-admin');
-    } else {
-        router.push('/dashboard-tecnico');
+        Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: err.message || 'Error de conexión con el servidor.',
+            confirmButtonColor: '#005D6B',
+        });
     }
 };
 </script>
