@@ -30,6 +30,13 @@
                     <h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Acceso Administrativo</h2>
                     <p class="text-on-surface-variant text-sm">Ingrese sus credenciales para continuar.</p>
                 </div>
+                
+                <!-- Error Message Alert -->
+                <div v-if="errorMessage" class="mb-6 p-4 bg-error-container/10 border border-error/20 rounded-xl flex items-start gap-3">
+                    <span class="material-symbols-outlined text-error">error</span>
+                    <p class="text-sm font-medium text-error leading-tight mt-0.5">{{ errorMessage }}</p>
+                </div>
+
                 <form class="space-y-6" @submit.prevent="handleLogin">
                     <!-- Username Field -->
                     <div class="space-y-2">
@@ -155,13 +162,24 @@ const username = ref('');
 const password = ref('');
 const tecnicoCategory = ref('iniciativas');
 
-const handleLogin = () => {
-    auth.login('administrador');
-    router.push('/dashboard-admin');
+const errorMessage = ref('');
+
+const handleLogin = async () => {
+    errorMessage.value = '';
+    try {
+        const user = await auth.login(username.value, password.value);
+        if (user.rol === 'administrador') {
+            router.push('/dashboard-admin');
+        } else {
+            router.push('/dashboard-tecnico');
+        }
+    } catch (err) {
+        errorMessage.value = err.message || 'Error de conexión con el servidor.';
+    }
 };
 
 const quickLogin = (role, category = null) => {
-    auth.login(role, category);
+    auth.quickLogin(role, category);
     if (role === 'administrador') {
         router.push('/dashboard-admin');
     } else {
