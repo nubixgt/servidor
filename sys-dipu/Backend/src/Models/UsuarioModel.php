@@ -62,4 +62,25 @@ class UsuarioModel
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function update($id, $data)
+    {
+        $query = "UPDATE usuarios SET nombre_completo = :nombre, rol = :rol, categoria_asignada = :categoria";
+        $params = [
+            ':nombre' => $data['nombre_completo'],
+            ':rol' => $data['rol'],
+            ':categoria' => $data['categoria_asignada'],
+            ':id' => $id
+        ];
+
+        if (!empty($data['password_hash'])) {
+            $query .= ", password_hash = :password";
+            $params[':password'] = $data['password_hash'];
+        }
+
+        $query .= " WHERE id = :id";
+        
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute($params);
+    }
 }

@@ -89,4 +89,39 @@ class UsuariosController extends Controller
             $this->json(['error' => 'No se pudo actualizar el estado'], 500);
         }
     }
+
+    #[Route('/usuarios/{id}', 'PUT')]
+    public function update($id)
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        // Validate basic fields (usuario is not updated, so we ignore it)
+        if (empty($data['nombre_completo']) || empty($data['rol'])) {
+            $this->json(['error' => 'Faltan campos obligatorios'], 400);
+            return;
+        }
+
+        // Hash password only if provided
+        if (!empty($data['password_hash'])) {
+            $data['password_hash'] = password_hash($data['password_hash'], PASSWORD_BCRYPT);
+        }
+
+        // Sanitize categoria if rol is admin
+        if ($data['rol'] === 'administrador') {
+            $data['categoria_asignada'] = null;
+        }
+
+        $model = new UsuarioModel();
+
+        try {
+            $success = $model->update((int)$id, $data);
+            if ($success) {
+                $this->json(['status' => 'success', 'message' => 'Usuario actualizado exitosamente']);
+            } else {
+                $this->json(['error' => 'No se pudo actualizar el usuario'], 500);
+            }
+        } catch (\PDOException $e) {
+            $this->json(['error' => 'Error en la base de datos'], 500);
+        }
+    }
 }

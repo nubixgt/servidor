@@ -114,7 +114,7 @@
                                     <button @click="toggleStatus(user)" class="p-2 text-on-surface-variant transition-colors rounded-lg hover:bg-surface-container" :class="user.estado == 1 ? 'hover:text-error' : 'hover:text-primary'" :title="user.estado == 1 ? 'Desactivar Usuario' : 'Activar Usuario'">
                                         <span class="material-symbols-outlined text-[1.3rem]">{{ user.estado == 1 ? 'block' : 'check_circle' }}</span>
                                     </button>
-                                    <button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container" title="Editar">
+                                    <button @click="openEditModal(user)" class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container" title="Editar">
                                         <span class="material-symbols-outlined text-[1.3rem]">edit</span>
                                     </button>
                                     <button @click="confirmDelete(user)" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error-container/50" title="Eliminar definitivamente">
@@ -149,11 +149,11 @@
             </div>
         </div>
 
-        <!-- Create User Modal -->
+        <!-- Create/Edit User Modal -->
         <div v-if="showUserModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div class="bg-surface-container-lowest rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
                 <div class="p-6 border-b border-outline-variant/20 flex items-center justify-between">
-                    <h3 class="text-xl font-bold text-on-surface font-headline">Nuevo Usuario</h3>
+                    <h3 class="text-xl font-bold text-on-surface font-headline">{{ editMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
                     <button @click="closeModal" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors">
                         <span class="material-symbols-outlined text-sm">close</span>
                     </button>
@@ -166,11 +166,11 @@
                         </div>
                         <div>
                             <label class="text-sm font-bold text-on-surface-variant mb-1 block">Nombre de Usuario (Para acceder)</label>
-                            <input v-model="newUser.usuario" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none font-mono" placeholder="Ej. carlos_m" type="text" />
+                            <input v-model="newUser.usuario" :disabled="editMode" :required="!editMode" class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none font-mono disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Ej. carlos_m" type="text" />
                         </div>
                         <div>
-                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Contraseña Temporal</label>
-                            <input v-model="newUser.password_hash" required class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="••••••••" type="password" />
+                            <label class="text-sm font-bold text-on-surface-variant mb-1 block">Contraseña {{ editMode ? '(Dejar vacío para no cambiar)' : 'Temporal' }}</label>
+                            <input v-model="newUser.password_hash" :required="!editMode" class="w-full px-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant/50 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="••••••••" type="password" />
                         </div>
                         <div>
                             <label class="text-sm font-bold text-on-surface-variant mb-1 block">Rol de Sistema</label>
@@ -222,9 +222,11 @@ const filterRole = ref('Todos');
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-// Estado del Modal de Creación
+// Estado del Modal de Creación/Edición
 const showUserModal = ref(false);
 const isSubmitting = ref(false);
+const editMode = ref(false);
+const editUserId = ref(null);
 const newUser = ref({
     nombre_completo: '',
     usuario: '',
@@ -257,9 +259,25 @@ watch([searchQuery, filterRole], () => {
     currentPage.value = 1;
 });
 
+// Abrir Modal Edición
+const openEditModal = (user) => {
+    editMode.value = true;
+    editUserId.value = user.id;
+    newUser.value = {
+        nombre_completo: user.nombre_completo,
+        usuario: user.usuario,
+        password_hash: '', // opcional 
+        rol: user.rol,
+        categoria_asignada: user.categoria_asignada || ''
+    };
+    showUserModal.value = true;
+};
+
 // Cerrar y limpiar modal
 const closeModal = () => {
     showUserModal.value = false;
+    editMode.value = false;
+    editUserId.value = null;
     newUser.value = {
         nombre_completo: '', usuario: '', password_hash: '', rol: 'tecnico', categoria_asignada: ''
     };
@@ -273,8 +291,12 @@ const submitUsuario = async () => {
     isSubmitting.value = true;
     try {
         const payload = { ...newUser.value };
-        const response = await fetch(`${API_URL}/usuarios`, {
-            method: 'POST',
+        
+        const url = editMode.value ? `${API_URL}/usuarios/${editUserId.value}` : `${API_URL}/usuarios`;
+        const method = editMode.value ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${authStore.token || ''}` 
@@ -284,11 +306,11 @@ const submitUsuario = async () => {
         const resData = await response.json();
         
         if (response.ok && resData.status === 'success') {
-            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Usuario Creado', showConfirmButton: false, timer: 3000 });
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: editMode.value ? 'Usuario Actualizado' : 'Usuario Creado', showConfirmButton: false, timer: 3000 });
             closeModal();
             fetchUsuarios();
         } else {
-            Swal.fire('Atención', resData.error || 'No se pudo crear el usuario.', 'warning');
+            Swal.fire('Atención', resData.error || 'No se pudo guardar el usuario.', 'warning');
         }
     } catch(e) {
         Swal.fire('Error', 'Falla en la conexión.', 'error');
