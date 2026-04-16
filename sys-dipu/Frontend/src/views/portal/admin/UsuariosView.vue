@@ -14,12 +14,14 @@
                 </button>
             </div>
         </header>
+
+        <!-- KPI Cards -->
         <div class="grid grid-cols-12 gap-6 mb-10">
             <div class="col-span-12 lg:col-span-4 bg-surface-container-low rounded-2xl p-6 flex flex-col justify-between min-h-[160px]">
                 <span class="text-on-surface-variant font-medium text-sm uppercase tracking-wider">Total Usuarios</span>
                 <div class="flex items-baseline gap-2">
-                    <span class="text-5xl font-extrabold text-on-surface font-headline">24</span>
-                    <span class="text-primary font-bold text-sm">Activos</span>
+                    <span class="text-5xl font-extrabold text-on-surface font-headline">{{ filteredUsuarios.length }}</span>
+                    <span class="text-primary font-bold text-sm">Mostrados</span>
                 </div>
             </div>
             <div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -28,43 +30,42 @@
                         <span class="text-on-surface-variant font-medium text-sm">Administradores</span>
                         <span class="w-2 h-2 rounded-full bg-tertiary"></span>
                     </div>
-                    <span class="text-3xl font-bold text-on-surface font-headline">2</span>
+                    <span class="text-3xl font-bold text-on-surface font-headline">{{ administradoresCount }}</span>
                 </div>
                 <div class="bg-surface-container rounded-2xl p-6 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <span class="text-on-surface-variant font-medium text-sm">Técnicos</span>
                         <span class="w-2 h-2 rounded-full bg-primary"></span>
                     </div>
-                    <span class="text-3xl font-bold text-on-surface font-headline">18</span>
+                    <span class="text-3xl font-bold text-on-surface font-headline">{{ tecnicosCount }}</span>
                 </div>
                 <div class="bg-surface-container rounded-2xl p-6 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <span class="text-on-surface-variant font-medium text-sm">Inactivos</span>
                         <span class="w-2 h-2 rounded-full bg-error"></span>
                     </div>
-                    <span class="text-3xl font-bold text-on-surface font-headline">4</span>
+                    <span class="text-3xl font-bold text-on-surface font-headline">{{ inactivosCount }}</span>
                 </div>
             </div>
         </div>
+
+        <!-- Filters -->
         <div class="flex flex-wrap items-center gap-4 mb-8">
             <div class="relative flex-1 min-w-[300px]">
                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                <input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Buscar por nombre, correo o rol..." type="text" />
+                <input v-model="searchQuery" class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Buscar por usuario o nombre..." type="text" />
             </div>
-            <div class="flex items-center bg-surface-container-low p-1.5 rounded-xl gap-1">
-                <button class="px-4 py-2 bg-surface-container-lowest text-on-surface text-sm font-semibold rounded-lg shadow-sm">Todos</button>
-                <button class="px-4 py-2 text-on-surface-variant text-sm font-medium hover:text-on-surface transition-colors">Administradores</button>
-                <button class="px-4 py-2 text-on-surface-variant text-sm font-medium hover:text-on-surface transition-colors">Técnicos</button>
+            <div class="flex items-center bg-surface-container-low p-1.5 rounded-xl gap-1 overflow-x-auto">
+                <button @click="filterRole = 'Todos'" :class="filterRole === 'Todos' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'" class="px-4 py-2 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap">Todos</button>
+                <button @click="filterRole = 'administrador'" :class="filterRole === 'administrador' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'" class="px-4 py-2 text-sm font-medium transition-colors rounded-lg whitespace-nowrap">Administradores</button>
+                <button @click="filterRole = 'tecnico'" :class="filterRole === 'tecnico' ? 'bg-surface-container-lowest text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'" class="px-4 py-2 text-sm font-medium transition-colors rounded-lg whitespace-nowrap">Técnicos</button>
             </div>
-            <button class="p-3 bg-surface-container-low text-on-surface-variant rounded-xl hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined">filter_list</span>
-            </button>
         </div>
-        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden">
-            <div class="overflow-x-auto">
-                <div class="w-full overflow-x-auto pb-4">
-                <table class="w-full text-left border-collapse min-w-[800px]">
 
+        <!-- Table -->
+        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+            <div class="w-full overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="bg-surface-container text-on-surface-variant text-xs uppercase tracking-widest font-bold">
                             <th class="px-8 py-5">Usuario</th>
@@ -76,62 +77,196 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="group hover:bg-surface-container-low transition-colors">
-                            <td class="px-8 py-6">
-                                <div class="flex items-center gap-3">
-                                    <img alt="Avatar" class="w-10 h-10 rounded-full object-cover" src="https://i.pravatar.cc/150?img=68" />
-                                    <div>
-                                        <p class="font-bold text-on-surface">Dip. Carlos Mendoza</p>
-                                        <p class="text-xs text-on-surface-variant">carlos.mendoza@congreso.gob</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-8 py-6"><span class="px-3 py-1 bg-primary-container text-on-primary-container text-xs font-bold rounded-full">Administrador</span></td>
-                            <td class="px-8 py-6"><span class="text-sm text-on-surface-variant">Todas</span></td>
-                            <td class="px-8 py-6"><p class="text-sm text-on-surface">Hoy, 09:45 AM</p></td>
-                            <td class="px-8 py-6">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full bg-primary"></span>
-                                    <span class="text-sm font-medium text-on-surface">Activo</span>
-                                </div>
-                            </td>
-                            <td class="px-8 py-6 text-right">
-                                <button class="p-2 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined">edit</span></button>
+                        <tr v-if="paginatedUsuarios.length === 0">
+                            <td colspan="6" class="px-8 py-12 text-center">
+                                <span class="material-symbols-outlined text-4xl text-outline-variant mb-2 block">person_search</span>
+                                <p class="text-on-surface-variant font-medium">No se encontraron usuarios que coincidan con la búsqueda...</p>
                             </td>
                         </tr>
-                        <tr class="group hover:bg-surface-container-low transition-colors">
+                        <tr v-for="user in paginatedUsuarios" :key="user.id" class="group hover:bg-surface-container-low transition-colors border-b border-outline-variant/10 last:border-0">
                             <td class="px-8 py-6">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm">ER</div>
+                                    <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm shadow-sm ring-1 ring-secondary-container/50">
+                                        {{ getInitials(user.nombre_completo) }}
+                                    </div>
                                     <div>
-                                        <p class="font-bold text-on-surface">Elena Rivas</p>
-                                        <p class="text-xs text-on-surface-variant">elena.rivas@equipo.gob</p>
+                                        <p class="font-bold text-on-surface">{{ user.nombre_completo }}</p>
+                                        <p class="text-xs text-on-surface-variant font-mono">@{{ user.usuario }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-8 py-6"><span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant text-xs font-bold rounded-full">Técnico</span></td>
                             <td class="px-8 py-6">
-                                <div class="flex flex-wrap gap-1">
-                                    <span class="px-2 py-0.5 bg-surface-container text-[10px] rounded">Iniciativas</span>
-                                </div>
+                                <span v-if="user.rol === 'administrador'" class="px-3 py-1 bg-tertiary-container text-on-tertiary-container text-xs font-bold rounded-full capitalize">{{ user.rol }}</span>
+                                <span v-else class="px-3 py-1 bg-surface-container-highest text-on-surface-variant text-xs font-bold rounded-full capitalize">{{ user.rol }}</span>
                             </td>
-                            <td class="px-8 py-6"><p class="text-sm text-on-surface">Ayer, 16:30 PM</p></td>
                             <td class="px-8 py-6">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full bg-primary"></span>
-                                    <span class="text-sm font-medium text-on-surface">Activo</span>
+                                <span v-if="!user.categoria_asignada || user.rol === 'administrador'" class="text-sm text-on-surface-variant italic">Todas</span>
+                                <span v-else class="px-3 py-1 bg-primary-container text-primary text-[10px] uppercase font-bold rounded tracking-wider shadow-sm">{{ user.categoria_asignada }}</span>
+                            </td>
+                            <td class="px-8 py-6">
+                                <p class="text-sm text-on-surface font-medium">{{ user.ultimo_acceso || 'Nunca' }}</p>
+                            </td>
+                            <td class="px-8 py-6">
+                                <div class="flex items-center gap-2 bg-surface px-3 py-1.5 rounded-lg inline-flex ring-1 ring-outline-variant/20">
+                                    <span class="w-2.5 h-2.5 rounded-full shadow-sm" :class="user.estado == 1 ? 'bg-primary' : 'bg-error'"></span>
+                                    <span class="text-xs font-bold text-on-surface">{{ user.estado == 1 ? 'Activo' : 'Inactivo' }}</span>
                                 </div>
                             </td>
                             <td class="px-8 py-6 text-right">
-                                <button class="p-2 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined">edit</span></button>
+                                <div class="flex items-center justify-end gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    <button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-lg hover:bg-surface-container" title="Editar">
+                                        <span class="material-symbols-outlined text-[1.3rem]">edit</span>
+                                    </button>
+                                    <button @click="confirmDelete(user)" class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-lg hover:bg-error-container/50" title="Eliminar definitivamente">
+                                        <span class="material-symbols-outlined text-[1.3rem]">delete</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
-                
                 </table>
             </div>
+            
+            <!-- Pagination Controls -->
+            <div class="px-8 py-4 bg-surface-container border-t border-outline-variant/10 flex items-center justify-between">
+                <span class="text-sm text-on-surface-variant font-medium">
+                    Mostrando 
+                    <span class="text-on-surface font-bold">{{ filteredUsuarios.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1 }}</span>
+                    a 
+                    <span class="text-on-surface font-bold">{{ Math.min(currentPage * itemsPerPage, filteredUsuarios.length) }}</span> 
+                    de 
+                    <span class="text-on-surface font-bold">{{ filteredUsuarios.length }}</span> registros
+                </span>
+                <div class="flex items-center gap-2">
+                    <button @click="currentPage--" :disabled="currentPage === 1" class="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface hover:text-primary hover:bg-white shadow-sm disabled:opacity-30 disabled:shadow-none transition-all active:scale-95 border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-sm font-bold">arrow_back_ios_new</span>
+                    </button>
+                    <span class="text-sm font-extrabold text-on-surface px-3">{{ currentPage }} / {{ totalPages || 1 }}</span>
+                    <button @click="currentPage++" :disabled="currentPage >= totalPages" class="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface hover:text-primary hover:bg-white shadow-sm disabled:opacity-30 disabled:shadow-none transition-all active:scale-95 border border-outline-variant/10">
+                        <span class="material-symbols-outlined text-sm font-bold">arrow_forward_ios</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
-<script setup></script>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import Swal from 'sweetalert2';
+import { useAuthStore } from '../../../stores/authStore.js';
+
+const authStore = useAuthStore();
+const API_URL = import.meta.env.VITE_API_URL || '/sys-dipu/Backend/api/v1';
+
+// Estado Reactivo
+const usuarios = ref([]);
+const searchQuery = ref('');
+const filterRole = ref('Todos');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+// Obtener Usuarios (REST GET)
+const fetchUsuarios = async () => {
+    try {
+        const response = await fetch(`${API_URL}/usuarios`, {
+            headers: {
+                'Authorization': `Bearer ${authStore.token || ''}`
+            }
+        });
+        const result = await response.json();
+        if(result.status === 'success') {
+            usuarios.value = result.data;
+        }
+    } catch(err) {
+        console.error('Error fetching usuarios:', err);
+        Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Fallo al descargar usuarios', showConfirmButton: false, timer: 3000 });
+    }
+};
+
+onMounted(() => {
+    fetchUsuarios();
+});
+
+// Reseteo de Paginación al usar el buscador o filtros
+watch([searchQuery, filterRole], () => {
+    currentPage.value = 1;
+});
+
+// Función de Borrado Físico con SweetAlert2
+const confirmDelete = (user) => {
+    Swal.fire({
+        title: 'Borrado Definitivo',
+        html: `Estás a punto de eliminar a <b>${user.nombre_completo}</b> (@${user.usuario}).<br/><br/>Esta acción borrará físicamente el registro y no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#BA1A1A', // Color Error System
+        cancelButtonColor: '#40484C', // Color Superficie Neutra
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'No, cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`${API_URL}/usuarios/${user.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authStore.token || ''}` }
+                });
+                const resData = await response.json();
+                
+                if (response.ok && resData.status === 'success') {
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: 'El usuario ha sido erradicado del sistema.',
+                        icon: 'success',
+                        confirmButtonColor: '#005D6B'
+                    });
+                    fetchUsuarios(); // Recargar la tabla instántaneamente
+                } else {
+                    Swal.fire('Error', resData.error || 'No se pudo procesar la solicitud.', 'error');
+                }
+            } catch(e) {
+                Swal.fire('Falla de red', 'No hay conexión con el servidor MySQL.', 'error');
+            }
+        }
+    });
+};
+
+// ============================================
+// LÓGICA COMPUTADA (CLIENT-SIDE RENDERING MÁGICO)
+// ============================================
+
+// Utilizada para sacar iniciales del nombre
+const getInitials = (name) => {
+    if(!name) return 'U';
+    const parts = name.trim().split(' ').filter(n => n.length > 0);
+    if(parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0,2).toUpperCase();
+};
+
+const filteredUsuarios = computed(() => {
+    return usuarios.value.filter(user => {
+        // Buscador por nombre de pila y nombre de cuenta
+        const matchesSearch = user.nombre_completo.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
+                              user.usuario.toLowerCase().includes(searchQuery.value.toLowerCase());
+        // Filtrado por Pestañas
+        const matchesRole = filterRole.value === 'Todos' || user.rol === filterRole.value;
+        return matchesSearch && matchesRole;
+    });
+});
+
+const totalPages = computed(() => Math.ceil(filteredUsuarios.value.length / itemsPerPage) || 1);
+
+const paginatedUsuarios = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredUsuarios.value.slice(start, end);
+});
+
+// KPIs Estadísticas Superiores
+const administradoresCount = computed(() => usuarios.value.filter(u => u.rol === 'administrador').length);
+const tecnicosCount = computed(() => usuarios.value.filter(u => u.rol === 'tecnico').length);
+const inactivosCount = computed(() => usuarios.value.filter(u => u.estado == 0).length);
+
+</script>

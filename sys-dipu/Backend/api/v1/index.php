@@ -3,6 +3,7 @@
 use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\AuthController;
+use App\Controllers\UsuariosController;
 
 // Backend/api/v1/index.php
 
@@ -33,6 +34,7 @@ $router = new Router();
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
+$router->registerController(UsuariosController::class);
 // $router->registerController(YourController::class);
 
 
