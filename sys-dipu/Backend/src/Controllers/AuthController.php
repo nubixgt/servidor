@@ -36,6 +36,10 @@ class AuthController extends Controller
 
         // Validación de contraseña
         if (password_verify($password, $user['password_hash'])) {
+            
+            // Actualizar el último acceso
+            $model->updateLastAccess($user['id']);
+
             // Generar Token JWT
             $payload = [
                 'id' => $user['id'],

@@ -88,7 +88,7 @@
                                     </div>
                                     <div>
                                         <p class="font-bold text-on-surface">{{ user.nombre_completo }}</p>
-                                        <p class="text-xs text-on-surface-variant font-mono">@{{ user.usuario }}</p>
+                                        <p class="text-xs text-on-surface-variant font-mono">{{ user.usuario }}</p>
                                     </div>
                                 </div>
                             </td>

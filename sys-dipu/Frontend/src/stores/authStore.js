@@ -6,11 +6,35 @@ import { ref } from 'vue';
 // Category: one of the 8 categories
 
 export const useAuthStore = defineStore('auth', () => {
-    const role = ref(null); // null | 'administrador' | 'tecnico'
-    const assignedCategory = ref(null); // null | Category string
+    const storedToken = localStorage.getItem('auth_token');
+    let initialUser = null, initialRole = null, initialCategory = null;
+
+    if (storedToken) {
+        try {
+            // Decodificar el payload del token JWT
+            const base64Url = storedToken.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+            const payload = JSON.parse(jsonPayload);
+            
+            // Comprobar si no ha expirado
+            if (payload.exp * 1000 > Date.now()) {
+                initialUser = { nombre: payload.nombre, rol: payload.rol, categoria: payload.categoria };
+                initialRole = payload.rol;
+                initialCategory = payload.categoria;
+            } else {
+                localStorage.removeItem('auth_token');
+            }
+        } catch (e) {
+            localStorage.removeItem('auth_token');
+        }
+    }
+
+    const role = ref(initialRole);
+    const assignedCategory = ref(initialCategory);
     const currentView = ref('dashboard');
-    const token = ref(null);
-    const user = ref(null);
+    const token = ref(storedToken && initialRole ? storedToken : null);
+    const user = ref(initialUser);
 
     async function login(username, password) {
         try {
