@@ -121,6 +121,25 @@ class TransactionRepository
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function findTodayRecentByUser($limit = 5, $userId)
+    {
+        $query = "
+            SELECT t.*, l.name as location_name, u.name as user_name 
+            FROM financial_transactions t
+            JOIN locations l ON t.location_id = l.id
+            JOIN users u ON t.created_by = u.id
+            WHERE t.created_by = :user_id 
+              AND DATE(t.created_at) = CURDATE()
+            ORDER BY t.created_at DESC LIMIT :limit
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', (int)$userId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     public function findAll()
     {
@@ -150,6 +169,23 @@ class TransactionRepository
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function findAllTodayByUser($userId)
+    {
+        $query = "
+            SELECT t.*, l.name as location_name, u.name as user_name 
+            FROM financial_transactions t
+            JOIN locations l ON t.location_id = l.id
+            JOIN users u ON t.created_by = u.id
+            WHERE t.created_by = :user_id 
+              AND DATE(t.created_at) = CURDATE()
+            ORDER BY t.created_at DESC
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':user_id', (int)$userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     public function getTechKPIs($userId)
     {
@@ -160,6 +196,20 @@ class TransactionRepository
                 COUNT(id) as total_transacciones
             FROM financial_transactions
             WHERE created_by = :user_id AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE())
+        ");
+        $stmt->execute(['user_id' => $userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getTodayTechKPIs($userId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                SUM(CASE WHEN type = 'ingreso' AND status = 'Aprobado' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as ingresos_hoy,
+                SUM(CASE WHEN type = 'egreso' AND status = 'Aprobado' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as egresos_hoy,
+                COUNT(id) as total_transacciones_hoy
+            FROM financial_transactions
+            WHERE created_by = :user_id AND DATE(created_at) = CURDATE()
         ");
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);

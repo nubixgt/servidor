@@ -1,8 +1,17 @@
 <template>
   <div class="space-y-8 max-w-4xl mx-auto">
-    <div class="text-center sm:text-left">
-      <h1 class="text-3xl font-sans font-bold text-on-surface tracking-tight">Panel de Control</h1>
-      <p class="text-base text-on-surface-variant mt-2">¿Qué acción deseas realizar hoy?</p>
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="text-center sm:text-left">
+        <h1 class="text-3xl font-sans font-bold text-on-surface tracking-tight">Panel de Control</h1>
+        <p class="text-base text-on-surface-variant mt-2">¿Qué acción deseas realizar hoy?</p>
+      </div>
+      <button 
+        @click="handleLogout"
+        class="flex items-center gap-2 px-6 py-2.5 bg-error-container text-[var(--color-error)] font-semibold rounded-2xl hover:bg-[var(--color-error)] hover:text-white transition-all duration-300 shadow-sm border border-[var(--color-error)]/20"
+      >
+        <ArrowRightOnRectangleIcon class="w-5 h-5" />
+        Cerrar Sesión
+      </button>
     </div>
 
     <!-- Quick Actions -->
@@ -50,15 +59,15 @@
             <ClockIcon class="w-5 h-5" />
           </div>
           <div>
-            <h2 class="text-lg font-bold text-on-surface">Mi Actividad Reciente</h2>
-            <p class="text-xs text-on-surface-variant">Últimos movimientos registrados por ti</p>
+            <h2 class="text-lg font-bold text-on-surface">Mi Actividad de Hoy</h2>
+            <p class="text-xs text-on-surface-variant">Movimientos registrados solo hoy</p>
           </div>
         </div>
         <button 
           @click="navigate('/tech/history')"
           class="text-primary text-sm font-medium hover:underline hidden sm:block"
         >
-          Ver historial completo
+          Ver historial de hoy
         </button>
       </div>
       
@@ -107,7 +116,7 @@
           @click="navigate('/tech/history')"
           class="w-full py-2 text-center text-[var(--color-primary)] text-sm font-medium hover:bg-primary-fixed/50 rounded-lg transition-colors"
         >
-          Ver historial completo
+          Ver historial de hoy
         </button>
       </div>
     </div>
@@ -123,7 +132,8 @@ import {
   ClockIcon, 
   CubeIcon, 
   MapPinIcon, 
-  ChevronRightIcon
+  ChevronRightIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/vue/24/outline';
 import api from '../../services/api';
 
@@ -131,6 +141,12 @@ const router = useRouter();
 
 const navigate = (path) => {
   router.push(path);
+};
+
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  router.push('/login');
 };
 
 const recentActivity = ref([]);

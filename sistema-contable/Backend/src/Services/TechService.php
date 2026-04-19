@@ -14,7 +14,7 @@ class TechService
 
     public function getDashboardData($userId)
     {
-        $recentActivity = $this->transactionRepo->findRecentByUser(10, $userId);
+        $recentActivity = $this->transactionRepo->findTodayRecentByUser(10, $userId);
         $assets = [];
 
         return [
@@ -25,8 +25,8 @@ class TechService
 
     public function getHistoryData($userId)
     {
-        $transactions = $this->transactionRepo->findAllByUser($userId);
-        $kpis = $this->transactionRepo->getTechKPIs($userId);
+        $transactions = $this->transactionRepo->findAllTodayByUser($userId);
+        $kpis = $this->transactionRepo->getTodayTechKPIs($userId);
         
         return [
             'transactions' => $transactions,

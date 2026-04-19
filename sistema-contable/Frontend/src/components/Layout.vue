@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen bg-surface overflow-hidden">
     <!-- Sidebar -->
-    <aside :class="[
+    <aside v-if="user.role !== 'tech'" :class="[
       'fixed inset-y-0 left-0 z-50 w-64 bg-white/80 backdrop-blur-xl border-r border-outline-variant/30 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex lg:flex-col',
       isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
     ]">
@@ -64,7 +64,7 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <!-- Topbar -->
-      <header class="h-20 bg-white/60 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 z-40 sticky top-0">
+      <header v-if="user.role !== 'tech'" class="h-20 bg-white/60 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 z-40 sticky top-0">
         <div class="flex items-center gap-4">
           <button 
             class="lg:hidden p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors"
@@ -158,7 +158,6 @@ const adminLinks = [
 
 const techLinks = [
   { to: '/tech', icon: Squares2X2Icon, label: 'Dashboard' },
-  { to: '/tech/history', icon: ClockIcon, label: 'Historial' },
 ];
 
 const links = computed(() => user.value.role === 'admin' ? adminLinks : techLinks);

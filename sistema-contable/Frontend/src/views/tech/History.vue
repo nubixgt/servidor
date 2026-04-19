@@ -2,18 +2,25 @@
   <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-sans font-bold text-on-surface tracking-tight">Historial de Movimientos</h1>
-        <p class="text-sm text-on-surface-variant mt-1">Revisa y busca entre todas las transacciones que has registrado.</p>
+        <h1 class="text-2xl font-sans font-bold text-on-surface tracking-tight">Historial de Hoy</h1>
+        <p class="text-sm text-on-surface-variant mt-1">Revisa las transacciones que has registrado el día de hoy.</p>
       </div>
+      <button 
+        @click="$router.push('/tech')"
+        class="flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface font-medium rounded-xl hover:bg-surface-container-highest transition-all border border-outline-variant/30 shadow-sm"
+      >
+        <ArrowLeftIcon class="w-4 h-4" />
+        Volver al Panel
+      </button>
     </div>
 
     <!-- KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="glass-card p-6 flex items-center justify-between group hover:shadow-lg transition-all duration-300">
         <div>
-          <p class="text-on-surface-variant text-sm font-medium mb-1">Ingresos (Mes Actual)</p>
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Ingresos de Hoy</p>
           <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono text-[var(--color-secondary)]">GTQ {{ formatNumber(kpis.ingresos_mes) }}</span>
+            <span class="text-3xl font-bold font-mono text-[var(--color-secondary)]">GTQ {{ formatNumber(kpis.ingresos_hoy) }}</span>
           </div>
         </div>
         <div class="w-12 h-12 rounded-2xl bg-[var(--color-secondary-container)] text-[var(--color-on-secondary-container)] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
@@ -23,9 +30,9 @@
 
       <div class="glass-card p-6 flex items-center justify-between group hover:shadow-lg transition-all duration-300">
         <div>
-          <p class="text-on-surface-variant text-sm font-medium mb-1">Egresos (Mes Actual)</p>
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Egresos de Hoy</p>
           <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono text-[var(--color-error)]">GTQ {{ formatNumber(kpis.egresos_mes) }}</span>
+            <span class="text-3xl font-bold font-mono text-[var(--color-error)]">GTQ {{ formatNumber(kpis.egresos_hoy) }}</span>
           </div>
         </div>
         <div class="w-12 h-12 rounded-2xl bg-[var(--color-error-container)] text-[var(--color-on-error-container)] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
@@ -35,9 +42,9 @@
 
       <div class="glass-card p-6 flex items-center justify-between group hover:shadow-lg transition-all duration-300">
         <div>
-          <p class="text-on-surface-variant text-sm font-medium mb-1">Total Registros (Mes)</p>
+          <p class="text-on-surface-variant text-sm font-medium mb-1">Total Registros (Hoy)</p>
           <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono text-on-surface">{{ kpis.total_transacciones }}</span>
+            <span class="text-3xl font-bold font-mono text-on-surface">{{ kpis.total_transacciones_hoy }}</span>
           </div>
         </div>
         <div class="w-12 h-12 rounded-2xl bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
@@ -129,8 +136,8 @@
         
         <div v-if="paginatedTransactions.length === 0" class="p-8 text-center text-on-surface-variant">
           <DocumentTextIcon class="w-12 h-12 mx-auto text-outline-variant mb-3" />
-          <p class="font-medium">No hay movimientos en el historial</p>
-          <p class="text-sm mt-1">Intenta ajustando los filtros de búsqueda.</p>
+          <p class="font-medium">No hay movimientos registrados hoy</p>
+          <p class="text-sm mt-1">Al comenzar un nuevo día, el historial se reinicia para tus nuevos registros.</p>
         </div>
       </div>
       
@@ -251,12 +258,13 @@ import {
   EyeIcon,
   XMarkIcon,
   ArrowTopRightOnSquareIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  ArrowLeftIcon
 } from '@heroicons/vue/24/outline';
 import api from '../../services/api';
 
 const transactions = ref([]);
-const kpis = ref({ ingresos_mes: 0, egresos_mes: 0, total_transacciones: 0 });
+const kpis = ref({ ingresos_hoy: 0, egresos_hoy: 0, total_transacciones_hoy: 0 });
 
 const searchTerm = ref('');
 const selectedType = ref('Todos');
@@ -273,9 +281,9 @@ const fetchHistory = async () => {
     transactions.value = res.data.data.transactions;
     if (res.data.data.kpis) {
       kpis.value = {
-        ingresos_mes: res.data.data.kpis.ingresos_mes || 0,
-        egresos_mes: res.data.data.kpis.egresos_mes || 0,
-        total_transacciones: res.data.data.kpis.total_transacciones || 0
+        ingresos_hoy: res.data.data.kpis.ingresos_hoy || 0,
+        egresos_hoy: res.data.data.kpis.egresos_hoy || 0,
+        total_transacciones_hoy: res.data.data.kpis.total_transacciones_hoy || 0
       };
     }
   } catch (error) {
