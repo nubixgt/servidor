@@ -99,13 +99,6 @@
           </div>
           
           <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto mt-2 sm:mt-0 pl-16 sm:pl-0">
-            <div class="flex items-center gap-2">
-              <div :class="[
-                'w-2 h-2 rounded-full',
-                activity.status === 'Completado' ? 'bg-[var(--color-secondary)]' : 'bg-[var(--color-tertiary-fixed-dim)]'
-              ]" />
-              <span class="text-sm font-medium text-on-surface-variant">{{ activity.status }}</span>
-            </div>
             <button class="sm:hidden text-primary text-sm font-medium">Ver detalles</button>
           </div>
         </div>

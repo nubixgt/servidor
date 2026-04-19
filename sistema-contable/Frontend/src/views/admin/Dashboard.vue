@@ -79,12 +79,11 @@
             <option value="ingreso">Ingreso</option>
             <option value="egreso">Egreso</option>
           </select>
-          <!-- Status filter -->
-          <select v-model="filterStatus" class="px-4 py-2 bg-[var(--color-surface-container-low)] border border-outline-variant/30 rounded-xl text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50">
-            <option value="">Estado: Todos</option>
-            <option value="Pendiente">Pendiente</option>
-            <option value="Aprobado">Aprobado</option>
-            <option value="Rechazado">Rechazado</option>
+          <!-- Type filter -->
+          <select v-model="filterType" class="px-4 py-2 bg-[var(--color-surface-container-low)] border border-outline-variant/30 rounded-xl text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50">
+            <option value="">Tipo: Todos</option>
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Egreso</option>
           </select>
         </div>
       </div>
@@ -100,7 +99,6 @@
               <th class="px-5 py-4 font-medium text-center">Locación</th>
               <th class="px-5 py-4 font-medium text-center">Monto</th>
               <th class="px-5 py-4 font-medium text-center">Fecha</th>
-              <th class="px-5 py-4 font-medium text-center">Estado</th>
               <th class="px-5 py-4 font-medium text-center">Acciones</th>
             </tr>
           </thead>
@@ -119,14 +117,6 @@
               </td>
               <td class="px-5 py-4 text-on-surface-variant text-xs">{{ trx.transaction_date }}</td>
               <td class="px-5 py-4">
-                <span :class="['px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1', trx.status === 'Aprobado' ? 'bg-[var(--color-secondary-container)] text-[var(--color-on-secondary-container)]' : trx.status === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-[var(--color-error-container)] text-[var(--color-on-error-container)]']">
-                  <CheckCircleIcon v-if="trx.status === 'Aprobado'" class="w-3 h-3" />
-                  <ClockIcon v-else-if="trx.status === 'Pendiente'" class="w-3 h-3" />
-                  <XCircleIcon v-else class="w-3 h-3" />
-                  {{ trx.status }}
-                </span>
-              </td>
-              <td class="px-5 py-4">
                 <div class="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <!-- View -->
                   <button @click="viewTransaction(trx)" class="p-1.5 text-outline hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-fixed)]/50 rounded-lg transition-colors" title="Visualizar">
@@ -136,14 +126,6 @@
                   <button @click="openEditModal(trx)" class="p-1.5 text-outline hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-fixed)]/50 rounded-lg transition-colors" title="Editar">
                     <PencilIcon class="w-4 h-4" />
                   </button>
-                  <!-- Approve (only when Pendiente) -->
-                  <button v-if="trx.status === 'Pendiente'" @click="changeStatus(trx.id, 'Aprobado')" class="p-1.5 text-[var(--color-secondary)] hover:bg-[var(--color-secondary-container)] rounded-lg transition-colors" title="Aprobar">
-                    <CheckCircleIcon class="w-4 h-4" />
-                  </button>
-                  <!-- Reject (only when Pendiente) -->
-                  <button v-if="trx.status === 'Pendiente'" @click="changeStatus(trx.id, 'Rechazado')" class="p-1.5 text-[var(--color-error)] hover:bg-[var(--color-error-container)] rounded-lg transition-colors" title="Rechazar">
-                    <XCircleIcon class="w-4 h-4" />
-                  </button>
                   <!-- Delete -->
                   <button @click="deleteTransaction(trx.id)" class="p-1.5 text-outline hover:text-[var(--color-error)] hover:bg-[var(--color-error-container)]/50 rounded-lg transition-colors" title="Eliminar">
                     <TrashIcon class="w-4 h-4" />
@@ -152,7 +134,7 @@
               </td>
             </tr>
             <tr v-if="paginatedTransactions.length === 0">
-              <td colspan="8" class="px-6 py-12 text-center text-on-surface-variant">
+              <td colspan="7" class="px-6 py-12 text-center text-on-surface-variant">
                 <p>No se encontraron transacciones.</p>
               </td>
             </tr>
@@ -180,7 +162,6 @@
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="px-2 py-0.5 bg-white/20 rounded-full text-white text-xs font-medium capitalize">{{ viewingTransaction.type }}</span>
-              <span :class="['px-2 py-0.5 rounded-full text-xs font-medium', viewingTransaction.status === 'Aprobado' ? 'bg-white/20 text-white' : viewingTransaction.status === 'Pendiente' ? 'bg-yellow-300/30 text-yellow-100' : 'bg-red-300/30 text-red-100']">{{ viewingTransaction.status }}</span>
             </div>
             <p class="text-white/80 text-xs">Transacción #{{ viewingTransaction.id }}</p>
             <h3 class="text-2xl font-bold text-white mt-1">{{ viewingTransaction.type === 'ingreso' ? '+' : '-' }}GTQ {{ parseFloat(viewingTransaction.amount).toLocaleString('es-GT', {minimumFractionDigits:2}) }}</h3>
@@ -266,14 +247,6 @@
                 <select v-model="editForm.type" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50">
                   <option value="ingreso">Ingreso</option>
                   <option value="egreso">Egreso</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                <select v-model="editForm.status" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50">
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Aprobado">Aprobado</option>
-                  <option value="Rechazado">Rechazado</option>
                 </select>
               </div>
               <div>

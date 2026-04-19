@@ -19,7 +19,7 @@ class TransactionRepository
             INSERT INTO financial_transactions (
                 type, amount, transaction_date, location_id, category, provider, description, receipt_path, status, created_by
             ) VALUES (
-                :type, :amount, :transaction_date, :location_id, :category, :provider, :description, :receipt_path, 'Pendiente', :created_by
+                :type, :amount, :transaction_date, :location_id, :category, :provider, :description, :receipt_path, 'Aprobado', :created_by
             )
         ";
 
@@ -81,8 +81,8 @@ class TransactionRepository
     {
         $stmt = $this->db->query("
             SELECT 
-                SUM(CASE WHEN type = 'ingreso' AND status = 'Aprobado' THEN amount ELSE 0 END) as total_ingresos,
-                SUM(CASE WHEN type = 'egreso'  AND status = 'Aprobado' THEN amount ELSE 0 END) as total_egresos
+                SUM(CASE WHEN type = 'ingreso' THEN amount ELSE 0 END) as total_ingresos,
+                SUM(CASE WHEN type = 'egreso'  THEN amount ELSE 0 END) as total_egresos
             FROM financial_transactions
         ");
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -191,8 +191,8 @@ class TransactionRepository
     {
         $stmt = $this->db->prepare("
             SELECT 
-                SUM(CASE WHEN type = 'ingreso' AND status = 'Aprobado' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as ingresos_mes,
-                SUM(CASE WHEN type = 'egreso' AND status = 'Aprobado' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as egresos_mes,
+                SUM(CASE WHEN type = 'ingreso' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as ingresos_mes,
+                SUM(CASE WHEN type = 'egreso' AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE()) THEN amount ELSE 0 END) as egresos_mes,
                 COUNT(id) as total_transacciones
             FROM financial_transactions
             WHERE created_by = :user_id AND MONTH(transaction_date) = MONTH(CURDATE()) AND YEAR(transaction_date) = YEAR(CURDATE())
@@ -205,8 +205,8 @@ class TransactionRepository
     {
         $stmt = $this->db->prepare("
             SELECT 
-                SUM(CASE WHEN type = 'ingreso' AND status = 'Aprobado' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as ingresos_hoy,
-                SUM(CASE WHEN type = 'egreso' AND status = 'Aprobado' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as egresos_hoy,
+                SUM(CASE WHEN type = 'ingreso' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as ingresos_hoy,
+                SUM(CASE WHEN type = 'egreso' AND DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as egresos_hoy,
                 COUNT(id) as total_transacciones_hoy
             FROM financial_transactions
             WHERE created_by = :user_id AND DATE(created_at) = CURDATE()

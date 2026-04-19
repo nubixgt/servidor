@@ -107,7 +107,6 @@
               <th class="px-6 py-4 font-medium text-center">Locación</th>
               <th class="px-6 py-4 font-medium text-center">Categoría</th>
               <th class="px-6 py-4 font-medium text-center">Monto</th>
-              <th class="px-6 py-4 font-medium text-center">Estado</th>
               <th class="px-6 py-4 font-medium text-center">Usuario</th>
             </tr>
           </thead>
@@ -124,22 +123,10 @@
               <td :class="['px-6 py-4 font-mono font-semibold', report.type === 'Ingreso' ? 'text-[var(--color-secondary)]' : 'text-[var(--color-error)]']">
                 {{ report.type === 'Ingreso' ? '+' : '-' }}{{ report.amount }}
               </td>
-              <td class="px-6 py-4">
-                <span :class="[
-                  'px-2.5 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1.5',
-                  report.status === 'Aprobado' ? 'bg-[var(--color-secondary-container)] text-[var(--color-on-secondary-container)]' :
-                  report.status === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-[var(--color-error-container)] text-[var(--color-on-error-container)]'
-                ]">
-                  <CheckCircleIcon v-if="report.status === 'Aprobado'" class="w-3 h-3" />
-                  <ClockIcon v-else-if="report.status === 'Pendiente'" class="w-3 h-3" />
-                  {{ report.status }}
-                </span>
-              </td>
               <td class="px-6 py-4 text-on-surface-variant">{{ report.user }}</td>
             </tr>
             <tr v-if="paginatedReports.length === 0">
-              <td colspan="6" class="px-6 py-12 text-center text-on-surface-variant">
+              <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
                 <DocumentTextIcon class="w-10 h-10 mx-auto text-outline-variant mb-2" />
                 <p>No se encontraron transacciones con los filtros aplicados.</p>
               </td>
@@ -274,9 +261,9 @@ watch([dateRange, selectedLocation, selectedType], () => { currentPage.value = 1
 
 // --- Export Functions ---
 const exportCSV = () => {
-  const headers = ['Fecha', 'Locación', 'Categoría', 'Tipo', 'Monto (GTQ)', 'Estado', 'Usuario'];
+  const headers = ['Fecha', 'Locación', 'Categoría', 'Tipo', 'Monto (GTQ)', 'Usuario'];
   const rows = filteredReports.value.map(r => [
-    r.date, r.location, r.category, r.type, r.amount.replace(/,/g, ''), r.status, r.user
+    r.date, r.location, r.category, r.type, r.amount.replace(/,/g, ''), r.user
   ]);
   // Semicolon separator works with Spanish-locale Excel installations
   const content = [headers, ...rows].map(row => row.map(v => `"${v ?? ''}"`).join(';')).join('\n');
@@ -303,11 +290,11 @@ const exportPDF = async () => {
 
   autoTable(doc, {
     startY: 28,
-    head: [['Fecha', 'Locación', 'Categoría', 'Tipo', 'Monto (GTQ)', 'Estado', 'Usuario']],
+    head: [['Fecha', 'Locación', 'Categoría', 'Tipo', 'Monto (GTQ)', 'Usuario']],
     body: filteredReports.value.map(r => [
       r.date, r.location, r.category, r.type,
       `${r.type === 'Ingreso' ? '+' : '-'}${r.amount}`,
-      r.status, r.user
+      r.user
     ]),
     styles: { fontSize: 9, cellPadding: 3 },
     headStyles: { fillColor: [34, 31, 71], textColor: 255, fontStyle: 'bold' },

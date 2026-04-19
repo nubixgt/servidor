@@ -74,14 +74,6 @@
               <option value="egreso">Egresos</option>
             </select>
           </div>
-          <div class="relative min-w-[130px]">
-            <select v-model="selectedStatus" class="w-full appearance-none pl-4 pr-10 py-2 bg-[var(--color-surface-container-low)] border border-outline-variant/30 rounded-xl text-sm text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 cursor-pointer">
-              <option value="Todos">Estado: Todos</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Aprobado">Aprobado</option>
-              <option value="Rechazado">Rechazado</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -94,7 +86,6 @@
               <th class="px-6 py-4 font-medium">Detalle</th>
               <th class="px-6 py-4 font-medium text-center">Tipo</th>
               <th class="px-6 py-4 font-medium text-right">Monto</th>
-              <th class="px-6 py-4 font-medium text-center">Estado</th>
               <th class="px-6 py-4 font-medium text-center">Acciones</th>
             </tr>
           </thead>
@@ -114,15 +105,6 @@
                 </span>
               </td>
               <td class="px-6 py-4 text-right font-mono font-medium text-on-surface">GTQ {{ formatNumber(tx.amount) }}</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center justify-center gap-2">
-                  <div :class="[
-                    'w-2 h-2 rounded-full',
-                    tx.status === 'Aprobado' ? 'bg-[var(--color-secondary)]' : (tx.status === 'Rechazado' ? 'bg-[var(--color-error)]' : 'bg-[var(--color-tertiary-fixed-dim)]')
-                  ]" />
-                  <span class="text-on-surface-variant text-xs">{{ tx.status }}</span>
-                </div>
-              </td>
               <td class="px-6 py-4">
                 <div class="flex items-center justify-center">
                   <button @click="openDetails(tx)" class="p-2 text-outline hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-fixed)]/50 rounded-lg transition-colors" title="Ver Detalles">
@@ -189,16 +171,6 @@
             <div>
               <p class="text-gray-500 font-medium mb-1">Fecha</p>
               <p class="font-mono text-gray-900">{{ selectedTx.transaction_date }}</p>
-            </div>
-            <div>
-              <p class="text-gray-500 font-medium mb-1">Estado</p>
-              <div class="flex items-center gap-2">
-                <div :class="[
-                  'w-2 h-2 rounded-full',
-                  selectedTx.status === 'Aprobado' ? 'bg-[var(--color-secondary)]' : (selectedTx.status === 'Rechazado' ? 'bg-[var(--color-error)]' : 'bg-[var(--color-tertiary-fixed-dim)]')
-                ]" />
-                <span class="font-medium text-gray-900">{{ selectedTx.status }}</span>
-              </div>
             </div>
             <div>
               <p class="text-gray-500 font-medium mb-1">Categoría</p>
@@ -268,7 +240,6 @@ const kpis = ref({ ingresos_hoy: 0, egresos_hoy: 0, total_transacciones_hoy: 0 }
 
 const searchTerm = ref('');
 const selectedType = ref('Todos');
-const selectedStatus = ref('Todos');
 
 const selectedTx = ref(null);
 
@@ -316,9 +287,8 @@ const filteredTransactions = computed(() => {
     
     const matchesSearch = catStr.includes(searchLow) || descStr.includes(searchLow) || provStr.includes(searchLow);
     const matchesType = selectedType.value === 'Todos' || tx.type === selectedType.value;
-    const matchesStatus = selectedStatus.value === 'Todos' || tx.status === selectedStatus.value;
     
-    return matchesSearch && matchesType && matchesStatus;
+    return matchesSearch && matchesType;
   });
 });
 
@@ -341,7 +311,7 @@ const nextPage = () => {
 };
 
 // Reset pagination when filters change
-watch([searchTerm, selectedType, selectedStatus], () => {
+watch([searchTerm, selectedType], () => {
   currentPage.value = 1;
 });
 
