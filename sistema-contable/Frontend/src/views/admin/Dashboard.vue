@@ -34,31 +34,54 @@
       </div>
     </div>
 
-    <!-- Alerts and Chart row -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 glass-card p-6 flex flex-col">
+    <!-- Charts and Alerts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Main Chart: Ingresos vs Egresos -->
+      <div class="lg:col-span-5 glass-card p-6 flex flex-col">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-bold text-on-surface">Ingresos vs Egresos</h2>
           <span class="text-xs text-on-surface-variant">Últimos 6 meses</span>
         </div>
-        <div class="flex-1 min-h-[220px]">
+        <div class="flex-1 min-h-[200px]">
           <canvas ref="chartCanvas"></canvas>
         </div>
       </div>
-      <div class="glass-card p-6 flex flex-col">
+
+      <!-- New Chart: Sales by Location -->
+      <div class="lg:col-span-4 glass-card p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-bold text-on-surface">Ventas por Locación</h2>
+          <span class="text-xs text-on-surface-variant">Top locales</span>
+        </div>
+        <div class="flex-1 min-h-[200px]">
+          <canvas ref="locationChartCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Alerts Section -->
+      <div class="lg:col-span-3 glass-card p-6 flex flex-col bg-[var(--color-surface-container-low)]">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-bold text-on-surface flex items-center gap-2">
             <ExclamationCircleIcon class="w-5 h-5 text-error" /> Alertas
           </h2>
         </div>
-        <div class="flex-1 space-y-4">
-          <div v-for="alert in pendingLeases" :key="alert.id" :class="['flex items-start gap-4 p-3 rounded-xl border', alert.type === 'warning' ? 'bg-error-container/30 border-[var(--color-error)]/20' : 'bg-surface-container border-outline-variant/30']">
-            <p class="text-sm font-medium text-on-surface">{{ alert.message }}</p>
+        <div class="flex-1 space-y-3 overflow-y-auto max-h-[300px] pr-1">
+          <div v-for="alert in pendingLeases" :key="alert.id" 
+            :class="['flex items-start gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02]', 
+                    alert.type === 'error' ? 'bg-error-container/20 border-error/20' : 
+                    alert.type === 'warning' ? 'bg-orange-100/50 border-orange-200' : 
+                    'bg-surface-container border-outline-variant/30']">
+            <ExclamationTriangleIcon v-if="alert.type === 'error' || alert.type === 'warning'" class="w-4 h-4 mt-0.5 flex-shrink-0 text-error" />
+            <p class="text-[13px] font-medium text-on-surface leading-tight">{{ alert.message }}</p>
           </div>
-          <button @click="navigate('/admin/locations')" class="w-full py-2 mt-2 text-center text-primary text-sm font-medium hover:bg-primary-fixed/50 rounded-lg transition-colors border border-primary/20">
-            Ver todas las locaciones
-          </button>
+          <div v-if="pendingLeases.length === 0" class="h-full flex flex-col items-center justify-center text-center opacity-40 py-8">
+            <CheckCircleIcon class="w-10 h-10 text-secondary mb-2" />
+            <p class="text-sm font-medium">Todo bajo control</p>
+          </div>
         </div>
+        <button @click="navigate('/admin/locations')" class="w-full py-2 mt-4 text-center text-primary text-sm font-medium hover:bg-primary-fixed/50 rounded-lg transition-colors border border-primary/20">
+          Gestionar Locaciones
+        </button>
       </div>
     </div>
 
@@ -302,7 +325,7 @@ import { Chart, registerables } from 'chart.js';
 import {
   ArrowTrendingUpIcon, MapPinIcon,
   ArrowTopRightOnSquareIcon as ArrowUpRightIcon, ArrowDownRightIcon,
-  ChartBarIcon, BuildingOffice2Icon, ExclamationCircleIcon,
+  ChartBarIcon, BuildingOffice2Icon, ExclamationCircleIcon, ExclamationTriangleIcon,
   CheckCircleIcon, XCircleIcon, ClockIcon,
   EyeIcon, PencilIcon, TrashIcon,
   MagnifyingGlassIcon, XMarkIcon, DocumentTextIcon
@@ -319,7 +342,9 @@ const pendingLeases = ref([]);
 const allTransactions = ref([]);
 const locations = ref([]);
 const chartCanvas = ref(null);
+const locationChartCanvas = ref(null);
 let chartInstance = null;
+let locationChartInstance = null;
 
 // Filters & pagination
 const searchTerm = ref('');
@@ -420,6 +445,38 @@ onMounted(async () => {
               ticks: { callback: v => `Q${v.toLocaleString()}` }
             }
           }
+        }
+      });
+    }
+
+    // Sales by Location Chart
+    if (locationChartCanvas.value && d.salesByLocation?.length) {
+      locationChartInstance = new Chart(locationChartCanvas.value, {
+        type: 'doughnut',
+        data: {
+          labels: d.salesByLocation.map(s => s.name),
+          datasets: [{
+            data: d.salesByLocation.map(s => parseFloat(s.total)),
+            backgroundColor: [
+              'rgba(34,197,94,0.7)',
+              'rgba(59,130,246,0.7)',
+              'rgba(168,85,247,0.7)',
+              'rgba(249,115,22,0.7)',
+              'rgba(236,72,153,0.7)'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { 
+              position: 'bottom',
+              labels: { boxWidth: 10, padding: 10, font: { size: 11 } }
+            }
+          },
+          cutout: '70%'
         }
       });
     }

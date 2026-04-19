@@ -251,4 +251,31 @@ class TransactionRepository
         ");
         return (int) $stmt->fetchColumn();
     }
+
+    public function getInactiveLocationsLast24h()
+    {
+        $stmt = $this->db->query("
+            SELECT name FROM locations 
+            WHERE id NOT IN (
+                SELECT DISTINCT location_id 
+                FROM financial_transactions 
+                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+            )
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getSalesByLocation()
+    {
+        $stmt = $this->db->query("
+            SELECT l.name, SUM(t.amount) as total 
+            FROM financial_transactions t
+            JOIN locations l ON t.location_id = l.id
+            WHERE t.type = 'ingreso'
+            GROUP BY l.id, l.name
+            ORDER BY total DESC
+            LIMIT 5
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -22,38 +22,29 @@ class AdminService
     {
         $kpis = $this->transactionRepo->getKPIs();
         $monthlyData = $this->transactionRepo->getMonthlyData(6);
+        $salesByLocation = $this->transactionRepo->getSalesByLocation();
 
         $alerts = [];
 
-        // Alert 1: Pending transactions
-        $pendingCount = $this->transactionRepo->countByStatus('Pendiente');
-        if ($pendingCount > 0) {
-            $alerts[] = [
-                'id' => 1,
-                'message' => "$pendingCount transacci" . ($pendingCount === 1 ? "ón pendiente" : "ones pendientes") . " de aprobación",
-                'type' => 'warning'
-            ];
-        }
-
-        // Alert 2: Egresos > 80% of Ingresos this month
+        // Alert 1: Egresos > 80% of Ingresos this month
         $ingresos = floatval($kpis['total_ingresos'] ?? 0);
         $egresos = floatval($kpis['total_egresos'] ?? 0);
         if ($ingresos > 0 && $egresos > 0 && ($egresos / $ingresos) >= 0.8) {
             $pct = round(($egresos / $ingresos) * 100);
             $alerts[] = [
-                'id' => 2,
+                'id' => uniqid(),
                 'message' => "Los egresos representan el {$pct}% de los ingresos totales",
                 'type' => 'warning'
             ];
         }
 
-        // Alert 3: Locations with no transactions this month
-        $inactiveCount = $this->transactionRepo->countLocationsWithoutTransactionsThisMonth();
-        if ($inactiveCount > 0) {
+        // Alert 2: Locations with no reports in last 24 hours
+        $inactive24h = $this->transactionRepo->getInactiveLocationsLast24h();
+        foreach ($inactive24h as $loc) {
             $alerts[] = [
-                'id' => 3,
-                'message' => "$inactiveCount locaci" . ($inactiveCount === 1 ? "ón sin" : "ones sin") . " transacciones este mes",
-                'type' => 'info'
+                'id' => uniqid(),
+                'message' => "El local '{$loc['name']}' no ha reportado actividad en las últimas 24 horas",
+                'type' => 'error'
             ];
         }
 
@@ -64,6 +55,7 @@ class AdminService
                 'balance_neto'   => ($kpis['total_ingresos'] ?? 0) - ($kpis['total_egresos'] ?? 0)
             ],
             'monthlyData' => $monthlyData,
+            'salesByLocation' => $salesByLocation,
             'alerts' => $alerts
         ];
     }
