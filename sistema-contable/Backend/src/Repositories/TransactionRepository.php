@@ -252,14 +252,14 @@ class TransactionRepository
         return (int) $stmt->fetchColumn();
     }
 
-    public function getInactiveLocationsLast24h()
+    public function getInactiveLocationsToday()
     {
         $stmt = $this->db->query("
             SELECT name FROM locations 
             WHERE id NOT IN (
                 SELECT DISTINCT location_id 
                 FROM financial_transactions 
-                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+                WHERE DATE(created_at) = CURDATE()
             )
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

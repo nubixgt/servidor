@@ -17,6 +17,7 @@ class Database
 
         try {
             $this->pdo = new PDO($dsn, $config['username'], $config['password'], $config['options']);
+            $this->pdo->exec("SET time_zone = '-06:00'");
         } catch (PDOException $e) {
             // In a real API, log this.
             error_log($e->getMessage());

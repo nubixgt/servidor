@@ -38,12 +38,12 @@ class AdminService
             ];
         }
 
-        // Alert 2: Locations with no reports in last 24 hours
-        $inactive24h = $this->transactionRepo->getInactiveLocationsLast24h();
-        foreach ($inactive24h as $loc) {
+        // Alert 2: Locations with no reports TODAY
+        $inactiveToday = $this->transactionRepo->getInactiveLocationsToday();
+        foreach ($inactiveToday as $loc) {
             $alerts[] = [
                 'id' => uniqid(),
-                'message' => "El local '{$loc['name']}' no ha reportado actividad en las últimas 24 horas",
+                'message' => "El local '{$loc['name']}' aún no reporta actividad el día de hoy",
                 'type' => 'error'
             ];
         }
