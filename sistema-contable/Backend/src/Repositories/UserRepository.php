@@ -22,7 +22,7 @@ class UserRepository
     
     public function findAll()
     {
-        $stmt = $this->db->query("SELECT id, username, name, email, role, location_id, status, last_login_at FROM users ORDER BY name ASC");
+        $stmt = $this->db->query("SELECT id, username, name, role, location_id, status, last_login_at FROM users ORDER BY name ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -40,7 +40,7 @@ class UserRepository
 
     public function findById($id)
     {
-        $stmt = $this->db->prepare("SELECT id, username, name, email, role, location_id, status FROM users WHERE id = :id");
+        $stmt = $this->db->prepare("SELECT id, username, name, role, location_id, status FROM users WHERE id = :id");
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -49,15 +49,14 @@ class UserRepository
     {
         $hash = password_hash($data['password'], PASSWORD_DEFAULT);
         
-        $query = "INSERT INTO users (username, password_hash, name, email, role, location_id, status) 
-                  VALUES (:username, :password_hash, :name, :email, :role, :location_id, :status)";
+        $query = "INSERT INTO users (username, password_hash, name, role, location_id, status) 
+                  VALUES (:username, :password_hash, :name, :role, :location_id, :status)";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute([
             'username' => $data['username'],
             'password_hash' => $hash,
             'name' => $data['name'],
-            'email' => $data['email'],
             'role' => $data['role'],
             'location_id' => !empty($data['location_id']) ? $data['location_id'] : null,
             'status' => $data['status'] ?? 'Activo'
@@ -71,7 +70,6 @@ class UserRepository
         $query = "UPDATE users SET 
                     username = :username, 
                     name = :name, 
-                    email = :email, 
                     role = :role, 
                     location_id = :location_id,
                     status = :status";
@@ -80,11 +78,12 @@ class UserRepository
             'id' => $id,
             'username' => $data['username'],
             'name' => $data['name'],
-            'email' => $data['email'],
             'role' => $data['role'],
             'location_id' => !empty($data['location_id']) ? $data['location_id'] : null,
             'status' => $data['status']
         ];
+
+
 
         if (isset($data['password']) && $data['password'] !== '') {
             $query .= ", password_hash = :password_hash";

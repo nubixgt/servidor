@@ -171,8 +171,8 @@ class AdminController extends Controller
             $this->json(['status' => 'success', 'message' => 'Usuario creado exitosamente', 'id' => $id], 201);
         } catch (\PDOException $e) {
             if ($e->getCode() == 23000) {
-                // Posible duplicación de llaves, e.g., username o email unique
-                $this->json(['error' => 'El nombre de usuario o correo electrónico ya existe.'], 400);
+                // Posible duplicación de llaves, e.g., username unique
+                $this->json(['error' => 'El nombre de usuario ya existe.'], 400);
             } else {
                 $this->json(['error' => 'Ocurrió un error en la base de datos al crear el usuario.'], 400);
             }

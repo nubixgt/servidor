@@ -18,7 +18,7 @@
           <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
           <input 
             type="text" 
-            placeholder="Buscar por nombre o email..." 
+            placeholder="Buscar por nombre o usuario..." 
             v-model="searchTerm"
             class="w-full pl-10 pr-4 py-2 bg-[var(--color-surface-container-low)] border border-outline-variant/30 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 transition-all"
           />
@@ -64,7 +64,6 @@
                   </div>
                   <div>
                     <div class="font-semibold text-on-surface">{{ user.name }}</div>
-                    <div class="text-xs text-on-surface-variant">{{ user.email }}</div>
                   </div>
                 </div>
               </td>
@@ -145,12 +144,6 @@
                   <input v-model="newUser.username" type="text" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] transition-all" />
                </div>
             </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico <span class="text-red-500">*</span></label>
-              <input v-model="newUser.email" type="email" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 focus:border-[var(--color-primary)] transition-all" />
-            </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
                 Contraseña <span v-if="!newUser.id" class="text-red-500">*</span>
@@ -230,7 +223,7 @@ const newUser = ref({
   id: null,
   name: '',
   username: '',
-  email: '',
+
   password: '',
   role: 'admin',
   location_id: '',
@@ -270,7 +263,7 @@ onMounted(() => {
 });
 
 const openModal = () => {
-  newUser.value = { id: null, name: '', username: '', email: '', password: '', role: 'admin', location_id: '', status: 'Activo' };
+  newUser.value = { id: null, name: '', username: '', password: '', role: 'admin', location_id: '', status: 'Activo' };
   isModalOpen.value = true;
 };
 
@@ -279,7 +272,6 @@ const editUser = (user) => {
     id: user.id,
     name: user.name,
     username: user.username,
-    email: user.email,
     password: '',
     role: user.role === 'Administrador' ? 'admin' : 'tech',
     location_id: user.location_id || '',
@@ -310,7 +302,7 @@ const saveUser = async () => {
     const payload = {
       name: newUser.value.name,
       username: newUser.value.username,
-      email: newUser.value.email,
+
       role: newUser.value.role,
       location_id: newUser.value.role === 'tech' ? newUser.value.location_id : null,
       status: newUser.value.status
@@ -339,11 +331,11 @@ const saveUser = async () => {
 const filteredUsers = computed(() => {
   return initialUsers.value.filter(user => {
     const nameStr = user.name || '';
-    const emailStr = user.email || '';
+    const userStr = user.username || '';
     const searchLow = searchTerm.value.toLowerCase();
     
     const matchesSearch = nameStr.toLowerCase().includes(searchLow) ||
-                          emailStr.toLowerCase().includes(searchLow);
+                          userStr.toLowerCase().includes(searchLow);
                           
     const matchesRole = selectedRole.value === 'Todos' || user.role === selectedRole.value;
     const matchesStatus = selectedStatus.value === 'Todos' || user.status === selectedStatus.value;
