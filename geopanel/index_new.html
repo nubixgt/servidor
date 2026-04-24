@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoPanel — Municipalidad de Sanarate, El Progreso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+<!-- ══ NAV ══════════════════════════════════════════════════════ -->
+<nav class="l-nav">
+    <a class="l-brand" href="landing.html">
+        <span class="l-brand-icon">🗺️</span>
+        <div>
+            <div class="l-brand-name">GeoPanel Boletas</div>
+            <div class="l-brand-sub">Municipalidad de Sanarate, El Progreso</div>
+        </div>
+    </a>
+    <a class="l-nav-btn" href="index.html"><span class="btn-full">Abrir Tablero Geográfico →</span><span class="btn-short">Abrir Tablero</span></a>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════ -->
+<section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="landing_video.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Sistema Municipal Activo
+        </div>
+        <h1>Gestión geográfica<br>de <span>boletas</span> municipales</h1>
+        <p class="hero-sub">
+            Visualiza, filtra y exporta registros sobre un mapa interactivo.
+            Municipalidad de Sanarate, El Progreso.
+        </p>
+        <div class="hero-ctas">
+            <a class="btn-primary" href="#datos">
+                <span>📋</span> Ver Datos
+            </a>
+            <a class="btn-ghost" href="index.html">
+                🗺️ Tablero Geográfico
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ DATOS ═════════════════════════════════════════════════════ -->
+<!-- ══ GRÁFICAS ══════════════════════════════════════════════════ -->
+<section class="section charts-section" id="graficas">
+    <div class="section-inner">
+        <div class="charts-section-head">
+            <span class="section-label">Análisis visual</span>
+            <h2 class="section-title">Gráficas</h2>
+        </div>
+
+        <!-- Wizard -->
+        <div class="cw-wrap" id="cwWrap">
+            <!-- Paso 1: tipo -->
+            <div class="cw-step" id="cwStep1">
+                <p class="cw-hint">Crea tu gráfica — elige el tipo</p>
+                <div class="cw-type-grid">
+                    <button class="cw-type-card" data-type="pie">
+                        <span class="cw-type-ico"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M24 24 L24 5 A19 19 0 0 1 41.5 33 Z" fill="#7aab4e"/><path d="M24 24 L41.5 33 A19 19 0 0 1 6.5 33 Z" fill="#4e9e8a"/><path d="M24 24 L6.5 33 A19 19 0 0 1 24 5 Z" fill="#e8c53a"/><circle cx="24" cy="24" r="8" fill="white"/></svg></span>
+                        <span class="cw-type-name">Pastel</span>
+                        <span class="cw-type-desc">Distribución de categorías</span>
+                    </button>
+                    <button class="cw-type-card" data-type="bar">
+                        <span class="cw-type-ico"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="26" width="10" height="16" rx="2" fill="#4e9e8a"/><rect x="19" y="12" width="10" height="30" rx="2" fill="#7aab4e"/><rect x="34" y="18" width="10" height="24" rx="2" fill="#e8c53a"/></svg></span>
+                        <span class="cw-type-name">Barras</span>
+                        <span class="cw-type-desc">Comparar cantidades</span>
+                    </button>
+                    <button class="cw-type-card" data-type="line">
+                        <span class="cw-type-ico"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><polyline points="4,38 16,22 28,30 44,10" stroke="#7aab4e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="38" r="4" fill="#7aab4e"/><circle cx="16" cy="22" r="4" fill="#7aab4e"/><circle cx="28" cy="30" r="4" fill="#7aab4e"/><circle cx="44" cy="10" r="4" fill="#7aab4e"/></svg></span>
+                        <span class="cw-type-name">Líneas</span>
+                        <span class="cw-type-desc">Tendencias en el tiempo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Paso 2: campo -->
+            <div class="cw-step" id="cwStep2" hidden>
+                <div class="cw-step2-head">
+                    <button class="cw-back" id="cwBack">← Atrás</button>
+                    <p class="cw-hint">Selecciona el campo a graficar</p>
+                </div>
+                <div class="cw-fields" id="cwFields"></div>
+            </div>
+        </div>
+
+        <!-- Botón compacto (visible solo cuando hay gráficas) -->
+        <button class="cw-compact-btn" id="cwCompactBtn" hidden>＋ Crear otra gráfica</button>
+
+        <!-- Grid de gráficas -->
+        <div class="charts-grid" id="chartsGrid">
+            <div class="charts-empty" id="chartsEmpty">
+                <div class="charts-empty-ico">📊</div>
+                <p>Cargando gráficas…</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section datos-section" id="datos">
+    <div class="section-inner">
+        <div class="dt-header-row">
+            <div>
+                <span class="section-label">Registros del sistema</span>
+                <h2 class="section-title">Listado de boletas</h2>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="dt-toolbar">
+            <div class="dt-search-wrap">
+                <span class="dt-search-icon">🔍</span>
+                <input type="text" id="dtSearch" placeholder="Buscar en todos los campos…" autocomplete="off">
+                <button class="dt-clear-btn" id="dtClearSearch" title="Limpiar">✕</button>
+            </div>
+
+            <div class="col-picker-wrap">
+                <button class="dt-tool-btn" id="colPickerBtn">
+                    ⊞ Columnas <span id="colCount"></span>
+                </button>
+                <div class="col-picker-dropdown" id="colPickerDropdown">
+                    <div class="col-picker-head">Columnas visibles</div>
+                    <div class="col-picker-list" id="colPickerList"></div>
+                    <div class="col-picker-foot">
+                        <button class="col-sel-all" id="colSelAll">Todas</button>
+                        <button class="col-sel-none" id="colSelNone">Ninguna</button>
+                        <button class="col-apply-btn" id="colPickerApply">Aplicar</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="dt-tool-btn refresh-btn" id="refreshBtn" title="Forzar actualización desde API">
+                ↺ Actualizar
+            </button>
+
+            <div class="dt-meta">
+                <span id="dtTotal"></span>
+                <span class="dt-sep">·</span>
+                <span id="dtCacheInfo"></span>
+            </div>
+        </div>
+
+        <!-- Status bar -->
+        <div id="dtStatus"></div>
+
+        <!-- Table -->
+        <div class="dt-wrap">
+            <table class="dt">
+                <thead id="dtHead"></thead>
+                <tbody id="dtBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="dt-pagination" id="dtPagination"></div>
+    </div>
+</section>
+
+<!-- ══ MAPA PREVIEW ══════════════════════════════════════════════ -->
+<section class="section map-section" id="mapa">
+    <div class="section-inner">
+        <span class="section-label">Vista geográfica</span>
+        <h2 class="section-title">Mapa general</h2>
+        <div class="map-wrap">
+            <div id="previewMap"></div>
+            <div class="map-overlay-badge" id="mapBadge">Cargando...</div>
+            <a class="map-click-overlay" href="index.html">
+                <div class="mco-inner">
+                    <div class="mco-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 3C10.27 3 4 9.27 4 17c0 10.5 14 22 14 22S32 27.5 32 17C32 9.27 25.73 3 18 3z" fill="white" opacity=".9"/><circle cx="18" cy="17" r="5" fill="#345C32"/></svg></div>
+                    <span class="mco-label">Abrir Tablero Geográfico</span>
+                    <span class="mco-sub">Mapa interactivo completo con filtros y exportación</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CTA FINAL ═════════════════════════════════════════════════ -->
+<section class="cta-section">
+    <h2>Listo para explorar los datos</h2>
+    <p>Accede al tablero interactivo con mapa completo, filtros dinámicos y exportación PDF.</p>
+    <a class="btn-primary" href="index.html">
+        <span>🗺️</span> Ir al Tablero Geográfico
+    </a>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════════ -->
+<footer class="l-footer">
+    <strong>GeoPanel Boletas</strong> — Municipalidad de Sanarate, El Progreso &nbsp;·&nbsp;
+    Sistema de gestión geográfica municipal
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    /* ── Config ───────────────────────────────────────────────── */
+    const CACHE_KEY = 'geopanel_data_v2';
+    const CACHE_TS  = 'geopanel_ts_v2';
+    const CACHE_TTL = 24 * 60 * 60 * 1000;
+    const PAGE_SIZE = 40;
+
+    const DEFAULT_PATTERNS = [
+        'nombre','vecino','name','nombre_completo','propietario','solicitante','titular',
+        'boleta_type','tipo_boleta','tipo','type','benefit','beneficio',
+        'fecha','date','created','solicitud',
+        'estado','status','estatus','state',
+        'dpi','cedula','identificacion','documento',
+    ];
+
+    const SKIP_FIELDS = new Set([
+        '_idx','_name','_imgs','_image_urls','_coords','_status',
+        'lat','lon','lng','latitude','longitude','latitud','longitud',
+        'coordenada_lat','coordenada_lng','coord_lat','coord_lng','x','y',
+        'location','coordinates',
+    ]);
+
+    const PENDING_KW  = ['pendiente','pending','en proceso','espera','waiting','open','abierto','revision'];
+    const APPROVED_KW = ['aprobado','approved','autorizado','completado','completed','cerrado','finalizado','done','activo'];
+
+    /* ── State ────────────────────────────────────────────────── */
+    let allData      = [];
+    let columns      = [];
+    let visibleCols  = [];
+    let filteredData = [];
+    let sortCol      = null;
+    let sortDir      = 1;
+    let currentPage  = 1;
+    let searchQ      = '';
+
+    /* ── Charts state ─────────────────────────────────────────── */
+    let chartInstances   = {};
+    let chartCount       = 0;
+    let chartsInitialized = false;
+    let cbSelectedType   = 'bar';
+
+    const CHART_COLORS = [
+        '#7aab4e','#4e9e8a','#e5845c','#5b7abf','#c97ec2',
+        '#e8c53a','#4ab8d4','#e36060','#8abe8a','#a08ecf','#f0a060','#60c0c0'
+    ];
+    const CHART_SKIP_EXTRA = new Set([
+        'id','_id','nombre','name','nombre_completo','vecino','solicitante','propietario','titular',
+        'dpi','cedula','identificacion','documento','boleta_number',
+        'direccion','address','observaciones','notas','comments','descripcion','description',
+        'foto','imagen','image','photo','url','link',
+    ]);
+
+    function isDateField(k) { return /fecha|date|created|registro|solicitud/i.test(k); }
+
+    function isChartable(k, vals) {
+        if (SKIP_FIELDS.has(k) || CHART_SKIP_EXTRA.has(k) || k.startsWith('_')) return false;
+        const nonempty = vals.filter(v => v != null && v !== '');
+        if (!nonempty.length) return false;
+        const avgLen = nonempty.map(v => String(v).length).reduce((a,b)=>a+b,0) / nonempty.length;
+        if (avgLen > 60) return false;
+        if (isDateField(k)) return nonempty.some(v => !isNaN(new Date(v)));
+        const uniq = new Set(nonempty.map(v => String(v).trim())).size;
+        return uniq >= 2 && uniq <= 40;
+    }
+
+    function getChartableFields() {
+        if (!allData.length) return [];
+        const sample = allData.slice(0, 100);
+        return Object.keys(allData[0]).filter(k => isChartable(k, sample.map(r => r[k])));
+    }
+
+    function countByField(field) {
+        const counts = {};
+        allData.forEach(r => {
+            const v = r[field]; if (v == null || v === '') return;
+            const k = String(v).trim() || '(vacío)';
+            counts[k] = (counts[k] || 0) + 1;
+        });
+        return counts;
+    }
+
+    function countByMonth(field) {
+        const counts = {};
+        allData.forEach(r => {
+            const v = r[field]; if (!v) return;
+            const d = new Date(v); if (isNaN(d)) return;
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            counts[key] = (counts[key] || 0) + 1;
+        });
+        return counts;
+    }
+
+    function updateGridLayout() {
+        const count = document.querySelectorAll('#chartsGrid .chart-card').length;
+        document.getElementById('chartsGrid').dataset.cols = count === 0 ? '0' : count === 1 ? '1' : count === 2 ? '2' : '3';
+    }
+
+    function addChart(field, type, customTitle, prepend) {
+        if (!allData.length) return;
+        const id = 'chart-' + (++chartCount);
+        const title = customTitle || colLabel(field);
+        const isDate = isDateField(field);
+        let labels, data;
+        if (isDate) {
+            const counts = countByMonth(field);
+            const sorted = Object.keys(counts).sort();
+            labels = sorted.map(k => { const [y,m]=k.split('-'); return new Date(+y,+m-1).toLocaleDateString('es',{month:'short',year:'2-digit'}); });
+            data = sorted.map(k => counts[k]);
+        } else {
+            const counts = countByField(field);
+            const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+            labels = sorted.map(([k])=>k);
+            data = sorted.map(([,v])=>v);
+        }
+        if (!labels.length) return;
+
+        let cardField = field, cardType = type;
+
+        // Build card with always-visible inline controls
+        const chartableFields = getChartableFields();
+        const fieldOpts = chartableFields.map(f =>
+            `<option value="${f}"${f===field?' selected':''}>${colLabel(f)}</option>`
+        ).join('');
+
+        const card = document.createElement('div');
+        card.className = 'chart-card'; card.dataset.chartId = id;
+        card.innerHTML = `
+            <div class="cep-inline">
+                <div class="cep-inline-field">
+                    <label class="cep-label">Campo</label>
+                    <select class="cep-field-sel">${fieldOpts}</select>
+                </div>
+                <div class="cep-inline-type">
+                    <label class="cep-label">Tipo</label>
+                    <div class="cep-types">
+                        <button class="cep-type${type==='bar'?' active':''}" data-t="bar">📊</button>
+                        <button class="cep-type${type==='pie'?' active':''}" data-t="pie">🥧</button>
+                        <button class="cep-type${type==='line'?' active':''}" data-t="line">📈</button>
+                    </div>
+                </div>
+                <button class="chart-card-remove" title="Eliminar">✕</button>
+            </div>
+            <div class="chart-canvas-wrap"><canvas id="${id}"></canvas></div>`;
+
+        const grid = document.getElementById('chartsGrid');
+        const emptyEl = document.getElementById('chartsEmpty');
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (prepend && grid.firstChild) grid.insertBefore(card, grid.firstChild);
+        else grid.appendChild(card);
+        updateGridLayout();
+
+        // In-place chart rebuild — no DOM move
+        function rebuildChart() {
+            const f = card.querySelector('.cep-field-sel').value;
+            const t = card.querySelector('.cep-type.active')?.dataset.t || 'bar';
+            cardField = f; cardType = t;
+
+            let lbls, dat;
+            if (isDateField(f)) {
+                const counts = countByMonth(f);
+                const sorted = Object.keys(counts).sort();
+                lbls = sorted.map(k => { const [y,m]=k.split('-'); return new Date(+y,+m-1).toLocaleDateString('es',{month:'short',year:'2-digit'}); });
+                dat  = sorted.map(k => counts[k]);
+            } else {
+                const counts = countByField(f);
+                const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+                lbls = sorted.map(([k])=>k);
+                dat  = sorted.map(([,v])=>v);
+            }
+            if (!lbls.length) return;
+
+            if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+
+            // Replace canvas (Chart.js requires fresh canvas after destroy)
+            const wrap = card.querySelector('.chart-canvas-wrap');
+            wrap.innerHTML = `<canvas id="${id}"></canvas>`;
+
+            const ct = t === 'pie' ? 'pie' : t === 'line' ? 'line' : 'bar';
+            const colors = CHART_COLORS.slice(0, lbls.length);
+            chartInstances[id] = new Chart(document.getElementById(id), {
+                type: ct,
+                data: { labels: lbls, datasets: [{ label: colLabel(f), data: dat,
+                    backgroundColor: ct==='line' ? 'rgba(122,171,78,.12)' : colors,
+                    borderColor: ct==='line' ? '#7aab4e' : (ct==='bar' ? colors : undefined),
+                    borderWidth: ct==='pie' ? 0 : 2, fill: ct==='line', tension: 0.4,
+                    pointRadius: ct==='line' ? 4 : 0, pointBackgroundColor: '#7aab4e',
+                }]},
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: ct==='pie', position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}` } }
+                    },
+                    scales: ct !== 'pie' ? {
+                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.06)' } },
+                        x: { ticks: { font: { size: 11 }, maxRotation: 35 }, grid: { display: false } }
+                    } : {}
+                }
+            });
+        }
+
+        // Field change → immediate rebuild
+        card.querySelector('.cep-field-sel').addEventListener('change', rebuildChart);
+
+        // Type buttons → immediate rebuild
+        card.querySelectorAll('.cep-type').forEach(btn => btn.addEventListener('click', e => {
+            e.stopPropagation();
+            card.querySelectorAll('.cep-type').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rebuildChart();
+        }));
+
+        card.querySelector('.chart-card-remove').addEventListener('click', e => {
+            e.stopPropagation();
+            if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+            card.remove();
+            updateGridLayout();
+            if (!grid.querySelector('.chart-card')) {
+                const emp = document.getElementById('chartsEmpty');
+                if (emp) { emp.style.display = ''; emp.querySelector('p').textContent = 'Elige un tipo de gráfica arriba para comenzar.'; }
+            }
+        });
+
+        // Initial render
+        const ct0 = type === 'pie' ? 'pie' : type === 'line' ? 'line' : 'bar';
+        const colors0 = CHART_COLORS.slice(0, labels.length);
+        chartInstances[id] = new Chart(document.getElementById(id), {
+            type: ct0,
+            data: { labels, datasets: [{ label: title, data,
+                backgroundColor: ct0==='line' ? 'rgba(122,171,78,.12)' : colors0,
+                borderColor: ct0==='line' ? '#7aab4e' : (ct0==='bar' ? colors0 : undefined),
+                borderWidth: ct0==='pie' ? 0 : 2, fill: ct0==='line', tension: 0.4,
+                pointRadius: ct0==='line' ? 4 : 0, pointBackgroundColor: '#7aab4e',
+            }]},
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: ct0==='pie', position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}` } }
+                },
+                scales: ct0 !== 'pie' ? {
+                    y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.06)' } },
+                    x: { ticks: { font: { size: 11 }, maxRotation: 35 }, grid: { display: false } }
+                } : {}
+            }
+        });
+    }
+
+    function initDefaultCharts() {
+        const fields = getChartableFields();
+        if (!fields.length) return;
+        const creadorField  = fields.find(f => /^(creator|creador|created_by|usuario)$/i.test(f));
+        const statusField   = fields.find(f => /^(status|estado|estatus|state)$/i.test(f));
+        const benefitField  = fields.find(f => /^(benefit|beneficio|tipo_beneficio|boleta_type|tipo_boleta)$/i.test(f));
+        if (creadorField) addChart(creadorField, 'bar',  'Creador');
+        if (statusField)  addChart(statusField,  'pie',  'Estado');
+        if (benefitField) addChart(benefitField, 'line', 'Beneficio');
+    }
+
+    /* ── Wizard ───────────────────────────────────────────────── */
+    function cwCollapse() {
+        document.getElementById('cwWrap').hidden = true;
+        document.getElementById('cwCompactBtn').hidden = false;
+    }
+
+    function cwExpand() {
+        document.getElementById('cwWrap').hidden = false;
+        document.getElementById('cwCompactBtn').hidden = true;
+        cwGoStep1();
+    }
+
+    document.getElementById('cwCompactBtn').addEventListener('click', cwExpand);
+
+    function cwGoStep1() {
+        document.getElementById('cwStep1').hidden = false;
+        document.getElementById('cwStep2').hidden = true;
+        cbSelectedType = null;
+    }
+
+    function cwGoStep2(type) {
+        cbSelectedType = type;
+        document.getElementById('cwStep1').hidden = true;
+        const step2 = document.getElementById('cwStep2');
+        step2.hidden = false;
+
+        const fields = getChartableFields();
+        const relevant = type === 'line'
+            ? fields.filter(f => isDateField(f)).concat(fields.filter(f => !isDateField(f)))
+            : fields.filter(f => !isDateField(f)).concat(fields.filter(f => isDateField(f)));
+
+        document.getElementById('cwFields').innerHTML = relevant.map(f => {
+            const isDate = isDateField(f);
+            const tag = type === 'line' && isDate ? '<span class="cw-tag">fecha</span>'
+                      : type !== 'line' && !isDate ? '<span class="cw-tag">categoría</span>' : '';
+            return `<button class="cw-field-chip${type === 'line' && isDate ? ' cw-chip-highlight' : ''}" data-field="${f}">${colLabel(f)}${tag}</button>`;
+        }).join('');
+
+        document.querySelectorAll('.cw-field-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                addChart(chip.dataset.field, cbSelectedType, null, false);
+                cwCollapse();
+            });
+        });
+    }
+
+    document.querySelectorAll('.cw-type-card').forEach(card => {
+        card.addEventListener('click', () => cwGoStep2(card.dataset.type));
+    });
+    document.getElementById('cwBack').addEventListener('click', cwGoStep1);
+
+    /* ── Helpers ──────────────────────────────────────────────── */
+    function extractCoords(b) {
+        let la = (b.location && (b.location.lat || b.location.latitude))
+              || b.lat || b.latitude || b.latitud || b.coordenada_lat || b.coord_lat || b.y || null;
+        let lo = (b.location && (b.location.lng || b.location.lon || b.location.longitude))
+              || b.lng || b.lon || b.longitude || b.longitud || b.coordenada_lng || b.coord_lng || b.x || null;
+        if ((la === null || lo === null) && Array.isArray(b.coordinates) && b.coordinates.length >= 2) {
+            lo = b.coordinates[0]; la = b.coordinates[1];
+        }
+        const lan = parseFloat(la), lon = parseFloat(lo);
+        const ok = !isNaN(lan) && !isNaN(lon) && lan !== 0 && lon !== 0
+                 && lan >= -90 && lan <= 90 && lon >= -180 && lon <= 180;
+        return ok ? { lat: lan, lon } : null;
+    }
+
+    function getName(b, i) {
+        return b.nombre || b.vecino || b.name || b.nombre_completo
+            || b.propietario || b.solicitante || b.titular || `Boleta #${i + 1}`;
+    }
+
+    function getStatus(b) {
+        for (const f of ['status','estado','estatus','state','condition','situacion']) {
+            if (b[f] !== undefined) {
+                const v = String(b[f]).toLowerCase();
+                if (PENDING_KW.some(k => v.includes(k)))  return 'pending';
+                if (APPROVED_KW.some(k => v.includes(k))) return 'approved';
+            }
+        }
+        return null;
+    }
+
+    const FIELD_ES = {
+        // identidad
+        nombre: 'Nombre', name: 'Nombre', nombre_completo: 'Nombre completo',
+        vecino: 'Vecino', solicitante: 'Solicitante', propietario: 'Propietario', titular: 'Titular',
+        dpi: 'DPI', cedula: 'Cédula', identificacion: 'Identificación', documento: 'Documento',
+        // boleta
+        id: 'ID', boleta_number: 'No. Boleta', boleta_type: 'Tipo de boleta',
+        tipo: 'Tipo', tipo_boleta: 'Tipo de boleta', tipo_beneficio: 'Tipo de beneficio',
+        benefit: 'Beneficio', beneficio: 'Beneficio', servicio: 'Servicio',
+        description: 'Descripción', descripcion: 'Descripción',
+        // estado
+        status: 'Estado', estado: 'Estado', estatus: 'Estado', state: 'Estado',
+        // fechas
+        created_at: 'Fecha de creación', date_formatted: 'Fecha',
+        fecha: 'Fecha', fecha_creacion: 'Fecha de creación',
+        fecha_solicitud: 'Fecha de solicitud', fecha_registro: 'Fecha de registro',
+        date: 'Fecha', created: 'Creado',
+        // ubicación
+        aldea: 'Aldea', comunidad: 'Comunidad', municipio: 'Municipio',
+        departamento: 'Departamento', direccion: 'Dirección', address: 'Dirección',
+        // otros
+        creator: 'Creador', usuario: 'Usuario', user: 'Usuario',
+        observaciones: 'Observaciones', notas: 'Notas',
+    };
+
+    const STATUS_ES = {
+        pending: 'Pendiente', pendiente: 'Pendiente',
+        approved: 'Aprobado', aprobado: 'Aprobado',
+        active: 'Activo', activo: 'Activo',
+        completed: 'Completado', completado: 'Completado',
+        rejected: 'Rechazado', rechazado: 'Rechazado',
+        cancelled: 'Cancelado', cancelado: 'Cancelado',
+        open: 'Abierto', closed: 'Cerrado',
+    };
+
+    function colLabel(k) {
+        return FIELD_ES[k] ?? FIELD_ES[k.toLowerCase()]
+            ?? k.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function statusLabel(v) {
+        if (!v) return v;
+        const key = String(v).toLowerCase().trim();
+        return STATUS_ES[key] ?? v;
+    }
+
+    function isStatusCol(k) {
+        return ['status','estado','estatus','state','condition','situacion'].includes(k.toLowerCase());
+    }
+
+    function esc(str) {
+        return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── Cache ────────────────────────────────────────────────── */
+    function getCached() {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            const ts  = localStorage.getItem(CACHE_TS);
+            if (!raw || !ts) return null;
+            if (Date.now() - parseInt(ts) > CACHE_TTL) return null;
+            return JSON.parse(raw);
+        } catch(e) { return null; }
+    }
+
+    function setCache(data) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            localStorage.setItem(CACHE_TS, Date.now().toString());
+        } catch(e) { /* quota exceeded, skip */ }
+    }
+
+    /* ── Load data ────────────────────────────────────────────── */
+    async function loadData(forceRefresh = false) {
+        setStatus('loading');
+        try {
+            let raw = forceRefresh ? null : getCached();
+            if (!raw) {
+                const r   = await fetch('api-proxy.php?all_pages=true');
+                const res = await r.json();
+                raw = (res.data || res.boletas || []).map((b, i) => ({
+                    ...b,
+                    nombre:  b.citizen?.name || b.nombre || b.name || b.nombre_completo || '',
+                    _coords: extractCoords(b),
+                    _name:   b.citizen?.name || getName(b, i),
+                    _status: getStatus(b),
+                }));
+                setCache(raw);
+            }
+            allData = raw;
+            buildColumns();
+            renderTable();
+            renderMap();
+            if (!chartsInitialized) { chartsInitialized = true; initDefaultCharts(); }
+            setStatus('idle');
+        } catch(e) {
+            setStatus('error', e.message);
+        }
+    }
+
+    /* ── Build columns ────────────────────────────────────────── */
+    function buildColumns() {
+        if (!allData.length) { columns = []; visibleCols = []; return; }
+        const sample = allData.slice(0, 30);
+        columns = Object.keys(allData[0]).filter(k => {
+            if (SKIP_FIELDS.has(k) || k.startsWith('_')) return false;
+            const vals = sample.map(r => r[k]).filter(v => v != null && v !== '');
+            if (!vals.length) return false;
+            if (vals.some(v => /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(String(v)))) return false;
+            const avgLen = vals.map(v => String(v).length).reduce((a,b) => a+b, 0) / vals.length;
+            return avgLen <= 200;
+        });
+
+        visibleCols = columns.filter(c =>
+            DEFAULT_PATTERNS.some(p => c.toLowerCase().includes(p))
+        );
+        if (visibleCols.length === 0) visibleCols = columns.slice(0, 5);
+        updateColCount();
+    }
+
+    function updateColCount() {
+        document.getElementById('colCount').textContent = `(${visibleCols.length}/${columns.length})`;
+    }
+
+    /* ── Render table ─────────────────────────────────────────── */
+    function renderTable() {
+        const q = searchQ.toLowerCase();
+        filteredData = q
+            ? allData.filter(row =>
+                Object.entries(row).some(([k, v]) =>
+                    !k.startsWith('_') && String(v ?? '').toLowerCase().includes(q)
+                )
+            )
+            : [...allData];
+
+        if (sortCol) {
+            filteredData.sort((a, b) =>
+                String(a[sortCol] ?? '').localeCompare(String(b[sortCol] ?? ''), 'es', {numeric: true}) * sortDir
+            );
+        }
+
+        const total = filteredData.length;
+        document.getElementById('dtTotal').textContent = `${total.toLocaleString('es-GT')} registros`;
+
+        const ts = localStorage.getItem(CACHE_TS);
+        document.getElementById('dtCacheInfo').textContent = ts
+            ? `Cache: ${new Date(parseInt(ts)).toLocaleString('es-GT')}`
+            : '';
+
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start    = (currentPage - 1) * PAGE_SIZE;
+        const pageData = filteredData.slice(start, start + PAGE_SIZE);
+
+        /* header */
+        document.getElementById('dtHead').innerHTML = `<tr>
+            ${visibleCols.map(c => {
+                const isSorted = sortCol === c;
+                const arrow = isSorted ? (sortDir > 0 ? ' ▲' : ' ▼') : '';
+                const statusCls = isStatusCol(c) ? ' col-status' : '';
+                return `<th class="sortable${isSorted?' sorted':''}${statusCls}" data-col="${esc(c)}">${esc(colLabel(c))}${arrow}</th>`;
+            }).join('')}
+            <th class="th-action">Mapa</th>
+        </tr>`;
+
+        document.querySelectorAll('#dtHead .sortable').forEach(th => {
+            th.addEventListener('click', () => {
+                if (sortCol === th.dataset.col) sortDir *= -1;
+                else { sortCol = th.dataset.col; sortDir = 1; }
+                currentPage = 1;
+                renderTable();
+            });
+        });
+
+        /* body */
+        if (!pageData.length) {
+            document.getElementById('dtBody').innerHTML =
+                `<tr><td colspan="${visibleCols.length + 1}" class="dt-empty-row">
+                    ${q ? 'Sin resultados para "' + esc(searchQ) + '"' : 'Sin datos'}
+                </td></tr>`;
+        } else {
+            document.getElementById('dtBody').innerHTML = pageData.map(row => `
+                <tr>
+                    ${visibleCols.map(c => {
+                        const v = row[c];
+                        let cell;
+                        if (isStatusCol(c) && v != null) {
+                            const cls = row._status === 'pending'  ? 'badge-pending'
+                                      : row._status === 'approved' ? 'badge-approved' : 'badge-neutral';
+                            cell = `<span class="status-badge ${cls}">${esc(statusLabel(v))}</span>`;
+                            return `<td class="col-status">${cell}</td>`;
+                        } else if (v != null && v !== '') {
+                            const txt = String(v).slice(0, 90);
+                            cell = `<span title="${esc(String(v))}">${esc(txt)}</span>`;
+                        } else {
+                            cell = '<span class="dt-empty">—</span>';
+                        }
+                        return `<td>${cell}</td>`;
+                    }).join('')}
+                    <td class="td-action">
+                        ${row._coords
+                            ? `<button class="map-pin-btn" onclick="gotoMap(${row._coords.lat},${row._coords.lon})" title="Ver en tablero geográfico">📍</button>`
+                            : `<span class="no-coord" title="Sin coordenadas">·</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        renderPagination(totalPages, total, start, Math.min(start + PAGE_SIZE, total));
+    }
+
+    function renderPagination(totalPages, total, start, end) {
+        const el = document.getElementById('dtPagination');
+        if (totalPages <= 1) { el.innerHTML = `<span class="pg-info">Mostrando ${total} registros</span>`; return; }
+        let html = `<span class="pg-info">Mostrando ${start+1}–${end} de ${total.toLocaleString('es-GT')}</span><div class="pg-btns">`;
+        if (currentPage > 1) html += `<button class="pg-btn" data-p="1">«</button><button class="pg-btn" data-p="${currentPage-1}">‹</button>`;
+        const from = Math.max(1, currentPage - 2), to = Math.min(totalPages, currentPage + 2);
+        for (let p = from; p <= to; p++)
+            html += `<button class="pg-btn${p===currentPage?' active':''}" data-p="${p}">${p}</button>`;
+        if (currentPage < totalPages) html += `<button class="pg-btn" data-p="${currentPage+1}">›</button><button class="pg-btn" data-p="${totalPages}">»</button>`;
+        html += '</div>';
+        el.innerHTML = html;
+        el.querySelectorAll('.pg-btn').forEach(btn =>
+            btn.addEventListener('click', () => { currentPage = parseInt(btn.dataset.p); renderTable(); })
+        );
+    }
+
+    /* ── Column picker ────────────────────────────────────────── */
+    function renderColPicker() {
+        document.getElementById('colPickerList').innerHTML = columns.map(c => `
+            <label class="col-pick-item">
+                <input type="checkbox" value="${esc(c)}" ${visibleCols.includes(c) ? 'checked' : ''}>
+                <span>${esc(colLabel(c))}</span>
+            </label>
+        `).join('');
+    }
+
+    function applyColPicker() {
+        visibleCols = [...document.querySelectorAll('#colPickerList input:checked')].map(i => i.value);
+        updateColCount();
+        closeColPicker();
+        renderTable();
+    }
+
+    function closeColPicker() {
+        document.getElementById('colPickerDropdown').classList.remove('open');
+    }
+
+    /* ── Map ──────────────────────────────────────────────────── */
+    const previewMap = L.map('previewMap', { zoomControl: false, dragging: false, touchZoom: false, doubleClickZoom: false, scrollWheelZoom: false, boxZoom: false, keyboard: false }).setView([14.85, -89.87], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors', maxZoom: 19
+    }).addTo(previewMap);
+    const mapGroup = L.layerGroup().addTo(previewMap);
+
+    function renderMap() {
+        mapGroup.clearLayers();
+        const pts = [];
+        allData.forEach(b => {
+            if (!b._coords) return;
+            const color = b._status === 'pending'  ? '#6b46c1'
+                        : b._status === 'approved' ? '#2c7a7b' : '#345C32';
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="26" viewBox="0 0 24 32">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 20 12 20S24 21 24 12C24 5.37 18.63 0 12 0z" fill="${color}"/>
+                <circle cx="12" cy="12" r="5" fill="white" opacity=".85"/>
+            </svg>`;
+            L.marker([b._coords.lat, b._coords.lon], {
+                icon: L.divIcon({ html: svg, className:'', iconSize:[20,26], iconAnchor:[10,26] })
+            }).addTo(mapGroup).bindPopup(`<strong style="color:#345C32">${esc(b._name)}</strong>`);
+            pts.push([b._coords.lat, b._coords.lon]);
+        });
+        if (pts.length) previewMap.fitBounds(pts, { padding: [30, 30] });
+        document.getElementById('mapBadge').textContent = `${pts.length} boletas en el mapa`;
+    }
+
+    /* ── Go to geographic map ─────────────────────────────────── */
+    window.gotoMap = function(lat, lon) {
+        localStorage.setItem('geopanel_goto', JSON.stringify({ lat, lon }));
+        window.location.href = 'index.html';
+    };
+
+    /* ── Status bar ───────────────────────────────────────────── */
+    function setStatus(state, msg) {
+        const el = document.getElementById('dtStatus');
+        if (state === 'loading') el.innerHTML = '<div class="dt-status-bar">⏳ Descargando datos desde la API…</div>';
+        else if (state === 'error') el.innerHTML = `<div class="dt-status-bar error">❌ Error: ${esc(msg)}</div>`;
+        else el.innerHTML = '';
+    }
+
+    /* ── Event listeners ──────────────────────────────────────── */
+    document.getElementById('dtSearch').addEventListener('input', e => {
+        searchQ = e.target.value;
+        document.getElementById('dtClearSearch').style.display = searchQ ? 'block' : 'none';
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('dtClearSearch').addEventListener('click', () => {
+        document.getElementById('dtSearch').value = '';
+        searchQ = '';
+        document.getElementById('dtClearSearch').style.display = 'none';
+        currentPage = 1;
+        renderTable();
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => loadData(true));
+
+    document.getElementById('colPickerBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        const dd = document.getElementById('colPickerDropdown');
+        const opening = !dd.classList.contains('open');
+        dd.classList.toggle('open');
+        if (opening) renderColPicker();
+    });
+
+    document.getElementById('colPickerApply').addEventListener('click', applyColPicker);
+
+    document.getElementById('colSelAll').addEventListener('click', () => {
+        document.querySelectorAll('#colPickerList input').forEach(i => i.checked = true);
+    });
+    document.getElementById('colSelNone').addEventListener('click', () => {
+        document.querySelectorAll('#colPickerList input').forEach(i => i.checked = false);
+    });
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.col-picker-wrap')) closeColPicker();
+    });
+
+    /* ── Start ────────────────────────────────────────────────── */
+    loadData();
+
+    window.addEventListener('pageshow', () => {
+        const v = document.querySelector('.hero-video');
+        if (v) v.play().catch(() => {});
+    });
+
+    const lNav = document.querySelector('.l-nav');
+    window.addEventListener('scroll', () => {
+        lNav.classList.toggle('island', window.scrollY > 60);
+    }, { passive: true });
+})();
+</script>
+</body>
+</html>
