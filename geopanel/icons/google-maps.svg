@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130">
+  <defs>
+    <clipPath id="pin-clip">
+      <path d="M50 4 C25 4 4 25 4 50 C4 78 50 126 50 126 C50 126 96 78 96 50 C96 25 75 4 50 4Z"/>
+    </clipPath>
+  </defs>
+  <!-- 4 Google color quadrants clipped to pin shape -->
+  <rect x="0"  y="0"  width="50" height="50"  fill="#4285F4" clip-path="url(#pin-clip)"/>
+  <rect x="50" y="0"  width="50" height="50"  fill="#EA4335" clip-path="url(#pin-clip)"/>
+  <rect x="0"  y="50" width="50" height="80"  fill="#FBBC04" clip-path="url(#pin-clip)"/>
+  <rect x="50" y="50" width="50" height="80"  fill="#34A853" clip-path="url(#pin-clip)"/>
+  <!-- White center hole -->
+  <circle cx="50" cy="50" r="19" fill="white" clip-path="url(#pin-clip)"/>
+</svg>

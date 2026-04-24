@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 118">
+  <!-- Body -->
+  <path d="M50 6 C26 6 9 23 9 44 C9 62 21 75 36 83 L33 106 C32 111 36 115 40 113 L50 106 L60 113 C64 115 68 111 67 106 L64 83 C79 75 91 62 91 44 C91 23 74 6 50 6Z" fill="#09D3EF"/>
+  <!-- Left eye white -->
+  <ellipse cx="35" cy="41" rx="9.5" ry="10.5" fill="white"/>
+  <!-- Right eye white -->
+  <ellipse cx="65" cy="41" rx="9.5" ry="10.5" fill="white"/>
+  <!-- Left pupil -->
+  <circle cx="37" cy="43" r="5.5" fill="#222"/>
+  <!-- Right pupil -->
+  <circle cx="67" cy="43" r="5.5" fill="#222"/>
+  <!-- Eye shine left -->
+  <circle cx="39.5" cy="40" r="2" fill="white"/>
+  <!-- Eye shine right -->
+  <circle cx="69.5" cy="40" r="2" fill="white"/>
+  <!-- Smile -->
+  <path d="M33 58 Q50 74 67 58" fill="none" stroke="white" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Antenna stem -->
+  <line x1="68" y1="14" x2="78" y2="5" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+  <!-- Antenna bulb -->
+  <circle cx="81" cy="4" r="6" fill="#FFD600" stroke="#222" stroke-width="1.5"/>
+</svg>
