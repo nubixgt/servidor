@@ -1,0 +1,42 @@
+{
+  "name": "GeoPanel — Municipalidad de El Progreso",
+  "short_name": "GeoPanel",
+  "description": "Panel geográfico de boletas municipales",
+  "start_url": "/geopanel_boletas/",
+  "scope": "/geopanel_boletas/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#345C32",
+  "theme_color": "#345C32",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["government", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Cargar Boletas",
+      "short_name": "Cargar",
+      "url": "/geopanel_boletas/?autoload=1",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ]
+}
