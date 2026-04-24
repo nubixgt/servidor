@@ -13,14 +13,14 @@
 
 <!-- ══ NAV ══════════════════════════════════════════════════════ -->
 <nav class="l-nav">
-    <a class="l-brand" href="landing.html">
+    <a class="l-brand" href="index.html">
         <span class="l-brand-icon">🗺️</span>
         <div>
             <div class="l-brand-name">GeoPanel Boletas</div>
             <div class="l-brand-sub">Municipalidad de Sanarate, El Progreso</div>
         </div>
     </a>
-    <a class="l-nav-btn" href="index.html"><span class="btn-full">Abrir Tablero Geográfico →</span><span class="btn-short">Abrir Tablero</span></a>
+    <a class="l-nav-btn" href="tablero.html"><span class="btn-full">Abrir Tablero Geográfico →</span><span class="btn-short">Abrir Tablero</span></a>
 </nav>
 
 <!-- ══ HERO ══════════════════════════════════════════════════════ -->
@@ -43,7 +43,7 @@
             <a class="btn-primary" href="#datos">
                 <span>📋</span> Ver Datos
             </a>
-            <a class="btn-ghost" href="index.html">
+            <a class="btn-ghost" href="tablero.html">
                 🗺️ Tablero Geográfico
             </a>
         </div>
@@ -173,7 +173,7 @@
         <div class="map-wrap">
             <div id="previewMap"></div>
             <div class="map-overlay-badge" id="mapBadge">Cargando...</div>
-            <a class="map-click-overlay" href="index.html">
+            <a class="map-click-overlay" href="tablero.html">
                 <div class="mco-inner">
                     <div class="mco-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 3C10.27 3 4 9.27 4 17c0 10.5 14 22 14 22S32 27.5 32 17C32 9.27 25.73 3 18 3z" fill="white" opacity=".9"/><circle cx="18" cy="17" r="5" fill="#345C32"/></svg></div>
                     <span class="mco-label">Abrir Tablero Geográfico</span>
@@ -188,7 +188,7 @@
 <section class="cta-section">
     <h2>Listo para explorar los datos</h2>
     <p>Accede al tablero interactivo con mapa completo, filtros dinámicos y exportación PDF.</p>
-    <a class="btn-primary" href="index.html">
+    <a class="btn-primary" href="tablero.html">
         <span>🗺️</span> Ir al Tablero Geográfico
     </a>
 </section>
@@ -823,7 +823,7 @@
     /* ── Go to geographic map ─────────────────────────────────── */
     window.gotoMap = function(lat, lon) {
         localStorage.setItem('geopanel_goto', JSON.stringify({ lat, lon }));
-        window.location.href = 'index.html';
+        window.location.href = 'tablero.html';
     };
 
     /* ── Status bar ───────────────────────────────────────────── */
