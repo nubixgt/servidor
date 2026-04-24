@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoPanel — Municipalidad de Sanarate, El Progreso</title>
+    <title>Nubix GeoPanel — Municipalidad de Sanarate</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
@@ -30,17 +30,10 @@
     </div>
 
     <div class="top-widgets">
-        <div class="widget glass" id="loadingStatus" style="display: none;">
-            <div class="dot-online" style="background: var(--accent); animation: pulse 1.5s infinite;"></div>
-            <div class="widget-info">
-                <span class="widget-label">Status</span>
-                <span class="widget-value" id="statusText">Loading...</span>
-            </div>
-        </div>
         <div class="widget glass">
             <span class="widget-icon">☁️</span>
             <div class="widget-info">
-                <span class="widget-label">Nubosidad</span>
+                <span class="widget-label">Nubosidad <span style="color:#22c55e">●</span></span>
                 <span class="widget-value">12%</span>
             </div>
         </div>
@@ -51,7 +44,10 @@
                 <span class="widget-value">23 May 2024</span>
             </div>
         </div>
-        <div class="user-avatar glass">AD</div>
+        <div class="user-avatar-wrap">
+            <div class="user-avatar glass">AD</div>
+            <span style="color:var(--text-dim); font-size: 10px;">⌄</span>
+        </div>
     </div>
 </header>
 
@@ -93,120 +89,122 @@
 
 <!-- ══ MAIN DASHBOARD ══════════════════════════════════════════ -->
 <main class="dashboard-root">
-    <!-- MAP -->
     <div id="map"></div>
 
     <!-- WELCOME PANEL -->
     <section class="panel panel-welcome glass" id="welcomePanel">
-        <div class="panel-inner">
-            <span class="welcome-label">Bienvenido a</span>
-            <h1 class="welcome-title">Nubix <span>GeoPanel</span></h1>
-            <p class="welcome-desc">Plataforma geoespacial inteligente para <strong>explorar, analizar</strong> y visualizar información territorial de Guatemala.</p>
-            <div class="welcome-actions">
-                <button class="btn-primary">Explorar mapa <span>↗</span></button>
-                <button class="btn-secondary">▶</button>
+        <span class="welcome-hint">Bienvenido a</span>
+        <h1 class="welcome-title">Nubix <span>GeoPanel</span></h1>
+        <p class="welcome-desc">Plataforma geoespacial inteligente para <strong>explorar, analizar</strong> y visualizar información territorial de Guatemala.</p>
+        <div class="welcome-actions">
+            <button class="btn-primary">Explorar mapa <span>↗</span></button>
+            <button class="btn-secondary">▶</button>
+        </div>
+    </section>
+
+    <!-- ANALYSIS PANEL -->
+    <section class="panel panel-analysis glass" id="analysisPanel" style="display: none;">
+        <div class="panel-head">
+            <span class="panel-icon">📊</span>
+            <h2 class="panel-title">Análisis rápido</h2>
+        </div>
+        <div class="analysis-grid">
+            <div class="analysis-card" id="resetFilters" onclick="fullReset()">
+                <span class="card-icon">📏</span>
+                <div class="card-text">
+                    <span class="card-label">Medir</span>
+                    <span class="card-sub">Distancias y áreas</span>
+                </div>
+            </div>
+            <div class="analysis-card">
+                <span class="card-icon">🔎</span>
+                <div class="card-text">
+                    <span class="card-label">Consultar</span>
+                    <span class="card-sub">Información espacial</span>
+                </div>
+            </div>
+            <div class="analysis-card">
+                <span class="card-icon">📑</span>
+                <div class="card-text">
+                    <span class="card-label">Superposición</span>
+                    <span class="card-sub">Comparar capas</span>
+                </div>
+            </div>
+            <div class="analysis-card">
+                <span class="card-icon">📤</span>
+                <div class="card-text">
+                    <span class="card-label">Exportar</span>
+                    <span class="card-sub">Datos geoespaciales</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- QUICK ANALYSIS -->
-        <div class="panel panel-analysis glass" id="analysisPanel" style="display: none;">
-            <div class="panel-head">
-                <span class="panel-icon">📊</span>
-                <span class="panel-title">Geo-Analysis</span>
-            </div>
-            <div class="analysis-grid">
-            <div class="analysis-card" id="resetFilters" onclick="fullReset()">
-                <span class="card-icon">📏</span>
-                    <div class="card-text">
-                        <span class="card-label">Reset</span>
-                        <span class="card-sub">Clear all filters</span>
-                    </div>
-                </div>
-                <div class="analysis-card" id="exportBtn">
-                    <span class="card-icon">📄</span>
-                    <div class="card-text">
-                        <span class="card-label">Report</span>
-                        <span class="card-sub">Export to PDF</span>
-                    </div>
-                </div>
-                <div class="analysis-card">
-                    <span class="card-icon">📡</span>
-                    <div class="card-text">
-                        <span class="card-label">Satellite</span>
-                        <span class="card-sub">Visual analysis</span>
-                    </div>
-                </div>
-                <div class="analysis-card">
-                    <span class="card-icon">📐</span>
-                    <div class="card-text">
-                        <span class="card-label">Measure</span>
-                        <span class="card-sub">Calculate area</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel panel-layers glass" id="layersPanel" style="display: none;">
+    <!-- LAYERS PANEL -->
+    <section class="panel panel-layers glass" id="layersPanel" style="display: none;">
         <div class="panel-head">
             <span class="panel-icon">📚</span>
             <h2 class="panel-title">Capas</h2>
-            <button class="panel-minimize">⌃</button>
+            <span style="margin-left: auto; cursor: pointer; opacity: 0.5;">⌃</span>
         </div>
-        <div class="layer-search">
+        
+        <div class="layer-search-wrap">
             <span class="ls-icon">🔍</span>
             <input type="text" placeholder="Buscar capas...">
-            <button class="ls-filter">⏳</button>
+            <span class="ls-filter">⏳</span>
         </div>
+
         <div class="layer-categories">
             <span class="cat-label">CATEGORÍAS</span>
+            
             <div class="layer-item">
                 <span class="layer-icon">🗺️</span>
-                <div class="layer-text">
+                <div class="layer-info">
                     <span class="layer-name">Límites Administrativos</span>
                     <span class="layer-count">5 capas</span>
                 </div>
                 <button class="layer-toggle active">👁️</button>
             </div>
+            
             <div class="layer-item">
                 <span class="layer-icon">🏗️</span>
-                <div class="layer-text">
+                <div class="layer-info">
                     <span class="layer-name">Infraestructura</span>
                     <span class="layer-count">8 capas</span>
                 </div>
                 <button class="layer-toggle active">👁️</button>
             </div>
+            
             <div class="layer-item">
                 <span class="layer-icon">🌱</span>
-                <div class="layer-text">
+                <div class="layer-info">
                     <span class="layer-name">Medio Ambiente</span>
                     <span class="layer-count">12 capas</span>
                 </div>
                 <button class="layer-toggle active">👁️</button>
             </div>
+
             <div class="layer-item">
-                <span class="layer-icon">🗺️</span>
-                <div class="layer-text">
-                    <span class="layer-name">Mapas Base</span>
-                    <div class="pill-group">
-                        <button class="pill-btn active" data-bm="hibrido">🛰️ Híbrido</button>
-                        <button class="pill-btn" data-bm="streets">🏙️ Calles</button>
-                        <button class="pill-btn" data-bm="topo">⛰️ Topo</button>
-                        <button class="pill-btn" data-bm="calor">🔥 Calor</button>
-                    </div>
+                <span class="layer-icon">📦</span>
+                <div class="layer-info">
+                    <span class="layer-name">Uso de Suelo</span>
+                    <span class="layer-count">6 capas</span>
                 </div>
+                <button class="layer-toggle active">👁️</button>
             </div>
+
             <div class="layer-item">
                 <span class="layer-icon">⚠️</span>
-                <div class="layer-text">
+                <div class="layer-info">
                     <span class="layer-name">Riesgos y Amenazas</span>
                     <span class="layer-count">7 capas</span>
                 </div>
                 <button class="layer-toggle">🕶️</button>
             </div>
+            
             <div class="layer-item">
                 <span class="layer-icon">🌳</span>
-                <div class="layer-text">
+                <div class="layer-info">
                     <span class="layer-name">Recursos Naturales</span>
                     <span class="layer-count">9 capas</span>
                 </div>
@@ -214,16 +212,14 @@
             </div>
         </div>
 
-        <div id="dynamicFilters" class="dynamic-filters-container"></div>
-        
-        <button class="btn-add-layer glass">＋ Agregar capa</button>
+        <button class="btn-add-layer">＋ Agregar capa</button>
     </section>
 
     <!-- BOTTOM TOOLBAR -->
     <div class="bottom-toolbar glass">
         <div class="tool-group">
-            <button class="tool-btn active" id="btn2D">2D</button>
-            <button class="tool-btn" id="btn3D">3D</button>
+            <button class="tool-btn" id="btn2D">2D</button>
+            <button class="tool-btn active" id="btn3D">3D</button>
         </div>
         <div class="tool-sep"></div>
         <button class="tool-btn" id="fitBounds" title="Centrar">🎯</button>
@@ -233,13 +229,25 @@
         <button class="tool-btn">🔖</button>
     </div>
 
-    <!-- BOTTOM INFO -->
-    <div class="bottom-info-container">
-        <div class="info-box glass">
-            <span class="info-label">Coordenadas</span>
-            <span class="info-value" id="infoCoords">14.6349° N, 90.5069° O</span>
+    <!-- BOTTOM LEFT BOX -->
+    <div class="bottom-left-info glass">
+        <span class="proj-icon">🌐</span>
+        <div class="proj-text">
+            <span style="color:var(--text-dim); font-size: 8px; display: block;">Proyección</span>
+            <span>WGS 84 / UTM 15N <span style="opacity:0.5">⌄</span></span>
         </div>
-        <div class="info-box glass">
+    </div>
+
+    <!-- BOTTOM RIGHT INFO -->
+    <div class="bottom-right-info">
+        <div class="info-pill glass">
+            <span class="info-icon">📍</span>
+            <div class="info-text">
+                <span class="info-label">Coordenadas</span>
+                <span class="info-value" id="infoCoords">14.6349° N, 90.5069° O</span>
+            </div>
+        </div>
+        <div class="info-pill glass">
             <span class="info-icon">⛰️</span>
             <div class="info-text">
                 <span class="info-label">Elevación</span>
@@ -248,13 +256,11 @@
         </div>
     </div>
 
-    <!-- MAP CONTROLS -->
-    <div class="side-map-controls">
-        <button class="control-btn glass">🧭</button>
-        <div class="zoom-stack glass">
-            <button class="zoom-btn" id="zoomIn">＋</button>
-            <button class="zoom-btn" id="zoomOut">－</button>
-        </div>
+    <!-- SIDE ZOOM -->
+    <div class="side-zoom">
+        <button class="zoom-btn glass">🧭</button>
+        <button class="zoom-btn glass" id="zoomIn">＋</button>
+        <button class="zoom-btn glass" id="zoomOut">－</button>
     </div>
 </main>
 
