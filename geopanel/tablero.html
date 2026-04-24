@@ -6,259 +6,146 @@
     <title>GeoPanel — Municipalidad de Sanarate, El Progreso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<!-- ══ TOP HEADER ═══════════════════════════════════════════════ -->
-<header class="top-header">
-    <div class="header-left">
-        <div class="nubix-logo">
-            <span class="logo-orb"></span>
-            <div class="logo-text">
-                <span class="logo-main">NUBIX</span>
-                <span class="logo-sub">GEOPANEL</span>
-            </div>
+<!-- ══ TOP NAV ══════════════════════════════════════════════════ -->
+<nav class="topbar">
+    <button class="nav-btn btn-panel-toggle" id="navPanelToggle" title="Mostrar/ocultar panel">
+        <span class="btn-icon">☰</span>
+    </button>
+    <div class="topbar-brand" onclick="history.back()" style="cursor:pointer" title="Volver">
+        <div>
+            <div class="brand-name">GeoPanel Boletas</div>
+            <div class="brand-sub">Municipalidad de Sanarate, El Progreso</div>
         </div>
     </div>
-    
-    <div class="top-search glass">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="globalSearch" placeholder="Buscar ubicación, coordenadas, capas...">
-        <span class="search-kbd">⌘ K</span>
-    </div>
-
-    <div class="top-widgets">
-        <div class="widget glass" id="loadingStatus" style="display: none;">
-            <div class="dot-online" style="background: var(--accent); animation: pulse 1.5s infinite;"></div>
-            <div class="widget-info">
-                <span class="widget-label">Status</span>
-                <span class="widget-value" id="statusText">Loading...</span>
-            </div>
-        </div>
-        <div class="widget glass">
-            <span class="widget-icon">☁️</span>
-            <div class="widget-info">
-                <span class="widget-label">Nubosidad</span>
-                <span class="widget-value">12%</span>
-            </div>
-        </div>
-        <div class="widget glass">
-            <span class="widget-icon">☀️</span>
-            <div class="widget-info">
-                <span class="widget-label">10:42 AM</span>
-                <span class="widget-value">23 May 2024</span>
-            </div>
-        </div>
-        <div class="user-avatar glass">AD</div>
-    </div>
-</header>
-
-<!-- ══ SIDEBAR ══════════════════════════════════════════════════ -->
-<aside class="main-sidebar glass">
-    <nav class="sidebar-nav">
-        <button class="nav-item active" onclick="showPanel('welcomePanel')">
-            <span class="nav-icon">🌐</span>
-            <span class="nav-label">Explorar</span>
-        </button>
-        <button class="nav-item">
-            <span class="nav-icon">🗺️</span>
-            <span class="nav-label">Mapas</span>
-        </button>
-        <button class="nav-item" onclick="showPanel('layersPanel')">
-            <span class="nav-icon">📚</span>
-            <span class="nav-label">Capas</span>
-        </button>
-        <button class="nav-item" onclick="showPanel('analysisPanel')">
-            <span class="nav-icon">📈</span>
-            <span class="nav-label">Análisis</span>
-        </button>
-        <button class="nav-item">
-            <span class="nav-icon">📄</span>
-            <span class="nav-label">Reportes</span>
-        </button>
-        <button class="nav-item">
-            <span class="nav-icon">🔔</span>
-            <span class="nav-label">Alertas</span>
-        </button>
-    </nav>
-    <div class="sidebar-footer">
-        <button class="nav-item">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Configuración</span>
+    <div class="topbar-right">
+        <button class="nav-btn btn-export" id="exportBtn">
+            <span class="btn-icon">📄</span> PDF
         </button>
     </div>
-</aside>
+</nav>
 
-<!-- ══ MAIN DASHBOARD ══════════════════════════════════════════ -->
-<main class="dashboard-root">
-    <!-- MAP -->
-    <div id="map"></div>
+<!-- ══ LOADING BAR ══════════════════════════════════════════════ -->
+<div class="loading-bar" id="loadingBar">
+    <div class="loading-progress"></div>
+    <div class="loading-text" id="loadingText">⏳ Cargando boletas...</div>
+</div>
 
-    <!-- WELCOME PANEL -->
-    <section class="panel panel-welcome glass" id="welcomePanel">
-        <div class="panel-inner">
-            <span class="welcome-label">Bienvenido a</span>
-            <h1 class="welcome-title">Nubix <span>GeoPanel</span></h1>
-            <p class="welcome-desc">Plataforma geoespacial inteligente para <strong>explorar, analizar</strong> y visualizar información territorial de Guatemala.</p>
-            <div class="welcome-actions">
-                <button class="btn-primary">Explorar mapa <span>↗</span></button>
-                <button class="btn-secondary">▶</button>
+<!-- ══ 2-COLUMN LAYOUT ══════════════════════════════════════════ -->
+<div class="app-layout">
+
+    <!-- COL 1 — Panel izquierdo -->
+    <aside class="left-panel" id="leftPanel">
+        <button class="panel-toggle" id="lpToggle" title="Comprimir panel">‹</button>
+
+        <!-- MAPA BASE -->
+        <div class="lp-block basemap-block">
+            <div class="block-head">
+                <span class="block-title">🗺 Mapa base</span>
+                <button class="btn-collapse-panel" id="lpToggle2" title="Ocultar panel">‹ Ocultar</button>
             </div>
-        </div>
-    </section>
-
-    <!-- QUICK ANALYSIS -->
-        <div class="panel panel-analysis glass" id="analysisPanel" style="display: none;">
-            <div class="panel-head">
-                <span class="panel-icon">📊</span>
-                <span class="panel-title">Geo-Analysis</span>
-            </div>
-            <div class="analysis-grid">
-            <div class="analysis-card" id="resetFilters" onclick="fullReset()">
-                <span class="card-icon">📏</span>
-                    <div class="card-text">
-                        <span class="card-label">Reset</span>
-                        <span class="card-sub">Clear all filters</span>
-                    </div>
-                </div>
-                <div class="analysis-card" id="exportBtn">
-                    <span class="card-icon">📄</span>
-                    <div class="card-text">
-                        <span class="card-label">Report</span>
-                        <span class="card-sub">Export to PDF</span>
-                    </div>
-                </div>
-                <div class="analysis-card">
-                    <span class="card-icon">📡</span>
-                    <div class="card-text">
-                        <span class="card-label">Satellite</span>
-                        <span class="card-sub">Visual analysis</span>
-                    </div>
-                </div>
-                <div class="analysis-card">
-                    <span class="card-icon">📐</span>
-                    <div class="card-text">
-                        <span class="card-label">Measure</span>
-                        <span class="card-sub">Calculate area</span>
-                    </div>
-                </div>
+            <div class="basemap-btns">
+                <button class="bm-btn active" data-bm="hibrido"><span class="bm-icon">🌍</span>Híbrido</button>
+                <button class="bm-btn" data-bm="satellite"><span class="bm-icon">🛰️</span>Satélite</button>
+                <button class="bm-btn" data-bm="topo"><span class="bm-icon">⛰️</span>Topográfico</button>
+                <button class="bm-btn" data-bm="calor"><span class="bm-icon">🌡️</span>Calor</button>
             </div>
         </div>
 
-        <div class="panel panel-layers glass" id="layersPanel" style="display: none;">
-        <div class="panel-head">
-            <span class="panel-icon">📚</span>
-            <h2 class="panel-title">Capas</h2>
-            <button class="panel-minimize">⌃</button>
-        </div>
-        <div class="layer-search">
-            <span class="ls-icon">🔍</span>
-            <input type="text" placeholder="Buscar capas...">
-            <button class="ls-filter">⏳</button>
-        </div>
-        <div class="layer-categories">
-            <span class="cat-label">CATEGORÍAS</span>
-            <div class="layer-item">
-                <span class="layer-icon">🗺️</span>
-                <div class="layer-text">
-                    <span class="layer-name">Límites Administrativos</span>
-                    <span class="layer-count">5 capas</span>
-                </div>
-                <button class="layer-toggle active">👁️</button>
+        <!-- LISTADO -->
+        <div class="lp-block listado-block">
+            <div class="listado-header">
+                <span class="block-title">📋 Listado</span>
+                <span class="listado-count" id="listCount">0</span>
             </div>
-            <div class="layer-item">
-                <span class="layer-icon">🏗️</span>
-                <div class="layer-text">
-                    <span class="layer-name">Infraestructura</span>
-                    <span class="layer-count">8 capas</span>
-                </div>
-                <button class="layer-toggle active">👁️</button>
+            <div class="listado-search">
+                <span>🔍</span>
+                <input type="text" id="listSearch" placeholder="Filtrar…" autocomplete="off">
+                <button id="listSearchClear">✕</button>
             </div>
-            <div class="layer-item">
-                <span class="layer-icon">🌱</span>
-                <div class="layer-text">
-                    <span class="layer-name">Medio Ambiente</span>
-                    <span class="layer-count">12 capas</span>
-                </div>
-                <button class="layer-toggle active">👁️</button>
+            <div class="listado-tabs">
+                <button class="rp-tab active" data-tab="all">
+                    Todas <span class="rp-badge" id="tabAll">0</span>
+                </button>
+                <button class="rp-tab" data-tab="nocoord">
+                    Sin Coord. <span class="rp-badge red" id="tabNocoord">0</span>
+                </button>
+                <button class="rp-tab" data-tab="pending">
+                    Pendientes <span class="rp-badge orange" id="tabPending">0</span>
+                </button>
             </div>
-            <div class="layer-item">
-                <span class="layer-icon">🗺️</span>
-                <div class="layer-text">
-                    <span class="layer-name">Mapas Base</span>
-                    <div class="pill-group">
-                        <button class="pill-btn active" data-bm="hibrido">🛰️ Híbrido</button>
-                        <button class="pill-btn" data-bm="streets">🏙️ Calles</button>
-                        <button class="pill-btn" data-bm="topo">⛰️ Topo</button>
-                        <button class="pill-btn" data-bm="calor">🔥 Calor</button>
-                    </div>
+            <div class="listado-scroll" id="boletaList">
+                <div class="list-empty">
+                    <div class="empty-ico">📂</div>
+                    <p>Cargando boletas…</p>
                 </div>
-            </div>
-            <div class="layer-item">
-                <span class="layer-icon">⚠️</span>
-                <div class="layer-text">
-                    <span class="layer-name">Riesgos y Amenazas</span>
-                    <span class="layer-count">7 capas</span>
-                </div>
-                <button class="layer-toggle">🕶️</button>
-            </div>
-            <div class="layer-item">
-                <span class="layer-icon">🌳</span>
-                <div class="layer-text">
-                    <span class="layer-name">Recursos Naturales</span>
-                    <span class="layer-count">9 capas</span>
-                </div>
-                <button class="layer-toggle active">👁️</button>
             </div>
         </div>
 
-        <div id="dynamicFilters" class="dynamic-filters-container"></div>
-        
-        <button class="btn-add-layer glass">＋ Agregar capa</button>
-    </section>
-
-    <!-- BOTTOM TOOLBAR -->
-    <div class="bottom-toolbar glass">
-        <div class="tool-group">
-            <button class="tool-btn active" id="btn2D">2D</button>
-            <button class="tool-btn" id="btn3D">3D</button>
+        <!-- FILTROS — estilo tienda, secciones comprimibles -->
+        <div class="lp-block filters-block">
+            <div class="block-head">
+                <span class="block-title">⚙️ Filtros</span>
+                <button class="btn-reset-filters" id="resetFilters">↺ Limpiar</button>
+            </div>
+            <div class="filters-scroll" id="dynamicFilters">
+                <div class="filter-placeholder">Los filtros aparecen al cargar los datos</div>
+            </div>
         </div>
-        <div class="tool-sep"></div>
-        <button class="tool-btn" id="fitBounds" title="Centrar">🎯</button>
-        <button class="tool-btn">📏</button>
-        <button class="tool-btn">📈</button>
-        <button class="tool-btn">🖨️</button>
-        <button class="tool-btn">🔖</button>
+
+    </aside>
+
+    <!-- COL 2 — Mapa -->
+    <main class="map-col">
+        <div id="map"></div>
+
+        <div class="map-btns">
+            <button class="map-btn" id="fitBoundsBtn" title="Centrar mapa">⊡ Centrar</button>
+        </div>
+
+        <div class="map-legend">
+            <div class="ml-title">Tipos de boleta</div>
+            <div class="ml-row"><span class="ml-em">🍎</span>Víveres / Alimentos</div>
+            <div class="ml-row"><span class="ml-em">💉</span>Jornada médica</div>
+            <div class="ml-row"><span class="ml-em">🏠</span>Láminas</div>
+            <div class="ml-row"><span class="ml-em">📍</span>Otro / sin tipo</div>
+        </div>
+
+        <div class="map-infobar" id="mapInfobar">Cargando datos…</div>
+    </main>
+
+</div><!-- /app-layout -->
+
+<!-- PANEL BACKDROP -->
+<div class="panel-backdrop" id="panelBackdrop"></div>
+
+<!-- PANEL DETALLE -->
+<div class="detail-panel" id="bottomPanel">
+    <div class="detail-header">
+        <div class="detail-title" id="bottomPanelTitle">📋 Detalle</div>
+        <button class="detail-close" id="bottomPanelClose">✕</button>
     </div>
+    <div class="detail-body" id="bottomPanelContent"></div>
+</div>
+<div class="detail-overlay" id="bottomPanelOverlay"></div>
 
-    <!-- BOTTOM INFO -->
-    <div class="bottom-info-container">
-        <div class="info-box glass">
-            <span class="info-label">Coordenadas</span>
-            <span class="info-value" id="infoCoords">14.6349° N, 90.5069° O</span>
-        </div>
-        <div class="info-box glass">
-            <span class="info-icon">⛰️</span>
-            <div class="info-text">
-                <span class="info-label">Elevación</span>
-                <span class="info-value" id="infoElevation">1,502 m</span>
-            </div>
-        </div>
+<!-- MODAL IMAGEN -->
+<div class="image-modal" id="imageModal">
+    <button class="img-modal-close" id="modalClose">✕</button>
+    <div class="img-modal-inner">
+        <button class="img-nav" id="imgPrev">‹</button>
+        <img id="modalImage" src="" alt="Imagen ampliada">
+        <button class="img-nav" id="imgNext">›</button>
     </div>
+    <div class="img-counter" id="imgCounter"></div>
+</div>
 
-    <!-- MAP CONTROLS -->
-    <div class="side-map-controls">
-        <button class="control-btn glass">🧭</button>
-        <div class="zoom-stack glass">
-            <button class="zoom-btn" id="zoomIn">＋</button>
-            <button class="zoom-btn" id="zoomOut">－</button>
-        </div>
-    </div>
-</main>
-
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="app.js"></script>
