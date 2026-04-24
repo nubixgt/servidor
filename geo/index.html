@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nubix GeoPanel — Municipalidad de Sanarate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="landing.css" />
+    <style>
+        /* Extra styles for the original features in the new design */
+        .col-picker-wrap { position: relative; }
+        .col-picker-dropdown {
+            position: absolute; top: 100%; right: 0; width: 260px;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: var(--glass-border); border-radius: 16px; padding: 20px;
+            display: none; z-index: 1000; margin-top: 10px;
+        }
+        .col-picker-dropdown.open { display: block; }
+        .col-picker-list { max-height: 300px; overflow-y: auto; margin: 12px 0; }
+        .col-pick-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 12px; cursor: pointer; }
+        .col-picker-foot { display: flex; gap: 8px; margin-top: 12px; }
+        .col-picker-foot button { flex: 1; padding: 8px; font-size: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
+        .col-apply-btn { background: var(--accent) !important; border: none !important; font-weight: 700; }
+        
+        .dt-clear-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 0 10px; }
+        #dtStatus { font-size: 11px; color: var(--accent); margin-bottom: 12px; font-weight: 600; }
+        
+        /* Chart card overrides for original logic */
+        .cep-inline { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+        .cep-label { font-size: 9px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .cep-field-sel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 12px; flex: 1; }
+        .cep-types { display: flex; gap: 4px; }
+        .cep-type { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .cep-type.active { background: var(--accent); border: none; }
+        .chart-card-remove { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 16px; margin-left: auto; }
+    </style>
+</head>
+<body>
+
+<nav class="l-nav">
+    <a class="l-brand" href="index.html">
+        <span class="l-brand-icon">🌐</span>
+        <div class="l-brand-text">
+            <div class="l-brand-name">NUBIX GEOPANEL</div>
+            <div class="l-brand-sub">Sanarate, El Progreso</div>
+        </div>
+    </a>
+    <a class="l-nav-btn" href="tablero.html">Abrir Tablero Geográfico ↗</a>
+</nav>
+
+<header class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="landing_video.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Sistema Municipal Activo
+        </div>
+        <h1>Gestión geográfica de <span>boletas</span> municipales</h1>
+        <p class="hero-sub">Visualiza, filtra y analiza registros territoriales sobre un mapa interactivo de última generación.</p>
+        <div class="hero-ctas">
+            <a class="btn-primary" href="#datos"><span>📋</span> Ver Listado</a>
+            <a class="btn-ghost" href="tablero.html">🗺️ Tablero 3D</a>
+        </div>
+    </div>
+</header>
+
+<section class="section charts-section" id="graficas">
+    <div class="section-inner">
+        <span class="section-label">Análisis visual</span>
+        <h2 class="section-title">Estadísticas</h2>
+        <div class="cw-wrap" id="cwWrap">
+            <div class="cw-step" id="cwStep1">
+                <p style="color: var(--text-dim); margin-bottom: 24px; font-weight: 600;">Crea una nueva gráfica:</p>
+                <div class="cw-type-grid">
+                    <button class="cw-type-card" data-type="pie"><span class="cw-type-name">🥧 Pastel</span><span class="cw-type-desc">Distribución porcentual</span></button>
+                    <button class="cw-type-card" data-type="bar"><span class="cw-type-name">📊 Barras</span><span class="cw-type-desc">Comparativa de volúmenes</span></button>
+                    <button class="cw-type-card" data-type="line"><span class="cw-type-name">📈 Líneas</span><span class="cw-type-desc">Tendencias en el tiempo</span></button>
+                </div>
+            </div>
+            <div class="cw-step" id="cwStep2" hidden>
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 24px;">
+                    <button class="cw-back btn-ghost" id="cwBack" style="padding: 8px 16px;">← Volver</button>
+                    <span style="font-weight: 600;">Selecciona el campo:</span>
+                </div>
+                <div class="cw-fields" id="cwFields" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+            </div>
+        </div>
+        <button class="btn-ghost" id="cwCompactBtn" hidden style="margin-bottom: 40px; width: 100%;">＋ Crear otra gráfica</button>
+        <div class="charts-grid" id="chartsGrid">
+            <div class="charts-empty" id="chartsEmpty">
+                <p>Cargando estadísticas inteligentes...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section datos-section" id="datos">
+    <div class="section-inner">
+        <span class="section-label">Registros</span>
+        <h2 class="section-title">Listado de Boletas</h2>
+        <div class="dt-toolbar">
+            <div class="dt-search-wrap">
+                <span>🔍</span>
+                <input type="text" id="dtSearch" placeholder="Buscar en todos los campos...">
+                <button class="dt-clear-btn" id="dtClearSearch">✕</button>
+            </div>
+            <div class="col-picker-wrap">
+                <button class="btn-ghost" id="colPickerBtn" style="padding: 10px 20px;">⊞ Columnas <span id="colCount"></span></button>
+                <div class="col-picker-dropdown" id="colPickerDropdown">
+                    <div class="col-picker-head" style="font-weight: 700; margin-bottom: 12px;">Columnas visibles</div>
+                    <div class="col-picker-list" id="colPickerList"></div>
+                    <div class="col-picker-foot">
+                        <button id="colSelAll">Todas</button>
+                        <button id="colSelNone">Ninguna</button>
+                        <button class="col-apply-btn" id="colPickerApply">Aplicar</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-ghost" id="refreshBtn">↺ Actualizar</button>
+            <div class="dt-meta" style="font-size: 11px; color: var(--text-dim);">
+                <span id="dtTotal">0</span> registros · <span id="dtCacheInfo"></span>
+            </div>
+        </div>
+        <div id="dtStatus"></div>
+        <div class="dt-wrap">
+            <table class="dt"><thead id="dtHead"></thead><tbody id="dtBody"></tbody></table>
+        </div>
+        <div class="dt-pagination" id="dtPagination"></div>
+    </div>
+</section>
+
+<section class="section map-section">
+    <div class="section-inner">
+        <span class="section-label">Geolocalización</span>
+        <h2 class="section-title">Vista Previa</h2>
+        <div class="map-wrap">
+            <div id="previewMap"></div>
+            <div class="map-overlay-badge" id="mapBadge" style="position: absolute; top: 20px; left: 20px; background: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; z-index: 101;">Cargando...</div>
+            <a class="map-click-overlay" href="tablero.html">
+                <div class="mco-inner">
+                    <div class="mco-icon">📍</div>
+                    <span class="mco-label">Abrir Tablero Geográfico</span>
+                    <p style="opacity: 0.7;">Mapa 3D interactivo con filtros dinámicos</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer class="l-footer">
+    <p><strong>Nubix GeoPanel</strong> — Municipalidad de Sanarate, El Progreso</p>
+    <p style="font-size: 11px; margin-top: 8px;">Sistema de Inteligencia Territorial © 2024</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    'use strict';
+    const CACHE_KEY = 'geopanel_data_v2', CACHE_TS = 'geopanel_ts_v2', CACHE_TTL = 24 * 60 * 60 * 1000, PAGE_SIZE = 40;
+    const DEFAULT_PATTERNS = ['nombre','vecino','name','nombre_completo','propietario','solicitante','titular','boleta_type','tipo_boleta','tipo','type','benefit','beneficio','fecha','date','created','solicitud','estado','status','estatus','state','dpi','cedula','identificacion','documento'];
+    const SKIP_FIELDS = new Set(['_idx','_name','_imgs','_image_urls','_coords','_status','lat','lon','lng','latitude','longitude','latitud','longitud','coordenada_lat','coordenada_lng','coord_lat','coord_lng','x','y','location','coordinates']);
+    const PENDING_KW = ['pendiente','pending','en proceso','espera','waiting','open','abierto','revision'], APPROVED_KW = ['aprobado','approved','autorizado','completado','completed','cerrado','finalizado','done','activo'];
+
+    let allData = [], columns = [], visibleCols = [], filteredData = [], sortCol = null, sortDir = 1, currentPage = 1, searchQ = '';
+    let chartInstances = {}, chartCount = 0, chartsInitialized = false, cbSelectedType = 'bar';
+    const CHART_COLORS = ['#3b82f6','#60a5fa','#2563eb','#1d4ed8','#1e40af','#93c5fd','#1d4ed8','#1e3a8a'];
+    const CHART_SKIP_EXTRA = new Set(['id','_id','nombre','name','nombre_completo','vecino','solicitante','propietario','titular','dpi','cedula','identificacion','documento','boleta_number','direccion','address','observaciones','notas','comments','descripcion','description','foto','imagen','image','photo','url','link']);
+
+    function isDateField(k) { return /fecha|date|created|registro|solicitud/i.test(k); }
+    function isChartable(k, vals) {
+        if (SKIP_FIELDS.has(k) || CHART_SKIP_EXTRA.has(k) || k.startsWith('_')) return false;
+        const nonempty = vals.filter(v => v != null && v !== '');
+        if (!nonempty.length) return false;
+        const avgLen = nonempty.map(v => String(v).length).reduce((a,b)=>a+b,0) / nonempty.length;
+        if (avgLen > 60) return false;
+        if (isDateField(k)) return nonempty.some(v => !isNaN(new Date(v)));
+        const uniq = new Set(nonempty.map(v => String(v).trim())).size;
+        return uniq >= 2 && uniq <= 40;
+    }
+    function getChartableFields() { if (!allData.length) return []; const sample = allData.slice(0, 100); return Object.keys(allData[0]).filter(k => isChartable(k, sample.map(r => r[k]))); }
+    function countByField(field) { const counts = {}; allData.forEach(r => { const v = r[field]; if (v == null || v === '') return; const k = String(v).trim() || '(vacío)'; counts[k] = (counts[k] || 0) + 1; }); return counts; }
+    function countByMonth(field) { const counts = {}; allData.forEach(r => { const v = r[field]; if (!v) return; const d = new Date(v); if (isNaN(d)) return; const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; counts[key] = (counts[key] || 0) + 1; }); return counts; }
+    
+    function addChart(field, type, customTitle, prepend) {
+        if (!allData.length) return;
+        const id = 'chart-' + (++chartCount);
+        const title = customTitle || colLabel(field);
+        const isDate = isDateField(field);
+        let labels, data;
+        if (isDate) {
+            const counts = countByMonth(field);
+            const sorted = Object.keys(counts).sort();
+            labels = sorted.map(k => { const [y,m]=k.split('-'); return new Date(+y,+m-1).toLocaleDateString('es',{month:'short',year:'2-digit'}); });
+            data = sorted.map(k => counts[k]);
+        } else {
+            const counts = countByField(field);
+            const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+            labels = sorted.map(([k])=>k); data = sorted.map(([,v])=>v);
+        }
+        if (!labels.length) return;
+
+        const chartableFields = getChartableFields();
+        const fieldOpts = chartableFields.map(f => `<option value="${f}"${f===field?' selected':''}>${colLabel(f)}</option>`).join('');
+
+        const card = document.createElement('div');
+        card.className = 'chart-card'; card.dataset.chartId = id;
+        card.innerHTML = `<div class="cep-inline"><div class="cep-inline-field"><label class="cep-label">Campo</label><select class="cep-field-sel">${fieldOpts}</select></div><div class="cep-inline-type"><label class="cep-label">Tipo</label><div class="cep-types"><button class="cep-type${type==='bar'?' active':''}" data-t="bar">📊</button><button class="cep-type${type==='pie'?' active':''}" data-t="pie">🥧</button><button class="cep-type${type==='line'?' active':''}" data-t="line">📈</button></div></div><button class="chart-card-remove" title="Eliminar">✕</button></div><div class="chart-canvas-wrap"><canvas id="${id}"></canvas></div>`;
+
+        const grid = document.getElementById('chartsGrid');
+        if (document.getElementById('chartsEmpty')) document.getElementById('chartsEmpty').style.display = 'none';
+        if (prepend && grid.firstChild) grid.insertBefore(card, grid.firstChild); else grid.appendChild(card);
+
+        function rebuild() {
+            const f = card.querySelector('.cep-field-sel').value, t = card.querySelector('.cep-type.active')?.dataset.t || 'bar';
+            let lbls, dat;
+            if (isDateField(f)) { const c = countByMonth(f); const s = Object.keys(c).sort(); lbls = s.map(k => { const [y,m]=k.split('-'); return new Date(+y,+m-1).toLocaleDateString('es',{month:'short',year:'2-digit'}); }); dat = s.map(k => c[k]); }
+            else { const c = countByField(f); const s = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,12); lbls = s.map(([k])=>k); dat = s.map(([,v])=>v); }
+            if (chartInstances[id]) chartInstances[id].destroy();
+            const wrap = card.querySelector('.chart-canvas-wrap'); wrap.innerHTML = `<canvas id="${id}"></canvas>`;
+            const ct = t==='pie'?'pie':t==='line'?'line':'bar';
+            chartInstances[id] = new Chart(document.getElementById(id), { type: ct, data: { labels: lbls, datasets: [{ label: colLabel(f), data: dat, backgroundColor: ct==='line' ? 'rgba(59,130,246,0.1)' : CHART_COLORS, borderColor: '#3b82f6', borderWidth: 2, fill: ct==='line', tension: 0.4 }]}, options: { responsive: true, maintainAspectRatio: false }});
+        }
+        card.querySelector('.cep-field-sel').addEventListener('change', rebuild);
+        card.querySelectorAll('.cep-type').forEach(btn => btn.onclick = () => { card.querySelectorAll('.cep-type').forEach(b => b.classList.remove('active')); btn.classList.add('active'); rebuild(); });
+        card.querySelector('.chart-card-remove').onclick = () => { if(chartInstances[id]) chartInstances[id].destroy(); card.remove(); };
+        rebuild();
+    }
+
+    function initDefaultCharts() { const f = getChartableFields(); if (f.length) { addChart(f[0], 'bar', colLabel(f[0])); addChart(f[1]||f[0], 'pie', colLabel(f[1]||f[0])); } }
+
+    function extractCoords(b) {
+        let la = b.lat || b.latitude || b.location?.lat || b.latitud || null;
+        let lo = b.lng || b.longitude || b.location?.lng || b.longitud || null;
+        const lan = parseFloat(la), lon = parseFloat(lo);
+        return (!isNaN(lan) && !isNaN(lon) && lan!==0) ? { lat: lan, lon } : null;
+    }
+    function getName(b, i) { return b.nombre || b.name || b.vecino || `Boleta #${i+1}`; }
+    function getStatus(b) { for (const f of ['status','estado','estatus']) { if (b[f]) { const v = String(b[f]).toLowerCase(); if (PENDING_KW.some(k => v.includes(k))) return 'pending'; if (APPROVED_KW.some(k => v.includes(k))) return 'approved'; } } return null; }
+    const FIELD_ES = { nombre: 'Nombre', name: 'Nombre', dpi: 'DPI', fecha: 'Fecha', estado: 'Estado', status: 'Estado' };
+    function colLabel(k) { return FIELD_ES[k] || k.replace(/_/g,' ').toUpperCase(); }
+
+    async function loadData(force = false) {
+        document.getElementById('dtStatus').textContent = 'Cargando datos...';
+        try {
+            const r = await fetch('api-proxy.php?all_pages=true');
+            const res = await r.json();
+            allData = (res.data || res.boletas || []).map((b,i) => ({ ...b, _idx: i, _name: getName(b,i), _coords: extractCoords(b), _status: getStatus(b) }));
+            buildColumns(); renderTable(); renderMap(); if(!chartsInitialized) { chartsInitialized=true; initDefaultCharts(); }
+            document.getElementById('dtStatus').textContent = '';
+        } catch(e) { document.getElementById('dtStatus').textContent = 'Error al cargar'; }
+    }
+
+    function buildColumns() { if(!allData.length) return; columns = Object.keys(allData[0]).filter(k => !SKIP_FIELDS.has(k) && !k.startsWith('_')); visibleCols = columns.slice(0, 8); updateColCount(); }
+    function updateColCount() { document.getElementById('colCount').textContent = `(${visibleCols.length}/${columns.length})`; }
+
+    function renderTable() {
+        const q = searchQ.toLowerCase();
+        filteredData = allData.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+        if (sortCol) filteredData.sort((a,b) => String(a[sortCol]).localeCompare(String(b[sortCol]), 'es', {numeric:true}) * sortDir);
+        document.getElementById('dtTotal').textContent = filteredData.length.toLocaleString();
+        const pageData = filteredData.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+        document.getElementById('dtHead').innerHTML = `<tr>${visibleCols.map(c => `<th class="sortable" data-col="${c}">${colLabel(c)}${sortCol===c?(sortDir>0?' ▲':' ▼'):''}</th>`).join('')}<th>Mapa</th></tr>`;
+        document.querySelectorAll('.sortable').forEach(th => th.onclick = () => { if(sortCol===th.dataset.col) sortDir*=-1; else {sortCol=th.dataset.col; sortDir=1;} renderTable(); });
+        document.getElementById('dtBody').innerHTML = pageData.map(r => `<tr>${visibleCols.map(c => `<td>${r[c]||'—'}</td>`).join('')}<td>${r._coords?'📍':''}</td></tr>`).join('');
+        renderPagination(Math.ceil(filteredData.length/PAGE_SIZE));
+    }
+
+    function renderPagination(total) {
+        let h = `<button onclick="changePage(1)">«</button>`;
+        for(let i=1; i<=Math.min(5, total); i++) h += `<button class="${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+        document.getElementById('dtPagination').innerHTML = h;
+    }
+    window.changePage = p => { currentPage = p; renderTable(); };
+
+    function renderMap() {
+        const m = L.map('previewMap', { zoomControl: false }).setView([14.85, -89.87], 9);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+        allData.filter(b => b._coords).slice(0,100).forEach(b => L.circleMarker([b._coords.lat, b._coords.lon], { radius: 4, color: '#3b82f6' }).addTo(m));
+        if (document.getElementById('mapBadge')) document.getElementById('mapBadge').textContent = 'Mapa Listo';
+    }
+
+    /* Column Picker */
+    document.getElementById('colPickerBtn').onclick = () => {
+        const d = document.getElementById('colPickerDropdown');
+        d.classList.toggle('open');
+        document.getElementById('colPickerList').innerHTML = columns.map(c => `<label class="col-pick-item"><input type="checkbox" value="${c}" ${visibleCols.includes(c)?'checked':''}> <span>${colLabel(c)}</span></label>`).join('');
+    };
+    document.getElementById('colPickerApply').onclick = () => {
+        visibleCols = [...document.querySelectorAll('#colPickerList input:checked')].map(i => i.value);
+        updateColCount(); document.getElementById('colPickerDropdown').classList.remove('open'); renderTable();
+    };
+    document.getElementById('colSelAll').onclick = () => document.querySelectorAll('#colPickerList input').forEach(i=>i.checked=true);
+    document.getElementById('colSelNone').onclick = () => document.querySelectorAll('#colPickerList input').forEach(i=>i.checked=false);
+
+    document.getElementById('dtSearch').oninput = e => { searchQ = e.target.value; currentPage = 1; renderTable(); };
+    document.getElementById('dtClearSearch').onclick = () => { document.getElementById('dtSearch').value = ''; searchQ = ''; renderTable(); };
+    document.getElementById('refreshBtn').onclick = () => loadData(true);
+
+    /* Wizard */
+    document.querySelectorAll('.cw-type-card').forEach(btn => btn.onclick = () => {
+        cbSelectedType = btn.dataset.type;
+        document.getElementById('cwStep1').hidden = true;
+        document.getElementById('cwStep2').hidden = false;
+        document.getElementById('cwFields').innerHTML = getChartableFields().map(f => `<button class="btn-ghost" onclick="finishChart('${f}')">${colLabel(f)}</button>`).join('');
+    });
+    window.finishChart = f => { addChart(f, cbSelectedType); document.getElementById('cwWrap').hidden = true; document.getElementById('cwCompactBtn').hidden = false; };
+    document.getElementById('cwBack').onclick = () => { document.getElementById('cwStep1').hidden = false; document.getElementById('cwStep2').hidden = true; };
+    document.getElementById('cwCompactBtn').onclick = () => { document.getElementById('cwWrap').hidden = false; document.getElementById('cwCompactBtn').hidden = true; document.getElementById('cwStep1').hidden = false; document.getElementById('cwStep2').hidden = true; };
+
+    loadData();
+})();
+</script>
+</body>
+</html>

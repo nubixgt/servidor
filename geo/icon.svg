@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#345C32"/>
+  <!-- Map pin -->
+  <path d="M256 100 C206 100 166 140 166 190 C166 255 256 390 256 390 S346 255 346 190 C346 140 306 100 256 100Z"
+        fill="#A7F0DD" opacity="0.95"/>
+  <!-- Pin inner circle -->
+  <circle cx="256" cy="188" r="38" fill="#345C32"/>
+  <!-- Grid lines (map feel) -->
+  <line x1="110" y1="420" x2="402" y2="420" stroke="#9CAC54" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+  <line x1="130" y1="445" x2="382" y2="445" stroke="#9CAC54" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <line x1="155" y1="465" x2="357" y2="465" stroke="#9CAC54" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+</svg>
