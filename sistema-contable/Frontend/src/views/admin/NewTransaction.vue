@@ -130,21 +130,38 @@
           <!-- File Upload -->
           <div class="space-y-2 md:col-span-2">
             <label class="text-sm font-medium text-on-surface-variant flex items-center gap-2">
-              <DocumentTextIcon class="w-4 h-4 text-outline" /> Comprobante (Imagen o PDF)
+              <DocumentTextIcon class="w-4 h-4 text-outline" /> Comprobantes (Mín. 1, Máx. 3)
             </label>
             <div 
               class="border-2 border-dashed border-outline-variant/50 rounded-xl p-8 text-center hover:bg-[var(--color-surface-container-low)] transition-colors cursor-pointer group"
               @click="$refs.receiptInput.click()"
             >
-              <input ref="receiptInput" type="file" accept="image/*,.pdf" class="hidden" @change="handleReceiptChange" />
+              <input ref="receiptInput" type="file" accept="image/*,.pdf" multiple class="hidden" @change="handleReceiptChange" />
               <div class="w-12 h-12 bg-[var(--color-surface-container)] rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-[var(--color-primary-fixed)] transition-colors">
                 <CloudArrowUpIcon class="w-6 h-6 text-outline group-hover:text-[var(--color-on-primary-fixed)] transition-colors" />
               </div>
-              <p v-if="receiptFile" class="text-sm font-medium text-[var(--color-primary)]">{{ receiptFile.name }}</p>
-              <template v-else>
-                <p class="text-sm font-medium text-on-surface">Haz clic para subir o arrastra el archivo aquí</p>
-                <p class="text-xs text-outline mt-1">PNG, JPG o PDF (Máx. 5MB)</p>
-              </template>
+              <p class="text-sm font-medium text-on-surface">Haz clic para subir o arrastra los archivos aquí</p>
+              <p class="text-xs text-outline mt-1">PNG, JPG o PDF (Máx. 3 archivos, 5MB c/u)</p>
+            </div>
+
+            <!-- Selected Files List -->
+            <div v-if="receiptFiles.length > 0" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+              <div v-for="(file, index) in receiptFiles" :key="index" class="relative group bg-[var(--color-surface-container-low)] p-3 rounded-xl border border-outline-variant/30 flex items-center gap-3">
+                <div class="w-10 h-10 bg-[var(--color-surface-container)] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <DocumentTextIcon class="w-5 h-5 text-outline" />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-medium text-on-surface truncate">{{ file.name }}</p>
+                  <p class="text-[10px] text-outline">{{ (file.size / 1024).toFixed(0) }} KB</p>
+                </div>
+                <button 
+                  type="button" 
+                  @click.stop="removeFile(index)"
+                  class="p-1.5 text-outline hover:text-[var(--color-error)] hover:bg-[var(--color-error-container)]/50 rounded-lg transition-colors"
+                >
+                  <XMarkIcon class="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -177,14 +194,15 @@ import {
   TagIcon,
   CurrencyDollarIcon,
   Bars3BottomLeftIcon,
-  UserIcon
+  UserIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
 const type = ref('ingreso');
 const isLoading = ref(false);
 const locations = ref([]);
-const receiptFile = ref(null);
+const receiptFiles = ref([]);
 
 const form = ref({
   amount: '',
@@ -205,8 +223,25 @@ onMounted(async () => {
 });
 
 const handleReceiptChange = (e) => {
-  const file = e.target.files[0];
-  if (file) receiptFile.value = file;
+  const files = Array.from(e.target.files);
+  
+  if (receiptFiles.value.length + files.length > 3) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Límite excedido',
+      text: 'Solo puedes subir un máximo de 3 comprobantes.',
+      confirmButtonColor: 'var(--color-primary)'
+    });
+    return;
+  }
+
+  receiptFiles.value = [...receiptFiles.value, ...files];
+  // Clear input so same file can be selected again if removed
+  e.target.value = '';
+};
+
+const removeFile = (index) => {
+  receiptFiles.value.splice(index, 1);
 };
 
 const handleSubmit = async () => {
@@ -222,9 +257,21 @@ const handleSubmit = async () => {
     if (type.value === 'egreso' && form.value.provider) {
       formData.append('provider', form.value.provider);
     }
-    if (receiptFile.value) {
-      formData.append('receipt', receiptFile.value);
+    
+    if (receiptFiles.value.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Faltan archivos',
+        text: 'Debes subir al menos 1 comprobante.',
+        confirmButtonColor: 'var(--color-primary)'
+      });
+      isLoading.value = false;
+      return;
     }
+
+    receiptFiles.value.forEach(file => {
+      formData.append('receipt[]', file);
+    });
 
     await api.post('/transactions', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -238,7 +285,7 @@ const handleSubmit = async () => {
     });
     
     form.value = { amount: '', transaction_date: new Date().toISOString().split('T')[0], location_id: '', category: '', provider: '', description: '' };
-    receiptFile.value = null;
+    receiptFiles.value = [];
     router.push('/admin');
   } catch (error) {
     Swal.fire({

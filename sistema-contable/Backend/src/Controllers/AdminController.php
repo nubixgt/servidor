@@ -249,17 +249,40 @@ class AdminController extends Controller
             return;
         }
 
-        if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['receipt'])) {
             $uploadDir = __DIR__ . '/../../uploads/transactions/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
 
-            $filename = uniqid() . '_' . basename($_FILES['receipt']['name']);
-            $destination = $uploadDir . $filename;
+            $files = $_FILES['receipt'];
+            $paths = [];
 
-            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $destination)) {
-                $data['receipt_path'] = '/uploads/transactions/' . $filename;
+            // Helper to handle single vs multiple files
+            if (is_array($files['name'])) {
+                // Multiple files
+                foreach ($files['name'] as $key => $name) {
+                    if ($files['error'][$key] === UPLOAD_ERR_OK) {
+                        $filename = uniqid() . '_' . basename($name);
+                        $destination = $uploadDir . $filename;
+                        if (move_uploaded_file($files['tmp_name'][$key], $destination)) {
+                            $paths[] = '/uploads/transactions/' . $filename;
+                        }
+                    }
+                }
+            } else {
+                // Single file
+                if ($files['error'] === UPLOAD_ERR_OK) {
+                    $filename = uniqid() . '_' . basename($files['name']);
+                    $destination = $uploadDir . $filename;
+                    if (move_uploaded_file($files['tmp_name'], $destination)) {
+                        $paths[] = '/uploads/transactions/' . $filename;
+                    }
+                }
+            }
+
+            if (!empty($paths)) {
+                $data['receipt_path'] = implode(',', $paths);
             }
         }
 
@@ -306,21 +329,44 @@ class AdminController extends Controller
             $data = json_decode(file_get_contents('php://input'), true) ?? [];
         }
 
-        // Handle new receipt upload
-        if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
-            // Delete old receipt if exists
+        // Handle new receipt upload (supports multiple)
+        if (isset($_FILES['receipt'])) {
+            // Delete old receipts if exists
             $existing = $this->service->getTransactionById($id);
             if ($existing && !empty($existing['receipt_path'])) {
-                $oldFile = __DIR__ . '/../../' . ltrim($existing['receipt_path'], '/');
-                if (file_exists($oldFile) && is_file($oldFile)) unlink($oldFile);
+                $oldPaths = explode(',', $existing['receipt_path']);
+                foreach ($oldPaths as $oldPath) {
+                    $oldFile = __DIR__ . '/../../' . ltrim($oldPath, '/');
+                    if (file_exists($oldFile) && is_file($oldFile)) unlink($oldFile);
+                }
             }
 
             $uploadDir = __DIR__ . '/../../uploads/transactions/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
-            $filename = uniqid() . '_' . basename($_FILES['receipt']['name']);
-            if (move_uploaded_file($_FILES['receipt']['tmp_name'], $uploadDir . $filename)) {
-                $data['receipt_path'] = '/uploads/transactions/' . $filename;
+            $files = $_FILES['receipt'];
+            $paths = [];
+
+            if (is_array($files['name'])) {
+                foreach ($files['name'] as $key => $name) {
+                    if ($files['error'][$key] === UPLOAD_ERR_OK) {
+                        $filename = uniqid() . '_' . basename($name);
+                        if (move_uploaded_file($files['tmp_name'][$key], $uploadDir . $filename)) {
+                            $paths[] = '/uploads/transactions/' . $filename;
+                        }
+                    }
+                }
+            } else {
+                if ($files['error'] === UPLOAD_ERR_OK) {
+                    $filename = uniqid() . '_' . basename($files['name']);
+                    if (move_uploaded_file($files['tmp_name'], $uploadDir . $filename)) {
+                        $paths[] = '/uploads/transactions/' . $filename;
+                    }
+                }
+            }
+
+            if (!empty($paths)) {
+                $data['receipt_path'] = implode(',', $paths);
             }
         }
 
@@ -339,10 +385,13 @@ class AdminController extends Controller
     {
         $trx = $this->service->getTransactionById($id);
 
-        // Delete associated receipt file
+        // Delete associated receipt files
         if ($trx && !empty($trx['receipt_path'])) {
-            $file = __DIR__ . '/../../' . ltrim($trx['receipt_path'], '/');
-            if (file_exists($file) && is_file($file)) unlink($file);
+            $paths = explode(',', $trx['receipt_path']);
+            foreach ($paths as $path) {
+                $file = __DIR__ . '/../../' . ltrim($path, '/');
+                if (file_exists($file) && is_file($file)) unlink($file);
+            }
         }
 
         try {

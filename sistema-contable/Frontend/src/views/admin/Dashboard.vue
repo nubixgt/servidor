@@ -194,21 +194,27 @@
 
         <!-- Body -->
         <div class="p-6 space-y-4 max-h-[55vh] overflow-y-auto">
-          <!-- Receipt image preview -->
-          <div v-if="viewingTransaction.receipt_path && isImage(viewingTransaction.receipt_path)" class="group cursor-pointer" @click="lightboxSrc = receiptUrl(viewingTransaction.receipt_path)">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Comprobante</p>
-            <div class="relative rounded-xl overflow-hidden border border-gray-100">
-              <img :src="receiptUrl(viewingTransaction.receipt_path)" alt="Comprobante" class="w-full max-h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                <EyeIcon class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          <!-- Receipt previews -->
+          <div v-if="viewingTransaction.receipt_path">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Comprobantes</p>
+            <div class="grid grid-cols-1 gap-4">
+              <div v-for="(path, idx) in viewingTransaction.receipt_path.split(',')" :key="idx" class="border border-gray-100 rounded-xl overflow-hidden p-2 bg-white shadow-sm">
+                <div v-if="isImage(path)" class="group cursor-pointer" @click="lightboxSrc = receiptUrl(path)">
+                  <div class="relative rounded-lg overflow-hidden">
+                    <img :src="receiptUrl(path)" alt="Comprobante" class="w-full max-h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                      <EyeIcon class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-2 text-center truncate">{{ path.split('/').pop() }}</p>
+                </div>
+                <div v-else class="py-2 px-3">
+                  <a :href="receiptUrl(path)" target="_blank" class="flex items-center gap-2 text-[var(--color-primary)] hover:underline text-sm">
+                    <DocumentTextIcon class="w-4 h-4" /> Ver PDF: {{ path.split('/').pop() }}
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-          <div v-else-if="viewingTransaction.receipt_path" class="mb-2">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Comprobante</p>
-            <a :href="receiptUrl(viewingTransaction.receipt_path)" target="_blank" class="flex items-center gap-2 text-[var(--color-primary)] hover:underline text-sm">
-              <DocumentTextIcon class="w-4 h-4" /> Ver PDF adjunto
-            </a>
           </div>
 
           <!-- Details grid -->
