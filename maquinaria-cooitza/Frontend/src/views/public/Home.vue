@@ -188,7 +188,6 @@
               </p>
             </div>
           </div>
-          <p class="text-[10px] text-on-surface-variant italic">Puedes arrastrar el marcador para ajustar la ubicación exacta si el GPS tiene margen de error.</p>
         </div>
 
         <!-- Submit Button -->
@@ -206,21 +205,6 @@
         </div>
       </form>
     </main>
-
-    <!-- Footer -->
-    <footer class="mt-12 w-full max-w-5xl flex flex-col md:flex-row justify-between items-center opacity-70 hover:opacity-100 transition-opacity duration-300 gap-6">
-      <div class="font-display text-xs font-bold text-primary tracking-tight">
-        COOITZÁ - Cooperativa de Ahorro y Crédito
-      </div>
-      <nav class="flex flex-wrap justify-center gap-6 font-display text-[10px] uppercase font-bold tracking-widest text-on-surface-variant">
-        <a href="#" class="hover:text-primary transition-colors">Términos de Operación</a>
-        <a href="#" class="hover:text-primary transition-colors">Protocolos de Seguridad</a>
-        <a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a>
-      </nav>
-      <div class="font-display text-[10px] uppercase font-medium text-on-surface-variant opacity-60">
-        © 2026 Maquinaria Cooitzá División de Maquinaria Pesada.
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -282,28 +266,22 @@ const machines = [
 ];
 
 const initMap = () => {
-  map = L.map('map').setView([form.latitud, form.longitud], 15);
+  map = L.map('map', {
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    tap: false,
+    touchZoom: false
+  }).setView([form.latitud, form.longitud], 15);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
   marker = L.marker([form.latitud, form.longitud], {
-    draggable: true
+    draggable: false
   }).addTo(map);
-
-  marker.on('dragend', (e) => {
-    const position = marker.getLatLng();
-    form.latitud = position.lat;
-    form.longitud = position.lng;
-  });
-
-  map.on('click', (e) => {
-    const position = e.latlng;
-    marker.setLatLng(position);
-    form.latitud = position.lat;
-    form.longitud = position.lng;
-  });
 };
 
 const handleFileUpload = (event) => {
@@ -337,12 +315,11 @@ const getGeolocation = () => {
       (error) => {
         console.error("Error getting geolocation:", error);
         isFetchingGps.value = false;
-        // Optional: Alert user that GPS failed
       },
       { 
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 0 // Force fresh location
+        maximumAge: 0
       }
     );
   }
