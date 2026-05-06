@@ -127,11 +127,12 @@
                 class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group"
                 @click="$refs.fileInput.click()"
               >
+                <!-- capture="environment" forces the rear camera on mobile devices -->
                 <input 
                   ref="fileInput"
                   type="file" 
                   accept="image/*" 
-                  capture="camera" 
+                  capture="environment" 
                   class="hidden" 
                   @change="handleFileUpload"
                   required
@@ -139,19 +140,20 @@
                 
                 <div v-if="!photoPreview" class="flex flex-col items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-on-surface-variant group-hover:text-primary transition-colors"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                  <span class="font-sans text-sm text-on-surface-variant group-hover:text-on-surface">
-                    Tap to take photo
+                  <span class="font-sans text-sm text-on-surface-variant group-hover:text-on-surface text-center">
+                    Toca para abrir la cámara <br>
+                    <small class="opacity-70">(Solo permite captura en vivo)</small>
                   </span>
                 </div>
                 <div v-else class="w-full h-32 relative">
                   <img :src="photoPreview" class="w-full h-full object-cover rounded border border-outline" />
                   <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span class="text-white text-xs font-bold uppercase">Change Photo</span>
+                    <span class="text-white text-xs font-bold uppercase">Cambiar Foto</span>
                   </div>
                 </div>
                 
                 <span class="font-display text-[10px] uppercase tracking-widest text-outline">
-                  CAMERA ONLY REQUIRED
+                  SOLO CAPTURA DE CÁMARA
                 </span>
               </div>
             </div>
@@ -162,33 +164,31 @@
         <div class="flex flex-col gap-2">
           <div class="flex justify-between items-end">
             <label class="label-caps text-on-surface-variant">Ubicación Actual</label>
-            <span class="font-display text-[10px] text-primary flex items-center gap-1 font-bold">
-              <span class="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              GPS ACTIVO
-            </span>
-          </div>
-          <div class="h-48 w-full border border-outline-variant bg-surface-container relative overflow-hidden group">
-            <!-- Simple placeholder for map, ideally use Leaflet or Google Maps here if needed -->
-            <img
-              src="https://maps.googleapis.com/maps/api/staticmap?center=14.6349,-90.5069&zoom=15&size=600x300&key=YOUR_API_KEY"
-              :src="`https://maps.googleapis.com/maps/api/staticmap?center=${form.latitud},${form.longitud}&zoom=15&size=600x300&sensor=false`"
-              alt="Construction map"
-              class="w-full h-full object-cover grayscale opacity-50 group-hover:opacity-70 transition-opacity duration-700"
-            />
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div class="relative">
-                <div class="absolute inset-0 bg-primary/20 rounded-full animate-ping scale-150" />
-                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                </div>
-              </div>
+            <div class="flex flex-col items-end gap-1">
+              <span class="font-display text-[10px] text-primary flex items-center gap-1 font-bold">
+                <span :class="['w-2 h-2 rounded-full bg-primary', isFetchingGps ? 'animate-ping' : 'animate-pulse']" />
+                {{ isFetchingGps ? 'BUSCANDO GPS...' : 'GPS ACTIVO' }}
+              </span>
+              <button 
+                type="button" 
+                @click="getGeolocation"
+                class="text-[9px] text-primary underline uppercase font-bold tracking-tighter hover:opacity-70 transition-opacity"
+              >
+                Refrescar mi ubicación
+              </button>
             </div>
-            <div class="absolute bottom-2 right-2 bg-surface-container-lowest/80 backdrop-blur-sm px-2 py-1 border border-outline-variant">
+          </div>
+          <div class="h-64 w-full border border-outline-variant bg-surface-container relative overflow-hidden group">
+            <!-- Leaflet Map Container -->
+            <div id="map" class="h-full w-full z-0"></div>
+            
+            <div class="absolute bottom-2 right-2 bg-surface-container-lowest/80 backdrop-blur-sm px-2 py-1 border border-outline-variant z-10 pointer-events-none">
               <p class="font-display text-[10px] font-bold text-on-surface">
-                {{ form.latitud.toFixed(4) }}° N, {{ form.longitud.toFixed(4) }}° W
+                {{ form.latitud.toFixed(6) }}° N, {{ form.longitud.toFixed(6) }}° W
               </p>
             </div>
           </div>
+          <p class="text-[10px] text-on-surface-variant italic">Puedes arrastrar el marcador para ajustar la ubicación exacta si el GPS tiene margen de error.</p>
         </div>
 
         <!-- Submit Button -->
@@ -226,11 +226,27 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for default marker icons in Leaflet + Vite
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIconRetina,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 const isSubmitting = ref(false);
+const isFetchingGps = ref(false);
 const submitMessage = ref('');
 const submitError = ref(false);
 const photoPreview = ref(null);
+const fileInput = ref(null);
 
 const form = reactive({
   operador: '',
@@ -241,6 +257,9 @@ const form = reactive({
   latitud: 14.6349,
   longitud: -90.5069
 });
+
+let map = null;
+let marker = null;
 
 const operadores = [
   'Henry Vasquez',
@@ -262,6 +281,31 @@ const machines = [
   { id: 'volteo', label: 'Camion Volteo', iconPath: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5h-4l-2-3h-3.5"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' },
 ];
 
+const initMap = () => {
+  map = L.map('map').setView([form.latitud, form.longitud], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  marker = L.marker([form.latitud, form.longitud], {
+    draggable: true
+  }).addTo(map);
+
+  marker.on('dragend', (e) => {
+    const position = marker.getLatLng();
+    form.latitud = position.lat;
+    form.longitud = position.lng;
+  });
+
+  map.on('click', (e) => {
+    const position = e.latlng;
+    marker.setLatLng(position);
+    form.latitud = position.lat;
+    form.longitud = position.lng;
+  });
+};
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -276,15 +320,30 @@ const handleFileUpload = (event) => {
 
 const getGeolocation = () => {
   if (navigator.geolocation) {
+    isFetchingGps.value = true;
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        form.latitud = position.coords.latitude;
-        form.longitud = position.coords.longitude;
+        const { latitude, longitude } = position.coords;
+        form.latitud = latitude;
+        form.longitud = longitude;
+        
+        if (map && marker) {
+          const newPos = [latitude, longitude];
+          map.setView(newPos, 15);
+          marker.setLatLng(newPos);
+        }
+        isFetchingGps.value = false;
       },
       (error) => {
         console.error("Error getting geolocation:", error);
+        isFetchingGps.value = false;
+        // Optional: Alert user that GPS failed
       },
-      { enableHighAccuracy: true }
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0 // Force fresh location
+      }
     );
   }
 };
@@ -304,7 +363,6 @@ const submitForm = async () => {
   formData.append('longitud', form.longitud);
 
   try {
-    // Adjust the URL as needed for your environment
     const response = await fetch('Backend/api/v1/maquinaria/registro', {
       method: 'POST',
       body: formData
@@ -314,7 +372,6 @@ const submitForm = async () => {
 
     if (response.ok) {
       submitMessage.value = 'Registro completado con éxito';
-      // Reset form
       form.valor_horometro = null;
       form.foto_horometro = null;
       photoPreview.value = null;
@@ -332,6 +389,7 @@ const submitForm = async () => {
 };
 
 onMounted(() => {
+  initMap();
   getGeolocation();
 });
 </script>
@@ -350,5 +408,12 @@ onMounted(() => {
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* Ensure Leaflet controls are above the map but below modals */
+:deep(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 </style>
