@@ -305,7 +305,7 @@ const submitForm = async () => {
 
   try {
     // Adjust the URL as needed for your environment
-    const response = await fetch('/Backend/api/v1/maquinaria/registro', {
+    const response = await fetch('Backend/api/v1/maquinaria/registro', {
       method: 'POST',
       body: formData
     });
