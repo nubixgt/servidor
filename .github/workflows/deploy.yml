@@ -22,6 +22,9 @@ jobs:
       - name: 🚀 Deploy via rsync
         run: |
           rsync -avz --delete \
+            --exclude '**/uploads/' \
+            --exclude '.git/' \
+            --exclude '.github/' \
             --chmod=D755,F644 \
             -e "ssh -p ${{ secrets.SSH_PORT }}" \
             ./ \
