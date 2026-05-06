@@ -14,7 +14,10 @@ class MaquinariaRepository
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    public function create(RegistroMaquinaria $registro): bool
+    /**
+     * Creates a new registration and returns its ID
+     */
+    public function create(RegistroMaquinaria $registro): int|bool
     {
         $sql = "INSERT INTO registros_maquinaria 
                 (operador, maquina_id, tipo_registro, valor_horometro, foto_horometro, latitud, longitud) 
@@ -22,7 +25,7 @@ class MaquinariaRepository
         
         $stmt = $this->pdo->prepare($sql);
         
-        return $stmt->execute([
+        $success = $stmt->execute([
             'operador' => $registro->operador,
             'maquina_id' => $registro->maquina_id,
             'tipo_registro' => $registro->tipo_registro,
@@ -31,5 +34,17 @@ class MaquinariaRepository
             'latitud' => $registro->latitud,
             'longitud' => $registro->longitud
         ]);
+
+        return $success ? (int)$this->pdo->lastInsertId() : false;
+    }
+
+    /**
+     * Updates the photo path for a specific registration
+     */
+    public function updateFotoPath(int $id, string $path): bool
+    {
+        $sql = "UPDATE registros_maquinaria SET foto_horometro = :path WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['path' => $path, 'id' => $id]);
     }
 }
