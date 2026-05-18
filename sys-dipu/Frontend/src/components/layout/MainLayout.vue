@@ -7,8 +7,43 @@
         <aside :class="['w-72 fixed left-0 top-0 h-full bg-surface-container-lowest flex flex-col p-6 z-50 border-r border-surface-container-low transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <div class="mb-8 px-4">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-dim flex items-center justify-center text-on-primary shadow-sm">
-                        <span class="material-symbols-outlined">account_balance</span>
+                    <div class="w-10 h-10 flex items-center justify-center">
+                        <svg width="38" height="38" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="sb-bg" cx="40" cy="28" r="44" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#1b3a6b"/>
+                                    <stop offset="100%" stop-color="#060e1c"/>
+                                </radialGradient>
+                                <linearGradient id="sb-teal" x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#7dd8f3"/>
+                                    <stop offset="100%" stop-color="#0891b2"/>
+                                </linearGradient>
+                                <linearGradient id="sb-gold" x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fef08a"/>
+                                    <stop offset="100%" stop-color="#d97706"/>
+                                </linearGradient>
+                                <linearGradient id="sb-border" x1="8" y1="4" x2="72" y2="76" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#67e8f9"/>
+                                    <stop offset="55%" stop-color="#0891b2"/>
+                                    <stop offset="100%" stop-color="#164e63"/>
+                                </linearGradient>
+                                <filter id="sb-glow">
+                                    <feGaussianBlur stdDeviation="2" result="b"/>
+                                    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                                <filter id="sb-drop">
+                                    <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000a1f" flood-opacity="0.5"/>
+                                </filter>
+                            </defs>
+                            <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="url(#sb-bg)" filter="url(#sb-drop)"/>
+                            <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="none" stroke="url(#sb-border)" stroke-width="1.5"/>
+                            <rect x="24" y="35" width="5.5" height="20" rx="2.75" fill="url(#sb-teal)" filter="url(#sb-glow)"/>
+                            <rect x="50.5" y="35" width="5.5" height="20" rx="2.75" fill="url(#sb-teal)" filter="url(#sb-glow)"/>
+                            <rect x="37.25" y="29" width="5.5" height="26" rx="2.75" fill="url(#sb-gold)" filter="url(#sb-glow)"/>
+                            <polygon points="40,19 58,32 22,32" fill="url(#sb-gold)" opacity="0.9" filter="url(#sb-glow)"/>
+                            <rect x="20" y="56" width="40" height="3.5" rx="1.75" fill="url(#sb-teal)" opacity="0.8"/>
+                            <path d="M40,1.5 L41.5,3.5 L44,5 L41.5,6.5 L40,8.5 L38.5,6.5 L36,5 L38.5,3.5 Z" fill="url(#sb-gold)" filter="url(#sb-glow)"/>
+                        </svg>
                     </div>
                     <div>
                         <h2 class="font-bold text-on-surface leading-tight font-headline">Ethereal Bureau</h2>

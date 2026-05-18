@@ -38,8 +38,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function login(username, password) {
         try {
-            // Utilizamos ruta absoluta basada en el dominio actual para que funcione en produccón (m.nubix.gt) o local
-            const API_URL = import.meta.env.VITE_API_URL || '/sys-dipu/Backend/api/v1';
+            // ⚠️ LOCAL - Para producción cambiar a: '/sys-dipu/Backend/api/v1'
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
             
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',

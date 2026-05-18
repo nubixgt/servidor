@@ -117,32 +117,279 @@
         </div>
 
         <!-- Tab: Autoridades -->
-        <div v-if="activeTab === 'autoridades'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div v-for="m in ministries" :key="'aut-'+m.id" class="bg-surface rounded-2xl p-6 border border-outline-variant/20 shadow-sm">
-                <h3 class="font-bold text-lg mb-6 font-headline border-b border-surface-container-low pb-3 uppercase tracking-widest">{{ m.short }} · Autoridades</h3>
-                
-                <div class="flex items-center gap-5 bg-surface-container-lowest border border-outline-variant/20 p-5 rounded-2xl mb-6">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dim shadow-inner flex items-center justify-center font-bold text-xl text-white uppercase">
-                        {{ m.ministro.nombre.substring(0,2) }}
-                    </div>
+        <div v-if="activeTab === 'autoridades'" class="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+
+            <!-- Hero Header -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary via-primary-dim to-secondary p-8 shadow-xl shadow-primary/20">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                        <p class="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Ministro Titular</p>
-                        <p class="font-extrabold text-lg text-on-surface leading-tight">{{ m.ministro.nombre }}</p>
-                        <p class="text-xs text-on-surface-variant mt-2 font-medium bg-background px-3 py-1.5 rounded-lg border border-outline-variant/10">{{ m.ministro.perfil }}</p>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-xl">account_balance</span>
+                            </div>
+                            <span class="text-white/70 text-sm font-bold uppercase tracking-widest">Fiscalización · Autoridades</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white font-headline leading-tight">Directorio Ministerial</h2>
+                        <p class="text-white/70 text-sm mt-1">Registro de autoridades y funcionarios por ministerio</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
+                            <p class="text-2xl font-extrabold text-white">{{ ministries.length }}</p>
+                            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Ministerios</p>
+                        </div>
+                        <div class="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
+                            <p class="text-2xl font-extrabold text-white">{{ totalPersonalRegistrado }}</p>
+                            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Registrados</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3 ml-1">Cuerpo de Viceministros</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div v-for="(v, idx) in m.viceministros" :key="idx" class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl border border-transparent hover:border-outline-variant/20 transition-colors">
-                        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center font-bold text-sm text-on-surface-variant uppercase shadow-sm">
-                            {{ v.nombre.substring(0,2) }}
+            <!-- Grid de Ministerios -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div v-for="(m, mIdx) in ministries" :key="'aut-'+m.id"
+                    class="group bg-surface rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    :style="`--card-hue: ${ministryHue(mIdx)}`">
+
+                    <!-- Banner con gradiente de color único por ministerio -->
+                    <div class="relative h-24 flex items-end pb-4 px-6 overflow-hidden"
+                        :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 35%) 0%, hsl(${ministryHue(mIdx)}, 45%, 22%) 100%)`">
+                        <!-- Watermark acronym -->
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none tracking-tight select-none pointer-events-none">{{ m.short }}</span>
+                        <!-- Glow blob -->
+                        <div class="absolute top-0 left-0 w-32 h-32 rounded-full blur-3xl opacity-30"
+                            :style="`background: hsl(${ministryHue(mIdx)}, 80%, 70%)`"></div>
+                        <!-- Ministry info -->
+                        <div class="relative z-10 flex items-center justify-between w-full">
+                            <div>
+                                <h3 class="font-extrabold text-xl text-white font-headline leading-tight">{{ m.short }}</h3>
+                                <p class="text-white/60 text-[11px] font-medium leading-snug max-w-[200px]">{{ m.name }}</p>
+                            </div>
+                            <button @click="abrirModal(m)"
+                                class="flex items-center gap-1.5 px-3.5 py-2 bg-white/15 hover:bg-white/30 backdrop-blur text-white text-[11px] font-bold rounded-xl transition-all border border-white/20 hover:border-white/40 shadow-sm">
+                                <span class="material-symbols-outlined text-[14px]">person_add</span>
+                                Agregar
+                            </button>
                         </div>
-                        <p class="text-sm font-bold text-on-surface">{{ v.nombre }}</p>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+
+                        <!-- Ministro Titular -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl relative overflow-hidden transition-all"
+                            :style="`background: hsl(${ministryHue(mIdx)}, 50%, 96%); border: 1px solid hsl(${ministryHue(mIdx)}, 40%, 88%)`">
+                            <div class="absolute inset-0 opacity-5"
+                                :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 80%, 50%), transparent)`"></div>
+                            <!-- Avatar -->
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg shrink-0 relative z-10"
+                                :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 40%), hsl(${ministryHue(mIdx)}, 50%, 28%))`">
+                                {{ m.ministro.nombre.substring(0,2).toUpperCase() }}
+                            </div>
+                            <div class="relative z-10 flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
+                                        :style="`background: hsl(${ministryHue(mIdx)}, 55%, 40%)`">Ministro Titular</span>
+                                </div>
+                                <p class="font-extrabold text-sm text-on-surface leading-tight truncate">{{ m.ministro.nombre }}</p>
+                                <p v-if="m.ministro.perfil" class="text-xs text-on-surface-variant mt-0.5 truncate">{{ m.ministro.perfil }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Viceministros -->
+                        <div>
+                            <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-[0.15em] mb-2 ml-1">Viceministros</p>
+                            <div class="flex flex-wrap gap-2">
+                                <div v-for="(v, idx) in m.viceministros" :key="idx"
+                                    class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all">
+                                    <div class="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-[9px] text-on-surface-variant uppercase shrink-0"
+                                        :style="`background: hsl(${ministryHue(mIdx)}, 30%, 88%); color: hsl(${ministryHue(mIdx)}, 50%, 35%)`">
+                                        {{ v.nombre.substring(0,2) }}
+                                    </div>
+                                    <p class="text-xs font-semibold text-on-surface">{{ v.nombre }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="border-t border-outline-variant/10"></div>
+
+                        <!-- Personal registrado -->
+                        <div v-if="personalPorMinisterio[m.id] && personalPorMinisterio[m.id].length > 0">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-[0.15em]">Personal registrado</p>
+                                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full text-white"
+                                    :style="`background: hsl(${ministryHue(mIdx)}, 55%, 40%)`">
+                                    {{ personalPorMinisterio[m.id].length }}
+                                </span>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div v-for="(p, idx) in personalPorMinisterio[m.id]" :key="idx"
+                                    class="flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 group/card hover:shadow-md cursor-default"
+                                    :style="`background: hsl(${ministryHue(mIdx)}, 40%, 97%); border-color: hsl(${ministryHue(mIdx)}, 35%, 90%)`">
+                                    <!-- Avatar con foto o iniciales -->
+                                    <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm"
+                                        :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 50%), hsl(${ministryHue(mIdx)}, 45%, 35%))`">
+                                        <img v-if="p.fotoPreview" :src="p.fotoPreview" class="w-full h-full object-cover" />
+                                        <div v-else class="w-full h-full flex items-center justify-center font-bold text-xs text-white uppercase">
+                                            {{ p.nombre.substring(0,2) }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p class="text-sm font-bold text-on-surface leading-tight">{{ p.nombre }}</p>
+                                            <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                                :class="p.tipoPuesto === 'Ministro' ? 'bg-amber-100 text-amber-700' : p.tipoPuesto === 'Viceministro' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'">
+                                                {{ p.tipoPuesto }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mt-1 flex-wrap">
+                                            <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
+                                                <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
+                                            </span>
+                                            <span v-if="p.fechaPosesion" class="text-[11px] text-on-surface-variant flex items-center gap-0.5">
+                                                <span class="material-symbols-outlined text-[11px]">event</span>{{ p.fechaPosesion }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button @click="eliminarPersona(m.id, idx)"
+                                        class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty state -->
+                        <div v-else class="flex flex-col items-center justify-center py-6 text-center rounded-2xl border-2 border-dashed transition-all"
+                            :style="`border-color: hsl(${ministryHue(mIdx)}, 40%, 85%); background: hsl(${ministryHue(mIdx)}, 50%, 98%)`">
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center mb-2"
+                                :style="`background: hsl(${ministryHue(mIdx)}, 50%, 92%)`">
+                                <span class="material-symbols-outlined text-xl"
+                                    :style="`color: hsl(${ministryHue(mIdx)}, 50%, 45%)`">group_add</span>
+                            </div>
+                            <p class="text-xs font-semibold text-on-surface-variant">Sin personal adicional</p>
+                            <button @click="abrirModal(m)" class="mt-2 text-[11px] font-bold underline underline-offset-2"
+                                :style="`color: hsl(${ministryHue(mIdx)}, 55%, 42%)`">+ Agregar primer funcionario</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Modal: Agregar Personal (rediseñado) -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="modalAbierto" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-md" @click="cerrarModal"></div>
+
+                    <div class="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+
+                        <!-- Gradient header del modal -->
+                        <div class="relative p-6 overflow-hidden"
+                            :style="ministerioSeleccionado ? `background: linear-gradient(135deg, hsl(${ministryHue(ministries.findIndex(m => m.id === ministerioSeleccionado.id))}, 60%, 35%), hsl(${ministryHue(ministries.findIndex(m => m.id === ministerioSeleccionado.id))}, 45%, 22%))` : 'background: linear-gradient(135deg, #334155, #1e293b)'">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none select-none pointer-events-none">
+                                {{ ministerioSeleccionado?.short }}
+                            </div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div>
+                                    <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Agregar Funcionario</p>
+                                    <h3 class="text-xl font-extrabold text-white font-headline">{{ ministerioSeleccionado?.short }}</h3>
+                                    <p class="text-white/50 text-xs mt-0.5 max-w-[240px] leading-snug">{{ ministerioSeleccionado?.name }}</p>
+                                </div>
+                                <button @click="cerrarModal"
+                                    class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+
+                            <!-- Foto preview -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-20 rounded-2xl bg-surface-container-high border-2 border-dashed border-outline-variant/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                    <img v-if="nuevoPersonal.fotoPreview" :src="nuevoPersonal.fotoPreview" class="w-full h-full object-cover" />
+                                    <span v-else class="material-symbols-outlined text-3xl text-outline-variant">person</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Foto</p>
+                                    <label class="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-surface-container-low rounded-xl text-sm text-on-surface-variant hover:bg-surface-container transition-all border border-outline-variant/15 hover:border-primary/30 group/upload">
+                                        <span class="material-symbols-outlined text-base text-primary group-hover/upload:scale-110 transition-transform">cloud_upload</span>
+                                        <span class="text-xs font-semibold truncate">{{ nuevoPersonal.fotoNombre || 'Subir fotografía...' }}</span>
+                                        <input type="file" accept="image/*" class="hidden" @change="onFotoChange" />
+                                    </label>
+                                    <p class="text-[10px] text-outline mt-1.5 ml-1">JPG, PNG o WebP · Máx. 5MB</p>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-outline-variant/10"></div>
+
+                            <!-- Nombre -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Nombre completo <span class="text-error">*</span></label>
+                                <input v-model="nuevoPersonal.nombre" type="text" placeholder="Ej: Lic. Carlos Morales González"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                            </div>
+
+                            <!-- Tipo de Puesto -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Tipo de Puesto <span class="text-error">*</span></label>
+                                <div class="flex gap-2">
+                                    <button v-for="tipo in ['Ministro', 'Viceministro', 'Director']" :key="tipo"
+                                        @click="nuevoPersonal.tipoPuesto = tipo"
+                                        :class="[
+                                            'flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all',
+                                            nuevoPersonal.tipoPuesto === tipo
+                                                ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]">{{ tipo }}</button>
+                                </div>
+                            </div>
+
+                            <!-- Sueldo + Fecha en grid -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Sueldo mensual</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-extrabold text-on-surface-variant">Q</span>
+                                        <input v-model="nuevoPersonal.sueldo" type="text" placeholder="00.00"
+                                            class="w-full pl-7 pr-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de toma</label>
+                                    <input v-model="nuevoPersonal.fechaPosesion" type="date"
+                                        class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
+                                </div>
+                            </div>
+
+                            <!-- Error -->
+                            <Transition name="slide-error">
+                                <p v-if="errorModal" class="flex items-center gap-2 text-xs font-bold text-error bg-error-container/30 px-4 py-3 rounded-xl border border-error/15">
+                                    <span class="material-symbols-outlined text-sm">error</span>
+                                    {{ errorModal }}
+                                </p>
+                            </Transition>
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="p-5 pt-0 flex gap-3">
+                            <button @click="cerrarModal"
+                                class="flex-1 py-3 px-4 bg-surface-container font-bold text-on-surface text-sm rounded-2xl hover:bg-surface-container-high transition-colors border border-outline-variant/10">
+                                Cancelar
+                            </button>
+                            <button @click="guardarPersonal"
+                                class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">how_to_reg</span>
+                                Registrar funcionario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
 
         <!-- Tab: Comisiones -->
         <div v-if="activeTab === 'comisiones'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -337,6 +584,66 @@ const query = ref('');
 const selected = ref('todos');
 const activeTab = ref('ministerios');
 
+// --- Lógica de Autoridades / Personal ---
+const personalPorMinisterio = ref({});
+const modalAbierto = ref(false);
+const ministerioSeleccionado = ref(null);
+const errorModal = ref('');
+const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
+
+function abrirModal(ministerio) {
+    ministerioSeleccionado.value = ministerio;
+    nuevoPersonal.value = { nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' };
+    errorModal.value = '';
+    modalAbierto.value = true;
+}
+
+function cerrarModal() {
+    modalAbierto.value = false;
+    ministerioSeleccionado.value = null;
+    errorModal.value = '';
+}
+
+function onFotoChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    nuevoPersonal.value.fotoNombre = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => { nuevoPersonal.value.fotoPreview = e.target.result; };
+    reader.readAsDataURL(file);
+}
+
+function guardarPersonal() {
+    if (!nuevoPersonal.value.nombre.trim()) {
+        errorModal.value = 'El nombre es obligatorio.';
+        return;
+    }
+    if (!nuevoPersonal.value.tipoPuesto) {
+        errorModal.value = 'Selecciona el tipo de puesto.';
+        return;
+    }
+    const id = ministerioSeleccionado.value.id;
+    if (!personalPorMinisterio.value[id]) {
+        personalPorMinisterio.value[id] = [];
+    }
+    personalPorMinisterio.value[id].push({ ...nuevoPersonal.value });
+    cerrarModal();
+}
+
+function eliminarPersona(ministerioId, index) {
+    personalPorMinisterio.value[ministerioId].splice(index, 1);
+}
+
+// Color único por ministerio basado en su posición
+function ministryHue(idx) {
+    const hues = [210, 165, 24, 280, 340, 195, 50, 155, 270, 310, 35, 130, 190, 240];
+    return hues[idx % hues.length];
+}
+
+const totalPersonalRegistrado = computed(() =>
+    Object.values(personalPorMinisterio.value).reduce((sum, arr) => sum + arr.length, 0)
+);
+
 const tabs = [
     { id: 'ministerios', label: 'Ministerios y Entidades' },
     { id: 'autoridades', label: 'Autoridades' },
@@ -346,108 +653,22 @@ const tabs = [
     { id: 'noticias', label: 'Noticias / Reputacional' },
 ];
 
-// Data directly transcribed from React component
+// 14 Ministerios reales de Guatemala
 const ministries = [
-  {
-    id: 1,
-    name: "Ministerio de Comunicaciones, Infraestructura y Vivienda",
-    short: "MICIVI",
-    presupuesto: 5800,
-    ejecucion: 24,
-    funcionamiento: 1300,
-    inversion: 4500,
-    empleados: 8421,
-    alertas: 5,
-    riesgo: "alto",
-    hallazgos: ["Baja ejecución en proyectos prioritarios", "Adjudicaciones tardías", "Presión por mantenimiento vial"],
-    docs: 12,
-    ministro: { nombre: "José Aguilar", foto: "", perfil: "Ingeniero civil con 20 años de experiencia técnica." },
-    viceministros: [
-      { nombre: "Viceministro Civil", foto: "" },
-      { nombre: "Viceministro Transportes", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 1240 },
-      { renglon: "022", cantidad: 380 },
-      { renglon: "029", cantidad: 2150 },
-    ],
-    transaccionesOI: 145,
-  },
-  {
-    id: 2,
-    name: "Ministerio de Salud Pública y Asistencia Social",
-    short: "MSPAS",
-    presupuesto: 14750,
-    ejecucion: 31,
-    funcionamiento: 10300,
-    inversion: 4450,
-    empleados: 38210,
-    alertas: 7,
-    riesgo: "alto",
-    hallazgos: ["Incidencias en compras directas", "Rezagos programáticos", "Abastecimiento de medicamentos oncológicos bajo"],
-    docs: 18,
-    ministro: { nombre: "Dra. Carmen Ríos", foto: "", perfil: "Médica epidemióloga, experiencia en OPS." },
-    viceministros: [
-      { nombre: "Viceministro Hospitales", foto: "" },
-      { nombre: "Viceministra Primaria", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 5420 },
-      { renglon: "022", cantidad: 2120 },
-      { renglon: "029", cantidad: 4850 },
-    ],
-    transaccionesOI: 220,
-  },
-  {
-    id: 3,
-    name: "Ministerio de Educación",
-    short: "MINEDUC",
-    presupuesto: 24500,
-    ejecucion: 29,
-    funcionamiento: 21400,
-    inversion: 3100,
-    empleados: 142000,
-    alertas: 4,
-    riesgo: "medio",
-    hallazgos: ["Infraestructura pendiente en zonas rurales", "Contratación de maestros en proceso"],
-    docs: 9,
-    ministro: { nombre: "Lic. Mario Estrada", foto: "", perfil: "Docente y planificador educativo." },
-    viceministros: [
-      { nombre: "Vice. Técnico", foto: "" },
-      { nombre: "Vice. Administrativo", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 18200 },
-      { renglon: "022", cantidad: 4200 },
-      { renglon: "029", cantidad: 9600 },
-    ],
-    transaccionesOI: 98,
-  },
-  {
-    id: 4,
-    name: "Ministerio de Desarrollo Social",
-    short: "MIDES",
-    presupuesto: 2850,
-    ejecucion: 19,
-    funcionamiento: 620,
-    inversion: 2230,
-    empleados: 1985,
-    alertas: 6,
-    riesgo: "alto",
-    hallazgos: ["Transferencias condicionadas bajo lupa ciudadana", "Cobertura territorial lenta"],
-    docs: 7,
-    ministro: { nombre: "Ana López", foto: "", perfil: "Especialista en programas sociales." },
-    viceministros: [
-      { nombre: "Viceministro Focalización", foto: "" },
-      { nombre: "Viceministra Ejecutiva", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 320 },
-      { renglon: "022", cantidad: 110 },
-      { renglon: "029", cantidad: 860 },
-    ],
-    transaccionesOI: 35,
-  },
+  { id: 1,  short: 'MAGA',    name: 'Ministerio de Agricultura, Ganadería y Alimentación',  presupuesto: 3200,  ejecucion: 22, funcionamiento: 800,   inversion: 2400,  empleados: 4200,  alertas: 3, riesgo: 'medio', hallazgos: ['Baja ejecución agrícola', 'Rezago en programas rurales'], docs: 5,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Desarrollo Rural', foto: '' }, { nombre: 'Viceministro Seguridad Alimentaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 800 }, { renglon: '022', cantidad: 200 }, { renglon: '029', cantidad: 600 }], transaccionesOI: 45 },
+  { id: 2,  short: 'MARN',    name: 'Ministerio de Ambiente y Recursos Naturales',            presupuesto: 890,   ejecucion: 18, funcionamiento: 400,   inversion: 490,   empleados: 1200,  alertas: 2, riesgo: 'medio', hallazgos: ['Escasa inversión ambiental', 'Deforestación sin control'], docs: 4,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Recursos Naturales', foto: '' }, { nombre: 'Viceministro Ambiente', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 300 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 150 }], transaccionesOI: 20 },
+  { id: 3,  short: 'CIV',     name: 'Ministerio de Comunicaciones, Infraestructura y Vivienda', presupuesto: 5800,  ejecucion: 24, funcionamiento: 1300,  inversion: 4500,  empleados: 8421,  alertas: 5, riesgo: 'alto',  hallazgos: ['Baja ejecución en proyectos prioritarios', 'Adjudicaciones tardías', 'Presión por mantenimiento vial'], docs: 12, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Civil', foto: '' }, { nombre: 'Viceministro Transportes', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 1240 }, { renglon: '022', cantidad: 380 }, { renglon: '029', cantidad: 2150 }], transaccionesOI: 145 },
+  { id: 4,  short: 'MCD',     name: 'Ministerio de Cultura y Deportes',                        presupuesto: 780,   ejecucion: 20, funcionamiento: 500,   inversion: 280,   empleados: 2100,  alertas: 1, riesgo: 'bajo',  hallazgos: ['Presupuesto limitado para cultura'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Cultural', foto: '' }, { nombre: 'Viceministro Deportivo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 400 }, { renglon: '022', cantidad: 100 }, { renglon: '029', cantidad: 300 }], transaccionesOI: 15 },
+  { id: 5,  short: 'MINDEF',  name: 'Ministerio de la Defensa Nacional',                       presupuesto: 4200,  ejecucion: 35, funcionamiento: 3500,  inversion: 700,   empleados: 22000, alertas: 2, riesgo: 'medio', hallazgos: ['Gasto en personal elevado', 'Equipamiento desactualizado'], docs: 6,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Defensa', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 5000 }, { renglon: '022', cantidad: 1200 }, { renglon: '029', cantidad: 800 }], transaccionesOI: 60 },
+  { id: 6,  short: 'MINDES',  name: 'Ministerio de Desarrollo Social',                         presupuesto: 2850,  ejecucion: 19, funcionamiento: 620,   inversion: 2230,  empleados: 1985,  alertas: 6, riesgo: 'alto',  hallazgos: ['Transferencias condicionadas bajo lupa ciudadana', 'Cobertura territorial lenta'], docs: 7,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Focalización', foto: '' }, { nombre: 'Viceministra Ejecutiva', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 320 }, { renglon: '022', cantidad: 110 }, { renglon: '029', cantidad: 860 }], transaccionesOI: 35 },
+  { id: 7,  short: 'MINEDUC', name: 'Ministerio de Educación',                                  presupuesto: 24500, ejecucion: 29, funcionamiento: 21400, inversion: 3100,  empleados: 142000,alertas: 4, riesgo: 'medio', hallazgos: ['Infraestructura pendiente en zonas rurales', 'Contratación de maestros en proceso'], docs: 9,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Vice. Técnico', foto: '' }, { nombre: 'Vice. Administrativo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 18200 }, { renglon: '022', cantidad: 4200 }, { renglon: '029', cantidad: 9600 }], transaccionesOI: 98 },
+  { id: 8,  short: 'MINECO',  name: 'Ministerio de Economía',                                   presupuesto: 1100,  ejecucion: 21, funcionamiento: 700,   inversion: 400,   empleados: 1500,  alertas: 2, riesgo: 'medio', hallazgos: ['Baja inversión productiva', 'Rezago en MiPymes'], docs: 4,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Inversión', foto: '' }, { nombre: 'Viceministro MIPYMES', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 280 }, { renglon: '022', cantidad: 90 }, { renglon: '029', cantidad: 200 }], transaccionesOI: 22 },
+  { id: 9,  short: 'MEM',     name: 'Ministerio de Energía y Minas',                            presupuesto: 1800,  ejecucion: 26, funcionamiento: 900,   inversion: 900,   empleados: 1800,  alertas: 3, riesgo: 'medio', hallazgos: ['Concesiones mineras cuestionadas', 'Energía rural deficiente'], docs: 6,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Energía', foto: '' }, { nombre: 'Viceministro Minas', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 350 }, { renglon: '022', cantidad: 100 }, { renglon: '029', cantidad: 250 }], transaccionesOI: 40 },
+  { id: 10, short: 'MINFIN',  name: 'Ministerio de Finanzas Públicas',                          presupuesto: 2100,  ejecucion: 40, funcionamiento: 1800,  inversion: 300,   empleados: 3200,  alertas: 4, riesgo: 'medio', hallazgos: ['Deuda pública creciente', 'Ejecución presupuestaria lenta en otros ministerios'], docs: 10, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Fiscal', foto: '' }, { nombre: 'Viceministro Tesorería', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 600 }, { renglon: '022', cantidad: 200 }, { renglon: '029', cantidad: 400 }], transaccionesOI: 80 },
+  { id: 11, short: 'MINGOB',  name: 'Ministerio de Gobernación',                                presupuesto: 6500,  ejecucion: 33, funcionamiento: 5500,  inversion: 1000,  empleados: 35000, alertas: 7, riesgo: 'alto',  hallazgos: ['Inseguridad creciente', 'Corrupción en corporaciones policiales', 'Hacinamiento carcelario'], docs: 14, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Seguridad', foto: '' }, { nombre: 'Viceministro Administrativo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 8000 }, { renglon: '022', cantidad: 2500 }, { renglon: '029', cantidad: 5000 }], transaccionesOI: 190 },
+  { id: 12, short: 'MINEX',   name: 'Ministerio de Relaciones Exteriores',                      presupuesto: 950,   ejecucion: 30, funcionamiento: 800,   inversion: 150,   empleados: 1100,  alertas: 1, riesgo: 'bajo',  hallazgos: ['Representación consular insuficiente'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Diplomático', foto: '' }, { nombre: 'Viceministro Consular', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 200 }, { renglon: '022', cantidad: 60 }, { renglon: '029', cantidad: 120 }], transaccionesOI: 12 },
+  { id: 13, short: 'MSPAS',   name: 'Ministerio de Salud Pública y Asistencia Social',          presupuesto: 14750, ejecucion: 31, funcionamiento: 10300, inversion: 4450,  empleados: 38210, alertas: 7, riesgo: 'alto',  hallazgos: ['Incidencias en compras directas', 'Rezagos programáticos', 'Abastecimiento de medicamentos oncológicos bajo'], docs: 18, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Hospitales', foto: '' }, { nombre: 'Viceministra Primaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 5420 }, { renglon: '022', cantidad: 2120 }, { renglon: '029', cantidad: 4850 }], transaccionesOI: 220 },
+  { id: 14, short: 'MINTRAB', name: 'Ministerio de Trabajo y Previsión Social',                 presupuesto: 820,   ejecucion: 25, funcionamiento: 600,   inversion: 220,   empleados: 1400,  alertas: 2, riesgo: 'medio', hallazgos: ['Inspecciones laborales insuficientes', 'Bajo presupuesto para IGSS'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Trabajo', foto: '' }, { nombre: 'Viceministro Previsión Social', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 250 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 180 }], transaccionesOI: 18 },
 ];
 
 const commissions = [
@@ -501,8 +722,27 @@ const riskColorClass = (risk) => {
         default: return 'bg-surface-container text-on-surface-variant border-outline-variant/20';
     }
 }
+
 </script>
 
 <style scoped>
-/* Agrega animaciones ligeras nativas si lo deseas */
+/* Transición del modal */
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.2s ease;
+}
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+.modal-enter-from .relative {
+    transform: scale(0.92) translateY(16px);
+}
+.modal-leave-to .relative {
+    transform: scale(0.95) translateY(8px);
+}
 </style>
