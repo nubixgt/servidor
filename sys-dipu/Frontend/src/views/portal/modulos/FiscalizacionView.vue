@@ -260,18 +260,6 @@
                             </div>
                         </div>
 
-                        <!-- Empty state -->
-                        <div v-else class="flex flex-col items-center justify-center py-6 text-center rounded-2xl border-2 border-dashed transition-all"
-                            :style="`border-color: hsl(${ministryHue(mIdx)}, 40%, 85%); background: hsl(${ministryHue(mIdx)}, 50%, 98%)`">
-                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center mb-2"
-                                :style="`background: hsl(${ministryHue(mIdx)}, 50%, 92%)`">
-                                <span class="material-symbols-outlined text-xl"
-                                    :style="`color: hsl(${ministryHue(mIdx)}, 50%, 45%)`">group_add</span>
-                            </div>
-                            <p class="text-xs font-semibold text-on-surface-variant">Sin personal adicional</p>
-                            <button @click="abrirModal(m)" class="mt-2 text-[11px] font-bold underline underline-offset-2"
-                                :style="`color: hsl(${ministryHue(mIdx)}, 55%, 42%)`">+ Agregar primer funcionario</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -390,6 +378,74 @@
                 </div>
             </Transition>
         </Teleport>
+
+        <!-- Tab: Presupuesto -->
+        <div v-if="activeTab === 'presupuesto'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <!-- Hero Header Presupuesto -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 p-8 shadow-xl shadow-emerald-900/20 mb-8">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shadow-inner">
+                                <span class="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
+                            </div>
+                            <span class="text-white/80 text-sm font-bold uppercase tracking-widest">Ejecución Financiera</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white font-headline leading-tight">Presupuesto SICOIN</h2>
+                        <p class="text-white/80 text-sm mt-1 max-w-xl">Sistema de Contabilidad Integrada. Adjunta el reporte oficial en Excel para analizar la ejecución presupuestaria actualizada.</p>
+                    </div>
+                    
+                    <div class="shrink-0 relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-300 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500"></div>
+                        <input type="file" id="excelUploadSicoin" accept=".xlsx, .xls" class="hidden" @change="handleExcelUpload" />
+                        <label for="excelUploadSicoin" class="relative cursor-pointer px-8 py-4 bg-white text-emerald-900 font-extrabold text-sm rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3 active:scale-95">
+                            <span class="material-symbols-outlined text-xl text-emerald-600 animate-bounce">upload_file</span>
+                            Cargar Reporte Excel
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Detallada del Excel (Formato SICOIN) -->
+            <div v-if="excelRows.length > 0" class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+                <div class="w-full overflow-x-auto pb-2">
+                    <table class="w-full text-left border-collapse min-w-[1000px] text-[13px] font-sans">
+                        <thead>
+                            <tr style="background-color: #1a2a4b; color: white;" class="border-b border-outline-variant/20 shadow-sm">
+                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-3 py-2 font-bold border-r border-white/20', index === 0 ? 'text-left' : 'text-right']">
+                                    {{ header || (index === 0 ? 'Entidad' : '') }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/20">
+                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-[#f0f4f8] transition-colors bg-white text-[#2a3547]">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-3 py-1.5 border-r border-outline-variant/20 whitespace-nowrap', cellIndex === 0 ? 'text-left' : 'text-right']">
+                                    <span :class="{'uppercase font-medium': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
+                                </td>
+                            </tr>
+                            <tr v-if="excelTotals" class="bg-white font-extrabold text-[#2a3547] border-t-[3px] border-outline-variant/40 shadow-sm">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-3 py-2 border-r border-outline-variant/20 whitespace-nowrap', cellIndex === 0 ? 'text-left' : 'text-right']">
+                                    {{ excelTotals[cellIndex] || '' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div v-else class="relative overflow-hidden bg-surface p-12 rounded-3xl border border-outline-variant/15 shadow-sm text-center flex flex-col items-center justify-center group/empty">
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div class="relative z-10">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-50 border-8 border-emerald-100 flex items-center justify-center group-hover/empty:scale-110 transition-transform duration-500 shadow-inner">
+                        <span class="material-symbols-outlined text-4xl text-emerald-500">analytics</span>
+                    </div>
+                    <h4 class="font-extrabold text-on-surface text-2xl font-headline tracking-tight">Base de datos vacía</h4>
+                    <p class="text-on-surface-variant mt-3 max-w-md mx-auto text-sm leading-relaxed">Sube el archivo Excel oficial de SICOIN utilizando el botón superior. El sistema procesará el documento automáticamente manteniendo su formato original.</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Tab: Comisiones -->
         <div v-if="activeTab === 'comisiones'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -579,6 +635,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import * as XLSX from 'xlsx';
 
 const query = ref('');
 const selected = ref('todos');
@@ -644,9 +701,104 @@ const totalPersonalRegistrado = computed(() =>
     Object.values(personalPorMinisterio.value).reduce((sum, arr) => sum + arr.length, 0)
 );
 
+// --- Lógica de Presupuesto (Excel SICOIN) ---
+const excelHeaders = ref([]);
+const excelRows = ref([]);
+const excelTotals = ref(null);
+
+function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // raw: false asegura que obtenemos el texto exacto que se ve en Excel (con comas, fechas, etc.)
+        const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
+        
+        if (rawData.length > 0) {
+            // 1. Encontrar cuántas columnas máximas hay
+            let maxCols = 0;
+            rawData.forEach(row => {
+                if (row.length > maxCols) maxCols = row.length;
+            });
+
+            // 2. Identificar qué columnas están completamente vacías en todas las filas
+            const colIsEmpty = new Array(maxCols).fill(true);
+            for (let r = 0; r < rawData.length; r++) {
+                for (let c = 0; c < maxCols; c++) {
+                    const cellValue = rawData[r][c];
+                    if (cellValue !== null && cellValue !== undefined && String(cellValue).trim() !== '') {
+                        colIsEmpty[c] = false;
+                    }
+                }
+            }
+
+            // 3. Filtrar columnas vacías y filas completamente vacías
+            const cleanedRows = [];
+            for (let r = 0; r < rawData.length; r++) {
+                const newRow = [];
+                let rowHasData = false;
+                for (let c = 0; c < maxCols; c++) {
+                    if (!colIsEmpty[c]) {
+                        const cellStr = String(rawData[r][c] || '').trim();
+                        newRow.push(cellStr);
+                        if (cellStr !== '') rowHasData = true;
+                    }
+                }
+                if (rowHasData) cleanedRows.push(newRow);
+            }
+
+            if (cleanedRows.length > 0) {
+                // Buscar la fila de cabecera: la que tenga más columnas llenas dentro de las primeras 15 filas
+                let headerIndex = 0;
+                let maxFilled = 0;
+                const limit = Math.min(15, cleanedRows.length);
+                for(let i = 0; i < limit; i++) {
+                    const filled = cleanedRows[i].filter(c => c !== '').length;
+                    if(filled > maxFilled) {
+                        maxFilled = filled;
+                        headerIndex = i;
+                    }
+                }
+
+                excelHeaders.value = cleanedRows[headerIndex];
+                
+                // Los datos reales están debajo de la cabecera
+                const dataRows = cleanedRows.slice(headerIndex + 1);
+                
+                // Identificar fila de totales (suele ser la última)
+                if (dataRows.length > 0) {
+                    const lastRow = dataRows[dataRows.length - 1];
+                    const firstCell = lastRow[0].toLowerCase();
+                    if (firstCell.includes('total') || firstCell === '' || firstCell.includes('sum')) {
+                        excelTotals.value = dataRows.pop();
+                    } else {
+                        excelTotals.value = null;
+                    }
+                } else {
+                    excelTotals.value = null;
+                }
+                
+                excelRows.value = dataRows;
+            } else {
+                excelHeaders.value = [];
+                excelRows.value = [];
+                excelTotals.value = null;
+            }
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
 const tabs = [
     { id: 'ministerios', label: 'Ministerios y Entidades' },
     { id: 'autoridades', label: 'Autoridades' },
+    { id: 'presupuesto', label: 'Presupuesto' },
     { id: 'comisiones', label: 'Comisiones' },
     { id: 'documentos', label: 'Documentos Generales' },
     { id: 'personal', label: 'Renglones y Personal' },
