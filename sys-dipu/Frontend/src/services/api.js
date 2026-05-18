@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost/IEMCOOP/template/Backend/api/v1', // Adjust this to match your local setup
+    baseURL: 'https://m.nubix.gt/sys-dipu/Backend/api/v1', // Remote backend server
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
