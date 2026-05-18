@@ -128,3 +128,164 @@
   background-color: rgba(248, 249, 250, 0.8);
   backdrop-filter: blur(20px);
 }
+
+/* ============================================
+   SISTEMA DE BOTONES DINÁMICOS E INTERACTIVOS
+   ============================================ */
+
+/* --- Estilos base para TODOS los botones --- */
+button,
+[role="button"],
+.btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+/* Efecto de levantar al hacer hover */
+button:hover,
+[role="button"]:hover,
+.btn:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Efecto de presionar al hacer clic */
+button:active,
+[role="button"]:active,
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: 0.08s;
+}
+
+/* --- Efecto Ripple (onda al hacer clic) --- */
+button::after,
+[role="button"]::after,
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+button:active::after,
+[role="button"]:active::after,
+.btn:active::after {
+  transform: scale(2.5);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* --- Variante PRIMARIA (filled) --- */
+.btn-primary,
+button[class*="bg-"][class*="primary"] {
+  box-shadow: 0 2px 8px rgba(76, 97, 108, 0.25);
+}
+
+.btn-primary:hover,
+button[class*="bg-"][class*="primary"]:hover {
+  box-shadow: 0 8px 24px rgba(76, 97, 108, 0.40);
+  filter: brightness(1.08);
+}
+
+/* --- Variante SECUNDARIA / outlined --- */
+.btn-outlined,
+button[class*="border"][class*="primary"] {
+  box-shadow: 0 1px 4px rgba(76, 97, 108, 0.10);
+}
+
+.btn-outlined:hover,
+button[class*="border"][class*="primary"]:hover {
+  box-shadow: 0 4px 16px rgba(76, 97, 108, 0.20);
+  background-color: var(--color-primary-container);
+}
+
+/* --- Variante GHOST / text button --- */
+.btn-ghost:hover,
+button[class*="text"]:not([class*="text-"]):hover {
+  background-color: rgba(76, 97, 108, 0.08);
+}
+
+/* --- Glows por tema (colores vibrantes) --- */
+
+/* Azul - Iniciativas */
+.theme-iniciativas button:not([disabled]):hover,
+.theme-iniciativas [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.40);
+}
+
+/* Naranja - Citaciones */
+.theme-citaciones button:not([disabled]):hover,
+.theme-citaciones [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.40);
+}
+
+/* Morado - Comisiones */
+.theme-comisiones button:not([disabled]):hover,
+.theme-comisiones [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.40);
+}
+
+/* Rojo - Fiscalización */
+.theme-fiscalizacion button:not([disabled]):hover,
+.theme-fiscalizacion [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.40);
+}
+
+/* Verde - Compromisos */
+.theme-compromisos button:not([disabled]):hover,
+.theme-compromisos [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.40);
+}
+
+/* Rosa - Actividades */
+.theme-actividades button:not([disabled]):hover,
+.theme-actividades [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.40);
+}
+
+/* Teal - Redes */
+.theme-redes button:not([disabled]):hover,
+.theme-redes [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.40);
+}
+
+/* Amber - Afiliaciones */
+.theme-afiliaciones button:not([disabled]):hover,
+.theme-afiliaciones [role="button"]:hover {
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.40);
+}
+
+/* --- Botones deshabilitados (no animados) --- */
+button:disabled,
+button[disabled],
+.btn:disabled {
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+button:disabled::after,
+button[disabled]::after {
+  display: none;
+}
+
+/* --- Animación de pulso para botones de acción principal --- */
+@keyframes btn-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 97, 108, 0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(76, 97, 108, 0); }
+}
+
+.btn-pulse {
+  animation: btn-pulse 2s infinite;
+}
