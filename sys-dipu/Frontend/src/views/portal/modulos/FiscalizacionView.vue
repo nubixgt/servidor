@@ -1,5 +1,12 @@
 <template>
-    <div class="space-y-8">
+    <div class="relative min-h-full">
+        <!-- Fondo interactivo que cubre el área de contenido -->
+        <div 
+            class="fixed inset-0 pointer-events-none transition-colors duration-1000 z-0"
+            :class="activeTab === 'presupuesto' ? 'bg-sky-200' : 'bg-transparent'"
+        ></div>
+        
+        <div class="relative z-10 space-y-8">
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
             <div class="max-w-3xl">
                 <h1 class="text-[2.75rem] leading-[1.2] font-extrabold text-on-surface tracking-tight mb-2 font-headline">Centro de Fiscalización del Ejecutivo</h1>
@@ -380,54 +387,55 @@
         </Teleport>
 
         <!-- Tab: Presupuesto -->
-        <div v-if="activeTab === 'presupuesto'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div v-if="activeTab === 'presupuesto'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
             <!-- Hero Header Presupuesto -->
-            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-900 p-8 shadow-xl shadow-emerald-900/20 mb-8">
-                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 p-8 shadow-2xl shadow-indigo-900/20 mb-8 border border-white/10">
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, white 1.5px, transparent 1.5px), radial-gradient(circle at 80% 20%, white 1.5px, transparent 1.5px); background-size: 48px 48px; animation: float 10s linear infinite;"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-500/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"></div>
                 
                 <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shadow-inner">
-                                <span class="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20">
+                                <span class="material-symbols-outlined text-white text-2xl">account_balance_wallet</span>
                             </div>
-                            <span class="text-white/80 text-sm font-bold uppercase tracking-widest">Ejecución Financiera</span>
+                            <span class="text-white/90 text-xs font-black uppercase tracking-[0.2em] bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">Ejecución Financiera</span>
                         </div>
-                        <h2 class="text-3xl font-extrabold text-white font-headline leading-tight">Presupuesto SICOIN</h2>
-                        <p class="text-white/80 text-sm mt-1 max-w-xl">Sistema de Contabilidad Integrada. Adjunta el reporte oficial en Excel para analizar la ejecución presupuestaria actualizada.</p>
+                        <h2 class="text-4xl font-extrabold text-white font-headline leading-tight tracking-tight drop-shadow-sm">Presupuesto</h2>
+                        <p class="text-white/80 text-sm mt-2 max-w-2xl leading-relaxed">Módulo interactivo del Sistema de Contabilidad Integrada. Adjunta el reporte oficial en formato Excel para analizar, formatear y visualizar la ejecución presupuestaria en tiempo real.</p>
                     </div>
                     
-                    <div class="shrink-0 relative group">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-300 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500"></div>
+                    <div class="shrink-0 relative group mt-4 md:mt-0">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 rounded-2xl blur-md opacity-40 group-hover:opacity-100 transition duration-500"></div>
                         <input type="file" id="excelUploadSicoin" accept=".xlsx, .xls" class="hidden" @change="handleExcelUpload" />
-                        <label for="excelUploadSicoin" class="relative cursor-pointer px-8 py-4 bg-white text-emerald-900 font-extrabold text-sm rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3 active:scale-95">
-                            <span class="material-symbols-outlined text-xl text-emerald-600 animate-bounce">upload_file</span>
-                            Cargar Reporte Excel
+                        <label for="excelUploadSicoin" class="relative cursor-pointer px-8 py-4 bg-white/95 backdrop-blur-sm text-indigo-900 font-extrabold text-sm rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3 active:scale-95 border border-white">
+                            <span class="material-symbols-outlined text-xl text-indigo-600 animate-bounce">upload_file</span>
+                            Cargar Reporte Oficial
                         </label>
                     </div>
                 </div>
             </div>
 
             <!-- Tabla Detallada del Excel (Formato SICOIN) -->
-            <div v-if="excelRows.length > 0" class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
-                <div class="w-full overflow-x-auto pb-2">
+            <div v-if="excelRows.length > 0" class="bg-white rounded-3xl border border-indigo-100 shadow-xl shadow-indigo-900/5 overflow-hidden p-2">
+                <div class="w-full overflow-x-auto rounded-2xl border border-indigo-50">
                     <table class="w-full text-left border-collapse min-w-[1000px] text-[13px] font-sans">
                         <thead>
-                            <tr style="background-color: #1a2a4b; color: white;" class="border-b border-outline-variant/20 shadow-sm">
-                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-3 py-2 font-bold border-r border-white/20', index === 0 ? 'text-left' : 'text-right']">
+                            <tr class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white shadow-sm">
+                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-4 py-3.5 font-bold border-r border-white/10 tracking-wide', index === 0 ? 'text-left' : 'text-right']">
                                     {{ header || (index === 0 ? 'Entidad' : '') }}
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-outline-variant/20">
-                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-[#f0f4f8] transition-colors bg-white text-[#2a3547]">
-                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-3 py-1.5 border-r border-outline-variant/20 whitespace-nowrap', cellIndex === 0 ? 'text-left' : 'text-right']">
-                                    <span :class="{'uppercase font-medium': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
+                        <tbody class="divide-y divide-indigo-50">
+                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-indigo-50/50 transition-colors bg-white text-slate-700 group">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-4 py-2 border-r border-indigo-50 whitespace-nowrap', cellIndex === 0 ? 'text-left text-indigo-950' : 'text-right']">
+                                    <span :class="{'uppercase font-bold text-[11px] tracking-wider': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
                                 </td>
                             </tr>
-                            <tr v-if="excelTotals" class="bg-white font-extrabold text-[#2a3547] border-t-[3px] border-outline-variant/40 shadow-sm">
-                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-3 py-2 border-r border-outline-variant/20 whitespace-nowrap', cellIndex === 0 ? 'text-left' : 'text-right']">
+                            <tr v-if="excelTotals" class="bg-gradient-to-r from-indigo-50 to-blue-50 font-extrabold text-indigo-950 border-t-4 border-indigo-200 shadow-inner">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-4 py-3.5 border-r border-indigo-100 whitespace-nowrap', cellIndex === 0 ? 'text-left uppercase tracking-widest text-xs' : 'text-right text-indigo-700']">
                                     {{ excelTotals[cellIndex] || '' }}
                                 </td>
                             </tr>
@@ -630,6 +638,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </template>
 
