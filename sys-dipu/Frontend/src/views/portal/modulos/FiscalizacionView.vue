@@ -456,50 +456,176 @@
         </div>
 
         <!-- Tab: Comisiones -->
-        <div v-if="activeTab === 'comisiones'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-surface-container-low bg-surface-container-lowest">
-                    <h3 class="font-extrabold text-xl font-headline tracking-tight">Estado de comisiones fiscales</h3>
+        <div v-if="activeTab === 'comisiones'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+
+            <!-- Hero Header Comisiones -->
+            <div class="relative rounded-3xl overflow-hidden p-8 shadow-xl" style="background: linear-gradient(135deg, #0f3642 0%, #184e5b 40%, #216170 100%);">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" style="background: rgba(90,177,197,0.15);"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);">
+                                <span class="material-symbols-outlined text-white text-xl">groups</span>
+                            </div>
+                            <span class="text-xs font-black uppercase tracking-widest" style="color: #a5d0db;">Fiscalización · Comisiones</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white font-headline">Estado de Comisiones Fiscales</h2>
+                        <p class="text-sm mt-1" style="color: #a5d0db;">Seguimiento de comisiones legislativas, agenda activa y avance de objetivos.</p>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
+                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Comisiones</p>
+                        </div>
+                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
+                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.filter(c=>c.prioridad==='Alta').length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Alta prioridad</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full overflow-x-auto pb-2">
-                    <table class="w-full text-left border-collapse min-w-[600px]">
+            </div>
+
+            <!-- Acciones + búsqueda -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 min-w-[260px]">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+                    <input v-model="comBusqueda" type="text" placeholder="Buscar comisión..." class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 text-on-surface" />
+                </div>
+                <div class="flex items-center bg-surface-container-low p-1.5 rounded-xl gap-1">
+                    <button v-for="f in ['Todas','Alta','Media']" :key="f" @click="comFiltro=f"
+                        :class="comFiltro===f ? 'px-4 py-2 bg-surface-container-lowest text-on-surface text-sm font-semibold rounded-lg shadow-sm' : 'px-4 py-2 text-on-surface-variant text-sm hover:text-on-surface transition-colors'">{{ f }}</button>
+                </div>
+                <button @click="abrirComModal()" class="px-5 py-2.5 font-bold text-sm rounded-xl flex items-center gap-2 text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95" style="background: linear-gradient(135deg, #184e5b, #216170);">
+                    <span class="material-symbols-outlined text-lg">add</span> Nueva Comisión
+                </button>
+            </div>
+
+            <!-- Grid de comisiones -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Tabla principal -->
+                <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse min-w-[550px]">
                         <thead>
-                            <tr class="bg-surface-container-lowest text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-surface-container-low">
+                            <tr class="text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-surface-container-low bg-surface-container-lowest">
                                 <th class="px-6 py-4 font-bold">Comisión</th>
                                 <th class="px-6 py-4 font-bold">Prioridad</th>
-                                <th class="px-6 py-4 font-bold text-center">Agenda activa</th>
-                                <th class="px-6 py-4 font-bold">Avance de Objetivos</th>
+                                <th class="px-6 py-4 font-bold text-center">Agenda</th>
+                                <th class="px-6 py-4 font-bold">Avance</th>
+                                <th class="px-6 py-4 font-bold text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-background">
-                            <tr v-for="c in commissions" :key="c.nombre" class="hover:bg-surface-container-lowest transition-colors">
-                                <td class="px-6 py-5 font-bold text-sm text-on-surface">{{ c.nombre }}</td>
+                        <tbody class="divide-y divide-surface-container-low">
+                            <tr v-if="comisionesFiltradas.length === 0">
+                                <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant text-sm">
+                                    <span class="material-symbols-outlined text-4xl block mb-2 text-outline">inbox</span>
+                                    No hay comisiones registradas
+                                </td>
+                            </tr>
+                            <tr v-for="c in comisionesFiltradas" :key="c.id" class="group hover:bg-surface-container-lowest transition-colors">
+                                <td class="px-6 py-5">
+                                    <p class="font-bold text-sm text-on-surface">{{ c.nombre }}</p>
+                                    <p v-if="c.notas" class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">{{ c.notas }}</p>
+                                </td>
                                 <td class="px-6 py-5">
                                     <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', c.prioridad==='Alta'?'bg-error-container text-on-error-container':'bg-tertiary-container text-on-tertiary-container']">{{ c.prioridad }}</span>
                                 </td>
                                 <td class="px-6 py-5 text-center font-bold text-sm text-on-surface-variant">{{ c.agenda }}</td>
-                                <td class="px-6 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex-1 bg-surface-container-highest h-2.5 rounded-full overflow-hidden">
-                                            <div class="bg-primary h-full rounded-full" :style="{ width: c.avances + '%' }"></div>
+                                <td class="px-6 py-5 min-w-[140px]">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-surface-container-highest h-2 rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full transition-all" :style="{ width: c.avances + '%', background: 'linear-gradient(90deg,#184e5b,#5ab1c5)' }"></div>
                                         </div>
-                                        <span class="text-xs font-black text-on-surface">{{ c.avances }}%</span>
+                                        <span class="text-xs font-black text-on-surface w-8 text-right">{{ c.avances }}%</span>
                                     </div>
+                                </td>
+                                <td class="px-6 py-5 text-right">
+                                    <button @click="abrirComModal(c)" class="p-2 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-surface-container-low">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </button>
+                                    <button @click="eliminarComision(c.id)" class="p-2 text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-error/5">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm p-6 max-h-min">
-                <h3 class="font-extrabold text-lg font-headline mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">target</span> Prioridades tácticas</h3>
-                <div class="space-y-3">
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
+
+                <!-- Panel derecho -->
+                <div class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                    <h3 class="font-extrabold text-lg font-headline mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">target</span> Prioridades tácticas
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Modal Nueva/Editar Comisión -->
+        <Teleport to="body">
+            <Transition name="com-modal">
+                <div v-if="comModalOpen" class="com-overlay" @click.self="cerrarComModal">
+                    <div class="com-card">
+                        <div class="com-header">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined com-icon">groups</span>
+                                <div>
+                                    <h3 class="com-title">{{ comEditando ? 'Editar Comisión' : 'Nueva Comisión' }}</h3>
+                                    <p class="com-sub">{{ comEditando ? 'Modifica los datos' : 'Registra una nueva comisión' }}</p>
+                                </div>
+                            </div>
+                            <button @click="cerrarComModal" class="com-close"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div class="com-body">
+                            <div class="com-field">
+                                <label class="com-label">Nombre *</label>
+                                <input v-model="comForm.nombre" class="com-input" placeholder="Ej. Comisión de Hacienda..." />
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Prioridad</label>
+                                    <select v-model="comForm.prioridad" class="com-input">
+                                        <option value="Alta">Alta</option>
+                                        <option value="Media">Media</option>
+                                        <option value="Baja">Baja</option>
+                                    </select>
+                                </div>
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Agenda activa</label>
+                                    <input v-model.number="comForm.agenda" type="number" min="0" class="com-input" placeholder="0" />
+                                </div>
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Avance %</label>
+                                    <input v-model.number="comForm.avances" type="number" min="0" max="100" class="com-input" placeholder="0" />
+                                </div>
+                            </div>
+                            <div class="com-field">
+                                <label class="com-label">Notas / Integrantes</label>
+                                <textarea v-model="comForm.notas" class="com-input" rows="3" placeholder="Lista de diputados, temas, observaciones..."></textarea>
+                            </div>
+                            <p v-if="comError" class="text-red-400 text-xs font-semibold">{{ comError }}</p>
+                        </div>
+                        <div class="com-footer">
+                            <button v-if="comEditando" @click="eliminarComision(comEditando.id); cerrarComModal()" class="com-btn-del">
+                                <span class="material-symbols-outlined text-sm">delete</span> Eliminar
+                            </button>
+                            <div class="flex gap-2 ml-auto">
+                                <button @click="cerrarComModal" class="com-btn-cancel">Cancelar</button>
+                                <button @click="guardarComision" class="com-btn-save">
+                                    <span class="material-symbols-outlined text-sm">{{ comEditando ? 'save' : 'add' }}</span>
+                                    {{ comEditando ? 'Guardar' : 'Crear' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
 
         <!-- Tab: Documentos -->
         <div v-if="activeTab === 'documentos'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -870,12 +996,50 @@ const ministries = [
   { id: 14, short: 'MINTRAB', name: 'Ministerio de Trabajo y Previsión Social',                 presupuesto: 820,   ejecucion: 25, funcionamiento: 600,   inversion: 220,   empleados: 1400,  alertas: 2, riesgo: 'medio', hallazgos: ['Inspecciones laborales insuficientes', 'Bajo presupuesto para IGSS'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Trabajo', foto: '' }, { nombre: 'Viceministro Previsión Social', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 250 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 180 }], transaccionesOI: 18 },
 ];
 
-const commissions = [
-  { nombre: "Descentralización y Desarrollo", prioridad: "Alta", agenda: 8, avances: 62 },
-  { nombre: "Seguridad Alimentaria", prioridad: "Alta", agenda: 6, avances: 48 },
-  { nombre: "Probidad y Transparencia", prioridad: "Media", agenda: 5, avances: 71 },
-  { nombre: "Defensa Nacional", prioridad: "Media", agenda: 4, avances: 55 },
-];
+// ─── Comisiones: estado reactivo y CRUD ───
+const commissionsData = ref([
+  { id: 1, nombre: 'Descentralización y Desarrollo', prioridad: 'Alta',  agenda: 8, avances: 62, notas: '' },
+  { id: 2, nombre: 'Seguridad Alimentaria',           prioridad: 'Alta',  agenda: 6, avances: 48, notas: '' },
+  { id: 3, nombre: 'Probidad y Transparencia',        prioridad: 'Media', agenda: 5, avances: 71, notas: '' },
+  { id: 4, nombre: 'Defensa Nacional',                prioridad: 'Media', agenda: 4, avances: 55, notas: '' },
+]);
+
+const comBusqueda  = ref('');
+const comFiltro    = ref('Todas');
+const comModalOpen = ref(false);
+const comEditando  = ref(null);
+const comError     = ref('');
+const comFormVacio = () => ({ nombre: '', prioridad: 'Alta', agenda: 0, avances: 0, notas: '' });
+const comForm      = ref(comFormVacio());
+
+const comisionesFiltradas = computed(() => {
+    let lista = commissionsData.value;
+    if (comFiltro.value !== 'Todas') lista = lista.filter(c => c.prioridad === comFiltro.value);
+    if (comBusqueda.value.trim()) {
+        const q = comBusqueda.value.toLowerCase();
+        lista = lista.filter(c => c.nombre.toLowerCase().includes(q));
+    }
+    return lista;
+});
+
+function abrirComModal(com = null) {
+    comError.value = '';
+    comEditando.value = com;
+    comForm.value = com ? { ...com } : comFormVacio();
+    comModalOpen.value = true;
+}
+function cerrarComModal() { comModalOpen.value = false; }
+function guardarComision() {
+    if (!comForm.value.nombre.trim()) { comError.value = 'El nombre es obligatorio.'; return; }
+    if (comEditando.value) {
+        const idx = commissionsData.value.findIndex(c => c.id === comEditando.value.id);
+        if (idx !== -1) commissionsData.value[idx] = { ...comForm.value, id: comEditando.value.id };
+    } else {
+        commissionsData.value.push({ ...comForm.value, id: Date.now() });
+    }
+    cerrarComModal();
+}
+function eliminarComision(id) { commissionsData.value = commissionsData.value.filter(c => c.id !== id); }
 
 const noticias = [
   { ministerio: "MICIVI", titulo: "Retrasos en adjudicaciones y presión civil por fallos en red vial departamental", fecha: "2026-04-14", fuente: "Prensa Libre", tono: "crítico" },
@@ -944,4 +1108,50 @@ const riskColorClass = (risk) => {
 .modal-leave-to .relative {
     transform: scale(0.95) translateY(8px);
 }
+
+/* ── Comisiones Modal ── */
+.com-modal-enter-active, .com-modal-leave-active { transition: opacity 0.25s ease; }
+.com-modal-enter-from, .com-modal-leave-to { opacity: 0; }
+.com-modal-enter-active .com-card, .com-modal-leave-active .com-card { transition: transform 0.25s ease; }
+.com-modal-enter-from .com-card, .com-modal-leave-to .com-card { transform: scale(0.95) translateY(12px); }
+
+.com-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(14, 40, 48, 0.75); backdrop-filter: blur(8px); padding: 16px;
+}
+.com-card {
+  background: #216170; border: 1px solid #327f91; border-radius: 20px;
+  width: 100%; max-width: 560px; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(14,40,48,0.6);
+}
+.com-header {
+  padding: 22px 28px; background: #184e5b;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #327f91;
+}
+.com-icon { font-size: 24px !important; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; color: #e0f2fe; border: 1px solid rgba(255,255,255,0.2); }
+.com-title { font-size: 17px; font-weight: 800; color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.com-sub   { font-size: 12px; color: #a5d0db; margin: 2px 0 0; }
+.com-close { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 8px; color: #e0f2fe; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.com-close:hover { background: rgba(255,255,255,0.2); }
+.com-body  { display: flex; flex-direction: column; gap: 16px; padding: 22px 28px; }
+.com-field { display: flex; flex-direction: column; gap: 5px; }
+.com-label { font-size: 11px; font-weight: 800; color: #a5d0db; text-transform: uppercase; letter-spacing: 0.05em; }
+.com-input {
+  width: 100%; padding: 10px 13px;
+  background: #184e5b; border: 1px solid #327f91; border-radius: 10px;
+  font-size: 14px; color: #fff; outline: none; transition: all 0.2s; font-family: inherit;
+  color-scheme: dark;
+}
+.com-input:focus { border-color: #5ab1c5; box-shadow: 0 0 0 3px rgba(90,177,197,0.2); }
+.com-input::placeholder { color: #6ba7b8; }
+.com-footer { display: flex; align-items: center; padding: 18px 28px; background: #184e5b; border-top: 1px solid #327f91; }
+.com-btn-del    { display:flex;align-items:center;gap:6px;padding:9px 15px;background:transparent;color:#f87171;border:1px solid transparent;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s; }
+.com-btn-del:hover { background:#7f1d1d;border-color:#fca5a5; }
+.com-btn-cancel { padding:9px 18px;background:#216170;color:#fff;border:1px solid #327f91;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s; }
+.com-btn-cancel:hover { background:#327f91; }
+.com-btn-save   { display:flex;align-items:center;gap:7px;padding:9px 20px;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,#0f3642,#216170);box-shadow:0 4px 12px rgba(14,40,48,0.3); }
+.com-btn-save:hover { filter:brightness(1.15);transform:translateY(-1px); }
 </style>
