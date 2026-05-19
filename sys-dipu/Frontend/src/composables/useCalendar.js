@@ -1,9 +1,14 @@
 import { ref, computed } from 'vue'
 
 const CATEGORIES = [
-  { id: 'trabajo', label: 'Trabajo', color: '#7c3aed', bg: '#ede9fe', border: '#a78bfa' },
-  { id: 'personal', label: 'Personal', color: '#16a34a', bg: '#dcfce7', border: '#4ade80' },
-  { id: 'urgente', label: 'Urgente', color: '#dc2626', bg: '#fee2e2', border: '#f87171' }
+  { id: 'iniciativas', label: 'Iniciativas de Ley', color: '#2563eb', bg: '#dbeafe', border: '#93c5fd' },
+  { id: 'citaciones', label: 'Citaciones', color: '#ea580c', bg: '#ffedd5', border: '#fdba74' },
+  { id: 'comisiones', label: 'Comisiones', color: '#9333ea', bg: '#f3e8ff', border: '#d8b4fe' },
+  { id: 'fiscalizacion', label: 'Fiscalización', color: '#dc2626', bg: '#fee2e2', border: '#fca5a5' },
+  { id: 'compromisos', label: 'Compromisos Distritales', color: '#16a34a', bg: '#dcfce7', border: '#86efac' },
+  { id: 'actividades', label: 'Actividades', color: '#e11d48', bg: '#ffe4e6', border: '#fda4af' },
+  { id: 'redes', label: 'Redes Sociales', color: '#0d9488', bg: '#ccfbf1', border: '#5eead4' },
+  { id: 'afiliaciones', label: 'Afiliaciones Políticas', color: '#d97706', bg: '#fef3c7', border: '#fcd34d' }
 ]
 
 function createId() {
@@ -16,12 +21,12 @@ export function useCalendar() {
   const searchQuery = ref('')
   const activeFilters = ref([]) // category ids
   const events = ref([
-    { id: createId(), title: 'Reunión de equipo', date: formatDate(new Date()), category: 'trabajo', description: 'Revisión semanal del proyecto', files: [] },
-    { id: createId(), title: 'Cita médica', date: formatDate(addDays(new Date(), 2)), category: 'personal', description: 'Control anual', files: [] },
-    { id: createId(), title: 'Entrega de reporte', date: formatDate(addDays(new Date(), 1)), category: 'urgente', description: 'Reporte fiscal Q2', files: [] },
-    { id: createId(), title: 'Capacitación Vue.js', date: formatDate(addDays(new Date(), 5)), category: 'trabajo', description: 'Curso avanzado', files: [] },
-    { id: createId(), title: 'Almuerzo familiar', date: formatDate(addDays(new Date(), 3)), category: 'personal', description: '', files: [] },
-    { id: createId(), title: 'Auditoría interna', date: formatDate(addDays(new Date(), -1)), category: 'urgente', description: 'Preparar documentos', files: [] },
+    { id: createId(), title: 'Revisión de propuesta de ley', date: formatDate(new Date()), category: 'iniciativas', description: 'Revisión con el equipo legal', files: [] },
+    { id: createId(), title: 'Citación Ministro', date: formatDate(addDays(new Date(), 2)), category: 'citaciones', description: 'Preparar preguntas', files: [] },
+    { id: createId(), title: 'Reunión Comisión', date: formatDate(addDays(new Date(), 1)), category: 'comisiones', description: 'Sala 3', files: [] },
+    { id: createId(), title: 'Auditoría Hospital', date: formatDate(addDays(new Date(), 5)), category: 'fiscalizacion', description: 'Visita de campo', files: [] },
+    { id: createId(), title: 'Visita a Comunidad', date: formatDate(addDays(new Date(), 3)), category: 'compromisos', description: 'Entregar reporte de avances', files: [] },
+    { id: createId(), title: 'Entrevista TV', date: formatDate(addDays(new Date(), -1)), category: 'redes', description: 'Canal 3', files: [] },
   ])
 
   function formatDate(d) {

@@ -2,18 +2,17 @@
 <Teleport to="body">
 <Transition name="modal">
 <div v-if="show" class="em-overlay" @click.self="$emit('close')">
-  <div class="em-card">
+  <div class="em-card" :style="{ '--active-color': activeCat?.color || '#3b82f6' }">
 
-    <!-- Header con gradiente -->
-    <div class="em-header" :style="activeCatStyle">
-      <div class="em-header-blob"></div>
-      <div class="em-header-inner">
-        <div class="em-header-icon">
-          <span class="material-symbols-outlined">{{ editing ? 'edit_calendar' : 'event_available' }}</span>
-        </div>
+    <!-- Nueva Cabecera Simple -->
+    <div class="em-header">
+      <div class="em-header-left">
+        <span class="material-symbols-outlined em-header-icon" :style="{ color: 'var(--active-color)' }">
+          {{ editing ? 'edit_calendar' : 'event_available' }}
+        </span>
         <div>
-          <p class="em-header-label">{{ editing ? 'Editar evento' : 'Nuevo evento' }}</p>
-          <p class="em-header-sub">{{ editing ? 'Modifica los datos del evento' : 'Completa los datos del evento' }}</p>
+          <h2 class="em-header-title">{{ editing ? 'Editar Evento' : 'Nuevo Evento' }}</h2>
+          <p class="em-header-sub">Completa los detalles a continuación</p>
         </div>
       </div>
       <button class="em-close" @click="$emit('close')">
@@ -21,88 +20,77 @@
       </button>
     </div>
 
-    <!-- Formulario -->
-    <div class="em-body">
-
-      <!-- Título -->
+    <!-- Contenido -->
+    <div class="em-layout">
       <div class="em-field">
-        <label class="em-label">Título</label>
+        <label class="em-label">Título del evento</label>
         <div class="em-input-wrap">
           <span class="material-symbols-outlined em-input-icon">title</span>
-          <input v-model="form.title" type="text" placeholder="Nombre del evento..." class="em-input" />
+          <input v-model="form.title" type="text" placeholder="Ej. Reunión de planeación..." class="em-input with-icon" />
         </div>
       </div>
 
-      <!-- Fecha -->
-      <div class="em-field">
-        <label class="em-label">Fecha</label>
-        <div class="em-input-wrap">
-          <span class="material-symbols-outlined em-input-icon">calendar_today</span>
-          <input v-model="form.date" type="date" class="em-input" />
+      <div class="em-field-row">
+        <div class="em-field w-half">
+          <label class="em-label">Fecha programada</label>
+          <div class="em-input-wrap">
+            <span class="material-symbols-outlined em-input-icon">calendar_month</span>
+            <input v-model="form.date" type="date" class="em-input with-icon" />
+          </div>
+        </div>
+
+        <div class="em-field w-half">
+          <label class="em-label">Clasificación</label>
+          <div class="em-select-wrap">
+            <select v-model="form.category" class="em-input em-select" :style="{ '--cc': activeCat?.color || '#64748b' }">
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                {{ cat.label }}
+              </option>
+            </select>
+            <span class="material-symbols-outlined em-select-icon">expand_more</span>
+            <div class="em-select-color-indicator" :style="{ background: activeCat?.color || 'transparent' }"></div>
+          </div>
         </div>
       </div>
-
-      <!-- Categoría -->
+      
       <div class="em-field">
-        <label class="em-label">Categoría</label>
-        <div class="em-cats">
-          <button v-for="cat in categories" :key="cat.id"
-            type="button"
-            @click="form.category = cat.id"
-            :class="['em-cat-btn', { selected: form.category === cat.id }]"
-            :style="{
-              '--cc': cat.color,
-              '--cb': cat.bg,
-              '--cbrd': cat.border,
-              background: form.category === cat.id ? cat.bg : '#f9fafb',
-              borderColor: form.category === cat.id ? cat.color : '#e5e7eb',
-              color: cat.color
-            }">
-            <span class="em-cat-dot" :style="{ background: cat.color }"></span>
-            {{ cat.label }}
-            <span v-if="form.category === cat.id" class="material-symbols-outlined em-cat-check">check_circle</span>
-          </button>
-        </div>
+        <label class="em-label">Descripción detallada</label>
+        <textarea v-model="form.description" rows="3" placeholder="Agrega detalles, enlaces o notas..." class="em-textarea"></textarea>
       </div>
 
-      <!-- Descripción -->
-      <div class="em-field">
-        <label class="em-label">Descripción</label>
-        <textarea v-model="form.description" rows="2" placeholder="Agrega detalles del evento..." class="em-textarea"></textarea>
-      </div>
-
-      <!-- Archivos -->
       <div class="em-field">
         <label class="em-label">Archivos adjuntos</label>
         <div class="em-dropzone" @click="$refs.fileInput.click()">
           <input ref="fileInput" type="file" multiple class="hidden" @change="handleFiles" />
           <span class="material-symbols-outlined em-drop-icon">cloud_upload</span>
-          <p class="em-drop-text">Arrastra o haz clic para adjuntar</p>
+          <div class="em-drop-text">
+            <strong>Haz clic para subir</strong> o arrastra y suelta<br>
+            <span>PDF, DOCX, JPG (Max. 10MB)</span>
+          </div>
         </div>
         <div v-if="form.files.length" class="em-files">
           <div v-for="(f, i) in form.files" :key="i" class="em-file-item">
-            <span class="material-symbols-outlined em-file-icon">attach_file</span>
+            <span class="material-symbols-outlined em-file-icon">description</span>
             <span class="em-file-name">{{ f.name }}</span>
             <button @click="form.files.splice(i, 1)" class="em-file-del">
-              <span class="material-symbols-outlined">delete</span>
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- Acciones -->
+    <!-- Pie del Modal -->
     <div class="em-footer">
       <button v-if="editing" @click="$emit('delete')" class="em-btn-delete">
-        <span class="material-symbols-outlined">delete_outline</span> Eliminar
+        Eliminar Evento
       </button>
       <div class="em-footer-right">
         <button @click="$emit('close')" class="em-btn-cancel">Cancelar</button>
         <button @click="save" :disabled="!form.title.trim()" class="em-btn-save"
-          :style="{ background: `linear-gradient(135deg, ${activeCat?.color || '#7c3aed'}, #4f46e5)` }">
-          <span class="material-symbols-outlined">{{ editing ? 'save' : 'add_circle' }}</span>
-          {{ editing ? 'Guardar cambios' : 'Crear evento' }}
+          :style="{ background: activeCat?.color || '#3b82f6', boxShadow: `0 8px 20px ${activeCat?.color || '#3b82f6'}40` }">
+          {{ editing ? 'Guardar Cambios' : 'Crear Evento' }}
+          <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
     </div>
@@ -119,13 +107,13 @@ import { reactive, computed, watch } from 'vue'
 const props = defineProps({ show: Boolean, editing: Object, date: String, categories: Array })
 const emit = defineEmits(['close', 'save', 'delete'])
 
-const form = reactive({ title: '', date: '', category: 'trabajo', description: '', files: [] })
+const form = reactive({ title: '', date: '', category: 'iniciativas', description: '', files: [] })
 
 const activeCat = computed(() => props.categories?.find(c => c.id === form.category))
 const activeCatStyle = computed(() => ({
   background: activeCat.value
-    ? `linear-gradient(135deg, ${activeCat.value.color}dd, ${activeCat.value.color}99)`
-    : 'linear-gradient(135deg, #7c3aed, #4f46e5)'
+    ? `linear-gradient(135deg, ${activeCat.value.color}, ${activeCat.value.color}dd)`
+    : 'linear-gradient(135deg, #0ea5e9, #3b82f6)'
 }))
 
 watch(() => props.show, (v) => {
@@ -138,7 +126,7 @@ watch(() => props.show, (v) => {
       files: [...(props.editing.files || [])]
     })
   } else if (v) {
-    Object.assign(form, { title: '', date: props.date || '', category: 'trabajo', description: '', files: [] })
+    Object.assign(form, { title: '', date: props.date || '', category: 'iniciativas', description: '', files: [] })
   }
 })
 
@@ -154,165 +142,191 @@ function save() {
 /* Transición */
 .modal-enter-active { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .modal-leave-active { transition: all 0.2s ease; }
-.modal-enter-from  { opacity: 0; transform: scale(0.85) translateY(20px); }
-.modal-leave-to    { opacity: 0; transform: scale(0.92) translateY(10px); }
-.modal-enter-from .em-overlay,
-.modal-leave-to   .em-overlay { opacity: 0; }
+.modal-enter-from  { opacity: 0; transform: scale(0.95) translateY(10px); }
+.modal-leave-to    { opacity: 0; transform: scale(0.98) translateY(5px); }
+.modal-enter-from .em-overlay, .modal-leave-to .em-overlay { opacity: 0; }
 
 /* Overlay */
 .em-overlay {
   position: fixed; inset: 0; z-index: 100;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(15, 10, 30, 0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(14, 40, 48, 0.8);
+  backdrop-filter: blur(8px);
   padding: 16px;
 }
 
-/* Card */
+/* Card Principal */
 .em-card {
-  background: white; border-radius: 22px;
-  width: 100%; max-width: 460px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+  background: #216170; /* Teal MINDES Base */
+  border: 1px solid #327f91; /* Teal Border */
+  border-radius: 20px;
+  width: 100%; max-width: 500px;
+  box-shadow: 0 25px 50px -12px rgba(14, 40, 48, 0.6);
   overflow: hidden;
+  display: flex; flex-direction: column;
 }
 
 /* Header */
 .em-header {
-  position: relative; overflow: hidden;
-  padding: 22px 24px; display: flex;
-  align-items: center; justify-content: space-between; gap: 14px;
-  transition: background 0.4s ease;
+  padding: 24px 28px; display: flex;
+  background: #184e5b; /* Darker Teal Header */
+  align-items: flex-start; justify-content: space-between;
+  border-bottom: 1px solid #327f91;
 }
-.em-header-blob {
-  position: absolute; width: 200px; height: 200px;
-  background: rgba(255,255,255,0.12); border-radius: 50%;
-  top: -80px; right: -40px; filter: blur(30px);
+.em-header-left { display: flex; align-items: center; gap: 16px; }
+.em-header-icon {
+  font-size: 28px !important;
+  padding: 10px; background: rgba(255, 255, 255, 0.1); 
+  border-radius: 12px;
+  color: #e0f2fe; /* Light Cyan */
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+.em-header-title { font-size: 20px; font-weight: 800; color: #ffffff; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; }
+.em-header-sub { font-size: 13px; color: #a5d0db; margin: 4px 0 0; }
+
+.em-close {
+  width: 32px; height: 32px; border: none; background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px; color: #e0f2fe; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.em-close:hover { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+
+/* Layout de una columna compacta */
+.em-layout {
+  display: flex; flex-direction: column;
+  gap: 20px; padding: 24px 28px;
+}
+
+/* Campos */
+.em-field-row { display: flex; gap: 16px; }
+.w-half { flex: 1; min-width: 0; }
+
+.em-field { display: flex; flex-direction: column; gap: 6px; }
+.em-label { font-size: 11px; font-weight: 800; color: #a5d0db; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Inputs Text / Date */
+.em-input-wrap { position: relative; display: flex; align-items: center; }
+.em-input {
+  width: 100%; padding: 12px 14px;
+  background: #184e5b; 
+  border: 1px solid #327f91; 
+  border-radius: 10px;
+  font-size: 14px; color: #ffffff; font-weight: 500;
+  transition: all 0.2s; outline: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  color-scheme: dark;
+}
+.em-input.with-icon { padding-left: 40px; }
+.em-input:focus { border-color: #5ab1c5; background: #184e5b; box-shadow: 0 0 0 3px rgba(90, 177, 197, 0.2); }
+.em-input::placeholder { color: #6ba7b8; font-weight: 400; }
+
+.em-input-icon {
+  position: absolute; left: 12px; font-size: 18px !important; color: #6ba7b8;
+  pointer-events: none; transition: color 0.3s;
+}
+.em-input:focus ~ .em-input-icon, .em-input-wrap:focus-within .em-input-icon { color: #5ab1c5; }
+
+/* Select (Clasificación) */
+.em-select-wrap { position: relative; display: flex; align-items: center; }
+.em-select {
+  appearance: none; padding-left: 36px; padding-right: 30px; cursor: pointer;
+}
+.em-select:focus { border-color: #5ab1c5; background: #184e5b; }
+.em-select-icon {
+  position: absolute; right: 10px; font-size: 20px !important; color: #6ba7b8;
   pointer-events: none;
 }
-.em-header-inner { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
-.em-header-icon {
-  width: 44px; height: 44px; background: rgba(255,255,255,0.2);
-  border-radius: 14px; display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(6px);
+.em-select-color-indicator {
+  position: absolute; left: 14px; width: 10px; height: 10px;
+  border-radius: 50%; pointer-events: none; transition: background 0.3s;
 }
-.em-header-icon .material-symbols-outlined { font-size: 22px; color: white; }
-.em-header-label { font-size: 16px; font-weight: 800; color: white; }
-.em-header-sub   { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-.em-close {
-  width: 32px; height: 32px; border: none;
-  background: rgba(255,255,255,0.2); border-radius: 10px;
-  color: white; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s; position: relative; z-index: 1; flex-shrink: 0;
-}
-.em-close:hover { background: rgba(255,255,255,0.35); }
-.em-close .material-symbols-outlined { font-size: 18px; }
-
-/* Body */
-.em-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
-
-.em-field { display: flex; flex-direction: column; gap: 7px; }
-.em-label {
-  font-size: 10px; font-weight: 800; color: #6b7280;
-  text-transform: uppercase; letter-spacing: 0.15em;
-}
-
-.em-input-wrap {
-  position: relative; display: flex; align-items: center;
-  background: #f9f7ff; border: 2px solid #ede9fe;
-  border-radius: 12px; transition: all 0.3s ease;
-}
-.em-input-wrap:focus-within { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
-.em-input-icon {
-  position: absolute; left: 12px; font-size: 17px !important;
-  color: #a78bfa; pointer-events: none;
-}
-.em-input {
-  width: 100%; padding: 11px 14px 11px 40px;
-  border: none; background: none; outline: none;
-  font-size: 13px; color: #1f2937;
-}
-.em-input::placeholder { color: #c4b5fd; }
-
-/* Categorías */
-.em-cats { display: flex; gap: 8px; flex-wrap: wrap; }
-.em-cat-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border: 2px solid; border-radius: 20px;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.em-cat-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.em-cat-btn.selected { transform: scale(1.06); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
-.em-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.em-cat-check { font-size: 14px !important; }
 
 /* Textarea */
 .em-textarea {
-  width: 100%; padding: 11px 14px;
-  background: #f9f7ff; border: 2px solid #ede9fe;
-  border-radius: 12px; font-size: 13px; color: #1f2937;
-  outline: none; resize: none; transition: all 0.3s ease;
-  font-family: inherit;
+  width: 100%; padding: 12px 14px;
+  background: #184e5b; border: 1px solid #327f91; border-radius: 10px;
+  font-size: 14px; color: #ffffff; resize: none; transition: all 0.2s; outline: none;
+  font-family: inherit; line-height: 1.5;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
 }
-.em-textarea:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
-.em-textarea::placeholder { color: #c4b5fd; }
+.em-textarea:focus { border-color: #5ab1c5; background: #184e5b; box-shadow: 0 0 0 3px rgba(90, 177, 197, 0.2); }
+.em-textarea::placeholder { color: #6ba7b8; }
 
 /* Dropzone */
 .em-dropzone {
-  border: 2px dashed #d8b4fe; border-radius: 14px;
-  padding: 20px; text-align: center; cursor: pointer;
-  background: #faf5ff; transition: all 0.3s ease;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 2px dashed #5ab1c5; border-radius: 12px;
+  padding: 24px; text-align: center; cursor: pointer;
+  background: #184e5b; transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
-.em-dropzone:hover { border-color: #7c3aed; background: #f3e8ff; }
-.em-drop-icon { font-size: 28px !important; color: #a78bfa; }
-.em-drop-text { font-size: 12px; color: #a78bfa; font-weight: 600; }
+.em-dropzone:hover { border-color: #79c6d8; background: #216170; }
+.em-drop-icon {
+  font-size: 28px !important; color: #ffffff; background: #327f91;
+  padding: 12px; border-radius: 50%;
+  transition: all 0.3s;
+}
+.em-dropzone:hover .em-drop-icon { color: #ffffff; background: #5ab1c5; }
+.em-drop-text { font-size: 13px; color: #ffffff; line-height: 1.5; }
+.em-drop-text strong { color: #79c6d8; transition: color 0.3s; }
+.em-drop-text span { font-size: 11px; color: #a5d0db; }
 
-/* Archivos */
-.em-files { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+/* Archivos adjuntos */
+.em-files { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
 .em-file-item {
-  display: flex; align-items: center; gap: 8px;
-  background: #f9f7ff; border: 1px solid #ede9fe;
-  border-radius: 10px; padding: 8px 12px;
+  display: flex; align-items: center; gap: 12px;
+  background: #184e5b; border: 1px solid #327f91;
+  border-radius: 12px; padding: 12px;
 }
-.em-file-icon { font-size: 16px !important; color: #a78bfa; }
-.em-file-name { font-size: 12px; color: #374151; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.em-file-del { border: none; background: none; cursor: pointer; color: #fca5a5; display: flex; transition: color 0.2s; }
-.em-file-del:hover { color: #dc2626; }
-.em-file-del .material-symbols-outlined { font-size: 16px; }
+.em-file-icon { font-size: 20px !important; color: #5ab1c5; }
+.em-file-name { font-size: 13px; font-weight: 500; color: #ffffff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.em-file-del {
+  border: none; background: #216170; border-radius: 8px;
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #a5d0db; transition: all 0.2s;
+}
+.em-file-del:hover { background: #7f1d1d; color: #fca5a5; }
 
 /* Footer */
 .em-footer {
-  display: flex; align-items: center; padding: 16px 24px;
-  border-top: 1px solid #f5f3ff; gap: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 28px; background: #184e5b; border-top: 1px solid #327f91;
 }
-.em-footer-right { display: flex; gap: 10px; margin-left: auto; }
+.em-footer-right { display: flex; gap: 12px; margin-left: auto; }
 
 .em-btn-delete {
-  display: flex; align-items: center; gap: 5px;
-  padding: 9px 16px; background: #fef2f2; color: #dc2626;
-  border: 1px solid #fecaca; border-radius: 12px;
-  font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+  padding: 10px 16px; background: transparent; color: #f87171;
+  border: 1px solid transparent; border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
-.em-btn-delete .material-symbols-outlined { font-size: 16px !important; }
-.em-btn-delete:hover { background: #fee2e2; }
+.em-btn-delete:hover { background: #7f1d1d; border-color: #fca5a5; }
 
 .em-btn-cancel {
-  padding: 9px 18px; background: #f3f4f6; color: #6b7280;
-  border: none; border-radius: 12px;
-  font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+  padding: 10px 20px; background: #216170; color: #ffffff;
+  border: 1px solid #327f91; border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
-.em-btn-cancel:hover { background: #e5e7eb; color: #374151; }
+.em-btn-cancel:hover { background: #327f91; color: #ffffff; border-color: #5ab1c5; }
 
 .em-btn-save {
-  display: flex; align-items: center; gap: 6px;
-  padding: 9px 22px; color: white; border: none;
-  border-radius: 12px; font-size: 12px; font-weight: 800;
-  cursor: pointer; transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35);
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 24px; color: white; border: none;
+  border-radius: 12px; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
 }
-.em-btn-save .material-symbols-outlined { font-size: 16px !important; }
-.em-btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(109, 40, 217, 0.4); }
-.em-btn-save:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.em-btn-save .material-symbols-outlined { font-size: 18px !important; }
+.em-btn-save:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.em-btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none !important; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .em-layout { grid-template-columns: 1fr; gap: 24px; padding: 20px; }
+  .em-header { padding: 20px; }
+  .em-footer { padding: 20px; flex-direction: column-reverse; gap: 16px; }
+  .em-footer-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .em-btn-delete { width: 100%; text-align: center; }
+}
 </style>

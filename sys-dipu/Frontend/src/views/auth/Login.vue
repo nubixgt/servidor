@@ -1,167 +1,109 @@
 <template>
-    <div class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <!-- Decorative blobs -->
-        <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full pointer-events-none" style="background: radial-gradient(circle, hsl(195,70%,40%,0.12) 0%, transparent 70%)"></div>
-        <div class="absolute -bottom-32 -left-32 w-96 h-96 rounded-full pointer-events-none" style="background: radial-gradient(circle, hsl(195,70%,40%,0.08) 0%, transparent 70%)"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none opacity-30" style="background: radial-gradient(circle, hsl(195,60%,50%,0.04) 0%, transparent 60%)"></div>
+    <div class="login-root">
 
-        <main class="w-full max-w-md relative z-10">
-            <!-- Logo Section -->
-            <div class="text-center mb-10">
-                <!-- SVG Emblem -->
-                <div class="inline-flex items-center justify-center mb-6 logo-container">
-                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
-                        <defs>
-                            <radialGradient id="dipu-bg" cx="40" cy="28" r="44" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#1b3a6b"/>
-                                <stop offset="100%" stop-color="#060e1c"/>
-                            </radialGradient>
-                            <linearGradient id="dipu-teal" x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#7dd8f3"/>
-                                <stop offset="100%" stop-color="#0891b2"/>
-                            </linearGradient>
-                            <linearGradient id="dipu-gold" x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#fef08a"/>
-                                <stop offset="100%" stop-color="#d97706"/>
-                            </linearGradient>
-                            <linearGradient id="dipu-border" x1="8" y1="4" x2="72" y2="76" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#67e8f9"/>
-                                <stop offset="55%" stop-color="#0891b2"/>
-                                <stop offset="100%" stop-color="#164e63"/>
-                            </linearGradient>
-                            <filter id="dipu-glow-sm">
-                                <feGaussianBlur stdDeviation="1.5" result="b"/>
-                                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                            </filter>
-                            <filter id="dipu-glow-md">
-                                <feGaussianBlur stdDeviation="2.5" result="b"/>
-                                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                            </filter>
-                            <filter id="dipu-drop">
-                                <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000a1f" flood-opacity="0.6"/>
-                            </filter>
-                        </defs>
-                        <!-- Ambient glow -->
-                        <circle cx="40" cy="42" r="30" fill="#0ea5e9" opacity="0.05" filter="url(#dipu-glow-md)"/>
-                        <!-- Main hexagon -->
-                        <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="url(#dipu-bg)" filter="url(#dipu-drop)"/>
-                        <!-- Hex border -->
-                        <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="none" stroke="url(#dipu-border)" stroke-width="1.5"/>
-                        <!-- Inner ring -->
-                        <polygon points="40,11 67,27 67,53 40,69 13,53 13,27" fill="none" stroke="#38bdf8" stroke-width="0.5" opacity="0.2"/>
-                        <!-- Left column -->
-                        <rect x="24" y="35" width="5.5" height="20" rx="2.75" fill="url(#dipu-teal)" filter="url(#dipu-glow-sm)"/>
-                        <!-- Right column -->
-                        <rect x="50.5" y="35" width="5.5" height="20" rx="2.75" fill="url(#dipu-teal)" filter="url(#dipu-glow-sm)"/>
-                        <!-- Center column (gold, taller) -->
-                        <rect x="37.25" y="29" width="5.5" height="26" rx="2.75" fill="url(#dipu-gold)" filter="url(#dipu-glow-md)"/>
-                        <!-- Pediment -->
-                        <polygon points="40,19 58,32 22,32" fill="url(#dipu-gold)" opacity="0.9" filter="url(#dipu-glow-sm)"/>
-                        <!-- Pediment top accent -->
-                        <line x1="33" y1="19.5" x2="47" y2="19.5" stroke="#7dd8f3" stroke-width="1" opacity="0.5"/>
-                        <!-- Base platform -->
-                        <rect x="20" y="56" width="40" height="3.5" rx="1.75" fill="url(#dipu-teal)" opacity="0.8" filter="url(#dipu-glow-sm)"/>
-                        <rect x="16" y="60.5" width="48" height="2" rx="1" fill="#38bdf8" opacity="0.25"/>
-                        <!-- Apex star -->
-                        <path d="M40,1.5 L41.5,3.5 L44,5 L41.5,6.5 L40,8.5 L38.5,6.5 L36,5 L38.5,3.5 Z" fill="url(#dipu-gold)" filter="url(#dipu-glow-md)"/>
-                        <!-- Vertex accents -->
-                        <circle cx="73" cy="22" r="1.8" fill="#38bdf8" opacity="0.45"/>
-                        <circle cx="73" cy="58" r="1.8" fill="#38bdf8" opacity="0.45"/>
-                        <circle cx="7" cy="22" r="1.8" fill="#38bdf8" opacity="0.45"/>
-                        <circle cx="7" cy="58" r="1.8" fill="#38bdf8" opacity="0.45"/>
-                    </svg>
+        <!-- ═══ PANEL IZQUIERDO ═══ -->
+        <div class="login-left">
+            <div class="lp-orb lp-orb-1"></div>
+            <div class="lp-orb lp-orb-2"></div>
+            <div class="lp-orb lp-orb-3"></div>
+            <div class="lp-dots"></div>
+
+            <div class="lp-body">
+                <!-- Logo -->
+                <div class="lp-logo-wrap">
+                    <img src="/logo.png" alt="SYS-DIPU Logo" class="lp-logo-img" />
                 </div>
 
-                <!-- Wordmark -->
-                <div class="space-y-1">
-                    <h1 class="text-3xl font-extrabold tracking-tight font-headline leading-none">
-                        <span style="background: linear-gradient(135deg, hsl(195,65%,38%), hsl(210,60%,28%)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SYS</span><span class="text-on-surface">·DIPU</span>
-                    </h1>
-                    <div class="flex items-center justify-center gap-2">
-                        <div class="h-px flex-1 max-w-[40px]" style="background: linear-gradient(90deg, transparent, hsl(195,50%,50%))"></div>
-                        <p class="text-on-surface-variant font-semibold tracking-[0.25em] text-[10px] uppercase">Portal de Gestión Institucional</p>
-                        <div class="h-px flex-1 max-w-[40px]" style="background: linear-gradient(90deg, hsl(195,50%,50%), transparent)"></div>
+                <p class="lp-tagline" style="margin-top: 10px;">Portal de Gestión Institucional</p>
+
+                <!-- Feature list -->
+                <div class="lp-features">
+                    <div class="lp-feat" v-for="f in features" :key="f.icon">
+                        <div class="lp-feat-icon">
+                            <span class="material-symbols-outlined">{{ f.icon }}</span>
+                        </div>
+                        <span>{{ f.label }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Login Card -->
-            <div class="bg-surface-container-lowest p-10 rounded-2xl shadow-[0_12px_40px_rgba(43,52,55,0.06)] border border-outline-variant/10">
-                <div class="mb-8">
-                    <h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Acceso Administrativo</h2>
-                    <p class="text-on-surface-variant text-sm">Ingrese sus credenciales para continuar.</p>
+            <p class="lp-version">v2.0 · © 2025 Sistema de Gestión Pública</p>
+        </div>
+
+        <!-- ═══ PANEL DERECHO ═══ -->
+        <div class="login-right">
+            <div class="lr-card">
+
+                <!-- Logo -->
+                <div class="lr-mobile-brand">
+                    <img src="/logo.png" alt="SYS-DIPU Logo" class="lr-logo-img" />
+                    <div>
+                        <p class="lr-mobile-sub" style="margin-top: 8px;">Portal de Gestión Institucional</p>
+                    </div>
                 </div>
 
-                <form class="space-y-6" @submit.prevent="handleLogin">
-                    <!-- Username Field -->
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest" for="username">
-                            Usuario
-                        </label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
-                                <span class="material-symbols-outlined text-sm">person</span>
-                            </div>
+                <!-- Header -->
+                <div class="lr-header">
+                    <h2 class="lr-title">Bienvenido</h2>
+                    <p class="lr-sub">Ingresa tus credenciales para acceder al sistema</p>
+                </div>
+
+                <!-- Form -->
+                <form class="lr-form" @submit.prevent="handleLogin">
+                    <div class="lr-field">
+                        <label class="lr-label" for="username">Usuario</label>
+                        <div class="lr-input-wrap">
+                            <span class="material-symbols-outlined lr-input-icon">person</span>
                             <input
                                 id="username"
                                 v-model="username"
-                                name="username"
                                 type="text"
                                 required
                                 placeholder="nombre.usuario"
-                                class="block w-full pl-11 pr-4 py-3.5 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg text-on-surface transition-all duration-300 placeholder:text-outline-variant/60 outline-none"
+                                class="lr-input"
                             />
                         </div>
                     </div>
 
-                    <!-- Password Field -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-end">
-                            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest" for="password">
-                                Contraseña
-                            </label>
-                            <a href="#" class="text-xs font-medium text-primary hover:text-primary-dim transition-colors">¿Olvidó su clave?</a>
+                    <div class="lr-field">
+                        <div class="lr-label-row">
+                            <label class="lr-label" for="password">Contraseña</label>
+                            <a href="#" class="lr-forgot">¿Olvidó su clave?</a>
                         </div>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
-                                <span class="material-symbols-outlined text-sm">lock</span>
-                            </div>
+                        <div class="lr-input-wrap">
+                            <span class="material-symbols-outlined lr-input-icon">lock</span>
                             <input
                                 id="password"
                                 v-model="password"
-                                name="password"
-                                type="password"
+                                :type="showPwd ? 'text' : 'password'"
                                 required
                                 placeholder="••••••••••••"
-                                class="block w-full pl-11 pr-4 py-3.5 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg text-on-surface transition-all duration-300 placeholder:text-outline-variant/60 outline-none"
+                                class="lr-input"
                             />
+                            <button type="button" @click="showPwd = !showPwd" class="lr-eye-btn">
+                                <span class="material-symbols-outlined">{{ showPwd ? 'visibility_off' : 'visibility' }}</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full py-4 px-6 bg-gradient-to-r from-primary to-primary-dim text-white font-bold rounded-xl shadow-md hover:shadow-xl transition-all duration-300 active:scale-[0.98] flex items-center justify-center space-x-2">
-                        <span>Entrar</span>
-                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    <button type="submit" class="lr-submit">
+                        <span>Ingresar al Sistema</span>
+                        <span class="material-symbols-outlined">arrow_forward</span>
                     </button>
                 </form>
-            </div>
 
 
-
-            <!-- Footer -->
-            <div class="mt-10 text-center space-y-4">
-                <p class="text-on-surface-variant text-xs font-medium">
-                    © 2024 Civic Ethos Suite. Sistema de Gestión Pública.
-                </p>
-                <div class="flex items-center justify-center space-x-6">
-                    <a href="#" class="text-xs text-outline hover:text-on-surface transition-colors">Soporte Técnico</a>
-                    <span class="w-1 h-1 bg-outline-variant rounded-full"></span>
-                    <a href="#" class="text-xs text-outline hover:text-on-surface transition-colors">Seguridad</a>
-                    <span class="w-1 h-1 bg-outline-variant rounded-full"></span>
-                    <a href="#" class="text-xs text-outline hover:text-on-surface transition-colors">Privacidad</a>
+                <!-- Footer -->
+                <div class="lr-footer">
+                    <a href="#">Soporte Técnico</a>
+                    <span class="lr-dot"></span>
+                    <a href="#">Seguridad</a>
+                    <span class="lr-dot"></span>
+                    <a href="#">Privacidad</a>
                 </div>
             </div>
-        </main>
+        </div>
+
     </div>
 </template>
 
@@ -176,6 +118,16 @@ const router = useRouter();
 
 const username = ref('');
 const password = ref('');
+const showPwd  = ref(false);
+
+const features = [
+    { icon: 'gavel',          label: 'Gestión de Iniciativas de Ley'  },
+    { icon: 'policy',         label: 'Centro de Fiscalización'         },
+    { icon: 'groups',         label: 'Comisiones y Citaciones'         },
+    { icon: 'handshake',      label: 'Compromisos Distritales'         },
+    { icon: 'event_available',label: 'Actividades y Agenda'            },
+];
+
 
 const handleLogin = async () => {
     try {
@@ -190,8 +142,287 @@ const handleLogin = async () => {
             icon: 'error',
             title: 'Acceso Denegado',
             text: err.message || 'Error de conexión con el servidor.',
-            confirmButtonColor: '#005D6B',
+            confirmButtonColor: '#0891b2',
         });
     }
 };
 </script>
+
+<style scoped>
+/* ═══ ROOT ═══ */
+.login-root {
+    display: flex;
+    min-height: 100vh;
+    font-family: inherit;
+}
+
+/* ═══ PANEL IZQUIERDO ═══ */
+.login-left {
+    display: none;
+}
+
+/* Orbs animados */
+.lp-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: orbDrift 12s ease-in-out infinite;
+    pointer-events: none;
+}
+.lp-orb-1 { width: 380px; height: 380px; background: #0e7490; opacity: 0.14; top: -120px; right: -80px; animation-delay: 0s; }
+.lp-orb-2 { width: 260px; height: 260px; background: #1d4ed8; opacity: 0.12; bottom: -60px; left: -40px;  animation-delay: -4s; }
+.lp-orb-3 { width: 180px; height: 180px; background: #06b6d4; opacity: 0.1;  top: 45%;    left: 10%;    animation-delay: -7s; }
+
+@keyframes orbDrift {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-30px) scale(1.08); }
+}
+
+/* Dot grid overlay */
+.lp-dots {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(34,211,238,0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+}
+
+/* Body content */
+.lp-body {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+}
+
+/* Logo */
+.lp-logo-wrap {
+    position: relative;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+}
+.lp-logo-pulse {
+    position: absolute;
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,211,238,0.25) 0%, transparent 70%);
+    animation: logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1);    opacity: 0.8; }
+    50%       { transform: scale(1.18); opacity: 0.4; }
+}
+.lp-logo-img {
+    position: relative; z-index: 1;
+    width: 260px; height: auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    animation: logoFloat 6s ease-in-out infinite;
+}
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+
+/* Wordmark */
+.lp-wordmark {
+    font-size: 38px; font-weight: 900;
+    color: white; letter-spacing: -0.5px;
+    margin: 0 0 8px;
+    font-family: 'Public Sans', sans-serif;
+}
+.lp-wordmark span {
+    background: linear-gradient(135deg, #22d3ee, #0891b2);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lp-tagline {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase; color: rgba(255,255,255,0.38);
+    margin: 0 0 36px;
+}
+
+/* Feature list */
+.lp-features { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
+.lp-feat {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(34,211,238,0.12);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+.lp-feat:hover {
+    background: rgba(34,211,238,0.08);
+    border-color: rgba(34,211,238,0.25);
+    transform: translateX(4px);
+}
+.lp-feat-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(34,211,238,0.12);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.lp-feat-icon .material-symbols-outlined { font-size: 16px; color: #22d3ee; }
+.lp-feat span:not(.material-symbols-outlined) { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.65); }
+
+/* Version footer */
+.lp-version {
+    position: absolute; bottom: 20px;
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.08em;
+    z-index: 1;
+}
+
+/* ═══ PANEL DERECHO ═══ */
+.login-right {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(150deg, #060f22 0%, #0a1a35 40%, #071428 80%, #030a16 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 32px;
+    overflow: hidden;
+}
+/* Orbs animados en el fondo del panel derecho */
+.login-right::before,
+.login-right::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    animation: orbDrift 12s ease-in-out infinite;
+}
+.login-right::before {
+    width: 400px; height: 400px;
+    background: #0e7490; opacity: 0.12;
+    top: -120px; right: -80px;
+}
+.login-right::after {
+    width: 280px; height: 280px;
+    background: #1d4ed8; opacity: 0.1;
+    bottom: -80px; left: -60px;
+    animation-delay: -5s;
+}
+/* Dot grid */
+.login-right .lr-card::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle, rgba(34,211,238,0.1) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.lr-card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 440px;
+    background: white;
+    border-radius: 24px;
+    padding: 44px 42px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(34,211,238,0.08);
+}
+
+/* Brand siempre visible */
+.lr-mobile-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.lr-logo-img {
+    flex-shrink: 0;
+    width: 180px; height: auto;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+}
+@keyframes logoSpin {
+    from { opacity: 0; transform: scale(0.6) rotate(-15deg); }
+    to   { opacity: 1; transform: scale(1)   rotate(0deg); }
+}
+.lr-mobile-title {
+    font-size: 20px; font-weight: 900; color: #1f2937;
+    font-family: 'Public Sans', sans-serif;
+    margin: 0;
+}
+.lr-mobile-title span {
+    background: linear-gradient(135deg, #0891b2, #0369a1);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lr-mobile-sub { font-size: 10px; color: #9ca3af; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Header */
+.lr-header { margin-bottom: 30px; }
+.lr-title { font-size: 26px; font-weight: 900; color: #111827; margin: 0 0 6px; font-family: 'Public Sans', sans-serif; }
+.lr-sub   { font-size: 13px; color: #6b7280; margin: 0; }
+
+/* Form */
+.lr-form { display: flex; flex-direction: column; gap: 20px; margin-bottom: 28px; }
+
+.lr-field { display: flex; flex-direction: column; gap: 8px; }
+.lr-label { font-size: 10px; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.15em; }
+.lr-label-row { display: flex; justify-content: space-between; align-items: center; }
+.lr-forgot { font-size: 11px; font-weight: 600; color: #6d28d9; text-decoration: none; transition: color 0.2s; }
+.lr-forgot:hover { color: #4c1d95; }
+
+.lr-input-wrap {
+    position: relative; display: flex; align-items: center;
+    background: #f9f7ff; border: 2px solid #ede9fe;
+    border-radius: 14px; transition: all 0.3s ease;
+}
+.lr-input-wrap:focus-within {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 4px rgba(167,139,250,0.12);
+    background: white;
+}
+.lr-input-icon {
+    position: absolute; left: 14px;
+    font-size: 18px !important; color: #a78bfa; pointer-events: none;
+}
+.lr-input {
+    width: 100%; padding: 13px 44px 13px 44px;
+    border: none; background: none; outline: none;
+    font-size: 14px; color: #111827;
+}
+.lr-input::placeholder { color: #c4b5fd; }
+.lr-eye-btn {
+    position: absolute; right: 12px;
+    border: none; background: none; cursor: pointer;
+    color: #c4b5fd; display: flex;
+    transition: color 0.2s;
+}
+.lr-eye-btn:hover { color: #7c3aed; }
+.lr-eye-btn .material-symbols-outlined { font-size: 18px; }
+
+/* Submit */
+.lr-submit {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #4f46e5, #0891b2);
+    color: white; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 800; cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+    letter-spacing: 0.02em;
+}
+.lr-submit .material-symbols-outlined { font-size: 18px; transition: transform 0.3s ease; }
+.lr-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79, 70, 229, 0.45); }
+.lr-submit:hover .material-symbols-outlined { transform: translateX(4px); }
+.lr-submit:active { transform: scale(0.98); }
+
+
+/* Footer */
+.lr-footer {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    flex-wrap: wrap;
+}
+.lr-footer a { font-size: 11px; color: #9ca3af; text-decoration: none; transition: color 0.2s; font-weight: 500; }
+.lr-footer a:hover { color: #6d28d9; }
+.lr-dot { width: 3px; height: 3px; border-radius: 50%; background: #d1d5db; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 480px) {
+    .lr-card { padding: 28px 20px; border-radius: 18px; }
+    .login-right { padding: 24px 16px; }
+}
+</style>
