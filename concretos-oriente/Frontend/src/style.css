@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-white font-sans antialiased overflow-x-hidden;
+    background: #0f172a; /* Deep slate fallback */
+  }
+}
+
+.glass-card {
+  @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl;
+}
+
+.glass-sidebar {
+  @apply backdrop-blur-2xl bg-black/20 border-r border-white/10 shadow-2xl;
+}
+
+.glass-topbar {
+  @apply backdrop-blur-md bg-black/10 border-b border-white/10;
+}
+
+.glass-button-primary {
+  @apply backdrop-blur-md bg-[#6366f1]/80 hover:bg-[#6366f1] border border-white/20 transition-all duration-300;
+}
+
+.glass-input {
+  @apply backdrop-blur-md bg-white/5 border border-white/10 focus:border-[#6366f1]/50 focus:bg-white/10 transition-all;
+}
+
+/* Scrollbar styling for glassy feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.bg-app-scenic {
+  background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2070');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}

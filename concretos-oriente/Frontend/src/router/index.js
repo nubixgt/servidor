@@ -1,0 +1,59 @@
+import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
+
+// Layouts
+import MainLayout from '../components/layout/MainLayout.vue';
+
+const routes = [
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../views/auth/Login.vue'),
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/',
+        component: MainLayout,
+        meta: { requiresAuth: true },
+        children: [
+            { path: '', redirect: '/dashboard' },
+            { path: 'dashboard', name: 'Dashboard', component: () => import('../views/admin/Dashboard.vue') },
+            { path: 'personnel', name: 'Personnel', component: () => import('../views/admin/Personnel.vue') },
+            { path: 'machinery', name: 'Machinery', component: () => import('../views/admin/Machinery.vue') },
+            { path: 'projects', name: 'Projects', component: () => import('../views/admin/Projects.vue') },
+            { path: 'finance', name: 'Finance', component: () => import('../views/admin/Finance.vue') },
+            { path: 'inventory', name: 'Inventory', component: () => import('../views/admin/Inventory.vue') },
+            { path: 'suppliers', name: 'Suppliers', component: () => import('../views/admin/Suppliers.vue') },
+            { path: 'purchases', name: 'Purchases', component: () => import('../views/admin/Purchases.vue') },
+            { path: 'tech-machinery', name: 'MachineryStatus', component: () => import('../views/tecnico/MachineryStatus.vue') },
+            { path: 'tech-projects', name: 'TechProjects', component: () => import('../views/tecnico/TechProjects.vue') },
+        ]
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        redirect: '/login'
+    }
+];
+
+const router = createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes
+});
+
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
+    
+    if (to.meta.requiresAuth && !authStore.userRole) {
+        next('/login');
+    } else if (to.path === '/login' && authStore.userRole) {
+        if (authStore.userRole === 'tecnico') {
+            next('/tech-machinery');
+        } else {
+            next('/dashboard');
+        }
+    } else {
+        next();
+    }
+});
+
+export default router;

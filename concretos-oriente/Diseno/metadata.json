@@ -1,0 +1,8 @@
+{
+  "name": "ConstructPro Management Suite",
+  "description": "A high-performance construction management suite for tracking projects, personnel, machinery, and finance with a premium minimalist aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
