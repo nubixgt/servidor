@@ -643,12 +643,27 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import api from '../../../services/api';
 import * as XLSX from 'xlsx';
 
 const query = ref('');
 const selected = ref('todos');
 const activeTab = ref('ministerios');
+
+onMounted(async () => {
+    try {
+        const response = await api.get('/presupuesto');
+        if (response.data && response.data.success && response.data.data) {
+            const data = response.data.data;
+            excelHeaders.value = data.excelHeaders || [];
+            excelRows.value = data.excelRows || [];
+            excelTotals.value = data.excelTotals || null;
+        }
+    } catch (error) {
+        console.error('Error al cargar el presupuesto guardado:', error);
+    }
+});
 
 // --- Lógica de Autoridades / Personal ---
 const personalPorMinisterio = ref({});
@@ -794,6 +809,10 @@ function handleExcelUpload(event) {
                 }
                 
                 excelRows.value = dataRows;
+
+                // 4. Guardar en Backend
+                guardarPresupuestoBD();
+
             } else {
                 excelHeaders.value = [];
                 excelRows.value = [];
@@ -802,6 +821,25 @@ function handleExcelUpload(event) {
         }
     };
     reader.readAsArrayBuffer(file);
+}
+
+async function guardarPresupuestoBD() {
+    try {
+        const payload = {
+            datos_json: {
+                excelHeaders: excelHeaders.value,
+                excelRows: excelRows.value,
+                excelTotals: excelTotals.value
+            }
+        };
+        const response = await api.post('/presupuesto', payload);
+        if (response.data && response.data.success) {
+            alert('¡Presupuesto SICOIN guardado con éxito en la base de datos!');
+        }
+    } catch (error) {
+        console.error('Error guardando presupuesto:', error);
+        alert('Hubo un error al intentar guardar el presupuesto.');
+    }
 }
 
 const tabs = [

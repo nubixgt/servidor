@@ -4,6 +4,7 @@ use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\AuthController;
 use App\Controllers\UsuariosController;
+use App\Controllers\PresupuestoController;
 
 // Backend/api/v1/index.php
 
@@ -40,7 +41,7 @@ $router = new Router();
 $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(UsuariosController::class);
-// $router->registerController(YourController::class);
+$router->registerController(PresupuestoController::class);
 
 
 // 6. Dispatch
