@@ -112,8 +112,7 @@ import { ref } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
-
-const logoUrl = import.meta.env.BASE_URL + 'logo.png';
+import logoUrl from '/public/logo.png';
 
 const auth = useAuthStore();
 const router = useRouter();
