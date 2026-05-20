@@ -67,18 +67,66 @@
       </div>
     </section>
 
+    <!-- Filters & Search -->
+    <section class="flex flex-col lg:flex-row gap-4">
+      <div class="flex-1 relative">
+        <input 
+          v-if="activeTab === 'machinery'" 
+          v-model="searchMachine" 
+          type="text" 
+          placeholder="Buscar máquina (código, marca, modelo)..." 
+          class="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-all"
+        />
+        <input 
+          v-else-if="activeTab === 'log'" 
+          v-model="searchLog" 
+          type="text" 
+          placeholder="Buscar en bitácora (máquina, operador)..." 
+          class="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-all"
+        />
+        <MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon class="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-white/40" />
+      </div>
+      
+      <!-- Filters Machinery -->
+      <div v-if="activeTab === 'machinery'" class="flex gap-4">
+        <select v-model="filterCategory" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+          <option value="">Todas las Categorías</option>
+          <option value="Maquinaria Pesada">Maquinaria Pesada</option>
+          <option value="Maquinaria Especial">Maquinaria Especial</option>
+          <option value="Vehículo">Vehículo</option>
+          <option value="Transporte Pesado">Transporte Pesado</option>
+          <option value="Equipo Menor">Equipo Menor</option>
+        </select>
+        <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+          <option value="">Todos los Estados</option>
+          <option value="Activo">Activo</option>
+          <option value="En Mantenimiento">En Mantenimiento</option>
+          <option value="En Reparación">En Reparación</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+
+      <!-- Filters Log -->
+      <div v-if="activeTab === 'log'" class="flex gap-4">
+        <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+          <option value="">Todos los Proyectos</option>
+          <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+        </select>
+      </div>
+    </section>
+
     <!-- Content -->
     <transition name="fade-slide" mode="out-in">
       
       <!-- TAB: MAQUINARIA -->
       <section v-if="activeTab === 'machinery'" key="machinery">
         <div v-if="loading" class="text-center py-20 text-white/40">Cargando maquinaria...</div>
-        <div v-else-if="machinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-[40px] border border-white/10">
+        <div v-else-if="filteredMachinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-[40px] border border-white/10">
           No hay maquinaria registrada.
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div 
-            v-for="m in machinery" 
+            v-for="m in filteredMachinery" 
             :key="m.id"
             class="glass-card rounded-[40px] overflow-hidden group hover:-translate-y-2 transition-all duration-500 border border-white/10"
           >
@@ -162,10 +210,10 @@
               <tr v-if="loadingLogs">
                 <td colspan="6" class="px-8 py-8 text-center text-white/50">Cargando bitácoras...</td>
               </tr>
-              <tr v-else-if="logs.length === 0">
+              <tr v-else-if="filteredLogs.length === 0">
                 <td colspan="6" class="px-8 py-12 text-center text-white/40 font-semibold">No hay bitácoras registradas</td>
               </tr>
-              <tr v-for="log in logs" :key="log.id" class="hover:bg-white/5 transition-all group">
+              <tr v-for="log in paginatedLogs" :key="log.id" class="hover:bg-white/5 transition-all group">
                 <td class="px-8 py-6 text-sm font-semibold text-white/80">{{ formatDate(log.fecha) }}</td>
                 <td class="px-8 py-6 font-bold text-white">{{ log.maquina_nombre }}</td>
                 <td class="px-8 py-6 text-sm font-semibold text-primary">{{ log.proyecto_nombre || 'N/A' }}</td>
@@ -187,6 +235,29 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        
+        <!-- Paginación -->
+        <div v-if="totalLogPages > 1" class="flex justify-between items-center px-8 py-6 border-t border-white/5 bg-black/20">
+          <p class="text-xs text-white/40 font-semibold tracking-widest">
+            Página <span class="text-white">{{ currentLogPage }}</span> de <span class="text-white">{{ totalLogPages }}</span>
+          </p>
+          <div class="flex gap-2">
+            <button 
+              @click="currentLogPage--" 
+              :disabled="currentLogPage === 1"
+              class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
+            >
+              <ChevronLeftIcon class="w-5 h-5" />
+            </button>
+            <button 
+              @click="currentLogPage++" 
+              :disabled="currentLogPage === totalLogPages"
+              class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
+            >
+              <ChevronRightIcon class="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -368,7 +439,7 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Máquina <span class="text-tertiary">*</span></label>
               <select v-model="formLog.maquina_id" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                 <option value="" disabled>Seleccionar máquina...</option>
-                <option v-for="m in machinery" :key="m.id" :value="m.id">{{ m.codigo_interno }} - {{ m.marca }} {{ m.modelo }}</option>
+                <option v-for="m in filteredMachinery" :key="m.id" :value="m.id">{{ m.codigo_interno }} - {{ m.marca }} {{ m.modelo }}</option>
               </select>
             </div>
 
@@ -589,11 +660,11 @@
 
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { 
   ArrowTrendingUpIcon, ArrowTrendingDownIcon, WrenchScrewdriverIcon, ExclamationTriangleIcon, 
   MapPinIcon, ClockIcon, Square3Stack3DIcon, ListBulletIcon, ArchiveBoxIcon, CubeIcon, 
-  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon
+  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -613,7 +684,55 @@ const projects = ref([]);
 const loading = ref(true);
 const loadingLogs = ref(true);
 
+
+const searchMachine = ref("");
+const filterCategory = ref("");
+const filterStatus = ref("");
+
+const searchLog = ref("");
+const filterLogProject = ref("");
+
+const filteredMachinery = computed(() => {
+  return machinery.value.filter(m => {
+    const searchVal = searchMachine.value.toLowerCase();
+    const matchSearch = (m.codigo_interno && m.codigo_interno.toLowerCase().includes(searchVal)) ||
+                        (m.marca && m.marca.toLowerCase().includes(searchVal)) ||
+                        (m.modelo && m.modelo.toLowerCase().includes(searchVal)) ||
+                        (m.placa && m.placa.toLowerCase().includes(searchVal));
+    const matchCat = filterCategory.value === "" || m.categoria === filterCategory.value;
+    const matchStatus = filterStatus.value === "" || m.estado === filterStatus.value;
+    return matchSearch && matchCat && matchStatus;
+  });
+});
+
+const filteredLogs = computed(() => {
+  return logs.value.filter(l => {
+    const searchVal = searchLog.value.toLowerCase();
+    const matchSearch = (l.maquina_nombre && l.maquina_nombre.toLowerCase().includes(searchVal)) ||
+                        (l.operador_nombre && l.operador_nombre.toLowerCase().includes(searchVal));
+    const matchProj = filterLogProject.value === "" || l.proyecto_id === filterLogProject.value;
+    return matchSearch && matchProj;
+  });
+});
+
+
+const currentLogPage = ref(1);
+const itemsPerPage = 10;
+
+const totalLogPages = computed(() => Math.ceil(filteredLogs.value.length / itemsPerPage));
+
+const paginatedLogs = computed(() => {
+  const start = (currentLogPage.value - 1) * itemsPerPage;
+  return filteredLogs.value.slice(start, start + itemsPerPage);
+});
+
+watch([searchLog, filterLogProject], () => {
+  currentLogPage.value = 1;
+});
+
 const selectedMachine = ref(null);
+
+
 
 const selectedLog = ref(null);
 
