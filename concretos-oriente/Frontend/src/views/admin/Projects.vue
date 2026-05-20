@@ -19,7 +19,122 @@
     </header>
 
     <transition name="fade-slide" mode="out-in">
-      <section v-if="view === 'projects'" key="projects">
+      <section v-if="view === 'projects'" key="projects" class="space-y-6">
+
+        <!-- Barra de búsqueda y filtros -->
+        <div class="bg-white/5 rounded-[32px] border border-white/10 backdrop-blur-xl p-6 space-y-4">
+
+          <!-- Fila principal -->
+          <div class="flex flex-col md:flex-row gap-4">
+            <!-- Buscador -->
+            <div class="relative flex-1">
+              <MagnifyingGlassIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 pointer-events-none" />
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Buscar por código, nombre, contrato o ubicación..."
+                class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-5 py-3.5 text-white placeholder-white/25 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-sm"
+              />
+              <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-all">
+                <XMarkIcon class="w-4 h-4" />
+              </button>
+            </div>
+
+            <!-- Filtros rápidos -->
+            <div class="flex gap-3 flex-wrap md:flex-nowrap">
+              <!-- Estado -->
+              <select v-model="filterEstado" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[140px]">
+                <option value="">Todos los estados</option>
+                <option value="Borrador">Borrador</option>
+                <option value="Activo">Activo</option>
+                <option value="Pausado">Pausado</option>
+                <option value="Completado">Completado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+
+              <!-- Cliente -->
+              <select v-model="filterCliente" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[160px]">
+                <option value="">Todos los clientes</option>
+                <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+              </select>
+
+              <!-- Ordenar -->
+              <select v-model="sortBy" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[160px]">
+                <option value="fecha_inicio_desc">Fecha inicio ↓</option>
+                <option value="fecha_inicio_asc">Fecha inicio ↑</option>
+                <option value="presupuesto_desc">Presupuesto ↓</option>
+                <option value="presupuesto_asc">Presupuesto ↑</option>
+                <option value="nombre_asc">Nombre A→Z</option>
+                <option value="nombre_desc">Nombre Z→A</option>
+              </select>
+
+              <!-- Botón filtros avanzados -->
+              <button
+                @click="showAdvancedFilters = !showAdvancedFilters"
+                :class="`flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-black uppercase tracking-widest transition-all border ${showAdvancedFilters || activeFiltersCount > 0 ? 'bg-primary/20 border-primary text-primary' : 'bg-black/40 border-white/10 text-white/60 hover:text-white hover:border-white/30'}`"
+              >
+                <AdjustmentsHorizontalIcon class="w-4 h-4" />
+                <span>Avanzado</span>
+                <span v-if="activeFiltersCount > 0" class="bg-primary text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">{{ activeFiltersCount }}</span>
+              </button>
+
+              <!-- Reset -->
+              <button
+                v-if="searchQuery || activeFiltersCount > 0"
+                @click="resetFilters"
+                class="flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm font-black text-tertiary/80 hover:text-tertiary bg-tertiary/10 hover:bg-tertiary/20 border border-tertiary/20 transition-all uppercase tracking-widest"
+              >
+                <XMarkIcon class="w-4 h-4" />
+                Limpiar
+              </button>
+            </div>
+          </div>
+
+          <!-- Panel de filtros avanzados -->
+          <transition name="fade-slide">
+            <div v-if="showAdvancedFilters" class="pt-4 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Gerente -->
+              <div>
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 block flex items-center gap-1.5">
+                  <ArrowsUpDownIcon class="w-3.5 h-3.5" /> Gerente
+                </label>
+                <select v-model="filterGerente" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white focus:border-primary transition-all appearance-none">
+                  <option value="">Todos los gerentes</option>
+                  <option v-for="u in users" :key="u.id" :value="u.id">{{ u.nombre }}</option>
+                </select>
+              </div>
+              <!-- Presupuesto mín -->
+              <div>
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 block">Presupuesto mínimo (GTQ)</label>
+                <input v-model="filterPresupuestoMin" type="number" min="0" placeholder="0" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white placeholder-white/20 focus:border-primary transition-all" />
+              </div>
+              <!-- Presupuesto máx -->
+              <div>
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 block">Presupuesto máximo (GTQ)</label>
+                <input v-model="filterPresupuestoMax" type="number" min="0" placeholder="Sin límite" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white placeholder-white/20 focus:border-primary transition-all" />
+              </div>
+              <!-- Rango fecha inicio -->
+              <div>
+                <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 block">Inicio del proyecto</label>
+                <div class="flex gap-2">
+                  <input v-model="filterFechaDesde" type="date" title="Desde" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-sm font-bold text-white focus:border-primary transition-all" />
+                  <input v-model="filterFechaHasta" type="date" title="Hasta" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-3 text-sm font-bold text-white focus:border-primary transition-all" />
+                </div>
+              </div>
+            </div>
+          </transition>
+
+          <!-- Contador de resultados -->
+          <div class="flex items-center justify-between pt-1">
+            <p class="text-xs text-white/30 font-bold uppercase tracking-widest">
+              <span class="text-white/60">{{ filteredProjects.length }}</span> de {{ projects.length }} proyectos
+            </p>
+            <div v-if="filterEstado" class="flex items-center gap-2">
+              <span :class="`w-2 h-2 rounded-full ${getStatusColor(filterEstado)}`"></span>
+              <span class="text-xs font-black text-white/50 uppercase tracking-widest">{{ filterEstado }}</span>
+            </div>
+          </div>
+        </div>
 
         <div v-if="loading" class="text-center py-20">
           <p class="text-white/50 text-xl font-bold uppercase tracking-widest animate-pulse">Cargando Proyectos...</p>
@@ -29,9 +144,18 @@
           <p class="text-white/50 text-xl font-bold uppercase tracking-widest">No hay proyectos registrados</p>
         </div>
 
+        <div v-else-if="filteredProjects.length === 0" class="text-center py-20 bg-white/5 rounded-[48px] border border-white/10">
+          <FunnelIcon class="w-12 h-12 text-white/20 mx-auto mb-4" />
+          <p class="text-white/50 text-lg font-black uppercase tracking-widest mb-2">Sin resultados</p>
+          <p class="text-white/30 text-sm font-medium">Ningún proyecto coincide con los filtros aplicados.</p>
+          <button @click="resetFilters" class="mt-6 px-8 py-3 bg-primary/20 hover:bg-primary/30 text-primary font-black text-sm uppercase tracking-widest rounded-2xl transition-all border border-primary/30">
+            Limpiar filtros
+          </button>
+        </div>
+
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           <div
-            v-for="proj in projects"
+            v-for="proj in filteredProjects"
             :key="proj.id"
             @click="openProjectDetails(proj)"
             class="glass-card rounded-[48px] overflow-hidden group cursor-pointer border border-white/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 relative"
@@ -473,12 +597,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import {
   BuildingOfficeIcon, ChevronRightIcon,
   PlusIcon, XMarkIcon, MapPinIcon,
   ChartBarIcon, BriefcaseIcon, CurrencyDollarIcon, UserIcon, UsersIcon,
-  PencilIcon, TrashIcon, DocumentTextIcon, PaperClipIcon, DocumentIcon, ArrowDownTrayIcon
+  PencilIcon, TrashIcon, DocumentTextIcon, PaperClipIcon, DocumentIcon, ArrowDownTrayIcon,
+  MagnifyingGlassIcon, FunnelIcon, AdjustmentsHorizontalIcon, ArrowsUpDownIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -507,6 +632,18 @@ const view = ref('projects');
 const projects = ref([]);
 const users = ref([]);
 const loading = ref(true);
+
+// Búsqueda y filtros
+const searchQuery = ref('');
+const filterEstado = ref('');
+const filterCliente = ref('');
+const filterGerente = ref('');
+const sortBy = ref('fecha_inicio_desc');
+const showAdvancedFilters = ref(false);
+const filterPresupuestoMin = ref('');
+const filterPresupuestoMax = ref('');
+const filterFechaDesde = ref('');
+const filterFechaHasta = ref('');
 const selectedProject = ref(null);
 const showModal = ref(false);
 const isSubmitting = ref(false);
@@ -534,6 +671,96 @@ const emptyForm = () => ({
 });
 
 const formData = ref(emptyForm());
+
+const filteredProjects = computed(() => {
+  let result = [...projects.value];
+
+  // Búsqueda por texto
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase().trim();
+    result = result.filter(p =>
+      p.codigo?.toLowerCase().includes(q) ||
+      p.nombre?.toLowerCase().includes(q) ||
+      p.numero_contrato?.toLowerCase().includes(q) ||
+      p.ubicacion?.toLowerCase().includes(q)
+    );
+  }
+
+  // Filtro por estado
+  if (filterEstado.value) {
+    result = result.filter(p => p.estado === filterEstado.value);
+  }
+
+  // Filtro por cliente
+  if (filterCliente.value) {
+    result = result.filter(p => String(p.cliente_id) === String(filterCliente.value));
+  }
+
+  // Filtro por gerente
+  if (filterGerente.value) {
+    result = result.filter(p => String(p.gerente_id) === String(filterGerente.value));
+  }
+
+  // Filtro por presupuesto mínimo
+  if (filterPresupuestoMin.value !== '') {
+    result = result.filter(p => parseFloat(p.presupuesto) >= parseFloat(filterPresupuestoMin.value));
+  }
+
+  // Filtro por presupuesto máximo
+  if (filterPresupuestoMax.value !== '') {
+    result = result.filter(p => parseFloat(p.presupuesto) <= parseFloat(filterPresupuestoMax.value));
+  }
+
+  // Filtro por fecha de inicio desde
+  if (filterFechaDesde.value) {
+    result = result.filter(p => p.fecha_inicio && p.fecha_inicio >= filterFechaDesde.value);
+  }
+
+  // Filtro por fecha de inicio hasta
+  if (filterFechaHasta.value) {
+    result = result.filter(p => p.fecha_inicio && p.fecha_inicio <= filterFechaHasta.value);
+  }
+
+  // Ordenamiento
+  result.sort((a, b) => {
+    switch (sortBy.value) {
+      case 'fecha_inicio_desc': return (b.fecha_inicio || '').localeCompare(a.fecha_inicio || '');
+      case 'fecha_inicio_asc':  return (a.fecha_inicio || '').localeCompare(b.fecha_inicio || '');
+      case 'presupuesto_desc':  return parseFloat(b.presupuesto || 0) - parseFloat(a.presupuesto || 0);
+      case 'presupuesto_asc':   return parseFloat(a.presupuesto || 0) - parseFloat(b.presupuesto || 0);
+      case 'nombre_asc':        return (a.nombre || '').localeCompare(b.nombre || '');
+      case 'nombre_desc':       return (b.nombre || '').localeCompare(a.nombre || '');
+      default: return 0;
+    }
+  });
+
+  return result;
+});
+
+const activeFiltersCount = computed(() => {
+  let count = 0;
+  if (filterEstado.value)         count++;
+  if (filterCliente.value)        count++;
+  if (filterGerente.value)        count++;
+  if (filterPresupuestoMin.value) count++;
+  if (filterPresupuestoMax.value) count++;
+  if (filterFechaDesde.value)     count++;
+  if (filterFechaHasta.value)     count++;
+  return count;
+});
+
+const resetFilters = () => {
+  searchQuery.value       = '';
+  filterEstado.value      = '';
+  filterCliente.value     = '';
+  filterGerente.value     = '';
+  filterPresupuestoMin.value = '';
+  filterPresupuestoMax.value = '';
+  filterFechaDesde.value  = '';
+  filterFechaHasta.value  = '';
+  sortBy.value            = 'fecha_inicio_desc';
+  showAdvancedFilters.value = false;
+};
 
 onMounted(async () => {
   await Promise.all([fetchProjects(), fetchUsers()]);
