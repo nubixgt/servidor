@@ -20,19 +20,47 @@
       </button>
     </div>
 
+    <!-- Filtros y Búsqueda -->
+    <div class="flex flex-col xl:flex-row gap-4 bg-secondary/20 p-4 rounded-3xl border border-white/5">
+      <div class="flex-1 relative">
+        <MagnifyingGlassIcon class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+        <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o usuario..." class="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-5 py-3 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-sm" />
+      </div>
+      
+      <div class="flex flex-col md:flex-row gap-4 shrink-0">
+        <div class="relative min-w-[200px]">
+          <FunnelIcon class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40 z-10" />
+          <select v-model="filterRole" class="w-full bg-black/40 border border-white/10 rounded-2xl pl-10 pr-5 py-3 text-white focus:border-primary transition-all font-bold text-sm appearance-none relative">
+            <option value="all">Todos los roles</option>
+            <option value="admin">Administrador</option>
+            <option value="supervisor">Supervisor</option>
+            <option value="tecnico">Técnico</option>
+          </select>
+        </div>
+        
+        <div class="relative min-w-[200px]">
+          <select v-model="filterStatus" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3 text-white focus:border-primary transition-all font-bold text-sm appearance-none">
+            <option value="all">Todos los estados</option>
+            <option value="Activo">Activos</option>
+            <option value="Inactivo">Inactivos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <!-- Lista de Usuarios -->
     <div v-if="loading" class="flex justify-center items-center py-20">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
     </div>
     
-    <div v-else-if="users.length === 0" class="text-center py-20 bg-secondary/30 rounded-3xl border border-white/5">
+    <div v-else-if="filteredUsers.length === 0" class="text-center py-20 bg-secondary/30 rounded-3xl border border-white/5">
       <UserCircleIcon class="w-16 h-16 text-white/20 mx-auto mb-4" />
-      <h3 class="text-xl font-bold text-white mb-2">No hay usuarios registrados</h3>
-      <p class="text-white/50">Comienza agregando el primer usuario al sistema.</p>
+      <h3 class="text-xl font-bold text-white mb-2">No hay usuarios encontrados</h3>
+      <p class="text-white/50">Prueba cambiando los filtros de búsqueda.</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <div v-for="user in users" :key="user.id" class="group bg-secondary/40 backdrop-blur-sm p-6 rounded-3xl border border-white/10 hover:border-primary/50 transition-all duration-500 hover:shadow-[0_0_40px_-15px_rgba(79,70,229,0.15)] flex flex-col h-full relative overflow-hidden">
+      <div v-for="user in filteredUsers" :key="user.id" class="group bg-secondary/40 backdrop-blur-sm p-6 rounded-3xl border border-white/10 hover:border-primary/50 transition-all duration-500 hover:shadow-[0_0_40px_-15px_rgba(79,70,229,0.15)] flex flex-col h-full relative overflow-hidden">
         
         <!-- Estado Badge -->
         <div class="absolute top-6 right-6 z-10">
@@ -59,7 +87,7 @@
 
         <div class="bg-black/20 p-4 rounded-2xl border border-white/5 mb-6 relative z-10">
           <p class="text-white/40 text-[10px] font-black uppercase tracking-widest mb-1">Usuario de Acceso</p>
-          <p class="text-white font-mono text-sm">@{{ user.usuario }}</p>
+          <p class="text-white font-mono text-sm">{{ user.usuario }}</p>
         </div>
 
         <div class="mt-auto flex gap-3 pt-4 border-t border-white/5 relative z-10">
@@ -169,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Swal from 'sweetalert2';
 import { 
   UserGroupIcon, 
@@ -179,7 +207,9 @@ import {
   TrashIcon,
   UserCircleIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon
 } from '@heroicons/vue/24/outline';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
@@ -190,6 +220,23 @@ const showModal = ref(false);
 const isSubmitting = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
+
+// Variables de Filtro y Búsqueda
+const searchQuery = ref('');
+const filterRole = ref('all');
+const filterStatus = ref('all');
+
+const filteredUsers = computed(() => {
+  return users.value.filter(user => {
+    const matchesSearch = user.nombre.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
+                          user.usuario.toLowerCase().includes(searchQuery.value.toLowerCase());
+    
+    const matchesRole = filterRole.value === 'all' || user.rol === filterRole.value;
+    const matchesStatus = filterStatus.value === 'all' || user.estado === filterStatus.value;
+
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+});
 
 const formData = ref({
   nombre: '',
