@@ -5,8 +5,8 @@
 return [
     'host'     => 'localhost',
     'dbname'   => 'visionwe_SysDipu',
-    'username' => 'root',   // usuario por defecto de XAMPP
-    'password' => '',        // XAMPP no tiene contraseña por defecto
+    'username' => 'visionwe',
+    'password' => 'Guate25#',
     'charset'  => 'utf8mb4',
     'options'  => [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
