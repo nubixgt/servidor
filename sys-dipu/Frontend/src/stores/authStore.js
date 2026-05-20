@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
             const payload = JSON.parse(jsonPayload);
-            
+
             // Comprobar si no ha expirado
             if (payload.exp * 1000 > Date.now()) {
                 initialUser = { nombre: payload.nombre, rol: payload.rol, categoria: payload.categoria };
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             // ⚠️ LOCAL - Para producción cambiar a: '/sys-dipu/Backend/api/v1'
             const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-            
+
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -60,10 +60,10 @@ export const useAuthStore = defineStore('auth', () => {
             role.value = data.user.rol;
             assignedCategory.value = data.user.categoria;
             currentView.value = 'dashboard';
-            
+
             // Opcional: Guardar en localStorage para mantener sesión
             localStorage.setItem('auth_token', data.token);
-            
+
             return data.user;
         } catch (error) {
             console.error('Login error:', error);
