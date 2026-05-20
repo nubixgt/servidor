@@ -40,17 +40,59 @@
 
     <!-- Table Section -->
     <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-300">
-      <div class="p-10 flex flex-wrap items-center justify-between gap-6 border-b border-white/5">
-        <div class="flex flex-wrap items-center gap-4">
-          <div class="glass-input px-6 py-3 rounded-2xl flex items-center gap-3 text-white/60 font-bold text-xs uppercase tracking-widest cursor-pointer">
-            <FunnelIcon class="w-4 h-4" />
-            Filtros
+      <!-- Filter Bar -->
+      <div class="p-8 border-b border-white/5 space-y-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Search -->
+          <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 text-white/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar por nombre, puesto o DPI..."
+              class="bg-transparent flex-1 text-sm text-white placeholder-white/30 focus:outline-none"
+            />
           </div>
+
+          <!-- Tipo -->
+          <select v-model="filterTipo" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[160px]">
+            <option value="">Todos los tipos</option>
+            <option value="Administrativo">Administrativo</option>
+            <option value="Operador">Operador</option>
+            <option value="Piloto">Piloto</option>
+            <option value="Contratista">Contratista</option>
+          </select>
+
+          <!-- Estado -->
+          <select v-model="filterEstado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[140px]">
+            <option value="">Todos los estados</option>
+            <option value="Activo">Activo</option>
+            <option value="Baja">Baja</option>
+          </select>
+
+          <!-- Proyecto -->
+          <select v-model="filterProyecto" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[180px]">
+            <option value="">Todos los proyectos</option>
+            <option value="__sin__">Sin asignar</option>
+            <option v-for="proj in projects" :key="proj.id" :value="String(proj.id)">
+              {{ proj.codigo ? `[${proj.codigo}] ` : '' }}{{ proj.nombre }}
+            </option>
+          </select>
+
+          <!-- Reset -->
+          <button
+            v-if="activeFiltersCount > 0"
+            @click="resetFilters"
+            class="flex items-center gap-2 text-white/50 hover:text-white text-xs font-bold px-4 py-3 rounded-2xl hover:bg-white/5 border border-white/10 transition-all"
+          >
+            <XMarkIcon class="w-4 h-4" />
+            Limpiar ({{ activeFiltersCount }})
+          </button>
+
+          <span class="ml-auto text-xs font-bold text-white/30 tracking-widest uppercase whitespace-nowrap">
+            {{ filteredPersonnel.length }} resultado{{ filteredPersonnel.length !== 1 ? 's' : '' }}
+          </span>
         </div>
-        <button class="flex items-center gap-2 text-primary text-sm font-bold hover:bg-white/5 px-8 py-3 rounded-2xl transition-all border border-white/10">
-          <ArrowDownTrayIcon class="w-5 h-5" />
-          Exportar CSV
-        </button>
       </div>
 
       <div class="overflow-x-auto px-4">
@@ -70,10 +112,13 @@
             <tr v-if="loading">
               <td colspan="7" class="px-8 py-8 text-center text-white/50">Cargando personal...</td>
             </tr>
-            <tr v-else-if="personnel.length === 0">
-              <td colspan="7" class="px-8 py-8 text-center text-white/50">No hay personal registrado aún.</td>
+            <tr v-else-if="filteredPersonnel.length === 0">
+              <td colspan="7" class="px-8 py-12 text-center">
+                <p class="text-white/40 font-semibold">No se encontraron empleados</p>
+                <p v-if="activeFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
+              </td>
             </tr>
-            <tr v-for="emp in personnel" :key="emp.id" class="hover:bg-white/5 group transition-colors duration-200">
+            <tr v-for="emp in paginatedPersonnel" :key="emp.id" class="hover:bg-white/5 group transition-colors duration-200">
               <!-- Nombre + foto + tipo badge -->
               <td class="px-8 py-6">
                 <div class="flex items-center gap-4">
@@ -136,8 +181,47 @@
         </table>
       </div>
 
-      <div class="px-8 py-6 flex items-center justify-between border-t border-white/5">
-        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">Mostrando {{ personnel.length }} empleados</p>
+      <!-- Pagination Footer -->
+      <div class="px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
+        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
+          Mostrando {{ Math.min((currentPage - 1) * PAGE_SIZE + 1, filteredPersonnel.length) }}–{{ Math.min(currentPage * PAGE_SIZE, filteredPersonnel.length) }}
+          de {{ filteredPersonnel.length }} empleado{{ filteredPersonnel.length !== 1 ? 's' : '' }}
+        </p>
+
+        <div class="flex items-center gap-2">
+          <button
+            @click="currentPage--"
+            :disabled="currentPage === 1"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeftIcon class="w-5 h-5" />
+          </button>
+
+          <template v-for="page in totalPages" :key="page">
+            <button
+              v-if="totalPages <= 7 || Math.abs(page - currentPage) <= 1 || page === 1 || page === totalPages"
+              @click="currentPage = page"
+              :class="[
+                'min-w-[36px] h-9 px-2 rounded-xl text-sm font-bold transition-all',
+                page === currentPage
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'text-white/40 hover:text-white hover:bg-white/10'
+              ]"
+            >{{ page }}</button>
+            <span
+              v-else-if="(page === currentPage - 2 && page > 2) || (page === currentPage + 2 && page < totalPages - 1)"
+              class="text-white/30 px-1"
+            >…</span>
+          </template>
+
+          <button
+            @click="currentPage++"
+            :disabled="currentPage === totalPages"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRightIcon class="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -460,11 +544,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import {
   UsersIcon, CheckCircleIcon, BriefcaseIcon, BuildingOfficeIcon,
-  PlusIcon, FunnelIcon, ArrowDownTrayIcon,
-  XMarkIcon, EyeIcon, PencilIcon, TrashIcon
+  PlusIcon, XMarkIcon, EyeIcon, PencilIcon, TrashIcon,
+  ChevronLeftIcon, ChevronRightIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -484,6 +568,69 @@ const isEditing      = ref(false);
 const editingId      = ref(null);
 const selectedEmp    = ref(null);
 const fullscreenImage = ref(null);
+
+// ----------------------------------------------------------------
+// Filters & Pagination
+// ----------------------------------------------------------------
+const searchQuery    = ref('');
+const filterTipo     = ref('');
+const filterEstado   = ref('');
+const filterProyecto = ref('');
+const currentPage    = ref(1);
+const PAGE_SIZE      = 10;
+
+// Reset page when any filter changes
+watch([searchQuery, filterTipo, filterEstado, filterProyecto], () => {
+  currentPage.value = 1;
+});
+
+const filteredPersonnel = computed(() => {
+  const today = new Date().toISOString().split('T')[0];
+  const q = searchQuery.value.toLowerCase().trim();
+
+  return personnel.value.filter(emp => {
+    // Text search: nombre, apellidos, puesto, DPI
+    if (q) {
+      const fullName = `${emp.nombres} ${emp.apellidos}`.toLowerCase();
+      const puesto   = (emp.puesto || '').toLowerCase();
+      const dpi      = (emp.dpi   || '').replace(/\s/g, '');
+      if (!fullName.includes(q) && !puesto.includes(q) && !dpi.includes(q)) return false;
+    }
+    // Tipo empleado
+    if (filterTipo.value && emp.tipo_empleado !== filterTipo.value) return false;
+    // Estado
+    if (filterEstado.value) {
+      const isActivo = !emp.fecha_baja || emp.fecha_baja > today;
+      if (filterEstado.value === 'Activo' && !isActivo)  return false;
+      if (filterEstado.value === 'Baja'   &&  isActivo)  return false;
+    }
+    // Proyecto
+    if (filterProyecto.value) {
+      if (filterProyecto.value === '__sin__' && emp.proyecto_id) return false;
+      if (filterProyecto.value !== '__sin__' && String(emp.proyecto_id) !== filterProyecto.value) return false;
+    }
+    return true;
+  });
+});
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredPersonnel.value.length / PAGE_SIZE)));
+
+const paginatedPersonnel = computed(() => {
+  const start = (currentPage.value - 1) * PAGE_SIZE;
+  return filteredPersonnel.value.slice(start, start + PAGE_SIZE);
+});
+
+const activeFiltersCount = computed(() =>
+  [searchQuery.value, filterTipo.value, filterEstado.value, filterProyecto.value].filter(Boolean).length
+);
+
+const resetFilters = () => {
+  searchQuery.value    = '';
+  filterTipo.value     = '';
+  filterEstado.value   = '';
+  filterProyecto.value = '';
+  currentPage.value    = 1;
+};
 
 const formData = ref({
   tipo_empleado:      '',
