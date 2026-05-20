@@ -175,9 +175,14 @@
                 </td>
                 <td class="px-8 py-6 text-sm text-white/80">{{ log.operador_nombre || 'N/A' }}</td>
                 <td class="px-8 py-6 text-right">
-                  <button @click="deleteLog(log.id)" class="p-2 text-white/20 hover:text-tertiary transition-all">
-                    <TrashIcon class="w-5 h-5" />
-                  </button>
+                  <div class="flex justify-end gap-2">
+                    <button @click="openViewLog(log)" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Visualizar">
+                      <EyeIcon class="w-5 h-5" />
+                    </button>
+                    <button @click="deleteLog(log.id)" class="p-2 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
+                      <TrashIcon class="w-5 h-5" />
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -478,6 +483,19 @@
                 </div>
               </div>
 
+              <!-- Mantenimiento & Adquisición -->
+              <div class="border-t border-white/5 pt-6 mt-6">
+                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
+                  <div class="w-8 h-[1px] bg-white/10"></div> Mantenimiento y Compra
+                </h5>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Int. Servicio</p><p class="text-sm font-bold text-white">{{ selectedMachine.intervalo_servicio ? selectedMachine.intervalo_servicio + ' h' : 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Último Servicio</p><p class="text-sm font-bold text-white">{{ formatDate(selectedMachine.fecha_ultimo_servicio) || 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Adquisición</p><p class="text-sm font-bold text-white">{{ formatDate(selectedMachine.fecha_adquisicion) || 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Costo</p><p class="text-sm font-bold text-white">{{ selectedMachine.costo_adquisicion ? 'Q ' + selectedMachine.costo_adquisicion : 'N/A' }}</p></div>
+                </div>
+              </div>
+              
               <!-- Personnel & Project -->
               <div class="p-6 rounded-[32px] bg-white/5 border border-white/5">
                 <div class="space-y-4">
@@ -496,15 +514,86 @@
         </div>
       </div>
     </transition>
+
+    <!-- Log Details Modal -->
+    <transition name="fade">
+      <div v-if="selectedLog" class="fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div @click="selectedLog = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl p-8">
+          <button @click="selectedLog = null" class="absolute top-8 right-8 z-10 w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
+            <XMarkIcon class="w-5 h-5" />
+          </button>
+          
+          <h3 class="text-2xl font-bold text-white mb-6">Detalle de Bitácora</h3>
+          
+          <div class="space-y-6">
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Fecha</p>
+                <p class="text-base font-bold text-white">{{ formatDate(selectedLog.fecha) }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Máquina</p>
+                <p class="text-base font-bold text-white">{{ selectedLog.maquina_nombre }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Proyecto</p>
+                <p class="text-base font-bold text-white">{{ selectedLog.proyecto_nombre || 'N/A' }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Operador</p>
+                <p class="text-base font-bold text-white">{{ selectedLog.operador_nombre || 'N/A' }}</p>
+              </div>
+            </div>
+            
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex justify-between items-center">
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Horómetro Inicial</p>
+                <p class="text-xl font-black text-white">{{ selectedLog.horometro_inicial }}</p>
+              </div>
+              <div class="h-10 w-[1px] bg-white/10"></div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Horómetro Final</p>
+                <p class="text-xl font-black text-white">{{ selectedLog.horometro_final }}</p>
+              </div>
+              <div class="h-10 w-[1px] bg-white/10"></div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Trabajado</p>
+                <p class="text-xl font-black text-primary">{{ selectedLog.horometro_final - selectedLog.horometro_inicial }} h</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Combustible (Gal/Lts)</p>
+                <p class="text-base font-bold text-white">{{ selectedLog.combustible_consumido || 'N/A' }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Registrado el</p>
+                <p class="text-base font-bold text-white">{{ new Date(selectedLog.created_at).toLocaleString('es-GT') }}</p>
+              </div>
+            </div>
+            
+            <div>
+              <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-2">Observaciones</p>
+              <div class="bg-black/20 rounded-xl p-4 border border-white/5 min-h-[80px]">
+                <p class="text-sm text-white/80 whitespace-pre-wrap">{{ selectedLog.observaciones || 'Sin observaciones.' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { 
   ArrowTrendingUpIcon, ArrowTrendingDownIcon, WrenchScrewdriverIcon, ExclamationTriangleIcon, 
   MapPinIcon, ClockIcon, Square3Stack3DIcon, ListBulletIcon, ArchiveBoxIcon, CubeIcon, 
-  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon
+  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -525,6 +614,13 @@ const loading = ref(true);
 const loadingLogs = ref(true);
 
 const selectedMachine = ref(null);
+
+const selectedLog = ref(null);
+
+const openViewLog = (log) => {
+  selectedLog.value = log;
+};
+
 
 // Modals State
 const showMachineModal = ref(false);
