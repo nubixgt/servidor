@@ -7,7 +7,7 @@
       </div>
 
       <div class="flex p-2 bg-black/20 rounded-[28px] shadow-inner border border-white/10 backdrop-blur-xl">
-        <button 
+        <button
           @click="view = 'projects'"
           :class="`px-10 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
             view === 'projects' ? 'bg-primary text-white shadow-[0_0_20px_rgba(99,102,241,0.4)]' : 'text-white/40 hover:text-white'
@@ -20,11 +20,11 @@
 
     <transition name="fade-slide" mode="out-in">
       <section v-if="view === 'projects'" key="projects">
-        
+
         <div v-if="loading" class="text-center py-20">
           <p class="text-white/50 text-xl font-bold uppercase tracking-widest animate-pulse">Cargando Proyectos...</p>
         </div>
-        
+
         <div v-else-if="projects.length === 0" class="text-center py-20 bg-white/5 rounded-[48px] border border-white/10">
           <p class="text-white/50 text-xl font-bold uppercase tracking-widest">No hay proyectos registrados</p>
         </div>
@@ -39,7 +39,7 @@
             <div class="h-64 relative overflow-hidden shrink-0">
               <img :src="getPhotoUrl(proj)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" :alt="proj.nombre" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-              
+
               <div class="absolute top-6 right-6 px-4 py-2 backdrop-blur-2xl bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-white/20 shadow-xl">
                 <div class="flex items-center gap-2.5">
                   <span :class="`w-2 h-2 rounded-full ${getStatusColor(proj.estado)} shadow-[0_0_10px_currentColor]`"></span>
@@ -53,13 +53,13 @@
                 <BuildingOfficeIcon class="w-4 h-4" /> {{ proj.codigo }}
               </p>
               <h3 class="text-2xl font-black text-white mb-2 leading-tight uppercase italic">{{ proj.nombre }}</h3>
-              
+
               <div class="flex items-center justify-between pt-6 border-t border-white/10 mt-4">
                 <div>
                   <p class="text-[10px] text-white/50 uppercase font-bold tracking-[0.2em] mb-1">Presupuesto</p>
                   <div class="flex items-center gap-2 font-black text-sm uppercase tracking-tighter italic text-white">
                     <CurrencyDollarIcon class="w-5 h-5 text-primary" />
-                    <span>Q {{ formatCurrency(proj.presupuesto_contractual) }}</span>
+                    <span>Q {{ formatCurrency(proj.presupuesto) }}</span>
                   </div>
                 </div>
                 <button class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary transition-all flex items-center justify-center group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]">
@@ -75,28 +75,28 @@
     <!-- Modal Detalles del Proyecto -->
     <transition name="fade">
       <div v-if="selectedProject" class="fixed inset-0 z-50 flex items-center justify-center p-6">
-        <div 
+        <div
           @click="closeProjectDetails"
           class="absolute inset-0 bg-black/90 backdrop-blur-md"
         ></div>
-        
+
         <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transform scale-100 transition-all duration-300">
           <div class="absolute top-6 right-6 z-10 flex gap-3">
-            <button 
+            <button
               @click="openEditModal(selectedProject)"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-primary/40"
               title="Editar"
             >
               <PencilIcon class="w-5 h-5" />
             </button>
-            <button 
+            <button
               @click="deleteProject(selectedProject.id)"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-tertiary flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-tertiary/40"
               title="Eliminar"
             >
               <TrashIcon class="w-5 h-5" />
             </button>
-            <button 
+            <button
               @click="closeProjectDetails"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all border border-white/10 text-white shadow-xl"
               title="Cerrar"
@@ -118,76 +118,114 @@
 
             <!-- Right: Info -->
             <div class="lg:w-3/5 p-10 bg-black/20 overflow-y-auto">
-              <div class="space-y-8">
-                
+              <div class="space-y-6">
+
+                <!-- Estado y Contrato -->
                 <div class="flex gap-4">
-                  <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-3 flex items-center gap-2">
+                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 flex items-center gap-2">
                       <ChartBarIcon class="w-4 h-4" /> Estado
                     </p>
                     <div class="flex items-center gap-3">
                       <div :class="`w-3 h-3 rounded-full ${getStatusColor(selectedProject.estado)} shadow-[0_0_10px_currentColor]`"></div>
-                      <span class="text-lg font-black italic uppercase text-white">{{ selectedProject.estado }}</span>
+                      <span class="text-base font-black italic uppercase text-white">{{ selectedProject.estado }}</span>
                     </div>
                   </div>
-                  <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-3 flex items-center gap-2">
+                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 flex items-center gap-2">
                       <DocumentTextIcon class="w-4 h-4" /> Contrato No.
                     </p>
-                    <span class="text-lg font-black uppercase text-white">{{ selectedProject.numero_contrato || 'N/A' }}</span>
+                    <span class="text-base font-black uppercase text-white">{{ selectedProject.numero_contrato || 'N/A' }}</span>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-6 bg-white/5 p-6 rounded-3xl border border-white/5">
+                <!-- Presupuesto y Cliente -->
+                <div class="grid grid-cols-2 gap-4 bg-white/5 p-5 rounded-3xl border border-white/5">
                   <div class="space-y-1">
                     <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">Presupuesto Contractual</p>
-                    <p class="text-xl font-black italic text-primary">Q {{ formatCurrency(selectedProject.presupuesto_contractual) }}</p>
+                    <p class="text-lg font-black italic text-primary">Q {{ formatCurrency(selectedProject.presupuesto) }}</p>
                   </div>
                   <div class="space-y-1">
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">Gasto Real Acumulado</p>
-                    <p :class="`text-xl font-black italic ${Number(selectedProject.gasto_real_acumulado) > Number(selectedProject.presupuesto_contractual) ? 'text-tertiary' : 'text-white'}`">
-                      Q {{ formatCurrency(selectedProject.gasto_real_acumulado) }}
-                    </p>
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">Cliente</p>
+                    <p class="text-sm font-bold text-white">{{ getClienteName(selectedProject.cliente_id) }}</p>
                   </div>
                 </div>
 
-                <div class="space-y-6">
+                <!-- Fechas -->
+                <div class="grid grid-cols-3 gap-3 bg-white/5 p-5 rounded-3xl border border-white/5">
                   <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2"><MapPinIcon class="w-4 h-4" /> Ubicación</p>
-                    <p class="text-base font-bold text-white">{{ selectedProject.nombre_ubicacion }}</p>
-                    <a v-if="selectedProject.coordenadas" :href="`https://www.google.com/maps/search/?api=1&query=${selectedProject.coordenadas}`" target="_blank" class="text-primary text-xs font-bold mt-2 inline-block hover:underline">
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Inicio</p>
+                    <p class="text-sm font-bold text-white">{{ formatDate(selectedProject.fecha_inicio) }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Fin Estimado</p>
+                    <p class="text-sm font-bold text-white">{{ formatDate(selectedProject.fecha_fin_estimada) || '—' }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Fin Real</p>
+                    <p class="text-sm font-bold text-white">{{ formatDate(selectedProject.fecha_fin_real) || '—' }}</p>
+                  </div>
+                </div>
+
+                <!-- Ubicación y Gerente -->
+                <div class="space-y-4">
+                  <div>
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 flex items-center gap-2"><MapPinIcon class="w-4 h-4" /> Ubicación</p>
+                    <p class="text-sm font-bold text-white">{{ selectedProject.ubicacion || '—' }}</p>
+                    <a v-if="selectedProject.coordenadas" :href="`https://www.google.com/maps/search/?api=1&query=${selectedProject.coordenadas}`" target="_blank" class="text-primary text-xs font-bold mt-1 inline-block hover:underline">
                       Ver en Mapa ({{ selectedProject.coordenadas }})
                     </a>
                   </div>
 
-                  <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2"><UserIcon class="w-4 h-4" /> Contactos</p>
-                    <p class="text-sm font-medium text-white/80 whitespace-pre-line">{{ selectedProject.contactos || 'Sin contactos registrados' }}</p>
+                  <div v-if="selectedProject.gerente_id">
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 flex items-center gap-2"><UserIcon class="w-4 h-4" /> Gerente Responsable</p>
+                    <p class="text-sm font-bold text-white">{{ getManagerName(selectedProject.gerente_id) }}</p>
                   </div>
+                </div>
 
-                  <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2"><BriefcaseIcon class="w-4 h-4" /> Descripción</p>
-                    <p class="text-sm font-medium text-white/80 whitespace-pre-line">{{ selectedProject.descripcion || 'Sin descripción' }}</p>
-                  </div>
-
-                  <!-- Archivos Adjuntos -->
-                  <div v-if="selectedProject.contratos_archivos && JSON.parse(selectedProject.contratos_archivos).length > 0">
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <PaperClipIcon class="w-4 h-4" /> Archivos de Contrato
-                    </p>
-                    <div class="flex flex-col gap-3">
-                      <a 
-                        v-for="(archivo, i) in JSON.parse(selectedProject.contratos_archivos)" 
+                <!-- Contactos -->
+                <div v-if="selectedProject.contactos">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2"><UsersIcon class="w-4 h-4" /> Contactos del Proyecto</p>
+                  <div class="space-y-2">
+                    <template v-if="parseContacts(selectedProject.contactos).length > 0">
+                      <div
+                        v-for="(c, i) in parseContacts(selectedProject.contactos)"
                         :key="i"
-                        :href="`/concretos-oriente/Backend/${archivo}`" 
-                        target="_blank"
-                        class="flex items-center gap-4 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/5 transition-all group"
+                        class="bg-white/5 p-4 rounded-2xl border border-white/5 grid grid-cols-2 gap-2 text-sm"
                       >
-                        <DocumentIcon class="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
-                        <span class="text-sm font-bold text-white truncate flex-1">Documento {{ i + 1 }}</span>
-                        <ArrowDownTrayIcon class="w-5 h-5 text-white/40 group-hover:text-white" />
-                      </a>
-                    </div>
+                        <div><span class="text-white/40 text-[10px] uppercase font-black block">Tipo</span><span class="font-bold text-white">{{ c.tipo || '—' }}</span></div>
+                        <div><span class="text-white/40 text-[10px] uppercase font-black block">Nombre</span><span class="font-bold text-white">{{ c.nombre || '—' }}</span></div>
+                        <div><span class="text-white/40 text-[10px] uppercase font-black block">Teléfono</span><span class="font-bold text-white">{{ c.telefono || '—' }}</span></div>
+                        <div><span class="text-white/40 text-[10px] uppercase font-black block">Email</span><span class="font-bold text-white">{{ c.email || '—' }}</span></div>
+                      </div>
+                    </template>
+                    <p v-else class="text-sm font-medium text-white/60">Sin contactos registrados</p>
+                  </div>
+                </div>
+
+                <!-- Descripción -->
+                <div v-if="selectedProject.descripcion">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2"><BriefcaseIcon class="w-4 h-4" /> Descripción</p>
+                  <p class="text-sm font-medium text-white/80 whitespace-pre-line">{{ selectedProject.descripcion }}</p>
+                </div>
+
+                <!-- Archivos de Contrato -->
+                <div v-if="selectedProject.contratos_archivos && parseJson(selectedProject.contratos_archivos).length > 0">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <PaperClipIcon class="w-4 h-4" /> Archivos de Contrato
+                  </p>
+                  <div class="flex flex-col gap-2">
+                    <a
+                      v-for="(archivo, i) in parseJson(selectedProject.contratos_archivos)"
+                      :key="i"
+                      :href="`/concretos-oriente/Backend/${archivo}`"
+                      target="_blank"
+                      class="flex items-center gap-4 bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/5 transition-all group"
+                    >
+                      <DocumentIcon class="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+                      <span class="text-sm font-bold text-white truncate flex-1">Documento {{ i + 1 }}</span>
+                      <ArrowDownTrayIcon class="w-5 h-5 text-white/40 group-hover:text-white" />
+                    </a>
                   </div>
                 </div>
 
@@ -207,7 +245,7 @@
     <transition name="fade">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
-        
+
         <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]">
           <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
             <h3 class="text-3xl font-black text-white italic uppercase tracking-tight">{{ isEditing ? 'Editar Proyecto' : 'Registrar Nuevo Proyecto' }}</h3>
@@ -217,62 +255,94 @@
           </div>
 
           <form @submit.prevent="submitForm" class="space-y-8">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Datos Principales -->
-              <div class="space-y-6">
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Código del Proyecto</label>
-                  <input v-model="formData.codigo" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. PRJ-2024-001" />
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre del Proyecto</label>
-                  <input v-model="formData.nombre" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Construcción Fase 1" />
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Estado Actual</label>
-                  <select v-model="formData.estado" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none">
-                    <option value="Borrador">Borrador</option>
-                    <option value="Activo">Activo</option>
-                    <option value="En Pausa">En Pausa</option>
-                    <option value="Completado">Completado</option>
-                    <option value="Cancelado">Cancelado</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Número de Contrato</label>
-                  <input v-model="formData.numero_contrato" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Opcional" />
-                </div>
-              </div>
 
-              <!-- Presupuesto y Ubicación -->
-              <div class="space-y-6">
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Presupuesto Contractual (GTQ)</label>
-                  <input v-model="formData.presupuesto_contractual" type="number" step="0.01" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-lg" placeholder="0.00" />
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Gasto Real Acumulado (GTQ)</label>
-                  <input v-model="formData.gasto_real_acumulado" type="number" step="0.01" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-lg" placeholder="0.00" />
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre de Ubicación</label>
-                  <input v-model="formData.nombre_ubicacion" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Zona 10, Ciudad" />
-                </div>
+            <!-- Fila 1: Código y Nombre -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Código del Proyecto *</label>
+                <input v-model="formData.codigo" type="text" maxlength="20" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. PRY-2025-001" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre del Proyecto *</label>
+                <input v-model="formData.nombre" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Construcción Fase 1" />
               </div>
             </div>
 
-            <!-- Mapa Full Width -->
+            <!-- Fila 2: Cliente y Estado -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Cliente *</label>
+                <select v-model="formData.cliente_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none">
+                  <option value="" disabled>Seleccionar cliente...</option>
+                  <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Estado *</label>
+                <select v-model="formData.estado" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none">
+                  <option value="Borrador">Borrador</option>
+                  <option value="Activo">Activo</option>
+                  <option value="Pausado">Pausado</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fila 3: Presupuesto y Número de Contrato -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Presupuesto Contractual (GTQ) *</label>
+                <input v-model="formData.presupuesto" type="number" step="0.01" min="0" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="0.00" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Número de Contrato</label>
+                <input v-model="formData.numero_contrato" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Opcional" />
+              </div>
+            </div>
+
+            <!-- Fila 4: Fechas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white/5 p-6 rounded-3xl border border-white/10">
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Fecha de Inicio *</label>
+                <input v-model="formData.fecha_inicio" type="date" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Fecha de Fin Estimada</label>
+                <input v-model="formData.fecha_fin_estimada" type="date" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" />
+              </div>
+              <div>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Fecha de Fin Real</label>
+                <input v-model="formData.fecha_fin_real" type="date" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" />
+              </div>
+            </div>
+
+            <!-- Fila 5: Gerente Responsable -->
+            <div>
+              <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Gerente Responsable</label>
+              <select v-model="formData.gerente_id" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none">
+                <option value="">Sin asignar</option>
+                <option v-for="u in users" :key="u.id" :value="u.id">{{ u.nombre }}</option>
+              </select>
+            </div>
+
+            <!-- Fila 6: Ubicación -->
+            <div>
+              <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre de la Ubicación</label>
+              <input v-model="formData.ubicacion" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Zona 10, Ciudad de Guatemala" />
+            </div>
+
+            <!-- Fila 7: Mapa GPS -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Ubicación Geográfica (Haz clic en el mapa)</label>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Coordenadas GPS (Haz clic en el mapa)</label>
                 <button type="button" @click="toggleMapFullscreen" class="text-xs text-primary hover:text-white font-bold flex items-center gap-1 transition-all">
                   <span v-if="mapFullscreen">Cerrar Pantalla Completa</span>
                   <span v-else>Ver en Pantalla Completa</span>
                 </button>
               </div>
               <div class="space-y-3">
-                <div 
+                <div
                   :class="mapFullscreen ? 'fixed inset-0 z-[100] bg-black p-4 md:p-10 flex flex-col' : 'relative h-80 w-full rounded-2xl border border-white/10'"
                 >
                   <div v-if="mapFullscreen" class="flex justify-between items-center mb-4 bg-black/80 backdrop-blur-md p-4 rounded-2xl border border-white/10">
@@ -294,7 +364,7 @@
                     </button>
                   </div>
                 </div>
-                
+
                 <div v-if="!mapFullscreen" class="flex gap-2">
                   <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-xs" placeholder="Coordenadas GPS (Latitud, Longitud)" readonly />
                   <button type="button" @click="getLocation" class="px-5 bg-white/10 hover:bg-primary rounded-2xl transition-all" title="Obtener mi ubicación actual">
@@ -304,36 +374,79 @@
               </div>
             </div>
 
-            <!-- Descripción y Contactos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Contactos</label>
-                <textarea v-model="formData.contactos" rows="3" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold resize-none" placeholder="Nombres, teléfonos, etc."></textarea>
+            <!-- Fila 8: Descripción -->
+            <div>
+              <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Descripción del Proyecto</label>
+              <textarea v-model="formData.descripcion" rows="4" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold resize-none" placeholder="Escribe los detalles del proyecto..."></textarea>
+            </div>
+
+            <!-- Fila 9: Contactos Dinámicos -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Contactos del Proyecto</label>
+                <button type="button" @click="addContact" class="flex items-center gap-2 text-xs font-black text-primary hover:text-white bg-primary/10 hover:bg-primary/30 px-4 py-2 rounded-xl transition-all uppercase tracking-widest">
+                  <PlusIcon class="w-4 h-4" /> Agregar Contacto
+                </button>
               </div>
-              <div>
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Descripción Detallada</label>
-                <textarea v-model="formData.descripcion" rows="3" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold resize-none" placeholder="Escribe los detalles aquí..."></textarea>
+
+              <div v-if="formData.contactos.length === 0" class="text-center py-6 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+                <p class="text-white/30 text-sm font-bold uppercase tracking-widest">Sin contactos agregados</p>
+              </div>
+
+              <div v-for="(contact, i) in formData.contactos" :key="i" class="bg-white/5 p-5 rounded-2xl border border-white/10 space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-primary uppercase tracking-widest">Contacto {{ i + 1 }}</span>
+                  <button type="button" @click="removeContact(i)" class="p-1.5 hover:bg-tertiary/20 hover:text-tertiary text-white/40 rounded-lg transition-all">
+                    <XMarkIcon class="w-4 h-4" />
+                  </button>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Tipo</label>
+                    <select v-model="contact.tipo" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-primary transition-all font-bold appearance-none">
+                      <option value="Propietario">Propietario</option>
+                      <option value="Supervisor">Supervisor</option>
+                      <option value="Residente">Residente</option>
+                      <option value="Proveedor">Proveedor</option>
+                      <option value="Contratista">Contratista</option>
+                      <option value="Administrativo">Administrativo</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Nombre</label>
+                    <input v-model="contact.nombre" type="text" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="Nombre completo" />
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Teléfono</label>
+                    <input v-model="contact.telefono" type="tel" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="+502 0000-0000" />
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Email</label>
+                    <input v-model="contact.email" type="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="correo@ejemplo.com" />
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Archivos -->
+            <!-- Fila 10: Archivos -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/5 p-6 rounded-3xl border border-white/10">
               <div>
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">
-                  Foto de Portada <span v-if="isEditing" class="text-primary normal-case">(Opcional para mantener actual)</span>
+                  Foto de Portada <span v-if="isEditing" class="text-primary normal-case font-normal">(Opcional — mantiene la actual)</span>
                 </label>
                 <input @change="handleFotoChange" type="file" accept="image/*" :required="!isEditing" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
               </div>
               <div>
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">
-                  Archivos de Contrato (Max 3. PDF/DOC) <span v-if="isEditing" class="text-primary normal-case">(Al subir nuevos, reemplazarán los anteriores)</span>
+                  Archivo de Contrato (Máx. 3 — PDF/Imagen) <span v-if="isEditing" class="text-primary normal-case font-normal">(Reemplaza los anteriores)</span>
                 </label>
-                <input @change="handleContratosChange" type="file" multiple accept=".pdf,.doc,.docx" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
-                
-                <div v-if="formData.contratos && formData.contratos.length > 0" class="mt-4 space-y-2">
+                <input @change="handleContratosChange" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
+
+                <div v-if="formData.contratos && formData.contratos.length > 0" class="mt-3 space-y-2">
                   <div v-for="(file, i) in formData.contratos" :key="i" class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
                     <span class="text-xs text-white/80 font-medium truncate flex-1">{{ file.name }}</span>
-                    <button type="button" @click="removeContrato(i)" class="p-1 hover:bg-tertiary/20 hover:text-tertiary text-white/40 rounded-lg transition-all">
+                    <button type="button" @click="removeContrato(i)" class="p-1 hover:bg-tertiary/20 hover:text-tertiary text-white/40 rounded-lg transition-all ml-2">
                       <XMarkIcon class="w-4 h-4" />
                     </button>
                   </div>
@@ -348,7 +461,7 @@
               </button>
               <button type="submit" :disabled="isSubmitting" class="glass-button-primary text-white py-4 px-12 rounded-2xl font-black uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
                 <span v-if="isSubmitting">Guardando...</span>
-                <span v-else>{{ isEditing ? 'Actualizar' : 'Guardar Proyecto' }}</span>
+                <span v-else>{{ isEditing ? 'Actualizar Proyecto' : 'Guardar Proyecto' }}</span>
               </button>
             </div>
           </form>
@@ -361,18 +474,38 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
-import { 
-  BuildingOfficeIcon, ChevronRightIcon, 
-  PlusIcon, XMarkIcon, CalendarIcon, MapPinIcon, 
-  ChartBarIcon, BriefcaseIcon, CurrencyDollarIcon, UserIcon,
+import {
+  BuildingOfficeIcon, ChevronRightIcon,
+  PlusIcon, XMarkIcon, MapPinIcon,
+  ChartBarIcon, BriefcaseIcon, CurrencyDollarIcon, UserIcon, UsersIcon,
   PencilIcon, TrashIcon, DocumentTextIcon, PaperClipIcon, DocumentIcon, ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
-const view = ref("projects");
+// Lista de clientes (estática)
+const CLIENTES = [
+  { id: 1,  nombre: 'Constructora Horizonte S.A.' },
+  { id: 2,  nombre: 'Inmobiliaria Los Pinos Ltda.' },
+  { id: 3,  nombre: 'Grupo Industrial Centroamérica' },
+  { id: 4,  nombre: 'Municipalidad de Guatemala' },
+  { id: 5,  nombre: 'Ministerio de Comunicaciones e Infraestructura' },
+  { id: 6,  nombre: 'Banco G&T Continental' },
+  { id: 7,  nombre: 'Desarrollos Urbanos del Norte S.A.' },
+  { id: 8,  nombre: 'Corporación Palmas de Oriente' },
+  { id: 9,  nombre: 'Industrias Cemento Progreso' },
+  { id: 10, nombre: 'Agexport — Asociación de Exportadores' },
+  { id: 11, nombre: 'Frigorífico La Montaña S.A.' },
+  { id: 12, nombre: 'Hotel & Resorts Tikal Maya' },
+  { id: 13, nombre: 'Ferrocarriles de Guatemala (FEGUA)' },
+  { id: 14, nombre: 'Cooperativa El Sembrador R.L.' },
+  { id: 15, nombre: 'Otro / Particular' },
+];
+
+const view = ref('projects');
 const projects = ref([]);
+const users = ref([]);
 const loading = ref(true);
 const selectedProject = ref(null);
 const showModal = ref(false);
@@ -381,23 +514,29 @@ const isEditing = ref(false);
 const editingId = ref(null);
 const mapFullscreen = ref(false);
 
-const formData = ref({
+const emptyForm = () => ({
   codigo: '',
   nombre: '',
-  nombre_ubicacion: '',
+  cliente_id: '',
+  ubicacion: '',
   coordenadas: '',
-  presupuesto_contractual: '',
-  gasto_real_acumulado: '',
+  presupuesto: '',
+  fecha_inicio: '',
+  fecha_fin_estimada: '',
+  fecha_fin_real: '',
   estado: 'Borrador',
   numero_contrato: '',
   descripcion: '',
-  contactos: '',
+  contactos: [],
+  gerente_id: '',
   foto: null,
   contratos: []
 });
 
-onMounted(() => {
-  fetchProjects();
+const formData = ref(emptyForm());
+
+onMounted(async () => {
+  await Promise.all([fetchProjects(), fetchUsers()]);
 });
 
 const fetchProjects = async () => {
@@ -407,34 +546,82 @@ const fetchProjects = async () => {
     const result = await response.json();
     if (result.status === 'success') {
       const fetchTime = Date.now();
-      projects.value = result.data.map(proj => ({...proj, _t: fetchTime}));
+      projects.value = result.data.map(proj => ({ ...proj, _t: fetchTime }));
     }
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error('Error fetching projects:', error);
   } finally {
     loading.value = false;
   }
 };
 
+const fetchUsers = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/users`);
+    const result = await response.json();
+    if (result.status === 'success') {
+      users.value = result.data;
+    }
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
 const getStatusColor = (status) => {
   switch (status) {
-    case 'Activo': return 'bg-primary text-primary';
-    case 'En Pausa': return 'bg-yellow-500 text-yellow-500';
+    case 'Activo':    return 'bg-primary text-primary';
+    case 'Pausado':   return 'bg-yellow-500 text-yellow-500';
     case 'Completado': return 'bg-green-500 text-green-500';
     case 'Cancelado': return 'bg-tertiary text-tertiary';
-    default: return 'bg-white/40 text-white/40';
+    default:          return 'bg-white/40 text-white/40';
   }
 };
 
 const formatCurrency = (value) => {
-  if (!value) return "0.00";
+  if (!value) return '0.00';
   return parseFloat(value).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+const formatDate = (value) => {
+  if (!value) return null;
+  const [year, month, day] = value.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 const getPhotoUrl = (proj) => {
-  if (!proj || !proj.foto) return 'https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=2070'; // default fallback
+  if (!proj || !proj.foto) return 'https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=2070';
   const timestamp = proj._t || Date.now();
   return `/concretos-oriente/Backend/${proj.foto}?t=${timestamp}`;
+};
+
+const getClienteName = (id) => {
+  const found = CLIENTES.find(c => c.id == id);
+  return found ? found.nombre : '—';
+};
+
+const getManagerName = (id) => {
+  const found = users.value.find(u => u.id == id);
+  return found ? found.nombre : '—';
+};
+
+const parseContacts = (raw) => {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const parseJson = (raw) => {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 };
 
 const openProjectDetails = (proj) => {
@@ -446,7 +633,7 @@ const closeProjectDetails = () => {
 };
 
 const openModal = () => {
-  resetForm();
+  formData.value = emptyForm();
   isEditing.value = false;
   editingId.value = null;
   showModal.value = true;
@@ -455,16 +642,20 @@ const openModal = () => {
 
 const openEditModal = (proj) => {
   formData.value = {
-    codigo: proj.codigo,
-    nombre: proj.nombre,
-    nombre_ubicacion: proj.nombre_ubicacion,
-    coordenadas: proj.coordenadas,
-    presupuesto_contractual: proj.presupuesto_contractual,
-    gasto_real_acumulado: proj.gasto_real_acumulado,
-    estado: proj.estado,
-    numero_contrato: proj.numero_contrato,
-    descripcion: proj.descripcion,
-    contactos: proj.contactos,
+    codigo: proj.codigo || '',
+    nombre: proj.nombre || '',
+    cliente_id: proj.cliente_id || '',
+    ubicacion: proj.ubicacion || '',
+    coordenadas: proj.coordenadas || '',
+    presupuesto: proj.presupuesto || '',
+    fecha_inicio: proj.fecha_inicio || '',
+    fecha_fin_estimada: proj.fecha_fin_estimada || '',
+    fecha_fin_real: proj.fecha_fin_real || '',
+    estado: proj.estado || 'Borrador',
+    numero_contrato: proj.numero_contrato || '',
+    descripcion: proj.descripcion || '',
+    contactos: parseContacts(proj.contactos),
+    gerente_id: proj.gerente_id || '',
     foto: null,
     contratos: []
   };
@@ -472,7 +663,7 @@ const openEditModal = (proj) => {
   editingId.value = proj.id;
   closeProjectDetails();
   showModal.value = true;
-  
+
   if (proj.coordenadas) {
     const parts = proj.coordenadas.split(',');
     if (parts.length === 2) {
@@ -487,26 +678,19 @@ const openEditModal = (proj) => {
 
 const closeModal = () => {
   showModal.value = false;
-  resetForm();
+  formData.value = emptyForm();
 };
 
-const resetForm = () => {
-  formData.value = {
-    codigo: '',
-    nombre: '',
-    nombre_ubicacion: '',
-    coordenadas: '',
-    presupuesto_contractual: '',
-    gasto_real_acumulado: '',
-    estado: 'Borrador',
-    numero_contrato: '',
-    descripcion: '',
-    contactos: '',
-    foto: null,
-    contratos: []
-  };
+// Contactos dinámicos
+const addContact = () => {
+  formData.value.contactos.push({ tipo: 'Supervisor', nombre: '', telefono: '', email: '' });
 };
 
+const removeContact = (index) => {
+  formData.value.contactos.splice(index, 1);
+};
+
+// Mapa
 let mapInstance = null;
 let mapMarker = null;
 
@@ -516,11 +700,10 @@ const initMap = (lat = 14.6349, lng = -90.5069) => {
       mapInstance.remove();
       mapInstance = null;
     }
-    
-    // Leaflet init (L is global from CDN)
+
     if (typeof L !== 'undefined') {
       mapInstance = L.map('project-map').setView([lat, lng], 13);
-      
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
@@ -530,36 +713,29 @@ const initMap = (lat = 14.6349, lng = -90.5069) => {
         mapMarker = L.marker([lat, lng]).addTo(mapInstance);
       }
 
-      mapInstance.on('click', function(e) {
+      mapInstance.on('click', function (e) {
         const clickedLat = e.latlng.lat.toFixed(6);
         const clickedLng = e.latlng.lng.toFixed(6);
         formData.value.coordenadas = `${clickedLat}, ${clickedLng}`;
-        
-        if (mapMarker) {
-          mapInstance.removeLayer(mapMarker);
-        }
+
+        if (mapMarker) mapInstance.removeLayer(mapMarker);
         mapMarker = L.marker([clickedLat, clickedLng]).addTo(mapInstance);
       });
-      
-      // Invalidate size to prevent grey tiles in hidden modals
-      setTimeout(() => {
-        mapInstance.invalidateSize();
-      }, 300);
+
+      setTimeout(() => mapInstance.invalidateSize(), 300);
     }
   });
 };
 
 const handleFotoChange = (e) => {
   const file = e.target.files[0];
-  if (file) {
-    formData.value.foto = file;
-  }
+  if (file) formData.value.foto = file;
 };
 
 const handleContratosChange = (e) => {
   const newFiles = Array.from(e.target.files);
   const totalFiles = formData.value.contratos.length + newFiles.length;
-  
+
   if (totalFiles > 3) {
     Swal.fire({
       title: 'Demasiados archivos',
@@ -570,12 +746,12 @@ const handleContratosChange = (e) => {
       confirmButtonColor: '#6366f1',
       customClass: { popup: 'border border-white/10 rounded-3xl' }
     });
-    e.target.value = ''; // Limpiar input
+    e.target.value = '';
     return;
   }
-  
+
   formData.value.contratos = [...formData.value.contratos, ...newFiles];
-  e.target.value = ''; // Resetear el input para permitir seleccionar más
+  e.target.value = '';
 };
 
 const removeContrato = (index) => {
@@ -584,27 +760,26 @@ const removeContrato = (index) => {
 
 const toggleMapFullscreen = () => {
   mapFullscreen.value = !mapFullscreen.value;
-  // Trigger invalidateSize after transition completes
   setTimeout(() => {
-    if (mapInstance) {
-      mapInstance.invalidateSize();
-    }
+    if (mapInstance) mapInstance.invalidateSize();
   }, 350);
 };
 
 const getLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
       const lat = position.coords.latitude.toFixed(6);
       const lng = position.coords.longitude.toFixed(6);
       formData.value.coordenadas = `${lat}, ${lng}`;
-      
+
       if (mapInstance) {
         if (mapMarker) mapInstance.removeLayer(mapMarker);
         mapMarker = L.marker([lat, lng]).addTo(mapInstance);
         mapInstance.setView([lat, lng], 15);
       }
-    }, () => {
+    },
+    () => {
       Swal.fire({
         title: 'Error',
         text: 'No se pudo obtener la ubicación. Revisa los permisos del navegador.',
@@ -613,50 +788,53 @@ const getLocation = () => {
         color: '#fff',
         confirmButtonColor: '#6366f1',
       });
-    });
-  }
+    }
+  );
 };
 
 const submitForm = async () => {
   isSubmitting.value = true;
-  
+
   const data = new FormData();
   data.append('codigo', formData.value.codigo);
   data.append('nombre', formData.value.nombre);
-  data.append('nombre_ubicacion', formData.value.nombre_ubicacion);
+  data.append('cliente_id', formData.value.cliente_id || 0);
+  data.append('ubicacion', formData.value.ubicacion);
   data.append('coordenadas', formData.value.coordenadas);
-  data.append('presupuesto_contractual', formData.value.presupuesto_contractual);
-  data.append('gasto_real_acumulado', formData.value.gasto_real_acumulado);
+  data.append('presupuesto', formData.value.presupuesto);
+  data.append('fecha_inicio', formData.value.fecha_inicio);
+  data.append('fecha_fin_estimada', formData.value.fecha_fin_estimada);
+  data.append('fecha_fin_real', formData.value.fecha_fin_real);
   data.append('estado', formData.value.estado);
   data.append('numero_contrato', formData.value.numero_contrato);
   data.append('descripcion', formData.value.descripcion);
-  data.append('contactos', formData.value.contactos);
-  
+  data.append('contactos', JSON.stringify(formData.value.contactos));
+  data.append('gerente_id', formData.value.gerente_id || 0);
+
   if (formData.value.foto) {
     data.append('foto', formData.value.foto);
   }
-  
+
   if (formData.value.contratos && formData.value.contratos.length > 0) {
     formData.value.contratos.forEach(file => {
-      data.append('contratos[]', file); // Array in FormData
+      data.append('contratos[]', file);
     });
   }
 
   try {
-    const url = isEditing.value ? `${BASE_URL}/projects/${editingId.value}` : `${BASE_URL}/projects`;
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      body: data
-    });
-    
+    const url = isEditing.value
+      ? `${BASE_URL}/projects/${editingId.value}`
+      : `${BASE_URL}/projects`;
+
+    const response = await fetch(url, { method: 'POST', body: data });
     const result = await response.json();
+
     if (result.status === 'success') {
       await fetchProjects();
       closeModal();
       Swal.fire({
         title: '¡Éxito!',
-        text: isEditing.value ? 'Proyecto actualizado.' : 'Proyecto creado.',
+        text: isEditing.value ? 'Proyecto actualizado correctamente.' : 'Proyecto creado correctamente.',
         icon: 'success',
         background: '#0f172a',
         color: '#fff',
@@ -667,7 +845,7 @@ const submitForm = async () => {
       throw new Error(result.message);
     }
   } catch (error) {
-    console.error("Error submitting project:", error);
+    console.error('Error submitting project:', error);
     Swal.fire({
       title: 'Error',
       text: error.message || 'Error de conexión al servidor',
@@ -685,7 +863,7 @@ const submitForm = async () => {
 const deleteProject = async (id) => {
   const result = await Swal.fire({
     title: '¿Estás seguro?',
-    text: "Se eliminará el proyecto y todos sus archivos. Esta acción es irreversible.",
+    text: 'Se eliminará el proyecto y todos sus archivos. Esta acción es irreversible.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#f43f5e',
@@ -702,19 +880,17 @@ const deleteProject = async (id) => {
   });
 
   if (!result.isConfirmed) return;
-  
+
   try {
-    const response = await fetch(`${BASE_URL}/projects/${id}`, {
-      method: 'DELETE'
-    });
-    
+    const response = await fetch(`${BASE_URL}/projects/${id}`, { method: 'DELETE' });
     const res = await response.json();
+
     if (res.status === 'success') {
       await fetchProjects();
       closeProjectDetails();
       Swal.fire({
         title: '¡Eliminado!',
-        text: 'El proyecto fue borrado.',
+        text: 'El proyecto fue borrado exitosamente.',
         icon: 'success',
         background: '#0f172a',
         color: '#fff',
@@ -727,7 +903,7 @@ const deleteProject = async (id) => {
   } catch (error) {
     Swal.fire({
       title: 'Error',
-      text: error.message || 'Error al eliminar',
+      text: error.message || 'Error al eliminar el proyecto',
       icon: 'error',
       background: '#0f172a',
       color: '#fff',
