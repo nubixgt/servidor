@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 pb-20">
+  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-8 relative">
     <!-- Header Principal -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-secondary/30 p-8 rounded-3xl border border-white/5 backdrop-blur-sm">
       <div class="flex items-center gap-6">
