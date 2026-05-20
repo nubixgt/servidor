@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /sys-dipu/Frontend/dist/
+
+    # Si el archivo o directorio existen, servirlos directamente
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Todo lo demás -> index.html (Vue Router se encarga)
+    RewriteRule ^ index.html [L]
+</IfModule>
