@@ -219,27 +219,11 @@ class SupplierController extends Controller
                 $total += (float)$it['cantidad'] * (float)$it['precio_unitario'];
             }
 
-            // Subir archivo adjunto si existe
-            $archivo_adjunto = null;
-            if (isset($_FILES['archivo_adjunto']) && $_FILES['archivo_adjunto']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../../../Uploads/Purchases/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                $fileName = time() . '_' . basename($_FILES['archivo_adjunto']['name']);
-                $targetFile = $uploadDir . $fileName;
-                
-                if (move_uploaded_file($_FILES['archivo_adjunto']['tmp_name'], $targetFile)) {
-                    $archivo_adjunto = 'Uploads/Purchases/' . $fileName;
-                }
-            }
-
-            // Insertar orden
+            // Insertar orden primero sin archivo
             $sql = "INSERT INTO purchase_orders 
                         (proveedor_id, proyecto_id, fecha_orden, condicion_pago, observaciones, archivo_adjunto, total, estado)
                     VALUES 
-                        (:proveedor_id, :proyecto_id, :fecha_orden, :condicion_pago, :observaciones, :archivo_adjunto, :total, 'Pendiente')";
+                        (:proveedor_id, :proyecto_id, :fecha_orden, :condicion_pago, :observaciones, NULL, :total, 'Pendiente')";
             
             $pdo->prepare($sql)->execute([
                 'proveedor_id'    => $proveedor_id,
@@ -247,11 +231,28 @@ class SupplierController extends Controller
                 'fecha_orden'     => $fecha_orden,
                 'condicion_pago'  => $condicion_pago,
                 'observaciones'   => $observaciones,
-                'archivo_adjunto' => $archivo_adjunto,
                 'total'           => $total
             ]);
 
             $po_id = $pdo->lastInsertId();
+            $archivo_adjunto = null;
+
+            // Subir archivo adjunto si existe
+            if (isset($_FILES['archivo_adjunto']) && $_FILES['archivo_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../Uploads/Purchases/' . $po_id . '/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                
+                $fileName = time() . '_' . basename($_FILES['archivo_adjunto']['name']);
+                $targetFile = $uploadDir . $fileName;
+                
+                if (move_uploaded_file($_FILES['archivo_adjunto']['tmp_name'], $targetFile)) {
+                    $archivo_adjunto = 'Uploads/Purchases/' . $po_id . '/' . $fileName;
+                    $pdo->prepare("UPDATE purchase_orders SET archivo_adjunto = :adj WHERE id = :id")
+                        ->execute(['adj' => $archivo_adjunto, 'id' => $po_id]);
+                }
+            }
 
             // Insertar items
             $sqlItem = "INSERT INTO purchase_order_items (purchase_order_id, item_id, cantidad, precio_unitario) 
