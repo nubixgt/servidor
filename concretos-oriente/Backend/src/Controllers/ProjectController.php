@@ -45,31 +45,39 @@ class ProjectController
             // Recibir datos de texto (FormData)
             $codigo = $_POST['codigo'] ?? '';
             $nombre = $_POST['nombre'] ?? '';
-            $nombre_ubicacion = $_POST['nombre_ubicacion'] ?? '';
+            $cliente_id = $_POST['cliente_id'] ?? 0;
+            $ubicacion = $_POST['ubicacion'] ?? '';
             $coordenadas = $_POST['coordenadas'] ?? '';
-            $presupuesto_contractual = $_POST['presupuesto_contractual'] ?? 0;
-            $gasto_real_acumulado = $_POST['gasto_real_acumulado'] ?? 0;
+            $presupuesto = $_POST['presupuesto'] ?? 0;
+            $fecha_inicio = $_POST['fecha_inicio'] ?? date('Y-m-d');
+            $fecha_fin_estimada = !empty($_POST['fecha_fin_estimada']) ? $_POST['fecha_fin_estimada'] : null;
+            $fecha_fin_real = !empty($_POST['fecha_fin_real']) ? $_POST['fecha_fin_real'] : null;
             $estado = $_POST['estado'] ?? 'Borrador';
             $numero_contrato = $_POST['numero_contrato'] ?? '';
             $descripcion = $_POST['descripcion'] ?? '';
-            $contactos = $_POST['contactos'] ?? '';
+            $contactos = $_POST['contactos'] ?? null;
+            $gerente_id = $_POST['gerente_id'] ?? 0;
 
-            // Inserción inicial a la base de datos (para obtener el ID)
-            $sql = "INSERT INTO projects (codigo, nombre, nombre_ubicacion, coordenadas, presupuesto_contractual, gasto_real_acumulado, estado, numero_contrato, descripcion, contactos) 
-                    VALUES (:codigo, :nombre, :nombre_ubicacion, :coordenadas, :presupuesto_contractual, :gasto_real_acumulado, :estado, :numero_contrato, :descripcion, :contactos)";
+            // Inserción inicial a la base de datos
+            $sql = "INSERT INTO projects (codigo, nombre, cliente_id, ubicacion, coordenadas, presupuesto, fecha_inicio, fecha_fin_estimada, fecha_fin_real, estado, numero_contrato, descripcion, contactos, gerente_id) 
+                    VALUES (:codigo, :nombre, :cliente_id, :ubicacion, :coordenadas, :presupuesto, :fecha_inicio, :fecha_fin_estimada, :fecha_fin_real, :estado, :numero_contrato, :descripcion, :contactos, :gerente_id)";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ':codigo' => $codigo,
                 ':nombre' => $nombre,
-                ':nombre_ubicacion' => $nombre_ubicacion,
+                ':cliente_id' => $cliente_id,
+                ':ubicacion' => $ubicacion,
                 ':coordenadas' => $coordenadas,
-                ':presupuesto_contractual' => $presupuesto_contractual,
-                ':gasto_real_acumulado' => $gasto_real_acumulado,
+                ':presupuesto' => $presupuesto,
+                ':fecha_inicio' => $fecha_inicio,
+                ':fecha_fin_estimada' => $fecha_fin_estimada,
+                ':fecha_fin_real' => $fecha_fin_real,
                 ':estado' => $estado,
                 ':numero_contrato' => $numero_contrato,
                 ':descripcion' => $descripcion,
-                ':contactos' => $contactos
+                ':contactos' => $contactos,
+                ':gerente_id' => $gerente_id
             ]);
 
             $id = $this->db->lastInsertId();
@@ -160,34 +168,44 @@ class ProjectController
 
             $codigo = $_POST['codigo'] ?? $project['codigo'];
             $nombre = $_POST['nombre'] ?? $project['nombre'];
-            $nombre_ubicacion = $_POST['nombre_ubicacion'] ?? $project['nombre_ubicacion'];
+            $cliente_id = $_POST['cliente_id'] ?? $project['cliente_id'];
+            $ubicacion = $_POST['ubicacion'] ?? $project['ubicacion'];
             $coordenadas = $_POST['coordenadas'] ?? $project['coordenadas'];
-            $presupuesto_contractual = $_POST['presupuesto_contractual'] ?? $project['presupuesto_contractual'];
-            $gasto_real_acumulado = $_POST['gasto_real_acumulado'] ?? $project['gasto_real_acumulado'];
+            $presupuesto = $_POST['presupuesto'] ?? $project['presupuesto'];
+            $fecha_inicio = $_POST['fecha_inicio'] ?? $project['fecha_inicio'];
+            $fecha_fin_estimada = !empty($_POST['fecha_fin_estimada']) ? $_POST['fecha_fin_estimada'] : null;
+            $fecha_fin_real = !empty($_POST['fecha_fin_real']) ? $_POST['fecha_fin_real'] : null;
             $estado = $_POST['estado'] ?? $project['estado'];
             $numero_contrato = $_POST['numero_contrato'] ?? $project['numero_contrato'];
             $descripcion = $_POST['descripcion'] ?? $project['descripcion'];
             $contactos = $_POST['contactos'] ?? $project['contactos'];
+            $gerente_id = $_POST['gerente_id'] ?? $project['gerente_id'];
 
             $sql = "UPDATE projects SET 
-                    codigo = :codigo, nombre = :nombre, nombre_ubicacion = :nombre_ubicacion, 
-                    coordenadas = :coordenadas, presupuesto_contractual = :presupuesto_contractual, 
-                    gasto_real_acumulado = :gasto_real_acumulado, estado = :estado, 
-                    numero_contrato = :numero_contrato, descripcion = :descripcion, contactos = :contactos 
+                    codigo = :codigo, nombre = :nombre, cliente_id = :cliente_id, 
+                    ubicacion = :ubicacion, coordenadas = :coordenadas, 
+                    presupuesto = :presupuesto, fecha_inicio = :fecha_inicio, 
+                    fecha_fin_estimada = :fecha_fin_estimada, fecha_fin_real = :fecha_fin_real, 
+                    estado = :estado, numero_contrato = :numero_contrato, 
+                    descripcion = :descripcion, contactos = :contactos, gerente_id = :gerente_id 
                     WHERE id = :id";
 
             $updateStmt = $this->db->prepare($sql);
             $updateStmt->execute([
                 ':codigo' => $codigo,
                 ':nombre' => $nombre,
-                ':nombre_ubicacion' => $nombre_ubicacion,
+                ':cliente_id' => $cliente_id,
+                ':ubicacion' => $ubicacion,
                 ':coordenadas' => $coordenadas,
-                ':presupuesto_contractual' => $presupuesto_contractual,
-                ':gasto_real_acumulado' => $gasto_real_acumulado,
+                ':presupuesto' => $presupuesto,
+                ':fecha_inicio' => $fecha_inicio,
+                ':fecha_fin_estimada' => $fecha_fin_estimada,
+                ':fecha_fin_real' => $fecha_fin_real,
                 ':estado' => $estado,
                 ':numero_contrato' => $numero_contrato,
                 ':descripcion' => $descripcion,
                 ':contactos' => $contactos,
+                ':gerente_id' => $gerente_id,
                 ':id' => $id
             ]);
 

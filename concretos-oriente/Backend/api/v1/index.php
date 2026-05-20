@@ -5,6 +5,7 @@ use App\Controllers\ExampleController;
 use App\Controllers\PersonnelController;
 use App\Controllers\ProjectController;
 use App\Controllers\UserController;
+use App\Controllers\MachineryController;
 
 // Backend/api/v1/index.php
 
@@ -38,6 +39,7 @@ $router->registerController(ExampleController::class);
 $router->registerController(PersonnelController::class);
 $router->registerController(ProjectController::class);
 $router->registerController(UserController::class);
+$router->registerController(MachineryController::class);
 // $router->registerController(YourController::class);
 
 

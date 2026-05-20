@@ -8,89 +8,133 @@ use Exception;
 
 class PersonnelController extends Controller
 {
+    // ----------------------------------------------------------------
+    // GET /personnel
+    // ----------------------------------------------------------------
     #[Route('/personnel', 'GET')]
     public function index()
     {
         try {
             $pdo = Database::getInstance()->getConnection();
-            $stmt = $pdo->query("SELECT * FROM personnel ORDER BY id DESC");
+
+            $sql = "SELECT
+                        p.*,
+                        pr.nombre AS proyecto_nombre
+                    FROM personnel p
+                    LEFT JOIN projects pr ON pr.id = p.proyecto_id
+                    ORDER BY p.id DESC";
+
+            $stmt = $pdo->query($sql);
             $personnel = $stmt->fetchAll();
 
             $this->json([
                 'status' => 'success',
-                'data' => $personnel
+                'data'   => $personnel
             ]);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
+    // ----------------------------------------------------------------
+    // POST /personnel  — crear nuevo empleado
+    // ----------------------------------------------------------------
     #[Route('/personnel', 'POST')]
     public function store()
     {
         try {
-            $nombres = $_POST['nombres'] ?? '';
-            $apellidos = $_POST['apellidos'] ?? '';
-            $dpi = $_POST['dpi'] ?? '';
-            $nit = $_POST['nit'] ?? '';
-            $puesto = $_POST['puesto'] ?? '';
-            $telefono = $_POST['telefono'] ?? '';
-            $salario_base = $_POST['salario_base'] ?? 0;
-            $pago_hora_extra = $_POST['pago_hora_extra'] ?? 0;
-            $estado = 'Activo';
+            // Campos obligatorios
+            $tipo_empleado      = trim($_POST['tipo_empleado']      ?? '');
+            $nombres            = trim($_POST['nombres']            ?? '');
+            $apellidos          = trim($_POST['apellidos']          ?? '');
+            $dpi                = preg_replace('/\D/', '', trim($_POST['dpi'] ?? ''));
+            $puesto             = trim($_POST['puesto']             ?? '');
+            $salario_base       = $_POST['salario_base']            ?? null;
+            $tipo_planilla      = trim($_POST['tipo_planilla']      ?? '');
+            $fecha_contratacion = trim($_POST['fecha_contratacion'] ?? '');
 
-            if (empty($nombres) || empty($apellidos) || empty($dpi)) {
-                $this->json(['status' => 'error', 'message' => 'Nombres, apellidos y DPI son requeridos'], 400);
+            if (
+                empty($tipo_empleado) || empty($nombres) || empty($apellidos) ||
+                empty($dpi) || empty($puesto) || $salario_base === null || $salario_base === '' ||
+                empty($tipo_planilla) || empty($fecha_contratacion)
+            ) {
+                $this->json([
+                    'status'  => 'error',
+                    'message' => 'Los campos tipo_empleado, nombres, apellidos, dpi, puesto, salario_base, tipo_planilla y fecha_contratacion son obligatorios.'
+                ], 400);
                 return;
             }
 
-            $pdo = Database::getInstance()->getConnection();
+            // Campos opcionales
+            $nit              = trim($_POST['nit']              ?? '') ?: null;
+            $telefono         = trim($_POST['telefono']         ?? '') ?: null;
+            $direccion        = trim($_POST['direccion']        ?? '') ?: null;
+            $numero_cuenta    = trim($_POST['numero_cuenta']    ?? '') ?: null;
+            $nombre_banco     = trim($_POST['nombre_banco']     ?? '') ?: null;
+            $tarifa_hora_extra = (isset($_POST['tarifa_hora_extra']) && $_POST['tarifa_hora_extra'] !== '')
+                                    ? $_POST['tarifa_hora_extra'] : null;
+            $fecha_baja       = (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
+                                    ? $_POST['fecha_baja'] : null;
+            $proyecto_id      = (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
+                                    ? (int)$_POST['proyecto_id'] : null;
 
+            $pdo = Database::getInstance()->getConnection();
             $pdo->beginTransaction();
 
-            $sql = "INSERT INTO personnel (nombres, apellidos, dpi, nit, puesto, telefono, salario_base, pago_hora_extra, estado) 
-                    VALUES (:nombres, :apellidos, :dpi, :nit, :puesto, :telefono, :salario_base, :pago_hora_extra, :estado)";
-            
+            $sql = "INSERT INTO personnel
+                        (tipo_empleado, nombres, apellidos, dpi, nit, telefono, direccion,
+                         puesto, tipo_planilla, salario_base, tarifa_hora_extra,
+                         fecha_contratacion, fecha_baja,
+                         numero_cuenta, nombre_banco, proyecto_id)
+                    VALUES
+                        (:tipo_empleado, :nombres, :apellidos, :dpi, :nit, :telefono, :direccion,
+                         :puesto, :tipo_planilla, :salario_base, :tarifa_hora_extra,
+                         :fecha_contratacion, :fecha_baja,
+                         :numero_cuenta, :nombre_banco, :proyecto_id)";
+
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                'nombres' => $nombres,
-                'apellidos' => $apellidos,
-                'dpi' => $dpi,
-                'nit' => $nit,
-                'puesto' => $puesto,
-                'telefono' => $telefono,
-                'salario_base' => $salario_base,
-                'pago_hora_extra' => $pago_hora_extra,
-                'estado' => $estado
+                'tipo_empleado'      => $tipo_empleado,
+                'nombres'            => $nombres,
+                'apellidos'          => $apellidos,
+                'dpi'                => $dpi,
+                'nit'                => $nit,
+                'telefono'           => $telefono,
+                'direccion'          => $direccion,
+                'puesto'             => $puesto,
+                'tipo_planilla'      => $tipo_planilla,
+                'salario_base'       => $salario_base,
+                'tarifa_hora_extra'  => $tarifa_hora_extra,
+                'fecha_contratacion' => $fecha_contratacion,
+                'fecha_baja'         => $fecha_baja,
+                'numero_cuenta'      => $numero_cuenta,
+                'nombre_banco'       => $nombre_banco,
+                'proyecto_id'        => $proyecto_id,
             ]);
 
-            $id_usuario = $pdo->lastInsertId();
+            $newId     = $pdo->lastInsertId();
             $foto_path = null;
 
-            // Handle file upload
+            // Manejo de foto
             if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                $fileTmpPath = $_FILES['foto']['tmp_name'];
-                $fileName = $_FILES['foto']['name'];
-                $fileNameCmps = explode(".", $fileName);
-                $fileExtension = strtolower(end($fileNameCmps));
+                $fileTmpPath   = $_FILES['foto']['tmp_name'];
+                $fileExtension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
 
-                $allowedfileExtensions = array('jpg', 'jpeg', 'png');
-                if (in_array($fileExtension, $allowedfileExtensions)) {
-                    $uploadFileDir = __DIR__ . '/../../Uploads/Personal/' . $id_usuario . '/';
-                    if (!is_dir($uploadFileDir)) {
-                        mkdir($uploadFileDir, 0755, true);
+                $allowed = ['jpg', 'jpeg', 'png'];
+                if (in_array($fileExtension, $allowed)) {
+                    $uploadDir = __DIR__ . '/../../Uploads/Personal/' . $newId . '/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
                     }
-                    
-                    $newFileName = 'foto.' . $fileExtension;
-                    $dest_path = $uploadFileDir . $newFileName;
 
-                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                        // Store relative path
-                        $foto_path = 'Uploads/Personal/' . $id_usuario . '/' . $newFileName;
-                        
-                        $updateSql = "UPDATE personnel SET foto_path = :foto_path WHERE id = :id";
-                        $updateStmt = $pdo->prepare($updateSql);
-                        $updateStmt->execute(['foto_path' => $foto_path, 'id' => $id_usuario]);
+                    $newFileName = 'foto.' . $fileExtension;
+                    $destPath    = $uploadDir . $newFileName;
+
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $foto_path = 'Uploads/Personal/' . $newId . '/' . $newFileName;
+
+                        $pdo->prepare("UPDATE personnel SET foto_path = :fp WHERE id = :id")
+                            ->execute(['fp' => $foto_path, 'id' => $newId]);
                     }
                 }
             }
@@ -98,9 +142,9 @@ class PersonnelController extends Controller
             $pdo->commit();
 
             $this->json([
-                'status' => 'success',
-                'message' => 'Personal creado correctamente',
-                'id' => $id_usuario,
+                'status'    => 'success',
+                'message'   => 'Personal creado correctamente',
+                'id'        => $newId,
                 'foto_path' => $foto_path
             ], 201);
 
@@ -111,91 +155,131 @@ class PersonnelController extends Controller
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
+
+    // ----------------------------------------------------------------
+    // POST /personnel/{id}  — actualizar empleado
+    // ----------------------------------------------------------------
     #[Route('/personnel/{id}', 'POST')]
     public function update($id)
     {
         try {
             $pdo = Database::getInstance()->getConnection();
-            
-            // Validate existence
-            $stmt = $pdo->prepare("SELECT id, foto_path FROM personnel WHERE id = :id");
-            $stmt->execute(['id' => $id]);
-            $empleado = $stmt->fetch();
-            
+
+            $checkStmt = $pdo->prepare("SELECT id, foto_path FROM personnel WHERE id = :id");
+            $checkStmt->execute(['id' => $id]);
+            $empleado = $checkStmt->fetch();
+
             if (!$empleado) {
                 $this->json(['status' => 'error', 'message' => 'Empleado no encontrado'], 404);
                 return;
             }
 
-            $nombres = $_POST['nombres'] ?? '';
-            $apellidos = $_POST['apellidos'] ?? '';
-            $dpi = $_POST['dpi'] ?? '';
-            $nit = $_POST['nit'] ?? '';
-            $puesto = $_POST['puesto'] ?? '';
-            $telefono = $_POST['telefono'] ?? '';
-            $salario_base = $_POST['salario_base'] ?? 0;
-            $pago_hora_extra = $_POST['pago_hora_extra'] ?? 0;
+            // Campos obligatorios
+            $tipo_empleado      = trim($_POST['tipo_empleado']      ?? '');
+            $nombres            = trim($_POST['nombres']            ?? '');
+            $apellidos          = trim($_POST['apellidos']          ?? '');
+            $dpi                = preg_replace('/\D/', '', trim($_POST['dpi'] ?? ''));
+            $puesto             = trim($_POST['puesto']             ?? '');
+            $salario_base       = $_POST['salario_base']            ?? null;
+            $tipo_planilla      = trim($_POST['tipo_planilla']      ?? '');
+            $fecha_contratacion = trim($_POST['fecha_contratacion'] ?? '');
 
-            if (empty($nombres) || empty($apellidos) || empty($dpi)) {
-                $this->json(['status' => 'error', 'message' => 'Nombres, apellidos y DPI son requeridos'], 400);
+            if (
+                empty($tipo_empleado) || empty($nombres) || empty($apellidos) ||
+                empty($dpi) || empty($puesto) || $salario_base === null || $salario_base === '' ||
+                empty($tipo_planilla) || empty($fecha_contratacion)
+            ) {
+                $this->json([
+                    'status'  => 'error',
+                    'message' => 'Los campos tipo_empleado, nombres, apellidos, dpi, puesto, salario_base, tipo_planilla y fecha_contratacion son obligatorios.'
+                ], 400);
                 return;
             }
 
+            // Campos opcionales
+            $nit              = trim($_POST['nit']              ?? '') ?: null;
+            $telefono         = trim($_POST['telefono']         ?? '') ?: null;
+            $direccion        = trim($_POST['direccion']        ?? '') ?: null;
+            $numero_cuenta    = trim($_POST['numero_cuenta']    ?? '') ?: null;
+            $nombre_banco     = trim($_POST['nombre_banco']     ?? '') ?: null;
+            $tarifa_hora_extra = (isset($_POST['tarifa_hora_extra']) && $_POST['tarifa_hora_extra'] !== '')
+                                    ? $_POST['tarifa_hora_extra'] : null;
+            $fecha_baja       = (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
+                                    ? $_POST['fecha_baja'] : null;
+            $proyecto_id      = (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
+                                    ? (int)$_POST['proyecto_id'] : null;
+
             $pdo->beginTransaction();
 
-            $sql = "UPDATE personnel SET 
-                        nombres = :nombres, apellidos = :apellidos, dpi = :dpi, nit = :nit, 
-                        puesto = :puesto, telefono = :telefono, salario_base = :salario_base, 
-                        pago_hora_extra = :pago_hora_extra 
+            $sql = "UPDATE personnel SET
+                        tipo_empleado      = :tipo_empleado,
+                        nombres            = :nombres,
+                        apellidos          = :apellidos,
+                        dpi                = :dpi,
+                        nit                = :nit,
+                        telefono           = :telefono,
+                        direccion          = :direccion,
+                        puesto             = :puesto,
+                        tipo_planilla      = :tipo_planilla,
+                        salario_base       = :salario_base,
+                        tarifa_hora_extra  = :tarifa_hora_extra,
+                        fecha_contratacion = :fecha_contratacion,
+                        fecha_baja         = :fecha_baja,
+                        numero_cuenta      = :numero_cuenta,
+                        nombre_banco       = :nombre_banco,
+                        proyecto_id        = :proyecto_id
                     WHERE id = :id";
-            
-            $updateStmt = $pdo->prepare($sql);
-            $updateStmt->execute([
-                'nombres' => $nombres,
-                'apellidos' => $apellidos,
-                'dpi' => $dpi,
-                'nit' => $nit,
-                'puesto' => $puesto,
-                'telefono' => $telefono,
-                'salario_base' => $salario_base,
-                'pago_hora_extra' => $pago_hora_extra,
-                'id' => $id
+
+            $pdo->prepare($sql)->execute([
+                'tipo_empleado'      => $tipo_empleado,
+                'nombres'            => $nombres,
+                'apellidos'          => $apellidos,
+                'dpi'                => $dpi,
+                'nit'                => $nit,
+                'telefono'           => $telefono,
+                'direccion'          => $direccion,
+                'puesto'             => $puesto,
+                'tipo_planilla'      => $tipo_planilla,
+                'salario_base'       => $salario_base,
+                'tarifa_hora_extra'  => $tarifa_hora_extra,
+                'fecha_contratacion' => $fecha_contratacion,
+                'fecha_baja'         => $fecha_baja,
+                'numero_cuenta'      => $numero_cuenta,
+                'nombre_banco'       => $nombre_banco,
+                'proyecto_id'        => $proyecto_id,
+                'id'                 => $id,
             ]);
 
             $foto_path = $empleado['foto_path'];
 
-            // Handle file upload
+            // Manejo de foto
             if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                // Remove old folder contents if exists
-                $uploadFileDir = __DIR__ . '/../../Uploads/Personal/' . $id . '/';
-                if (is_dir($uploadFileDir)) {
-                    $files = glob($uploadFileDir . '*'); 
-                    foreach($files as $file){ 
-                      if(is_file($file)) {
-                        unlink($file); 
-                      }
+                $uploadDir = __DIR__ . '/../../Uploads/Personal/' . $id . '/';
+
+                // Limpiar archivos viejos
+                if (is_dir($uploadDir)) {
+                    foreach (glob($uploadDir . '*') as $file) {
+                        if (is_file($file)) {
+                            unlink($file);
+                        }
                     }
                 } else {
-                    mkdir($uploadFileDir, 0755, true);
+                    mkdir($uploadDir, 0755, true);
                 }
 
-                $fileTmpPath = $_FILES['foto']['tmp_name'];
-                $fileName = $_FILES['foto']['name'];
-                $fileNameCmps = explode(".", $fileName);
-                $fileExtension = strtolower(end($fileNameCmps));
+                $fileTmpPath   = $_FILES['foto']['tmp_name'];
+                $fileExtension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
 
-                $allowedfileExtensions = array('jpg', 'jpeg', 'png');
-                if (in_array($fileExtension, $allowedfileExtensions)) {
+                $allowed = ['jpg', 'jpeg', 'png'];
+                if (in_array($fileExtension, $allowed)) {
                     $newFileName = 'foto.' . $fileExtension;
-                    $dest_path = $uploadFileDir . $newFileName;
+                    $destPath    = $uploadDir . $newFileName;
 
-                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                        // Store relative path
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
                         $foto_path = 'Uploads/Personal/' . $id . '/' . $newFileName;
-                        
-                        $updateFotoSql = "UPDATE personnel SET foto_path = :foto_path WHERE id = :id";
-                        $updateFotoStmt = $pdo->prepare($updateFotoSql);
-                        $updateFotoStmt->execute(['foto_path' => $foto_path, 'id' => $id]);
+
+                        $pdo->prepare("UPDATE personnel SET foto_path = :fp WHERE id = :id")
+                            ->execute(['fp' => $foto_path, 'id' => $id]);
                     }
                 }
             }
@@ -203,8 +287,8 @@ class PersonnelController extends Controller
             $pdo->commit();
 
             $this->json([
-                'status' => 'success',
-                'message' => 'Personal actualizado correctamente',
+                'status'    => 'success',
+                'message'   => 'Personal actualizado correctamente',
                 'foto_path' => $foto_path
             ]);
 
@@ -216,40 +300,38 @@ class PersonnelController extends Controller
         }
     }
 
+    // ----------------------------------------------------------------
+    // DELETE /personnel/{id}
+    // ----------------------------------------------------------------
     #[Route('/personnel/{id}', 'DELETE')]
     public function destroy($id)
     {
         try {
             $pdo = Database::getInstance()->getConnection();
-            
-            // Check existence
-            $stmt = $pdo->prepare("SELECT id, foto_path FROM personnel WHERE id = :id");
-            $stmt->execute(['id' => $id]);
-            $empleado = $stmt->fetch();
-            
-            if (!$empleado) {
+
+            $checkStmt = $pdo->prepare("SELECT id FROM personnel WHERE id = :id");
+            $checkStmt->execute(['id' => $id]);
+
+            if (!$checkStmt->fetch()) {
                 $this->json(['status' => 'error', 'message' => 'Empleado no encontrado'], 404);
                 return;
             }
 
-            // Delete physical directory and files
-            $uploadFileDir = __DIR__ . '/../../Uploads/Personal/' . $id . '/';
-            if (is_dir($uploadFileDir)) {
-                $files = glob($uploadFileDir . '*'); 
-                foreach($files as $file){ 
-                    if(is_file($file)) {
-                        unlink($file); 
+            // Eliminar carpeta de fotos
+            $uploadDir = __DIR__ . '/../../Uploads/Personal/' . $id . '/';
+            if (is_dir($uploadDir)) {
+                foreach (glob($uploadDir . '*') as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
                     }
                 }
-                rmdir($uploadFileDir);
+                rmdir($uploadDir);
             }
 
-            // Delete record
-            $delStmt = $pdo->prepare("DELETE FROM personnel WHERE id = :id");
-            $delStmt->execute(['id' => $id]);
+            $pdo->prepare("DELETE FROM personnel WHERE id = :id")->execute(['id' => $id]);
 
             $this->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Personal eliminado correctamente'
             ]);
 
