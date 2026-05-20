@@ -12,14 +12,22 @@
         <p class="cal-month-hero">{{ monthName }} <span>{{ currentYear }}</span> <em>· {{ todayDay }}</em></p>
       </div>
       <div class="cal-banner-right">
-        <div class="cal-kpi-row">
-          <div class="cal-kpi" v-for="cat in CATEGORIES" :key="cat.id">
-            <span class="cal-kpi-num">{{ events.filter(e => e.category === cat.id).length }}</span>
-            <span class="cal-kpi-label">{{ cat.label }}</span>
-          </div>
-          <div class="cal-kpi cal-kpi-total">
-            <span class="cal-kpi-num">{{ events.length }}</span>
-            <span class="cal-kpi-label">Total</span>
+        <div class="cal-events-summary">
+          <button class="cal-summary-btn" @click="showStats = !showStats">
+            <span class="material-symbols-outlined">event_note</span>
+            <span>{{ events.length }} evento{{ events.length !== 1 ? 's' : '' }}</span>
+            <span class="material-symbols-outlined cal-summary-chevron" :class="{ open: showStats }">expand_more</span>
+          </button>
+          <div class="cal-stats-dropdown" v-if="showStats">
+            <div class="cal-stats-item" v-for="cat in CATEGORIES" :key="cat.id">
+              <span class="cal-stats-dot" :style="{ background: cat.color }"></span>
+              <span class="cal-stats-label">{{ cat.label }}</span>
+              <span class="cal-stats-count" :style="{ color: cat.color }">{{ events.filter(e => e.category === cat.id).length }}</span>
+            </div>
+            <div class="cal-stats-total">
+              <span>Total</span>
+              <span>{{ events.length }}</span>
+            </div>
           </div>
         </div>
         <div class="cal-banner-actions">
@@ -167,6 +175,7 @@ onMounted(() => {
 
 const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const hoverDate = ref(null)
+const showStats = ref(false)
 const showModal = ref(false)
 const editingEvent = ref(null)
 const selectedDate = ref('')
@@ -266,27 +275,52 @@ function handleDrop(date) {
 
 .cal-banner-right { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
 
-/* KPI cards */
-.cal-kpi-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.cal-kpi {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px; padding: 10px 16px;
-  text-align: center; min-width: 68px;
-  transition: all 0.2s ease;
+/* Botón resumen de eventos */
+.cal-events-summary { position: relative; }
+
+.cal-summary-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 16px;
+  background: white; border: 1.5px solid #e5e7eb;
+  border-radius: 10px; font-size: 13px; font-weight: 700;
+  color: #374151; cursor: pointer; transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
-.cal-kpi:hover { background: #f3f4f6; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.07); }
-.cal-kpi-num {
-  display: block; font-size: 22px; font-weight: 900;
-  color: #111827; line-height: 1; margin-bottom: 4px;
+.cal-summary-btn:hover { border-color: #fca5a5; background: #fff5f5; color: #dc2626; }
+.cal-summary-btn .material-symbols-outlined { font-size: 18px !important; color: #dc2626; }
+.cal-summary-chevron {
+  font-size: 18px !important; color: #9ca3af !important;
+  transition: transform 0.25s ease;
 }
-.cal-kpi-label {
-  display: block; font-size: 9px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.12em;
-  color: #9ca3af;
+.cal-summary-chevron.open { transform: rotate(180deg); }
+
+.cal-stats-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: white; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 8px;
+  min-width: 240px; z-index: 50;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  animation: dropIn 0.2s ease;
 }
-.cal-kpi-total { border-color: #fca5a5; background: #fff5f5; }
-.cal-kpi-total .cal-kpi-num { color: #dc2626; }
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cal-stats-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: 8px;
+  transition: background 0.15s;
+}
+.cal-stats-item:hover { background: #f9fafb; }
+.cal-stats-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.cal-stats-label { flex: 1; font-size: 12px; font-weight: 600; color: #374151; }
+.cal-stats-count { font-size: 13px; font-weight: 800; }
+.cal-stats-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 10px 4px; margin-top: 4px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 12px; font-weight: 800; color: #111827;
+}
 
 /* Banner actions */
 .cal-banner-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
