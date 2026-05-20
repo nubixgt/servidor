@@ -11,7 +11,7 @@
             <div class="lp-body">
                 <!-- Logo -->
                 <div class="lp-logo-wrap">
-                    <img src="/logo.png" alt="SYS-DIPU Logo" class="lp-logo-img" />
+                    <img :src="logoUrl" alt="SYS-DIPU Logo" class="lp-logo-img" />
                 </div>
 
                 <p class="lp-tagline" style="margin-top: 10px;">Portal de Gestión Institucional</p>
@@ -36,7 +36,7 @@
 
                 <!-- Logo -->
                 <div class="lr-mobile-brand">
-                    <img src="/logo.png" alt="SYS-DIPU Logo" class="lr-logo-img" />
+                    <img :src="logoUrl" alt="SYS-DIPU Logo" class="lr-logo-img" />
                     <div>
                         <p class="lr-mobile-sub" style="margin-top: 8px;">Portal de Gestión Institucional</p>
                     </div>
@@ -112,6 +112,8 @@ import { ref } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
+
+const logoUrl = import.meta.env.BASE_URL + 'logo.png';
 
 const auth = useAuthStore();
 const router = useRouter();
