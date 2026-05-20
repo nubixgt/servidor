@@ -45,24 +45,26 @@
         </div>
         <div class="h-72 relative flex items-end justify-between px-6 z-10">
            <div class="absolute inset-0 flex flex-col justify-between text-[9px] font-black text-white/10 uppercase tracking-widest pointer-events-none pb-12">
-            <div v-for="val in [500, 400, 300, 200, 100, 0]" :key="val" class="border-t border-white/5 w-full pt-2 flex justify-between items-center">
-              <span>{{ val }}K</span>
+            <div v-for="val in chartScale" :key="val" class="border-t border-white/5 w-full pt-2 flex justify-between items-center">
+              <span>{{ val }}</span>
               <div class="w-[85%] border-t border-dashed border-white/5"></div>
             </div>
           </div>
           <div class="flex-1 flex items-end justify-around gap-10 h-full z-10 pb-6 ml-10">
-            <div v-for="(month, i) in ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun']" :key="month" class="flex flex-col items-center gap-4 w-full group h-full justify-end">
+            <div v-for="(col, i) in chartData" :key="col.month" class="flex flex-col items-center gap-4 w-full group h-full justify-end">
               <div class="flex gap-3 w-full items-end justify-center h-full">
                 <div 
-                  :style="{ height: `${[60, 75, 85, 70, 90, 80][i]}%` }"
-                  :class="`w-5 rounded-t-xl transition-all duration-700 group-hover:scale-x-110 ${i === 2 ? 'bg-primary shadow-[0_0_25px_#6366f160]' : 'bg-primary/20 group-hover:bg-primary/40'}`"
+                  :style="{ height: `${col.incPct}%` }"
+                  :class="`w-5 rounded-t-xl transition-all duration-700 group-hover:scale-x-110 bg-primary/40 hover:bg-primary shadow-lg hover:shadow-primary/50`"
+                  :title="`Ingresos: Q${col.inc}`"
                 ></div>
                 <div 
-                  :style="{ height: `${[40, 45, 50, 60, 35, 40][i]}%` }"
-                  :class="`w-5 rounded-t-xl transition-all duration-700 group-hover:scale-x-110 ${i === 2 ? 'bg-tertiary shadow-[0_0_20px_rgba(244,63,94,0.4)]' : 'bg-tertiary/20 group-hover:bg-tertiary/40'}`"
+                  :style="{ height: `${col.expPct}%` }"
+                  :class="`w-5 rounded-t-xl transition-all duration-700 group-hover:scale-x-110 bg-tertiary/40 hover:bg-tertiary shadow-lg hover:shadow-tertiary/50`"
+                  :title="`Egresos: Q${col.exp}`"
                 ></div>
               </div>
-              <span :class="`text-[10px] font-black tracking-widest uppercase ${i === 2 ? 'text-primary shadow-[0_0_5px_#6366f150]' : 'text-white/20'}`">{{ month }}</span>
+              <span class="text-[10px] font-black tracking-widest uppercase text-white/40 group-hover:text-white">{{ col.month }}</span>
             </div>
           </div>
         </div>
@@ -74,9 +76,9 @@
         <div class="relative w-60 h-60 mx-auto mb-12 flex items-center justify-center">
           <svg class="w-full h-full transform -rotate-90 drop-shadow-2xl" viewBox="0 0 36 36">
             <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="4.5" />
-            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#6366f1" stroke-width="4.5" stroke-dasharray="55 100" stroke-linecap="round" class="drop-shadow-[0_0_8px_#6366f1]" />
-            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#f43f5e" stroke-width="4.5" stroke-dasharray="25 100" stroke-dashoffset="-55" stroke-linecap="round" class="drop-shadow-[0_0_8px_#f43f5e]" />
-            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="rgba(255,255,255,0.3)" stroke-width="4.5" stroke-dasharray="20 100" stroke-dashoffset="-80" stroke-linecap="round" />
+            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#6366f1" stroke-width="4.5" :stroke-dasharray="`${pieChartData[0]?.val || 0} 100`" stroke-linecap="round" class="drop-shadow-[0_0_8px_#6366f1] transition-all duration-1000" />
+            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="#f43f5e" stroke-width="4.5" :stroke-dasharray="`${pieChartData[1]?.val || 0} 100`" :stroke-dashoffset="`-${pieChartData[0]?.val || 0}`" stroke-linecap="round" class="drop-shadow-[0_0_8px_#f43f5e] transition-all duration-1000" />
+            <circle cx="18" cy="18" r="15.9" fill="transparent" stroke="rgba(255,255,255,0.3)" stroke-width="4.5" :stroke-dasharray="`${pieChartData[2]?.val || 0} 100`" :stroke-dashoffset="`-${(pieChartData[0]?.val || 0) + (pieChartData[1]?.val || 0)}`" stroke-linecap="round" class="transition-all duration-1000" />
           </svg>
           <div class="absolute inset-0 flex flex-col items-center justify-center text-center translate-y-1">
             <span class="text-5xl font-black text-white italic tracking-tighter">{{ budgetPercent }}%</span>
@@ -84,11 +86,7 @@
           </div>
         </div>
         <div class="space-y-6 mt-auto">
-          <div v-for="item in [
-            { label: 'Ingresos Operativos', val: 55, color: 'bg-primary shadow-[0_0_10px_#6366f1]' },
-            { label: 'Egresos Administrativos', val: 25, color: 'bg-tertiary shadow-[0_0_10px_#f43f5e]' },
-            { label: 'Reservas de Capital', val: 20, color: 'bg-white/20' },
-          ]" :key="item.label" class="flex items-center justify-between group cursor-pointer border-b border-white/5 pb-4">
+          <div v-for="item in pieChartData" :key="item.label" class="flex items-center justify-between group cursor-pointer border-b border-white/5 pb-4">
             <div class="flex items-center gap-4">
               <span :class="`w-3 h-3 rounded-full ${item.color} group-hover:scale-150 transition-transform duration-500`"></span>
               <span class="text-xs font-bold text-white/60 tracking-wider uppercase">{{ item.label }}</span>
@@ -411,6 +409,84 @@ const budgetPercent = computed(() => {
   if (dbKpis.value.total_income === 0) return 0;
   return Math.round((dbKpis.value.net_balance / dbKpis.value.total_income) * 100);
 });
+
+
+// Chart Data Computed
+const chartData = computed(() => {
+  if (transactions.value.length === 0) return [];
+  
+  // Group by month
+  const monthly = {};
+  transactions.value.forEach(tx => {
+    const d = new Date(tx.fecha_ingreso || tx.fecha_egreso);
+    const m = d.toLocaleString('es-ES', { month: 'short' });
+    const y = d.getFullYear();
+    const key = `${m} ${y}`;
+    
+    if (!monthly[key]) monthly[key] = { month: m, inc: 0, exp: 0, sort: d.getTime() };
+    
+    if (tx.transaction_type === 'Ingreso') monthly[key].inc += parseFloat(tx.monto);
+    else monthly[key].exp += parseFloat(tx.monto);
+  });
+
+  // Sort and get last 6 months
+  const sorted = Object.values(monthly).sort((a, b) => a.sort - b.sort).slice(-6);
+  
+  // Find max for scaling
+  let maxVal = 0;
+  sorted.forEach(col => {
+    if (col.inc > maxVal) maxVal = col.inc;
+    if (col.exp > maxVal) maxVal = col.exp;
+  });
+  
+  if (maxVal === 0) maxVal = 1;
+
+  // Calculate percentages (max height is 100%)
+  return sorted.map(col => ({
+    ...col,
+    incPct: (col.inc / maxVal) * 85, // 85% visually so it doesn't touch the very top
+    expPct: (col.exp / maxVal) * 85
+  }));
+});
+
+const chartScale = computed(() => {
+  if (chartData.value.length === 0) return ['100K', '80K', '60K', '40K', '20K', '0'];
+  let maxVal = 0;
+  chartData.value.forEach(col => {
+    if (col.inc > maxVal) maxVal = col.inc;
+    if (col.exp > maxVal) maxVal = col.exp;
+  });
+  
+  const step = maxVal / 5;
+  const scale = [];
+  for(let i=5; i>=0; i--) {
+    let val = step * i;
+    scale.push(val > 1000 ? (val/1000).toFixed(1) + 'K' : val.toFixed(0));
+  }
+  return scale;
+});
+
+const pieChartData = computed(() => {
+  const total = dbKpis.value.total_income + dbKpis.value.total_expense + Math.abs(dbKpis.value.net_balance);
+  if (total === 0) {
+    return [
+      { label: 'Ingresos Operativos', val: 0, color: 'bg-primary shadow-[0_0_10px_#6366f1]' },
+      { label: 'Egresos Administrativos', val: 0, color: 'bg-tertiary shadow-[0_0_10px_#f43f5e]' },
+      { label: 'Reservas de Capital', val: 0, color: 'bg-white/20' },
+    ];
+  }
+  
+  const pInc = Math.round((dbKpis.value.total_income / total) * 100);
+  const pExp = Math.round((dbKpis.value.total_expense / total) * 100);
+  const pNet = Math.round((Math.abs(dbKpis.value.net_balance) / total) * 100);
+  
+  return [
+    { label: 'Ingresos Operativos', val: pInc, color: 'bg-primary shadow-[0_0_10px_#6366f1]' },
+    { label: 'Egresos Administrativos', val: pExp, color: 'bg-tertiary shadow-[0_0_10px_#f43f5e]' },
+    { label: 'Reservas de Capital', val: pNet, color: 'bg-white/20' },
+  ];
+});
+
 
 // Pagination
 const currentPage = ref(1);
