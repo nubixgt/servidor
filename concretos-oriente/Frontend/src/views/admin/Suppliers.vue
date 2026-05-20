@@ -2,16 +2,39 @@
   <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-10">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-3">
-        <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">Directorio de Proveedores</h2>
-        <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Gestión de alianzas estratégicas y suministros</p>
+        <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">
+          {{ activeTab === 'directorio' ? 'Directorio de Proveedores' : 'Historial de Compras' }}
+        </h2>
+        <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">
+          {{ activeTab === 'directorio' ? 'Gestión de alianzas estratégicas y suministros' : 'Registro histórico de todas las órdenes emitidas' }}
+        </p>
       </div>
-      <button @click="openSupplierModal" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
-        <PlusIcon class="w-5 h-5" />
-        Añadir Proveedor
-      </button>
+      <div class="flex items-center gap-4">
+        <!-- Tabs -->
+        <div class="flex items-center bg-black/20 p-1 rounded-2xl border border-white/10">
+          <button 
+            @click="activeTab = 'directorio'"
+            :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'directorio' ? 'bg-white/10 text-white shadow-xl' : 'text-white/40 hover:text-white']"
+          >
+            Directorio
+          </button>
+          <button 
+            @click="activeTab = 'compras'; fetchPurchases();"
+            :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'compras' ? 'bg-white/10 text-white shadow-xl' : 'text-white/40 hover:text-white']"
+          >
+            Compras
+          </button>
+        </div>
+
+        <button v-if="activeTab === 'directorio'" @click="openSupplierModal" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
+          <PlusIcon class="w-5 h-5" />
+          Añadir Proveedor
+        </button>
+      </div>
     </div>
 
-    <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl">
+    <!-- DIRECTORIO TAB -->
+    <section v-if="activeTab === 'directorio'" class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl">
       <div class="p-12 border-b border-white/5 bg-white/5 backdrop-blur-3xl flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div class="relative flex-1 max-w-lg">
           <MagnifyingGlassIcon class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -68,6 +91,54 @@
             <span v-if="sup.dias_credito" class="text-[10px] font-black text-white/20 uppercase tracking-widest">{{ sup.dias_credito }} Días</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- COMPRAS TAB -->
+    <section v-if="activeTab === 'compras'" class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] bg-white/5">
+              <th class="px-12 py-8">Orden / Fecha</th>
+              <th class="px-12 py-8">Proveedor</th>
+              <th class="px-12 py-8">Proyecto / Pago</th>
+              <th class="px-12 py-8 text-right">Total</th>
+              <th class="px-12 py-8 text-center">Archivo</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr v-if="loadingPurchases">
+              <td colspan="5" class="px-12 py-10 text-center text-white/40">Cargando órdenes de compra...</td>
+            </tr>
+            <tr v-else-if="purchases.length === 0">
+              <td colspan="5" class="px-12 py-10 text-center text-white/40">No hay órdenes de compra registradas.</td>
+            </tr>
+            <tr v-for="order in purchases" :key="order.id" class="hover:bg-white/5 transition-all group">
+              <td class="px-12 py-10">
+                <p class="font-black text-lg text-white italic uppercase">ORD-{{ String(order.id).padStart(4, '0') }}</p>
+                <p class="text-[10px] font-bold text-white/30 uppercase mt-1">{{ formatDate(order.fecha_orden) }}</p>
+              </td>
+              <td class="px-12 py-10">
+                <p class="font-bold text-white truncate max-w-[200px]">{{ order.razon_social }}</p>
+              </td>
+              <td class="px-12 py-10">
+                <p class="font-bold text-sm text-white/80">{{ order.proyecto_nombre || 'N/A' }}</p>
+                <p class="text-[10px] font-black text-primary uppercase mt-1">{{ order.condicion_pago }}</p>
+              </td>
+              <td class="px-12 py-10 text-right">
+                <p class="font-black text-white italic text-lg">Q {{ Number(order.total).toLocaleString('en-US', {minimumFractionDigits: 2}) }}</p>
+                <p class="text-[10px] font-bold text-white/30 uppercase mt-1">{{ order.items.length }} Ítems</p>
+              </td>
+              <td class="px-12 py-10 text-center">
+                <a v-if="order.archivo_adjunto" :href="getFileUrl(order.archivo_adjunto)" target="_blank" class="inline-flex p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-primary transition-all shadow-xl" title="Ver Archivo Adjunto">
+                  <DocumentTextIcon class="w-6 h-6" />
+                </a>
+                <span v-else class="text-[10px] text-white/20 uppercase tracking-widest font-black">Sin Archivo</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -141,7 +212,7 @@
 
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono *</label>
-              <input v-model="formSupplier.telefono" type="text" required placeholder="0000-0000" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
+              <input v-model="formSupplier.telefono" @input="formatPhone" type="text" maxlength="9" required placeholder="0000-0000" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
             <div class="space-y-2 md:col-span-2">
@@ -282,16 +353,20 @@
 import { ref, computed, onMounted } from 'vue';
 import { 
   BuildingOfficeIcon, PhoneIcon, EnvelopeIcon, MapPinIcon, ShieldCheckIcon, 
-  PlusIcon, FunnelIcon, MagnifyingGlassIcon, StarIcon, XMarkIcon, PencilIcon, TrashIcon
+  PlusIcon, FunnelIcon, MagnifyingGlassIcon, StarIcon, XMarkIcon, PencilIcon, TrashIcon,
+  DocumentTextIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
+const activeTab = ref('directorio');
 const suppliers = ref([]);
+const purchases = ref([]);
 const projects = ref([]);
 const inventoryItems = ref([]);
 const loading = ref(true);
+const loadingPurchases = ref(false);
 const isSubmitting = ref(false);
 
 const searchQuery = ref('');
@@ -305,6 +380,16 @@ const fetchSuppliers = async () => {
     if (data.status === 'success') suppliers.value = data.data;
   } catch(e) {}
   loading.value = false;
+};
+
+const fetchPurchases = async () => {
+  loadingPurchases.value = true;
+  try {
+    const res = await fetch(`${BASE_URL}/purchases`);
+    const data = await res.json();
+    if (data.status === 'success') purchases.value = data.data;
+  } catch(e) {}
+  loadingPurchases.value = false;
 };
 
 const fetchDependencies = async () => {
@@ -331,6 +416,25 @@ const filteredSuppliers = computed(() => {
     s.nit.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
+
+const formatDate = (val) => {
+  if (!val) return '';
+  const [y, m, d] = val.split('-');
+  return `${d}/${m}/${y}`;
+};
+
+const getFileUrl = (path) => {
+  return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
+};
+
+// Formatter for Phone Input
+const formatPhone = (e) => {
+  let val = e.target.value.replace(/\D/g, ''); // keep only numbers
+  if (val.length > 4) {
+    val = val.substring(0, 4) + '-' + val.substring(4, 8);
+  }
+  formSupplier.value.telefono = val;
+};
 
 // SUPPLIER MODAL
 const showSupplierModal = ref(false);
@@ -452,7 +556,7 @@ const submitPurchase = async () => {
     const json = await res.json();
     if(json.status === 'success') {
       closePurchaseModal();
-      selectedSupplier.value = null; // Volver al inicio para refrescar
+      selectedSupplier.value = null; // Volver al inicio
       Swal.fire({background: '#0f172a', color: '#fff', icon: 'success', title: 'Orden Creada'});
     } else {
       Swal.fire({background: '#0f172a', color: '#fff', icon: 'error', text: json.message});
