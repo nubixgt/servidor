@@ -149,7 +149,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useCalendar } from '../../../composables/useCalendar.js'
 import EventModal from '../../../components/calendar/EventModal.vue'
 
@@ -157,8 +157,13 @@ const {
   currentDate, viewMode, searchQuery, activeFilters, events,
   currentYear, currentMonth, monthName, displayDays, filteredEvents,
   CATEGORIES, getEventsForDate, prevPeriod, nextPeriod, goToday,
-  toggleFilter, addEvent, updateEvent, deleteEvent, moveEvent, formatDate
+  toggleFilter, addEvent, updateEvent, deleteEvent, moveEvent, formatDate,
+  loadEvents
 } = useCalendar()
+
+onMounted(() => {
+  loadEvents()
+})
 
 const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const hoverDate = ref(null)

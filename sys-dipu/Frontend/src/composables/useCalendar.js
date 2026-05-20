@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import api from '../services/api'
 
 const CATEGORIES = [
   { id: 'iniciativas', label: 'Iniciativas de Ley', color: '#2563eb', bg: '#dbeafe', border: '#93c5fd' },
@@ -11,23 +12,12 @@ const CATEGORIES = [
   { id: 'afiliaciones', label: 'Afiliaciones Políticas', color: '#d97706', bg: '#fef3c7', border: '#fcd34d' }
 ]
 
-function createId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
-}
-
 export function useCalendar() {
   const currentDate = ref(new Date())
   const viewMode = ref('month') // month | week
   const searchQuery = ref('')
   const activeFilters = ref([]) // category ids
-  const events = ref([
-    { id: createId(), title: 'Revisión de propuesta de ley', date: formatDate(new Date()), category: 'iniciativas', description: 'Revisión con el equipo legal', files: [] },
-    { id: createId(), title: 'Citación Ministro', date: formatDate(addDays(new Date(), 2)), category: 'citaciones', description: 'Preparar preguntas', files: [] },
-    { id: createId(), title: 'Reunión Comisión', date: formatDate(addDays(new Date(), 1)), category: 'comisiones', description: 'Sala 3', files: [] },
-    { id: createId(), title: 'Auditoría Hospital', date: formatDate(addDays(new Date(), 5)), category: 'fiscalizacion', description: 'Visita de campo', files: [] },
-    { id: createId(), title: 'Visita a Comunidad', date: formatDate(addDays(new Date(), 3)), category: 'compromisos', description: 'Entregar reporte de avances', files: [] },
-    { id: createId(), title: 'Entrevista TV', date: formatDate(addDays(new Date(), -1)), category: 'redes', description: 'Canal 3', files: [] },
-  ])
+  const events = ref([])
 
   function formatDate(d) {
     const y = d.getFullYear()
@@ -136,28 +126,89 @@ export function useCalendar() {
     else activeFilters.value.push(catId)
   }
 
-  function addEvent(evt) {
-    events.value.push({ ...evt, id: createId(), files: evt.files || [] })
+  async function loadEvents() {
+    try {
+      const response = await api.get('/calendario/eventos')
+      if (response.data && response.data.success) {
+        events.value = response.data.data.map(evt => ({
+          ...evt,
+          files: evt.files ? JSON.parse(evt.files) : []
+        }))
+      }
+    } catch (error) {
+      console.error('Error al cargar eventos:', error)
+    }
   }
 
-  function updateEvent(id, data) {
-    const idx = events.value.findIndex(e => e.id === id)
-    if (idx >= 0) events.value[idx] = { ...events.value[idx], ...data }
+  async function addEvent(evt) {
+    try {
+      const response = await api.post('/calendario/eventos', {
+        title: evt.title,
+        date: evt.date,
+        category: evt.category,
+        description: evt.description || '',
+        files: JSON.stringify(evt.files || [])
+      })
+      if (response.data && response.data.success) {
+        await loadEvents()
+      }
+    } catch (error) {
+      console.error('Error al agregar el evento:', error)
+    }
   }
 
-  function deleteEvent(id) {
-    events.value = events.value.filter(e => e.id !== id)
+  async function updateEvent(id, data) {
+    try {
+      const response = await api.put(`/calendario/eventos/${id}`, {
+        title: data.title,
+        date: data.date,
+        category: data.category,
+        description: data.description || '',
+        files: JSON.stringify(data.files || [])
+      })
+      if (response.data && response.data.success) {
+        await loadEvents()
+      }
+    } catch (error) {
+      console.error('Error al actualizar el evento:', error)
+    }
   }
 
-  function moveEvent(id, newDate) {
-    const idx = events.value.findIndex(e => e.id === id)
-    if (idx >= 0) events.value[idx].date = newDate
+  async function deleteEvent(id) {
+    try {
+      const response = await api.delete(`/calendario/eventos/${id}`)
+      if (response.data && response.data.success) {
+        await loadEvents()
+      }
+    } catch (error) {
+      console.error('Error al eliminar el evento:', error)
+    }
+  }
+
+  async function moveEvent(id, newDate) {
+    const evt = events.value.find(e => e.id === id)
+    if (!evt) return
+    try {
+      const response = await api.put(`/calendario/eventos/${id}`, {
+        title: evt.title,
+        date: newDate,
+        category: evt.category,
+        description: evt.description || '',
+        files: JSON.stringify(evt.files || [])
+      })
+      if (response.data && response.data.success) {
+        await loadEvents()
+      }
+    } catch (error) {
+      console.error('Error al mover el evento:', error)
+    }
   }
 
   return {
     currentDate, viewMode, searchQuery, activeFilters, events,
     currentYear, currentMonth, monthName, displayDays, filteredEvents,
     CATEGORIES, getEventsForDate, prevPeriod, nextPeriod, goToday,
-    toggleFilter, addEvent, updateEvent, deleteEvent, moveEvent, formatDate
+    toggleFilter, addEvent, updateEvent, deleteEvent, moveEvent, formatDate,
+    loadEvents
   }
 }

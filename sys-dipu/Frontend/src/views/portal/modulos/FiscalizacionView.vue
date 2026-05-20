@@ -13,7 +13,7 @@
                 <p class="text-on-surface-variant text-lg leading-relaxed">Tablero integral para seguimiento político, presupuestario, documental y mediático por ministerio, secretaría, entidad y comisión.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest">
+                <button @click="abrirDocModal" class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest">
                     <span class="material-symbols-outlined text-xl">upload</span> Cargar documento
                 </button>
                 <button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl">
@@ -259,8 +259,9 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <button @click="eliminarPersona(m.id, idx)"
-                                        class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0">
+                                    <button @click="eliminarPersona(p)"
+                                        class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0"
+                                        title="Eliminar funcionario">
                                         <span class="material-symbols-outlined text-[16px]">delete</span>
                                     </button>
                                 </div>
@@ -379,6 +380,96 @@
                                 class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                                 <span class="material-symbols-outlined text-base">how_to_reg</span>
                                 Registrar funcionario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+
+        <!-- Modal: Cargar Documento -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="docModalAbierto" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-md" @click="cerrarDocModal"></div>
+
+                    <div class="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+
+                        <!-- Gradient header del modal -->
+                        <div class="relative p-6 overflow-hidden bg-gradient-to-br from-primary via-primary-dim to-secondary">
+                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none select-none pointer-events-none">
+                                DOCS
+                            </div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div>
+                                    <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cargar Documento</p>
+                                    <h3 class="text-xl font-extrabold text-white font-headline">Evidencia & Fiscalización</h3>
+                                    <p class="text-white/50 text-xs mt-0.5 max-w-[240px] leading-snug">Vincule documentos al repositorio de control de la bancada</p>
+                                </div>
+                                <button @click="cerrarDocModal"
+                                    class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div class="p-6 space-y-5">
+
+                            <!-- Nombre del documento -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Nombre del Documento <span class="text-error">*</span></label>
+                                <input v-model="nuevoDoc.nombre" type="text" placeholder="Ej: Oficio de amparo y fiscalización 0938-2026"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                            </div>
+
+                            <!-- Tipo y Entidad en grid -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Tipo de Archivo <span class="text-error">*</span></label>
+                                    <select v-model="nuevoDoc.tipo" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                                        <option value="PDF">PDF</option>
+                                        <option value="XLSX">XLSX / Excel</option>
+                                        <option value="DOCX">DOCX / Word</option>
+                                        <option value="PPTX">PPTX / PowerPoint</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Entidad Vinculada <span class="text-error">*</span></label>
+                                    <select v-model="nuevoDoc.entidad" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                                        <option value="" disabled>Seleccione entidad...</option>
+                                        <option v-for="m in ministries" :key="m.id" :value="m.short">{{ m.short }} - {{ m.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de Carga</label>
+                                <input v-model="nuevoDoc.fecha" type="date"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
+                            </div>
+
+                            <!-- Error -->
+                            <Transition name="slide-error">
+                                <p v-if="errorDoc" class="flex items-center gap-2 text-xs font-bold text-error bg-error-container/30 px-4 py-3 rounded-xl border border-error/15">
+                                    <span class="material-symbols-outlined text-sm">error</span>
+                                    {{ errorDoc }}
+                                </p>
+                            </Transition>
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="p-5 pt-0 flex gap-3">
+                            <button @click="cerrarDocModal"
+                                class="flex-1 py-3 px-4 bg-surface-container font-bold text-on-surface text-sm rounded-2xl hover:bg-surface-container-high transition-colors border border-outline-variant/10">
+                                Cancelar
+                            </button>
+                            <button @click="guardarDocumento"
+                                class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">cloud_upload</span>
+                                Guardar documento
                             </button>
                         </div>
                     </div>
@@ -632,7 +723,9 @@
             <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-surface-container-low bg-surface-container-lowest flex justify-between items-center">
                     <h3 class="font-extrabold text-xl font-headline tracking-tight">Repositorio Documental</h3>
-                    <button class="text-primary hover:bg-primary-container p-2 rounded-lg transition-colors"><span class="material-symbols-outlined">filter_list</span></button>
+                    <button @click="abrirDocModal" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all hover:bg-primary/95 shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">upload_file</span> Cargar
+                    </button>
                 </div>
                 <div class="w-full overflow-x-auto pb-2">
                     <table class="w-full text-left border-collapse min-w-[600px]">
@@ -642,16 +735,28 @@
                                 <th class="px-6 py-4 font-bold">Documento</th>
                                 <th class="px-6 py-4 font-bold">Entidad Central</th>
                                 <th class="px-6 py-4 font-bold">Fecha Reseña</th>
+                                <th class="px-6 py-4 font-bold text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-background">
-                            <tr v-for="d in docs" :key="d.nombre" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+                            <tr v-if="docs.length === 0">
+                                <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant text-sm">
+                                    <span class="material-symbols-outlined text-4xl block mb-2 text-outline">folder_off</span>
+                                    No hay documentos cargados en el repositorio.
+                                </td>
+                            </tr>
+                            <tr v-for="d in docs" :key="d.id" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
                                 <td class="px-6 py-4">
                                     <span class="px-2.5 py-1 bg-surface-container-highest border border-outline-variant/20 rounded text-[10px] font-black text-on-surface-variant shadow-sm">{{ d.tipo }}</span>
                                 </td>
                                 <td class="px-6 py-4 font-bold text-sm text-primary group-hover:underline">{{ d.nombre }}</td>
                                 <td class="px-6 py-4 text-xs font-semibold text-on-surface-variant">{{ d.entidad }}</td>
                                 <td class="px-6 py-4 text-xs font-mono text-on-surface-variant">{{ d.fecha }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button @click.stop="eliminarDocumento(d)" class="p-1.5 rounded-xl hover:bg-error/10 text-error inline-flex items-center justify-center transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -662,7 +767,7 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
                 <h3 class="font-extrabold text-lg font-headline mb-4 relative z-10">Carga Segura de Evidencia</h3>
                 
-                <div class="border-2 border-dashed border-primary/30 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center text-center text-on-surface-variant mb-6 hover:bg-primary/10 transition-colors cursor-pointer relative z-10">
+                <div @click="abrirDocModal" class="border-2 border-dashed border-primary/30 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center text-center text-on-surface-variant mb-6 hover:bg-primary/10 transition-colors cursor-pointer relative z-10">
                     <div class="w-16 h-16 rounded-full bg-surface shadow-sm flex items-center justify-center mb-4">
                         <span class="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
                     </div>
@@ -789,6 +894,8 @@ onMounted(async () => {
     } catch (error) {
         console.error('Error al cargar el presupuesto guardado:', error);
     }
+    await cargarPersonalBD();
+    await cargarDocumentosBD();
 });
 
 // --- Lógica de Autoridades / Personal ---
@@ -798,9 +905,45 @@ const ministerioSeleccionado = ref(null);
 const errorModal = ref('');
 const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
 
+// --- Lógica de Documentos ---
+const docs = ref([]);
+const docModalAbierto = ref(false);
+const nuevoDoc = ref({ nombre: '', tipo: 'PDF', entidad: '', fecha: '' });
+const errorDoc = ref('');
+
+async function cargarPersonalBD() {
+    try {
+        const response = await api.get('/fiscalizacion/personal');
+        if (response.data?.success && Array.isArray(response.data.data)) {
+            const agrupado = {};
+            response.data.data.forEach(p => {
+                const mId = p.ministerio_id;
+                if (!agrupado[mId]) {
+                    agrupado[mId] = [];
+                }
+                agrupado[mId].push(p);
+            });
+            personalPorMinisterio.value = agrupado;
+        }
+    } catch (error) {
+        console.error('Error al cargar personal:', error);
+    }
+}
+
+async function cargarDocumentosBD() {
+    try {
+        const response = await api.get('/fiscalizacion/documentos');
+        if (response.data?.success && Array.isArray(response.data.data)) {
+            docs.value = response.data.data;
+        }
+    } catch (error) {
+        console.error('Error al cargar documentos:', error);
+    }
+}
+
 function abrirModal(ministerio) {
     ministerioSeleccionado.value = ministerio;
-    nuevoPersonal.value = { nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' };
+    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
     errorModal.value = '';
     modalAbierto.value = true;
 }
@@ -820,7 +963,7 @@ function onFotoChange(event) {
     reader.readAsDataURL(file);
 }
 
-function guardarPersonal() {
+async function guardarPersonal() {
     if (!nuevoPersonal.value.nombre.trim()) {
         errorModal.value = 'El nombre es obligatorio.';
         return;
@@ -829,16 +972,104 @@ function guardarPersonal() {
         errorModal.value = 'Selecciona el tipo de puesto.';
         return;
     }
-    const id = ministerioSeleccionado.value.id;
-    if (!personalPorMinisterio.value[id]) {
-        personalPorMinisterio.value[id] = [];
+    try {
+        const payload = {
+            ministerio_id: ministerioSeleccionado.value.id,
+            nombre: nuevoPersonal.value.nombre,
+            tipo_puesto: nuevoPersonal.value.tipoPuesto,
+            sueldo: nuevoPersonal.value.sueldo ? parseFloat(nuevoPersonal.value.sueldo) : null,
+            fecha_posesion: nuevoPersonal.value.fechaPosesion || null,
+            foto_nombre: nuevoPersonal.value.fotoNombre || null,
+            foto_preview: nuevoPersonal.value.fotoPreview || null
+        };
+        const response = await api.post('/fiscalizacion/personal', payload);
+        if (response.data?.success) {
+            await cargarPersonalBD();
+            cerrarModal();
+        } else {
+            errorModal.value = response.data?.error || 'Error al guardar el funcionario.';
+        }
+    } catch (error) {
+        console.error('Error al guardar personal:', error);
+        errorModal.value = 'Error de conexión con el servidor.';
     }
-    personalPorMinisterio.value[id].push({ ...nuevoPersonal.value });
-    cerrarModal();
 }
 
-function eliminarPersona(ministerioId, index) {
-    personalPorMinisterio.value[ministerioId].splice(index, 1);
+async function eliminarPersona(p) {
+    if (!p.id) return;
+    if (confirm(`¿Está seguro de eliminar a ${p.nombre}?`)) {
+        try {
+            const response = await api.delete(`/fiscalizacion/personal/${p.id}`);
+            if (response.data?.success) {
+                await cargarPersonalBD();
+            } else {
+                alert(response.data?.error || 'Error al eliminar el funcionario.');
+            }
+        } catch (error) {
+            console.error('Error al eliminar funcionario:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    }
+}
+
+function abrirDocModal() {
+    nuevoDoc.value = {
+        nombre: '',
+        tipo: 'PDF',
+        entidad: ministries[0]?.short || '',
+        fecha: new Date().toISOString().split('T')[0]
+    };
+    errorDoc.value = '';
+    docModalAbierto.value = true;
+}
+
+function cerrarDocModal() {
+    docModalAbierto.value = false;
+    errorDoc.value = '';
+}
+
+async function guardarDocumento() {
+    if (!nuevoDoc.value.nombre.trim()) {
+        errorDoc.value = 'El nombre del documento es obligatorio.';
+        return;
+    }
+    if (!nuevoDoc.value.tipo) {
+        errorDoc.value = 'Selecciona el tipo de documento.';
+        return;
+    }
+    if (!nuevoDoc.value.entidad) {
+        errorDoc.value = 'Selecciona la entidad vinculada.';
+        return;
+    }
+    try {
+        const response = await api.post('/fiscalizacion/documentos', nuevoDoc.value);
+        if (response.data?.success) {
+            await cargarDocumentosBD();
+            cerrarDocModal();
+        } else {
+            errorDoc.value = response.data?.error || 'Error al guardar el documento.';
+        }
+    } catch (error) {
+        console.error('Error al guardar documento:', error);
+        errorDoc.value = 'Error de conexión con el servidor.';
+    }
+}
+
+async function eliminarDocumento(d) {
+    if (!d.id) return;
+    if (confirm(`¿Está seguro de eliminar el documento "${d.nombre}"?`)) {
+        try {
+            const response = await api.delete(`/fiscalizacion/documentos/${d.id}`);
+            if (response.data?.success) {
+                await cargarDocumentosBD();
+            } else {
+                alert(response.data?.error || 'Error al eliminar el documento.');
+            }
+        } catch (error) {
+            console.error('Error al eliminar documento:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    }
 }
 
 // Color único por ministerio basado en su posición
@@ -1056,15 +1287,8 @@ const personal = [
   { puesto: "Asistente Despacho", renglones: "022", salario: "Q8,000", entidad: "MINEDUC" },
 ];
 
-const docs = [
-  { tipo: "PDF", nombre: "Informe de consolidación de ejecución de Marzo 2026", entidad: "MICIVI", fecha: "2026-04-01" },
-  { tipo: "PPTX", nombre: "Presentación de resultados interinstitucional presidencia", entidad: "MSPAS", fecha: "2026-04-09" },
-  { tipo: "XLSX", nombre: "Nómina y renglones de contrato temporal consolidados", entidad: "MINEDUC", fecha: "2026-04-10" },
-  { tipo: "PDF", nombre: "Oficio formal de amparo y fiscalización 0938-2026", entidad: "MIDES", fecha: "2026-04-12" },
-];
-
 const totalPresupuesto = computed(() => ministries.reduce((acc, m) => acc + m.presupuesto, 0));
-const totalDocs = computed(() => ministries.reduce((acc, m) => acc + m.docs, 0));
+const totalDocs = computed(() => docs.value.length);
 const totalAlertas = computed(() => ministries.reduce((acc, m) => acc + m.alertas, 0));
 const avgEjecucion = computed(() => Math.round(ministries.reduce((acc, m) => acc + m.ejecucion, 0) / ministries.length));
 

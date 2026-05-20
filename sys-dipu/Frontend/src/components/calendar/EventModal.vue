@@ -161,6 +161,7 @@ function save() {
   border: 1px solid #327f91; /* Teal Border */
   border-radius: 20px;
   width: 100%; max-width: 500px;
+  max-height: min(720px, 90vh);
   box-shadow: 0 25px 50px -12px rgba(14, 40, 48, 0.6);
   overflow: hidden;
   display: flex; flex-direction: column;
@@ -168,9 +169,9 @@ function save() {
 
 /* Header */
 .em-header {
-  padding: 24px 28px; display: flex;
+  padding: 16px 20px; display: flex;
   background: #184e5b; /* Darker Teal Header */
-  align-items: flex-start; justify-content: space-between;
+  align-items: center; justify-content: space-between;
   border-bottom: 1px solid #327f91;
 }
 .em-header-left { display: flex; align-items: center; gap: 16px; }
@@ -198,7 +199,22 @@ function save() {
 /* Layout de una columna compacta */
 .em-layout {
   display: flex; flex-direction: column;
-  gap: 20px; padding: 24px 28px;
+  gap: 14px; padding: 16px 20px;
+  overflow-y: auto;
+  
+  /* Custom scrollbar to keep it sleek and premium */
+  scrollbar-width: thin;
+  scrollbar-color: #327f91 #184e5b;
+}
+.em-layout::-webkit-scrollbar {
+  width: 6px;
+}
+.em-layout::-webkit-scrollbar-track {
+  background: #184e5b;
+}
+.em-layout::-webkit-scrollbar-thumb {
+  background: #327f91;
+  border-radius: 3px;
 }
 
 /* Campos */
@@ -211,7 +227,7 @@ function save() {
 /* Inputs Text / Date */
 .em-input-wrap { position: relative; display: flex; align-items: center; }
 .em-input {
-  width: 100%; padding: 12px 14px;
+  width: 100%; padding: 10px 12px;
   background: #184e5b; 
   border: 1px solid #327f91; 
   border-radius: 10px;
@@ -247,7 +263,7 @@ function save() {
 
 /* Textarea */
 .em-textarea {
-  width: 100%; padding: 12px 14px;
+  width: 100%; padding: 10px 12px;
   background: #184e5b; border: 1px solid #327f91; border-radius: 10px;
   font-size: 14px; color: #ffffff; resize: none; transition: all 0.2s; outline: none;
   font-family: inherit; line-height: 1.5;
@@ -259,9 +275,9 @@ function save() {
 /* Dropzone */
 .em-dropzone {
   border: 2px dashed #5ab1c5; border-radius: 12px;
-  padding: 24px; text-align: center; cursor: pointer;
+  padding: 16px; text-align: center; cursor: pointer;
   background: #184e5b; transition: all 0.2s;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
 }
 .em-dropzone:hover { border-color: #79c6d8; background: #216170; }
 .em-drop-icon {
@@ -293,7 +309,7 @@ function save() {
 /* Footer */
 .em-footer {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 28px; background: #184e5b; border-top: 1px solid #327f91;
+  padding: 14px 20px; background: #184e5b; border-top: 1px solid #327f91;
 }
 .em-footer-right { display: flex; gap: 12px; margin-left: auto; }
 
