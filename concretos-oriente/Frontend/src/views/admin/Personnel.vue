@@ -340,7 +340,9 @@ const fetchPersonnel = async () => {
     const response = await fetch(`${BASE_URL}/personnel`);
     const result = await response.json();
     if (result.status === 'success') {
-      personnel.value = result.data;
+      const fetchTime = Date.now();
+      // Agregar un identificador de tiempo local para forzar recarga de cache
+      personnel.value = result.data.map(emp => ({...emp, _t: fetchTime}));
     }
   } catch (error) {
     console.error("Error fetching personnel:", error);
@@ -451,8 +453,8 @@ const getInitials = (nombres, apellidos) => {
 
 const getPhotoUrl = (emp) => {
   if (!emp || !emp.foto_path) return '';
-  // Usamos updated_at para obligar al navegador a recargar la foto si cambió
-  const timestamp = new Date(emp.updated_at || emp.created_at || Date.now()).getTime();
+  // Usar el timestamp inyectado en el fetch para romper el caché
+  const timestamp = emp._t || Date.now();
   return `/concretos-oriente/Backend/${emp.foto_path}?t=${timestamp}`;
 };
 
