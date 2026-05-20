@@ -104,6 +104,13 @@
           <h3 class="text-4xl font-black text-white italic uppercase tracking-tighter">Protocolo de Transacciones</h3>
           <p class="text-[10px] font-bold text-white/30 mt-3 uppercase tracking-[0.3em]">Libro mayor financiero en tiempo real</p>
         </div>
+        <div class="flex items-center gap-4">
+          <select v-model="filterType" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-xs font-bold text-white uppercase tracking-widest focus:outline-none focus:border-primary/50 appearance-none cursor-pointer">
+            <option value="Todos">Todas las Transacciones</option>
+            <option value="Ingreso">Solo Ingresos</option>
+            <option value="Egreso">Solo Egresos</option>
+          </select>
+        </div>
       </div>
 
       <div class="overflow-x-auto px-6">
@@ -342,7 +349,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { 
   WalletIcon, ArrowTrendingUpIcon, ClockIcon, ArrowTrendingDownIcon,
   BanknotesIcon, ArchiveBoxIcon, UserIcon, PlusIcon, DocumentArrowDownIcon, 
@@ -488,13 +495,27 @@ const pieChartData = computed(() => {
 });
 
 
-// Pagination
+// Pagination & Filters
+const filterType = ref('Todos');
+
+const filteredTransactions = computed(() => {
+  let result = transactions.value;
+  if (filterType.value !== 'Todos') {
+    result = result.filter(tx => tx.transaction_type === filterType.value);
+  }
+  return result;
+});
+
 const currentPage = ref(1);
 const itemsPerPage = 10;
-const totalPages = computed(() => Math.ceil(transactions.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(filteredTransactions.value.length / itemsPerPage) || 1);
 const paginatedTransactions = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return transactions.value.slice(start, start + itemsPerPage);
+  return filteredTransactions.value.slice(start, start + itemsPerPage);
+});
+
+watch(filterType, () => {
+  currentPage.value = 1;
 });
 
 const formatDate = (val) => {
