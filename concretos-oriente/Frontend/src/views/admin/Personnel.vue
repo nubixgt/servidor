@@ -74,10 +74,10 @@
               <td class="px-8 py-8">
                 <div class="flex items-center gap-5">
                   <div 
-                    @click="emp.foto_path ? openImageFullScreen(getPhotoUrl(emp.foto_path)) : null"
+                    @click="emp.foto_path ? openImageFullScreen(getPhotoUrl(emp)) : null"
                     :class="['w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden border border-white/10 shadow-lg transition-transform hover:scale-105', emp.foto_path ? 'cursor-pointer' : '']"
                   >
-                    <img v-if="emp.foto_path" :src="getPhotoUrl(emp.foto_path)" alt="Foto" class="w-full h-full object-cover" />
+                    <img v-if="emp.foto_path" :src="getPhotoUrl(emp)" alt="Foto" class="w-full h-full object-cover" />
                     <span v-else class="font-bold text-primary">{{ getInitials(emp.nombres, emp.apellidos) }}</span>
                   </div>
                   <div>
@@ -222,10 +222,10 @@
           <!-- Foto Grande Izquierda -->
           <div class="w-full md:w-1/3 flex flex-col items-center gap-4">
             <div 
-              @click="selectedEmp.foto_path ? openImageFullScreen(getPhotoUrl(selectedEmp.foto_path)) : null"
+              @click="selectedEmp.foto_path ? openImageFullScreen(getPhotoUrl(selectedEmp)) : null"
               :class="['w-40 h-40 rounded-3xl bg-white/5 flex items-center justify-center overflow-hidden border border-white/10 shadow-2xl', selectedEmp.foto_path ? 'cursor-pointer hover:scale-105 transition-transform' : '']"
             >
-              <img v-if="selectedEmp.foto_path" :src="getPhotoUrl(selectedEmp.foto_path)" alt="Foto" class="w-full h-full object-cover" />
+              <img v-if="selectedEmp.foto_path" :src="getPhotoUrl(selectedEmp)" alt="Foto" class="w-full h-full object-cover" />
               <span v-else class="font-bold text-primary text-5xl">{{ getInitials(selectedEmp.nombres, selectedEmp.apellidos) }}</span>
             </div>
             <div class="text-center">
@@ -449,9 +449,11 @@ const getInitials = (nombres, apellidos) => {
   return `${n}${a}`;
 };
 
-const getPhotoUrl = (path) => {
-  if (!path) return '';
-  return `/concretos-oriente/Backend/${path}`;
+const getPhotoUrl = (emp) => {
+  if (!emp || !emp.foto_path) return '';
+  // Usamos updated_at para obligar al navegador a recargar la foto si cambió
+  const timestamp = new Date(emp.updated_at || emp.created_at || Date.now()).getTime();
+  return `/concretos-oriente/Backend/${emp.foto_path}?t=${timestamp}`;
 };
 
 const deleteEmployee = async (id) => {
