@@ -281,7 +281,9 @@
                       <XMarkIcon class="w-6 h-6" />
                     </button>
                   </div>
-                  <div id="project-map" :class="mapFullscreen ? 'flex-1 rounded-2xl border border-white/10 w-full' : 'h-full w-full rounded-2xl z-0 relative'" style="z-index: 1;"></div>
+                  <div :class="mapFullscreen ? 'flex-1 w-full relative' : 'h-full w-full relative min-h-[300px]'">
+                    <div id="project-map" class="absolute inset-0 rounded-2xl border border-white/10 z-0"></div>
+                  </div>
                   <div v-if="mapFullscreen" class="mt-4 p-4 bg-black/80 backdrop-blur-md rounded-2xl border border-white/10 flex flex-col md:flex-row gap-4 items-center">
                     <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3 text-white focus:border-primary transition-all font-bold text-sm" placeholder="Latitud, Longitud" readonly />
                     <button type="button" @click="getLocation" class="w-full md:w-auto px-6 py-3 bg-primary hover:bg-primary/80 rounded-2xl transition-all font-black uppercase tracking-widest flex items-center justify-center gap-2 text-sm text-white">
@@ -582,12 +584,12 @@ const removeContrato = (index) => {
 
 const toggleMapFullscreen = () => {
   mapFullscreen.value = !mapFullscreen.value;
-  // Trigger invalidateSize after transition
+  // Trigger invalidateSize after transition completes
   setTimeout(() => {
     if (mapInstance) {
       mapInstance.invalidateSize();
     }
-  }, 300);
+  }, 350);
 };
 
 const getLocation = () => {

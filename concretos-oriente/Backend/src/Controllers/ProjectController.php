@@ -13,7 +13,7 @@ class ProjectController
 
     public function __construct()
     {
-        $this->db = (new Database())->getConnection();
+        $this->db = Database::getInstance()->getConnection();
     }
 
     // GET /projects
@@ -75,7 +75,7 @@ class ProjectController
             $id = $this->db->lastInsertId();
 
             // Manejo de archivos subidos
-            $baseDir = __DIR__ . "/../../../Uploads/Projects/$id";
+            $baseDir = __DIR__ . "/../../Uploads/Projects/$id";
             if (!file_exists($baseDir)) {
                 mkdir($baseDir, 0777, true);
             }
@@ -191,7 +191,7 @@ class ProjectController
                 ':id' => $id
             ]);
 
-            $baseDir = __DIR__ . "/../../../Uploads/Projects/$id";
+            $baseDir = __DIR__ . "/../../Uploads/Projects/$id";
             if (!file_exists($baseDir)) {
                 mkdir($baseDir, 0777, true);
             }
@@ -199,8 +199,8 @@ class ProjectController
             // Actualizar foto si se envió una nueva
             if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                 // Borrar foto vieja si existe
-                if (!empty($project['foto']) && file_exists(__DIR__ . "/../../../" . $project['foto'])) {
-                    unlink(__DIR__ . "/../../../" . $project['foto']);
+                if (!empty($project['foto']) && file_exists(__DIR__ . "/../../" . $project['foto'])) {
+                    unlink(__DIR__ . "/../../" . $project['foto']);
                 }
 
                 $fotoExt = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
@@ -284,7 +284,7 @@ class ProjectController
             $deleteStmt->execute([$id]);
 
             // Borrar directorio físico de forma recursiva
-            $dirPath = __DIR__ . "/../../../Uploads/Projects/$id";
+            $dirPath = __DIR__ . "/../../Uploads/Projects/$id";
             if (is_dir($dirPath)) {
                 $this->deleteDirectory($dirPath);
             }
