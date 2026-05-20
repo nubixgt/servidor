@@ -38,17 +38,7 @@ $router->registerController(PersonnelController::class);
 $router->registerController(ProjectController::class);
 // $router->registerController(YourController::class);
 
-// Personnel Routes
-$router->get('/personnel', [PersonnelController::class, 'index']);
-$router->post('/personnel', [PersonnelController::class, 'store']);
-$router->post('/personnel/{id}', [PersonnelController::class, 'update']);
-$router->delete('/personnel/{id}', [PersonnelController::class, 'destroy']);
 
-// Projects Routes
-$router->get('/projects', [ProjectController::class, 'index']);
-$router->post('/projects', [ProjectController::class, 'store']);
-$router->post('/projects/{id}', [ProjectController::class, 'update']);
-$router->delete('/projects/{id}', [ProjectController::class, 'destroy']);
 
 
 // 6. Dispatch

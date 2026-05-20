@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Utils\Database;
+use App\Attributes\Route;
 use PDO;
 use Exception;
 
@@ -16,6 +17,7 @@ class ProjectController
     }
 
     // GET /projects
+    #[Route('/projects', 'GET')]
     public function index()
     {
         try {
@@ -26,7 +28,7 @@ class ProjectController
                 "status" => "success",
                 "data" => $projects
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode([
                 "status" => "error",
@@ -36,6 +38,7 @@ class ProjectController
     }
 
     // POST /projects (Create)
+    #[Route('/projects', 'POST')]
     public function store()
     {
         try {
@@ -131,7 +134,7 @@ class ProjectController
                 "message" => "Proyecto creado exitosamente"
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode([
                 "status" => "error",
@@ -141,6 +144,7 @@ class ProjectController
     }
 
     // POST /projects/{id} (Update - Usamos POST por FormData con archivos)
+    #[Route('/projects/{id}', 'POST')]
     public function update($id)
     {
         try {
@@ -251,7 +255,7 @@ class ProjectController
                 "message" => "Proyecto actualizado exitosamente"
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode([
                 "status" => "error",
@@ -261,6 +265,7 @@ class ProjectController
     }
 
     // DELETE /projects/{id}
+    #[Route('/projects/{id}', 'DELETE')]
     public function destroy($id)
     {
         try {
@@ -289,7 +294,7 @@ class ProjectController
                 "message" => "Proyecto y archivos eliminados"
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             http_response_code(500);
             echo json_encode([
                 "status" => "error",

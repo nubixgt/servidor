@@ -256,16 +256,48 @@
                   <input v-model="formData.gasto_real_acumulado" type="number" step="0.01" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-lg" placeholder="0.00" />
                 </div>
                 <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Ubicación Geográfica (Haz clic en el mapa)</label>
-                  <div class="space-y-3">
-                    <div id="project-map" class="h-48 w-full rounded-2xl border border-white/10 z-0 relative z-0" style="z-index: 1;"></div>
-                    <div class="flex gap-2">
-                      <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-xs" placeholder="Latitud, Longitud" readonly />
-                      <button type="button" @click="getLocation" class="px-5 bg-white/10 hover:bg-primary rounded-2xl transition-all" title="Obtener mi ubicación actual">
-                        <MapPinIcon class="w-6 h-6 text-white" />
-                      </button>
-                    </div>
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre de Ubicación</label>
+                  <input v-model="formData.nombre_ubicacion" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Zona 10, Ciudad" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Mapa Full Width -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest block">Ubicación Geográfica (Haz clic en el mapa)</label>
+                <button type="button" @click="toggleMapFullscreen" class="text-xs text-primary hover:text-white font-bold flex items-center gap-1 transition-all">
+                  <span v-if="mapFullscreen">Cerrar Pantalla Completa</span>
+                  <span v-else>Ver en Pantalla Completa</span>
+                </button>
+              </div>
+              <div class="space-y-3">
+                <div 
+                  :class="mapFullscreen ? 'fixed inset-0 z-[100] bg-black p-4 md:p-10 flex flex-col' : 'relative h-80 w-full rounded-2xl border border-white/10'"
+                >
+                  <div v-if="mapFullscreen" class="flex justify-between items-center mb-4 bg-black/80 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                    <p class="text-white font-black uppercase tracking-widest text-lg">Seleccionar Ubicación</p>
+                    <button type="button" @click="toggleMapFullscreen" class="p-2 bg-white/10 hover:bg-tertiary rounded-xl text-white transition-all">
+                      <XMarkIcon class="w-6 h-6" />
+                    </button>
                   </div>
+                  <div id="project-map" :class="mapFullscreen ? 'flex-1 rounded-2xl border border-white/10 w-full' : 'h-full w-full rounded-2xl z-0 relative'" style="z-index: 1;"></div>
+                  <div v-if="mapFullscreen" class="mt-4 p-4 bg-black/80 backdrop-blur-md rounded-2xl border border-white/10 flex flex-col md:flex-row gap-4 items-center">
+                    <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3 text-white focus:border-primary transition-all font-bold text-sm" placeholder="Latitud, Longitud" readonly />
+                    <button type="button" @click="getLocation" class="w-full md:w-auto px-6 py-3 bg-primary hover:bg-primary/80 rounded-2xl transition-all font-black uppercase tracking-widest flex items-center justify-center gap-2 text-sm text-white">
+                      <MapPinIcon class="w-5 h-5 text-white" /> Mi Ubicación
+                    </button>
+                    <button type="button" @click="toggleMapFullscreen" class="w-full md:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-black uppercase tracking-widest text-sm text-white">
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+                
+                <div v-if="!mapFullscreen" class="flex gap-2">
+                  <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-xs" placeholder="Coordenadas GPS (Latitud, Longitud)" readonly />
+                  <button type="button" @click="getLocation" class="px-5 bg-white/10 hover:bg-primary rounded-2xl transition-all" title="Obtener mi ubicación actual">
+                    <MapPinIcon class="w-6 h-6 text-white" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -345,6 +377,7 @@ const showModal = ref(false);
 const isSubmitting = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
+const mapFullscreen = ref(false);
 
 const formData = ref({
   codigo: '',
@@ -545,6 +578,16 @@ const handleContratosChange = (e) => {
 
 const removeContrato = (index) => {
   formData.value.contratos.splice(index, 1);
+};
+
+const toggleMapFullscreen = () => {
+  mapFullscreen.value = !mapFullscreen.value;
+  // Trigger invalidateSize after transition
+  setTimeout(() => {
+    if (mapInstance) {
+      mapInstance.invalidateSize();
+    }
+  }, 300);
 };
 
 const getLocation = () => {
