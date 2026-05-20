@@ -8,6 +8,7 @@ use App\Controllers\UserController;
 use App\Controllers\MachineryController;
 use App\Controllers\InventoryController;
 use App\Controllers\SupplierController;
+use App\Controllers\FinanceController;
 
 // Backend/api/v1/index.php
 
@@ -44,6 +45,7 @@ $router->registerController(UserController::class);
 $router->registerController(MachineryController::class);
 $router->registerController(InventoryController::class);
 $router->registerController(SupplierController::class);
+$router->registerController(FinanceController::class);
 // $router->registerController(YourController::class);
 
 
