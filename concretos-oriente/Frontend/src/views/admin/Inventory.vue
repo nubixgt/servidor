@@ -309,6 +309,10 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código de Barras</label>
               <input v-model="formItem.codigo_barras" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
+            <div class="space-y-2 lg:col-span-1">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código QR</label>
+              <input v-model="formItem.codigo_qr" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+            </div>
           </div>
 
           <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
@@ -554,12 +558,12 @@ const isEditing = ref(false);
 const editItemId = ref(null);
 const formItem = ref({
   tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', 
-  unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: ''
+  unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: '', codigo_qr: ''
 });
 
 const openItemModal = () => {
   isEditing.value = false;
-  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: ''};
+  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: '', codigo_qr: ''};
   showItemModal.value = true;
 };
 
