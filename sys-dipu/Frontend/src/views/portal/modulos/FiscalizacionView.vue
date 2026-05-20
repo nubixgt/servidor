@@ -3,7 +3,7 @@
         <!-- Fondo interactivo que cubre el área de contenido -->
         <div 
             class="fixed inset-0 pointer-events-none transition-colors duration-1000 z-0"
-            :class="activeTab === 'presupuesto' ? 'bg-sky-200' : 'bg-transparent'"
+            :class="activeTab === 'presupuesto' ? 'bg-white' : 'bg-transparent'"
         ></div>
         
         <div class="relative z-10 space-y-8">
@@ -480,28 +480,23 @@
         <!-- Tab: Presupuesto -->
         <div v-if="activeTab === 'presupuesto'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
             <!-- Hero Header Presupuesto -->
-            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 p-8 shadow-2xl shadow-indigo-900/20 mb-8 border border-white/10">
-                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, white 1.5px, transparent 1.5px), radial-gradient(circle at 80% 20%, white 1.5px, transparent 1.5px); background-size: 48px 48px; animation: float 10s linear infinite;"></div>
-                <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div class="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-500/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"></div>
-                
-                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="bg-white rounded-3xl border border-gray-200 shadow-sm p-8 mb-2">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20">
+                            <div class="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center shadow-md">
                                 <span class="material-symbols-outlined text-white text-2xl">account_balance_wallet</span>
                             </div>
-                            <span class="text-white/90 text-xs font-black uppercase tracking-[0.2em] bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">Ejecución Financiera</span>
+                            <span class="text-red-600 text-xs font-black uppercase tracking-[0.2em] bg-red-50 px-3 py-1 rounded-full border border-red-100">Ejecución Financiera</span>
                         </div>
-                        <h2 class="text-4xl font-extrabold text-white font-headline leading-tight tracking-tight drop-shadow-sm">Presupuesto</h2>
-                        <p class="text-white/80 text-sm mt-2 max-w-2xl leading-relaxed">Módulo interactivo del Sistema de Contabilidad Integrada. Adjunta el reporte oficial en formato Excel para analizar, formatear y visualizar la ejecución presupuestaria en tiempo real.</p>
+                        <h2 class="text-3xl font-extrabold text-gray-900 font-headline leading-tight tracking-tight">Presupuesto</h2>
+                        <p class="text-gray-500 text-sm mt-2 max-w-2xl leading-relaxed">Módulo interactivo del Sistema de Contabilidad Integrada. Adjunta el reporte oficial en formato Excel para analizar y visualizar la ejecución presupuestaria.</p>
                     </div>
-                    
-                    <div class="shrink-0 relative group mt-4 md:mt-0">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 rounded-2xl blur-md opacity-40 group-hover:opacity-100 transition duration-500"></div>
+
+                    <div class="shrink-0 mt-4 md:mt-0">
                         <input type="file" id="excelUploadSicoin" accept=".xlsx, .xls" class="hidden" @change="handleExcelUpload" />
-                        <label for="excelUploadSicoin" class="relative cursor-pointer px-8 py-4 bg-white/95 backdrop-blur-sm text-indigo-900 font-extrabold text-sm rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3 active:scale-95 border border-white">
-                            <span class="material-symbols-outlined text-xl text-indigo-600 animate-bounce">upload_file</span>
+                        <label for="excelUploadSicoin" class="cursor-pointer px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-3 active:scale-95">
+                            <span class="material-symbols-outlined text-xl">upload_file</span>
                             Cargar Reporte Oficial
                         </label>
                     </div>
@@ -509,24 +504,28 @@
             </div>
 
             <!-- Tabla Detallada del Excel (Formato SICOIN) -->
-            <div v-if="excelRows.length > 0" class="bg-white rounded-3xl border border-indigo-100 shadow-xl shadow-indigo-900/5 overflow-hidden p-2">
-                <div class="w-full overflow-x-auto rounded-2xl border border-indigo-50">
+            <div v-if="excelRows.length > 0" class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="font-bold text-gray-900 text-base">Reporte de Ejecución Presupuestaria</h3>
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest">SICOIN</span>
+                </div>
+                <div class="w-full overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[1000px] text-[13px] font-sans">
                         <thead>
-                            <tr class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white shadow-sm">
-                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-4 py-3.5 font-bold border-r border-white/10 tracking-wide', index === 0 ? 'text-left' : 'text-right']">
+                            <tr class="bg-gray-900 text-white">
+                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-4 py-3.5 font-bold border-r border-white/10 tracking-wide text-xs uppercase', index === 0 ? 'text-left' : 'text-right']">
                                     {{ header || (index === 0 ? 'Entidad' : '') }}
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-indigo-50">
-                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-indigo-50/50 transition-colors bg-white text-slate-700 group">
-                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-4 py-2 border-r border-indigo-50 whitespace-nowrap', cellIndex === 0 ? 'text-left text-indigo-950' : 'text-right']">
-                                    <span :class="{'uppercase font-bold text-[11px] tracking-wider': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-red-50/50 transition-colors bg-white text-gray-700 group">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-4 py-2.5 border-r border-gray-100 whitespace-nowrap', cellIndex === 0 ? 'text-left font-semibold text-gray-900' : 'text-right text-gray-900 font-semibold']">
+                                    <span :class="{'uppercase text-[11px] tracking-wider': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
                                 </td>
                             </tr>
-                            <tr v-if="excelTotals" class="bg-gradient-to-r from-indigo-50 to-blue-50 font-extrabold text-indigo-950 border-t-4 border-indigo-200 shadow-inner">
-                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-4 py-3.5 border-r border-indigo-100 whitespace-nowrap', cellIndex === 0 ? 'text-left uppercase tracking-widest text-xs' : 'text-right text-indigo-700']">
+                            <tr v-if="excelTotals" class="bg-gray-50 font-extrabold text-gray-900 border-t-2 border-gray-200">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-4 py-3.5 border-r border-gray-100 whitespace-nowrap', cellIndex === 0 ? 'text-left uppercase tracking-widest text-xs' : 'text-right text-gray-900']">
                                     {{ excelTotals[cellIndex] || '' }}
                                 </td>
                             </tr>
@@ -534,15 +533,16 @@
                     </table>
                 </div>
             </div>
-            <div v-else class="relative overflow-hidden bg-surface p-12 rounded-3xl border border-outline-variant/15 shadow-sm text-center flex flex-col items-center justify-center group/empty">
-                <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                <div class="relative z-10">
-                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-50 border-8 border-emerald-100 flex items-center justify-center group-hover/empty:scale-110 transition-transform duration-500 shadow-inner">
-                        <span class="material-symbols-outlined text-4xl text-emerald-500">analytics</span>
-                    </div>
-                    <h4 class="font-extrabold text-on-surface text-2xl font-headline tracking-tight">Base de datos vacía</h4>
-                    <p class="text-on-surface-variant mt-3 max-w-md mx-auto text-sm leading-relaxed">Sube el archivo Excel oficial de SICOIN utilizando el botón superior. El sistema procesará el documento automáticamente manteniendo su formato original.</p>
+            <div v-else class="bg-white p-12 rounded-3xl border border-gray-200 shadow-sm text-center flex flex-col items-center justify-center">
+                <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-red-50 border-8 border-red-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-4xl text-red-500">analytics</span>
                 </div>
+                <h4 class="font-extrabold text-gray-900 text-2xl font-headline tracking-tight">Sin datos cargados</h4>
+                <p class="text-gray-500 mt-3 max-w-md mx-auto text-sm leading-relaxed">Sube el archivo Excel oficial de SICOIN utilizando el botón superior. El sistema procesará el documento automáticamente.</p>
+                <label for="excelUploadSicoin" class="mt-6 cursor-pointer px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center gap-2 w-fit mx-auto">
+                    <span class="material-symbols-outlined text-lg">upload_file</span>
+                    Cargar Reporte
+                </label>
             </div>
         </div>
 
@@ -550,28 +550,26 @@
         <div v-if="activeTab === 'comisiones'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
 
             <!-- Hero Header Comisiones -->
-            <div class="relative rounded-3xl overflow-hidden p-8 shadow-xl" style="background: linear-gradient(135deg, #0f3642 0%, #184e5b 40%, #216170 100%);">
-                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
-                <div class="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" style="background: rgba(90,177,197,0.15);"></div>
-                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="bg-white rounded-3xl border border-gray-200 shadow-sm p-8">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);">
-                                <span class="material-symbols-outlined text-white text-xl">groups</span>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center shadow-md">
+                                <span class="material-symbols-outlined text-white text-2xl">groups</span>
                             </div>
-                            <span class="text-xs font-black uppercase tracking-widest" style="color: #a5d0db;">Fiscalización · Comisiones</span>
+                            <span class="text-red-600 text-xs font-black uppercase tracking-[0.2em] bg-red-50 px-3 py-1 rounded-full border border-red-100">Fiscalización · Comisiones</span>
                         </div>
-                        <h2 class="text-3xl font-extrabold text-white font-headline">Estado de Comisiones Fiscales</h2>
-                        <p class="text-sm mt-1" style="color: #a5d0db;">Seguimiento de comisiones legislativas, agenda activa y avance de objetivos.</p>
+                        <h2 class="text-3xl font-extrabold text-gray-900 font-headline">Estado de Comisiones Fiscales</h2>
+                        <p class="text-gray-500 text-sm mt-1">Seguimiento de comisiones legislativas, agenda activa y avance de objetivos.</p>
                     </div>
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
-                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.length }}</p>
-                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Comisiones</p>
+                        <div class="text-center px-5 py-3 rounded-2xl bg-gray-50 border border-gray-200">
+                            <p class="text-2xl font-extrabold text-gray-900">{{ commissionsData.length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Comisiones</p>
                         </div>
-                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
-                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.filter(c=>c.prioridad==='Alta').length }}</p>
-                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Alta prioridad</p>
+                        <div class="text-center px-5 py-3 rounded-2xl bg-red-50 border border-red-100">
+                            <p class="text-2xl font-extrabold text-red-600">{{ commissionsData.filter(c=>c.prioridad==='Alta').length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-red-400">Alta prioridad</p>
                         </div>
                     </div>
                 </div>
@@ -580,14 +578,14 @@
             <!-- Acciones + búsqueda -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="relative flex-1 min-w-[260px]">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
-                    <input v-model="comBusqueda" type="text" placeholder="Buscar comisión..." class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 text-on-surface" />
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+                    <input v-model="comBusqueda" type="text" placeholder="Buscar comisión..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-red-200 text-gray-900" />
                 </div>
-                <div class="flex items-center bg-surface-container-low p-1.5 rounded-xl gap-1">
+                <div class="flex items-center bg-gray-100 p-1.5 rounded-xl gap-1">
                     <button v-for="f in ['Todas','Alta','Media']" :key="f" @click="comFiltro=f"
-                        :class="comFiltro===f ? 'px-4 py-2 bg-surface-container-lowest text-on-surface text-sm font-semibold rounded-lg shadow-sm' : 'px-4 py-2 text-on-surface-variant text-sm hover:text-on-surface transition-colors'">{{ f }}</button>
+                        :class="comFiltro===f ? 'px-4 py-2 bg-white text-gray-900 text-sm font-semibold rounded-lg shadow-sm' : 'px-4 py-2 text-gray-500 text-sm hover:text-gray-900 transition-colors'">{{ f }}</button>
                 </div>
-                <button @click="abrirComModal()" class="px-5 py-2.5 font-bold text-sm rounded-xl flex items-center gap-2 text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95" style="background: linear-gradient(135deg, #184e5b, #216170);">
+                <button @click="abrirComModal()" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 font-bold text-sm rounded-xl flex items-center gap-2 text-white shadow-md transition-all hover:shadow-lg active:scale-95">
                     <span class="material-symbols-outlined text-lg">add</span> Nueva Comisión
                 </button>
             </div>
@@ -595,10 +593,10 @@
             <!-- Grid de comisiones -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Tabla principal -->
-                <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+                <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                     <table class="w-full text-left border-collapse min-w-[550px]">
                         <thead>
-                            <tr class="text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-surface-container-low bg-surface-container-lowest">
+                            <tr class="text-gray-500 text-[10px] uppercase tracking-widest border-b border-gray-100 bg-gray-50">
                                 <th class="px-6 py-4 font-bold">Comisión</th>
                                 <th class="px-6 py-4 font-bold">Prioridad</th>
                                 <th class="px-6 py-4 font-bold text-center">Agenda</th>
@@ -606,35 +604,35 @@
                                 <th class="px-6 py-4 font-bold text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-surface-container-low">
+                        <tbody class="divide-y divide-gray-100">
                             <tr v-if="comisionesFiltradas.length === 0">
-                                <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant text-sm">
-                                    <span class="material-symbols-outlined text-4xl block mb-2 text-outline">inbox</span>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-400 text-sm">
+                                    <span class="material-symbols-outlined text-4xl block mb-2 text-gray-300">inbox</span>
                                     No hay comisiones registradas
                                 </td>
                             </tr>
-                            <tr v-for="c in comisionesFiltradas" :key="c.id" class="group hover:bg-surface-container-lowest transition-colors">
+                            <tr v-for="c in comisionesFiltradas" :key="c.id" class="group hover:bg-red-50/40 transition-colors">
                                 <td class="px-6 py-5">
-                                    <p class="font-bold text-sm text-on-surface">{{ c.nombre }}</p>
-                                    <p v-if="c.notas" class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">{{ c.notas }}</p>
+                                    <p class="font-bold text-sm text-gray-900">{{ c.nombre }}</p>
+                                    <p v-if="c.notas" class="text-xs text-gray-400 mt-0.5 line-clamp-1">{{ c.notas }}</p>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', c.prioridad==='Alta'?'bg-error-container text-on-error-container':'bg-tertiary-container text-on-tertiary-container']">{{ c.prioridad }}</span>
+                                    <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', c.prioridad==='Alta' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600']">{{ c.prioridad }}</span>
                                 </td>
-                                <td class="px-6 py-5 text-center font-bold text-sm text-on-surface-variant">{{ c.agenda }}</td>
+                                <td class="px-6 py-5 text-center font-bold text-sm text-gray-500">{{ c.agenda }}</td>
                                 <td class="px-6 py-5 min-w-[140px]">
                                     <div class="flex items-center gap-2">
-                                        <div class="flex-1 bg-surface-container-highest h-2 rounded-full overflow-hidden">
-                                            <div class="h-full rounded-full transition-all" :style="{ width: c.avances + '%', background: 'linear-gradient(90deg,#184e5b,#5ab1c5)' }"></div>
+                                        <div class="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full bg-red-500 transition-all" :style="{ width: c.avances + '%' }"></div>
                                         </div>
-                                        <span class="text-xs font-black text-on-surface w-8 text-right">{{ c.avances }}%</span>
+                                        <span class="text-xs font-black text-gray-700 w-8 text-right">{{ c.avances }}%</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-5 text-right">
-                                    <button @click="abrirComModal(c)" class="p-2 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-surface-container-low">
+                                    <button @click="abrirComModal(c)" class="p-2 text-gray-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-gray-100">
                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </button>
-                                    <button @click="eliminarComision(c.id)" class="p-2 text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-error/5">
+                                    <button @click="eliminarComision(c.id)" class="p-2 text-gray-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-red-50">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
                                 </td>
@@ -644,14 +642,14 @@
                 </div>
 
                 <!-- Panel derecho -->
-                <div class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                     <h3 class="font-extrabold text-lg font-headline mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">target</span> Prioridades tácticas
+                        <span class="material-symbols-outlined text-red-600">target</span> Prioridades tácticas
                     </h3>
                     <div class="space-y-3">
-                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
-                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
-                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
+                        <div class="p-4 rounded-xl border border-gray-100 text-xs font-medium leading-relaxed text-gray-500 bg-gray-50">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
+                        <div class="p-4 rounded-xl border border-gray-100 text-xs font-medium leading-relaxed text-gray-500 bg-gray-50">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
+                        <div class="p-4 rounded-xl border border-gray-100 text-xs font-medium leading-relaxed text-gray-500 bg-gray-50">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
                     </div>
                 </div>
             </div>

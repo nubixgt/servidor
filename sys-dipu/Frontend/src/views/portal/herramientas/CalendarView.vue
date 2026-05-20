@@ -12,14 +12,21 @@
         <p class="cal-month-hero">{{ monthName }} <span>{{ currentYear }}</span> <em>· {{ todayDay }}</em></p>
       </div>
       <div class="cal-banner-right">
-        <div class="cal-kpi-row">
-          <div class="cal-kpi" v-for="cat in CATEGORIES" :key="cat.id">
-            <span class="cal-kpi-num">{{ events.filter(e => e.category === cat.id).length }}</span>
-            <span class="cal-kpi-label">{{ cat.label }}</span>
+        <!-- Resumen compacto -->
+        <div class="cal-summary">
+          <div class="cal-summary-top">
+            <span class="cal-summary-num">{{ events.length }}</span>
+            <div class="cal-summary-meta">
+              <span class="cal-summary-label">eventos</span>
+              <span class="cal-summary-sublabel">este mes</span>
+            </div>
           </div>
-          <div class="cal-kpi cal-kpi-total">
-            <span class="cal-kpi-num">{{ events.length }}</span>
-            <span class="cal-kpi-label">Total</span>
+          <div class="cal-summary-breakdown">
+            <span v-for="cat in CATEGORIES" :key="cat.id" class="cal-summary-item">
+              <span class="cal-summary-dot" :style="{ background: cat.color }"></span>
+              <span class="cal-summary-cat">{{ cat.label }}</span>
+              <span class="cal-summary-count">{{ events.filter(e => e.category === cat.id).length }}</span>
+            </span>
           </div>
         </div>
         <div class="cal-banner-actions">
@@ -52,18 +59,6 @@
       </button>
     </div>
     <div class="cal-right-controls">
-      <div class="cal-filters">
-        <button v-for="cat in CATEGORIES" :key="cat.id"
-          @click="toggleFilter(cat.id)"
-          :class="['cal-filter', { active: activeFilters.includes(cat.id) }]"
-          :style="{ '--fc': cat.color, '--fb': cat.bg }">
-          <span class="cal-filter-dot" :style="{ background: cat.color }"></span>
-          {{ cat.label }}
-        </button>
-        <button v-if="activeFilters.length" @click="activeFilters = []" class="cal-filter-clear">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
       <div class="cal-search">
         <span class="material-symbols-outlined">search</span>
         <input v-model="searchQuery" placeholder="Buscar evento..." />
@@ -234,7 +229,6 @@ function handleDrop(date) {
   box-shadow: 0 20px 60px rgba(185, 28, 28, 0.3);
 }
 
-/* Blobs flotantes */
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -272,27 +266,55 @@ function handleDrop(date) {
 
 .cal-banner-right { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
 
-/* KPI cards */
-.cal-kpi-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.cal-kpi {
-  background: rgba(255,255,255,0.13);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 14px; padding: 10px 18px;
-  text-align: center; min-width: 72px;
-  transition: all 0.3s ease;
+/* ── Resumen compacto ── */
+.cal-summary {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  padding: 14px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 280px;
 }
-.cal-kpi:hover { background: rgba(255,255,255,0.22); transform: translateY(-3px); }
-.cal-kpi-num {
-  display: block; font-size: 24px; font-weight: 900;
-  color: white; line-height: 1; margin-bottom: 4px;
+.cal-summary-top {
+  display: flex; align-items: center; gap: 12px;
 }
-.cal-kpi-label {
-  display: block; font-size: 9px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.55);
+.cal-summary-num {
+  font-size: 48px; font-weight: 900; color: white;
+  line-height: 1; letter-spacing: -2px;
 }
-.cal-kpi-total .cal-kpi-num { color: #fde68a; }
+.cal-summary-meta {
+  display: flex; flex-direction: column;
+}
+.cal-summary-label {
+  font-size: 16px; font-weight: 800; color: white;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.cal-summary-sublabel {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em;
+}
+.cal-summary-breakdown {
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 10px;
+}
+.cal-summary-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px;
+}
+.cal-summary-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.cal-summary-cat {
+  color: rgba(255,255,255,0.65); font-weight: 600;
+}
+.cal-summary-count {
+  color: white; font-weight: 900;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px; padding: 1px 7px;
+  font-size: 10px;
+}
 
 /* Banner actions */
 .cal-banner-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -359,7 +381,6 @@ function handleDrop(date) {
 
 .cal-right-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-/* Filtros */
 .cal-filters { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .cal-filter {
   display: flex; align-items: center; gap: 6px;
@@ -384,7 +405,6 @@ function handleDrop(date) {
 .cal-filter-clear .material-symbols-outlined { font-size: 14px !important; }
 .cal-filter-clear:hover { background: #fecaca; }
 
-/* Búsqueda */
 .cal-search {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 14px; background: #fff5f5;
@@ -420,10 +440,9 @@ function handleDrop(date) {
   gap: 1px; background: #fecaca;
 }
 
-/* Celdas */
 .cal-cell {
   background: white; min-height: 130px; padding: 10px;
-  position: relative; transition: background 0.2s ease, transform 0.2s ease;
+  position: relative; transition: background 0.2s ease;
   animation: cellAppear 0.35s ease-out var(--anim-delay, 0ms) both;
   cursor: default;
 }
@@ -448,7 +467,6 @@ function handleDrop(date) {
 }
 .week-mode .cal-cell { min-height: 220px; }
 
-/* Parte superior de la celda */
 .cal-cell-top {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 6px;
@@ -482,15 +500,13 @@ function handleDrop(date) {
 .cal-cell-add-btn:hover { background: #b91c1c; transform: scale(1.18) !important; }
 .cal-cell-add-btn .material-symbols-outlined { font-size: 15px; }
 
-/* Eventos */
 .cal-events-list { display: flex; flex-direction: column; gap: 3px; }
 .cal-evt {
   display: flex; align-items: center; gap: 5px;
   padding: 3px 7px 3px 5px;
   background: var(--eb); border-radius: 6px;
   cursor: grab; transition: all 0.2s ease;
-  border: 1px solid transparent;
-  overflow: hidden;
+  border: 1px solid transparent; overflow: hidden;
 }
 .cal-evt:hover {
   transform: translateX(3px) scale(1.01);
@@ -554,31 +570,23 @@ function handleDrop(date) {
   .cal-main-title { font-size: 24px; }
   .cal-month-hero { font-size: 11px; }
 
-  /* KPIs: scroll horizontal en móvil */
-  .cal-kpi-row {
-    display: flex; flex-wrap: nowrap;
-    overflow-x: auto; gap: 8px;
-    padding-bottom: 4px; width: 100%;
-    scrollbar-width: none;
-  }
-  .cal-kpi-row::-webkit-scrollbar { display: none; }
-  .cal-kpi { min-width: 64px; padding: 8px 12px; flex-shrink: 0; }
-  .cal-kpi-num { font-size: 20px; }
+  /* Resumen compacto en móvil */
+  .cal-summary { min-width: unset; width: 100%; padding: 12px 14px; }
+  .cal-summary-num { font-size: 36px; }
+  .cal-summary-label { font-size: 13px; }
+  .cal-summary-breakdown { gap: 5px 10px; }
 
   .cal-banner-actions { flex-wrap: wrap; gap: 8px; }
   .cal-view-toggle button { padding: 6px 10px; font-size: 11px; }
   .cal-today-btn { padding: 7px 12px; font-size: 11px; }
   .cal-new-btn { padding: 7px 14px; font-size: 11px; }
 
-  /* Controles */
   .cal-controls {
     flex-direction: column; align-items: flex-start;
-    padding: 12px 14px; gap: 10px;
-    border-radius: 12px;
+    padding: 12px 14px; gap: 10px; border-radius: 12px;
   }
   .cal-nav-label { font-size: 14px; min-width: 150px; }
 
-  /* Filtros: scroll horizontal */
   .cal-right-controls { flex-direction: column; align-items: flex-start; width: 100%; gap: 8px; }
   .cal-filters {
     display: flex; flex-wrap: nowrap;
@@ -591,7 +599,6 @@ function handleDrop(date) {
   .cal-search { width: 100%; box-sizing: border-box; }
   .cal-search input { min-width: 0; flex: 1; }
 
-  /* Cuadrícula de calendario */
   .cal-grid-wrap { border-radius: 14px; }
   .cal-weekdays > div { font-size: 8px; padding: 10px 2px; letter-spacing: 0.05em; }
   .cal-cell { min-height: 60px; padding: 4px 3px; }
@@ -602,7 +609,6 @@ function handleDrop(date) {
   .cal-evt-dot { width: 5px; height: 5px; }
   .week-mode .cal-cell { min-height: 120px; }
 
-  /* Próximos eventos */
   .cal-upcoming { border-radius: 14px; }
   .cal-upcoming-item { padding: 10px 14px; gap: 10px; }
   .cal-upcoming-title { font-size: 12px; }
