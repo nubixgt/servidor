@@ -38,8 +38,16 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function login(username, password) {
         try {
-            // ⚠️ LOCAL - Para producción cambiar a: '/sys-dipu/Backend/api/v1'
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+            // 🚀 DETECCIÓN DINÁMICA DE ENTORNO ULTRA ROBUSTA (Evita sustituciones estáticas de Vite)
+            const isLocal = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1' || 
+                            window.location.hostname.startsWith('192.168.') || 
+                            window.location.hostname.startsWith('10.') || 
+                            window.location.hostname.endsWith('.local');
+
+            const API_URL = isLocal ? 'http://localhost:8080' : '/sys-dipu/Backend/api/v1';
+
+
 
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
