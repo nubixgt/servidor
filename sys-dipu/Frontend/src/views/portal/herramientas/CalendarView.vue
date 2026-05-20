@@ -238,7 +238,6 @@ function handleDrop(date) {
   background: white;
   border-radius: 16px;
   padding: 24px 32px 28px;
-  overflow: hidden;
   margin-bottom: 16px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
