@@ -25,6 +25,7 @@ const routes = [
             { path: 'inventory', name: 'Inventory', component: () => import('../views/admin/Inventory.vue') },
             { path: 'suppliers', name: 'Suppliers', component: () => import('../views/admin/Suppliers.vue') },
             { path: 'purchases', name: 'Purchases', component: () => import('../views/admin/Purchases.vue') },
+            { path: 'users', name: 'Users', component: () => import('../views/admin/Users.vue') },
             { path: 'tech-machinery', name: 'MachineryStatus', component: () => import('../views/tecnico/MachineryStatus.vue') },
             { path: 'tech-projects', name: 'TechProjects', component: () => import('../views/tecnico/TechProjects.vue') },
         ]

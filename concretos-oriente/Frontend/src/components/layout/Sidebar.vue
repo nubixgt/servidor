@@ -69,7 +69,7 @@ import { useAuthStore } from '../../stores/auth';
 import { 
   Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon, 
   BanknotesIcon, LifebuoyIcon, ArrowRightOnRectangleIcon, PlusIcon, 
-  CubeIcon, BuildingOfficeIcon, ShoppingBagIcon 
+  CubeIcon, BuildingOfficeIcon, ShoppingBagIcon, ShieldCheckIcon 
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -88,6 +88,7 @@ const allNavItemsArr = [
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
   { id: "purchases", label: "Compras", icon: ShoppingBagIcon, roles: ["admin"] },
   { id: "finance", label: "Finanzas", icon: BanknotesIcon, roles: ["admin"] },
+  { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
 ];
 
 const filteredItems = computed(() => {
