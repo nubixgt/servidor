@@ -426,8 +426,8 @@ class MachineryController extends Controller
 
             // Actualizar horómetro de la máquina si el final es mayor al actual
             $pdo->prepare(
-                "UPDATE machinery SET horometro_actual = :h WHERE id = :id AND horometro_actual < :h"
-            )->execute(['h' => (int)$horometro_final, 'id' => (int)$maquina_id]);
+                "UPDATE machinery SET horometro_actual = :h1 WHERE id = :id AND horometro_actual < :h2"
+            )->execute(['h1' => (int)$horometro_final, 'h2' => (int)$horometro_final, 'id' => (int)$maquina_id]);
 
             $this->json([
                 'status'  => 'success',

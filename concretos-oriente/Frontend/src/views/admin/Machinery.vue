@@ -185,46 +185,6 @@
         </div>
       </section>
 
-      <!-- TAB: INVENTARIO (Estático para mantener diseño) -->
-      <section v-else-if="activeTab === 'inventory'" key="inventory" class="glass-card rounded-[40px] overflow-hidden border border-white/10">
-        <!-- Mantengo el HTML de inventario original para no romper el diseño si lo necesitas ver -->
-        <div class="overflow-x-auto px-4">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Nombre del Material</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Stock Actual</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Estado</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              <tr v-for="(inv, i) in inventory" :key="i" class="hover:bg-white/5 transition-all group">
-                <td class="px-8 py-8">
-                  <div class="flex items-center gap-5">
-                    <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 border border-white/5 shadow-lg">
-                      <component :is="inv.icon" class="w-7 h-7" />
-                    </div>
-                    <div>
-                      <p class="font-bold text-white text-lg tracking-tight">{{ inv.name }}</p>
-                      <p class="text-xs font-semibold text-white/40 tracking-widest uppercase mt-1">{{ inv.sub }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-8 py-8 font-bold text-white text-base">{{ inv.stock }}</td>
-                <td class="px-8 py-8">
-                  <span :class="`px-5 py-2 rounded-full text-[10px] font-extrabold uppercase tracking-widest border transition-all ${
-                    inv.status === 'Óptimo' ? 'bg-primary/20 text-primary border-primary/20' :
-                    inv.status === 'Advertencia' ? 'bg-orange-500/20 text-orange-400 border-orange-500/20' :
-                    'bg-tertiary/20 text-tertiary border-tertiary/20'
-                  }`">
-                    {{ inv.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
 
     </transition>
 
@@ -554,8 +514,7 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 const activeTab = ref("machinery");
 const tabs = [
   { id: 'machinery', name: 'Maquinaria Pesada' },
-  { id: 'log', name: 'Bitácora Diaria' },
-  { id: 'inventory', name: 'Inventario (Ejemplo)' }
+  { id: 'log', name: 'Bitácora Diaria' }
 ];
 
 const machinery = ref([]);
@@ -622,13 +581,6 @@ const metrics = computed(() => {
   ];
 });
 
-// Mock Inventory (Mantenido visualmente por tu diseño)
-const inventory = [
-  { name: "Aceite Hidráulico", sub: "Galones", stock: "45", status: "Óptimo", icon: Square3Stack3DIcon },
-  { name: "Filtros de Aire", sub: "Unidades", stock: "12", status: "Stock Bajo", icon: ListBulletIcon },
-  { name: "Líquido de Frenos", sub: "Litros", stock: "20", status: "Óptimo", icon: ArchiveBoxIcon },
-  { name: "Baterías 24V", sub: "Unidades", stock: "2", status: "Advertencia", icon: CubeIcon },
-];
 
 // ----------------------------------------------------------------
 // Lifecycle & Fetches
