@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://m.nubix.gt/sys-dipu/Backend/api/v1', // Remote backend server
+    baseURL: 'http://localhost:8080', // ⚠️ LOCAL - Para producción: 'https://m.nubix.gt/sys-dipu/Backend/api/v1'
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

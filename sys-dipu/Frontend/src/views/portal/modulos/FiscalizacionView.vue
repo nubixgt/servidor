@@ -1,12 +1,19 @@
 <template>
-    <div class="space-y-8">
+    <div class="relative min-h-full">
+        <!-- Fondo interactivo que cubre el área de contenido -->
+        <div 
+            class="fixed inset-0 pointer-events-none transition-colors duration-1000 z-0"
+            :class="activeTab === 'presupuesto' ? 'bg-sky-200' : 'bg-transparent'"
+        ></div>
+        
+        <div class="relative z-10 space-y-8">
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
             <div class="max-w-3xl">
                 <h1 class="text-[2.75rem] leading-[1.2] font-extrabold text-on-surface tracking-tight mb-2 font-headline">Centro de Fiscalización del Ejecutivo</h1>
                 <p class="text-on-surface-variant text-lg leading-relaxed">Tablero integral para seguimiento político, presupuestario, documental y mediático por ministerio, secretaría, entidad y comisión.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest">
+                <button @click="abrirDocModal" class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest">
                     <span class="material-symbols-outlined text-xl">upload</span> Cargar documento
                 </button>
                 <button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl">
@@ -117,85 +124,608 @@
         </div>
 
         <!-- Tab: Autoridades -->
-        <div v-if="activeTab === 'autoridades'" class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div v-for="m in ministries" :key="'aut-'+m.id" class="bg-surface rounded-2xl p-6 border border-outline-variant/20 shadow-sm">
-                <h3 class="font-bold text-lg mb-6 font-headline border-b border-surface-container-low pb-3 uppercase tracking-widest">{{ m.short }} · Autoridades</h3>
-                
-                <div class="flex items-center gap-5 bg-surface-container-lowest border border-outline-variant/20 p-5 rounded-2xl mb-6">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dim shadow-inner flex items-center justify-center font-bold text-xl text-white uppercase">
-                        {{ m.ministro.nombre.substring(0,2) }}
-                    </div>
+        <div v-if="activeTab === 'autoridades'" class="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+
+            <!-- Hero Header -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary via-primary-dim to-secondary p-8 shadow-xl shadow-primary/20">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div>
-                        <p class="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Ministro Titular</p>
-                        <p class="font-extrabold text-lg text-on-surface leading-tight">{{ m.ministro.nombre }}</p>
-                        <p class="text-xs text-on-surface-variant mt-2 font-medium bg-background px-3 py-1.5 rounded-lg border border-outline-variant/10">{{ m.ministro.perfil }}</p>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-xl">account_balance</span>
+                            </div>
+                            <span class="text-white/70 text-sm font-bold uppercase tracking-widest">Fiscalización · Autoridades</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white font-headline leading-tight">Directorio Ministerial</h2>
+                        <p class="text-white/70 text-sm mt-1">Registro de autoridades y funcionarios por ministerio</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
+                            <p class="text-2xl font-extrabold text-white">{{ ministries.length }}</p>
+                            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Ministerios</p>
+                        </div>
+                        <div class="text-center bg-white/10 backdrop-blur rounded-2xl px-5 py-3">
+                            <p class="text-2xl font-extrabold text-white">{{ totalPersonalRegistrado }}</p>
+                            <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Registrados</p>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3 ml-1">Cuerpo de Viceministros</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div v-for="(v, idx) in m.viceministros" :key="idx" class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl border border-transparent hover:border-outline-variant/20 transition-colors">
-                        <div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center font-bold text-sm text-on-surface-variant uppercase shadow-sm">
-                            {{ v.nombre.substring(0,2) }}
+            <!-- Grid de Ministerios -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div v-for="(m, mIdx) in ministries" :key="'aut-'+m.id"
+                    class="group bg-surface rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    :style="`--card-hue: ${ministryHue(mIdx)}`">
+
+                    <!-- Banner con gradiente de color único por ministerio -->
+                    <div class="relative h-24 flex items-end pb-4 px-6 overflow-hidden"
+                        :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 35%) 0%, hsl(${ministryHue(mIdx)}, 45%, 22%) 100%)`">
+                        <!-- Watermark acronym -->
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none tracking-tight select-none pointer-events-none">{{ m.short }}</span>
+                        <!-- Glow blob -->
+                        <div class="absolute top-0 left-0 w-32 h-32 rounded-full blur-3xl opacity-30"
+                            :style="`background: hsl(${ministryHue(mIdx)}, 80%, 70%)`"></div>
+                        <!-- Ministry info -->
+                        <div class="relative z-10 flex items-center justify-between w-full">
+                            <div>
+                                <h3 class="font-extrabold text-xl text-white font-headline leading-tight">{{ m.short }}</h3>
+                                <p class="text-white/60 text-[11px] font-medium leading-snug max-w-[200px]">{{ m.name }}</p>
+                            </div>
+                            <button @click="abrirModal(m)"
+                                class="flex items-center gap-1.5 px-3.5 py-2 bg-white/15 hover:bg-white/30 backdrop-blur text-white text-[11px] font-bold rounded-xl transition-all border border-white/20 hover:border-white/40 shadow-sm">
+                                <span class="material-symbols-outlined text-[14px]">person_add</span>
+                                Agregar
+                            </button>
                         </div>
-                        <p class="text-sm font-bold text-on-surface">{{ v.nombre }}</p>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+
+                        <!-- Ministro Titular -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl relative overflow-hidden transition-all"
+                            :style="`background: hsl(${ministryHue(mIdx)}, 50%, 96%); border: 1px solid hsl(${ministryHue(mIdx)}, 40%, 88%)`">
+                            <div class="absolute inset-0 opacity-5"
+                                :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 80%, 50%), transparent)`"></div>
+                            <!-- Avatar -->
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg shrink-0 relative z-10"
+                                :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 40%), hsl(${ministryHue(mIdx)}, 50%, 28%))`">
+                                {{ m.ministro.nombre.substring(0,2).toUpperCase() }}
+                            </div>
+                            <div class="relative z-10 flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
+                                        :style="`background: hsl(${ministryHue(mIdx)}, 55%, 40%)`">Ministro Titular</span>
+                                </div>
+                                <p class="font-extrabold text-sm text-on-surface leading-tight truncate">{{ m.ministro.nombre }}</p>
+                                <p v-if="m.ministro.perfil" class="text-xs text-on-surface-variant mt-0.5 truncate">{{ m.ministro.perfil }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Viceministros -->
+                        <div>
+                            <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-[0.15em] mb-2 ml-1">Viceministros</p>
+                            <div class="flex flex-wrap gap-2">
+                                <div v-for="(v, idx) in m.viceministros" :key="idx"
+                                    class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all">
+                                    <div class="w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center font-bold text-[9px] text-on-surface-variant uppercase shrink-0"
+                                        :style="`background: hsl(${ministryHue(mIdx)}, 30%, 88%); color: hsl(${ministryHue(mIdx)}, 50%, 35%)`">
+                                        {{ v.nombre.substring(0,2) }}
+                                    </div>
+                                    <p class="text-xs font-semibold text-on-surface">{{ v.nombre }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="border-t border-outline-variant/10"></div>
+
+                        <!-- Personal registrado -->
+                        <div v-if="personalPorMinisterio[m.id] && personalPorMinisterio[m.id].length > 0">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-[0.15em]">Personal registrado</p>
+                                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full text-white"
+                                    :style="`background: hsl(${ministryHue(mIdx)}, 55%, 40%)`">
+                                    {{ personalPorMinisterio[m.id].length }}
+                                </span>
+                            </div>
+                            <div class="space-y-2.5">
+                                <div v-for="(p, idx) in personalPorMinisterio[m.id]" :key="idx"
+                                    class="flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 group/card hover:shadow-md cursor-default"
+                                    :style="`background: hsl(${ministryHue(mIdx)}, 40%, 97%); border-color: hsl(${ministryHue(mIdx)}, 35%, 90%)`">
+                                    <!-- Avatar con foto o iniciales -->
+                                    <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm"
+                                        :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 50%), hsl(${ministryHue(mIdx)}, 45%, 35%))`">
+                                        <img v-if="p.fotoPreview" :src="p.fotoPreview" class="w-full h-full object-cover" />
+                                        <div v-else class="w-full h-full flex items-center justify-center font-bold text-xs text-white uppercase">
+                                            {{ p.nombre.substring(0,2) }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p class="text-sm font-bold text-on-surface leading-tight">{{ p.nombre }}</p>
+                                            <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                                :class="p.tipoPuesto === 'Ministro' ? 'bg-amber-100 text-amber-700' : p.tipoPuesto === 'Viceministro' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'">
+                                                {{ p.tipoPuesto }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-3 mt-1 flex-wrap">
+                                            <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
+                                                <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
+                                            </span>
+                                            <span v-if="p.fechaPosesion" class="text-[11px] text-on-surface-variant flex items-center gap-0.5">
+                                                <span class="material-symbols-outlined text-[11px]">event</span>{{ p.fechaPosesion }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button @click="eliminarPersona(p)"
+                                        class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0"
+                                        title="Eliminar funcionario">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tab: Comisiones -->
-        <div v-if="activeTab === 'comisiones'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-surface-container-low bg-surface-container-lowest">
-                    <h3 class="font-extrabold text-xl font-headline tracking-tight">Estado de comisiones fiscales</h3>
+        <!-- Modal: Agregar Personal (rediseñado) -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="modalAbierto" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-md" @click="cerrarModal"></div>
+
+                    <div class="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+
+                        <!-- Gradient header del modal -->
+                        <div class="relative p-6 overflow-hidden"
+                            :style="ministerioSeleccionado ? `background: linear-gradient(135deg, hsl(${ministryHue(ministries.findIndex(m => m.id === ministerioSeleccionado.id))}, 60%, 35%), hsl(${ministryHue(ministries.findIndex(m => m.id === ministerioSeleccionado.id))}, 45%, 22%))` : 'background: linear-gradient(135deg, #334155, #1e293b)'">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none select-none pointer-events-none">
+                                {{ ministerioSeleccionado?.short }}
+                            </div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div>
+                                    <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Agregar Funcionario</p>
+                                    <h3 class="text-xl font-extrabold text-white font-headline">{{ ministerioSeleccionado?.short }}</h3>
+                                    <p class="text-white/50 text-xs mt-0.5 max-w-[240px] leading-snug">{{ ministerioSeleccionado?.name }}</p>
+                                </div>
+                                <button @click="cerrarModal"
+                                    class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+
+                            <!-- Foto preview -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-20 rounded-2xl bg-surface-container-high border-2 border-dashed border-outline-variant/30 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                    <img v-if="nuevoPersonal.fotoPreview" :src="nuevoPersonal.fotoPreview" class="w-full h-full object-cover" />
+                                    <span v-else class="material-symbols-outlined text-3xl text-outline-variant">person</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Foto</p>
+                                    <label class="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-surface-container-low rounded-xl text-sm text-on-surface-variant hover:bg-surface-container transition-all border border-outline-variant/15 hover:border-primary/30 group/upload">
+                                        <span class="material-symbols-outlined text-base text-primary group-hover/upload:scale-110 transition-transform">cloud_upload</span>
+                                        <span class="text-xs font-semibold truncate">{{ nuevoPersonal.fotoNombre || 'Subir fotografía...' }}</span>
+                                        <input type="file" accept="image/*" class="hidden" @change="onFotoChange" />
+                                    </label>
+                                    <p class="text-[10px] text-outline mt-1.5 ml-1">JPG, PNG o WebP · Máx. 5MB</p>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-outline-variant/10"></div>
+
+                            <!-- Nombre -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Nombre completo <span class="text-error">*</span></label>
+                                <input v-model="nuevoPersonal.nombre" type="text" placeholder="Ej: Lic. Carlos Morales González"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                            </div>
+
+                            <!-- Tipo de Puesto -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Tipo de Puesto <span class="text-error">*</span></label>
+                                <div class="flex gap-2">
+                                    <button v-for="tipo in ['Ministro', 'Viceministro', 'Director']" :key="tipo"
+                                        @click="nuevoPersonal.tipoPuesto = tipo"
+                                        :class="[
+                                            'flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all',
+                                            nuevoPersonal.tipoPuesto === tipo
+                                                ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]">{{ tipo }}</button>
+                                </div>
+                            </div>
+
+                            <!-- Sueldo + Fecha en grid -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Sueldo mensual</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-extrabold text-on-surface-variant">Q</span>
+                                        <input v-model="nuevoPersonal.sueldo" type="text" placeholder="00.00"
+                                            class="w-full pl-7 pr-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de toma</label>
+                                    <input v-model="nuevoPersonal.fechaPosesion" type="date"
+                                        class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
+                                </div>
+                            </div>
+
+                            <!-- Error -->
+                            <Transition name="slide-error">
+                                <p v-if="errorModal" class="flex items-center gap-2 text-xs font-bold text-error bg-error-container/30 px-4 py-3 rounded-xl border border-error/15">
+                                    <span class="material-symbols-outlined text-sm">error</span>
+                                    {{ errorModal }}
+                                </p>
+                            </Transition>
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="p-5 pt-0 flex gap-3">
+                            <button @click="cerrarModal"
+                                class="flex-1 py-3 px-4 bg-surface-container font-bold text-on-surface text-sm rounded-2xl hover:bg-surface-container-high transition-colors border border-outline-variant/10">
+                                Cancelar
+                            </button>
+                            <button @click="guardarPersonal"
+                                class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">how_to_reg</span>
+                                Registrar funcionario
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full overflow-x-auto pb-2">
-                    <table class="w-full text-left border-collapse min-w-[600px]">
+            </Transition>
+        </Teleport>
+
+        <!-- Modal: Cargar Documento -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="docModalAbierto" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-md" @click="cerrarDocModal"></div>
+
+                    <div class="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+
+                        <!-- Gradient header del modal -->
+                        <div class="relative p-6 overflow-hidden bg-gradient-to-br from-primary via-primary-dim to-secondary">
+                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none select-none pointer-events-none">
+                                DOCS
+                            </div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div>
+                                    <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Cargar Documento</p>
+                                    <h3 class="text-xl font-extrabold text-white font-headline">Evidencia & Fiscalización</h3>
+                                    <p class="text-white/50 text-xs mt-0.5 max-w-[240px] leading-snug">Vincule documentos al repositorio de control de la bancada</p>
+                                </div>
+                                <button @click="cerrarDocModal"
+                                    class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div class="p-6 space-y-5">
+
+                            <!-- Nombre del documento -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Nombre del Documento <span class="text-error">*</span></label>
+                                <input v-model="nuevoDoc.nombre" type="text" placeholder="Ej: Oficio de amparo y fiscalización 0938-2026"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                            </div>
+
+                            <!-- Tipo y Entidad en grid -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Tipo de Archivo <span class="text-error">*</span></label>
+                                    <select v-model="nuevoDoc.tipo" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                                        <option value="PDF">PDF</option>
+                                        <option value="XLSX">XLSX / Excel</option>
+                                        <option value="DOCX">DOCX / Word</option>
+                                        <option value="PPTX">PPTX / PowerPoint</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Entidad Vinculada <span class="text-error">*</span></label>
+                                    <select v-model="nuevoDoc.entidad" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
+                                        <option value="" disabled>Seleccione entidad...</option>
+                                        <option v-for="m in ministries" :key="m.id" :value="m.short">{{ m.short }} - {{ m.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de Carga</label>
+                                <input v-model="nuevoDoc.fecha" type="date"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
+                            </div>
+
+                            <!-- Error -->
+                            <Transition name="slide-error">
+                                <p v-if="errorDoc" class="flex items-center gap-2 text-xs font-bold text-error bg-error-container/30 px-4 py-3 rounded-xl border border-error/15">
+                                    <span class="material-symbols-outlined text-sm">error</span>
+                                    {{ errorDoc }}
+                                </p>
+                            </Transition>
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="p-5 pt-0 flex gap-3">
+                            <button @click="cerrarDocModal"
+                                class="flex-1 py-3 px-4 bg-surface-container font-bold text-on-surface text-sm rounded-2xl hover:bg-surface-container-high transition-colors border border-outline-variant/10">
+                                Cancelar
+                            </button>
+                            <button @click="guardarDocumento"
+                                class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-base">cloud_upload</span>
+                                Guardar documento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+
+        <!-- Tab: Presupuesto -->
+        <div v-if="activeTab === 'presupuesto'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-700">
+            <!-- Hero Header Presupuesto -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 p-8 shadow-2xl shadow-indigo-900/20 mb-8 border border-white/10">
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, white 1.5px, transparent 1.5px), radial-gradient(circle at 80% 20%, white 1.5px, transparent 1.5px); background-size: 48px 48px; animation: float 10s linear infinite;"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-fuchsia-500/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20">
+                                <span class="material-symbols-outlined text-white text-2xl">account_balance_wallet</span>
+                            </div>
+                            <span class="text-white/90 text-xs font-black uppercase tracking-[0.2em] bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">Ejecución Financiera</span>
+                        </div>
+                        <h2 class="text-4xl font-extrabold text-white font-headline leading-tight tracking-tight drop-shadow-sm">Presupuesto</h2>
+                        <p class="text-white/80 text-sm mt-2 max-w-2xl leading-relaxed">Módulo interactivo del Sistema de Contabilidad Integrada. Adjunta el reporte oficial en formato Excel para analizar, formatear y visualizar la ejecución presupuestaria en tiempo real.</p>
+                    </div>
+                    
+                    <div class="shrink-0 relative group mt-4 md:mt-0">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 rounded-2xl blur-md opacity-40 group-hover:opacity-100 transition duration-500"></div>
+                        <input type="file" id="excelUploadSicoin" accept=".xlsx, .xls" class="hidden" @change="handleExcelUpload" />
+                        <label for="excelUploadSicoin" class="relative cursor-pointer px-8 py-4 bg-white/95 backdrop-blur-sm text-indigo-900 font-extrabold text-sm rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3 active:scale-95 border border-white">
+                            <span class="material-symbols-outlined text-xl text-indigo-600 animate-bounce">upload_file</span>
+                            Cargar Reporte Oficial
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Detallada del Excel (Formato SICOIN) -->
+            <div v-if="excelRows.length > 0" class="bg-white rounded-3xl border border-indigo-100 shadow-xl shadow-indigo-900/5 overflow-hidden p-2">
+                <div class="w-full overflow-x-auto rounded-2xl border border-indigo-50">
+                    <table class="w-full text-left border-collapse min-w-[1000px] text-[13px] font-sans">
                         <thead>
-                            <tr class="bg-surface-container-lowest text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-surface-container-low">
-                                <th class="px-6 py-4 font-bold">Comisión</th>
-                                <th class="px-6 py-4 font-bold">Prioridad</th>
-                                <th class="px-6 py-4 font-bold text-center">Agenda activa</th>
-                                <th class="px-6 py-4 font-bold">Avance de Objetivos</th>
+                            <tr class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white shadow-sm">
+                                <th v-for="(header, index) in excelHeaders" :key="index" :class="['px-4 py-3.5 font-bold border-r border-white/10 tracking-wide', index === 0 ? 'text-left' : 'text-right']">
+                                    {{ header || (index === 0 ? 'Entidad' : '') }}
+                                </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-background">
-                            <tr v-for="c in commissions" :key="c.nombre" class="hover:bg-surface-container-lowest transition-colors">
-                                <td class="px-6 py-5 font-bold text-sm text-on-surface">{{ c.nombre }}</td>
-                                <td class="px-6 py-5">
-                                    <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', c.prioridad==='Alta'?'bg-error-container text-on-error-container':'bg-tertiary-container text-on-tertiary-container']">{{ c.prioridad }}</span>
+                        <tbody class="divide-y divide-indigo-50">
+                            <tr v-for="(row, rowIndex) in excelRows" :key="rowIndex" class="hover:bg-indigo-50/50 transition-colors bg-white text-slate-700 group">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="cellIndex" :class="['px-4 py-2 border-r border-indigo-50 whitespace-nowrap', cellIndex === 0 ? 'text-left text-indigo-950' : 'text-right']">
+                                    <span :class="{'uppercase font-bold text-[11px] tracking-wider': cellIndex === 0}">{{ row[cellIndex] || '' }}</span>
                                 </td>
-                                <td class="px-6 py-5 text-center font-bold text-sm text-on-surface-variant">{{ c.agenda }}</td>
-                                <td class="px-6 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex-1 bg-surface-container-highest h-2.5 rounded-full overflow-hidden">
-                                            <div class="bg-primary h-full rounded-full" :style="{ width: c.avances + '%' }"></div>
-                                        </div>
-                                        <span class="text-xs font-black text-on-surface">{{ c.avances }}%</span>
-                                    </div>
+                            </tr>
+                            <tr v-if="excelTotals" class="bg-gradient-to-r from-indigo-50 to-blue-50 font-extrabold text-indigo-950 border-t-4 border-indigo-200 shadow-inner">
+                                <td v-for="(cell, cellIndex) in excelHeaders" :key="'tot_'+cellIndex" :class="['px-4 py-3.5 border-r border-indigo-100 whitespace-nowrap', cellIndex === 0 ? 'text-left uppercase tracking-widest text-xs' : 'text-right text-indigo-700']">
+                                    {{ excelTotals[cellIndex] || '' }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm p-6 max-h-min">
-                <h3 class="font-extrabold text-lg font-headline mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">target</span> Prioridades tácticas</h3>
-                <div class="space-y-3">
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
-                    <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest shadow-sm">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
+            <div v-else class="relative overflow-hidden bg-surface p-12 rounded-3xl border border-outline-variant/15 shadow-sm text-center flex flex-col items-center justify-center group/empty">
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div class="relative z-10">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-50 border-8 border-emerald-100 flex items-center justify-center group-hover/empty:scale-110 transition-transform duration-500 shadow-inner">
+                        <span class="material-symbols-outlined text-4xl text-emerald-500">analytics</span>
+                    </div>
+                    <h4 class="font-extrabold text-on-surface text-2xl font-headline tracking-tight">Base de datos vacía</h4>
+                    <p class="text-on-surface-variant mt-3 max-w-md mx-auto text-sm leading-relaxed">Sube el archivo Excel oficial de SICOIN utilizando el botón superior. El sistema procesará el documento automáticamente manteniendo su formato original.</p>
                 </div>
             </div>
         </div>
+
+        <!-- Tab: Comisiones -->
+        <div v-if="activeTab === 'comisiones'" class="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+
+            <!-- Hero Header Comisiones -->
+            <div class="relative rounded-3xl overflow-hidden p-8 shadow-xl" style="background: linear-gradient(135deg, #0f3642 0%, #184e5b 40%, #216170 100%);">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" style="background: rgba(90,177,197,0.15);"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);">
+                                <span class="material-symbols-outlined text-white text-xl">groups</span>
+                            </div>
+                            <span class="text-xs font-black uppercase tracking-widest" style="color: #a5d0db;">Fiscalización · Comisiones</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white font-headline">Estado de Comisiones Fiscales</h2>
+                        <p class="text-sm mt-1" style="color: #a5d0db;">Seguimiento de comisiones legislativas, agenda activa y avance de objetivos.</p>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
+                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Comisiones</p>
+                        </div>
+                        <div class="text-center px-5 py-3 rounded-2xl" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(4px);">
+                            <p class="text-2xl font-extrabold text-white">{{ commissionsData.filter(c=>c.prioridad==='Alta').length }}</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color: rgba(255,255,255,0.6);">Alta prioridad</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones + búsqueda -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 min-w-[260px]">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">search</span>
+                    <input v-model="comBusqueda" type="text" placeholder="Buscar comisión..." class="w-full pl-12 pr-4 py-3 bg-surface-container-low border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 text-on-surface" />
+                </div>
+                <div class="flex items-center bg-surface-container-low p-1.5 rounded-xl gap-1">
+                    <button v-for="f in ['Todas','Alta','Media']" :key="f" @click="comFiltro=f"
+                        :class="comFiltro===f ? 'px-4 py-2 bg-surface-container-lowest text-on-surface text-sm font-semibold rounded-lg shadow-sm' : 'px-4 py-2 text-on-surface-variant text-sm hover:text-on-surface transition-colors'">{{ f }}</button>
+                </div>
+                <button @click="abrirComModal()" class="px-5 py-2.5 font-bold text-sm rounded-xl flex items-center gap-2 text-white shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95" style="background: linear-gradient(135deg, #184e5b, #216170);">
+                    <span class="material-symbols-outlined text-lg">add</span> Nueva Comisión
+                </button>
+            </div>
+
+            <!-- Grid de comisiones -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Tabla principal -->
+                <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse min-w-[550px]">
+                        <thead>
+                            <tr class="text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-surface-container-low bg-surface-container-lowest">
+                                <th class="px-6 py-4 font-bold">Comisión</th>
+                                <th class="px-6 py-4 font-bold">Prioridad</th>
+                                <th class="px-6 py-4 font-bold text-center">Agenda</th>
+                                <th class="px-6 py-4 font-bold">Avance</th>
+                                <th class="px-6 py-4 font-bold text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-surface-container-low">
+                            <tr v-if="comisionesFiltradas.length === 0">
+                                <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant text-sm">
+                                    <span class="material-symbols-outlined text-4xl block mb-2 text-outline">inbox</span>
+                                    No hay comisiones registradas
+                                </td>
+                            </tr>
+                            <tr v-for="c in comisionesFiltradas" :key="c.id" class="group hover:bg-surface-container-lowest transition-colors">
+                                <td class="px-6 py-5">
+                                    <p class="font-bold text-sm text-on-surface">{{ c.nombre }}</p>
+                                    <p v-if="c.notas" class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">{{ c.notas }}</p>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest', c.prioridad==='Alta'?'bg-error-container text-on-error-container':'bg-tertiary-container text-on-tertiary-container']">{{ c.prioridad }}</span>
+                                </td>
+                                <td class="px-6 py-5 text-center font-bold text-sm text-on-surface-variant">{{ c.agenda }}</td>
+                                <td class="px-6 py-5 min-w-[140px]">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 bg-surface-container-highest h-2 rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full transition-all" :style="{ width: c.avances + '%', background: 'linear-gradient(90deg,#184e5b,#5ab1c5)' }"></div>
+                                        </div>
+                                        <span class="text-xs font-black text-on-surface w-8 text-right">{{ c.avances }}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 text-right">
+                                    <button @click="abrirComModal(c)" class="p-2 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-surface-container-low">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </button>
+                                    <button @click="eliminarComision(c.id)" class="p-2 text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100 rounded-lg hover:bg-error/5">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel derecho -->
+                <div class="bg-surface rounded-2xl border border-outline-variant/20 shadow-sm p-6">
+                    <h3 class="font-extrabold text-lg font-headline mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">target</span> Prioridades tácticas
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Control estricto de citaciones, validación de oficios enviados, revisión de respuestas recibidas y plazos pendientes por institución.</div>
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Agenda pormenorizada por comisión con responsables asignados, plazos irrevocables, insumos y hallazgos clave.</div>
+                        <div class="p-4 rounded-xl border border-outline-variant/30 text-xs font-medium leading-relaxed text-on-surface-variant bg-surface-container-lowest">Uso del Semáforo de riesgo para detectar oportunidades óptimas de fiscalización política y técnica.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Nueva/Editar Comisión -->
+        <Teleport to="body">
+            <Transition name="com-modal">
+                <div v-if="comModalOpen" class="com-overlay" @click.self="cerrarComModal">
+                    <div class="com-card">
+                        <div class="com-header">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined com-icon">groups</span>
+                                <div>
+                                    <h3 class="com-title">{{ comEditando ? 'Editar Comisión' : 'Nueva Comisión' }}</h3>
+                                    <p class="com-sub">{{ comEditando ? 'Modifica los datos' : 'Registra una nueva comisión' }}</p>
+                                </div>
+                            </div>
+                            <button @click="cerrarComModal" class="com-close"><span class="material-symbols-outlined">close</span></button>
+                        </div>
+                        <div class="com-body">
+                            <div class="com-field">
+                                <label class="com-label">Nombre *</label>
+                                <input v-model="comForm.nombre" class="com-input" placeholder="Ej. Comisión de Hacienda..." />
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Prioridad</label>
+                                    <select v-model="comForm.prioridad" class="com-input">
+                                        <option value="Alta">Alta</option>
+                                        <option value="Media">Media</option>
+                                        <option value="Baja">Baja</option>
+                                    </select>
+                                </div>
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Agenda activa</label>
+                                    <input v-model.number="comForm.agenda" type="number" min="0" class="com-input" placeholder="0" />
+                                </div>
+                                <div class="com-field flex-1">
+                                    <label class="com-label">Avance %</label>
+                                    <input v-model.number="comForm.avances" type="number" min="0" max="100" class="com-input" placeholder="0" />
+                                </div>
+                            </div>
+                            <div class="com-field">
+                                <label class="com-label">Notas / Integrantes</label>
+                                <textarea v-model="comForm.notas" class="com-input" rows="3" placeholder="Lista de diputados, temas, observaciones..."></textarea>
+                            </div>
+                            <p v-if="comError" class="text-red-400 text-xs font-semibold">{{ comError }}</p>
+                        </div>
+                        <div class="com-footer">
+                            <button v-if="comEditando" @click="eliminarComision(comEditando.id); cerrarComModal()" class="com-btn-del">
+                                <span class="material-symbols-outlined text-sm">delete</span> Eliminar
+                            </button>
+                            <div class="flex gap-2 ml-auto">
+                                <button @click="cerrarComModal" class="com-btn-cancel">Cancelar</button>
+                                <button @click="guardarComision" class="com-btn-save">
+                                    <span class="material-symbols-outlined text-sm">{{ comEditando ? 'save' : 'add' }}</span>
+                                    {{ comEditando ? 'Guardar' : 'Crear' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
 
         <!-- Tab: Documentos -->
         <div v-if="activeTab === 'documentos'" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div class="lg:col-span-2 bg-surface rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-surface-container-low bg-surface-container-lowest flex justify-between items-center">
                     <h3 class="font-extrabold text-xl font-headline tracking-tight">Repositorio Documental</h3>
-                    <button class="text-primary hover:bg-primary-container p-2 rounded-lg transition-colors"><span class="material-symbols-outlined">filter_list</span></button>
+                    <button @click="abrirDocModal" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all hover:bg-primary/95 shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-[16px]">upload_file</span> Cargar
+                    </button>
                 </div>
                 <div class="w-full overflow-x-auto pb-2">
                     <table class="w-full text-left border-collapse min-w-[600px]">
@@ -205,16 +735,28 @@
                                 <th class="px-6 py-4 font-bold">Documento</th>
                                 <th class="px-6 py-4 font-bold">Entidad Central</th>
                                 <th class="px-6 py-4 font-bold">Fecha Reseña</th>
+                                <th class="px-6 py-4 font-bold text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-background">
-                            <tr v-for="d in docs" :key="d.nombre" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+                            <tr v-if="docs.length === 0">
+                                <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant text-sm">
+                                    <span class="material-symbols-outlined text-4xl block mb-2 text-outline">folder_off</span>
+                                    No hay documentos cargados en el repositorio.
+                                </td>
+                            </tr>
+                            <tr v-for="d in docs" :key="d.id" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
                                 <td class="px-6 py-4">
                                     <span class="px-2.5 py-1 bg-surface-container-highest border border-outline-variant/20 rounded text-[10px] font-black text-on-surface-variant shadow-sm">{{ d.tipo }}</span>
                                 </td>
                                 <td class="px-6 py-4 font-bold text-sm text-primary group-hover:underline">{{ d.nombre }}</td>
                                 <td class="px-6 py-4 text-xs font-semibold text-on-surface-variant">{{ d.entidad }}</td>
                                 <td class="px-6 py-4 text-xs font-mono text-on-surface-variant">{{ d.fecha }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button @click.stop="eliminarDocumento(d)" class="p-1.5 rounded-xl hover:bg-error/10 text-error inline-flex items-center justify-center transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -225,7 +767,7 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
                 <h3 class="font-extrabold text-lg font-headline mb-4 relative z-10">Carga Segura de Evidencia</h3>
                 
-                <div class="border-2 border-dashed border-primary/30 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center text-center text-on-surface-variant mb-6 hover:bg-primary/10 transition-colors cursor-pointer relative z-10">
+                <div @click="abrirDocModal" class="border-2 border-dashed border-primary/30 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center text-center text-on-surface-variant mb-6 hover:bg-primary/10 transition-colors cursor-pointer relative z-10">
                     <div class="w-16 h-16 rounded-full bg-surface shadow-sm flex items-center justify-center mb-4">
                         <span class="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
                     </div>
@@ -328,134 +870,407 @@
             </div>
         </div>
     </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import api from '../../../services/api';
+import * as XLSX from 'xlsx';
 
 const query = ref('');
 const selected = ref('todos');
 const activeTab = ref('ministerios');
 
+onMounted(async () => {
+    try {
+        const response = await api.get('/presupuesto');
+        if (response.data && response.data.success && response.data.data) {
+            const data = response.data.data;
+            excelHeaders.value = data.excelHeaders || [];
+            excelRows.value = data.excelRows || [];
+            excelTotals.value = data.excelTotals || null;
+        }
+    } catch (error) {
+        console.error('Error al cargar el presupuesto guardado:', error);
+    }
+    await cargarPersonalBD();
+    await cargarDocumentosBD();
+});
+
+// --- Lógica de Autoridades / Personal ---
+const personalPorMinisterio = ref({});
+const modalAbierto = ref(false);
+const ministerioSeleccionado = ref(null);
+const errorModal = ref('');
+const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
+
+// --- Lógica de Documentos ---
+const docs = ref([]);
+const docModalAbierto = ref(false);
+const nuevoDoc = ref({ nombre: '', tipo: 'PDF', entidad: '', fecha: '' });
+const errorDoc = ref('');
+
+async function cargarPersonalBD() {
+    try {
+        const response = await api.get('/fiscalizacion/personal');
+        if (response.data?.success && Array.isArray(response.data.data)) {
+            const agrupado = {};
+            response.data.data.forEach(p => {
+                const mId = p.ministerio_id;
+                if (!agrupado[mId]) {
+                    agrupado[mId] = [];
+                }
+                agrupado[mId].push(p);
+            });
+            personalPorMinisterio.value = agrupado;
+        }
+    } catch (error) {
+        console.error('Error al cargar personal:', error);
+    }
+}
+
+async function cargarDocumentosBD() {
+    try {
+        const response = await api.get('/fiscalizacion/documentos');
+        if (response.data?.success && Array.isArray(response.data.data)) {
+            docs.value = response.data.data;
+        }
+    } catch (error) {
+        console.error('Error al cargar documentos:', error);
+    }
+}
+
+function abrirModal(ministerio) {
+    ministerioSeleccionado.value = ministerio;
+    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
+    errorModal.value = '';
+    modalAbierto.value = true;
+}
+
+function cerrarModal() {
+    modalAbierto.value = false;
+    ministerioSeleccionado.value = null;
+    errorModal.value = '';
+}
+
+function onFotoChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    nuevoPersonal.value.fotoNombre = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => { nuevoPersonal.value.fotoPreview = e.target.result; };
+    reader.readAsDataURL(file);
+}
+
+async function guardarPersonal() {
+    if (!nuevoPersonal.value.nombre.trim()) {
+        errorModal.value = 'El nombre es obligatorio.';
+        return;
+    }
+    if (!nuevoPersonal.value.tipoPuesto) {
+        errorModal.value = 'Selecciona el tipo de puesto.';
+        return;
+    }
+    try {
+        const payload = {
+            ministerio_id: ministerioSeleccionado.value.id,
+            nombre: nuevoPersonal.value.nombre,
+            tipo_puesto: nuevoPersonal.value.tipoPuesto,
+            sueldo: nuevoPersonal.value.sueldo ? parseFloat(nuevoPersonal.value.sueldo) : null,
+            fecha_posesion: nuevoPersonal.value.fechaPosesion || null,
+            foto_nombre: nuevoPersonal.value.fotoNombre || null,
+            foto_preview: nuevoPersonal.value.fotoPreview || null
+        };
+        const response = await api.post('/fiscalizacion/personal', payload);
+        if (response.data?.success) {
+            await cargarPersonalBD();
+            cerrarModal();
+        } else {
+            errorModal.value = response.data?.error || 'Error al guardar el funcionario.';
+        }
+    } catch (error) {
+        console.error('Error al guardar personal:', error);
+        errorModal.value = 'Error de conexión con el servidor.';
+    }
+}
+
+async function eliminarPersona(p) {
+    if (!p.id) return;
+    if (confirm(`¿Está seguro de eliminar a ${p.nombre}?`)) {
+        try {
+            const response = await api.delete(`/fiscalizacion/personal/${p.id}`);
+            if (response.data?.success) {
+                await cargarPersonalBD();
+            } else {
+                alert(response.data?.error || 'Error al eliminar el funcionario.');
+            }
+        } catch (error) {
+            console.error('Error al eliminar funcionario:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    }
+}
+
+function abrirDocModal() {
+    nuevoDoc.value = {
+        nombre: '',
+        tipo: 'PDF',
+        entidad: ministries[0]?.short || '',
+        fecha: new Date().toISOString().split('T')[0]
+    };
+    errorDoc.value = '';
+    docModalAbierto.value = true;
+}
+
+function cerrarDocModal() {
+    docModalAbierto.value = false;
+    errorDoc.value = '';
+}
+
+async function guardarDocumento() {
+    if (!nuevoDoc.value.nombre.trim()) {
+        errorDoc.value = 'El nombre del documento es obligatorio.';
+        return;
+    }
+    if (!nuevoDoc.value.tipo) {
+        errorDoc.value = 'Selecciona el tipo de documento.';
+        return;
+    }
+    if (!nuevoDoc.value.entidad) {
+        errorDoc.value = 'Selecciona la entidad vinculada.';
+        return;
+    }
+    try {
+        const response = await api.post('/fiscalizacion/documentos', nuevoDoc.value);
+        if (response.data?.success) {
+            await cargarDocumentosBD();
+            cerrarDocModal();
+        } else {
+            errorDoc.value = response.data?.error || 'Error al guardar el documento.';
+        }
+    } catch (error) {
+        console.error('Error al guardar documento:', error);
+        errorDoc.value = 'Error de conexión con el servidor.';
+    }
+}
+
+async function eliminarDocumento(d) {
+    if (!d.id) return;
+    if (confirm(`¿Está seguro de eliminar el documento "${d.nombre}"?`)) {
+        try {
+            const response = await api.delete(`/fiscalizacion/documentos/${d.id}`);
+            if (response.data?.success) {
+                await cargarDocumentosBD();
+            } else {
+                alert(response.data?.error || 'Error al eliminar el documento.');
+            }
+        } catch (error) {
+            console.error('Error al eliminar documento:', error);
+            alert('Error de conexión con el servidor.');
+        }
+    }
+}
+
+// Color único por ministerio basado en su posición
+function ministryHue(idx) {
+    const hues = [210, 165, 24, 280, 340, 195, 50, 155, 270, 310, 35, 130, 190, 240];
+    return hues[idx % hues.length];
+}
+
+const totalPersonalRegistrado = computed(() =>
+    Object.values(personalPorMinisterio.value).reduce((sum, arr) => sum + arr.length, 0)
+);
+
+// --- Lógica de Presupuesto (Excel SICOIN) ---
+const excelHeaders = ref([]);
+const excelRows = ref([]);
+const excelTotals = ref(null);
+
+function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // raw: false asegura que obtenemos el texto exacto que se ve en Excel (con comas, fechas, etc.)
+        const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: '' });
+        
+        if (rawData.length > 0) {
+            // 1. Encontrar cuántas columnas máximas hay
+            let maxCols = 0;
+            rawData.forEach(row => {
+                if (row.length > maxCols) maxCols = row.length;
+            });
+
+            // 2. Identificar qué columnas están completamente vacías en todas las filas
+            const colIsEmpty = new Array(maxCols).fill(true);
+            for (let r = 0; r < rawData.length; r++) {
+                for (let c = 0; c < maxCols; c++) {
+                    const cellValue = rawData[r][c];
+                    if (cellValue !== null && cellValue !== undefined && String(cellValue).trim() !== '') {
+                        colIsEmpty[c] = false;
+                    }
+                }
+            }
+
+            // 3. Filtrar columnas vacías y filas completamente vacías
+            const cleanedRows = [];
+            for (let r = 0; r < rawData.length; r++) {
+                const newRow = [];
+                let rowHasData = false;
+                for (let c = 0; c < maxCols; c++) {
+                    if (!colIsEmpty[c]) {
+                        const cellStr = String(rawData[r][c] || '').trim();
+                        newRow.push(cellStr);
+                        if (cellStr !== '') rowHasData = true;
+                    }
+                }
+                if (rowHasData) cleanedRows.push(newRow);
+            }
+
+            if (cleanedRows.length > 0) {
+                // Buscar la fila de cabecera: la que tenga más columnas llenas dentro de las primeras 15 filas
+                let headerIndex = 0;
+                let maxFilled = 0;
+                const limit = Math.min(15, cleanedRows.length);
+                for(let i = 0; i < limit; i++) {
+                    const filled = cleanedRows[i].filter(c => c !== '').length;
+                    if(filled > maxFilled) {
+                        maxFilled = filled;
+                        headerIndex = i;
+                    }
+                }
+
+                excelHeaders.value = cleanedRows[headerIndex];
+                
+                // Los datos reales están debajo de la cabecera
+                const dataRows = cleanedRows.slice(headerIndex + 1);
+                
+                // Identificar fila de totales (suele ser la última)
+                if (dataRows.length > 0) {
+                    const lastRow = dataRows[dataRows.length - 1];
+                    const firstCell = lastRow[0].toLowerCase();
+                    if (firstCell.includes('total') || firstCell === '' || firstCell.includes('sum')) {
+                        excelTotals.value = dataRows.pop();
+                    } else {
+                        excelTotals.value = null;
+                    }
+                } else {
+                    excelTotals.value = null;
+                }
+                
+                excelRows.value = dataRows;
+
+                // 4. Guardar en Backend
+                guardarPresupuestoBD();
+
+            } else {
+                excelHeaders.value = [];
+                excelRows.value = [];
+                excelTotals.value = null;
+            }
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+async function guardarPresupuestoBD() {
+    try {
+        const payload = {
+            datos_json: {
+                excelHeaders: excelHeaders.value,
+                excelRows: excelRows.value,
+                excelTotals: excelTotals.value
+            }
+        };
+        const response = await api.post('/presupuesto', payload);
+        if (response.data && response.data.success) {
+            alert('¡Presupuesto SICOIN guardado con éxito en la base de datos!');
+        }
+    } catch (error) {
+        console.error('Error guardando presupuesto:', error);
+        alert('Hubo un error al intentar guardar el presupuesto.');
+    }
+}
+
 const tabs = [
     { id: 'ministerios', label: 'Ministerios y Entidades' },
     { id: 'autoridades', label: 'Autoridades' },
+    { id: 'presupuesto', label: 'Presupuesto' },
     { id: 'comisiones', label: 'Comisiones' },
     { id: 'documentos', label: 'Documentos Generales' },
     { id: 'personal', label: 'Renglones y Personal' },
     { id: 'noticias', label: 'Noticias / Reputacional' },
 ];
 
-// Data directly transcribed from React component
+// 14 Ministerios reales de Guatemala
 const ministries = [
-  {
-    id: 1,
-    name: "Ministerio de Comunicaciones, Infraestructura y Vivienda",
-    short: "MICIVI",
-    presupuesto: 5800,
-    ejecucion: 24,
-    funcionamiento: 1300,
-    inversion: 4500,
-    empleados: 8421,
-    alertas: 5,
-    riesgo: "alto",
-    hallazgos: ["Baja ejecución en proyectos prioritarios", "Adjudicaciones tardías", "Presión por mantenimiento vial"],
-    docs: 12,
-    ministro: { nombre: "José Aguilar", foto: "", perfil: "Ingeniero civil con 20 años de experiencia técnica." },
-    viceministros: [
-      { nombre: "Viceministro Civil", foto: "" },
-      { nombre: "Viceministro Transportes", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 1240 },
-      { renglon: "022", cantidad: 380 },
-      { renglon: "029", cantidad: 2150 },
-    ],
-    transaccionesOI: 145,
-  },
-  {
-    id: 2,
-    name: "Ministerio de Salud Pública y Asistencia Social",
-    short: "MSPAS",
-    presupuesto: 14750,
-    ejecucion: 31,
-    funcionamiento: 10300,
-    inversion: 4450,
-    empleados: 38210,
-    alertas: 7,
-    riesgo: "alto",
-    hallazgos: ["Incidencias en compras directas", "Rezagos programáticos", "Abastecimiento de medicamentos oncológicos bajo"],
-    docs: 18,
-    ministro: { nombre: "Dra. Carmen Ríos", foto: "", perfil: "Médica epidemióloga, experiencia en OPS." },
-    viceministros: [
-      { nombre: "Viceministro Hospitales", foto: "" },
-      { nombre: "Viceministra Primaria", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 5420 },
-      { renglon: "022", cantidad: 2120 },
-      { renglon: "029", cantidad: 4850 },
-    ],
-    transaccionesOI: 220,
-  },
-  {
-    id: 3,
-    name: "Ministerio de Educación",
-    short: "MINEDUC",
-    presupuesto: 24500,
-    ejecucion: 29,
-    funcionamiento: 21400,
-    inversion: 3100,
-    empleados: 142000,
-    alertas: 4,
-    riesgo: "medio",
-    hallazgos: ["Infraestructura pendiente en zonas rurales", "Contratación de maestros en proceso"],
-    docs: 9,
-    ministro: { nombre: "Lic. Mario Estrada", foto: "", perfil: "Docente y planificador educativo." },
-    viceministros: [
-      { nombre: "Vice. Técnico", foto: "" },
-      { nombre: "Vice. Administrativo", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 18200 },
-      { renglon: "022", cantidad: 4200 },
-      { renglon: "029", cantidad: 9600 },
-    ],
-    transaccionesOI: 98,
-  },
-  {
-    id: 4,
-    name: "Ministerio de Desarrollo Social",
-    short: "MIDES",
-    presupuesto: 2850,
-    ejecucion: 19,
-    funcionamiento: 620,
-    inversion: 2230,
-    empleados: 1985,
-    alertas: 6,
-    riesgo: "alto",
-    hallazgos: ["Transferencias condicionadas bajo lupa ciudadana", "Cobertura territorial lenta"],
-    docs: 7,
-    ministro: { nombre: "Ana López", foto: "", perfil: "Especialista en programas sociales." },
-    viceministros: [
-      { nombre: "Viceministro Focalización", foto: "" },
-      { nombre: "Viceministra Ejecutiva", foto: "" },
-    ],
-    personalRenglones: [
-      { renglon: "011", cantidad: 320 },
-      { renglon: "022", cantidad: 110 },
-      { renglon: "029", cantidad: 860 },
-    ],
-    transaccionesOI: 35,
-  },
+  { id: 1,  short: 'MAGA',    name: 'Ministerio de Agricultura, Ganadería y Alimentación',  presupuesto: 3200,  ejecucion: 22, funcionamiento: 800,   inversion: 2400,  empleados: 4200,  alertas: 3, riesgo: 'medio', hallazgos: ['Baja ejecución agrícola', 'Rezago en programas rurales'], docs: 5,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Desarrollo Rural', foto: '' }, { nombre: 'Viceministro Seguridad Alimentaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 800 }, { renglon: '022', cantidad: 200 }, { renglon: '029', cantidad: 600 }], transaccionesOI: 45 },
+  { id: 2,  short: 'MARN',    name: 'Ministerio de Ambiente y Recursos Naturales',            presupuesto: 890,   ejecucion: 18, funcionamiento: 400,   inversion: 490,   empleados: 1200,  alertas: 2, riesgo: 'medio', hallazgos: ['Escasa inversión ambiental', 'Deforestación sin control'], docs: 4,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Recursos Naturales', foto: '' }, { nombre: 'Viceministro Ambiente', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 300 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 150 }], transaccionesOI: 20 },
+  { id: 3,  short: 'CIV',     name: 'Ministerio de Comunicaciones, Infraestructura y Vivienda', presupuesto: 5800,  ejecucion: 24, funcionamiento: 1300,  inversion: 4500,  empleados: 8421,  alertas: 5, riesgo: 'alto',  hallazgos: ['Baja ejecución en proyectos prioritarios', 'Adjudicaciones tardías', 'Presión por mantenimiento vial'], docs: 12, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Civil', foto: '' }, { nombre: 'Viceministro Transportes', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 1240 }, { renglon: '022', cantidad: 380 }, { renglon: '029', cantidad: 2150 }], transaccionesOI: 145 },
+  { id: 4,  short: 'MCD',     name: 'Ministerio de Cultura y Deportes',                        presupuesto: 780,   ejecucion: 20, funcionamiento: 500,   inversion: 280,   empleados: 2100,  alertas: 1, riesgo: 'bajo',  hallazgos: ['Presupuesto limitado para cultura'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Cultural', foto: '' }, { nombre: 'Viceministro Deportivo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 400 }, { renglon: '022', cantidad: 100 }, { renglon: '029', cantidad: 300 }], transaccionesOI: 15 },
+  { id: 5,  short: 'MINDEF',  name: 'Ministerio de la Defensa Nacional',                       presupuesto: 4200,  ejecucion: 35, funcionamiento: 3500,  inversion: 700,   empleados: 22000, alertas: 2, riesgo: 'medio', hallazgos: ['Gasto en personal elevado', 'Equipamiento desactualizado'], docs: 6,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Defensa', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 5000 }, { renglon: '022', cantidad: 1200 }, { renglon: '029', cantidad: 800 }], transaccionesOI: 60 },
+  { id: 6,  short: 'MINDES',  name: 'Ministerio de Desarrollo Social',                         presupuesto: 2850,  ejecucion: 19, funcionamiento: 620,   inversion: 2230,  empleados: 1985,  alertas: 6, riesgo: 'alto',  hallazgos: ['Transferencias condicionadas bajo lupa ciudadana', 'Cobertura territorial lenta'], docs: 7,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Focalización', foto: '' }, { nombre: 'Viceministra Ejecutiva', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 320 }, { renglon: '022', cantidad: 110 }, { renglon: '029', cantidad: 860 }], transaccionesOI: 35 },
+  { id: 7,  short: 'MINEDUC', name: 'Ministerio de Educación',                                  presupuesto: 24500, ejecucion: 29, funcionamiento: 21400, inversion: 3100,  empleados: 142000,alertas: 4, riesgo: 'medio', hallazgos: ['Infraestructura pendiente en zonas rurales', 'Contratación de maestros en proceso'], docs: 9,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Vice. Técnico', foto: '' }, { nombre: 'Vice. Administrativo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 18200 }, { renglon: '022', cantidad: 4200 }, { renglon: '029', cantidad: 9600 }], transaccionesOI: 98 },
+  { id: 8,  short: 'MINECO',  name: 'Ministerio de Economía',                                   presupuesto: 1100,  ejecucion: 21, funcionamiento: 700,   inversion: 400,   empleados: 1500,  alertas: 2, riesgo: 'medio', hallazgos: ['Baja inversión productiva', 'Rezago en MiPymes'], docs: 4,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Inversión', foto: '' }, { nombre: 'Viceministro MIPYMES', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 280 }, { renglon: '022', cantidad: 90 }, { renglon: '029', cantidad: 200 }], transaccionesOI: 22 },
+  { id: 9,  short: 'MEM',     name: 'Ministerio de Energía y Minas',                            presupuesto: 1800,  ejecucion: 26, funcionamiento: 900,   inversion: 900,   empleados: 1800,  alertas: 3, riesgo: 'medio', hallazgos: ['Concesiones mineras cuestionadas', 'Energía rural deficiente'], docs: 6,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Energía', foto: '' }, { nombre: 'Viceministro Minas', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 350 }, { renglon: '022', cantidad: 100 }, { renglon: '029', cantidad: 250 }], transaccionesOI: 40 },
+  { id: 10, short: 'MINFIN',  name: 'Ministerio de Finanzas Públicas',                          presupuesto: 2100,  ejecucion: 40, funcionamiento: 1800,  inversion: 300,   empleados: 3200,  alertas: 4, riesgo: 'medio', hallazgos: ['Deuda pública creciente', 'Ejecución presupuestaria lenta en otros ministerios'], docs: 10, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Fiscal', foto: '' }, { nombre: 'Viceministro Tesorería', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 600 }, { renglon: '022', cantidad: 200 }, { renglon: '029', cantidad: 400 }], transaccionesOI: 80 },
+  { id: 11, short: 'MINGOB',  name: 'Ministerio de Gobernación',                                presupuesto: 6500,  ejecucion: 33, funcionamiento: 5500,  inversion: 1000,  empleados: 35000, alertas: 7, riesgo: 'alto',  hallazgos: ['Inseguridad creciente', 'Corrupción en corporaciones policiales', 'Hacinamiento carcelario'], docs: 14, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Seguridad', foto: '' }, { nombre: 'Viceministro Administrativo', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 8000 }, { renglon: '022', cantidad: 2500 }, { renglon: '029', cantidad: 5000 }], transaccionesOI: 190 },
+  { id: 12, short: 'MINEX',   name: 'Ministerio de Relaciones Exteriores',                      presupuesto: 950,   ejecucion: 30, funcionamiento: 800,   inversion: 150,   empleados: 1100,  alertas: 1, riesgo: 'bajo',  hallazgos: ['Representación consular insuficiente'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Diplomático', foto: '' }, { nombre: 'Viceministro Consular', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 200 }, { renglon: '022', cantidad: 60 }, { renglon: '029', cantidad: 120 }], transaccionesOI: 12 },
+  { id: 13, short: 'MSPAS',   name: 'Ministerio de Salud Pública y Asistencia Social',          presupuesto: 14750, ejecucion: 31, funcionamiento: 10300, inversion: 4450,  empleados: 38210, alertas: 7, riesgo: 'alto',  hallazgos: ['Incidencias en compras directas', 'Rezagos programáticos', 'Abastecimiento de medicamentos oncológicos bajo'], docs: 18, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Hospitales', foto: '' }, { nombre: 'Viceministra Primaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 5420 }, { renglon: '022', cantidad: 2120 }, { renglon: '029', cantidad: 4850 }], transaccionesOI: 220 },
+  { id: 14, short: 'MINTRAB', name: 'Ministerio de Trabajo y Previsión Social',                 presupuesto: 820,   ejecucion: 25, funcionamiento: 600,   inversion: 220,   empleados: 1400,  alertas: 2, riesgo: 'medio', hallazgos: ['Inspecciones laborales insuficientes', 'Bajo presupuesto para IGSS'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Trabajo', foto: '' }, { nombre: 'Viceministro Previsión Social', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 250 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 180 }], transaccionesOI: 18 },
 ];
 
-const commissions = [
-  { nombre: "Descentralización y Desarrollo", prioridad: "Alta", agenda: 8, avances: 62 },
-  { nombre: "Seguridad Alimentaria", prioridad: "Alta", agenda: 6, avances: 48 },
-  { nombre: "Probidad y Transparencia", prioridad: "Media", agenda: 5, avances: 71 },
-  { nombre: "Defensa Nacional", prioridad: "Media", agenda: 4, avances: 55 },
-];
+// ─── Comisiones: estado reactivo y CRUD ───
+const commissionsData = ref([
+  { id: 1, nombre: 'Descentralización y Desarrollo', prioridad: 'Alta',  agenda: 8, avances: 62, notas: '' },
+  { id: 2, nombre: 'Seguridad Alimentaria',           prioridad: 'Alta',  agenda: 6, avances: 48, notas: '' },
+  { id: 3, nombre: 'Probidad y Transparencia',        prioridad: 'Media', agenda: 5, avances: 71, notas: '' },
+  { id: 4, nombre: 'Defensa Nacional',                prioridad: 'Media', agenda: 4, avances: 55, notas: '' },
+]);
+
+const comBusqueda  = ref('');
+const comFiltro    = ref('Todas');
+const comModalOpen = ref(false);
+const comEditando  = ref(null);
+const comError     = ref('');
+const comFormVacio = () => ({ nombre: '', prioridad: 'Alta', agenda: 0, avances: 0, notas: '' });
+const comForm      = ref(comFormVacio());
+
+const comisionesFiltradas = computed(() => {
+    let lista = commissionsData.value;
+    if (comFiltro.value !== 'Todas') lista = lista.filter(c => c.prioridad === comFiltro.value);
+    if (comBusqueda.value.trim()) {
+        const q = comBusqueda.value.toLowerCase();
+        lista = lista.filter(c => c.nombre.toLowerCase().includes(q));
+    }
+    return lista;
+});
+
+function abrirComModal(com = null) {
+    comError.value = '';
+    comEditando.value = com;
+    comForm.value = com ? { ...com } : comFormVacio();
+    comModalOpen.value = true;
+}
+function cerrarComModal() { comModalOpen.value = false; }
+function guardarComision() {
+    if (!comForm.value.nombre.trim()) { comError.value = 'El nombre es obligatorio.'; return; }
+    if (comEditando.value) {
+        const idx = commissionsData.value.findIndex(c => c.id === comEditando.value.id);
+        if (idx !== -1) commissionsData.value[idx] = { ...comForm.value, id: comEditando.value.id };
+    } else {
+        commissionsData.value.push({ ...comForm.value, id: Date.now() });
+    }
+    cerrarComModal();
+}
+function eliminarComision(id) { commissionsData.value = commissionsData.value.filter(c => c.id !== id); }
 
 const noticias = [
   { ministerio: "MICIVI", titulo: "Retrasos en adjudicaciones y presión civil por fallos en red vial departamental", fecha: "2026-04-14", fuente: "Prensa Libre", tono: "crítico" },
@@ -472,15 +1287,8 @@ const personal = [
   { puesto: "Asistente Despacho", renglones: "022", salario: "Q8,000", entidad: "MINEDUC" },
 ];
 
-const docs = [
-  { tipo: "PDF", nombre: "Informe de consolidación de ejecución de Marzo 2026", entidad: "MICIVI", fecha: "2026-04-01" },
-  { tipo: "PPTX", nombre: "Presentación de resultados interinstitucional presidencia", entidad: "MSPAS", fecha: "2026-04-09" },
-  { tipo: "XLSX", nombre: "Nómina y renglones de contrato temporal consolidados", entidad: "MINEDUC", fecha: "2026-04-10" },
-  { tipo: "PDF", nombre: "Oficio formal de amparo y fiscalización 0938-2026", entidad: "MIDES", fecha: "2026-04-12" },
-];
-
 const totalPresupuesto = computed(() => ministries.reduce((acc, m) => acc + m.presupuesto, 0));
-const totalDocs = computed(() => ministries.reduce((acc, m) => acc + m.docs, 0));
+const totalDocs = computed(() => docs.value.length);
 const totalAlertas = computed(() => ministries.reduce((acc, m) => acc + m.alertas, 0));
 const avgEjecucion = computed(() => Math.round(ministries.reduce((acc, m) => acc + m.ejecucion, 0) / ministries.length));
 
@@ -501,8 +1309,73 @@ const riskColorClass = (risk) => {
         default: return 'bg-surface-container text-on-surface-variant border-outline-variant/20';
     }
 }
+
 </script>
 
 <style scoped>
-/* Agrega animaciones ligeras nativas si lo deseas */
+/* Transición del modal */
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.2s ease;
+}
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+.modal-enter-from .relative {
+    transform: scale(0.92) translateY(16px);
+}
+.modal-leave-to .relative {
+    transform: scale(0.95) translateY(8px);
+}
+
+/* ── Comisiones Modal ── */
+.com-modal-enter-active, .com-modal-leave-active { transition: opacity 0.25s ease; }
+.com-modal-enter-from, .com-modal-leave-to { opacity: 0; }
+.com-modal-enter-active .com-card, .com-modal-leave-active .com-card { transition: transform 0.25s ease; }
+.com-modal-enter-from .com-card, .com-modal-leave-to .com-card { transform: scale(0.95) translateY(12px); }
+
+.com-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(14, 40, 48, 0.75); backdrop-filter: blur(8px); padding: 16px;
+}
+.com-card {
+  background: #216170; border: 1px solid #327f91; border-radius: 20px;
+  width: 100%; max-width: 560px; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(14,40,48,0.6);
+}
+.com-header {
+  padding: 22px 28px; background: #184e5b;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #327f91;
+}
+.com-icon { font-size: 24px !important; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; color: #e0f2fe; border: 1px solid rgba(255,255,255,0.2); }
+.com-title { font-size: 17px; font-weight: 800; color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.com-sub   { font-size: 12px; color: #a5d0db; margin: 2px 0 0; }
+.com-close { width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.1); border-radius: 8px; color: #e0f2fe; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.com-close:hover { background: rgba(255,255,255,0.2); }
+.com-body  { display: flex; flex-direction: column; gap: 16px; padding: 22px 28px; }
+.com-field { display: flex; flex-direction: column; gap: 5px; }
+.com-label { font-size: 11px; font-weight: 800; color: #a5d0db; text-transform: uppercase; letter-spacing: 0.05em; }
+.com-input {
+  width: 100%; padding: 10px 13px;
+  background: #184e5b; border: 1px solid #327f91; border-radius: 10px;
+  font-size: 14px; color: #fff; outline: none; transition: all 0.2s; font-family: inherit;
+  color-scheme: dark;
+}
+.com-input:focus { border-color: #5ab1c5; box-shadow: 0 0 0 3px rgba(90,177,197,0.2); }
+.com-input::placeholder { color: #6ba7b8; }
+.com-footer { display: flex; align-items: center; padding: 18px 28px; background: #184e5b; border-top: 1px solid #327f91; }
+.com-btn-del    { display:flex;align-items:center;gap:6px;padding:9px 15px;background:transparent;color:#f87171;border:1px solid transparent;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s; }
+.com-btn-del:hover { background:#7f1d1d;border-color:#fca5a5; }
+.com-btn-cancel { padding:9px 18px;background:#216170;color:#fff;border:1px solid #327f91;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s; }
+.com-btn-cancel:hover { background:#327f91; }
+.com-btn-save   { display:flex;align-items:center;gap:7px;padding:9px 20px;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,#0f3642,#216170);box-shadow:0 4px 12px rgba(14,40,48,0.3); }
+.com-btn-save:hover { filter:brightness(1.15);transform:translateY(-1px); }
 </style>

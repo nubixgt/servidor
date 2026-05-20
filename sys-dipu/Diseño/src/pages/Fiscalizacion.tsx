@@ -13,7 +13,7 @@ export default function Fiscalizacion() {
           <button className="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest active:scale-95">
             <span className="material-symbols-outlined text-xl">ios_share</span> Exportar
           </button>
-          <button className="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl active:scale-95">
+          <button className="px-6 py-2.5 bg-linear-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl active:scale-95">
             <span className="material-symbols-outlined text-xl">add</span> Nueva Acción
           </button>
         </div>

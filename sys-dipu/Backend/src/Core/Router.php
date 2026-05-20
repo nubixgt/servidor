@@ -20,19 +20,21 @@ class Router
 
     public function dispatch($method, $uri)
     {
-        // Simple URI matching for now (ignores query params in matching logic)
+        // Strip query string
         $uri = strtok($uri, '?');
 
-        // Strip the base path if we are running in a subdirectory
-        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /project/api/v1/index.php
-        $scriptDir = dirname($scriptName);     // e.g., /project/api/v1
+        // Strip the base path only when running under Apache/Nginx (not PHP built-in server).
+        // In PHP's built-in server, SCRIPT_NAME equals REQUEST_URI, so dirname()
+        // would incorrectly strip a real path segment (e.g. /auth from /auth/login).
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
 
-        // Normalize slashes
-        $scriptDir = str_replace('\\', '/', $scriptDir);
-
-        // If URI starts with scriptDir, remove it
-        if ($scriptDir !== '/' && strpos($uri, $scriptDir) === 0) {
-            $uri = substr($uri, strlen($scriptDir));
+        // Only strip base path when SCRIPT_NAME ends with .php (real script, not spoofed by built-in server)
+        if (str_ends_with($scriptName, '.php') && $scriptName !== $requestUri) {
+            $scriptDir = dirname(str_replace('\\', '/', $scriptName));
+            if ($scriptDir !== '/' && strpos($uri, $scriptDir) === 0) {
+                $uri = substr($uri, strlen($scriptDir));
+            }
         }
 
         // Ensure URI starts with /
@@ -40,42 +42,34 @@ class Router
             $uri = '/' . $uri;
         }
 
+
         foreach ($this->controllers as $controllerClass) {
             $reflection = new ReflectionClass($controllerClass);
-
-            // Check Class Level Authorization (Optional, usually we check at method level or both)
             $classAuth = $reflection->getAttributes(Authorize::class);
-            // logic for class Level auth could go here...
 
             foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $methodRef) {
                 $attributes = $methodRef->getAttributes(Route::class);
 
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
-
-                    // Check if Method and URI match
-                    // This supports parameters like /users/{id} via regex
                     $pattern = preg_replace('/\{[a-zA-Z0-9_]+\}/', '([a-zA-Z0-9_]+)', $route->path);
                     $pattern = "@^" . $pattern . "$@D";
 
-                    if ($route->method === $method && preg_match($pattern, $uri, $matches)) {
-                        array_shift($matches); // Remove full match
+                    // 🔍 DEBUG TEMPORAL
+                    error_log("Checking route: [{$route->method}] {$route->path} | Pattern: {$pattern} | URI: {$uri} | Method: {$method}");
 
-                        // Handle Authorization (Roles)
+                    if ($route->method === $method && preg_match($pattern, $uri, $matches)) {
+                        array_shift($matches);
                         $authAttrs = $methodRef->getAttributes(Authorize::class);
                         if (!empty($authAttrs)) {
                             $auth = $authAttrs[0]->newInstance();
                             $this->checkPermissions($auth->roles);
                         }
-
-                        // Handle Privileges (Specific Capabilities)
                         $privAttrs = $methodRef->getAttributes(HasPrivilege::class);
                         if (!empty($privAttrs)) {
                             $priv = $privAttrs[0]->newInstance();
                             $this->checkPrivilege($priv->privilege);
                         }
-
-                        // Instantiate Controller and Call Method
                         $controllerInstance = new $controllerClass();
                         call_user_func_array([$controllerInstance, $methodRef->getName()], $matches);
                         return;
@@ -85,7 +79,7 @@ class Router
         }
 
         // Default: 404 Endpoint Not Found
-        // You can make a generic Response class or just echo json
+        error_log(">>> 404 - No route matched for [{$method}] {$uri}");
         http_response_code(404);
         echo json_encode(["status" => "error", "message" => "Endpoint not found"]);
     }
