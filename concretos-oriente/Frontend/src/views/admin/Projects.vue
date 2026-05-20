@@ -256,16 +256,15 @@
                   <input v-model="formData.gasto_real_acumulado" type="number" step="0.01" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-lg" placeholder="0.00" />
                 </div>
                 <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre de Ubicación</label>
-                  <input v-model="formData.nombre_ubicacion" type="text" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. Zona 10, Ciudad" />
-                </div>
-                <div>
-                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Coordenadas GPS (Lat, Lng)</label>
-                  <div class="flex gap-2">
-                    <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="14.634, -90.506" />
-                    <button type="button" @click="getLocation" class="px-5 bg-white/10 hover:bg-primary rounded-2xl transition-all" title="Obtener mi ubicación actual">
-                      <MapPinIcon class="w-6 h-6 text-white" />
-                    </button>
+                  <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Ubicación Geográfica (Haz clic en el mapa)</label>
+                  <div class="space-y-3">
+                    <div id="project-map" class="h-48 w-full rounded-2xl border border-white/10 z-0 relative z-0" style="z-index: 1;"></div>
+                    <div class="flex gap-2">
+                      <input v-model="formData.coordenadas" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold text-xs" placeholder="Latitud, Longitud" readonly />
+                      <button type="button" @click="getLocation" class="px-5 bg-white/10 hover:bg-primary rounded-2xl transition-all" title="Obtener mi ubicación actual">
+                        <MapPinIcon class="w-6 h-6 text-white" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -293,10 +292,18 @@
               </div>
               <div>
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">
-                  Archivos de Contrato (Max 3. PDF/DOC) <span v-if="isEditing" class="text-primary normal-case">(Opcional)</span>
+                  Archivos de Contrato (Max 3. PDF/DOC) <span v-if="isEditing" class="text-primary normal-case">(Al subir nuevos, reemplazarán los anteriores)</span>
                 </label>
                 <input @change="handleContratosChange" type="file" multiple accept=".pdf,.doc,.docx" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
-                <p v-if="formData.contratos && formData.contratos.length > 0" class="text-xs text-primary mt-2 font-bold">{{ formData.contratos.length }} archivos seleccionados.</p>
+                
+                <div v-if="formData.contratos && formData.contratos.length > 0" class="mt-4 space-y-2">
+                  <div v-for="(file, i) in formData.contratos" :key="i" class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                    <span class="text-xs text-white/80 font-medium truncate flex-1">{{ file.name }}</span>
+                    <button type="button" @click="removeContrato(i)" class="p-1 hover:bg-tertiary/20 hover:text-tertiary text-white/40 rounded-lg transition-all">
+                      <XMarkIcon class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -319,7 +326,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { 
   BuildingOfficeIcon, ChevronRightIcon, 
   PlusIcon, XMarkIcon, CalendarIcon, MapPinIcon, 
@@ -408,6 +415,7 @@ const openModal = () => {
   isEditing.value = false;
   editingId.value = null;
   showModal.value = true;
+  initMap();
 };
 
 const openEditModal = (proj) => {
@@ -429,6 +437,17 @@ const openEditModal = (proj) => {
   editingId.value = proj.id;
   closeProjectDetails();
   showModal.value = true;
+  
+  if (proj.coordenadas) {
+    const parts = proj.coordenadas.split(',');
+    if (parts.length === 2) {
+      initMap(parseFloat(parts[0]), parseFloat(parts[1]));
+    } else {
+      initMap();
+    }
+  } else {
+    initMap();
+  }
 };
 
 const closeModal = () => {
@@ -453,6 +472,48 @@ const resetForm = () => {
   };
 };
 
+let mapInstance = null;
+let mapMarker = null;
+
+const initMap = (lat = 14.6349, lng = -90.5069) => {
+  nextTick(() => {
+    if (mapInstance) {
+      mapInstance.remove();
+      mapInstance = null;
+    }
+    
+    // Leaflet init (L is global from CDN)
+    if (typeof L !== 'undefined') {
+      mapInstance = L.map('project-map').setView([lat, lng], 13);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(mapInstance);
+
+      if (formData.value.coordenadas) {
+        mapMarker = L.marker([lat, lng]).addTo(mapInstance);
+      }
+
+      mapInstance.on('click', function(e) {
+        const clickedLat = e.latlng.lat.toFixed(6);
+        const clickedLng = e.latlng.lng.toFixed(6);
+        formData.value.coordenadas = `${clickedLat}, ${clickedLng}`;
+        
+        if (mapMarker) {
+          mapInstance.removeLayer(mapMarker);
+        }
+        mapMarker = L.marker([clickedLat, clickedLng]).addTo(mapInstance);
+      });
+      
+      // Invalidate size to prevent grey tiles in hidden modals
+      setTimeout(() => {
+        mapInstance.invalidateSize();
+      }, 300);
+    }
+  });
+};
+
 const handleFotoChange = (e) => {
   const file = e.target.files[0];
   if (file) {
@@ -461,8 +522,10 @@ const handleFotoChange = (e) => {
 };
 
 const handleContratosChange = (e) => {
-  const files = Array.from(e.target.files);
-  if (files.length > 3) {
+  const newFiles = Array.from(e.target.files);
+  const totalFiles = formData.value.contratos.length + newFiles.length;
+  
+  if (totalFiles > 3) {
     Swal.fire({
       title: 'Demasiados archivos',
       text: 'Solo puedes subir hasta 3 archivos de contrato.',
@@ -473,16 +536,29 @@ const handleContratosChange = (e) => {
       customClass: { popup: 'border border-white/10 rounded-3xl' }
     });
     e.target.value = ''; // Limpiar input
-    formData.value.contratos = [];
     return;
   }
-  formData.value.contratos = files;
+  
+  formData.value.contratos = [...formData.value.contratos, ...newFiles];
+  e.target.value = ''; // Resetear el input para permitir seleccionar más
+};
+
+const removeContrato = (index) => {
+  formData.value.contratos.splice(index, 1);
 };
 
 const getLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
-      formData.value.coordenadas = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+      const lat = position.coords.latitude.toFixed(6);
+      const lng = position.coords.longitude.toFixed(6);
+      formData.value.coordenadas = `${lat}, ${lng}`;
+      
+      if (mapInstance) {
+        if (mapMarker) mapInstance.removeLayer(mapMarker);
+        mapMarker = L.marker([lat, lng]).addTo(mapInstance);
+        mapInstance.setView([lat, lng], 15);
+      }
     }, () => {
       Swal.fire({
         title: 'Error',
