@@ -35,6 +35,10 @@ export const getApiBaseUrl = () => {
     }
 };
 
+export const getBackendBaseUrl = () => {
+    return getApiBaseUrl().replace('/api/v1', '');
+};
+
 const api = axios.create({
     baseURL: getApiBaseUrl(),
     headers: {
