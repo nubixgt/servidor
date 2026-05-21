@@ -132,7 +132,8 @@
         <div
           v-for="file in filteredFiles"
           :key="file.id"
-          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between"
+          @click="openDetails(file)"
+          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between cursor-pointer"
         >
           <div class="h-44 bg-white/5 relative overflow-hidden flex items-center justify-center">
             <img
@@ -161,7 +162,7 @@
               <span class="text-white/40">{{ file.size }}</span>
               <div class="flex gap-2">
                 <button
-                  @click="handleDownload(file.path)"
+                  @click.stop="handleDownload(file.path)"
                   class="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg transition-colors border border-white/5"
                 >
                   <ArrowDownTrayIcon class="w-3.5 h-3.5" />
@@ -186,7 +187,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
-              <tr v-for="file in filteredFiles" :key="file.id" class="hover:bg-white/5 transition-all">
+              <tr v-for="file in filteredFiles" :key="file.id" @click="openDetails(file)" class="hover:bg-white/5 transition-all cursor-pointer">
                 <td class="px-10 py-5">
                   <div class="flex items-center gap-3">
                     <DocumentTextIcon class="w-4 h-4 text-primary" />
@@ -199,7 +200,7 @@
                 </td>
                 <td class="px-10 py-5 text-right font-black italic text-sm text-white/70">{{ file.size }}</td>
                 <td class="px-10 py-5 text-right space-x-1">
-                  <button @click="handleDownload(file.path)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
+                  <button @click.stop="handleDownload(file.path)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
                     <ArrowDownTrayIcon class="w-4 h-4" />
                   </button>
                 </td>
@@ -331,6 +332,60 @@
         </form>
       </div>
     </div>
+    <!-- Document Details Modal -->
+    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showDetailsModal = false"></div>
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+        <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-6">Detalles del Documento</h3>
+        
+        <div v-if="selectedDocument" class="space-y-4">
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Nombre</p>
+            <p class="text-sm font-extrabold uppercase text-white">{{ selectedDocument.name }}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Tipo / Categoría</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.category }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Extensión</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.ext }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Proyecto</p>
+              <p class="text-xs font-bold uppercase text-primary">{{ selectedDocument.projectName }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Módulo Relacionado</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.moduleRel }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Peso</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.size }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Fecha</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.modifiedAt }}</p>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Etiquetas</p>
+            <p class="text-xs font-bold uppercase text-emerald-400">{{ selectedDocument.tags }}</p>
+          </div>
+
+          <div class="pt-6">
+            <button
+              @click="showDetailsModal = false"
+              class="w-full glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
+            >
+              Cerrar Detalles
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -338,6 +393,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useAuthStore } from '../../stores/auth';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -357,6 +413,8 @@ import {
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
 
+const authStore = useAuthStore();
+
 const getBackendUrl = (path: string) => {
   if (!path) return '';
   return `/concretos-oriente/Backend/${path}`;
@@ -375,6 +433,9 @@ interface DigitalFile {
   name: string;
   category: string;
   folderId: string;
+  projectName: string;
+  moduleRel: string;
+  tags: string;
   size: string;
   modifiedAt: string;
   modifiedBy: string;
@@ -398,6 +459,8 @@ const selectedFolderId = ref<string | null>(null);
 const showUploadModal = ref(false);
 const showNewFolderModal = ref(false);
 const notification = ref('');
+const showDetailsModal = ref(false);
+const selectedDocument = ref<DigitalFile | null>(null);
 
 const form = ref({
   tipo_documento: 'Contrato',
@@ -415,8 +478,10 @@ const categories = [
   { value: 'all', label: 'Todos' },
   { value: 'Contrato', label: 'Contratos' },
   { value: 'Factura', label: 'Facturas' },
+  { value: 'Cheque', label: 'Cheques' },
   { value: 'Licencia', label: 'Licencias' },
   { value: 'Fotografía', label: 'Fotografías' },
+  { value: 'Manual', label: 'Manuales' },
   { value: 'Otro', label: 'Otros' },
 ];
 
@@ -453,6 +518,9 @@ const fetchDocuments = async () => {
         name: d.nombre_documento,
         category: d.tipo_documento,
         folderId: d.project_id,
+        projectName: d.proyecto_nombre || 'Ninguno',
+        moduleRel: d.modulo_relacionado || 'Ninguno',
+        tags: d.etiquetas || 'Sin etiquetas',
         size: (d.peso_archivo / 1024 / 1024).toFixed(2) + ' MB',
         modifiedAt: new Date(d.created_at).toLocaleDateString(),
         modifiedBy: 'Sistema',
@@ -507,12 +575,7 @@ async function handleUploadFile() {
       return Swal.fire('Atención', 'Seleccione un archivo.', 'warning');
     }
 
-    const userStr = localStorage.getItem('userData');
-    let userId = 'default';
-    if (userStr) {
-      const userObj = JSON.parse(userStr);
-      userId = userObj.id;
-    }
+    let userId = authStore.userRole || 'admin';
     formData.append('usuario_id', userId);
 
     const res = await axios.post(`${API_URL}/documents`, formData, {
@@ -545,5 +608,10 @@ async function handleUploadFile() {
 
 function handleDownload(path: string) {
   window.open(getBackendUrl(path), '_blank');
+}
+
+function openDetails(file: DigitalFile) {
+  selectedDocument.value = file;
+  showDetailsModal.value = true;
 }
 </script>
