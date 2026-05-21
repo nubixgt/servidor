@@ -216,137 +216,61 @@
 
     </div>
 
-    <!-- Summary + Sources -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-      <!-- Weekly Analytics Card -->
-      <div class="lg:col-span-2 bg-gradient-to-br from-primary/10 via-slate-950 to-transparent p-10 rounded-[48px] border border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-        <div class="space-y-6 flex-1">
-          <div class="inline-flex bg-primary/20 p-3 rounded-2xl text-primary">
-            <BoltIcon class="w-5 h-5 animate-bounce" />
-          </div>
-          <div class="space-y-2">
-            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Resumen Semanal de Alertas</h3>
-            <p class="text-xs text-white/50 font-bold leading-relaxed max-w-md uppercase">
-              Has resuelto satisfactoriamente el 85% de las alertas críticas de esta semana. La eficiencia de cierre promedia 1.2 hrs.
-            </p>
-          </div>
-          <div class="flex gap-4">
-            <div class="bg-white/5 p-4 rounded-2xl flex-1 border border-white/5">
-              <span class="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">Promedio Cierre</span>
-              <span class="text-base font-black italic text-white uppercase">1.2 Horas</span>
-            </div>
-            <div class="bg-white/5 p-4 rounded-2xl flex-1 border border-white/5">
-              <span class="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-1">Críticas Hoy</span>
-              <span class="text-base font-black italic text-rose-400 uppercase">0 Alertas</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mini histogram -->
-        <div class="w-[180px] h-[140px] flex items-end justify-between p-4 bg-white/[0.02] border border-white/5 rounded-3xl gap-2.5 relative">
-          <div class="absolute top-3 left-4 text-[8px] uppercase tracking-widest font-black text-white/20">Cierres L-V</div>
-          <div class="w-full bg-primary/20 h-1/2 rounded-lg"></div>
-          <div class="w-full bg-primary/40 h-3/4 rounded-lg"></div>
-          <div class="w-full bg-primary/60 h-2/3 rounded-lg"></div>
-          <div class="w-full bg-primary h-full rounded-lg relative overflow-hidden">
-            <div class="absolute bottom-0 inset-x-0 bg-white/20 h-1 w-full"></div>
-          </div>
-          <div class="w-full bg-primary/30 h-1/3 rounded-lg"></div>
-        </div>
-      </div>
-
-      <!-- Data Sources -->
-      <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between">
-        <div>
-          <h4 class="text-sm font-black uppercase tracking-widest text-white/50 mb-6 flex items-center gap-2">
-            <ServerIcon class="w-4 h-4 text-primary" /> Fuentes de Datos Vinculadas
-          </h4>
-          <div class="space-y-4 font-bold text-xs uppercase tracking-wide">
-            <div
-              v-for="src in sources"
-              :key="src.id"
-              class="flex justify-between items-center bg-white/[0.01] p-3 rounded-xl border border-white/5"
-            >
-              <span class="text-white/75">{{ src.name }}</span>
-              <div class="flex items-center gap-2">
-                <span :class="[
-                  'w-2.5 h-2.5 rounded-full',
-                  src.status === 'online' ? 'bg-emerald-500 animate-pulse' :
-                  src.status === 'syncing' ? 'bg-amber-400 animate-spin border' :
-                  'bg-rose-500'
-                ]"></span>
-                <span class="text-[9px] text-white/30 uppercase tracking-wider">{{ src.status }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button
-          @click="showToast('Diagnosticando salud del concentrador de transacciones de ConstructPro')"
-          class="w-full mt-8 py-4 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/10 transition-colors"
-        >
-          Ver Estado del Sistema
-        </button>
-      </div>
-
-    </div>
 
     <!-- Config Modal -->
-    <div v-if="showConfigModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
+    <div v-if="showConfigModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
       <div class="absolute inset-0 cursor-pointer" @click="showConfigModal = false"></div>
 
-      <div class="relative w-full max-w-md glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
-        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Canales de Alerta</h3>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Elige cómo deseas enterarte de eventos financieros y de logística en ConstructPro</p>
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-8">
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Configuración de Alerta</h3>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Define los parámetros para disparar alertas automáticas</p>
 
         <form @submit.prevent="handleSaveConfig" class="space-y-6">
-
-          <!-- Email -->
-          <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <EnvelopeIcon class="w-5 h-5 text-primary" />
-              <div>
-                <p class="font-extrabold text-xs uppercase tracking-wider text-white">Alertas por Correo</p>
-                <p class="text-[10px] font-bold text-white/30 uppercase mt-0.5">Reportes diarios e hitos financieros</p>
-              </div>
-            </div>
-            <input
-              type="checkbox"
-              v-model="emailAlerts"
-              class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20 focus:ring-offset-0"
-            />
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre de la alerta</label>
+            <input type="text" v-model="form.nombre" required class="w-full glass-input rounded-2xl p-4 text-xs font-bold uppercase text-white placeholder:text-white/20" placeholder="Ej. Alerta de Stock de Cemento" />
           </div>
 
-          <!-- Push -->
-          <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <DevicePhoneMobileIcon class="w-5 h-5 text-primary" />
-              <div>
-                <p class="font-extrabold text-xs uppercase tracking-wider text-white">Notificaciones Push</p>
-                <p class="text-[10px] font-bold text-white/30 uppercase mt-0.5">Incidentes críticos en obra pesada</p>
-              </div>
-            </div>
-            <input
-              type="checkbox"
-              v-model="pushAlerts"
-              class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20 focus:ring-offset-0"
-            />
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Tipo de evento</label>
+            <select v-model="form.tipo_evento" required class="w-full glass-input rounded-2xl p-4 text-xs font-bold uppercase text-white appearance-none cursor-pointer">
+              <option value="Stock bajo" class="bg-slate-900">Stock bajo</option>
+              <option value="Vencimiento de crédito" class="bg-slate-900">Vencimiento de crédito</option>
+              <option value="Mantenimiento próximo" class="bg-slate-900">Mantenimiento próximo</option>
+              <option value="Sobrecosto de proyecto" class="bg-slate-900">Sobrecosto de proyecto</option>
+            </select>
           </div>
 
-          <!-- SMS -->
-          <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-            <div class="flex items-center gap-3">
-              <ChatBubbleLeftIcon class="w-5 h-5 text-primary" />
-              <div>
-                <p class="font-extrabold text-xs uppercase tracking-wider text-white">Servicios de Mensajería SMS</p>
-                <p class="text-[10px] font-bold text-white/30 uppercase mt-0.5">Sueldos y nóminas procesadas (Beta)</p>
-              </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Canal de notificación</label>
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="WhatsApp" v-model="form.canales" class="rounded border-white/10 bg-white/5 text-primary focus:ring-0"> WhatsApp</label>
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="Correo electrónico" v-model="form.canales" class="rounded border-white/10 bg-white/5 text-primary focus:ring-0"> Correo electrónico</label>
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="In-app" v-model="form.canales" class="rounded border-white/10 bg-white/5 text-primary focus:ring-0"> In-app</label>
             </div>
-            <input
-              type="checkbox"
-              v-model="smsAlerts"
-              class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20 focus:ring-offset-0"
-            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Destinatarios</label>
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="Admin" v-model="form.destinatarios" class="rounded border-white/10 bg-white/5 text-emerald-500 focus:ring-0"> Admin</label>
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="Supervisor" v-model="form.destinatarios" class="rounded border-white/10 bg-white/5 text-emerald-500 focus:ring-0"> Supervisor</label>
+              <label class="flex items-center gap-2 text-xs font-bold uppercase text-white cursor-pointer"><input type="checkbox" value="Técnico" v-model="form.destinatarios" class="rounded border-white/10 bg-white/5 text-emerald-500 focus:ring-0"> Técnico</label>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Umbral o condición (Numérico)</label>
+            <input type="number" v-model="form.umbral" required class="w-full glass-input rounded-2xl p-4 text-xs font-bold uppercase text-white placeholder:text-white/20" placeholder="Ej: 5 (Días o %)" />
+          </div>
+
+          <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div>
+              <p class="font-extrabold text-xs uppercase tracking-wider text-white">Alerta Activa</p>
+              <p class="text-[10px] font-bold text-white/30 uppercase mt-0.5">Habilitar inmediatamente</p>
+            </div>
+            <input type="checkbox" v-model="form.activa" class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20 focus:ring-offset-0 cursor-pointer" />
           </div>
 
           <!-- Buttons -->
@@ -355,7 +279,7 @@
               type="submit"
               class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
             >
-              Guardar Configuración
+              Guardar Alerta
             </button>
             <button
               type="button"
@@ -365,7 +289,6 @@
               Cancelar
             </button>
           </div>
-
         </form>
       </div>
     </div>
@@ -396,6 +319,10 @@ import {
   BoltIcon,
   ServerIcon
 } from '@heroicons/vue/24/outline';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+const API_URL = '/concretos-oriente/Backend/api/v1';
 
 interface NotificationItem {
   id: string;
@@ -419,9 +346,15 @@ const searchTerm = ref('');
 const activeTab = ref('todas');
 const showConfigModal = ref(false);
 const notification = ref('');
-const emailAlerts = ref(true);
-const pushAlerts = ref(true);
-const smsAlerts = ref(false);
+
+const form = ref({
+  nombre: '',
+  tipo_evento: 'Stock bajo',
+  canales: [] as string[],
+  destinatarios: [] as string[],
+  umbral: 0,
+  activa: true
+});
 
 const tabs = [
   { value: 'todas', label: 'Todas las Notificaciones' },
@@ -500,28 +433,21 @@ const notifications = ref<NotificationItem[]>([
   }
 ]);
 
-const sources = ref<SourceStatus[]>([
-  { id: 'SRC-1', name: 'Sensores IOT Maquinaria contratista', status: 'online' },
-  { id: 'SRC-2', name: 'API Banco Central (Plataforma FX)', status: 'online' },
-  { id: 'SRC-3', name: 'Logs de Seguridad Física de Obra', status: 'online' },
-  { id: 'SRC-4', name: 'Sincronización de Costos ERP', status: 'syncing' }
-]);
-
 const criticalCount = computed(() => notifications.value.filter(n => n.isUrgent && !n.isRead).length);
 const unreadCount = computed(() => notifications.value.filter(n => !n.isRead).length);
 const financeCount = computed(() => notifications.value.filter(n => n.category === 'finanzas').length);
 
-const filteredNotifications = computed(() =>
-  notifications.value.filter(nt => {
-    const term = searchTerm.value.toLowerCase();
-    const matchesSearch = !term ||
-      nt.title.toLowerCase().includes(term) ||
-      nt.description.toLowerCase().includes(term) ||
-      nt.projectOrMeta.toLowerCase().includes(term);
-    const matchesTab = activeTab.value === 'todas' || nt.category === activeTab.value;
+const filteredNotifications = computed(() => {
+  return notifications.value.filter(n => {
+    const matchesSearch = 
+      n.title.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      n.projectOrMeta.toLowerCase().includes(searchTerm.value.toLowerCase());
+    
+    const matchesTab = activeTab.value === 'todas' || n.category === activeTab.value;
+    
     return matchesSearch && matchesTab;
-  })
-);
+  });
+});
 
 const getCategoryStyles = (nt: NotificationItem) => {
   switch (nt.category) {
@@ -556,8 +482,35 @@ const handleDeleteNotification = (id: string) => {
   showToast('Notificación removida del buzón');
 };
 
-const handleSaveConfig = () => {
-  showConfigModal.value = false;
-  showToast('Canales de alertas actualizados correctamente');
-};
+async function handleSaveConfig() {
+  try {
+    const res = await axios.post(`${API_URL}/alerts_config`, {
+      nombre: form.value.nombre,
+      tipo_evento: form.value.tipo_evento,
+      canales: form.value.canales,
+      destinatarios: form.value.destinatarios,
+      umbral: form.value.umbral,
+      activa: form.value.activa ? 1 : 0
+    });
+    
+    if (res.data.status === 'success') {
+      showConfigModal.value = false;
+      showToast('Configuración guardada en la base de datos');
+      
+      // Reset form
+      form.value = {
+        nombre: '',
+        tipo_evento: 'Stock bajo',
+        canales: [],
+        destinatarios: [],
+        umbral: 0,
+        activa: true
+      };
+    } else {
+      Swal.fire('Error', res.data.message || 'Error al guardar la configuración', 'error');
+    }
+  } catch (err: any) {
+    Swal.fire('Error', 'Hubo un error de conexión', 'error');
+  }
+}
 </script>

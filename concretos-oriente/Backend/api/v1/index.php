@@ -15,6 +15,7 @@ use App\Controllers\BudgetsController;
 use App\Controllers\PayrollController;
 use App\Controllers\MaintenanceController;
 use App\Controllers\DocumentsController;
+use App\Controllers\AlertsController;
 
 // Backend/api/v1/index.php
 
@@ -58,7 +59,7 @@ $router->registerController(BudgetsController::class);
 $router->registerController(PayrollController::class);
 $router->registerController(MaintenanceController::class);
 $router->registerController(DocumentsController::class);
-// $router->registerController(YourController::class);
+$router->registerController(AlertsController::class);
 
 
 
