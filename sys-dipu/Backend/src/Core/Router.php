@@ -116,6 +116,8 @@ class Router
     private function validateToken()
     {
         $headers = getallheaders();
+        error_log("validateToken headers: " . json_encode($headers));
+        
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
 
         if (empty($authHeader)) {
@@ -127,6 +129,7 @@ class Router
         }
 
         if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            error_log("validateToken 401: Missing Bearer Token. authHeader=" . $authHeader);
             http_response_code(401);
             echo json_encode(["status" => "error", "message" => "Unauthorized: Missing Bearer Token"]);
             exit;
@@ -136,12 +139,14 @@ class Router
         $payload = JwtUtils::validate($token);
 
         if (!$payload) {
+            error_log("validateToken 401: Invalid Token. token=" . $token);
             http_response_code(401);
             echo json_encode(["status" => "error", "message" => "Unauthorized: Invalid Token"]);
             exit;
         }
 
         if (isset($payload['exp']) && $payload['exp'] < time()) {
+            error_log("validateToken 401: Token Expired. exp=" . $payload['exp'] . " time=" . time());
             http_response_code(401);
             echo json_encode(["status" => "error", "message" => "Unauthorized: Token Expired"]);
             exit;
