@@ -225,7 +225,7 @@
           <div class="space-y-2">
             <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Empleados Incluidos</label>
             <div class="bg-white/5 border border-white/10 rounded-2xl p-4 max-h-48 overflow-y-auto custom-scrollbar space-y-2">
-              <div v-if="activePersonnel.length === 0" class="text-xs text-white/40">Cargando personal...</div>
+              <div v-if="activePersonnel.length === 0" class="text-xs text-white/40 italic py-2">No hay personal activo registrado.</div>
               <label v-for="emp in activePersonnel" :key="emp.id" class="flex items-center gap-3 cursor-pointer p-2 hover:bg-white/5 rounded-xl transition-colors">
                 <input type="checkbox" v-model="newPayroll.empleados_ids" :value="emp.id" class="w-4 h-4 rounded text-primary focus:ring-primary border-white/20 bg-slate-900" />
                 <div>
@@ -456,7 +456,7 @@ const fetchPayrolls = async () => {
 
 const fetchActivePersonnel = async () => {
   try {
-    const res = await axios.get(`${API_URL}/personnel/active`);
+    const res = await axios.get(`${API_URL}/payrolls/active-personnel`);
     if (res.data.status === 'success') {
       activePersonnel.value = res.data.data;
     }

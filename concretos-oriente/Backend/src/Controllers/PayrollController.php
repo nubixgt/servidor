@@ -23,10 +23,10 @@ class PayrollController {
         exit;
     }
 
-    #[Route('/personnel/active', 'GET')]
+    #[Route('/payrolls/active-personnel', 'GET')]
     public function getActivePersonnel() {
         try {
-            $stmt = $this->db->query("SELECT id, nombres, apellidos, puesto, salario_base, tipo_planilla FROM personnel WHERE fecha_baja IS NULL");
+            $stmt = $this->db->query("SELECT id, nombres, apellidos, puesto, salario_base, tipo_planilla FROM personnel WHERE fecha_baja IS NULL OR fecha_baja = '0000-00-00' OR fecha_baja >= CURDATE()");
             $personnel = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $this->respond('success', 'Personal activo', $personnel);
         } catch (\Exception $e) {
