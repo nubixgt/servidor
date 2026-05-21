@@ -1065,11 +1065,7 @@ async function onFotoMinistro(event, ministerioId) {
     formData.append('foto', file);
 
     try {
-        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData);
         if (res.data?.success) {
             const isLocal = window.location.hostname === 'localhost' ||
                             window.location.hostname === '127.0.0.1' ||

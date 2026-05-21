@@ -91,7 +91,7 @@ class Router
 
         $payload = $this->validateToken(); // Reuse validation logic
 
-        $userRole = $payload['role'] ?? 'guest';
+        $userRole = $payload['rol'] ?? $payload['role'] ?? 'guest';
 
         if (!in_array($userRole, $requiredRoles)) {
             http_response_code(403);
