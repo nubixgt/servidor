@@ -456,7 +456,7 @@ const fetchPayrolls = async () => {
 
 const fetchActivePersonnel = async () => {
   try {
-    const res = await axios.get(`${API_URL}/personnel/active`);
+    const res = await axios.get(`${API_URL}/payrolls/active-personnel`);
     if (res.data.status === 'success') {
       activePersonnel.value = res.data.data;
     }

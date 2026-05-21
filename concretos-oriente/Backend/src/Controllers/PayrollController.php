@@ -23,7 +23,7 @@ class PayrollController {
         exit;
     }
 
-    #[Route('/personnel/active', 'GET')]
+    #[Route('/payrolls/active-personnel', 'GET')]
     public function getActivePersonnel() {
         try {
             $stmt = $this->db->query("SELECT id, nombres, apellidos, puesto, salario_base, tipo_planilla FROM personnel WHERE fecha_baja IS NULL");
