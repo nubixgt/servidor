@@ -10,6 +10,27 @@ use App\Controllers\CalendarioController;
 
 // Backend/api/v1/index.php
 
+if (isset($_GET['debug_db'])) {
+    header("Content-Type: application/json; charset=UTF-8");
+    try {
+        require_once __DIR__ . '/../../autoload.php';
+        $db = \App\Utils\Database::getInstance()->getConnection();
+        $stmt = $db->query("SELECT id, nombre_completo, usuario, rol, estado FROM usuarios");
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Database connection successful!',
+            'users' => $users
+        ], JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], JSON_PRETTY_PRINT);
+    }
+    exit;
+}
+
 // 1. Load Autoloader
 // Disable HTML error output to keep JSON valid
 ini_set('display_errors', 1);
