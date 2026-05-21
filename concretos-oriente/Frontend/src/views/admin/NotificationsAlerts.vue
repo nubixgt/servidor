@@ -364,74 +364,33 @@ const tabs = [
   { value: 'proyectos', label: 'Proyectos' },
 ];
 
-const notifications = ref<NotificationItem[]>([
-  {
-    id: 'NT-101',
-    title: 'Retraso Crítico en Cimentación',
-    category: 'proyectos',
-    description: 'El Proyecto SkyTower reporta un retraso de 48h debido a falla mecánica en la excavadora principal. Requiere reprogramación inmediata de turnos.',
-    isUrgent: true,
-    timeAgo: 'Hace 15 min',
-    projectOrMeta: 'SkyTower Phase 1',
-    valueOrPriority: 'Urgente',
-    isRead: false
-  },
-  {
-    id: 'NT-102',
-    title: 'Factura Aprobada',
-    category: 'finanzas',
-    description: 'La factura #F-2024-089 (Suministros de Acero Corrugado) ha sido validada y aprobada por el departamento contable principal.',
-    isUrgent: false,
-    timeAgo: 'Hace 2 horas',
-    projectOrMeta: 'Compra de Aceros',
-    valueOrPriority: 'Q12,450.00',
-    isRead: false
-  },
-  {
-    id: 'NT-103',
-    title: 'Mantenimiento Preventivo Requerido',
-    category: 'maquinaria',
-    description: 'La Grúa Torre GT-04 requiere cambio de aceite hidráulico de alta densidad y revisión de tensión de cables mecánicos en los próximos 3 días.',
-    isUrgent: false,
-    timeAgo: 'Hace 5 horas',
-    projectOrMeta: 'GT-04',
-    valueOrPriority: 'Medio',
-    isRead: false
-  },
-  {
-    id: 'NT-104',
-    title: 'Nuevo Ingreso a Equipo de Obra',
-    category: 'personal',
-    description: 'Roberto Gómez se ha unido oficialmente al proyecto residencial como Inspector de Seguridad Industrial certificado en normas ISO 4501.',
-    isUrgent: false,
-    timeAgo: 'Ayer, 09:30 AM',
-    projectOrMeta: 'ID: #8900',
-    valueOrPriority: 'Informativo',
-    isRead: true
-  },
-  {
-    id: 'NT-105',
-    title: 'Vencimiento Próximo de Póliza',
-    category: 'finanzas',
-    description: 'La póliza de vicios ocultos para el Puente Interconector Sur vencerá en 30 días calendario. Solicite renovación regulatoria.',
-    isUrgent: false,
-    timeAgo: 'Hace 2 días',
-    projectOrMeta: 'Póliza de Fianzas',
-    valueOrPriority: 'Q45,000.00',
-    isRead: true
-  },
-  {
-    id: 'NT-106',
-    title: 'Rendimiento semanal superado',
-    category: 'proyectos',
-    description: 'La cuadrilla de acabados arquitectónicos en Urbanización Las Colinas completó el doble de metrajes planificados para esta quincena.',
-    isUrgent: false,
-    timeAgo: 'Hace 3 días',
-    projectOrMeta: 'Colinas',
-    valueOrPriority: 'Alta Eficiencia',
-    isRead: true
+const notifications = ref<NotificationItem[]>([]);
+
+const fetchNotifications = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/alerts_history`);
+    if (res.data.status === 'success') {
+      notifications.value = res.data.data.map((n: any) => ({
+        id: n.id.toString(),
+        title: n.title,
+        category: n.category,
+        description: n.description,
+        isUrgent: n.is_urgent == 1,
+        timeAgo: n.time_ago || new Date(n.created_at).toLocaleDateString(),
+        projectOrMeta: n.project_or_meta || 'General',
+        valueOrPriority: n.value_or_priority || 'Normal',
+        isRead: n.is_read == 1
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching notifications", error);
   }
-]);
+};
+
+import { onMounted } from 'vue';
+onMounted(() => {
+  fetchNotifications();
+});
 
 const criticalCount = computed(() => notifications.value.filter(n => n.isUrgent && !n.isRead).length);
 const unreadCount = computed(() => notifications.value.filter(n => !n.isRead).length);

@@ -2,10 +2,31 @@
 
 namespace App\Controllers;
 
+use App\Utils\Database;
+use App\Attributes\Route;
 use PDO;
 use Exception;
 
-class AlertsController extends BaseController {
+class AlertsController {
+    private $db;
+
+    public function __construct() {
+        $this->db = Database::getInstance()->getConnection();
+    }
+
+    private function respond($status, $message, $data = null) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => $status,
+            'message' => $message,
+            'data' => $data
+        ]);
+        exit;
+    }
+
+    private function getJsonData() {
+        return json_decode(file_get_contents('php://input'), true);
+    }
 
     #[Route('/alerts_config', 'GET')]
     public function getConfigs() {
@@ -13,7 +34,6 @@ class AlertsController extends BaseController {
             $stmt = $this->db->query("SELECT * FROM alerts_config ORDER BY created_at DESC");
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // parse json fields
             foreach ($data as &$row) {
                 $row['canales'] = json_decode($row['canales'], true) ?: [];
                 $row['destinatarios'] = json_decode($row['destinatarios'], true) ?: [];
@@ -64,4 +84,15 @@ class AlertsController extends BaseController {
         }
     }
 
+    #[Route('/alerts_history', 'GET')]
+    public function getHistory() {
+        try {
+            // Devuelve las alertas disparadas (historial). Si la tabla no existe o está vacía, devuelve array vacío.
+            $stmt = $this->db->query("SELECT * FROM alerts_history ORDER BY created_at DESC");
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->respond('success', 'Historial recuperado', $data);
+        } catch (Exception $e) {
+            return $this->respond('error', 'Error al recuperar historial: ' . $e->getMessage());
+        }
+    }
 }
