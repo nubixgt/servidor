@@ -19,13 +19,6 @@
 
       <div class="flex flex-wrap items-center gap-4">
         <button
-          @click="handleMarkAllRead"
-          class="flex items-center gap-2 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 active:scale-95 transition-all"
-        >
-          <DocumentCheckIcon class="w-4 h-4 text-primary" /> Marcar Todo Como Leído
-        </button>
-
-        <button
           @click="showConfigModal = true"
           class="glass-button-primary bg-primary border-primary border text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all shadow-primary/20"
         >
@@ -111,10 +104,19 @@
         >
           {{ tab.label }}
         </button>
+        <button
+          @click="activeTab = 'configuraciones'; fetchConfigs()"
+          :class="[
+            'text-xs font-black uppercase tracking-widest pb-3 transition-colors ml-auto',
+            activeTab === 'configuraciones' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-emerald-500/40 hover:text-emerald-400'
+          ]"
+        >
+          MIS REGLAS ACTIVAS
+        </button>
       </div>
 
-      <!-- Search bar -->
-      <div class="p-8 border-b border-white/5 bg-black/10 flex items-center justify-between">
+      <!-- Search bar (only for notifications) -->
+      <div v-if="activeTab !== 'configuraciones'" class="p-8 border-b border-white/5 bg-black/10 flex items-center justify-between">
         <div class="relative w-full max-w-md">
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
           <input
@@ -130,7 +132,7 @@
       </div>
 
       <!-- Notifications list -->
-      <div class="divide-y divide-white/5">
+      <div v-if="activeTab !== 'configuraciones'" class="divide-y divide-white/5">
         <div v-if="filteredNotifications.length === 0" class="px-10 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">
           No tienes notificaciones o alertas en este módulo.
         </div>
@@ -206,6 +208,52 @@
             <button
               @click.stop="handleDeleteNotification(nt.id)"
               title="Eliminar registro"
+              class="p-2.5 bg-white/5 hover:bg-white/10 text-white/50 hover:text-rose-400 rounded-xl border border-white/5 transition-all"
+            >
+              <TrashIcon class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configurations List -->
+      <div v-if="activeTab === 'configuraciones'" class="divide-y divide-white/5">
+        <div v-if="configs.length === 0" class="px-10 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">
+          No tienes ninguna regla configurada.
+        </div>
+
+        <div
+          v-for="cfg in configs"
+          :key="cfg.id"
+          class="group flex flex-col md:flex-row items-start md:items-center gap-6 px-10 py-6 transition-colors hover:bg-white/[0.02]"
+        >
+          <div class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <Cog6ToothIcon class="w-5 h-5" />
+          </div>
+
+          <div class="flex-grow space-y-1.5 min-w-0">
+            <div class="flex items-center flex-wrap gap-2.5">
+              <h4 class="font-extrabold text-white text-base tracking-tight uppercase italic">{{ cfg.nombre }}</h4>
+              <span :class="['px-3 py-0.5 font-black text-[9px] uppercase tracking-widest rounded-lg', cfg.activa ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-white/40']">
+                {{ cfg.activa ? 'Activa' : 'Inactiva' }}
+              </span>
+            </div>
+
+            <p class="text-xs text-white/50 leading-relaxed font-semibold">
+              <span class="text-white/70">Condición:</span> {{ cfg.tipo_evento }} (Umbral: {{ cfg.umbral }})
+            </p>
+
+            <div class="flex items-center flex-wrap gap-4 pt-1.5 text-[10px] font-black text-white/30 uppercase tracking-widest">
+              <span class="text-primary italic">Destinatarios: {{ cfg.destinatarios.join(', ') || 'Ninguno' }}</span>
+              <span class="text-white/10">•</span>
+              <span class="text-emerald-400">Canales: {{ cfg.canales.join(', ') || 'Ninguno' }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-end md:self-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              @click="handleDeleteConfig(cfg.id)"
+              title="Eliminar regla"
               class="p-2.5 bg-white/5 hover:bg-white/10 text-white/50 hover:text-rose-400 rounded-xl border border-white/5 transition-all"
             >
               <TrashIcon class="w-4 h-4" />
@@ -365,6 +413,7 @@ const tabs = [
 ];
 
 const notifications = ref<NotificationItem[]>([]);
+const configs = ref<any[]>([]);
 
 const fetchNotifications = async () => {
   try {
@@ -387,9 +436,33 @@ const fetchNotifications = async () => {
   }
 };
 
+const fetchConfigs = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/alerts_config`);
+    if (res.data.status === 'success') {
+      configs.value = res.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching configs", error);
+  }
+};
+
+const handleDeleteConfig = async (id: number) => {
+  try {
+    const res = await axios.delete(`${API_URL}/alerts_config/${id}`);
+    if (res.data.status === 'success') {
+      showToast('Regla eliminada exitosamente');
+      fetchConfigs();
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 import { onMounted } from 'vue';
 onMounted(() => {
   fetchNotifications();
+  fetchConfigs();
 });
 
 const criticalCount = computed(() => notifications.value.filter(n => n.isUrgent && !n.isRead).length);
@@ -397,6 +470,7 @@ const unreadCount = computed(() => notifications.value.filter(n => !n.isRead).le
 const financeCount = computed(() => notifications.value.filter(n => n.category === 'finanzas').length);
 
 const filteredNotifications = computed(() => {
+  if (activeTab.value === 'configuraciones') return [];
   return notifications.value.filter(n => {
     const matchesSearch = 
       n.title.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
@@ -423,12 +497,8 @@ const showToast = (msg: string) => {
   setTimeout(() => { notification.value = ''; }, 4500);
 };
 
-const handleMarkAllRead = () => {
-  notifications.value = notifications.value.map(nt => ({ ...nt, isRead: true }));
-  showToast('Todas las notificaciones marcadas como leídas');
-};
-
-const handleMarkAsRead = (id: string) => {
+const handleMarkAsRead = async (id: string) => {
+  // Aquí idealmente harías un await axios.post(`${API_URL}/alerts_history/mark_read/${id}`)
   const nt = notifications.value.find(n => n.id === id);
   if (nt && !nt.isRead) {
     nt.isRead = true;
@@ -456,6 +526,8 @@ async function handleSaveConfig() {
       showConfigModal.value = false;
       showToast('Configuración guardada en la base de datos');
       
+      fetchConfigs();
+
       // Reset form
       form.value = {
         nombre: '',
