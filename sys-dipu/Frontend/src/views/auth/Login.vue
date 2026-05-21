@@ -212,7 +212,7 @@ const handleLogin = async () => {
 }
 .lp-logo-img {
     position: relative; z-index: 1;
-    width: 260px; height: auto;
+    width: 320px; height: auto;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
     animation: logoFloat 6s ease-in-out infinite;
 }
@@ -333,7 +333,7 @@ const handleLogin = async () => {
 }
 .lr-logo-img {
     flex-shrink: 0;
-    width: 180px; height: auto;
+    width: 220px; height: auto;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
 @keyframes logoSpin {

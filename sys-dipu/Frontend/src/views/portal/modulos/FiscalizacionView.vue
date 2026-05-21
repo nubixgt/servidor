@@ -153,9 +153,27 @@
                 </div>
             </div>
 
+            <!-- Barra de búsqueda de ministerios -->
+            <div class="flex items-center gap-3 bg-white rounded-2xl border border-outline-variant/20 px-4 py-3 shadow-sm">
+                <span class="material-symbols-outlined text-outline text-xl">search</span>
+                <input v-model="busquedaAutoridades" type="text" placeholder="Buscar ministerio o entidad..."
+                    class="flex-1 border-none outline-none text-sm text-on-surface bg-transparent"
+                    style="font-family: inherit;" />
+                <button v-if="busquedaAutoridades" @click="busquedaAutoridades = ''"
+                    class="text-outline hover:text-on-surface transition-colors">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            <!-- Mensaje sin resultados -->
+            <div v-if="ministeriosFiltrados.length === 0" class="text-center py-12 text-on-surface-variant">
+                <span class="material-symbols-outlined text-5xl block mb-3 text-outline">search_off</span>
+                <p class="font-semibold">No se encontró ningún ministerio con "{{ busquedaAutoridades }}"</p>
+            </div>
+
             <!-- Grid de Ministerios -->
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div v-for="(m, mIdx) in ministries" :key="'aut-'+m.id"
+                <div v-for="(m, mIdx) in ministeriosFiltrados" :key="'aut-'+m.id"
                     class="group bg-surface rounded-3xl border border-outline-variant/15 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                     :style="`--card-hue: ${ministryHue(mIdx)}`">
 
@@ -188,10 +206,31 @@
                             :style="`background: hsl(${ministryHue(mIdx)}, 50%, 96%); border: 1px solid hsl(${ministryHue(mIdx)}, 40%, 88%)`">
                             <div class="absolute inset-0 opacity-5"
                                 :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 80%, 50%), transparent)`"></div>
-                            <!-- Avatar -->
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg shrink-0 relative z-10"
-                                :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 40%), hsl(${ministryHue(mIdx)}, 50%, 28%))`">
-                                {{ m.ministro.nombre.substring(0,2).toUpperCase() }}
+                            <!-- Avatar clickeable para subir foto -->
+                            <input :id="`foto-ministro-${m.id}`" type="file" accept="image/*" class="hidden"
+                                @change="onFotoMinistro($event, m.id)" />
+                            <div class="relative shrink-0 z-10 group/avatar">
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg cursor-pointer overflow-hidden"
+                                    :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 40%), hsl(${ministryHue(mIdx)}, 50%, 28%))`"
+                                    @click="abrirSelectorFotoMinistro(m.id)"
+                                    :title="ministerioFotos[m.id] ? 'Cambiar foto' : 'Agregar foto'">
+                                    <img v-if="ministerioFotos[m.id] && subiendoFoto !== m.id"
+                                        :src="ministerioFotos[m.id]"
+                                        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:9999px;"
+                                        @error="ministerioFotos[m.id] = null" />
+                                    <span v-if="subiendoFoto === m.id" class="material-symbols-outlined text-xl animate-spin" style="position:relative;z-index:1;">progress_activity</span>
+                                    <template v-else-if="!ministerioFotos[m.id]">
+                                        <span class="group-hover/avatar:hidden">{{ m.ministro.nombre.substring(0,2).toUpperCase() }}</span>
+                                        <span class="material-symbols-outlined hidden group-hover/avatar:block text-xl">add_a_photo</span>
+                                    </template>
+                                </div>
+                                <!-- Botón eliminar foto -->
+                                <button v-if="ministerioFotos[m.id] && subiendoFoto !== m.id"
+                                    @click.stop="eliminarFotoMinistro(m.id)"
+                                    class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-white flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 hover:scale-110 shadow-md z-20"
+                                    title="Eliminar foto">
+                                    <span class="material-symbols-outlined" style="font-size: 12px;">close</span>
+                                </button>
                             </div>
                             <div class="relative z-10 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-0.5">
@@ -894,12 +933,92 @@ onMounted(async () => {
     }
     await cargarPersonalBD();
     await cargarDocumentosBD();
+    await cargarFotosMinistros();
 });
 
 // --- Lógica de Autoridades / Personal ---
 const personalPorMinisterio = ref({});
 const modalAbierto = ref(false);
 const ministerioSeleccionado = ref(null);
+const busquedaAutoridades = ref('');
+const ministerioFotos = ref({});
+const subiendoFoto = ref(null);
+
+const ministeriosFiltrados = computed(() => {
+    if (!busquedaAutoridades.value.trim()) return ministries;
+    const q = busquedaAutoridades.value.toLowerCase();
+    return ministries.filter(m =>
+        m.short.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
+    );
+});
+
+async function cargarFotosMinistros() {
+    try {
+        const res = await api.get('/fiscalizacion/ministro-fotos');
+        if (res.data?.success) {
+            const raw = res.data.data || {};
+            const isLocal = window.location.hostname === 'localhost' ||
+                            window.location.hostname === '127.0.0.1' ||
+                            window.location.hostname.startsWith('192.168.') ||
+                            window.location.hostname.startsWith('10.') ||
+                            window.location.hostname.endsWith('.local');
+            const base = isLocal ? 'http://localhost:8080' : '';
+            const fotos = {};
+            for (const [key, val] of Object.entries(raw)) {
+                fotos[key] = val.startsWith('http') ? val : base + val;
+            }
+            ministerioFotos.value = fotos;
+        }
+    } catch (e) {
+        console.error('Error al cargar fotos de ministros:', e);
+    }
+}
+
+async function onFotoMinistro(event, ministerioId) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    subiendoFoto.value = ministerioId;
+    const formData = new FormData();
+    formData.append('foto', file);
+
+    try {
+        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData);
+        if (res.data?.success) {
+            const isLocal = window.location.hostname === 'localhost' ||
+                            window.location.hostname === '127.0.0.1' ||
+                            window.location.hostname.startsWith('192.168.') ||
+                            window.location.hostname.startsWith('10.') ||
+                            window.location.hostname.endsWith('.local');
+            const base = isLocal ? 'http://localhost:8080' : '';
+            const url = res.data.url;
+            ministerioFotos.value[ministerioId] = (url.startsWith('http') ? url : base + url) + '?t=' + Date.now();
+        }
+    } catch (e) {
+        console.error('Error al subir foto:', e);
+    } finally {
+        subiendoFoto.value = null;
+        event.target.value = '';
+    }
+}
+
+function abrirSelectorFotoMinistro(ministerioId) {
+    const input = document.getElementById(`foto-ministro-${ministerioId}`);
+    if (input) input.click();
+}
+
+async function eliminarFotoMinistro(ministerioId) {
+    if (!confirm('¿Está seguro de eliminar la foto de este ministro?')) return;
+    try {
+        const res = await api.delete(`/fiscalizacion/ministro-foto/${ministerioId}`);
+        if (res.data?.success) {
+            delete ministerioFotos.value[ministerioId];
+        }
+    } catch (e) {
+        console.error('Error al eliminar foto:', e);
+        alert('Error al eliminar la foto.');
+    }
+}
 const errorModal = ref('');
 const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
 
