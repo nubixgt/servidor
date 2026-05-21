@@ -7,7 +7,9 @@
         <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">Bancos y Conciliación</h2>
         <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Gestión inteligente de saldos y extractos contables</p>
       </div>
-      <div class="flex items-center gap-4 relative z-20">
+      <div class="flex items-center gap-4 relative z-20 flex-wrap">
+        <button @click="showAccountModal = true" class="px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 transition-all">Nueva Cuenta</button>
+        <button @click="showConciliationModal = true" class="glass-button-primary bg-primary border-primary border text-white px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-2 hover:scale-105 transition-all">Conciliación</button>
         <div class="relative">
           <MagnifyingGlassIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input
@@ -22,43 +24,35 @@
 
     <!-- Summary Row -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- Account Card 1 -->
-      <div class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-52 cursor-pointer group relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="flex justify-between items-start">
-          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Banco Santander</span>
-          <div class="bg-primary/20 p-4 rounded-2xl text-primary border border-white/10 shadow-lg shadow-primary/20">
-            <BuildingLibraryIcon class="w-6 h-6" />
+      
+      <!-- Dynamic Accounts Cards -->
+      <template v-if="accounts.length > 0">
+        <div v-for="(acc, index) in accounts.slice(0, 2)" :key="acc.id" class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-52 cursor-pointer group relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none" :class="index % 2 === 0 ? 'bg-primary/5' : 'bg-orange-500/5'"></div>
+          <div class="flex justify-between items-start">
+            <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">{{ acc.nombre_banco }}</span>
+            <div :class="['p-4 rounded-2xl border border-white/10 shadow-lg', index % 2 === 0 ? 'bg-primary/20 text-primary shadow-primary/20' : 'bg-orange-500/20 text-orange-400 shadow-orange-500/10']">
+              <BuildingLibraryIcon v-if="index % 2 === 0" class="w-6 h-6" />
+              <CreditCardIcon v-else class="w-6 h-6" />
+            </div>
+          </div>
+          <div class="mt-4">
+            <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">{{ acc.numero_cuenta }} - {{ acc.tipo_cuenta }}</p>
+            <h3 class="text-3xl font-black tracking-tighter italic text-white mt-2">{{ acc.activa ? 'ACTIVA' : 'INACTIVA' }}</h3>
+            <div :class="['mt-4 flex items-center px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest inline-flex gap-2 border', index % 2 === 0 ? 'bg-primary/15 text-primary border-primary/20' : 'bg-orange-500/15 text-orange-400 border-orange-500/20']">
+              <CheckIcon class="w-3.5 h-3.5" />
+              Moneda: {{ acc.moneda }}
+            </div>
           </div>
         </div>
-        <div class="mt-4">
-          <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">Cuenta Corriente Operativa</p>
-          <h3 class="text-4xl font-black tracking-tighter italic text-white mt-2">Q450,230.00</h3>
-          <div class="mt-4 flex items-center bg-primary/15 text-primary border border-primary/20 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest inline-flex gap-2">
-            <CheckIcon class="w-3.5 h-3.5" />
-            Conciliado hace 2h
-          </div>
+      </template>
+      <template v-else>
+        <!-- Skeleton / Empty State Cards -->
+        <div class="glass-card p-10 rounded-[40px] flex flex-col justify-center items-center h-52 col-span-2 text-white/30">
+          <BuildingLibraryIcon class="w-10 h-10 mb-4 opacity-50" />
+          <p class="font-bold uppercase tracking-widest text-xs">Sin Cuentas Registradas</p>
         </div>
-      </div>
-
-      <!-- Account Card 2 -->
-      <div class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-52 cursor-pointer group relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="flex justify-between items-start">
-          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">BBVA Corporate</span>
-          <div class="bg-orange-500/20 p-4 rounded-2xl text-orange-400 border border-white/10 shadow-lg shadow-orange-500/10">
-            <CreditCardIcon class="w-6 h-6" />
-          </div>
-        </div>
-        <div class="mt-4">
-          <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">Tarjeta de Compras Materiales</p>
-          <h3 class="text-4xl font-black tracking-tighter italic text-white mt-2">Q12,450.15</h3>
-          <div class="mt-4 flex items-center bg-orange-500/15 text-orange-400 border border-orange-500/20 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest inline-flex gap-2">
-            <ExclamationTriangleIcon class="w-3.5 h-3.5" />
-            {{ pendingCount }} Pendientes
-          </div>
-        </div>
-      </div>
+      </template>
 
       <!-- Bento Upload -->
       <div class="glass-card p-10 rounded-[40px] flex flex-col items-center justify-center text-center cursor-pointer border-2 border-dashed border-white/10 hover:border-primary/40 hover:bg-white/5 transition-all group">
@@ -84,11 +78,11 @@
             <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Periodo Evaluado</label>
             <select
               v-model="selectedPeriod"
-              class="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent cursor-pointer"
+              class="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
             >
-              <option value="Últimos 30 días" class="bg-slate-900 text-white">Últimos 30 días</option>
-              <option value="Mes actual" class="bg-slate-900 text-white">Mes actual</option>
-              <option value="Trimestre anterior" class="bg-slate-900 text-white">Trimestre anterior</option>
+              <option value="Últimos 30 días" class="bg-slate-900">Últimos 30 días</option>
+              <option value="Mes actual" class="bg-slate-900">Mes actual</option>
+              <option value="Trimestre anterior" class="bg-slate-900">Trimestre anterior</option>
             </select>
           </div>
 
@@ -124,7 +118,7 @@
             <button
               @click="handleAutoConciliation"
               :disabled="pendingLinkedCount === 0"
-              class="mt-8 w-full glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl disabled:opacity-30 disabled:pointer-events-none hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all text-center"
+              class="mt-8 w-full glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl disabled:opacity-30 disabled:pointer-events-none hover:shadow-primary/30 transition-all text-center"
             >
               Conciliar Automáticamente
             </button>
@@ -187,7 +181,7 @@
                     </div>
                   </td>
                   <td :class="['px-10 py-8 text-right font-black italic text-xl', tx.type === 'in' ? 'text-primary' : 'text-white']">
-                    {{ tx.type === 'in' ? '+' : '-' }}Q{{ tx.amount.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                    {{ tx.type === 'in' ? '+' : '-' }}Q{{ Number(tx.amount).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </td>
                   <td class="px-10 py-8 text-center">
                     <div v-if="tx.status === 'pending'" class="flex items-center justify-center gap-3">
@@ -235,75 +229,90 @@
       </div>
     </section>
 
-    <!-- FAB Button -->
-    <button
-      @click="showAddModal = true"
-      class="fixed bottom-12 right-12 w-20 h-20 rounded-[32px] glass-button-primary bg-primary border border-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group"
-    >
-      <PlusIcon class="w-10 h-10 group-hover:rotate-90 transition-transform duration-500" />
-    </button>
+    <!-- Modals -->
 
-    <!-- Manual Transaction Modal -->
-    <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
-      <div class="absolute inset-0 cursor-pointer" @click="showAddModal = false"></div>
+    <!-- Add Account Modal -->
+    <div v-if="showAccountModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showAccountModal = false"></div>
       <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)]">
-        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Nuevo Registro Manual</h3>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Introducir transacción al flujo de conciliación</p>
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Registro de Cuenta</h3>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Introducir una nueva cuenta bancaria al sistema</p>
 
-        <form @submit.prevent="handleCreateTransaction" class="space-y-6">
+        <form @submit.prevent="handleCreateAccount" class="space-y-6">
           <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Descripción del Movimiento</label>
-            <input
-              type="text"
-              required
-              v-model="newDesc"
-              placeholder="E.g. COMPRA CEMENTOS GUATEMALA"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase"
-            />
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre del banco</label>
+            <input type="text" required v-model="newAccount.nombre_banco" placeholder="E.g. BANCO INDUSTRIAL" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white" />
           </div>
-
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Número de cuenta</label>
+            <input type="text" required v-model="newAccount.numero_cuenta" placeholder="E.g. 1234567890" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
+          </div>
           <div class="grid grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Monto en Quetzales (Q)</label>
-              <input
-                type="number"
-                required
-                step="0.01"
-                v-model="newAmount"
-                placeholder="0.00"
-                class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/20"
-              />
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Tipo de cuenta</label>
+              <input type="text" required v-model="newAccount.tipo_cuenta" placeholder="Monetaria, Ahorro..." class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white uppercase" />
             </div>
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Tipo de Operación</label>
-              <div class="flex bg-white/5 border border-white/10 rounded-2xl p-1">
-                <button type="button" @click="newType = 'out'" :class="['flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all', newType === 'out' ? 'bg-white/10 text-white' : 'text-white/40']">
-                  Salida (EGRESO)
-                </button>
-                <button type="button" @click="newType = 'in'" :class="['flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all', newType === 'in' ? 'bg-primary text-white shadow-md' : 'text-white/40']">
-                  Entrada (INGRESO)
-                </button>
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Moneda</label>
+              <select v-model="newAccount.moneda" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
+                <option value="GTQ" class="bg-slate-900">GTQ</option>
+                <option value="USD" class="bg-slate-900">USD</option>
+              </select>
+            </div>
+          </div>
+          <div class="space-y-2 flex items-center gap-3">
+             <input type="checkbox" v-model="newAccount.activa" class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20" />
+             <label class="text-[10px] font-black text-white/30 uppercase tracking-widest">Cuenta Activa</label>
+          </div>
+
+          <div class="flex gap-4 pt-4">
+            <button type="submit" class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all">Guardar Cuenta</button>
+            <button type="button" @click="showAccountModal = false" class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white/50">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Conciliation Modal -->
+    <div v-if="showConciliationModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showConciliationModal = false"></div>
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)] max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Conciliación</h3>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Marcar período y transacciones como conciliadas</p>
+
+        <form @submit.prevent="handleCreateConciliation" class="space-y-6">
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Cuenta Bancaria</label>
+            <select v-model="newConciliation.bank_account_id" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
+              <option value="" disabled class="bg-slate-900 text-white/50">Seleccione una cuenta</option>
+              <option v-for="acc in accounts" :key="acc.id" :value="acc.id" class="bg-slate-900">{{ acc.nombre_banco }} - {{ acc.numero_cuenta }}</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Período a conciliar</label>
+              <input type="month" required v-model="newConciliation.periodo" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Saldo según banco</label>
+              <input type="number" step="0.01" required v-model="newConciliation.saldo_banco" placeholder="0.00" class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/20" />
+            </div>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Partidas conciliatorias (Pendientes)</label>
+            <div class="max-h-40 overflow-y-auto custom-scrollbar bg-white/5 rounded-2xl p-4 border border-white/10">
+              <div v-if="transactions.length === 0" class="text-xs text-white/40 font-bold uppercase tracking-widest">No hay transacciones pendientes.</div>
+              <div v-for="tx in transactions" :key="tx.id" class="flex items-center gap-3 mb-2">
+                <input type="checkbox" :value="tx.id" v-model="newConciliation.partidas_conciliatorias" class="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20" />
+                <span class="text-xs font-bold text-white uppercase">{{ tx.date }} - {{ tx.type === 'in' ? '+' : '-' }}Q{{ tx.amount }}</span>
               </div>
             </div>
           </div>
 
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Detalle / ID de Referencia</label>
-            <input
-              type="text"
-              required
-              v-model="newDetail"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white uppercase"
-            />
-          </div>
-
           <div class="flex gap-4 pt-4">
-            <button type="submit" class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all">
-              Guardar Registro
-            </button>
-            <button type="button" @click="showAddModal = false" class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white/50">
-              Cancelar
-            </button>
+            <button type="submit" class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all">Registrar</button>
+            <button type="button" @click="showConciliationModal = false" class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white/50">Cancelar</button>
           </div>
         </form>
       </div>
@@ -313,7 +322,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import {
   BuildingLibraryIcon,
   CreditCardIcon,
@@ -329,23 +339,97 @@ import {
   CheckIcon
 } from '@heroicons/vue/24/outline'
 
+const API_URL = 'http://localhost/concretos-oriente/Backend/api/v1'
+
 const searchTerm = ref('')
 const selectedPeriod = ref('Últimos 30 días')
 const selectedStatus = ref('pending')
-const showAddModal = ref(false)
-const newDesc = ref('')
-const newDetail = ref('MANUAL SUITE')
-const newAmount = ref('')
-const newType = ref('out')
 
-const transactions = ref([
-  { id: '982130021', date: '12 Oct 2026', bankDesc: 'CONCRETOS DEL NORTE SA', detail: 'ID: 982130021', refSystem: 'Factura #F-4421', isLinked: true, amount: 2450.00, type: 'out', status: 'pending' },
-  { id: 'SUC-055', date: '11 Oct 2026', bankDesc: 'TRANSFERENCIA DEPÓSITO', detail: 'SUCURSAL 055', refSystem: 'No se encontró coincidencia', isLinked: false, amount: 15000.00, type: 'in', status: 'pending' },
-  { id: 'PAY-41', date: '10 Oct 2026', bankDesc: 'PAGO NOMINA SEM 41', detail: 'OPERACIONES CAMPO', refSystem: 'Planilla de Sueldos', isLinked: true, amount: 8230.10, type: 'out', status: 'pending' },
-  { id: 'OC-2023-99', date: '09 Oct 2026', bankDesc: 'FERRETERIA INDUSTRIAL', detail: 'COMPRA HERRAMIENTAS', refSystem: 'OC #2023-99', isLinked: true, amount: 125.50, type: 'out', status: 'pending' },
-  { id: 'SUP-108', date: '05 Oct 2026', bankDesc: 'ACEROS DE GUATE', detail: 'SUMINISTRO VARILLAS', refSystem: 'Factura #F-9021', isLinked: true, amount: 15400.00, type: 'out', status: 'matched' },
-  { id: 'CLI-992', date: '02 Oct 2026', bankDesc: 'ANTICIPO SKYLINE TOWER', detail: 'TRANSF. CLIENTE', refSystem: 'Contrato #H-12', isLinked: true, amount: 75000.00, type: 'in', status: 'matched' }
-])
+const showAccountModal = ref(false)
+const showConciliationModal = ref(false)
+
+const accounts = ref<any[]>([])
+const transactions = ref<any[]>([])
+
+const newAccount = ref({
+  nombre_banco: '',
+  numero_cuenta: '',
+  tipo_cuenta: '',
+  moneda: 'GTQ',
+  activa: true
+})
+
+const newConciliation = ref({
+  bank_account_id: '',
+  periodo: '',
+  saldo_banco: '',
+  partidas_conciliatorias: []
+})
+
+const fetchAccounts = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/bank-accounts`)
+    if (res.data.status === 'success') {
+      accounts.value = res.data.data
+    }
+  } catch (error) {
+    console.error('Error fetching accounts', error)
+  }
+}
+
+const fetchTransactions = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/bank-transactions`)
+    if (res.data.status === 'success') {
+      transactions.value = res.data.data
+    }
+  } catch (error) {
+    console.error('Error fetching transactions', error)
+  }
+}
+
+onMounted(() => {
+  fetchAccounts()
+  fetchTransactions()
+})
+
+const handleCreateAccount = async () => {
+  try {
+    const payload = {
+      ...newAccount.value,
+      activa: newAccount.value.activa ? 1 : 0
+    }
+    const res = await axios.post(`${API_URL}/bank-accounts`, payload)
+    if (res.data.status === 'success') {
+      showAccountModal.value = false
+      newAccount.value = { nombre_banco: '', numero_cuenta: '', tipo_cuenta: '', moneda: 'GTQ', activa: true }
+      fetchAccounts()
+    } else {
+      alert('Error al registrar la cuenta')
+    }
+  } catch (error) {
+    console.error('Error:', error)
+    alert('Error al procesar la solicitud.')
+  }
+}
+
+const handleCreateConciliation = async () => {
+  try {
+    const res = await axios.post(`${API_URL}/bank-reconciliations`, newConciliation.value)
+    if (res.data.status === 'success') {
+      showConciliationModal.value = false
+      newConciliation.value = { bank_account_id: '', periodo: '', saldo_banco: '', partidas_conciliatorias: [] }
+      alert('Conciliación registrada correctamente')
+      // Refetch transactions to possibly hide reconciled ones if needed
+      fetchTransactions()
+    } else {
+      alert('Error al registrar conciliación')
+    }
+  } catch (error) {
+    console.error('Error:', error)
+    alert('Error al procesar la solicitud.')
+  }
+}
 
 const filteredTransactions = computed(() => {
   return transactions.value.filter(tx => {
@@ -383,25 +467,5 @@ function handleAutoConciliation() {
   transactions.value.forEach(tx => {
     if (tx.status === 'pending' && tx.isLinked) tx.status = 'matched'
   })
-}
-
-function handleCreateTransaction() {
-  if (!newDesc.value || !newAmount.value) return
-  transactions.value.unshift({
-    id: Math.random().toString(36).substring(2, 9).toUpperCase(),
-    date: 'Hoy, ' + new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'short' }),
-    bankDesc: newDesc.value,
-    detail: newDetail.value,
-    refSystem: 'Registro Manual',
-    isLinked: false,
-    amount: parseFloat(newAmount.value),
-    type: newType.value,
-    status: 'manual'
-  })
-  showAddModal.value = false
-  newDesc.value = ''
-  newDetail.value = 'MANUAL SUITE'
-  newAmount.value = ''
-  newType.value = 'out'
 }
 </script>
