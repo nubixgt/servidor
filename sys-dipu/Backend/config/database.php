@@ -1,12 +1,14 @@
 <?php
 
-// ⚠️  ENTORNO LOCAL (XAMPP)
-// Para producción, usa: username=visionwe, password=Guate25#
+$isLocal = (str_contains(__DIR__, 'di3go') || str_contains(__DIR__, 'OneDrive') || (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1')));
+$username = $isLocal ? 'root' : 'visionwe';
+$password = $isLocal ? '' : 'Guate25#';
+
 return [
     'host'     => 'localhost',
     'dbname'   => 'visionwe_SysDipu',
-    'username' => 'visionwe',
-    'password' => 'Guate25#',
+    'username' => $username,
+    'password' => $password,
     'charset'  => 'utf8mb4',
     'options'  => [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

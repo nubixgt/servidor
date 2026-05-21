@@ -5,8 +5,11 @@
         
         <!-- Sidebar -->
         <aside :class="['w-72 fixed left-0 top-0 h-full bg-surface-container-lowest flex flex-col p-6 z-50 border-r border-surface-container-low transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
-            <div class="mb-8 px-2 flex items-center justify-center">
-                <img :src="logoUrl" alt="SYS-DIPU Logo" class="w-full h-auto max-h-24 object-contain" />
+            <div class="mb-8 px-2 flex items-center gap-3">
+                <div class="w-12 h-12 overflow-hidden flex items-start justify-center flex-shrink-0">
+                    <img :src="logoUrl" alt="SYS-DIPU Globe" class="w-12 h-12 object-contain scale-[1.4] origin-top" />
+                </div>
+                <span class="text-2xl font-black tracking-wider text-[#1b5cb7]">SYS-DIPU</span>
             </div>
 
             <nav class="flex-1 space-y-1 overflow-y-auto pr-2">
@@ -94,7 +97,23 @@ import { ref, computed, watch } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter, useRoute } from 'vue-router';
 import SidebarItem from './SidebarItem.vue';
-import logoUrl from '/public/logo.png';
+const getLogoUrl = () => {
+    const path = window.location.pathname.toLowerCase();
+    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
+    if (isViteDev) {
+        return '/sys-dipu/logo.png';
+    }
+    const distIndex = path.indexOf('/frontend/dist');
+    if (distIndex !== -1) {
+        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/logo.png';
+    }
+    const sysDipuIndex = path.indexOf('/sys-dipu');
+    if (sysDipuIndex !== -1) {
+        return window.location.pathname.substring(0, sysDipuIndex) + '/sys-dipu/logo.png';
+    }
+    return '/logo.png';
+};
+const logoUrl = getLogoUrl();
 
 const auth = useAuthStore();
 const router = useRouter();
