@@ -27,21 +27,31 @@
     <!-- Main Grid Content Layout -->
     <div class="grid grid-cols-12 gap-10">
 
-      <!-- Left Column: Log Timeline (Col-Span 7) -->
-      <section class="col-span-12 lg:col-span-7 space-y-8">
+      <!-- Full Width: Log Timeline -->
+      <section class="col-span-12 space-y-8">
         <div class="flex justify-between items-center border-b border-white/5 pb-4">
           <h3 class="text-xl font-black italic uppercase tracking-wider flex items-center gap-3">
             <ClipboardDocumentListIcon class="w-5 h-5 text-primary" />
             Línea de Tiempo de Mantenimientos
           </h3>
-          <div class="relative">
-            <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" />
-            <input
-              type="text"
-              v-model="searchTerm"
-              placeholder="Buscar en bitácora..."
-              class="glass-input pl-10 pr-4 py-2.5 rounded-xl text-2xs uppercase tracking-widest font-bold placeholder:text-white/25 w-48 text-white focus:outline-none focus:border-primary/50"
-            />
+          <div class="flex items-center gap-4">
+            <select
+              v-model="filterType"
+              class="glass-input px-4 py-2.5 rounded-xl text-2xs uppercase tracking-widest font-bold text-white focus:outline-none focus:border-primary/50"
+            >
+              <option value="Todos" class="bg-slate-900">Todos</option>
+              <option value="Preventivo" class="bg-slate-900">Preventivo</option>
+              <option value="Correctivo" class="bg-slate-900">Correctivo</option>
+            </select>
+            <div class="relative">
+              <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" />
+              <input
+                type="text"
+                v-model="searchTerm"
+                placeholder="Buscar mantenimientos..."
+                class="glass-input pl-10 pr-4 py-2.5 rounded-xl text-2xs uppercase tracking-widest font-bold placeholder:text-white/25 w-72 text-white focus:outline-none focus:border-primary/50"
+              />
+            </div>
           </div>
         </div>
 
@@ -115,48 +125,6 @@
         </div>
       </section>
 
-      <!-- Right Column: Maintenance & State (Col-Span 5) -->
-      <section class="col-span-12 lg:col-span-5 space-y-8">
-        <div class="border-b border-white/5 pb-4">
-          <h3 class="text-xl font-black italic uppercase tracking-wider flex items-center gap-3">
-            <WrenchScrewdriverIcon class="w-5 h-5 text-primary" />
-            Estado de Flota
-          </h3>
-        </div>
-
-        <div class="space-y-6">
-          <!-- General Fleet Metrics Card -->
-          <div class="glass-card rounded-[40px] p-8 border border-white/5 space-y-6 bg-gradient-to-br from-[#003ec7]/10 to-transparent">
-            <h5 class="text-sm font-black uppercase tracking-widest text-white/60">Métricas Generales</h5>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-white/5 p-5 rounded-3xl text-center border border-white/5">
-                <p class="text-4xl font-black italic text-primary">{{ machineryList.length }}</p>
-                <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Maquinarias Activas</p>
-              </div>
-              <div class="bg-white/5 p-5 rounded-3xl text-center border border-white/5">
-                <p class="text-4xl font-black italic text-amber-400">{{ filteredLogs.length }}</p>
-                <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mt-2">Servicios Realizados</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass-card p-10 rounded-[48px] border border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
-            <div class="flex gap-4 items-start">
-              <div class="bg-primary/20 p-4 rounded-full text-primary border border-white/5 shadow-lg">
-                <SparklesIcon class="w-6 h-6 animate-pulse" />
-              </div>
-              <div>
-                <h5 class="text-lg font-black italic uppercase tracking-wider text-white">Análisis Preventivo</h5>
-                <p class="text-xs text-white/50 font-medium leading-relaxed mt-3">
-                  Asegúrate de registrar con exactitud el horómetro de cada máquina durante el servicio. Esto nos permite predecir mejor cuándo será necesario el próximo mantenimiento preventivo y evitar gastos correctivos mayores.
-                </p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
     </div>
 
     <!-- Create Log Modal -->
@@ -300,6 +268,7 @@ const logsList = ref<any[]>([]);
 
 const showAddLogModal = ref(false);
 const searchTerm = ref('');
+const filterType = ref('Todos');
 const notification = ref('');
 
 const form = ref({
@@ -344,10 +313,14 @@ const fetchLogs = async () => {
 const filteredLogs = computed(() => {
   return logsList.value.filter(item => {
     const term = searchTerm.value.toLowerCase();
-    return !term || 
+    const matchSearch = !term || 
            item.descripcion.toLowerCase().includes(term) ||
            item.codigo_interno.toLowerCase().includes(term) ||
            item.marca.toLowerCase().includes(term);
+    
+    const matchFilter = filterType.value === 'Todos' || item.tipo_mantenimiento === filterType.value;
+    
+    return matchSearch && matchFilter;
   });
 });
 

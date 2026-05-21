@@ -1,8 +1,7 @@
 <template>
   <aside class="w-[280px] h-screen fixed left-0 top-0 glass-sidebar flex-col py-8 z-50 hidden md:flex">
     <div class="px-10 mb-12">
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">ConstructPro</h1>
-      <p class="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mt-1">Suite de Gestión</p>
+      <h1 class="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">Concretos del Oriente</h1>
       
       <div v-if="role" class="mt-6 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-2">
         <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#6366f1]"></div>
