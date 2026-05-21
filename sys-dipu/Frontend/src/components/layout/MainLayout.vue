@@ -6,7 +6,7 @@
         <!-- Sidebar -->
         <aside :class="['w-72 fixed left-0 top-0 h-full bg-surface-container-lowest flex flex-col p-6 z-50 border-r border-surface-container-low transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <div class="mb-8 px-2 flex items-center justify-center">
-                <img src="/logo.png" alt="SYS-DIPU Logo" class="w-full h-auto max-h-24 object-contain" />
+                <img :src="logoUrl" alt="SYS-DIPU Logo" class="w-full h-auto max-h-24 object-contain" />
             </div>
 
             <nav class="flex-1 space-y-1 overflow-y-auto pr-2">
@@ -94,6 +94,7 @@ import { ref, computed, watch } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter, useRoute } from 'vue-router';
 import SidebarItem from './SidebarItem.vue';
+import logoUrl from '/public/logo.png';
 
 const auth = useAuthStore();
 const router = useRouter();
