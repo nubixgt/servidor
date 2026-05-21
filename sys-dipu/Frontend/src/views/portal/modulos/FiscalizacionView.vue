@@ -210,22 +210,22 @@
                             <input :id="`foto-ministro-${m.id}`" type="file" accept="image/*" class="hidden"
                                 @change="onFotoMinistro($event, m.id)" />
                             <div class="relative shrink-0 z-10 group/avatar">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg cursor-pointer overflow-hidden"
+                                <div :class="['w-12 h-12 rounded-full flex items-center justify-center font-bold text-base text-white shadow-lg overflow-hidden', (isAdmin || ministerioFotos[m.id]) ? 'cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95' : '']"
                                     :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 40%), hsl(${ministryHue(mIdx)}, 50%, 28%))`"
-                                    @click="abrirSelectorFotoMinistro(m.id)"
-                                    :title="ministerioFotos[m.id] ? 'Cambiar foto' : 'Agregar foto'">
+                                    @click="ministerioFotos[m.id] ? verFotoMinistro(m) : (isAdmin ? abrirSelectorFotoMinistro(m.id) : null)"
+                                    :title="ministerioFotos[m.id] ? (isAdmin ? 'Ver, cambiar o ampliar foto' : 'Ver foto ampliada') : (isAdmin ? 'Agregar foto' : '')">
                                     <img v-if="ministerioFotos[m.id] && subiendoFoto !== m.id"
                                         :src="ministerioFotos[m.id]"
                                         style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:9999px;"
                                         @error="ministerioFotos[m.id] = null" />
                                     <span v-if="subiendoFoto === m.id" class="material-symbols-outlined text-xl animate-spin" style="position:relative;z-index:1;">progress_activity</span>
                                     <template v-else-if="!ministerioFotos[m.id]">
-                                        <span class="group-hover/avatar:hidden">{{ m.ministro.nombre.substring(0,2).toUpperCase() }}</span>
-                                        <span class="material-symbols-outlined hidden group-hover/avatar:block text-xl">add_a_photo</span>
+                                        <span :class="{'group-hover/avatar:hidden': isAdmin}">{{ m.ministro.nombre.substring(0,2).toUpperCase() }}</span>
+                                        <span v-if="isAdmin" class="material-symbols-outlined hidden group-hover/avatar:block text-xl">add_a_photo</span>
                                     </template>
                                 </div>
                                 <!-- Botón eliminar foto -->
-                                <button v-if="ministerioFotos[m.id] && subiendoFoto !== m.id"
+                                <button v-if="isAdmin && ministerioFotos[m.id] && subiendoFoto !== m.id"
                                     @click.stop="eliminarFotoMinistro(m.id)"
                                     class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-white flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 hover:scale-110 shadow-md z-20"
                                     title="Eliminar foto">
@@ -237,7 +237,13 @@
                                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full text-white"
                                         :style="`background: hsl(${ministryHue(mIdx)}, 55%, 40%)`">Ministro Titular</span>
                                 </div>
-                                <p class="font-extrabold text-sm text-on-surface leading-tight truncate">{{ m.ministro.nombre }}</p>
+                                <p v-if="isAdmin" @click="editarNombreMinistro(m)" class="font-extrabold text-sm text-on-surface leading-tight truncate hover:text-primary cursor-pointer flex items-center gap-1 group/name transition-colors" title="Haga clic para editar el nombre del ministro">
+                                    {{ m.ministro.nombre }}
+                                    <span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover/name:opacity-100 transition-opacity">edit</span>
+                                </p>
+                                <p v-else class="font-extrabold text-sm text-on-surface leading-tight truncate">
+                                    {{ m.ministro.nombre }}
+                                </p>
                                 <p v-if="m.ministro.perfil" class="text-xs text-on-surface-variant mt-0.5 truncate">{{ m.ministro.perfil }}</p>
                             </div>
                         </div>
@@ -289,6 +295,7 @@
                                                 {{ p.tipoPuesto }}
                                             </span>
                                         </div>
+                                        <p v-if="p.tituloPuesto" class="text-xs text-on-surface-variant/80 mt-0.5 font-medium leading-none">{{ p.tituloPuesto }}</p>
                                         <div class="flex items-center gap-3 mt-1 flex-wrap">
                                             <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
                                                 <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
@@ -383,6 +390,13 @@
                                 </div>
                             </div>
 
+                            <!-- Título de Puesto (Dinámico) -->
+                            <div v-if="nuevoPersonal.tipoPuesto === 'Viceministro' || nuevoPersonal.tipoPuesto === 'Director'" class="space-y-1.5 animate-in fade-in duration-300">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Título de Puesto <span class="text-error">*</span></label>
+                                <input v-model="nuevoPersonal.tituloPuesto" type="text" placeholder="Ej: Viceministro Administrativo Financiero o Director de Compras"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                            </div>
+
                             <!-- Sueldo + Fecha en grid -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
@@ -394,7 +408,7 @@
                                     </div>
                                 </div>
                                 <div class="space-y-1.5">
-                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de toma</label>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de ingreso</label>
                                     <input v-model="nuevoPersonal.fechaPosesion" type="date"
                                         class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
                                 </div>
@@ -914,6 +928,11 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../../../services/api';
 import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
+import { useAuthStore } from '../../../stores/authStore.js';
+
+const authStore = useAuthStore();
+const isAdmin = computed(() => authStore.role === 'administrador');
 
 const query = ref('');
 const selected = ref('todos');
@@ -945,9 +964,9 @@ const ministerioFotos = ref({});
 const subiendoFoto = ref(null);
 
 const ministeriosFiltrados = computed(() => {
-    if (!busquedaAutoridades.value.trim()) return ministries;
+    if (!busquedaAutoridades.value.trim()) return ministries.value;
     const q = busquedaAutoridades.value.toLowerCase();
-    return ministries.filter(m =>
+    return ministries.value.filter(m =>
         m.short.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)
     );
 });
@@ -965,7 +984,19 @@ async function cargarFotosMinistros() {
             const base = isLocal ? 'http://localhost:8080' : '';
             const fotos = {};
             for (const [key, val] of Object.entries(raw)) {
-                fotos[key] = val.startsWith('http') ? val : base + val;
+                const fotoUrl = val && typeof val === 'object' ? val.foto : null;
+                const nombre = val && typeof val === 'object' ? val.nombre : 'Pendiente';
+                
+                if (fotoUrl) {
+                    fotos[key] = fotoUrl.startsWith('http') ? fotoUrl : base + fotoUrl;
+                }
+                
+                // Actualizar el nombre reactivamente en el array ministries
+                const mId = parseInt(key);
+                const mIndex = ministries.value.findIndex(m => m.id === mId);
+                if (mIndex !== -1) {
+                    ministries.value[mIndex].ministro.nombre = nombre || 'Pendiente';
+                }
             }
             ministerioFotos.value = fotos;
         }
@@ -974,16 +1005,71 @@ async function cargarFotosMinistros() {
     }
 }
 
+async function editarNombreMinistro(m) {
+    if (!isAdmin.value) return;
+    const { value: nuevoNombre } = await Swal.fire({
+        title: 'Editar Ministro Titular',
+        input: 'text',
+        inputLabel: 'Nombre del Ministro para ' + m.short,
+        inputValue: m.ministro.nombre === 'Pendiente' ? '' : m.ministro.nombre,
+        placeholder: 'Ej: Lic. Carlos Morales González',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#005D6B',
+        inputValidator: (value) => {
+            if (!value || !value.trim()) {
+                return '¡El nombre no puede estar vacío!';
+            }
+        }
+    });
+
+    if (nuevoNombre !== undefined) {
+        const nombreTrimmed = nuevoNombre.trim();
+        try {
+            const res = await api.post(`/fiscalizacion/ministro-nombre/${m.id}`, { nombre: nombreTrimmed });
+            if (res.data?.success) {
+                m.ministro.nombre = nombreTrimmed;
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Nombre actualizado exitosamente',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire('Error', res.data?.error || 'No se pudo actualizar el nombre del ministro.', 'error');
+            }
+        } catch (error) {
+            console.error('Error al actualizar nombre del ministro:', error);
+            Swal.fire('Error de red', 'No se pudo conectar con el servidor.', 'error');
+        }
+    }
+}
+
 async function onFotoMinistro(event, ministerioId) {
+    if (!isAdmin.value) return;
     const file = event.target.files[0];
     if (!file) return;
+
+    // Validar localmente tamaño (máx 10MB para la foto)
+    if (file.size > 10 * 1024 * 1024) {
+        Swal.fire('Archivo muy grande', 'La foto no debe superar los 10 MB.', 'warning');
+        event.target.value = '';
+        return;
+    }
 
     subiendoFoto.value = ministerioId;
     const formData = new FormData();
     formData.append('foto', file);
 
     try {
-        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData);
+        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         if (res.data?.success) {
             const isLocal = window.location.hostname === 'localhost' ||
                             window.location.hostname === '127.0.0.1' ||
@@ -993,9 +1079,22 @@ async function onFotoMinistro(event, ministerioId) {
             const base = isLocal ? 'http://localhost:8080' : '';
             const url = res.data.url;
             ministerioFotos.value[ministerioId] = (url.startsWith('http') ? url : base + url) + '?t=' + Date.now();
+            
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Foto de ministro guardada exitosamente',
+                showConfirmButton: false,
+                timer: 2500
+            });
+        } else {
+            Swal.fire('Error', res.data?.error || 'No se pudo guardar la foto del ministro.', 'error');
         }
     } catch (e) {
         console.error('Error al subir foto:', e);
+        const errorMsg = e.response?.data?.error || 'No se pudo conectar con el servidor o subir la imagen.';
+        Swal.fire('Error al subir imagen', errorMsg, 'error');
     } finally {
         subiendoFoto.value = null;
         event.target.value = '';
@@ -1007,20 +1106,68 @@ function abrirSelectorFotoMinistro(ministerioId) {
     if (input) input.click();
 }
 
-async function eliminarFotoMinistro(ministerioId) {
-    if (!confirm('¿Está seguro de eliminar la foto de este ministro?')) return;
-    try {
-        const res = await api.delete(`/fiscalizacion/ministro-foto/${ministerioId}`);
-        if (res.data?.success) {
-            delete ministerioFotos.value[ministerioId];
+function verFotoMinistro(m) {
+    Swal.fire({
+        title: m.ministro.nombre || 'Ministro Titular',
+        text: m.name,
+        imageUrl: ministerioFotos.value[m.id],
+        imageAlt: `Foto de ${m.ministro.nombre}`,
+        showConfirmButton: isAdmin.value,
+        confirmButtonText: '<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">photo_camera</span> Cambiar Foto</span>',
+        cancelButtonText: 'Cerrar',
+        confirmButtonColor: '#005D6B',
+        cancelButtonColor: '#6c757d',
+        showCloseButton: true,
+        customClass: {
+            popup: 'rounded-3xl shadow-2xl p-6 border border-outline-variant/10',
+            image: 'rounded-2xl object-cover shadow-lg max-h-[380px] max-w-full my-4 border border-outline-variant/15',
+            title: 'font-headline font-black text-xl text-on-surface pt-2',
+            htmlContainer: 'text-xs font-bold text-outline-variant uppercase tracking-widest'
         }
-    } catch (e) {
-        console.error('Error al eliminar foto:', e);
-        alert('Error al eliminar la foto.');
+    }).then((result) => {
+        if (result.isConfirmed && isAdmin.value) {
+            abrirSelectorFotoMinistro(m.id);
+        }
+    });
+}
+
+async function eliminarFotoMinistro(ministerioId) {
+    if (!isAdmin.value) return;
+    const result = await Swal.fire({
+        title: '¿Eliminar foto?',
+        text: '¿Está seguro de eliminar la foto de este ministro titular?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            const res = await api.delete(`/fiscalizacion/ministro-foto/${ministerioId}`);
+            if (res.data?.success) {
+                delete ministerioFotos.value[ministerioId];
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Foto eliminada exitosamente',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire('Error', res.data?.error || 'No se pudo eliminar la foto de la base de datos.', 'error');
+            }
+        } catch (e) {
+            console.error('Error al eliminar foto:', e);
+            Swal.fire('Error', 'Hubo un error de red al intentar eliminar la foto.', 'error');
+        }
     }
 }
 const errorModal = ref('');
-const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
+const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', tituloPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
 
 // --- Lógica de Documentos ---
 const docs = ref([]);
@@ -1060,7 +1207,7 @@ async function cargarDocumentosBD() {
 
 function abrirModal(ministerio) {
     ministerioSeleccionado.value = ministerio;
-    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
+    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', tituloPuesto: '', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
     errorModal.value = '';
     modalAbierto.value = true;
 }
@@ -1089,11 +1236,16 @@ async function guardarPersonal() {
         errorModal.value = 'Selecciona el tipo de puesto.';
         return;
     }
+    if ((nuevoPersonal.value.tipoPuesto === 'Viceministro' || nuevoPersonal.value.tipoPuesto === 'Director') && !nuevoPersonal.value.tituloPuesto?.trim()) {
+        errorModal.value = 'El título de puesto es obligatorio.';
+        return;
+    }
     try {
         const payload = {
             ministerio_id: ministerioSeleccionado.value.id,
             nombre: nuevoPersonal.value.nombre,
             tipo_puesto: nuevoPersonal.value.tipoPuesto,
+            titulo_puesto: (nuevoPersonal.value.tipoPuesto === 'Viceministro' || nuevoPersonal.value.tipoPuesto === 'Director') ? nuevoPersonal.value.tituloPuesto : null,
             sueldo: nuevoPersonal.value.sueldo ? parseFloat(nuevoPersonal.value.sueldo) : null,
             fecha_posesion: nuevoPersonal.value.fechaPosesion || null,
             foto_nombre: nuevoPersonal.value.fotoNombre || null,
@@ -1133,7 +1285,7 @@ function abrirDocModal() {
     nuevoDoc.value = {
         nombre: '',
         tipo: 'PDF',
-        entidad: ministries[0]?.short || '',
+        entidad: ministries.value[0]?.short || '',
         fecha: new Date().toISOString().split('T')[0]
     };
     errorDoc.value = '';
@@ -1327,7 +1479,7 @@ const tabs = [
 ];
 
 // 14 Ministerios reales de Guatemala
-const ministries = [
+const ministries = ref([
   { id: 1,  short: 'MAGA',    name: 'Ministerio de Agricultura, Ganadería y Alimentación',  presupuesto: 3200,  ejecucion: 22, funcionamiento: 800,   inversion: 2400,  empleados: 4200,  alertas: 3, riesgo: 'medio', hallazgos: ['Baja ejecución agrícola', 'Rezago en programas rurales'], docs: 5,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Desarrollo Rural', foto: '' }, { nombre: 'Viceministro Seguridad Alimentaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 800 }, { renglon: '022', cantidad: 200 }, { renglon: '029', cantidad: 600 }], transaccionesOI: 45 },
   { id: 2,  short: 'MARN',    name: 'Ministerio de Ambiente y Recursos Naturales',            presupuesto: 890,   ejecucion: 18, funcionamiento: 400,   inversion: 490,   empleados: 1200,  alertas: 2, riesgo: 'medio', hallazgos: ['Escasa inversión ambiental', 'Deforestación sin control'], docs: 4,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Recursos Naturales', foto: '' }, { nombre: 'Viceministro Ambiente', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 300 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 150 }], transaccionesOI: 20 },
   { id: 3,  short: 'CIV',     name: 'Ministerio de Comunicaciones, Infraestructura y Vivienda', presupuesto: 5800,  ejecucion: 24, funcionamiento: 1300,  inversion: 4500,  empleados: 8421,  alertas: 5, riesgo: 'alto',  hallazgos: ['Baja ejecución en proyectos prioritarios', 'Adjudicaciones tardías', 'Presión por mantenimiento vial'], docs: 12, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Civil', foto: '' }, { nombre: 'Viceministro Transportes', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 1240 }, { renglon: '022', cantidad: 380 }, { renglon: '029', cantidad: 2150 }], transaccionesOI: 145 },
@@ -1342,7 +1494,7 @@ const ministries = [
   { id: 12, short: 'MINEX',   name: 'Ministerio de Relaciones Exteriores',                      presupuesto: 950,   ejecucion: 30, funcionamiento: 800,   inversion: 150,   empleados: 1100,  alertas: 1, riesgo: 'bajo',  hallazgos: ['Representación consular insuficiente'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Diplomático', foto: '' }, { nombre: 'Viceministro Consular', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 200 }, { renglon: '022', cantidad: 60 }, { renglon: '029', cantidad: 120 }], transaccionesOI: 12 },
   { id: 13, short: 'MSPAS',   name: 'Ministerio de Salud Pública y Asistencia Social',          presupuesto: 14750, ejecucion: 31, funcionamiento: 10300, inversion: 4450,  empleados: 38210, alertas: 7, riesgo: 'alto',  hallazgos: ['Incidencias en compras directas', 'Rezagos programáticos', 'Abastecimiento de medicamentos oncológicos bajo'], docs: 18, ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Hospitales', foto: '' }, { nombre: 'Viceministra Primaria', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 5420 }, { renglon: '022', cantidad: 2120 }, { renglon: '029', cantidad: 4850 }], transaccionesOI: 220 },
   { id: 14, short: 'MINTRAB', name: 'Ministerio de Trabajo y Previsión Social',                 presupuesto: 820,   ejecucion: 25, funcionamiento: 600,   inversion: 220,   empleados: 1400,  alertas: 2, riesgo: 'medio', hallazgos: ['Inspecciones laborales insuficientes', 'Bajo presupuesto para IGSS'], docs: 3,  ministro: { nombre: 'Pendiente', foto: '', perfil: '' }, viceministros: [{ nombre: 'Viceministro Trabajo', foto: '' }, { nombre: 'Viceministro Previsión Social', foto: '' }], personalRenglones: [{ renglon: '011', cantidad: 250 }, { renglon: '022', cantidad: 80 }, { renglon: '029', cantidad: 180 }], transaccionesOI: 18 },
-];
+]);
 
 // ─── Comisiones: estado reactivo y CRUD ───
 const commissionsData = ref([
@@ -1404,13 +1556,13 @@ const personal = [
   { puesto: "Asistente Despacho", renglones: "022", salario: "Q8,000", entidad: "MINEDUC" },
 ];
 
-const totalPresupuesto = computed(() => ministries.reduce((acc, m) => acc + m.presupuesto, 0));
+const totalPresupuesto = computed(() => ministries.value.reduce((acc, m) => acc + m.presupuesto, 0));
 const totalDocs = computed(() => docs.value.length);
-const totalAlertas = computed(() => ministries.reduce((acc, m) => acc + m.alertas, 0));
-const avgEjecucion = computed(() => Math.round(ministries.reduce((acc, m) => acc + m.ejecucion, 0) / ministries.length));
+const totalAlertas = computed(() => ministries.value.reduce((acc, m) => acc + m.alertas, 0));
+const avgEjecucion = computed(() => Math.round(ministries.value.reduce((acc, m) => acc + m.ejecucion, 0) / ministries.value.length));
 
 const filteredMinistries = computed(() => {
-    return ministries.filter((m) => {
+    return ministries.value.filter((m) => {
         const textToSearch = `${m.name} ${m.short} ${m.hallazgos.join(' ')}`.toLowerCase();
         const matchesText = textToSearch.includes(query.value.toLowerCase());
         const matchesSelect = selected.value === 'todos' || m.short === selected.value;

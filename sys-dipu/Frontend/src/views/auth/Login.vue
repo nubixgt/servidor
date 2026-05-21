@@ -112,7 +112,23 @@ import { ref } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
-import logoUrl from '/public/logo.png';
+const getLogoUrl = () => {
+    const path = window.location.pathname.toLowerCase();
+    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
+    if (isViteDev) {
+        return '/sys-dipu/logo.png';
+    }
+    const distIndex = path.indexOf('/frontend/dist');
+    if (distIndex !== -1) {
+        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/logo.png';
+    }
+    const sysDipuIndex = path.indexOf('/sys-dipu');
+    if (sysDipuIndex !== -1) {
+        return window.location.pathname.substring(0, sysDipuIndex) + '/sys-dipu/logo.png';
+    }
+    return '/logo.png';
+};
+const logoUrl = getLogoUrl();
 
 const auth = useAuthStore();
 const router = useRouter();

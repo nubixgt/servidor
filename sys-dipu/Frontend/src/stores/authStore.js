@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { getApiBaseUrl } from '../services/api';
 
 // Role and Category types
 // Role: 'administrador' | 'tecnico'
@@ -38,14 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function login(username, password) {
         try {
-            // 🚀 DETECCIÓN DINÁMICA DE ENTORNO ULTRA ROBUSTA (Evita sustituciones estáticas de Vite)
-            const isLocal = window.location.hostname === 'localhost' || 
-                            window.location.hostname === '127.0.0.1' || 
-                            window.location.hostname.startsWith('192.168.') || 
-                            window.location.hostname.startsWith('10.') || 
-                            window.location.hostname.endsWith('.local');
-
-            const API_URL = isLocal ? 'http://localhost:8080' : '/sys-dipu/Backend/api/v1';
+            const API_URL = getApiBaseUrl();
 
 
 
