@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 20-05-2026 a las 20:15:29
+-- Tiempo de generación: 21-05-2026 a las 15:57:59
 -- Versión del servidor: 11.4.11-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -20,6 +20,116 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `visionwe_ConcretosOriente`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `expenses`
+--
+
+CREATE TABLE `expenses` (
+  `id` int(11) NOT NULL,
+  `proyecto_id` int(11) DEFAULT NULL,
+  `tipo_egreso` varchar(100) NOT NULL,
+  `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `fecha_egreso` date NOT NULL,
+  `cuenta_origen` varchar(255) DEFAULT NULL,
+  `numero_cheque` varchar(100) DEFAULT NULL,
+  `beneficiario` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `comprobante_path` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `expenses`
+--
+
+INSERT INTO `expenses` (`id`, `proyecto_id`, `tipo_egreso`, `monto`, `fecha_egreso`, `cuenta_origen`, `numero_cheque`, `beneficiario`, `descripcion`, `comprobante_path`, `created_at`) VALUES
+(1, 1, 'Nómina', 1000.00, '2026-05-20', 'Caja General', '984510', 'Prueba 1', 'Prueba 1 para saber si carga todo correctamente en el formulario de Egreso', 'Uploads/Expenses/1/1779314311_paisaje1.jpg', '2026-05-20 21:58:31');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `incomes`
+--
+
+CREATE TABLE `incomes` (
+  `id` int(11) NOT NULL,
+  `proyecto_id` int(11) DEFAULT NULL,
+  `tipo_ingreso` varchar(100) NOT NULL,
+  `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `fecha_ingreso` date NOT NULL,
+  `cuenta_bancaria` varchar(255) NOT NULL,
+  `numero_cheque` varchar(100) DEFAULT NULL,
+  `pagador` varchar(255) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `comprobante_path` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `incomes`
+--
+
+INSERT INTO `incomes` (`id`, `proyecto_id`, `tipo_ingreso`, `monto`, `fecha_ingreso`, `cuenta_bancaria`, `numero_cheque`, `pagador`, `descripcion`, `comprobante_path`, `created_at`) VALUES
+(1, 1, 'Estimación', 1500.00, '2026-05-20', 'Banco Industrial - 99120', '8412010', 'Prueba 1', 'Prueba 1 para saber si todo carga correctamente en el formulario de Ingreso', 'Uploads/Incomes/1/1779314221_paisaje2.jpg', '2026-05-20 21:57:01');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventory_items`
+--
+
+CREATE TABLE `inventory_items` (
+  `id` int(11) NOT NULL,
+  `tipo_item` enum('Material','Repuesto','Herramienta','Consumible') NOT NULL,
+  `codigo_sku` varchar(100) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `unidad_medida` varchar(50) NOT NULL,
+  `codigo_qr` varchar(255) DEFAULT NULL,
+  `codigo_barras` varchar(255) DEFAULT NULL,
+  `costo_unitario` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `stock_minimo` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `stock_actual` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `inventory_items`
+--
+
+INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `codigo_qr`, `codigo_barras`, `costo_unitario`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
+(3, 'Repuesto', '64564', 'Cemento', 'Cemento de buena calidad', 'm2', '984520', '98748915', 100.00, 100.00, 150.00, '2026-05-20 21:03:34', '2026-05-20 21:04:15');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inventory_kardex`
+--
+
+CREATE TABLE `inventory_kardex` (
+  `id` int(11) NOT NULL,
+  `tipo_movimiento` enum('Entrada','Salida','Traslado','Ajuste') NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `proyecto_origen_id` int(11) DEFAULT NULL,
+  `proyecto_destino_id` int(11) DEFAULT NULL,
+  `cantidad` decimal(12,2) NOT NULL,
+  `costo_unitario` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `referencia_documento` varchar(255) DEFAULT NULL,
+  `notas` text DEFAULT NULL,
+  `fecha_movimiento` datetime NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `inventory_kardex`
+--
+
+INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_origen_id`, `proyecto_destino_id`, `cantidad`, `costo_unitario`, `referencia_documento`, `notas`, `fecha_movimiento`, `created_at`) VALUES
+(3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', '2026-05-20 21:03:00', '2026-05-20 21:04:15');
 
 -- --------------------------------------------------------
 
@@ -156,6 +266,82 @@ INSERT INTO `projects` (`id`, `codigo`, `nombre`, `cliente_id`, `ubicacion`, `co
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `purchase_orders`
+--
+
+CREATE TABLE `purchase_orders` (
+  `id` int(11) NOT NULL,
+  `proveedor_id` int(11) NOT NULL,
+  `proyecto_id` int(11) NOT NULL,
+  `fecha_orden` date NOT NULL,
+  `condicion_pago` enum('Contado','Crédito') NOT NULL DEFAULT 'Contado',
+  `observaciones` text DEFAULT NULL,
+  `archivo_adjunto` varchar(255) DEFAULT NULL,
+  `total` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `estado` enum('Pendiente','Aprobada','Rechazada') NOT NULL DEFAULT 'Pendiente',
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `purchase_orders`
+--
+
+INSERT INTO `purchase_orders` (`id`, `proveedor_id`, `proyecto_id`, `fecha_orden`, `condicion_pago`, `observaciones`, `archivo_adjunto`, `total`, `estado`, `created_at`) VALUES
+(2, 2, 1, '2026-05-20', 'Crédito', 'Prueba 1', 'Uploads/Purchases/2/1779312036_paisaje1.jpg', 85.00, 'Pendiente', '2026-05-20 21:20:36');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `purchase_order_items`
+--
+
+CREATE TABLE `purchase_order_items` (
+  `id` int(11) NOT NULL,
+  `purchase_order_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `cantidad` decimal(12,2) NOT NULL,
+  `precio_unitario` decimal(12,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `purchase_order_items`
+--
+
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `item_id`, `cantidad`, `precio_unitario`, `created_at`) VALUES
+(3, 2, 3, 2.00, 20.00, '2026-05-20 21:20:36'),
+(4, 2, 3, 3.00, 15.00, '2026-05-20 21:20:36');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `suppliers`
+--
+
+CREATE TABLE `suppliers` (
+  `id` int(11) NOT NULL,
+  `razon_social` varchar(255) NOT NULL,
+  `nit` varchar(50) NOT NULL,
+  `direccion` varchar(255) NOT NULL,
+  `telefono` varchar(20) NOT NULL,
+  `correo_electronico` varchar(255) DEFAULT NULL,
+  `contacto_principal` varchar(255) DEFAULT NULL,
+  `condicion_pago` enum('Contado','Crédito') NOT NULL DEFAULT 'Contado',
+  `dias_credito` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `suppliers`
+--
+
+INSERT INTO `suppliers` (`id`, `razon_social`, `nit`, `direccion`, `telefono`, `correo_electronico`, `contacto_principal`, `condicion_pago`, `dias_credito`, `created_at`, `updated_at`) VALUES
+(2, 'Prueba 1', '984150', 'Prueba 1 para direccion', '5641-6510', 'prueba1@gmail.com', 'Sergio', 'Crédito', 6, '2026-05-20 21:20:12', '2026-05-20 21:20:12');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `users`
 --
 
@@ -181,6 +367,36 @@ INSERT INTO `users` (`id`, `nombre`, `usuario`, `password`, `rol`, `estado`, `fo
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `expenses`
+--
+ALTER TABLE `expenses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_expense_project` (`proyecto_id`);
+
+--
+-- Indices de la tabla `incomes`
+--
+ALTER TABLE `incomes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_income_project` (`proyecto_id`);
+
+--
+-- Indices de la tabla `inventory_items`
+--
+ALTER TABLE `inventory_items`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_sku` (`codigo_sku`);
+
+--
+-- Indices de la tabla `inventory_kardex`
+--
+ALTER TABLE `inventory_kardex`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_kardex_item` (`item_id`),
+  ADD KEY `fk_kardex_origen` (`proyecto_origen_id`),
+  ADD KEY `fk_kardex_destino` (`proyecto_destino_id`);
 
 --
 -- Indices de la tabla `machinery`
@@ -215,6 +431,29 @@ ALTER TABLE `projects`
   ADD UNIQUE KEY `codigo` (`codigo`);
 
 --
+-- Indices de la tabla `purchase_orders`
+--
+ALTER TABLE `purchase_orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_po_proveedor` (`proveedor_id`),
+  ADD KEY `fk_po_proyecto` (`proyecto_id`);
+
+--
+-- Indices de la tabla `purchase_order_items`
+--
+ALTER TABLE `purchase_order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_poi_orden` (`purchase_order_id`),
+  ADD KEY `fk_poi_item` (`item_id`);
+
+--
+-- Indices de la tabla `suppliers`
+--
+ALTER TABLE `suppliers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idx_nit` (`nit`);
+
+--
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
@@ -224,6 +463,30 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `expenses`
+--
+ALTER TABLE `expenses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `incomes`
+--
+ALTER TABLE `incomes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `inventory_items`
+--
+ALTER TABLE `inventory_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `inventory_kardex`
+--
+ALTER TABLE `inventory_kardex`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery`
@@ -250,6 +513,24 @@ ALTER TABLE `projects`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de la tabla `purchase_orders`
+--
+ALTER TABLE `purchase_orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `purchase_order_items`
+--
+ALTER TABLE `purchase_order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `suppliers`
+--
+ALTER TABLE `suppliers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
@@ -258,6 +539,26 @@ ALTER TABLE `users`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `expenses`
+--
+ALTER TABLE `expenses`
+  ADD CONSTRAINT `fk_expense_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `incomes`
+--
+ALTER TABLE `incomes`
+  ADD CONSTRAINT `fk_income_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `inventory_kardex`
+--
+ALTER TABLE `inventory_kardex`
+  ADD CONSTRAINT `fk_kardex_destino` FOREIGN KEY (`proyecto_destino_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_kardex_item` FOREIGN KEY (`item_id`) REFERENCES `inventory_items` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_kardex_origen` FOREIGN KEY (`proyecto_origen_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
 
 --
 -- Filtros para la tabla `machinery`
@@ -279,6 +580,20 @@ ALTER TABLE `machinery_log`
 --
 ALTER TABLE `personnel`
   ADD CONSTRAINT `fk_personnel_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `purchase_orders`
+--
+ALTER TABLE `purchase_orders`
+  ADD CONSTRAINT `fk_po_proveedor` FOREIGN KEY (`proveedor_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_po_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`);
+
+--
+-- Filtros para la tabla `purchase_order_items`
+--
+ALTER TABLE `purchase_order_items`
+  ADD CONSTRAINT `fk_poi_item` FOREIGN KEY (`item_id`) REFERENCES `inventory_items` (`id`),
+  ADD CONSTRAINT `fk_poi_orden` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
