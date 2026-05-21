@@ -66,10 +66,12 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
-import { 
-  Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon, 
-  BanknotesIcon, LifebuoyIcon, ArrowRightOnRectangleIcon, PlusIcon, 
-  CubeIcon, BuildingOfficeIcon, ShoppingBagIcon, ShieldCheckIcon 
+import {
+  Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon,
+  BanknotesIcon, LifebuoyIcon, ArrowRightOnRectangleIcon, PlusIcon,
+  CubeIcon, BuildingOfficeIcon, ShoppingBagIcon, ShieldCheckIcon,
+  BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
+  CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -89,6 +91,13 @@ const allNavItemsArr = [
   { id: "purchases", label: "Compras", icon: ShoppingBagIcon, roles: ["admin"] },
   { id: "finance", label: "Finanzas", icon: BanknotesIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
+  { id: "bank-conciliation", label: "Bancos y Conciliación", icon: BuildingLibraryIcon, roles: ["admin"] },
+  { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },
+  { id: "budgets-estimations", label: "Presupuestos", icon: CalculatorIcon, roles: ["admin"] },
+  { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: CreditCardIcon, roles: ["admin"] },
+  { id: "digital-documents", label: "Documentos Digitales", icon: FolderOpenIcon, roles: ["admin"] },
+  { id: "notifications-alerts", label: "Centro de Mensajes", icon: BellAlertIcon, roles: ["admin"] },
+  { id: "payroll-expenses", label: "Planillas y Pagos", icon: CurrencyDollarIcon, roles: ["admin"] },
 ];
 
 const filteredItems = computed(() => {

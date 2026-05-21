@@ -28,6 +28,13 @@ const routes = [
             { path: 'users', name: 'Users', component: () => import('../views/admin/Users.vue') },
             { path: 'tech-machinery', name: 'MachineryStatus', component: () => import('../views/tecnico/MachineryStatus.vue') },
             { path: 'tech-projects', name: 'TechProjects', component: () => import('../views/tecnico/TechProjects.vue') },
+            { path: 'bank-conciliation', name: 'BankConciliation', component: () => import('../views/admin/BankConciliation.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'bitacora-mantenimiento', name: 'BitacoraMantenimiento', component: () => import('../views/admin/BitacoraMantenimiento.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'budgets-estimations', name: 'BudgetsEstimations', component: () => import('../views/admin/BudgetsEstimations.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'credits-accounts-payable', name: 'CreditsAccountsPayable', component: () => import('../views/admin/CreditsAccountsPayable.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'digital-documents', name: 'DigitalDocuments', component: () => import('../views/admin/DigitalDocuments.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'notifications-alerts', name: 'NotificationsAlerts', component: () => import('../views/admin/NotificationsAlerts.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'payroll-expenses', name: 'PayrollExpenses', component: () => import('../views/admin/PayrollExpenses.vue'), meta: { requiresRole: 'admin' } },
         ]
     },
     {
