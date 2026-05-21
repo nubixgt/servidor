@@ -11,11 +11,18 @@ import Finance from "./views/admin/Finance";
 import Inventory from "./views/admin/Inventory";
 import Suppliers from "./views/admin/Suppliers";
 import Purchases from "./views/admin/Purchases";
+import BankConciliation from "./views/admin/BankConciliation";
+import CreditsAccountsPayable from "./views/admin/CreditsAccountsPayable";
+import BudgetsEstimations from "./views/admin/BudgetsEstimations";
+import PayrollExpenses from "./views/admin/PayrollExpenses";
+import BitacoraMantenimiento from "./views/admin/BitacoraMantenimiento";
+import DigitalDocuments from "./views/admin/DigitalDocuments";
+import NotificationsAlerts from "./views/admin/NotificationsAlerts";
 import MachineryStatus from "./views/tecnico/MachineryStatus";
 import TechProjects from "./views/tecnico/TechProjects";
 
 export type Role = "admin" | "supervisor" | "tecnico" | null;
-export type View = "login" | "dashboard" | "personnel" | "machinery" | "projects" | "finance" | "inventory" | "suppliers" | "purchases" | "tech-machinery" | "tech-projects";
+export type View = "login" | "dashboard" | "personnel" | "machinery" | "projects" | "finance" | "inventory" | "suppliers" | "purchases" | "tech-machinery" | "tech-projects" | "bank-conciliation" | "credits-accounts-payable" | "budgets-estimations" | "payroll-expenses" | "bitacora-mantenimiento" | "digital-documents" | "notifications-alerts";
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>("login");
@@ -31,6 +38,13 @@ export default function App() {
       case "inventory": return "Gestión de Inventario";
       case "suppliers": return "Directorio de Proveedores";
       case "purchases": return "Módulo de Compras";
+      case "bank-conciliation": return "Bancos y Conciliación";
+      case "credits-accounts-payable": return "Créditos y Cuentas por Pagar";
+      case "budgets-estimations": return "Presupuestos y Estimaciones";
+      case "payroll-expenses": return "Planillas y Gastos";
+      case "bitacora-mantenimiento": return "Bitácoras y Mantenimiento";
+      case "digital-documents": return "Documentos Digitales";
+      case "notifications-alerts": return "Notificaciones y Alertas";
       case "tech-machinery": return "Estatus de Maquinaria";
       case "tech-projects": return "Mis Asignaciones";
       default: return "ConstructPro";
@@ -77,6 +91,13 @@ export default function App() {
       case "inventory": return <Inventory />;
       case "suppliers": return <Suppliers />;
       case "purchases": return <Purchases />;
+      case "bank-conciliation": return <BankConciliation />;
+      case "credits-accounts-payable": return <CreditsAccountsPayable />;
+      case "budgets-estimations": return <BudgetsEstimations />;
+      case "payroll-expenses": return <PayrollExpenses />;
+      case "bitacora-mantenimiento": return <BitacoraMantenimiento />;
+      case "digital-documents": return <DigitalDocuments />;
+      case "notifications-alerts": return <NotificationsAlerts />;
       case "tech-machinery": return <MachineryStatus />;
       case "tech-projects": return <TechProjects />;
       default: return <Dashboard />;

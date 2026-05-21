@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Construction, FolderKanban, Banknote, LifeBuoy, LogOut, Plus, Package, Building2, ShoppingBag } from "lucide-react";
+import { LayoutDashboard, Users, Construction, FolderKanban, Banknote, LifeBuoy, LogOut, Plus, Package, Building2, ShoppingBag, Landmark, PiggyBank, Coins, ClipboardList, FolderOpen, Bell } from "lucide-react";
 import { motion } from "motion/react";
 import { Role, View } from "../App";
 
@@ -21,6 +21,13 @@ export default function Sidebar({ currentView, onViewChange, onLogout, role }: S
     { id: "suppliers", label: "Proveedores", icon: Building2, roles: ["admin"] },
     { id: "purchases", label: "Compras", icon: ShoppingBag, roles: ["admin"] },
     { id: "finance", label: "Finanzas", icon: Banknote, roles: ["admin"] },
+    { id: "bank-conciliation", label: "Bancos y Conciliación", icon: Landmark, roles: ["admin"] },
+    { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: Landmark, roles: ["admin"] },
+    { id: "budgets-estimations", label: "Presupuestos y Estimaciones", icon: PiggyBank, roles: ["admin"] },
+    { id: "payroll-expenses", label: "Planillas y Gastos", icon: Coins, roles: ["admin"] },
+    { id: "bitacora-mantenimiento", label: "Bitácora y Mantenimiento", icon: ClipboardList, roles: ["admin", "supervisor", "tecnico"] },
+    { id: "digital-documents", label: "Documentos Digitales", icon: FolderOpen, roles: ["admin", "supervisor", "tecnico"] },
+    { id: "notifications-alerts", label: "Notificaciones y Alertas", icon: Bell, roles: ["admin", "supervisor", "tecnico"] },
   ];
 
   const filteredItems = allNavItemsArr.filter(item => item.roles.includes(role || ""));
