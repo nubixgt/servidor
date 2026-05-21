@@ -14,6 +14,7 @@ use App\Controllers\CreditsController;
 use App\Controllers\BudgetsController;
 use App\Controllers\PayrollController;
 use App\Controllers\MaintenanceController;
+use App\Controllers\DocumentsController;
 
 // Backend/api/v1/index.php
 
@@ -56,6 +57,7 @@ $router->registerController(CreditsController::class);
 $router->registerController(BudgetsController::class);
 $router->registerController(PayrollController::class);
 $router->registerController(MaintenanceController::class);
+$router->registerController(DocumentsController::class);
 // $router->registerController(YourController::class);
 
 
