@@ -23,11 +23,11 @@
     </div>
 
     <!-- Summary Row -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
       
       <!-- Dynamic Accounts Cards -->
       <template v-if="accounts.length > 0">
-        <div v-for="(acc, index) in accounts.slice(0, 2)" :key="acc.id" class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-52 cursor-pointer group relative overflow-hidden">
+        <div v-for="(acc, index) in accounts.slice(0, 2)" :key="acc.id" class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-auto min-h-[14rem] cursor-pointer group relative overflow-hidden">
           <div class="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none" :class="index % 2 === 0 ? 'bg-primary/5' : 'bg-orange-500/5'"></div>
           <div class="flex justify-between items-start">
             <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">{{ acc.nombre_banco }}</span>
@@ -48,22 +48,11 @@
       </template>
       <template v-else>
         <!-- Skeleton / Empty State Cards -->
-        <div class="glass-card p-10 rounded-[40px] flex flex-col justify-center items-center h-52 col-span-2 text-white/30">
+        <div class="glass-card p-10 rounded-[40px] flex flex-col justify-center items-center h-auto min-h-[14rem] col-span-2 text-white/30">
           <BuildingLibraryIcon class="w-10 h-10 mb-4 opacity-50" />
           <p class="font-bold uppercase tracking-widest text-xs">Sin Cuentas Registradas</p>
         </div>
       </template>
-
-      <!-- Bento Upload -->
-      <div class="glass-card p-10 rounded-[40px] flex flex-col items-center justify-center text-center cursor-pointer border-2 border-dashed border-white/10 hover:border-primary/40 hover:bg-white/5 transition-all group">
-        <div class="bg-primary/20 text-primary p-5 rounded-full mb-4 shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-500">
-          <CloudArrowUpIcon class="w-8 h-8" />
-        </div>
-        <h4 class="text-lg font-black italic uppercase tracking-wider text-white">Cargar Extracto</h4>
-        <p class="text-xs text-white/40 mt-2 max-w-xs font-medium">
-          Sube o arrastra archivos PDF o CSV para iniciar la conciliación automatizada.
-        </p>
-      </div>
     </section>
 
     <!-- Main Reconciliation Engine -->
@@ -102,28 +91,7 @@
           </div>
         </div>
 
-        <!-- AI Feature Component -->
-        <div class="glass-card p-10 rounded-[40px] border border-primary/20 relative overflow-hidden bg-gradient-to-br from-primary/10 via-transparent to-transparent flex flex-col justify-between">
-          <div class="flex justify-between items-start mb-6">
-            <div class="bg-primary/20 p-3 rounded-2xl text-primary border border-white/15">
-              <SparklesIcon class="w-5 h-5 animate-pulse" />
-            </div>
-            <span class="text-[9px] font-black text-primary uppercase tracking-[0.25em] bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">Inteligente</span>
-          </div>
-          <div>
-            <h5 class="text-xl font-black italic uppercase tracking-tighter text-white">Contabilidad Smart Match</h5>
-            <p class="text-xs font-medium text-white/50 mt-3 leading-relaxed">
-              Nuestra IA analizó su cartola e indexó <strong>{{ pendingLinkedCount }} coincidencias precisas</strong> pendientes según montos e instructivo.
-            </p>
-            <button
-              @click="handleAutoConciliation"
-              :disabled="pendingLinkedCount === 0"
-              class="mt-8 w-full glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl disabled:opacity-30 disabled:pointer-events-none hover:shadow-primary/30 transition-all text-center"
-            >
-              Conciliar Automáticamente
-            </button>
-          </div>
-        </div>
+
       </div>
 
       <!-- Transactions Table Column -->
@@ -155,13 +123,13 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5">
-                <tr v-if="filteredTransactions.length === 0">
+                <tr v-if="paginatedTransactions.length === 0">
                   <td colspan="5" class="px-10 py-20 text-center text-white/30 font-bold uppercase tracking-widest text-xs">
-                    Ninguna transacción pendiente coincide con el filtro.
+                    Ninguna transacción coincide con el filtro o la página actual.
                   </td>
                 </tr>
                 <tr
-                  v-for="tx in filteredTransactions"
+                  v-for="tx in paginatedTransactions"
                   :key="tx.id"
                   class="hover:bg-white/5 transition-all duration-300 group"
                 >
@@ -213,14 +181,14 @@
           <!-- Table Footer Pagination -->
           <div class="p-10 border-t border-white/5 bg-black/20 flex flex-col md:flex-row justify-between items-center gap-6">
             <p class="text-[10px] font-black text-white/20 uppercase tracking-widest">
-              Mostrando 1-{{ filteredTransactions.length }} de {{ filteredTransactions.length }} registros cargados
+              Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredTransactions.length) }} de {{ filteredTransactions.length }} registros cargados
             </p>
             <div class="flex items-center gap-3">
-              <button class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all">
+              <button @click="prevPage" :disabled="currentPage === 1" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronLeftIcon class="w-5 h-5 text-white/40" />
               </button>
-              <button class="w-10 h-10 rounded-xl bg-primary text-white font-black italic text-sm">1</button>
-              <button class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all">
+              <button class="w-10 h-10 rounded-xl bg-primary text-white font-black italic text-sm">{{ currentPage }}</button>
+              <button @click="nextPage" :disabled="currentPage === totalPages" class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 <ChevronRightIcon class="w-5 h-5 text-white/40" />
               </button>
             </div>
@@ -490,6 +458,22 @@ const filteredTransactions = computed(() => {
     return tx.status === selectedStatus.value && matchesSearch
   })
 })
+
+const currentPage = ref(1)
+const itemsPerPage = 10
+
+const paginatedTransactions = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredTransactions.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredTransactions.value.length / itemsPerPage) || 1
+})
+
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
+const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
 
 const pendingCount = computed(() => transactions.value.filter(t => t.status === 'pending').length)
 const matchedCount = computed(() => transactions.value.filter(t => t.status === 'matched').length)
