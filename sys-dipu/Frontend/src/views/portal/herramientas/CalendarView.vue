@@ -60,18 +60,6 @@
       </button>
     </div>
     <div class="cal-right-controls">
-      <div class="cal-filters">
-        <button v-for="cat in CATEGORIES" :key="cat.id"
-          @click="toggleFilter(cat.id)"
-          :class="['cal-filter', { active: activeFilters.includes(cat.id) }]"
-          :style="{ '--fc': cat.color, '--fb': cat.bg }">
-          <span class="cal-filter-dot" :style="{ background: cat.color }"></span>
-          {{ cat.label }}
-        </button>
-        <button v-if="activeFilters.length" @click="activeFilters = []" class="cal-filter-clear">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
       <div class="cal-search">
         <span class="material-symbols-outlined">search</span>
         <input v-model="searchQuery" placeholder="Buscar evento..." />
