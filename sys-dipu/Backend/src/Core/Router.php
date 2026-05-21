@@ -116,7 +116,15 @@ class Router
     private function validateToken()
     {
         $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? '';
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+
+        if (empty($authHeader)) {
+            if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+            }
+        }
 
         if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             http_response_code(401);
