@@ -225,30 +225,32 @@
           </div>
 
           <!-- Fotos y Ubicacion -->
-          <div class="grid grid-cols-2 gap-6 pt-2">
+          <div class="space-y-4 pt-2">
+            
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Evidencia Fotográfica (Máx 5)</label>
-              <div class="bg-white/5 border border-dashed border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 transition-colors relative">
+              <div class="flex justify-between items-end">
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Evidencia Fotográfica (Máx 5)</label>
+              </div>
+              <div class="bg-white/5 border border-dashed border-white/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 transition-colors relative">
                 <input type="file" multiple accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                <PhotoIcon class="w-6 h-6 text-white/40 mb-2" />
-                <p class="text-[10px] font-bold text-white/60">Haz clic para subir fotos</p>
-                <p v-if="selectedFiles.length > 0" class="text-[10px] font-black text-primary mt-1">{{ selectedFiles.length }} archivo(s) seleccionado(s)</p>
+                <PhotoIcon class="w-8 h-8 text-white/40 mb-3" />
+                <p class="text-xs font-bold text-white/60">Haz clic aquí o arrastra tus fotos</p>
+                <p v-if="selectedFiles.length > 0" class="text-[10px] font-black text-primary mt-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">{{ selectedFiles.length }} archivo(s) seleccionado(s)</p>
               </div>
             </div>
             
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Ubicación (GPS)</label>
-              <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                <button type="button" v-if="!form.latitud" @click="detectLocation" class="w-full py-2 bg-primary/20 hover:bg-primary/40 border border-primary/30 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
-                  <MapPinIcon class="w-4 h-4" /> Detectar Mi Ubicación
-                </button>
-                <div v-else class="text-xs font-bold text-white flex items-center justify-between">
-                  <span class="text-emerald-400 flex items-center gap-1"><CheckCircleIcon class="w-4 h-4" /> Ubicación capturada</span>
-                  <button type="button" @click="form.latitud = ''; form.longitud = ''" class="text-[10px] text-rose-400 hover:text-rose-300">Borrar</button>
+              <div class="flex justify-between items-end">
+                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Ubicación del Servicio (GPS)</label>
+                <div v-if="form.latitud" class="text-[10px] font-black text-emerald-400 flex items-center gap-1 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20">
+                  <CheckCircleIcon class="w-3 h-3" /> Ubicación capturada
                 </div>
               </div>
+              
               <!-- Mapa Opcional para ajustar -->
-              <div id="maintenance-map" class="w-full h-32 rounded-xl border border-white/10 mt-2 z-10 relative overflow-hidden hidden" :class="{'!block': mapInstance}"></div>
+              <div class="p-2 bg-white/5 rounded-3xl border border-white/10">
+                <div id="maintenance-map" class="w-full h-72 rounded-2xl z-10 relative overflow-hidden"></div>
+              </div>
             </div>
           </div>
 
@@ -353,10 +355,9 @@ onMounted(() => {
 const openAddModal = () => {
   showAddLogModal.value = true;
   nextTick(() => {
-    if (mapInstance) {
-      mapInstance.remove();
-      mapInstance = null;
-    }
+    setTimeout(() => {
+      detectLocation();
+    }, 300); // Dar un poco de tiempo para que se renderice el modal
   });
 };
 
