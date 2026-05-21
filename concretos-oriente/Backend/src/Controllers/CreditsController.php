@@ -107,7 +107,7 @@ class CreditsController {
             // Manejo de archivo comprobante
             $receipt_path = null;
             if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../../Uploads/Payments/';
+                $uploadDir = __DIR__ . '/../../Uploads/Payments/' . $credit_id . '/';
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
                 }
@@ -115,7 +115,7 @@ class CreditsController {
                 $targetFile = $uploadDir . $filename;
                 
                 if (move_uploaded_file($_FILES['receipt']['tmp_name'], $targetFile)) {
-                    $receipt_path = 'Uploads/Payments/' . $filename;
+                    $receipt_path = 'Uploads/Payments/' . $credit_id . '/' . $filename;
                 }
             }
 
