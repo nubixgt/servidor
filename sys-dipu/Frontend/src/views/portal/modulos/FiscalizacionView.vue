@@ -983,7 +983,7 @@ async function cargarFotosMinistros() {
                 const nombre = val && typeof val === 'object' ? val.nombre : 'Pendiente';
                 
                 if (fotoUrl) {
-                    fotos[key] = fotoUrl.startsWith('http') ? fotoUrl : base + fotoUrl;
+                    fotos[key] = (fotoUrl.startsWith('http') ? fotoUrl : base + fotoUrl) + '?t=' + Date.now();
                 }
                 
                 // Actualizar el nombre reactivamente en el array ministries
