@@ -39,13 +39,6 @@
       </ul>
     </nav>
 
-    <div v-if="role === 'admin'" class="px-6 mb-8 mt-auto">
-      <button class="w-full glass-button-primary text-white py-4 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-2xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all">
-        <PlusIcon class="w-4 h-4" />
-        Nuevo Proyecto
-      </button>
-    </div>
-
     <div class="pt-4 px-6 space-y-1 border-t border-white/5 mt-auto">
       <button class="w-full flex items-center px-6 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
         <LifebuoyIcon class="w-5 h-5 mr-4" />
@@ -93,11 +86,11 @@ const allNavItemsArr = [
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
   { id: "bank-conciliation", label: "Bancos y Conciliación", icon: BuildingLibraryIcon, roles: ["admin"] },
   { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },
-  { id: "budgets-estimations", label: "Presupuestos", icon: CalculatorIcon, roles: ["admin"] },
+  { id: "budgets-estimations", label: "Presupuestos y Estimaciones", icon: CalculatorIcon, roles: ["admin"] },
   { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: CreditCardIcon, roles: ["admin"] },
   { id: "digital-documents", label: "Documentos Digitales", icon: FolderOpenIcon, roles: ["admin"] },
-  { id: "notifications-alerts", label: "Centro de Mensajes", icon: BellAlertIcon, roles: ["admin"] },
-  { id: "payroll-expenses", label: "Planillas y Pagos", icon: CurrencyDollarIcon, roles: ["admin"] },
+  { id: "notifications-alerts", label: "Notificaciones y Alertas", icon: BellAlertIcon, roles: ["admin"] },
+  { id: "payroll-expenses", label: "Planilla y Gastos", icon: CurrencyDollarIcon, roles: ["admin"] },
 ];
 
 const filteredItems = computed(() => {
