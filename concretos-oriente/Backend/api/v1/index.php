@@ -11,6 +11,7 @@ use App\Controllers\SupplierController;
 use App\Controllers\FinanceController;
 use App\Controllers\BankConciliationController;
 use App\Controllers\CreditsController;
+use App\Controllers\BudgetsController;
 
 // Backend/api/v1/index.php
 
@@ -50,6 +51,7 @@ $router->registerController(SupplierController::class);
 $router->registerController(FinanceController::class);
 $router->registerController(BankConciliationController::class);
 $router->registerController(CreditsController::class);
+$router->registerController(BudgetsController::class);
 // $router->registerController(YourController::class);
 
 

@@ -1,27 +1,26 @@
 <template>
   <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
 
-    <!-- Toast Notification -->
-    <div
-      v-if="notification"
-      class="fixed top-24 right-10 z-50 bg-primary/20 border border-primary text-white backdrop-blur-xl px-6 py-4 rounded-2xl flex items-center gap-3 shadow-lg"
-    >
-      <CheckCircleIcon class="w-5 h-5 text-primary" />
-      <span class="text-xs font-black uppercase tracking-wider">{{ notification }}</span>
-    </div>
-
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-3">
         <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">Presupuestos y Estimaciones</h2>
-        <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Gestione sus costos operativos y márgenes de utilidad en tiempo real</p>
+        <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Gestione sus costos operativos y estimaciones de avance</p>
       </div>
-      <button
-        @click="showCreateModal = true"
-        class="glass-button-primary bg-primary border border-primary text-white px-8 py-5 rounded-3xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all"
-      >
-        <PlusIcon class="w-4 h-4" /> Crear Estimación
-      </button>
+      <div class="flex gap-4 flex-wrap">
+        <button
+          @click="showAddItemModal = true"
+          class="px-6 py-4 rounded-3xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 transition-all flex items-center gap-2"
+        >
+          <PlusIcon class="w-4 h-4" /> Partida Presupuestaria
+        </button>
+        <button
+          @click="showAddEstimationModal = true"
+          class="glass-button-primary bg-primary border border-primary text-white px-8 py-4 rounded-3xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all"
+        >
+          <PlusIcon class="w-4 h-4" /> Crear Estimación
+        </button>
+      </div>
     </div>
 
     <!-- Bento Grid Stats -->
@@ -30,17 +29,16 @@
       <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden group">
         <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
         <div>
-          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Total Cotizado</span>
+          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Costo Estimado Global</span>
           <div class="flex items-baseline gap-3 mt-4">
-            <h3 class="text-3xl font-black italic tracking-tighter">Q{{ totalQuoted.toLocaleString('es-GT') }}</h3>
-            <span class="text-[10px] font-black text-primary bg-primary/20 px-2 py-0.5 rounded-lg">+12%</span>
+            <h3 class="text-3xl font-black italic tracking-tighter">Q{{ totalGlobalCost.toLocaleString('es-GT', {minimumFractionDigits: 2}) }}</h3>
           </div>
         </div>
         <div>
           <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden mb-2">
             <div class="bg-primary h-full rounded-full" style="width: 70%"></div>
           </div>
-          <p class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Cumplimiento del pipeline</p>
+          <p class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Avance Financiero General</p>
         </div>
       </div>
 
@@ -50,7 +48,7 @@
         <div>
           <span class="text-[10px] font-black text-white/80 uppercase tracking-[0.25em]">Margen Promedio</span>
           <div class="flex items-baseline gap-3 mt-4">
-            <h3 class="text-4xl font-black italic tracking-tighter">{{ averageMargin }}%</h3>
+            <h3 class="text-4xl font-black italic tracking-tighter">24%</h3>
             <ArrowTrendingUpIcon class="w-5 h-5 text-white/80" />
           </div>
         </div>
@@ -62,35 +60,27 @@
 
       <!-- Stat Card 3 -->
       <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-xl"></div>
+        <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl"></div>
         <div>
-          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Pendientes de Aprobación</span>
+          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Estimaciones en Revisión</span>
           <div class="flex items-baseline gap-3 mt-4">
-            <h3 class="text-3xl font-black italic tracking-tighter">18</h3>
-            <span class="text-[9px] font-black bg-rose-500/20 text-rose-400 px-2.5 py-0.5 rounded-lg uppercase tracking-wider">Urgente</span>
+            <h3 class="text-3xl font-black italic tracking-tighter">{{ pendingEstimationsCount }}</h3>
+            <span class="text-[9px] font-black bg-amber-500/20 text-amber-400 px-2.5 py-0.5 rounded-lg uppercase tracking-wider">Pendientes</span>
           </div>
-        </div>
-        <div class="flex items-center justify-between">
-          <div class="flex -space-x-2.5">
-            <div class="w-8 h-8 rounded-full border border-slate-900 bg-indigo-500 flex items-center justify-center text-[10px] font-extrabold">A1</div>
-            <div class="w-8 h-8 rounded-full border border-slate-900 bg-pink-500 flex items-center justify-center text-[10px] font-extrabold">F2</div>
-            <div class="w-8 h-8 rounded-full border border-slate-900 bg-amber-500 flex items-center justify-center text-[10px] font-extrabold">JV</div>
-          </div>
-          <p class="text-[9px] font-extrabold text-white/30 uppercase tracking-widest">En espera</p>
         </div>
       </div>
 
       <!-- Stat Card 4 -->
       <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52">
         <div>
-          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Materiales Indexados</span>
+          <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Partidas Registradas</span>
           <div class="flex items-baseline gap-3 mt-4">
-            <h3 class="text-3xl font-black italic tracking-tighter">94%</h3>
+            <h3 class="text-3xl font-black italic tracking-tighter">{{ budgetItems.length }}</h3>
           </div>
         </div>
         <div>
           <p class="text-[10px] text-white/50 leading-relaxed font-bold">
-            Tipos actualizados automáticamente hoy a las <strong>08:00 AM</strong>.
+            Catálogo de partidas presupuestarias base actualizado.
           </p>
         </div>
       </div>
@@ -104,8 +94,8 @@
         <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl">
           <div class="p-10 border-b border-white/5 bg-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Presupuestos Activos</h3>
-              <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">Estimaciones vigentes por proyecto y fase</p>
+              <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Estimaciones de Avance</h3>
+              <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">Estimaciones vigentes por proyecto y período</p>
             </div>
             <div class="relative">
               <MagnifyingGlassIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
@@ -123,44 +113,42 @@
               <thead>
                 <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5">
                   <th class="px-10 py-6">Proyecto</th>
-                  <th class="px-10 py-6">Fecha</th>
-                  <th class="px-10 py-6 text-right">Costo Total</th>
-                  <th class="px-10 py-6 text-center">Beneficio (Utilidad)</th>
+                  <th class="px-10 py-6">Período</th>
+                  <th class="px-10 py-6 text-right">Costo Calculado</th>
+                  <th class="px-10 py-6 text-center">Partidas</th>
                   <th class="px-10 py-6 text-right">Estado</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5">
-                <tr v-if="filteredBudgets.length === 0">
+                <tr v-if="filteredEstimations.length === 0">
                   <td colspan="5" class="px-10 py-16 text-center text-white/30 font-bold uppercase tracking-widest text-xs">
-                    No hay presupuestos activos que coincidan con la búsqueda.
+                    No hay estimaciones activas que coincidan con la búsqueda.
                   </td>
                 </tr>
                 <tr
-                  v-for="b in filteredBudgets"
-                  :key="b.id"
+                  v-for="est in filteredEstimations"
+                  :key="est.id"
                   class="hover:bg-white/5 transition-all duration-300 cursor-pointer group"
                 >
                   <td class="px-10 py-6">
-                    <h5 class="font-extrabold text-base text-white tracking-tight uppercase italic">{{ b.project }}</h5>
-                    <p class="text-[10px] font-bold text-white/30 tracking-wider uppercase mt-1">ID: {{ b.id }} • Fase: {{ b.phase }}</p>
+                    <h5 class="font-extrabold text-base text-white tracking-tight uppercase italic">{{ est.project_name || 'N/A' }}</h5>
+                    <p class="text-[10px] font-bold text-white/30 tracking-wider uppercase mt-1">EST-{{ est.id }}</p>
                   </td>
-                  <td class="px-10 py-6 text-xs text-white/50 font-bold">{{ b.date }}</td>
+                  <td class="px-10 py-6 text-xs text-white/50 font-bold uppercase">{{ est.periodo }}</td>
                   <td class="px-10 py-6 text-right font-black italic text-base text-white">
-                    Q{{ b.cost.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                    Q{{ Number(est.costo_calculado || 0).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </td>
-                  <td class="px-10 py-6 text-center">
-                    <span class="bg-primary/20 text-primary border border-primary/25 px-3.5 py-1.5 rounded-xl text-xs font-black italic">
-                      {{ b.utility }}%
-                    </span>
+                  <td class="px-10 py-6 text-center text-xs font-bold text-white/60">
+                    {{ est.items?.length || 0 }} items
                   </td>
                   <td class="px-10 py-6 text-right">
                     <span :class="[
                       'px-3.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border',
-                      b.status === 'Aprobado' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                      b.status === 'En Revisión' ? 'bg-primary/10 text-primary border-primary/20' :
+                      est.estado === 'Aprobado' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                      est.estado === 'En Revisión' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                       'bg-white/5 text-white/40 border-white/10'
                     ]">
-                      {{ b.status }}
+                      {{ est.estado }}
                     </span>
                   </td>
                 </tr>
@@ -169,13 +157,7 @@
           </div>
 
           <div class="p-8 border-t border-white/5 bg-black/10 flex justify-between items-center text-[10px] font-black text-white/20 uppercase tracking-widest">
-            <span>Mostrando {{ filteredBudgets.length }} de {{ budgets.length }} elementos</span>
-            <button
-              @click="triggerNotification('Filtrado avanzado próximamente disponible')"
-              class="hover:text-primary transition-colors cursor-pointer"
-            >
-              Ver todos
-            </button>
+            <span>Mostrando {{ filteredEstimations.length }} de {{ estimations.length }} elementos</span>
           </div>
         </div>
       </div>
@@ -185,95 +167,61 @@
         <div class="glass-card p-10 rounded-[44px] border-l-4 border-primary space-y-8">
           <div>
             <h3 class="text-xl font-black italic uppercase tracking-tighter">Desglose de Costos</h3>
-            <p class="text-[10px] font-black text-white/35 uppercase tracking-widest mt-1">Gastos presupuestales globales</p>
+            <p class="text-[10px] font-black text-white/35 uppercase tracking-widest mt-1">Categorías base</p>
           </div>
 
           <div class="space-y-6">
-            <!-- Category 1 -->
             <div class="space-y-3">
               <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
                 <span class="flex items-center gap-2 text-white/60">
                   <WrenchScrewdriverIcon class="w-3.5 h-3.5 text-primary" />
                   Materiales
                 </span>
-                <span class="font-black text-white">Q680,400.00</span>
+                <span class="font-black text-white">55%</span>
               </div>
               <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div class="bg-primary h-full rounded-full" style="width: 55%"></div>
               </div>
-              <p class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Alerta: +4.2% inflación acero estructural</p>
             </div>
 
-            <!-- Category 2 -->
             <div class="space-y-3">
               <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
                 <span class="flex items-center gap-2 text-white/60">
                   <UsersIcon class="w-3.5 h-3.5 text-primary" />
                   Mano de Obra
                 </span>
-                <span class="font-black text-white">Q340,200.00</span>
+                <span class="font-black text-white">30%</span>
               </div>
               <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div class="bg-primary h-full rounded-full" style="width: 30%"></div>
               </div>
-              <p class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Certificación y seguridad técnica</p>
             </div>
 
-            <!-- Category 3 -->
             <div class="space-y-3">
               <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
                 <span class="flex items-center gap-2 text-white/60">
                   <TrophyIcon class="w-3.5 h-3.5 text-primary" />
-                  Equipos y Maquinaria
+                  Maquinaria
                 </span>
-                <span class="font-black text-white">Q120,150.00</span>
+                <span class="font-black text-white">15%</span>
               </div>
               <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                <div class="bg-primary h-full rounded-full" style="width: 10%"></div>
-              </div>
-              <p class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Ahorro detectado: Eficiencia renting</p>
-            </div>
-
-            <!-- Operating Margin Total -->
-            <div class="space-y-3 pt-6 border-t border-white/5">
-              <div class="flex justify-between items-center">
-                <span class="text-xs font-black uppercase tracking-wider text-primary italic">Margen de Caja</span>
-                <span class="text-lg font-black italic text-primary">Q99,250.00</span>
-              </div>
-              <div class="w-full bg-primary/20 h-2 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+                <div class="bg-primary h-full rounded-full" style="width: 15%"></div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Quick Action Analysis -->
-        <div class="glass-card p-10 rounded-[44px] border border-white/5 bg-gradient-to-br from-indigo-950/20 to-transparent relative overflow-hidden group">
-          <div class="relative z-10 space-y-3">
-            <h4 class="text-lg font-black italic uppercase tracking-wider text-white">Análisis de Mercado</h4>
-            <p class="text-xs text-white/40 leading-relaxed font-bold">
-              Tenemos nuevos precios verificados en cementeras y aceros para actualizar rápidamente sus márgenes de ganancia.
-            </p>
-            <button
-              @click="triggerNotification('Base de datos de proveedores actualizada')"
-              class="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2 group-hover:translate-x-1.5 transition-transform cursor-pointer"
-            >
-              Actualizar Base de Precios <ChevronRightIcon class="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Visual Chart Trends & AI Suggestions -->
+    <!-- Visual Chart Trends -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
       <!-- Trend Graph Visualization -->
-      <div class="lg:col-span-2 glass-card p-10 rounded-[48px] border border-white/5 space-y-8">
+      <div class="lg:col-span-3 glass-card p-10 rounded-[48px] border border-white/5 space-y-8">
         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div>
-            <h3 class="text-2xl font-black italic uppercase tracking-tighter text-white">Costos Totales vs. Presupuestado</h3>
-            <p class="text-[10px] font-black text-white/30 uppercase tracking-widest mt-1">Comparación periódica Enero - Abril</p>
+            <h3 class="text-2xl font-black italic uppercase tracking-tighter text-white">Avance Presupuestado vs Real</h3>
+            <p class="text-[10px] font-black text-white/30 uppercase tracking-widest mt-1">Comparativa general (Simulación Gráfica)</p>
           </div>
           <div class="flex items-center gap-6">
             <div class="flex items-center gap-2">
@@ -282,7 +230,7 @@
             </div>
             <div class="flex items-center gap-2">
               <div class="w-3 h-3 rounded-full bg-rose-500"></div>
-              <span class="text-[10px] font-black uppercase tracking-widest text-white/40">Real</span>
+              <span class="text-[10px] font-black uppercase tracking-widest text-white/40">Real Estimado</span>
             </div>
           </div>
         </div>
@@ -317,95 +265,84 @@
           </div>
         </div>
       </div>
-
-      <!-- AI Suggestion Box -->
-      <div class="lg:col-span-1 bg-gradient-to-br from-indigo-950 to-slate-950 border border-primary/30 p-10 rounded-[48px] flex flex-col justify-between h-full shadow-2xl relative overflow-hidden text-center">
-        <div class="absolute -top-10 -right-10 w-28 h-28 bg-primary/10 rounded-full blur-2xl"></div>
-        <div class="flex pt-4 flex-col items-center gap-4">
-          <div class="bg-primary/20 p-5 rounded-full text-primary border border-white/10 shadow-xl shadow-primary/20">
-            <SparklesIcon class="w-8 h-8 animate-pulse" />
-          </div>
-          <h3 class="text-xl font-black italic uppercase tracking-tighter text-white">Sugerencia IA</h3>
-          <p class="text-xs text-white/50 leading-relaxed font-semibold">
-            Identificamos un potencial ahorro de hasta un <strong>8.5% en la logística global</strong> de la Fase Residencial "La Sierra" ajustando y programando las rutas de acarreo.
-          </p>
-        </div>
-        <button
-          @click="triggerNotification('Sugerencias aplicadas, simulando optimización.')"
-          class="mt-8 w-full glass-button-primary bg-primary border border-primary py-4 rounded-3xl text-xs font-black uppercase tracking-widest text-white shadow-2xl"
-        >
-          Aplicar Sugerencias
-        </button>
-      </div>
     </div>
 
-    <!-- Create Estimate Modal -->
-    <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
-      <div class="absolute inset-0 cursor-pointer" @click="showCreateModal = false"></div>
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
-        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Crear Estimación</h3>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Diseñar nueva cotización de costos de proyecto</p>
+    <!-- Modal Partida Presupuestaria -->
+    <div v-if="showAddItemModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showAddItemModal = false"></div>
+      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Partida Presupuestaria</h3>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Defina los componentes del presupuesto</p>
 
-        <form @submit.prevent="handleCreateEstimate" class="space-y-6">
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre del Proyecto</label>
-            <input
-              type="text"
-              required
-              v-model="projectName"
-              placeholder="E.g. Proyecto Altiplano - Lote 5"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Fase / Categoría</label>
-            <input
-              type="text"
-              v-model="phaseName"
-              placeholder="E.g. Cimentación / Estructura"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
-            />
+        <form @submit.prevent="submitBudgetItem" class="space-y-6">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Proyecto *</label>
+              <select required v-model="newItem.project_id" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
+                <option value="" disabled class="bg-slate-900 text-white/50">Seleccione proyecto...</option>
+                <option v-for="proj in projects" :key="proj.id" :value="proj.id" class="bg-slate-900">{{ proj.nombre }}</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre de Partida *</label>
+              <input
+                type="text"
+                required
+                v-model="newItem.nombre_partida"
+                placeholder="E.g. Excavación de zanjas"
+                class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
+              />
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Costo Estimado (Q)</label>
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Tipo / Categoría *</label>
+              <select required v-model="newItem.categoria" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
+                <option value="" disabled class="bg-slate-900 text-white/50">Seleccione categoría...</option>
+                <option value="Material" class="bg-slate-900">Material</option>
+                <option value="Mano de Obra" class="bg-slate-900">Mano de Obra</option>
+                <option value="Maquinaria" class="bg-slate-900">Maquinaria</option>
+                <option value="Subcontrato" class="bg-slate-900">Subcontrato</option>
+                <option value="Indirectos" class="bg-slate-900">Indirectos</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Unidad de Medida *</label>
+              <input
+                type="text"
+                required
+                v-model="newItem.unidad_medida"
+                placeholder="E.g. m3, gl, ml, unidad"
+                class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Cantidad Estimada *</label>
               <input
                 type="number"
                 required
                 step="0.01"
-                v-model="costValue"
+                min="0.01"
+                v-model="newItem.cantidad_estimada"
                 placeholder="0.00"
                 class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/20"
               />
             </div>
             <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Margen de Utilidad (%)</label>
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Precio Unitario (Q) *</label>
               <input
                 type="number"
-                v-model="utilityValue"
-                placeholder="22"
+                required
+                step="0.01"
+                min="0.01"
+                v-model="newItem.precio_unitario"
+                placeholder="0.00"
                 class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/20"
               />
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Estado del Presupuesto</label>
-            <div class="flex bg-white/5 border border-white/10 rounded-2xl p-1">
-              <button
-                v-for="st in ['Borrador', 'En Revisión']"
-                :key="st"
-                type="button"
-                @click="statusValue = st"
-                :class="[
-                  'flex-1 py-3 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all',
-                  statusValue === st ? 'bg-primary text-white shadow-md' : 'text-white/40'
-                ]"
-              >
-                {{ st }}
-              </button>
             </div>
           </div>
 
@@ -414,11 +351,96 @@
               type="submit"
               class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
             >
-              Confirmar Estimación
+              Guardar Partida
             </button>
             <button
               type="button"
-              @click="showCreateModal = false"
+              @click="showAddItemModal = false"
+              class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white/50"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Estimación de Avance -->
+    <div v-if="showAddEstimationModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showAddEstimationModal = false"></div>
+      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Estimación de Avance</h3>
+        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Reporte periódico del progreso de obra</p>
+
+        <form @submit.prevent="submitEstimation" class="space-y-6">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Proyecto *</label>
+              <select required v-model="newEstimation.project_id" @change="loadItemsForProject" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
+                <option value="" disabled class="bg-slate-900 text-white/50">Seleccione proyecto...</option>
+                <option v-for="proj in projects" :key="proj.id" :value="proj.id" class="bg-slate-900">{{ proj.nombre }}</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Período de Estimación *</label>
+              <input
+                type="text"
+                required
+                v-model="newEstimation.periodo"
+                placeholder="E.g. Semana 1 (1 al 7 de Octubre)"
+                class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Observaciones</label>
+            <textarea
+              v-model="newEstimation.observaciones"
+              rows="2"
+              placeholder="Detalles del progreso..."
+              class="w-full glass-input rounded-2xl p-4 text-sm font-bold text-white placeholder:text-white/20"
+            ></textarea>
+          </div>
+
+          <!-- Partidas del proyecto -->
+          <div v-if="newEstimation.project_id" class="mt-6 border border-white/10 rounded-3xl p-6 bg-black/20 space-y-4">
+            <h4 class="text-xs font-black uppercase tracking-widest text-primary mb-4">Avance por Partidas</h4>
+            <div v-if="projectBudgetItems.length === 0" class="text-xs text-white/40 italic text-center py-4">
+              Este proyecto no tiene partidas presupuestarias registradas.
+            </div>
+            <div v-for="(item, index) in projectBudgetItems" :key="item.id" class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl">
+              <div class="flex-1">
+                <h5 class="text-sm font-black text-white uppercase">{{ item.nombre_partida }}</h5>
+                <p class="text-[10px] text-white/40 font-bold tracking-widest uppercase">{{ item.categoria }} • {{ item.cantidad_estimada }} {{ item.unidad_medida }} a Q{{ item.precio_unitario }}</p>
+              </div>
+              <div class="w-32">
+                <div class="relative">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    v-model="item.avance_real"
+                    placeholder="0"
+                    class="w-full glass-input rounded-xl p-3 pr-8 text-sm font-bold text-right text-white"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 text-xs font-black">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 pt-6">
+            <button
+              type="submit"
+              class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
+            >
+              Guardar Estimación
+            </button>
+            <button
+              type="button"
+              @click="showAddEstimationModal = false"
               class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-white/50"
             >
               Cancelar
@@ -432,68 +454,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
-  CheckCircleIcon,
   ArrowTrendingUpIcon,
-  ChevronRightIcon,
   WrenchScrewdriverIcon,
   UsersIcon,
   TrophyIcon,
-  SparklesIcon,
 } from '@heroicons/vue/24/outline';
 
-interface BudgetEstimate {
-  id: string;
-  project: string;
-  phase: string;
-  date: string;
-  cost: number;
-  utility: number;
-  status: 'En Revisión' | 'Aprobado' | 'Borrador';
-}
+const API_URL = '/concretos-oriente/Backend/api/v1';
+
+const projects = ref<any[]>([]);
+const budgetItems = ref<any[]>([]);
+const estimations = ref<any[]>([]);
+
+// Variables locales para el avance
+const projectBudgetItems = ref<any[]>([]);
 
 const searchTerm = ref('');
-const showCreateModal = ref(false);
-const notification = ref('');
+const showAddItemModal = ref(false);
+const showAddEstimationModal = ref(false);
 
-const projectName = ref('');
-const phaseName = ref('');
-const costValue = ref('');
-const utilityValue = ref('22');
-const statusValue = ref('En Revisión');
+const newItem = ref({
+  project_id: '',
+  nombre_partida: '',
+  categoria: '',
+  unidad_medida: '',
+  cantidad_estimada: '',
+  precio_unitario: ''
+});
 
-const budgets = ref<BudgetEstimate[]>([
-  {
-    id: 'BDG-01',
-    project: "Residencial 'La Sierra'",
-    phase: 'Estructura',
-    date: '24 May, 2026',
-    cost: 450200.0,
-    utility: 22,
-    status: 'En Revisión',
-  },
-  {
-    id: 'BDG-02',
-    project: 'Torre Corporativa Delta',
-    phase: 'Acabados',
-    date: '20 May, 2026',
-    cost: 890500.0,
-    utility: 28,
-    status: 'Aprobado',
-  },
-  {
-    id: 'BDG-03',
-    project: 'Complejo Logístico Norte',
-    phase: 'Excavación',
-    date: '15 May, 2026',
-    cost: 1120000.0,
-    utility: 19,
-    status: 'Borrador',
-  },
-]);
+const newEstimation = ref({
+  project_id: '',
+  periodo: '',
+  observaciones: ''
+});
 
 const graphData = ref([
   { month: 'Ene', budget: 60, real: 65 },
@@ -502,51 +501,144 @@ const graphData = ref([
   { month: 'Abr', budget: 85, real: 92 },
 ]);
 
-const filteredBudgets = computed(() =>
-  budgets.value.filter(
-    (b) =>
-      b.project.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      b.phase.toLowerCase().includes(searchTerm.value.toLowerCase())
-  )
-);
-
-const totalQuoted = computed(() => budgets.value.reduce((acc, b) => acc + b.cost, 0));
-
-const averageMargin = computed(() => {
-  if (budgets.value.length === 0) return 0;
-  const sum = budgets.value.reduce((acc, b) => acc + b.utility, 0);
-  return (sum / budgets.value.length).toFixed(1);
+onMounted(() => {
+  fetchProjects();
+  fetchBudgetItems();
+  fetchEstimations();
 });
 
-function triggerNotification(text: string) {
-  notification.value = text;
-  setTimeout(() => {
-    notification.value = '';
-  }, 4000);
-}
+const fetchProjects = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/projects`);
+    if (res.data.status === 'success') {
+      projects.value = res.data.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-function handleCreateEstimate() {
-  if (!projectName.value || !costValue.value) return;
+const fetchBudgetItems = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/budget-items`);
+    if (res.data.status === 'success') {
+      budgetItems.value = res.data.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-  const newEst: BudgetEstimate = {
-    id: 'BDG-' + Math.floor(Math.random() * 90 + 10),
-    project: projectName.value,
-    phase: phaseName.value || 'General',
-    date: new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'short', year: 'numeric' }),
-    cost: parseFloat(costValue.value),
-    utility: parseInt(utilityValue.value),
-    status: statusValue.value as BudgetEstimate['status'],
+const fetchEstimations = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/estimations`);
+    if (res.data.status === 'success') {
+      estimations.value = res.data.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const totalGlobalCost = computed(() => {
+  return estimations.value.reduce((sum, est) => sum + (Number(est.costo_calculado) || 0), 0);
+});
+
+const pendingEstimationsCount = computed(() => {
+  return estimations.value.filter(e => e.estado === 'En Revisión').length;
+});
+
+const filteredEstimations = computed(() => {
+  return estimations.value.filter(e => {
+    const projName = (e.project_name || '').toLowerCase();
+    const period = (e.periodo || '').toLowerCase();
+    const search = searchTerm.value.toLowerCase();
+    return projName.includes(search) || period.includes(search);
+  });
+});
+
+const loadItemsForProject = () => {
+  // Filtrar las partidas del proyecto seleccionado y prepararlas para el formulario de avance
+  projectBudgetItems.value = budgetItems.value
+    .filter(bi => bi.project_id === newEstimation.value.project_id)
+    .map(bi => ({ ...bi, avance_real: '' })); // Iniciar el input vacío
+};
+
+const submitBudgetItem = async () => {
+  try {
+    const res = await axios.post(`${API_URL}/budget-items`, newItem.value);
+    if (res.data.status === 'success') {
+      showAddItemModal.value = false;
+      newItem.value = {
+        project_id: '', nombre_partida: '', categoria: '', unidad_medida: '', cantidad_estimada: '', precio_unitario: ''
+      };
+      fetchBudgetItems();
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Partida registrada correctamente',
+        icon: 'success',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      });
+    } else {
+      throw new Error(res.data.message);
+    }
+  } catch (error: any) {
+    Swal.fire({
+      title: 'Error',
+      text: error.message || 'Error de red',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1',
+      customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+    });
+  }
+};
+
+const submitEstimation = async () => {
+  // Construir payload
+  const itemsPayload = projectBudgetItems.value.map(item => ({
+    budget_item_id: item.id,
+    porcentaje_avance: parseFloat(item.avance_real) || 0
+  }));
+
+  const payload = {
+    ...newEstimation.value,
+    items: itemsPayload
   };
 
-  budgets.value.unshift(newEst);
-  showCreateModal.value = false;
-
-  projectName.value = '';
-  phaseName.value = '';
-  costValue.value = '';
-  utilityValue.value = '22';
-  statusValue.value = 'En Revisión';
-
-  triggerNotification('¡Estimación creada exitosamente!');
-}
+  try {
+    const res = await axios.post(`${API_URL}/estimations`, payload);
+    if (res.data.status === 'success') {
+      showAddEstimationModal.value = false;
+      newEstimation.value = { project_id: '', periodo: '', observaciones: '' };
+      projectBudgetItems.value = [];
+      fetchEstimations();
+      Swal.fire({
+        title: '¡Estimación Creada!',
+        text: 'La estimación de avance ha sido registrada correctamente',
+        icon: 'success',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      });
+    } else {
+      throw new Error(res.data.message);
+    }
+  } catch (error: any) {
+    Swal.fire({
+      title: 'Error',
+      text: error.message || 'Error de red',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1',
+      customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+    });
+  }
+};
 </script>
