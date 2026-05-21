@@ -29,7 +29,7 @@ class CreditsController {
         try {
             $stmt = $this->db->query("
                 SELECT c.*, 
-                       s.nombre_empresa as supplier_name,
+                       s.razon_social as supplier_name,
                        p.nombre as project_name,
                        (SELECT COALESCE(SUM(amount), 0) FROM credit_payments cp WHERE cp.credit_id = c.id) as total_paid
                 FROM credits c

@@ -230,7 +230,7 @@
               <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Proveedor *</label>
               <select required v-model="newCredit.supplier_id" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white focus:outline-none cursor-pointer">
                 <option value="" disabled class="bg-slate-900 text-white/50">Seleccione proveedor...</option>
-                <option v-for="sup in suppliers" :key="sup.id" :value="sup.id" class="bg-slate-900">{{ sup.nombre_empresa }}</option>
+                <option v-for="sup in suppliers" :key="sup.id" :value="sup.id" class="bg-slate-900">{{ sup.razon_social }}</option>
               </select>
             </div>
             <div class="space-y-2">
