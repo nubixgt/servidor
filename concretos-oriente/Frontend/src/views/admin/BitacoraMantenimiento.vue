@@ -224,6 +224,16 @@
             ></textarea>
           </div>
 
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Observaciones / Recomendaciones (Opcional)</label>
+            <textarea
+              rows="2"
+              v-model="form.observaciones"
+              placeholder="Notas adicionales sobre el equipo o el servicio..."
+              class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white focus:outline-none focus:border-primary/50"
+            ></textarea>
+          </div>
+
           <!-- Repuestos Section -->
           <div class="bg-black/20 p-6 rounded-3xl border border-white/5 space-y-4">
             <div class="flex justify-between items-center">
