@@ -324,6 +324,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 import {
   BuildingLibraryIcon,
   CreditCardIcon,
@@ -339,7 +340,7 @@ import {
   CheckIcon
 } from '@heroicons/vue/24/outline'
 
-const API_URL = 'http://localhost/concretos-oriente/Backend/api/v1'
+const API_URL = '/concretos-oriente/Backend/api/v1'
 
 const searchTerm = ref('')
 const selectedPeriod = ref('Últimos 30 días')
@@ -404,12 +405,37 @@ const handleCreateAccount = async () => {
       showAccountModal.value = false
       newAccount.value = { nombre_banco: '', numero_cuenta: '', tipo_cuenta: '', moneda: 'GTQ', activa: true }
       fetchAccounts()
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Cuenta bancaria registrada correctamente.',
+        icon: 'success',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      })
     } else {
-      alert('Error al registrar la cuenta')
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al registrar la cuenta: ' + res.data.message,
+        icon: 'error',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      })
     }
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al procesar la solicitud.')
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al procesar la solicitud. Revisa tu conexión.',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1',
+      customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+    })
   }
 }
 
@@ -419,15 +445,39 @@ const handleCreateConciliation = async () => {
     if (res.data.status === 'success') {
       showConciliationModal.value = false
       newConciliation.value = { bank_account_id: '', periodo: '', saldo_banco: '', partidas_conciliatorias: [] }
-      alert('Conciliación registrada correctamente')
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Conciliación registrada correctamente',
+        icon: 'success',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      })
       // Refetch transactions to possibly hide reconciled ones if needed
       fetchTransactions()
     } else {
-      alert('Error al registrar conciliación')
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al registrar conciliación: ' + res.data.message,
+        icon: 'error',
+        background: '#0f172a',
+        color: '#fff',
+        confirmButtonColor: '#6366f1',
+        customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+      })
     }
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al procesar la solicitud.')
+    Swal.fire({
+      title: 'Error',
+      text: 'Error al procesar la solicitud. Revisa tu conexión.',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1',
+      customClass: { popup: 'border border-white/10 rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-6 py-3 font-bold' }
+    })
   }
 }
 
