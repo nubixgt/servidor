@@ -295,6 +295,7 @@
                                                 {{ p.tipoPuesto }}
                                             </span>
                                         </div>
+                                        <p v-if="p.tituloPuesto" class="text-xs text-on-surface-variant/80 mt-0.5 font-medium leading-none">{{ p.tituloPuesto }}</p>
                                         <div class="flex items-center gap-3 mt-1 flex-wrap">
                                             <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
                                                 <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
@@ -387,6 +388,13 @@
                                                 : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
                                         ]">{{ tipo }}</button>
                                 </div>
+                            </div>
+
+                            <!-- Título de Puesto (Dinámico) -->
+                            <div v-if="nuevoPersonal.tipoPuesto === 'Viceministro' || nuevoPersonal.tipoPuesto === 'Director'" class="space-y-1.5 animate-in fade-in duration-300">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Título de Puesto <span class="text-error">*</span></label>
+                                <input v-model="nuevoPersonal.tituloPuesto" type="text" placeholder="Ej: Viceministro Administrativo Financiero o Director de Compras"
+                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
                             </div>
 
                             <!-- Sueldo + Fecha en grid -->
@@ -1159,7 +1167,7 @@ async function eliminarFotoMinistro(ministerioId) {
     }
 }
 const errorModal = ref('');
-const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
+const nuevoPersonal = ref({ nombre: '', tipoPuesto: '', tituloPuesto: '', sueldo: '', fechaPosesion: '', fotoPreview: null, fotoNombre: '' });
 
 // --- Lógica de Documentos ---
 const docs = ref([]);
@@ -1199,7 +1207,7 @@ async function cargarDocumentosBD() {
 
 function abrirModal(ministerio) {
     ministerioSeleccionado.value = ministerio;
-    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
+    nuevoPersonal.value = { nombre: '', tipoPuesto: 'Director', tituloPuesto: '', sueldo: '', fechaPosesion: new Date().toISOString().split('T')[0], fotoPreview: null, fotoNombre: '' };
     errorModal.value = '';
     modalAbierto.value = true;
 }
@@ -1228,11 +1236,16 @@ async function guardarPersonal() {
         errorModal.value = 'Selecciona el tipo de puesto.';
         return;
     }
+    if ((nuevoPersonal.value.tipoPuesto === 'Viceministro' || nuevoPersonal.value.tipoPuesto === 'Director') && !nuevoPersonal.value.tituloPuesto?.trim()) {
+        errorModal.value = 'El título de puesto es obligatorio.';
+        return;
+    }
     try {
         const payload = {
             ministerio_id: ministerioSeleccionado.value.id,
             nombre: nuevoPersonal.value.nombre,
             tipo_puesto: nuevoPersonal.value.tipoPuesto,
+            titulo_puesto: (nuevoPersonal.value.tipoPuesto === 'Viceministro' || nuevoPersonal.value.tipoPuesto === 'Director') ? nuevoPersonal.value.tituloPuesto : null,
             sueldo: nuevoPersonal.value.sueldo ? parseFloat(nuevoPersonal.value.sueldo) : null,
             fecha_posesion: nuevoPersonal.value.fechaPosesion || null,
             foto_nombre: nuevoPersonal.value.fotoNombre || null,

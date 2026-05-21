@@ -15,17 +15,20 @@ try {
     
     echo "CONNECTED SUCCESSFUL\n";
     
-    $sql = "CREATE TABLE IF NOT EXISTS fiscalizacion_ministros (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        ministerio_id INT NOT NULL UNIQUE,
-        nombre_ministro VARCHAR(255) DEFAULT 'Pendiente',
-        foto_url VARCHAR(255) NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )";
+    // Add column if not exists
+    $db->exec("ALTER TABLE fiscalizacion_personal ADD COLUMN titulo_puesto VARCHAR(255) NULL AFTER tipo_puesto");
+    echo "Column titulo_puesto added successfully!\n";
     
-    $db->exec($sql);
-    echo "Table fiscalizacion_ministros created successfully!\n";
+    // DESCRIBE fiscalizacion_personal
+    $stmt = $db->query("DESCRIBE fiscalizacion_personal");
+    $columns = $stmt->fetchAll();
+    echo "COLUMNS IN fiscalizacion_personal:\n";
+    foreach ($columns as $col) {
+        echo " - " . $col['Field'] . " (" . $col['Type'] . ")\n";
+    }
     
 } catch (Exception $e) {
     echo "ERROR: " . $e->getMessage() . "\n";
 }
+
+
