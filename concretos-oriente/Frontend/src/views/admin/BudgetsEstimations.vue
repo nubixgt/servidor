@@ -24,7 +24,7 @@
     </div>
 
     <!-- Bento Grid Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <!-- Stat Card 1 -->
       <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden group">
         <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
@@ -36,25 +36,9 @@
         </div>
         <div>
           <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden mb-2">
-            <div class="bg-primary h-full rounded-full" style="width: 70%"></div>
+            <div class="bg-primary h-full rounded-full transition-all duration-1000" :style="{ width: (totalGlobalCost / (totalBudgetCost || 1) * 100) + '%' }"></div>
           </div>
           <p class="text-[9px] font-bold text-white/30 uppercase tracking-wider">Avance Financiero General</p>
-        </div>
-      </div>
-
-      <!-- Stat Card 2 (Highlight Margin) -->
-      <div class="bg-gradient-to-br from-primary to-indigo-950 p-8 rounded-[40px] flex flex-col justify-between h-52 relative overflow-hidden shadow-2xl shadow-primary/20">
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-        <div>
-          <span class="text-[10px] font-black text-white/80 uppercase tracking-[0.25em]">Margen Promedio</span>
-          <div class="flex items-baseline gap-3 mt-4">
-            <h3 class="text-4xl font-black italic tracking-tighter">24%</h3>
-            <ArrowTrendingUpIcon class="w-5 h-5 text-white/80" />
-          </div>
-        </div>
-        <div>
-          <p class="text-xs font-black uppercase tracking-wider text-white/90">Objetivo General: 22%</p>
-          <p class="text-[10px] font-bold text-white/50 tracking-wide mt-2">Por encima del objetivo fijado por dirección</p>
         </div>
       </div>
 
@@ -171,43 +155,24 @@
           </div>
 
           <div class="space-y-6">
-            <div class="space-y-3">
+            <div v-for="cat in costBreakdown" :key="cat.name" class="space-y-3">
               <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
                 <span class="flex items-center gap-2 text-white/60">
-                  <WrenchScrewdriverIcon class="w-3.5 h-3.5 text-primary" />
-                  Materiales
+                  <component :is="cat.icon" class="w-3.5 h-3.5 text-primary" />
+                  {{ cat.name }}
                 </span>
-                <span class="font-black text-white">55%</span>
+                <span class="font-black text-white">{{ cat.percent }}%</span>
+              </div>
+              <div class="flex justify-between text-[9px] font-bold text-white/30 tracking-widest uppercase mb-1">
+                <span>Total: Q{{ cat.cost.toLocaleString('es-GT', {minimumFractionDigits: 2}) }}</span>
               </div>
               <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                <div class="bg-primary h-full rounded-full" style="width: 55%"></div>
+                <div class="bg-primary h-full rounded-full transition-all duration-1000" :style="{ width: cat.percent + '%' }"></div>
               </div>
             </div>
 
-            <div class="space-y-3">
-              <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
-                <span class="flex items-center gap-2 text-white/60">
-                  <UsersIcon class="w-3.5 h-3.5 text-primary" />
-                  Mano de Obra
-                </span>
-                <span class="font-black text-white">30%</span>
-              </div>
-              <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                <div class="bg-primary h-full rounded-full" style="width: 30%"></div>
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <div class="flex justify-between items-center text-xs font-extrabold uppercase tracking-wide">
-                <span class="flex items-center gap-2 text-white/60">
-                  <TrophyIcon class="w-3.5 h-3.5 text-primary" />
-                  Maquinaria
-                </span>
-                <span class="font-black text-white">15%</span>
-              </div>
-              <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                <div class="bg-primary h-full rounded-full" style="width: 15%"></div>
-              </div>
+            <div v-if="costBreakdown.length === 0" class="text-xs text-white/40 italic py-4">
+              Aún no hay partidas para analizar el desglose.
             </div>
           </div>
         </div>
@@ -241,7 +206,7 @@
           <div class="absolute left-0 right-0 top-3/4 h-[1px] bg-white/[0.02] border-dashed pointer-events-none"></div>
 
           <div
-            v-for="(data, idx) in graphData"
+            v-for="(data, idx) in dynamicGraphData"
             :key="idx"
             class="flex-grow flex flex-col items-center h-full justify-end gap-3 group"
           >
@@ -251,17 +216,17 @@
                 class="flex-1 bg-primary/20 hover:bg-primary border border-primary/20 rounded-t-xl group-hover:scale-105 transition-all text-center relative"
                 :style="{ height: `${data.budget}%` }"
               >
-                <span class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-black bg-slate-900 border border-white/10 px-1 py-0.5 rounded text-white">{{ data.budget }}%</span>
+                <span class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-black bg-slate-900 border border-white/10 px-1 py-0.5 rounded text-white z-10 whitespace-nowrap">Q{{ (data.budgetVal/1000).toFixed(1) }}k</span>
               </div>
               <!-- Real bar -->
               <div
                 class="flex-1 bg-rose-500/20 hover:bg-rose-500 border border-rose-500/20 rounded-t-xl transition-all relative"
                 :style="{ height: `${data.real}%` }"
               >
-                <span class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-black bg-slate-900 border border-white/10 px-1 py-0.5 rounded text-rose-400">{{ data.real }}%</span>
+                <span class="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-black bg-slate-900 border border-white/10 px-1 py-0.5 rounded text-rose-400 z-10 whitespace-nowrap">Q{{ (data.realVal/1000).toFixed(1) }}k</span>
               </div>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">{{ data.month }}</span>
+            <span class="text-[9px] font-black uppercase tracking-widest text-white/40 mt-1 whitespace-nowrap overflow-hidden text-ellipsis w-16 text-center" :title="data.label">{{ data.label }}</span>
           </div>
         </div>
       </div>
@@ -464,6 +429,8 @@ import {
   WrenchScrewdriverIcon,
   UsersIcon,
   TrophyIcon,
+  BriefcaseIcon,
+  DocumentIcon
 } from '@heroicons/vue/24/outline';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
@@ -471,6 +438,14 @@ const API_URL = '/concretos-oriente/Backend/api/v1';
 const projects = ref<any[]>([]);
 const budgetItems = ref<any[]>([]);
 const estimations = ref<any[]>([]);
+
+const iconMap: Record<string, any> = {
+  Material: WrenchScrewdriverIcon,
+  'Mano de Obra': UsersIcon,
+  Maquinaria: TrophyIcon,
+  Subcontrato: BriefcaseIcon,
+  Indirectos: DocumentIcon
+};
 
 // Variables locales para el avance
 const projectBudgetItems = ref<any[]>([]);
@@ -494,12 +469,59 @@ const newEstimation = ref({
   observaciones: ''
 });
 
-const graphData = ref([
-  { month: 'Ene', budget: 60, real: 65 },
-  { month: 'Feb', budget: 75, real: 70 },
-  { month: 'Mar', budget: 55, real: 52 },
-  { month: 'Abr', budget: 85, real: 92 },
-]);
+const totalBudgetCost = computed(() => {
+  return budgetItems.value.reduce((sum, item) => sum + (Number(item.cantidad_estimada) * Number(item.precio_unitario)), 0);
+});
+
+const costBreakdown = computed(() => {
+  const breakdown: Record<string, number> = {
+    Material: 0,
+    'Mano de Obra': 0,
+    Maquinaria: 0,
+    Subcontrato: 0,
+    Indirectos: 0
+  };
+  
+  budgetItems.value.forEach(item => {
+    const cost = Number(item.cantidad_estimada) * Number(item.precio_unitario);
+    if (breakdown[item.categoria] !== undefined) {
+      breakdown[item.categoria] += cost;
+    }
+  });
+
+  const total = totalBudgetCost.value || 1; // avoid div by 0
+
+  return [
+    { name: 'Material', cost: breakdown['Material'], percent: Math.round((breakdown['Material'] / total) * 100), icon: iconMap['Material'] },
+    { name: 'Mano de Obra', cost: breakdown['Mano de Obra'], percent: Math.round((breakdown['Mano de Obra'] / total) * 100), icon: iconMap['Mano de Obra'] },
+    { name: 'Maquinaria', cost: breakdown['Maquinaria'], percent: Math.round((breakdown['Maquinaria'] / total) * 100), icon: iconMap['Maquinaria'] },
+    { name: 'Subcontrato', cost: breakdown['Subcontrato'], percent: Math.round((breakdown['Subcontrato'] / total) * 100), icon: iconMap['Subcontrato'] },
+    { name: 'Indirectos', cost: breakdown['Indirectos'], percent: Math.round((breakdown['Indirectos'] / total) * 100), icon: iconMap['Indirectos'] },
+  ].filter(c => c.cost > 0);
+});
+
+const dynamicGraphData = computed(() => {
+  // Show up to 4 active projects for comparison
+  const data = projects.value.slice(0, 4).map(p => {
+    const pItems = budgetItems.value.filter(bi => bi.project_id === p.id);
+    const pEsts = estimations.value.filter(e => e.project_id === p.id);
+
+    const totalBudget = pItems.reduce((s, i) => s + (Number(i.cantidad_estimada) * Number(i.precio_unitario)), 0);
+    const totalReal = pEsts.reduce((s, e) => s + Number(e.costo_calculado), 0);
+
+    const max = Math.max(totalBudget, totalReal, 1);
+    
+    return {
+      label: p.nombre,
+      budget: Math.round((totalBudget / max) * 100) || 0,
+      real: Math.round((totalReal / max) * 100) || 0,
+      budgetVal: totalBudget,
+      realVal: totalReal
+    };
+  });
+
+  return data.length ? data : [{ label: 'Sin datos', budget: 0, real: 0, budgetVal: 0, realVal: 0 }];
+});
 
 onMounted(() => {
   fetchProjects();
