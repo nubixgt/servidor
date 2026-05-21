@@ -25,12 +25,6 @@
 
       <div class="flex flex-wrap gap-4">
         <button
-          @click="showNewFolderModal = true"
-          class="flex items-center gap-2.5 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 active:scale-95 transition-all"
-        >
-          <FolderPlusIcon class="w-4 h-4 text-primary" /> Nueva Carpeta
-        </button>
-        <button
           @click="showUploadModal = true"
           class="glass-button-primary bg-primary border-primary border text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all shadow-primary/20"
         >
@@ -112,15 +106,6 @@
             </p>
           </div>
         </div>
-
-        <!-- Create Folder Card -->
-        <div
-          @click="showNewFolderModal = true"
-          class="bg-white/5 border-2 border-dashed border-white/5 p-8 rounded-3xl hover:bg-white/10 transition-all cursor-pointer flex flex-col items-center justify-center text-center h-44"
-        >
-          <FolderPlusIcon class="w-8 h-8 text-white/30 mb-2" />
-          <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Nueva Carpeta de Proyecto</p>
-        </div>
       </div>
     </section>
 
@@ -181,12 +166,6 @@
                 >
                   <ArrowDownTrayIcon class="w-3.5 h-3.5" />
                 </button>
-                <button
-                  @click="handleShare(file.name)"
-                  class="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg transition-colors border border-white/5"
-                >
-                  <ShareIcon class="w-3.5 h-3.5" />
-                </button>
               </div>
             </div>
           </div>
@@ -221,62 +200,6 @@
                 <td class="px-10 py-5 text-right font-black italic text-sm text-white/70">{{ file.size }}</td>
                 <td class="px-10 py-5 text-right space-x-1">
                   <button @click="handleDownload(file.path)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
-                    <ArrowDownTrayIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="handleShare(file.name)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
-                    <ShareIcon class="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Licenses & Permits Section -->
-    <section class="space-y-6">
-      <h3 class="text-xl font-black italic uppercase tracking-wider flex items-center gap-2">
-        <ShieldCheckIcon class="w-5 h-5 text-primary" /> Licencias y Permisos Próximos a Vencer
-      </h3>
-
-      <div class="glass-card rounded-[40px] overflow-hidden border border-white/5 shadow-2xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
-                <th class="px-10 py-5">Documento</th>
-                <th class="px-10 py-5">Proyecto Asociado</th>
-                <th class="px-10 py-5 text-center">Estado</th>
-                <th class="px-10 py-5 text-center">Vencimiento oficial</th>
-                <th class="px-10 py-5 text-right">Acción</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              <tr v-for="p in permits" :key="p.id" class="hover:bg-white/5 transition-all">
-                <td class="px-10 py-6">
-                  <div class="flex items-center gap-3">
-                    <ShieldCheckIcon class="w-5 h-5 text-emerald-400" />
-                    <span class="font-extrabold text-base text-white tracking-tight uppercase italic">{{ p.name }}</span>
-                  </div>
-                </td>
-                <td class="px-10 py-6 text-sm text-white/60 font-black uppercase">{{ p.project }}</td>
-                <td class="px-10 py-6 text-center">
-                  <span :class="[
-                    'px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border',
-                    p.status === 'vence_pronto'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                      : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                  ]">
-                    {{ p.status === 'vence_pronto' ? 'Vence Pronto' : 'Vigente' }}
-                  </span>
-                </td>
-                <td class="px-10 py-6 text-center text-xs font-black text-rose-400">{{ p.expiresAt }}</td>
-                <td class="px-10 py-6 text-right">
-                  <button
-                    @click="handleDownload(p.name)"
-                    class="p-2.5 bg-white/5 border border-white/5 rounded-xl text-white/60 hover:text-white transition-all hover:scale-105 active:scale-95 inline-block"
-                  >
                     <ArrowDownTrayIcon class="w-4 h-4" />
                   </button>
                 </td>
@@ -408,45 +331,6 @@
         </form>
       </div>
     </div>
-
-    <!-- New Folder Modal -->
-    <div v-if="showNewFolderModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
-      <div class="absolute inset-0 cursor-pointer" @click="showNewFolderModal = false"></div>
-      <div class="relative w-full max-w-md glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
-        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Nueva Carpeta</h3>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Ingrese el nombre identificador para el nuevo directorio lógico de obra</p>
-
-        <form @submit.prevent="handleCreateFolder" class="space-y-6">
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre de la Carpeta</label>
-            <input
-              type="text"
-              required
-              v-model="folderName"
-              placeholder="E.g. Condominio El Prado - Fase Final"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
-            />
-          </div>
-
-          <div class="flex gap-4 pt-4">
-            <button
-              type="submit"
-              class="flex-grow glass-button-primary bg-primary border border-primary text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
-            >
-              Crear Directorio
-            </button>
-            <button
-              type="button"
-              @click="showNewFolderModal = false"
-              class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-white/50"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
   </div>
 </template>
 
@@ -623,6 +507,14 @@ async function handleUploadFile() {
       return Swal.fire('Atención', 'Seleccione un archivo.', 'warning');
     }
 
+    const userStr = localStorage.getItem('userData');
+    let userId = 'default';
+    if (userStr) {
+      const userObj = JSON.parse(userStr);
+      userId = userObj.id;
+    }
+    formData.append('usuario_id', userId);
+
     const res = await axios.post(`${API_URL}/documents`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
@@ -649,10 +541,6 @@ async function handleUploadFile() {
   } catch (error) {
     Swal.fire('Error', 'No se pudo cargar el archivo', 'error');
   }
-}
-
-function handleShare(name: string) {
-  showToast(`Enlace de descarga compartido para "${name}"`);
 }
 
 function handleDownload(path: string) {

@@ -54,6 +54,7 @@ class DocumentsController {
             $modulo_relacionado = $data['modulo_relacionado'] ?? null;
             $nombre_documento = $data['nombre_documento'] ?? '';
             $etiquetas = $data['etiquetas'] ?? '';
+            $usuario_id = $data['usuario_id'] ?? 'default';
             
             if (empty($tipo_documento) || empty($nombre_documento)) {
                 return $this->respond('error', 'El tipo y nombre de documento son obligatorios');
@@ -63,7 +64,7 @@ class DocumentsController {
                 return $this->respond('error', 'Debe subir un archivo');
             }
 
-            $baseDir = __DIR__ . '/../../Uploads/Documents';
+            $baseDir = __DIR__ . '/../../Uploads/Documents/' . $usuario_id;
             if (!is_dir($baseDir)) {
                 mkdir($baseDir, 0777, true);
             }
@@ -82,7 +83,7 @@ class DocumentsController {
             
             $dbPath = '';
             if (move_uploaded_file($archivo['tmp_name'], $destPath)) {
-                $dbPath = 'Uploads/Documents/' . $fileName;
+                $dbPath = 'Uploads/Documents/' . $usuario_id . '/' . $fileName;
             } else {
                 return $this->respond('error', 'No se pudo subir el archivo al servidor');
             }
