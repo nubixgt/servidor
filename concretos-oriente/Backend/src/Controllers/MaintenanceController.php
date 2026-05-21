@@ -46,11 +46,15 @@ class MaintenanceController {
             ");
             $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            // Get parts for each log
+            // Get parts and photos for each log
             foreach ($logs as &$log) {
                 $stmtParts = $this->db->prepare("SELECT * FROM maintenance_parts WHERE maintenance_log_id = ?");
                 $stmtParts->execute([$log['id']]);
                 $log['repuestos'] = $stmtParts->fetchAll(PDO::FETCH_ASSOC);
+
+                $stmtPhotos = $this->db->prepare("SELECT foto_path FROM maintenance_photos WHERE maintenance_log_id = ?");
+                $stmtPhotos->execute([$log['id']]);
+                $log['fotos'] = $stmtPhotos->fetchAll(PDO::FETCH_COLUMN);
             }
             
             $this->respond('success', 'Bitacoras', $logs);
@@ -62,7 +66,7 @@ class MaintenanceController {
     #[Route('/maintenance/logs', 'POST')]
     public function createLog() {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $_POST;
             
             $machinery_id = $data['machinery_id'] ?? '';
             $tipo_mantenimiento = $data['tipo_mantenimiento'] ?? 'Preventivo';
@@ -72,11 +76,19 @@ class MaintenanceController {
             $responsable_id = !empty($data['responsable_id']) ? $data['responsable_id'] : null;
             $proximo_mantenimiento = !empty($data['proximo_mantenimiento']) ? $data['proximo_mantenimiento'] : null;
             $observaciones = $data['observaciones'] ?? '';
-            $repuestos = $data['repuestos'] ?? [];
+            $latitud = !empty($data['latitud']) ? $data['latitud'] : null;
+            $longitud = !empty($data['longitud']) ? $data['longitud'] : null;
+            
+            $repuestos = [];
+            if (!empty($data['repuestos'])) {
+                $repuestos = json_decode($data['repuestos'], true);
+            }
             
             $costo_total = 0;
-            foreach ($repuestos as $rep) {
-                $costo_total += ((float)$rep['cantidad'] * (float)$rep['costo_unitario']);
+            if (is_array($repuestos)) {
+                foreach ($repuestos as $rep) {
+                    $costo_total += ((float)$rep['cantidad'] * (float)$rep['costo_unitario']);
+                }
             }
 
             if (empty($machinery_id) || empty($fecha_mantenimiento) || empty($descripcion)) {
@@ -88,21 +100,44 @@ class MaintenanceController {
             $stmt = $this->db->prepare("
                 INSERT INTO maintenance_logs (
                     machinery_id, tipo_mantenimiento, fecha_mantenimiento, descripcion, 
-                    costo_total, responsable_id, proximo_mantenimiento, horometro_servicio, observaciones
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    costo_total, responsable_id, proximo_mantenimiento, horometro_servicio, observaciones, latitud, longitud
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $machinery_id, $tipo_mantenimiento, $fecha_mantenimiento, $descripcion, 
-                $costo_total, $responsable_id, $proximo_mantenimiento, $horometro_servicio, $observaciones
+                $costo_total, $responsable_id, $proximo_mantenimiento, $horometro_servicio, $observaciones, $latitud, $longitud
             ]);
             
             $log_id = $this->db->lastInsertId();
 
-            if (!empty($repuestos)) {
+            if (!empty($repuestos) && is_array($repuestos)) {
                 $stmtPart = $this->db->prepare("INSERT INTO maintenance_parts (maintenance_log_id, nombre_repuesto, cantidad, costo_unitario) VALUES (?, ?, ?, ?)");
                 foreach ($repuestos as $rep) {
                     if (!empty($rep['nombre'])) {
                         $stmtPart->execute([$log_id, $rep['nombre'], $rep['cantidad'], $rep['costo_unitario']]);
+                    }
+                }
+            }
+            
+            // Handle file uploads
+            if (!empty($_FILES['fotos']['name']) && is_array($_FILES['fotos']['name'])) {
+                $baseDir = __DIR__ . '/../../Uploads/Maintenance/' . $log_id;
+                if (!is_dir($baseDir)) {
+                    mkdir($baseDir, 0777, true);
+                }
+                
+                $stmtPhoto = $this->db->prepare("INSERT INTO maintenance_photos (maintenance_log_id, foto_path) VALUES (?, ?)");
+                
+                foreach ($_FILES['fotos']['name'] as $key => $name) {
+                    if ($_FILES['fotos']['error'][$key] == UPLOAD_ERR_OK && !empty($name)) {
+                        $ext = pathinfo($name, PATHINFO_EXTENSION);
+                        $fileName = 'foto_' . ($key + 1) . '_' . time() . '.' . $ext;
+                        $destPath = $baseDir . '/' . $fileName;
+                        
+                        if (move_uploaded_file($_FILES['fotos']['tmp_name'][$key], $destPath)) {
+                            $dbPath = 'Uploads/Maintenance/' . $log_id . '/' . $fileName;
+                            $stmtPhoto->execute([$log_id, $dbPath]);
+                        }
                     }
                 }
             }

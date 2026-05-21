@@ -17,7 +17,7 @@
         <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Control diario de operaciones y salud de activos críticos</p>
       </div>
       <button
-        @click="showAddLogModal = true"
+        @click="openAddModal"
         class="glass-button-primary bg-primary border-primary border text-white px-8 py-5 rounded-3xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all"
       >
         <PlusIcon class="w-4 h-4" /> Nuevo Registro Bitácora
@@ -89,7 +89,8 @@
                   </span>
                 </div>
 
-                <p class="text-xs text-white/50 leading-relaxed font-bold">{{ item.descripcion }}</p>
+                <p class="text-xs text-white/70 leading-relaxed font-bold">{{ item.descripcion }}</p>
+                <p v-if="item.observaciones" class="text-xs text-white/40 leading-relaxed italic border-l-2 border-white/10 pl-3">Obs: {{ item.observaciones }}</p>
 
                 <!-- Details -->
                 <div class="flex flex-wrap gap-2 pt-2">
@@ -102,6 +103,27 @@
                   <span v-if="item.nombres" class="text-[9px] font-black uppercase tracking-wider text-white/40 bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg">
                     MECÁNICO: {{ item.nombres }} {{ item.apellidos }}
                   </span>
+                  <a v-if="item.latitud && item.longitud" :href="'https://www.google.com/maps/search/?api=1&query=' + item.latitud + ',' + item.longitud" target="_blank" class="text-[9px] font-black uppercase tracking-wider text-sky-400 bg-sky-400/10 hover:bg-sky-400/20 transition-colors border border-sky-400/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <MapPinIcon class="w-3 h-3" /> GPS
+                  </a>
+                </div>
+
+                <!-- Photos -->
+                <div v-if="item.fotos && item.fotos.length > 0" class="grid grid-cols-3 md:grid-cols-5 gap-4 pt-3.5">
+                  <div
+                    v-for="(imgUrl, iIdx) in item.fotos"
+                    :key="iIdx"
+                    class="relative h-20 rounded-2xl overflow-hidden border border-white/10 group/img cursor-pointer"
+                  >
+                    <img
+                      :src="getBackendUrl(imgUrl)"
+                      alt="Foto Mantenimiento"
+                      class="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition-all duration-300"
+                    />
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                      <PhotoIcon class="w-5 h-5 text-white" />
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Repuestos -->
@@ -130,7 +152,7 @@
     <!-- Create Log Modal -->
     <div v-if="showAddLogModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
       <div class="absolute inset-0 cursor-pointer" @click="showAddLogModal = false"></div>
-      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-auto">
+      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Orden de Mantenimiento</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Registrar nuevo servicio para maquinaria o vehículo</p>
 
@@ -202,6 +224,34 @@
             ></textarea>
           </div>
 
+          <!-- Fotos y Ubicacion -->
+          <div class="grid grid-cols-2 gap-6 pt-2">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Evidencia Fotográfica (Máx 5)</label>
+              <div class="bg-white/5 border border-dashed border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 transition-colors relative">
+                <input type="file" multiple accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                <PhotoIcon class="w-6 h-6 text-white/40 mb-2" />
+                <p class="text-[10px] font-bold text-white/60">Haz clic para subir fotos</p>
+                <p v-if="selectedFiles.length > 0" class="text-[10px] font-black text-primary mt-1">{{ selectedFiles.length }} archivo(s) seleccionado(s)</p>
+              </div>
+            </div>
+            
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Ubicación (GPS)</label>
+              <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <button type="button" v-if="!form.latitud" @click="detectLocation" class="w-full py-2 bg-primary/20 hover:bg-primary/40 border border-primary/30 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                  <MapPinIcon class="w-4 h-4" /> Detectar Mi Ubicación
+                </button>
+                <div v-else class="text-xs font-bold text-white flex items-center justify-between">
+                  <span class="text-emerald-400 flex items-center gap-1"><CheckCircleIcon class="w-4 h-4" /> Ubicación capturada</span>
+                  <button type="button" @click="form.latitud = ''; form.longitud = ''" class="text-[10px] text-rose-400 hover:text-rose-300">Borrar</button>
+                </div>
+              </div>
+              <!-- Mapa Opcional para ajustar -->
+              <div id="maintenance-map" class="w-full h-32 rounded-xl border border-white/10 mt-2 z-10 relative overflow-hidden hidden" :class="{'!block': mapInstance}"></div>
+            </div>
+          </div>
+
           <!-- Repuestos Section -->
           <div class="bg-black/20 p-6 rounded-3xl border border-white/5 space-y-4">
             <div class="flex justify-between items-center">
@@ -245,7 +295,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {
@@ -255,12 +305,16 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ClockIcon,
-  WrenchScrewdriverIcon,
-  SparklesIcon,
+  MapPinIcon,
+  PhotoIcon,
   TrashIcon
 } from '@heroicons/vue/24/outline';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
+
+const getBackendUrl = (path: string) => {
+  return `/concretos-oriente/Backend/${path}`;
+};
 
 const machineryList = ref<any[]>([]);
 const personnelList = ref<any[]>([]);
@@ -271,6 +325,8 @@ const searchTerm = ref('');
 const filterType = ref('Todos');
 const notification = ref('');
 
+const selectedFiles = ref<File[]>([]);
+
 const form = ref({
   machinery_id: '',
   tipo_mantenimiento: 'Preventivo',
@@ -280,14 +336,82 @@ const form = ref({
   responsable_id: '',
   proximo_mantenimiento: '',
   observaciones: '',
+  latitud: '',
+  longitud: '',
   repuestos: [] as {nombre: string, cantidad: number, costo_unitario: number}[]
 });
+
+let mapInstance: any = null;
+let mapMarker: any = null;
 
 onMounted(() => {
   fetchMachinery();
   fetchPersonnel();
   fetchLogs();
 });
+
+const openAddModal = () => {
+  showAddLogModal.value = true;
+  nextTick(() => {
+    if (mapInstance) {
+      mapInstance.remove();
+      mapInstance = null;
+    }
+  });
+};
+
+const detectLocation = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        form.value.latitud = position.coords.latitude.toFixed(6);
+        form.value.longitud = position.coords.longitude.toFixed(6);
+        initMap(position.coords.latitude, position.coords.longitude);
+      },
+      (error) => {
+        console.error("Error obtaining location", error);
+        initMap(14.6349, -90.5069); // Default GT
+      }
+    );
+  } else {
+    initMap(14.6349, -90.5069);
+  }
+};
+
+const initMap = (lat: number, lng: number) => {
+  nextTick(() => {
+    if (mapInstance) {
+      mapInstance.remove();
+    }
+    
+    // @ts-ignore
+    if (typeof L !== 'undefined') {
+      // @ts-ignore
+      mapInstance = L.map('maintenance-map').setView([lat, lng], 13);
+      // @ts-ignore
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(mapInstance);
+      
+      // @ts-ignore
+      mapMarker = L.marker([lat, lng]).addTo(mapInstance);
+
+      mapInstance.on('click', function (e: any) {
+        const clickedLat = e.latlng.lat.toFixed(6);
+        const clickedLng = e.latlng.lng.toFixed(6);
+        form.value.latitud = clickedLat;
+        form.value.longitud = clickedLng;
+
+        if (mapMarker) mapInstance.removeLayer(mapMarker);
+        // @ts-ignore
+        mapMarker = L.marker([clickedLat, clickedLng]).addTo(mapInstance);
+      });
+      
+      setTimeout(() => { mapInstance.invalidateSize(); }, 200);
+    }
+  });
+};
 
 const fetchMachinery = async () => {
   try {
@@ -336,16 +460,43 @@ const calcularTotalRepuestos = () => {
   return form.value.repuestos.reduce((sum, r) => sum + (Number(r.cantidad) * Number(r.costo_unitario)), 0);
 };
 
-function triggerToast(msg: string) {
-  notification.value = msg;
-  setTimeout(() => { notification.value = ''; }, 4500);
-}
+const handleFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files) {
+    if (target.files.length > 5) {
+      Swal.fire('Atención', 'Solo puedes subir hasta 5 fotos.', 'warning');
+      target.value = '';
+      return;
+    }
+    selectedFiles.value = Array.from(target.files);
+  }
+};
 
 async function handleCreateLog() {
   if (!form.value.machinery_id || !form.value.descripcion) return;
 
   try {
-    const res = await axios.post(`${API_URL}/maintenance/logs`, form.value);
+    const formData = new FormData();
+    formData.append('machinery_id', form.value.machinery_id);
+    formData.append('tipo_mantenimiento', form.value.tipo_mantenimiento);
+    formData.append('fecha_mantenimiento', form.value.fecha_mantenimiento);
+    formData.append('descripcion', form.value.descripcion);
+    formData.append('horometro_servicio', form.value.horometro_servicio);
+    formData.append('responsable_id', form.value.responsable_id);
+    formData.append('proximo_mantenimiento', form.value.proximo_mantenimiento);
+    formData.append('observaciones', form.value.observaciones);
+    formData.append('latitud', form.value.latitud);
+    formData.append('longitud', form.value.longitud);
+    formData.append('repuestos', JSON.stringify(form.value.repuestos));
+    
+    selectedFiles.value.forEach(file => {
+      formData.append('fotos[]', file);
+    });
+
+    const res = await axios.post(`${API_URL}/maintenance/logs`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    
     if (res.data.status === 'success') {
       showAddLogModal.value = false;
       form.value = {
@@ -357,8 +508,11 @@ async function handleCreateLog() {
         responsable_id: '',
         proximo_mantenimiento: '',
         observaciones: '',
+        latitud: '',
+        longitud: '',
         repuestos: []
       };
+      selectedFiles.value = [];
       Swal.fire({
         toast: true,
         position: 'top-end',
@@ -370,6 +524,8 @@ async function handleCreateLog() {
         color: '#fff'
       });
       fetchLogs();
+    } else {
+      Swal.fire('Error', res.data.message || 'Error al guardar', 'error');
     }
   } catch (error) {
     Swal.fire('Error', 'No se pudo guardar el registro', 'error');
