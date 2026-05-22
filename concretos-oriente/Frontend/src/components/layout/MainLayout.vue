@@ -14,7 +14,7 @@
       </main>
       
       <footer class="md:ml-[280px] p-10 text-center text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
-        ConstructPro © 2024 Suite de Gestión • Versión Premium 4.2.0
+        Concretos del Oriente © 2026
       </footer>
     </div>
 

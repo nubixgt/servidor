@@ -25,12 +25,6 @@
 
       <div class="flex flex-wrap gap-4">
         <button
-          @click="showNewFolderModal = true"
-          class="flex items-center gap-2.5 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 active:scale-95 transition-all"
-        >
-          <FolderPlusIcon class="w-4 h-4 text-primary" /> Nueva Carpeta
-        </button>
-        <button
           @click="showUploadModal = true"
           class="glass-button-primary bg-primary border-primary border text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all shadow-primary/20"
         >
@@ -112,15 +106,6 @@
             </p>
           </div>
         </div>
-
-        <!-- Create Folder Card -->
-        <div
-          @click="showNewFolderModal = true"
-          class="bg-white/5 border-2 border-dashed border-white/5 p-8 rounded-3xl hover:bg-white/10 transition-all cursor-pointer flex flex-col items-center justify-center text-center h-44"
-        >
-          <FolderPlusIcon class="w-8 h-8 text-white/30 mb-2" />
-          <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Nueva Carpeta de Proyecto</p>
-        </div>
       </div>
     </section>
 
@@ -147,12 +132,13 @@
         <div
           v-for="file in filteredFiles"
           :key="file.id"
-          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between"
+          @click="openDetails(file)"
+          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between cursor-pointer"
         >
           <div class="h-44 bg-white/5 relative overflow-hidden flex items-center justify-center">
             <img
-              v-if="file.thumbnail"
-              :src="file.thumbnail"
+              v-if="['jpg','jpeg','png'].includes(file.ext)"
+              :src="getBackendUrl(file.path)"
               :alt="file.name"
               class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-transform duration-500 group-hover:scale-105"
             />
@@ -176,16 +162,10 @@
               <span class="text-white/40">{{ file.size }}</span>
               <div class="flex gap-2">
                 <button
-                  @click="handleDownload(file.name)"
+                  @click.stop="handleDownload(file.path)"
                   class="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg transition-colors border border-white/5"
                 >
                   <ArrowDownTrayIcon class="w-3.5 h-3.5" />
-                </button>
-                <button
-                  @click="handleShare(file.name)"
-                  class="p-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-lg transition-colors border border-white/5"
-                >
-                  <ShareIcon class="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -207,7 +187,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
-              <tr v-for="file in filteredFiles" :key="file.id" class="hover:bg-white/5 transition-all">
+              <tr v-for="file in filteredFiles" :key="file.id" @click="openDetails(file)" class="hover:bg-white/5 transition-all cursor-pointer">
                 <td class="px-10 py-5">
                   <div class="flex items-center gap-3">
                     <DocumentTextIcon class="w-4 h-4 text-primary" />
@@ -220,63 +200,7 @@
                 </td>
                 <td class="px-10 py-5 text-right font-black italic text-sm text-white/70">{{ file.size }}</td>
                 <td class="px-10 py-5 text-right space-x-1">
-                  <button @click="handleDownload(file.name)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
-                    <ArrowDownTrayIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="handleShare(file.name)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
-                    <ShareIcon class="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Licenses & Permits Section -->
-    <section class="space-y-6">
-      <h3 class="text-xl font-black italic uppercase tracking-wider flex items-center gap-2">
-        <ShieldCheckIcon class="w-5 h-5 text-primary" /> Licencias y Permisos Próximos a Vencer
-      </h3>
-
-      <div class="glass-card rounded-[40px] overflow-hidden border border-white/5 shadow-2xl">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
-                <th class="px-10 py-5">Documento</th>
-                <th class="px-10 py-5">Proyecto Asociado</th>
-                <th class="px-10 py-5 text-center">Estado</th>
-                <th class="px-10 py-5 text-center">Vencimiento oficial</th>
-                <th class="px-10 py-5 text-right">Acción</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              <tr v-for="p in permits" :key="p.id" class="hover:bg-white/5 transition-all">
-                <td class="px-10 py-6">
-                  <div class="flex items-center gap-3">
-                    <ShieldCheckIcon class="w-5 h-5 text-emerald-400" />
-                    <span class="font-extrabold text-base text-white tracking-tight uppercase italic">{{ p.name }}</span>
-                  </div>
-                </td>
-                <td class="px-10 py-6 text-sm text-white/60 font-black uppercase">{{ p.project }}</td>
-                <td class="px-10 py-6 text-center">
-                  <span :class="[
-                    'px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border',
-                    p.status === 'vence_pronto'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                      : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                  ]">
-                    {{ p.status === 'vence_pronto' ? 'Vence Pronto' : 'Vigente' }}
-                  </span>
-                </td>
-                <td class="px-10 py-6 text-center text-xs font-black text-rose-400">{{ p.expiresAt }}</td>
-                <td class="px-10 py-6 text-right">
-                  <button
-                    @click="handleDownload(p.name)"
-                    class="p-2.5 bg-white/5 border border-white/5 rounded-xl text-white/60 hover:text-white transition-all hover:scale-105 active:scale-95 inline-block"
-                  >
+                  <button @click.stop="handleDownload(file.path)" class="p-2 hover:bg-white/5 text-white/40 hover:text-white rounded-xl transition-colors inline-block">
                     <ArrowDownTrayIcon class="w-4 h-4" />
                   </button>
                 </td>
@@ -304,69 +228,98 @@
       <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Cargar Archivo</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Arrastre o seleccione el archivo digital para su almacenamiento</p>
-
         <form @submit.prevent="handleUploadFile" class="space-y-6">
-          <div class="border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center text-center bg-white/[0.01] hover:bg-white/[0.03] transition-colors cursor-pointer">
-            <ArrowUpTrayIcon class="w-10 h-10 text-primary/60 mb-3" />
-            <p class="text-xs font-black uppercase tracking-widest text-white/50">Arrastra tus archivos aquí</p>
-            <p class="text-[10px] font-bold text-white/20 uppercase tracking-wider mt-1">O haz clic para explorar en el disco local</p>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Tipo de documento</label>
+              <select
+                v-model="form.tipo_documento"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
+              >
+                <option value="Contrato" class="bg-slate-950 text-white">Contrato</option>
+                <option value="Factura" class="bg-slate-950 text-white">Factura</option>
+                <option value="Cheque" class="bg-slate-950 text-white">Cheque</option>
+                <option value="Fotografía" class="bg-slate-950 text-white">Fotografía</option>
+                <option value="Licencia" class="bg-slate-950 text-white">Licencia</option>
+                <option value="Manual" class="bg-slate-950 text-white">Manual</option>
+                <option value="Otro" class="bg-slate-950 text-white">Otro</option>
+              </select>
+            </div>
+            <div class="space-y-2" v-if="form.tipo_documento === 'Otro'">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Especificar Otro</label>
+              <input
+                type="text"
+                v-model="form.tipo_documento_otro"
+                required
+                placeholder="Escriba el tipo de documento"
+                class="w-full glass-input rounded-2xl p-4 text-sm font-bold uppercase text-white"
+              />
+            </div>
+            <div class="space-y-2" v-else>
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Módulo relacionado (Opcional)</label>
+              <select
+                v-model="form.modulo_relacionado"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
+              >
+                <option value="" class="bg-slate-950 text-white">Ninguno</option>
+                <option value="Finanzas" class="bg-slate-950 text-white">Finanzas</option>
+                <option value="RRHH" class="bg-slate-950 text-white">Recursos Humanos</option>
+                <option value="Mantenimiento" class="bg-slate-950 text-white">Mantenimiento</option>
+                <option value="Inventario" class="bg-slate-950 text-white">Inventario</option>
+                <option value="Proyectos" class="bg-slate-950 text-white">Proyectos</option>
+                <option value="General" class="bg-slate-950 text-white">General</option>
+              </select>
+            </div>
           </div>
 
           <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre De Referencia o Archivo</label>
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Proyecto asociado (Opcional)</label>
+            <select
+              v-model="form.project_id"
+              class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
+            >
+              <option value="" class="bg-slate-950 text-white">Ninguno</option>
+              <option v-for="f in folders" :key="f.id" :value="f.id" class="bg-slate-950 text-white">{{ f.name }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre o descripción del documento</label>
             <input
               type="text"
               required
-              v-model="fileName"
-              placeholder="E.g. Plano de Planta Baja"
+              v-model="form.nombre_documento"
+              placeholder="Ej. Contrato de Arrendamiento"
               class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
             />
           </div>
 
-          <div class="grid grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Categoría General</label>
-              <select
-                v-model="fileCat"
-                class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
-              >
-                <option value="planos" class="bg-slate-950 text-white">Planos</option>
-                <option value="contratos" class="bg-slate-950 text-white">Contratos</option>
-                <option value="licencias" class="bg-slate-950 text-white">Licencias</option>
-                <option value="evidencia" class="bg-slate-950 text-white">Evidencia</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Extensión / Tipo</label>
-              <select
-                v-model="fileExtension"
-                class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
-              >
-                <option value="pdf" class="bg-slate-950 text-white">PDF Document</option>
-                <option value="dwg" class="bg-slate-950 text-white">DWG Blueprint</option>
-                <option value="docx" class="bg-slate-950 text-white">Microsoft Word</option>
-                <option value="xlsx" class="bg-slate-950 text-white">Excel Spreadsheet</option>
-                <option value="png" class="bg-slate-950 text-white">PNG Image</option>
-              </select>
-            </div>
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Etiquetas o palabras clave (Opcional)</label>
+            <input
+              type="text"
+              v-model="form.etiquetas"
+              placeholder="Ej. legal, enero, torre alfa"
+              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
+            />
           </div>
 
           <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Asignar a Carpeta de Destino</label>
-            <select
-              v-model="fileFolder"
-              class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold uppercase text-white focus:outline-none"
-            >
-              <option v-for="f in folders" :key="f.id" :value="f.id" class="bg-slate-950 text-white">{{ f.name }}</option>
-            </select>
+            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Archivo Digital (PDF, Imagen, Excel)</label>
+            <input
+              type="file"
+              required
+              @change="handleFileSelected"
+              class="w-full bg-white/5 border border-dashed border-white/20 rounded-2xl p-4 text-xs font-bold text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-primary file:text-white hover:file:bg-primary/80 cursor-pointer"
+            />
           </div>
 
           <div class="flex gap-4 pt-4">
             <button
               type="submit"
-              class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
+              class="flex-grow glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all disabled:opacity-50"
             >
-              Confirmar Guardado
+              Subir Archivo Seguro
             </button>
             <button
               type="button"
@@ -379,42 +332,57 @@
         </form>
       </div>
     </div>
-
-    <!-- New Folder Modal -->
-    <div v-if="showNewFolderModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
-      <div class="absolute inset-0 cursor-pointer" @click="showNewFolderModal = false"></div>
-      <div class="relative w-full max-w-md glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
-        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Nueva Carpeta</h3>
-        <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Ingrese el nombre identificador para el nuevo directorio lógico de obra</p>
-
-        <form @submit.prevent="handleCreateFolder" class="space-y-6">
-          <div class="space-y-2">
-            <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Nombre de la Carpeta</label>
-            <input
-              type="text"
-              required
-              v-model="folderName"
-              placeholder="E.g. Condominio El Prado - Fase Final"
-              class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 uppercase text-white"
-            />
+    <!-- Document Details Modal -->
+    <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
+      <div class="absolute inset-0 cursor-pointer" @click="showDetailsModal = false"></div>
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+        <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-6">Detalles del Documento</h3>
+        
+        <div v-if="selectedDocument" class="space-y-4">
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Nombre</p>
+            <p class="text-sm font-extrabold uppercase text-white">{{ selectedDocument.name }}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Tipo / Categoría</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.category }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Extensión</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.ext }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Proyecto</p>
+              <p class="text-xs font-bold uppercase text-primary">{{ selectedDocument.projectName }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Módulo Relacionado</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.moduleRel }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Peso</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.size }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Fecha</p>
+              <p class="text-xs font-bold uppercase text-white">{{ selectedDocument.modifiedAt }}</p>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/30">Etiquetas</p>
+            <p class="text-xs font-bold uppercase text-emerald-400">{{ selectedDocument.tags }}</p>
           </div>
 
-          <div class="flex gap-4 pt-4">
+          <div class="pt-6">
             <button
-              type="submit"
-              class="flex-grow glass-button-primary bg-primary border border-primary text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
+              @click="showDetailsModal = false"
+              class="w-full glass-button-primary bg-primary border-primary border text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl hover:shadow-primary/30 transition-all"
             >
-              Crear Directorio
-            </button>
-            <button
-              type="button"
-              @click="showNewFolderModal = false"
-              class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-white/50"
-            >
-              Cancelar
+              Cerrar Detalles
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
@@ -422,7 +390,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useAuthStore } from '../../stores/auth';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -440,6 +411,15 @@ import {
   BookOpenIcon,
 } from '@heroicons/vue/24/outline';
 
+const API_URL = '/concretos-oriente/Backend/api/v1';
+
+const authStore = useAuthStore();
+
+const getBackendUrl = (path: string) => {
+  if (!path) return '';
+  return `/concretos-oriente/Backend/${path}`;
+};
+
 interface ProjectFolder {
   id: string;
   name: string;
@@ -451,13 +431,16 @@ interface ProjectFolder {
 interface DigitalFile {
   id: string;
   name: string;
-  category: 'all' | 'planos' | 'contratos' | 'licencias' | 'evidencia';
+  category: string;
   folderId: string;
+  projectName: string;
+  moduleRel: string;
+  tags: string;
   size: string;
   modifiedAt: string;
   modifiedBy: string;
-  ext: 'pdf' | 'dwg' | 'docx' | 'xlsx' | 'png';
-  thumbnail?: string;
+  ext: string;
+  path: string;
 }
 
 interface Permit {
@@ -476,92 +459,81 @@ const selectedFolderId = ref<string | null>(null);
 const showUploadModal = ref(false);
 const showNewFolderModal = ref(false);
 const notification = ref('');
+const showDetailsModal = ref(false);
+const selectedDocument = ref<DigitalFile | null>(null);
+
+const form = ref({
+  tipo_documento: 'Contrato',
+  tipo_documento_otro: '',
+  project_id: '',
+  modulo_relacionado: '',
+  nombre_documento: '',
+  etiquetas: '',
+  archivo: null as File | null
+});
 
 const folderName = ref('');
-const fileName = ref('');
-const fileCat = ref('planos');
-const fileExtension = ref('pdf');
-const fileFolder = ref('Alpha');
 
 const categories = [
   { value: 'all', label: 'Todos' },
-  { value: 'planos', label: 'Planos (PDF/DWG)' },
-  { value: 'contratos', label: 'Contratos' },
-  { value: 'licencias', label: 'Licencias' },
-  { value: 'evidencia', label: 'Evidencia Obra' },
+  { value: 'Contrato', label: 'Contratos' },
+  { value: 'Factura', label: 'Facturas' },
+  { value: 'Cheque', label: 'Cheques' },
+  { value: 'Licencia', label: 'Licencias' },
+  { value: 'Fotografía', label: 'Fotografías' },
+  { value: 'Manual', label: 'Manuales' },
+  { value: 'Otro', label: 'Otros' },
 ];
 
-const folders = ref<ProjectFolder[]>([
-  { id: 'Alpha', name: 'Torre Residencial Alpha', filesCount: 2450, size: '1.2 GB', colorClass: 'text-primary' },
-  { id: 'Sur', name: 'Puente Interconector Sur', filesCount: 890, size: '450 MB', colorClass: 'text-indigo-400' },
-  { id: 'SkyPort', name: 'Centro Logístico SkyPort', filesCount: 156, size: '89 MB', colorClass: 'text-emerald-400' },
-]);
+const folders = ref<ProjectFolder[]>([]);
+const files = ref<DigitalFile[]>([]);
+const permits = ref<Permit[]>([]);
 
-const files = ref<DigitalFile[]>([
-  {
-    id: 'DOC-1',
-    name: 'Plano_Estructural_V2.pdf',
-    category: 'planos',
-    folderId: 'Alpha',
-    size: '18.4 MB',
-    modifiedAt: 'hace 2h',
-    modifiedBy: 'Ing. Carlos Ruiz',
-    ext: 'pdf',
-    thumbnail: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    id: 'DOC-2',
-    name: 'Instalaciones_Hidrosanitarias.dwg',
-    category: 'planos',
-    folderId: 'Alpha',
-    size: '45.2 MB',
-    modifiedAt: 'ayer',
-    modifiedBy: 'Arq. M. Lopez',
-    ext: 'dwg',
-  },
-  {
-    id: 'DOC-3',
-    name: 'Contrato_Suministros_Aceros.docx',
-    category: 'contratos',
-    folderId: 'Sur',
-    size: '1.4 MB',
-    modifiedAt: 'hace 3d',
-    modifiedBy: 'Jurídico',
-    ext: 'docx',
-    thumbnail: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    id: 'DOC-4',
-    name: 'Presupuesto_General_Estructuras.xlsx',
-    category: 'contratos',
-    folderId: 'SkyPort',
-    size: '4.8 MB',
-    modifiedAt: 'hace 1 semana',
-    modifiedBy: 'Aux. Contable',
-    ext: 'xlsx',
-  },
-  {
-    id: 'DOC-5',
-    name: 'Permiso_Ambiental_Zona_Sur.pdf',
-    category: 'licencias',
-    folderId: 'Sur',
-    size: '2.1 MB',
-    modifiedAt: 'hace 5 días',
-    modifiedBy: 'Ing. Carlos Ruiz',
-    ext: 'pdf',
-  },
-]);
+onMounted(() => {
+  fetchProjects();
+  fetchDocuments();
+});
 
-const permits = ref<Permit[]>([
-  { id: 'P-1', name: 'Licencia de Construcción #4502', project: 'Torre Alpha', status: 'vence_pronto', expiresAt: '15 Dic 2026' },
-  { id: 'P-2', name: 'Permiso Ambiental Zona Sur', project: 'Puente Interconector', status: 'vigente', expiresAt: '02 Feb 2027' },
-]);
+const fetchProjects = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/projects`);
+    if (res.data.status === 'success') {
+      folders.value = res.data.data.map((p: any) => ({
+        id: p.id,
+        name: p.nombre,
+        filesCount: 0, // Placeholder
+        size: '0 MB', // Placeholder
+        colorClass: 'text-indigo-400'
+      }));
+    }
+  } catch (error) { console.error(error); }
+};
+
+const fetchDocuments = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/documents`);
+    if (res.data.status === 'success') {
+      files.value = res.data.data.map((d: any) => ({
+        id: d.id,
+        name: d.nombre_documento,
+        category: d.tipo_documento,
+        folderId: d.project_id,
+        projectName: d.proyecto_nombre || 'Ninguno',
+        moduleRel: d.modulo_relacionado || 'Ninguno',
+        tags: d.etiquetas || 'Sin etiquetas',
+        size: (d.peso_archivo / 1024 / 1024).toFixed(2) + ' MB',
+        modifiedAt: new Date(d.created_at).toLocaleDateString(),
+        modifiedBy: 'Sistema',
+        ext: d.tipo_archivo,
+        path: d.archivo_path
+      }));
+    }
+  } catch (error) { console.error(error); }
+};
 
 const filteredFiles = computed(() =>
   files.value.filter((f) => {
-    const matchesSearch =
-      f.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      f.modifiedBy.toLowerCase().includes(searchTerm.value.toLowerCase());
+    const matchesSearch = f.name.toLowerCase().includes(searchTerm.value.toLowerCase());
     const matchesCategory = selectedCategory.value === 'all' || f.category === selectedCategory.value;
     const matchesFolder = selectedFolderId.value === null || f.folderId === selectedFolderId.value;
     return matchesSearch && matchesCategory && matchesFolder;
@@ -577,54 +549,69 @@ function showToast(msg: string) {
 
 function handleCreateFolder() {
   if (!folderName.value.trim()) return;
-
-  const generatedId = folderName.value.replace(/\s+/g, '').substring(0, 10);
-  folders.value.push({
-    id: generatedId,
-    name: folderName.value,
-    filesCount: 0,
-    size: '0 Bytes',
-    colorClass: 'text-amber-400',
-  });
-
-  const name = folderName.value;
-  folderName.value = '';
+  Swal.fire('Aviso', 'Para crear un proyecto nuevo, por favor vaya al módulo de Proyectos.', 'info');
   showNewFolderModal.value = false;
-  showToast(`Carpeta "${name}" creada exitosamente.`);
 }
 
-function handleUploadFile() {
-  if (!fileName.value.trim()) return;
-
-  const newFile: DigitalFile = {
-    id: 'DOC-' + Math.floor(Math.random() * 900 + 100),
-    name: fileName.value.includes('.') ? fileName.value : `${fileName.value}.${fileExtension.value}`,
-    category: fileCat.value as DigitalFile['category'],
-    folderId: fileFolder.value,
-    size: `${(Math.random() * 10 + 1).toFixed(1)} MB`,
-    modifiedAt: 'ahora mismo',
-    modifiedBy: 'Admin Principal',
-    ext: fileExtension.value as DigitalFile['ext'],
-  };
-
-  const targetFolder = folders.value.find((f) => f.id === fileFolder.value);
-  if (targetFolder) {
-    targetFolder.filesCount += 1;
-    if (targetFolder.size === '0 Bytes') targetFolder.size = '5.4 MB';
+const handleFileSelected = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    form.value.archivo = target.files[0];
   }
+};
 
-  const name = newFile.name;
-  files.value.unshift(newFile);
-  fileName.value = '';
-  showUploadModal.value = false;
-  showToast(`Archivo "${name}" subido a la carpeta.`);
+async function handleUploadFile() {
+  try {
+    const formData = new FormData();
+    formData.append('tipo_documento', form.value.tipo_documento);
+    if (form.value.tipo_documento === 'Otro') formData.append('tipo_documento_otro', form.value.tipo_documento_otro);
+    formData.append('project_id', form.value.project_id);
+    formData.append('modulo_relacionado', form.value.modulo_relacionado);
+    formData.append('nombre_documento', form.value.nombre_documento);
+    formData.append('etiquetas', form.value.etiquetas);
+    if (form.value.archivo) {
+      formData.append('archivo', form.value.archivo);
+    } else {
+      return Swal.fire('Atención', 'Seleccione un archivo.', 'warning');
+    }
+
+    let userId = authStore.userRole || 'admin';
+    formData.append('usuario_id', userId);
+
+    const res = await axios.post(`${API_URL}/documents`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    if (res.data.status === 'success') {
+      showToast('Documento subido exitosamente');
+      showUploadModal.value = false;
+      
+      // Reset form
+      form.value = {
+        tipo_documento: 'Contrato',
+        tipo_documento_otro: '',
+        project_id: '',
+        modulo_relacionado: '',
+        nombre_documento: '',
+        etiquetas: '',
+        archivo: null
+      };
+      
+      fetchDocuments();
+    } else {
+      Swal.fire('Error', res.data.message, 'error');
+    }
+  } catch (error) {
+    Swal.fire('Error', 'No se pudo cargar el archivo', 'error');
+  }
 }
 
-function handleShare(name: string) {
-  showToast(`Enlace de descarga compartido para "${name}"`);
+function handleDownload(path: string) {
+  window.open(getBackendUrl(path), '_blank');
 }
 
-function handleDownload(name: string) {
-  showToast(`Iniciando descarga de "${name}"`);
+function openDetails(file: DigitalFile) {
+  selectedDocument.value = file;
+  showDetailsModal.value = true;
 }
 </script>

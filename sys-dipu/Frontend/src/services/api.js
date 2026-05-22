@@ -35,6 +35,10 @@ export const getApiBaseUrl = () => {
     }
 };
 
+export const getBackendBaseUrl = () => {
+    return getApiBaseUrl().replace('/api/v1', '');
+};
+
 const api = axios.create({
     baseURL: getApiBaseUrl(),
     headers: {
@@ -46,9 +50,9 @@ const api = axios.create({
 // Request interceptor for API calls
 api.interceptors.request.use(
     config => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('auth_token');
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers.set('Authorization', `Bearer ${token}`);
         }
         return config;
     },

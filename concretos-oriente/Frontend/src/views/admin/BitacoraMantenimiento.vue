@@ -113,6 +113,7 @@
                   <div
                     v-for="(imgUrl, iIdx) in item.fotos"
                     :key="iIdx"
+                    @click="fullscreenImage = getBackendUrl(imgUrl)"
                     class="relative h-20 rounded-2xl overflow-hidden border border-white/10 group/img cursor-pointer"
                   >
                     <img
@@ -121,7 +122,7 @@
                       class="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition-all duration-300"
                     />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                      <PhotoIcon class="w-5 h-5 text-white" />
+                      <MagnifyingGlassIcon class="w-5 h-5 text-white" />
                     </div>
                   </div>
                 </div>
@@ -234,8 +235,18 @@
               <div class="bg-white/5 border border-dashed border-white/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-white/10 transition-colors relative">
                 <input type="file" multiple accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 <PhotoIcon class="w-8 h-8 text-white/40 mb-3" />
-                <p class="text-xs font-bold text-white/60">Haz clic aquí o arrastra tus fotos</p>
-                <p v-if="selectedFiles.length > 0" class="text-[10px] font-black text-primary mt-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">{{ selectedFiles.length }} archivo(s) seleccionado(s)</p>
+                <p class="text-xs font-bold text-white/60">Haz clic aquí para añadir fotos</p>
+                <p class="text-[10px] text-white/40 mt-1">Puedes agregar hasta 5 fotos en total</p>
+              </div>
+              <!-- Lista de Archivos -->
+              <div v-if="selectedFiles.length > 0" class="mt-4 space-y-2">
+                <div v-for="(file, idx) in selectedFiles" :key="idx" class="flex justify-between items-center bg-white/5 px-3 py-2 rounded-xl border border-white/10">
+                  <span class="text-[10px] font-bold text-white/70 truncate w-4/5">{{ file.name }}</span>
+                  <button type="button" @click.prevent="removeFile(idx)" class="text-rose-400 hover:text-rose-300 p-1">
+                    <XMarkIcon class="w-4 h-4" />
+                  </button>
+                </div>
+                <div class="text-[10px] font-black text-primary text-right">{{ selectedFiles.length }} / 5 fotos</div>
               </div>
             </div>
             
@@ -243,10 +254,11 @@
               <div class="flex justify-between items-end">
                 <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Ubicación del Servicio (GPS)</label>
                 <div v-if="form.latitud" class="text-[10px] font-black text-emerald-400 flex items-center gap-1 bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20">
-                  <CheckCircleIcon class="w-3 h-3" /> Ubicación capturada
+                  <CheckCircleIcon class="w-3 h-3" /> Coordenadas: {{ form.latitud }}, {{ form.longitud }}
                 </div>
               </div>
               
+              <div class="text-[10px] text-white/40 mb-2 italic">Haz clic en el mapa para ajustar la ubicación exacta.</div>
               <!-- Mapa Opcional para ajustar -->
               <div class="p-2 bg-white/5 rounded-3xl border border-white/10">
                 <div id="maintenance-map" class="w-full h-72 rounded-2xl z-10 relative overflow-hidden"></div>
@@ -293,6 +305,14 @@
       </div>
     </div>
 
+    <!-- Fullscreen Image Viewer -->
+    <div v-if="fullscreenImage" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm" @click="fullscreenImage = ''">
+      <button class="absolute top-6 right-6 p-2 bg-white/10 hover:bg-rose-500 rounded-full text-white transition-all z-50">
+        <XMarkIcon class="w-6 h-6" />
+      </button>
+      <img :src="fullscreenImage" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl" @click.stop />
+    </div>
+
   </div>
 </template>
 
@@ -309,7 +329,8 @@ import {
   ClockIcon,
   MapPinIcon,
   PhotoIcon,
-  TrashIcon
+  TrashIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
@@ -327,6 +348,7 @@ const searchTerm = ref('');
 const filterType = ref('Todos');
 const notification = ref('');
 
+const fullscreenImage = ref('');
 const selectedFiles = ref<File[]>([]);
 
 const form = ref({
@@ -463,14 +485,22 @@ const calcularTotalRepuestos = () => {
 
 const handleFileChange = (e: Event) => {
   const target = e.target as HTMLInputElement;
-  if (target.files) {
-    if (target.files.length > 5) {
-      Swal.fire('Atención', 'Solo puedes subir hasta 5 fotos.', 'warning');
+  if (target.files && target.files.length > 0) {
+    const newFiles = Array.from(target.files);
+    
+    if (selectedFiles.value.length + newFiles.length > 5) {
+      Swal.fire('Atención', 'Solo puedes subir un máximo de 5 fotos en total.', 'warning');
       target.value = '';
       return;
     }
-    selectedFiles.value = Array.from(target.files);
+    
+    selectedFiles.value = [...selectedFiles.value, ...newFiles];
+    target.value = ''; // Reset input so same file can be selected again if needed
   }
+};
+
+const removeFile = (idx: number) => {
+  selectedFiles.value.splice(idx, 1);
 };
 
 async function handleCreateLog() {

@@ -52,9 +52,8 @@ class MaintenanceController {
                 $stmtParts->execute([$log['id']]);
                 $log['repuestos'] = $stmtParts->fetchAll(PDO::FETCH_ASSOC);
 
-                $stmtPhotos = $this->db->prepare("SELECT foto_path FROM maintenance_photos WHERE maintenance_log_id = ?");
-                $stmtPhotos->execute([$log['id']]);
-                $log['fotos'] = $stmtPhotos->fetchAll(PDO::FETCH_COLUMN);
+                // Decode photos JSON if it exists
+                $log['fotos'] = !empty($log['path_fotos']) ? json_decode($log['path_fotos'], true) : [];
             }
             
             $this->respond('success', 'Bitacoras', $logs);
@@ -120,13 +119,12 @@ class MaintenanceController {
             }
             
             // Handle file uploads
+            $uploadedPhotos = [];
             if (!empty($_FILES['fotos']['name']) && is_array($_FILES['fotos']['name'])) {
                 $baseDir = __DIR__ . '/../../Uploads/Maintenance/' . $log_id;
                 if (!is_dir($baseDir)) {
                     mkdir($baseDir, 0777, true);
                 }
-                
-                $stmtPhoto = $this->db->prepare("INSERT INTO maintenance_photos (maintenance_log_id, foto_path) VALUES (?, ?)");
                 
                 foreach ($_FILES['fotos']['name'] as $key => $name) {
                     if ($_FILES['fotos']['error'][$key] == UPLOAD_ERR_OK && !empty($name)) {
@@ -136,10 +134,15 @@ class MaintenanceController {
                         
                         if (move_uploaded_file($_FILES['fotos']['tmp_name'][$key], $destPath)) {
                             $dbPath = 'Uploads/Maintenance/' . $log_id . '/' . $fileName;
-                            $stmtPhoto->execute([$log_id, $dbPath]);
+                            $uploadedPhotos[] = $dbPath;
                         }
                     }
                 }
+            }
+            
+            if (!empty($uploadedPhotos)) {
+                $stmtUpdate = $this->db->prepare("UPDATE maintenance_logs SET path_fotos = ? WHERE id = ?");
+                $stmtUpdate->execute([json_encode($uploadedPhotos), $log_id]);
             }
             
             // Opcional: Actualizar horometro de la maquinaria si el reportado es mayor

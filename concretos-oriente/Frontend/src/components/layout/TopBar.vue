@@ -23,13 +23,6 @@
       <button class="p-2.5 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer">
         <Cog8ToothIcon class="w-5 h-5" />
       </button>
-      <div class="h-10 w-10 rounded-xl overflow-hidden border border-white/20 ml-2 shadow-lg">
-        <img
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuArgdIOMUDf0C6kThHSW5VFABlcng177gJWGlDxkHuy8QmzbeWMS3kea5am-7C9uVfDhZAVPr_arrbRG2cWgE5E3Cuu8uB39zOFboMr1rzeCViTnoLCWBnhbjUOd_XKG24UbvAsD3Qk5Fz2Aaic7R-IM8YtHUliJgm5p0CftIpqvMbhTLNULlHzhk78AmxsWUmBH5Sxi4dTWeRFvGeSi2_FA1YK_rieEU5YHV0ecxUq8gPXqeBrVIir6mDTvjaHcv_WegQtRSMWmPQ"
-          alt="User Profile"
-          class="w-full h-full object-cover"
-        />
-      </div>
     </div>
   </header>
 </template>
@@ -53,7 +46,7 @@ const title = computed(() => {
     case 'Purchases': return 'Módulo de Compras';
     case 'MachineryStatus': return 'Estatus de Maquinaria';
     case 'TechProjects': return 'Mis Asignaciones';
-    default: return 'ConstructPro';
+    default: return 'Concretos del Oriente';
   }
 });
 </script>

@@ -1153,7 +1153,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api, { getApiBaseUrl } from '../../../services/api';
+import api, { getApiBaseUrl, getBackendBaseUrl } from '../../../services/api';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../../stores/authStore.js';
@@ -1374,19 +1374,14 @@ async function cargarFotosMinistros() {
         const res = await api.get('/fiscalizacion/ministro-fotos');
         if (res.data?.success) {
             const raw = res.data.data || {};
-            const isLocal = window.location.hostname === 'localhost' ||
-                            window.location.hostname === '127.0.0.1' ||
-                            window.location.hostname.startsWith('192.168.') ||
-                            window.location.hostname.startsWith('10.') ||
-                            window.location.hostname.endsWith('.local');
-            const base = isLocal ? 'http://localhost:8080' : '';
+            const base = getBackendBaseUrl();
             const fotos = {};
             for (const [key, val] of Object.entries(raw)) {
                 const fotoUrl = val && typeof val === 'object' ? val.foto : null;
                 const nombre = val && typeof val === 'object' ? val.nombre : 'Pendiente';
                 
                 if (fotoUrl) {
-                    fotos[key] = fotoUrl.startsWith('http') ? fotoUrl : base + fotoUrl;
+                    fotos[key] = (fotoUrl.startsWith('http') ? fotoUrl : base + fotoUrl) + '?t=' + Date.now();
                 }
                 
                 // Actualizar el nombre reactivamente en el array ministries
@@ -1469,12 +1464,7 @@ async function onFotoMinistro(event, ministerioId) {
             }
         });
         if (res.data?.success) {
-            const isLocal = window.location.hostname === 'localhost' ||
-                            window.location.hostname === '127.0.0.1' ||
-                            window.location.hostname.startsWith('192.168.') ||
-                            window.location.hostname.startsWith('10.') ||
-                            window.location.hostname.endsWith('.local');
-            const base = isLocal ? 'http://localhost:8080' : '';
+            const base = getBackendBaseUrl();
             const url = res.data.url;
             ministerioFotos.value[ministerioId] = (url.startsWith('http') ? url : base + url) + '?t=' + Date.now();
             

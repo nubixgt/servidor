@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Pass Authorization Header to environment variables (for CGI/FastCGI)
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
 # Handle Preflight OPTIONS requests for CORS (if server config allows it, otherwise handle in PHP)
 RewriteCond %{REQUEST_METHOD} OPTIONS
 RewriteRule ^(.*)$ api/v1/index.php [L,QSA]
