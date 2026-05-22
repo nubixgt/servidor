@@ -177,26 +177,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import api from '../../../services/api'
 
-const citaciones = ref([
-  { id: 1, folio: 'CIT-2024-044', citado: 'Ministerio de Economía',    descripcion: 'Comparecencia por análisis presupuestario',  tipo: 'Comparecencia', fecha: '2024-10-28', hora: '10:00 AM - 12:00 PM', estado: 'Programada',  notas: '' },
-  { id: 2, folio: 'CIT-2024-038', citado: 'Municipalidad de Mixco',    descripcion: 'Informe sobre obra pública postergada',       tipo: 'Convocatoria',  fecha: '2024-10-20', hora: '14:00 PM - 16:00 PM', estado: 'Completada',  notas: '' },
-  { id: 3, folio: 'CIT-2024-022', citado: 'Director General de Salud', descripcion: 'Requerimiento sobre déficit de medicamentos', tipo: 'Audiencia',     fecha: '2024-10-10', hora: '09:00 AM - 11:00 AM', estado: 'Anulada',     notas: '' },
-])
-
+const citaciones = ref([])
 const busqueda = ref('')
 const filtro   = ref('Todas')
 
+const cargarCitaciones = async () => {
+  try {
+    const res = await api.get('/modulos/citaciones')
+    if (res.data && res.data.success) {
+      citaciones.value = res.data.data
+    }
+  } catch (err) {
+    console.error('Error al cargar citaciones:', err)
+  }
+}
+
+onMounted(() => {
+  cargarCitaciones()
+})
+
 const citacionesFiltradas = computed(() => {
-  let lista = citaciones.value
+  let lista = citaciones.value || []
   if (filtro.value !== 'Todas') lista = lista.filter(c => c.estado === filtro.value)
   if (busqueda.value.trim()) {
     const q = busqueda.value.toLowerCase()
     lista = lista.filter(c =>
-      c.folio.toLowerCase().includes(q) ||
-      c.citado.toLowerCase().includes(q) ||
-      c.tipo.toLowerCase().includes(q)
+      (c.folio && c.folio.toLowerCase().includes(q)) ||
+      (c.citado && c.citado.toLowerCase().includes(q)) ||
+      (c.tipo && c.tipo.toLowerCase().includes(q))
     )
   }
   return lista
@@ -216,21 +227,35 @@ function abrirModal(cit = null) {
 }
 function cerrarModal() { modalOpen.value = false }
 
-function guardar() {
+async function guardar() {
   error.value = ''
   if (!form.value.folio.trim())  { error.value = 'El folio es obligatorio.'; return }
   if (!form.value.citado.trim()) { error.value = 'El citado es obligatorio.'; return }
   if (!form.value.tipo)          { error.value = 'Selecciona un tipo.'; return }
-  if (editando.value) {
-    const idx = citaciones.value.findIndex(c => c.id === editando.value.id)
-    if (idx !== -1) citaciones.value[idx] = { ...form.value, id: editando.value.id }
-  } else {
-    citaciones.value.push({ ...form.value, id: Date.now() })
+  try {
+    if (editando.value) {
+      await api.put(`/modulos/citaciones/${editando.value.id}`, form.value)
+    } else {
+      await api.post('/modulos/citaciones', form.value)
+    }
+    await cargarCitaciones()
+    cerrarModal()
+  } catch (err) {
+    error.value = 'Error al guardar el registro en el servidor.'
+    console.error(err)
   }
-  cerrarModal()
 }
 
-function eliminar(id) { citaciones.value = citaciones.value.filter(c => c.id !== id) }
+async function eliminar(id) {
+  if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+    try {
+      await api.delete(`/modulos/citaciones/${id}`)
+      await cargarCitaciones()
+    } catch (err) {
+      console.error('Error al eliminar citación:', err)
+    }
+  }
+}
 
 function estadoClass(estado) {
   if (estado === 'Programada') return 'cit-badge programada'

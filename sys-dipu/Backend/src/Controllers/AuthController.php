@@ -57,6 +57,7 @@ class AuthController extends Controller
                 'message' => 'Autenticación exitosa',
                 'token' => $token,
                 'user' => [
+                    'id' => $user['id'],
                     'nombre' => $user['nombre_completo'],
                     'rol' => $user['rol'],
                     'categoria' => $user['categoria_asignada'] // Null para admins

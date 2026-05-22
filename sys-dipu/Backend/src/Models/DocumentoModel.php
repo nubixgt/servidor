@@ -15,20 +15,29 @@ class DocumentoModel
 
     public function getAll()
     {
-        $stmt = $this->db->prepare("SELECT id, tipo, nombre, entidad, DATE_FORMAT(fecha, '%Y-%m-%d') as fecha, created_at FROM fiscalizacion_documentos ORDER BY id DESC");
+        $stmt = $this->db->prepare("SELECT id, tipo, nombre, entidad, DATE_FORMAT(fecha, '%Y-%m-%d') as fecha, file_url, created_at FROM fiscalizacion_documentos ORDER BY id DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create($data)
     {
-        $stmt = $this->db->prepare("INSERT INTO fiscalizacion_documentos (tipo, nombre, entidad, fecha) VALUES (:tipo, :nombre, :entidad, :fecha)");
+        $stmt = $this->db->prepare("INSERT INTO fiscalizacion_documentos (tipo, nombre, entidad, fecha, file_url) VALUES (:tipo, :nombre, :entidad, :fecha, :file_url)");
         return $stmt->execute([
             ':tipo' => $data['tipo'],
             ':nombre' => $data['nombre'],
             ':entidad' => $data['entidad'],
-            ':fecha' => $data['fecha']
+            ':fecha' => $data['fecha'],
+            ':file_url' => $data['file_url']
         ]);
+    }
+
+    public function getById($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM fiscalizacion_documentos WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function delete($id)

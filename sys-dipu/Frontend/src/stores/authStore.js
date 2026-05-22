@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
 
             // Comprobar si no ha expirado
             if (payload.exp * 1000 > Date.now()) {
-                initialUser = { nombre: payload.nombre, rol: payload.rol, categoria: payload.categoria };
+                initialUser = { id: payload.id, nombre: payload.nombre, rol: payload.rol, categoria: payload.categoria };
                 initialRole = payload.rol;
                 initialCategory = payload.categoria;
             } else {
