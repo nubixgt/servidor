@@ -380,7 +380,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 import {
   CheckCircleIcon,
@@ -441,7 +441,7 @@ onMounted(() => {
 
 const fetchPayrolls = async () => {
   try {
-    const res = await axios.get(`${API_URL}/payrolls`);
+    const res = await api.get(`/payrolls`);
     if (res.data.status === 'success') {
       payrolls.value = res.data.data;
       if (payrolls.value.length > 0 && !selectedPayrollId.value) {
@@ -456,7 +456,7 @@ const fetchPayrolls = async () => {
 
 const fetchActivePersonnel = async () => {
   try {
-    const res = await axios.get(`${API_URL}/payrolls/active-personnel`);
+    const res = await api.get(`/payrolls/active-personnel`);
     if (res.data.status === 'success') {
       activePersonnel.value = res.data.data;
     }
@@ -468,7 +468,7 @@ const fetchActivePersonnel = async () => {
 const loadPayrollDetails = async () => {
   if (!selectedPayrollId.value) return;
   try {
-    const res = await axios.get(`${API_URL}/payrolls/details?payroll_id=${selectedPayrollId.value}`);
+    const res = await api.get(`/payrolls/details?payroll_id=${selectedPayrollId.value}`);
     if (res.data.status === 'success') {
       payrollDetails.value = res.data.data;
     }
@@ -483,7 +483,7 @@ const selectAllEmployees = () => {
 
 const generatePayroll = async () => {
   try {
-    const res = await axios.post(`${API_URL}/payrolls`, newPayroll.value);
+    const res = await api.post(`/payrolls`, newPayroll.value);
     if (res.data.status === 'success') {
       showGenerateModal.value = false;
       newPayroll.value = { periodo: '', fecha_corte: '', empleados_ids: [] };
@@ -519,7 +519,7 @@ const openEditModal = (emp: any) => {
 
 const updatePayrollDetail = async () => {
   try {
-    const res = await axios.post(`${API_URL}/payroll-details`, editForm.value);
+    const res = await api.post(`/payroll-details`, editForm.value);
     if (res.data.status === 'success') {
       showEditModal.value = false;
       loadPayrollDetails(); // Reload table
@@ -542,7 +542,7 @@ const updatePayrollDetail = async () => {
 const executeMassPayments = async () => {
   if (!selectedPayrollId.value) return;
   try {
-    const res = await axios.post(`${API_URL}/payrolls/pay`, { payroll_id: selectedPayrollId.value });
+    const res = await api.post(`/payrolls/pay`, { payroll_id: selectedPayrollId.value });
     if (res.data.status === 'success') {
       showPayModal.value = false;
       fetchPayrolls(); // Reload to get updated status

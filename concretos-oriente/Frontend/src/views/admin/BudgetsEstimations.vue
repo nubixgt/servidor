@@ -420,7 +420,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 import {
   PlusIcon,
@@ -531,7 +531,7 @@ onMounted(() => {
 
 const fetchProjects = async () => {
   try {
-    const res = await axios.get(`${API_URL}/projects`);
+    const res = await api.get(`/projects`);
     if (res.data.status === 'success') {
       projects.value = res.data.data;
     }
@@ -542,7 +542,7 @@ const fetchProjects = async () => {
 
 const fetchBudgetItems = async () => {
   try {
-    const res = await axios.get(`${API_URL}/budget-items`);
+    const res = await api.get(`/budget-items`);
     if (res.data.status === 'success') {
       budgetItems.value = res.data.data;
     }
@@ -553,7 +553,7 @@ const fetchBudgetItems = async () => {
 
 const fetchEstimations = async () => {
   try {
-    const res = await axios.get(`${API_URL}/estimations`);
+    const res = await api.get(`/estimations`);
     if (res.data.status === 'success') {
       estimations.value = res.data.data;
     }
@@ -588,7 +588,7 @@ const loadItemsForProject = () => {
 
 const submitBudgetItem = async () => {
   try {
-    const res = await axios.post(`${API_URL}/budget-items`, newItem.value);
+    const res = await api.post(`/budget-items`, newItem.value);
     if (res.data.status === 'success') {
       showAddItemModal.value = false;
       newItem.value = {
@@ -633,7 +633,7 @@ const submitEstimation = async () => {
   };
 
   try {
-    const res = await axios.post(`${API_URL}/estimations`, payload);
+    const res = await api.post(`/estimations`, payload);
     if (res.data.status === 'success') {
       showAddEstimationModal.value = false;
       newEstimation.value = { project_id: '', periodo: '', observaciones: '' };

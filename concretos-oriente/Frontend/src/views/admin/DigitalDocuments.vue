@@ -391,7 +391,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../stores/auth';
 import {
@@ -496,7 +496,7 @@ onMounted(() => {
 
 const fetchProjects = async () => {
   try {
-    const res = await axios.get(`${API_URL}/projects`);
+    const res = await api.get(`/projects`);
     if (res.data.status === 'success') {
       folders.value = res.data.data.map((p: any) => ({
         id: p.id,
@@ -511,7 +511,7 @@ const fetchProjects = async () => {
 
 const fetchDocuments = async () => {
   try {
-    const res = await axios.get(`${API_URL}/documents`);
+    const res = await api.get(`/documents`);
     if (res.data.status === 'success') {
       files.value = res.data.data.map((d: any) => ({
         id: d.id,
@@ -578,7 +578,7 @@ async function handleUploadFile() {
     let userId = authStore.userRole || 'admin';
     formData.append('usuario_id', userId);
 
-    const res = await axios.post(`${API_URL}/documents`, formData, {
+    const res = await api.post(`/documents`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 

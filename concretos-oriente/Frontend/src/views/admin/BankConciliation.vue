@@ -291,7 +291,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../../services/api'
 import Swal from 'sweetalert2'
 import {
   BuildingLibraryIcon,
@@ -308,7 +308,7 @@ import {
   CheckIcon
 } from '@heroicons/vue/24/outline'
 
-const API_URL = '/concretos-oriente/Backend/api/v1'
+const API_URL = '/concretos-oriente/Backend/api/v1';
 
 const searchTerm = ref('')
 const selectedPeriod = ref('Últimos 30 días')
@@ -337,7 +337,7 @@ const newConciliation = ref({
 
 const fetchAccounts = async () => {
   try {
-    const res = await axios.get(`${API_URL}/bank-accounts`)
+    const res = await api.get(`/bank-accounts`)
     if (res.data.status === 'success') {
       accounts.value = res.data.data
     }
@@ -348,7 +348,7 @@ const fetchAccounts = async () => {
 
 const fetchTransactions = async () => {
   try {
-    const res = await axios.get(`${API_URL}/bank-transactions`)
+    const res = await api.get(`/bank-transactions`)
     if (res.data.status === 'success') {
       transactions.value = res.data.data
     }
@@ -368,7 +368,7 @@ const handleCreateAccount = async () => {
       ...newAccount.value,
       activa: newAccount.value.activa ? 1 : 0
     }
-    const res = await axios.post(`${API_URL}/bank-accounts`, payload)
+    const res = await api.post(`/bank-accounts`, payload)
     if (res.data.status === 'success') {
       showAccountModal.value = false
       newAccount.value = { nombre_banco: '', numero_cuenta: '', tipo_cuenta: '', moneda: 'GTQ', activa: true }
@@ -409,7 +409,7 @@ const handleCreateAccount = async () => {
 
 const handleCreateConciliation = async () => {
   try {
-    const res = await axios.post(`${API_URL}/bank-reconciliations`, newConciliation.value)
+    const res = await api.post(`/bank-reconciliations`, newConciliation.value)
     if (res.data.status === 'success') {
       showConciliationModal.value = false
       newConciliation.value = { bank_account_id: '', periodo: '', saldo_banco: '', partidas_conciliatorias: [] }
