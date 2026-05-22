@@ -6,12 +6,12 @@
 -- ==========================================
 
 CREATE TABLE IF NOT EXISTS usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre_completo VARCHAR(150) NOT NULL,
-    usuario VARCHAR(50) NOT NULL UNIQUE,
+    usuario VARCHAR(80) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    rol ENUM('administrador', 'tecnico') NOT NULL DEFAULT 'tecnico',
-    categoria_asignada VARCHAR(50) NULL COMMENT 'Módulo asignado al técnico',
+    rol ENUM('administrador', 'tecnico', 'readonly') NOT NULL DEFAULT 'readonly',
+    categoria_asignada VARCHAR(100) NULL COMMENT 'Módulo asignado al técnico',
     estado TINYINT(1) DEFAULT 1,
     ultimo_acceso DATETIME NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS fiscalizacion_personal (
     ministerio_id INT NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     tipo_puesto VARCHAR(100) NOT NULL,
+    titulo_puesto VARCHAR(255) DEFAULT NULL,
     sueldo VARCHAR(100) NULL,
     fecha_posesion DATE NULL,
     foto_nombre VARCHAR(255) NULL,
@@ -39,8 +40,33 @@ CREATE TABLE IF NOT EXISTS fiscalizacion_documentos (
     nombre VARCHAR(255) NOT NULL,
     entidad VARCHAR(50) NOT NULL,
     fecha DATE NOT NULL,
-    file_url VARCHAR(500) NULL,
+    file_url VARCHAR(500) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS fiscalizacion_ministros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ministerio_id INT NOT NULL,
+    nombre_ministro VARCHAR(255) DEFAULT 'Pendiente',
+    foto_url VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `ministerio_id` (`ministerio_id`)
+);
+
+CREATE TABLE IF NOT EXISTS fiscalizacion_alertas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT UNSIGNED NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    sicoin_alerts TINYINT(1) DEFAULT 1,
+    documento_alerts TINYINT(1) DEFAULT 1,
+    critica_alerts TINYINT(1) DEFAULT 1,
+    personal_alerts TINYINT(1) DEFAULT 1,
+    canal VARCHAR(50) DEFAULT 'email',
+    frecuencia VARCHAR(50) DEFAULT 'instante',
+    estado TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
 -- ==========================================
@@ -181,27 +207,7 @@ CREATE TABLE IF NOT EXISTS presupuestos_sicoin (
 );
 
 -- ==========================================
--- 12. ESTRUCTURA PARA EL SISTEMA DE ALERTAS DE FISCALIZACION
--- ==========================================
-
-CREATE TABLE IF NOT EXISTS fiscalizacion_alertas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT UNSIGNED NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    sicoin_alerts TINYINT(1) DEFAULT 1,
-    documento_alerts TINYINT(1) DEFAULT 1,
-    critica_alerts TINYINT(1) DEFAULT 1,
-    personal_alerts TINYINT(1) DEFAULT 1,
-    canal VARCHAR(50) DEFAULT 'email',
-    frecuencia VARCHAR(50) DEFAULT 'instante',
-    estado TINYINT(1) DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
-
--- ==========================================
--- 13. ESTRUCTURA PARA EL ARCHIVO CENTRAL
+-- 12. ESTRUCTURA PARA EL ARCHIVO CENTRAL
 -- ==========================================
 
 CREATE TABLE IF NOT EXISTS archivo_central (
@@ -215,4 +221,3 @@ CREATE TABLE IF NOT EXISTS archivo_central (
     file_url VARCHAR(500) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
