@@ -80,7 +80,7 @@ const allNavItemsArr = [
   { id: "tech-projects", label: "Mis Proyectos", icon: BriefcaseIcon, roles: ["tecnico"] },
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
-  { id: "purchases", label: "Compras", icon: ShoppingBagIcon, roles: ["admin"] },
+
   { id: "finance", label: "Finanzas", icon: BanknotesIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
   { id: "bank-conciliation", label: "Bancos y Conciliación", icon: BuildingLibraryIcon, roles: ["admin"] },

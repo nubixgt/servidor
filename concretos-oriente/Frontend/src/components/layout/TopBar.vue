@@ -43,7 +43,7 @@ const title = computed(() => {
     case 'Finance': return 'Vista General de Finanzas';
     case 'Inventory': return 'Gestión de Inventario';
     case 'Suppliers': return 'Directorio de Proveedores';
-    case 'Purchases': return 'Módulo de Compras';
+
     case 'MachineryStatus': return 'Estatus de Maquinaria';
     case 'TechProjects': return 'Mis Asignaciones';
     default: return 'Concretos del Oriente';
