@@ -32,14 +32,17 @@ class CreditsController extends Controller
     public function store()
     {
         try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!$input) $input = $_POST;
+
             $data = [
-                'supplier_id'    => $_POST['supplier_id'] ?? null,
-                'project_id'     => $_POST['project_id'] ?? null,
-                'invoice_number' => $_POST['invoice_number'] ?? '',
-                'purchase_date'  => $_POST['purchase_date'] ?? date('Y-m-d'),
-                'amount'         => isset($_POST['amount']) ? (float)$_POST['amount'] : 0,
-                'due_date'       => $_POST['due_date'] ?? date('Y-m-d'),
-                'observations'   => $_POST['observations'] ?? '',
+                'supplier_id'    => !empty($input['supplier_id']) ? (int)$input['supplier_id'] : null,
+                'project_id'     => !empty($input['project_id']) ? (int)$input['project_id'] : null,
+                'invoice_number' => trim($input['invoice_number'] ?? ''),
+                'purchase_date'  => trim($input['purchase_date'] ?? date('Y-m-d')),
+                'amount'         => isset($input['amount']) ? (float)$input['amount'] : 0.0,
+                'due_date'       => trim($input['due_date'] ?? date('Y-m-d')),
+                'observations'   => trim($input['observations'] ?? ''),
                 'status'         => 'Pendiente'
             ];
 
@@ -58,12 +61,15 @@ class CreditsController extends Controller
     public function storePayment()
     {
         try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            if (!$input) $input = $_POST;
+
             $data = [
-                'credit_id'       => $_POST['credit_id'] ?? null,
-                'amount'          => isset($_POST['amount']) ? (float)$_POST['amount'] : 0,
-                'payment_date'    => $_POST['payment_date'] ?? date('Y-m-d'),
-                'bank_account_id' => $_POST['bank_account_id'] ?? null,
-                'check_number'    => $_POST['check_number'] ?? '',
+                'credit_id'       => !empty($input['credit_id']) ? (int)$input['credit_id'] : null,
+                'amount'          => isset($input['amount']) ? (float)$input['amount'] : 0.0,
+                'payment_date'    => trim($input['payment_date'] ?? date('Y-m-d')),
+                'bank_account_id' => !empty($input['bank_account_id']) ? (int)$input['bank_account_id'] : null,
+                'check_number'    => trim($input['check_number'] ?? ''),
             ];
 
             $fileData = $_FILES['receipt'] ?? null;
