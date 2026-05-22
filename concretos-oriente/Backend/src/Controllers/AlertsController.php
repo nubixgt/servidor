@@ -1,98 +1,69 @@
 <?php
-
 namespace App\Controllers;
 
-use App\Utils\Database;
+use App\Core\Controller;
 use App\Attributes\Route;
-use PDO;
+use App\Services\AlertService;
 use Exception;
 
-class AlertsController {
-    private $db;
+class AlertsController extends Controller
+{
+    private AlertService $alertService;
 
-    public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
-    }
-
-    private function respond($status, $message, $data = null) {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'status' => $status,
-            'message' => $message,
-            'data' => $data
-        ]);
-        exit;
-    }
-
-    private function getJsonData() {
-        return json_decode(file_get_contents('php://input'), true);
+    public function __construct()
+    {
+        $this->alertService = new AlertService();
     }
 
     #[Route('/alerts_config', 'GET')]
-    public function getConfigs() {
+    public function getConfigs()
+    {
         try {
-            $stmt = $this->db->query("SELECT * FROM alerts_config ORDER BY created_at DESC");
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($data as &$row) {
-                $row['canales'] = json_decode($row['canales'], true) ?: [];
-                $row['destinatarios'] = json_decode($row['destinatarios'], true) ?: [];
-            }
-
-            return $this->respond('success', 'Configuraciones recuperadas', $data);
+            $data = $this->alertService->getConfigs();
+            $this->json(['status' => 'success', 'message' => 'Configuraciones recuperadas', 'data' => $data]);
         } catch (Exception $e) {
-            return $this->respond('error', 'Error al recuperar configuraciones: ' . $e->getMessage());
+            $this->json(['status' => 'error', 'message' => 'Error al recuperar configuraciones: ' . $e->getMessage()], 500);
         }
     }
 
     #[Route('/alerts_config', 'POST')]
-    public function createConfig() {
+    public function createConfig()
+    {
         try {
-            $data = $this->getJsonData();
-            
-            $nombre = $data['nombre'] ?? '';
-            $tipo_evento = $data['tipo_evento'] ?? '';
-            $canales = isset($data['canales']) ? json_encode($data['canales']) : '[]';
-            $destinatarios = isset($data['destinatarios']) ? json_encode($data['destinatarios']) : '[]';
-            $umbral = $data['umbral'] ?? 0;
-            $activa = isset($data['activa']) ? (int)$data['activa'] : 1;
-            
-            if (empty($nombre) || empty($tipo_evento)) {
-                return $this->respond('error', 'Faltan campos obligatorios');
-            }
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (!$data) $data = $_POST;
 
-            $stmt = $this->db->prepare("
-                INSERT INTO alerts_config (nombre, tipo_evento, canales, destinatarios, umbral, activa)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([$nombre, $tipo_evento, $canales, $destinatarios, $umbral, $activa]);
+            $result = $this->alertService->createConfig($data);
 
-            return $this->respond('success', 'Configuración guardada exitosamente', ['id' => $this->db->lastInsertId()]);
+            $this->json(['status' => 'success', 'message' => 'Configuración guardada exitosamente', 'data' => $result]);
         } catch (Exception $e) {
-            return $this->respond('error', 'Error al crear configuración: ' . $e->getMessage());
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => 'Error al crear configuración: ' . $e->getMessage()], $code);
         }
     }
 
     #[Route('/alerts_config/{id}', 'DELETE')]
-    public function deleteConfig($id) {
+    public function deleteConfig($id)
+    {
         try {
-            $stmt = $this->db->prepare("DELETE FROM alerts_config WHERE id = ?");
-            $stmt->execute([$id]);
-            return $this->respond('success', 'Configuración eliminada');
+            $this->alertService->deleteConfig((int)$id);
+            $this->json(['status' => 'success', 'message' => 'Configuración eliminada']);
         } catch (Exception $e) {
-            return $this->respond('error', 'Error al eliminar configuración: ' . $e->getMessage());
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => 'Error al eliminar configuración: ' . $e->getMessage()], $code);
         }
     }
 
     #[Route('/alerts_history', 'GET')]
-    public function getHistory() {
+    public function getHistory()
+    {
         try {
-            // Devuelve las alertas disparadas (historial). Si la tabla no existe o está vacía, devuelve array vacío.
-            $stmt = $this->db->query("SELECT * FROM alerts_history ORDER BY created_at DESC");
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $this->respond('success', 'Historial recuperado', $data);
+            $data = $this->alertService->getHistory();
+            $this->json(['status' => 'success', 'message' => 'Historial recuperado', 'data' => $data]);
         } catch (Exception $e) {
-            return $this->respond('error', 'Error al recuperar historial: ' . $e->getMessage());
+            $this->json(['status' => 'error', 'message' => 'Error al recuperar historial: ' . $e->getMessage()], 500);
         }
     }
 }
