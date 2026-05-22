@@ -92,7 +92,7 @@ export default function Afiliaciones() {
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                  <span className="font-mono text-xs text-on-surface-variant">2345 67890 0101</span>
+                  <span className="font-mono text-xs text-on-surface-variant">2345-67890-0101</span>
                 </td>
                 <td className="px-8 py-6">
                   <span className="text-sm text-on-surface">Zona 18, Guatemala</span>
@@ -120,7 +120,7 @@ export default function Afiliaciones() {
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                  <span className="font-mono text-xs text-on-surface-variant">1987 65432 0108</span>
+                  <span className="font-mono text-xs text-on-surface-variant">1987-65432-0108</span>
                 </td>
                 <td className="px-8 py-6">
                   <span className="text-sm text-on-surface">Villa Nueva</span>

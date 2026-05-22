@@ -7,7 +7,10 @@
         <p class="text-on-surface-variant text-lg leading-relaxed">Administración de comisiones legislativas, dictámenes y grupos de trabajo especializados.</p>
       </div>
       <div class="flex items-center gap-3">
-        <button class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest active:scale-95">
+        <button
+          @click="exportarComisiones"
+          class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest active:scale-95"
+        >
           <span class="material-symbols-outlined text-xl">ios_share</span> Exportar
         </button>
         <button
@@ -269,7 +272,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import api, { getApiBaseUrl } from '../../../services/api'
 
 /* ─── Estado ─── */
 const showModal = ref(false)
@@ -281,27 +285,46 @@ const filtros       = ['Todas', 'Permanentes', 'Especiales']
 
 const formVacio = () => ({ nombre: '', presidente: '', tipo: '', estado: 'En Sesión', dictamenes: 0, notas: '' })
 const form = ref(formVacio())
+const comisiones = ref([])
 
-const comisiones = ref([
-  { id: 1, nombre: 'Comisión de Hacienda y Presupuesto',        presidente: 'M. Villanueva', tipo: 'Permanente', estado: 'En Sesión',    dictamenes: 12, notas: '' },
-  { id: 2, nombre: 'Comisión de Salud y Previsión Social',      presidente: 'R. Castillo',   tipo: 'Permanente', estado: 'Sin Actividad', dictamenes: 5,  notas: '' },
-  { id: 3, nombre: 'Comisión Especial de Seguimiento Electoral', presidente: 'L. Morales',   tipo: 'Especial',   estado: 'En Sesión',    dictamenes: 3,  notas: '' },
-])
+const cargarComisiones = async () => {
+  try {
+    const res = await api.get('/modulos/comisiones')
+    if (res.data && res.data.success) {
+      comisiones.value = res.data.data
+    }
+  } catch (err) {
+    console.error('Error al cargar comisiones:', err)
+  }
+}
+
+const exportarComisiones = () => {
+  const API_URL = getApiBaseUrl()
+  window.open(`${API_URL}/modulos/comisiones/export`, '_blank')
+}
+
+onMounted(() => {
+  cargarComisiones()
+})
 
 /* ─── Computed ─── */
 const comisionesFiltradas = computed(() => {
-  let lista = comisiones.value
+  let lista = comisiones.value || []
   if (filtroActivo.value === 'Permanentes') lista = lista.filter(c => c.tipo === 'Permanente')
   if (filtroActivo.value === 'Especiales')  lista = lista.filter(c => c.tipo === 'Especial')
   if (busqueda.value.trim()) {
     const q = busqueda.value.toLowerCase()
-    lista = lista.filter(c => c.nombre.toLowerCase().includes(q) || c.presidente.toLowerCase().includes(q))
+    lista = lista.filter(c => 
+      (c.nombre && c.nombre.toLowerCase().includes(q)) || 
+      (c.presidente && c.presidente.toLowerCase().includes(q))
+    )
   }
   return lista
 })
 
 /* ─── Helpers ─── */
 function initials(name) {
+  if (!name) return 'CO'
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
 }
 function estadoClass(estado) {
@@ -324,29 +347,40 @@ function openModal(com = null) {
 }
 function closeModal() { showModal.value = false }
 
-function guardarComision() {
+async function guardarComision() {
   formError.value = ''
   if (!form.value.nombre.trim())    { formError.value = 'El nombre es obligatorio.'; return }
   if (!form.value.presidente.trim()){ formError.value = 'El presidente es obligatorio.'; return }
   if (!form.value.tipo)             { formError.value = 'Selecciona un tipo.'; return }
 
-  if (editando.value) {
-    const idx = comisiones.value.findIndex(c => c.id === editando.value.id)
-    if (idx !== -1) comisiones.value[idx] = { ...form.value, id: editando.value.id }
-  } else {
-    comisiones.value.push({ ...form.value, id: Date.now() })
+  try {
+    if (editando.value) {
+      await api.put(`/modulos/comisiones/${editando.value.id}`, form.value)
+    } else {
+      await api.post('/modulos/comisiones', form.value)
+    }
+    await cargarComisiones()
+    closeModal()
+  } catch (err) {
+    formError.value = 'Error al guardar el registro en el servidor.'
+    console.error(err)
   }
-  closeModal()
 }
 
-function confirmarEliminar() {
+async function confirmarEliminar() {
   if (confirm(`¿Eliminar la comisión "${editando.value.nombre}"?`)) {
-    eliminarComision(editando.value.id)
+    await eliminarComision(editando.value.id)
     closeModal()
   }
 }
-function eliminarComision(id) {
-  comisiones.value = comisiones.value.filter(c => c.id !== id)
+
+async function eliminarComision(id) {
+  try {
+    await api.delete(`/modulos/comisiones/${id}`)
+    await cargarComisiones()
+  } catch (err) {
+    console.error('Error al eliminar comisión:', err)
+  }
 }
 </script>
 

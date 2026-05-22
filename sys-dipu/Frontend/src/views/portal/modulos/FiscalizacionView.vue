@@ -16,8 +16,24 @@
                 <button @click="abrirDocModal" class="px-6 py-2.5 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center gap-2 transition-all hover:bg-surface-container-highest">
                     <span class="material-symbols-outlined text-xl">upload</span> Cargar documento
                 </button>
-                <button class="px-6 py-2.5 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/10 transition-all hover:shadow-xl">
-                    <span class="material-symbols-outlined text-xl">notifications_active</span> Activar alertas
+                <button 
+                    @click="abrirAlertasModal" 
+                    :class="[
+                        'px-6 py-2.5 font-semibold rounded-lg flex items-center gap-2 transition-all hover:-translate-y-0.5',
+                        alertasActivas 
+                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 hover:bg-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/5' 
+                            : 'bg-gradient-to-br from-primary to-primary-dim text-on-primary shadow-lg shadow-primary/10 hover:shadow-xl'
+                    ]"
+                >
+                    <span 
+                        :class="[
+                            'material-symbols-outlined text-xl',
+                            alertasActivas ? 'animate-pulse text-emerald-600' : ''
+                        ]"
+                    >
+                        {{ alertasActivas ? 'notifications_active' : 'notifications' }}
+                    </span> 
+                    {{ alertasActivas ? 'Alertas activadas' : 'Activar alertas' }}
                 </button>
             </div>
         </header>
@@ -470,39 +486,24 @@
                         <!-- Form body -->
                         <div class="p-6 space-y-5">
 
-                            <!-- Nombre del documento -->
+                            <!-- Seleccionar Archivo -->
                             <div class="space-y-1.5">
-                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Nombre del Documento <span class="text-error">*</span></label>
-                                <input v-model="nuevoDoc.nombre" type="text" placeholder="Ej: Oficio de amparo y fiscalización 0938-2026"
-                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
-                            </div>
-
-                            <!-- Tipo y Entidad en grid -->
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1.5">
-                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Tipo de Archivo <span class="text-error">*</span></label>
-                                    <select v-model="nuevoDoc.tipo" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
-                                        <option value="PDF">PDF</option>
-                                        <option value="XLSX">XLSX / Excel</option>
-                                        <option value="DOCX">DOCX / Word</option>
-                                        <option value="PPTX">PPTX / PowerPoint</option>
-                                    </select>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Entidad Vinculada <span class="text-error">*</span></label>
-                                    <select v-model="nuevoDoc.entidad" class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer">
-                                        <option value="" disabled>Seleccione entidad...</option>
-                                        <option v-for="m in ministries" :key="m.id" :value="m.short">{{ m.short }} - {{ m.name }}</option>
-                                    </select>
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Seleccionar Archivo <span class="text-error">*</span></label>
+                                <div class="relative">
+                                    <input type="file" id="documentoFile" ref="docFileInputRef" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" class="hidden" @change="onDocFileChange" />
+                                    <label for="documentoFile" class="flex items-center justify-center gap-3 px-4 py-5 bg-surface-container-low hover:bg-surface-container-high rounded-xl text-sm text-on-surface border-2 border-dashed border-outline-variant/30 hover:border-primary/40 outline-none transition-all cursor-pointer select-none">
+                                        <span class="material-symbols-outlined text-2xl text-primary">upload_file</span>
+                                        <div class="text-left">
+                                            <p class="font-bold text-xs" v-if="selectedDocFile">{{ selectedDocFile.name }}</p>
+                                            <p class="font-bold text-xs text-on-surface-variant" v-else>Haga clic para examinar su equipo</p>
+                                            <p class="text-[10px] text-outline mt-0.5" v-if="selectedDocFile">{{ (selectedDocFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+                                            <p class="text-[10px] text-outline mt-0.5" v-else>PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX hasta 50MB</p>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
 
-                            <!-- Fecha -->
-                            <div class="space-y-1.5">
-                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Fecha de Carga</label>
-                                <input v-model="nuevoDoc.fecha" type="date"
-                                    class="w-full px-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all" />
-                            </div>
+
 
                             <!-- Error -->
                             <Transition name="slide-error">
@@ -523,6 +524,232 @@
                                 class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
                                 <span class="material-symbols-outlined text-base">cloud_upload</span>
                                 Guardar documento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
+
+        <!-- Modal: Configurar Alertas -->
+        <Teleport to="body">
+            <Transition name="modal">
+                <div v-if="alertasModalAbierto" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/50 backdrop-blur-md" @click="cerrarAlertasModal"></div>
+
+                    <div class="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl border border-outline-variant/20 overflow-hidden">
+
+                        <!-- Gradient header del modal -->
+                        <div class="relative p-6 overflow-hidden bg-gradient-to-br from-primary via-primary-dim to-secondary">
+                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[4rem] font-black text-white/10 leading-none select-none pointer-events-none">
+                                <span class="material-symbols-outlined text-7xl">notifications</span>
+                            </div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div>
+                                    <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-1">Alertas del Sistema</p>
+                                    <h3 class="text-xl font-extrabold text-white font-headline">Configurar Alertas Inteligentes</h3>
+                                    <p class="text-white/50 text-xs mt-0.5 max-w-[240px] leading-snug">Monitoreo automático y alertas en tiempo real de fiscalización</p>
+                                </div>
+                                <button @click="cerrarAlertasModal"
+                                    class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white">
+                                    <span class="material-symbols-outlined text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Form body -->
+                        <div class="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+
+                            <!-- Correo electrónico -->
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Correo Electrónico de Recepción <span class="text-error">*</span></label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg">mail</span>
+                                    <input v-model="alertasConfig.email" type="email" placeholder="ejemplo@bancada.gob.gt"
+                                        class="w-full pl-11 pr-4 py-3 bg-surface-container-low rounded-xl text-sm text-on-surface border border-outline-variant/15 focus:border-primary/40 outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-outline" />
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-outline-variant/10"></div>
+
+                            <!-- Categorías de Alerta (Switches) -->
+                            <div class="space-y-3">
+                                <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">¿Sobre qué desea recibir alertas?</p>
+                                
+                                <div class="space-y-2">
+                                    <!-- SICOIN Alerts -->
+                                    <div class="flex items-center justify-between p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all cursor-pointer" @click="alertasConfig.sicoin_alerts = !alertasConfig.sicoin_alerts">
+                                        <div class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-xl text-primary shrink-0 mt-0.5">account_balance_wallet</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-on-surface">Ejecución Presupuestaria (SICOIN)</p>
+                                                <p class="text-[10px] text-outline font-medium">Baja ejecución o desviaciones presupuestarias</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none" @click.stop>
+                                            <input type="checkbox" v-model="alertasConfig.sicoin_alerts" class="sr-only peer" />
+                                            <div class="w-10 h-6 bg-surface-container-highest rounded-full peer peer-focus:ring-2 peer-focus:ring-primary/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Documento Alerts -->
+                                    <div class="flex items-center justify-between p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all cursor-pointer" @click="alertasConfig.documento_alerts = !alertasConfig.documento_alerts">
+                                        <div class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-xl text-primary shrink-0 mt-0.5">upload_file</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-on-surface">Nuevos Documentos Cargados</p>
+                                                <p class="text-[10px] text-outline font-medium">Al subir nuevos informes oficiales de evidencia</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none" @click.stop>
+                                            <input type="checkbox" v-model="alertasConfig.documento_alerts" class="sr-only peer" />
+                                            <div class="w-10 h-6 bg-surface-container-highest rounded-full peer peer-focus:ring-2 peer-focus:ring-primary/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Alertas Críticas -->
+                                    <div class="flex items-center justify-between p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all cursor-pointer" @click="alertasConfig.critica_alerts = !alertasConfig.critica_alerts">
+                                        <div class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-xl text-error shrink-0 mt-0.5">warning</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-on-surface">Líneas de Ataque y Alertas Críticas</p>
+                                                <p class="text-[10px] text-outline font-medium">Hallazgos graves y anomalías severas inmediatas</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none" @click.stop>
+                                            <input type="checkbox" v-model="alertasConfig.critica_alerts" class="sr-only peer" />
+                                            <div class="w-10 h-6 bg-surface-container-highest rounded-full peer peer-focus:ring-2 peer-focus:ring-primary/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Directorio / Personal Alerts -->
+                                    <div class="flex items-center justify-between p-3.5 bg-surface-container-low rounded-2xl border border-outline-variant/10 hover:border-outline-variant/30 transition-all cursor-pointer" @click="alertasConfig.personal_alerts = !alertasConfig.personal_alerts">
+                                        <div class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-xl text-primary shrink-0 mt-0.5">group</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-on-surface">Cambios en Directorio Ejecutivo</p>
+                                                <p class="text-[10px] text-outline font-medium">Nombramientos o cambios de ministros y directores</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none" @click.stop>
+                                            <input type="checkbox" v-model="alertasConfig.personal_alerts" class="sr-only peer" />
+                                            <div class="w-10 h-6 bg-surface-container-highest rounded-full peer peer-focus:ring-2 peer-focus:ring-primary/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="h-px bg-outline-variant/10"></div>
+
+                            <!-- Canal de Recepción -->
+                            <div class="space-y-2">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Canal de Recepción</label>
+                                <div class="flex gap-2">
+                                    <button 
+                                        @click="alertasConfig.canal = 'email'"
+                                        :class="[
+                                            'flex-1 py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5',
+                                            alertasConfig.canal === 'email'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">mail</span> Correo
+                                    </button>
+                                    <button 
+                                        @click="alertasConfig.canal = 'telegram'"
+                                        :class="[
+                                            'flex-1 py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5',
+                                            alertasConfig.canal === 'telegram'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">send</span> Telegram
+                                    </button>
+                                    <button 
+                                        @click="alertasConfig.canal = 'sistema'"
+                                        :class="[
+                                            'flex-1 py-2 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5',
+                                            alertasConfig.canal === 'sistema'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">notifications</span> Sistema
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Frecuencia -->
+                            <div class="space-y-2">
+                                <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-[0.12em]">Frecuencia de Notificación</label>
+                                <div class="flex gap-2">
+                                    <button 
+                                        @click="alertasConfig.frecuencia = 'instante'"
+                                        :class="[
+                                            'flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all',
+                                            alertasConfig.frecuencia === 'instante'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        Al Instante
+                                    </button>
+                                    <button 
+                                        @click="alertasConfig.frecuencia = 'diario'"
+                                        :class="[
+                                            'flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all',
+                                            alertasConfig.frecuencia === 'diario'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        Resumen Diario
+                                    </button>
+                                    <button 
+                                        @click="alertasConfig.frecuencia = 'semanal'"
+                                        :class="[
+                                            'flex-1 py-2.5 text-xs font-bold rounded-xl border transition-all',
+                                            alertasConfig.frecuencia === 'semanal'
+                                                ? 'bg-primary text-white border-primary shadow-md'
+                                                : 'bg-surface-container-low text-on-surface-variant border-outline-variant/15 hover:border-primary/30'
+                                        ]"
+                                    >
+                                        Semanal
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer actions -->
+                        <div class="p-5 pt-0 flex gap-3">
+                            <button 
+                                v-if="alertasActivas"
+                                @click="desactivarAlertas"
+                                :disabled="guardandoAlertas"
+                                class="flex-1 py-3 px-4 bg-error-container/20 text-error font-bold text-sm rounded-2xl hover:bg-error-container/40 transition-colors border border-error/20 flex items-center justify-center gap-1.5 disabled:opacity-50"
+                            >
+                                <span class="material-symbols-outlined text-base">notifications_off</span>
+                                Desactivar
+                            </button>
+                            <button 
+                                v-else
+                                @click="cerrarAlertasModal"
+                                class="flex-1 py-3 px-4 bg-surface-container font-bold text-on-surface text-sm rounded-2xl hover:bg-surface-container-high transition-colors border border-outline-variant/10"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                @click="guardarConfiguracionAlertas"
+                                :disabled="guardandoAlertas"
+                                class="flex-2 py-3 px-6 bg-primary text-white font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                <span class="material-symbols-outlined text-base" v-if="!guardandoAlertas">notifications_active</span>
+                                <span class="material-symbols-outlined text-base animate-spin" v-else>progress_activity</span>
+                                {{ alertasActivas ? 'Actualizar' : 'Activar y Suscribirse' }}
                             </button>
                         </div>
                     </div>
@@ -796,7 +1023,7 @@
                                     No hay documentos cargados en el repositorio.
                                 </td>
                             </tr>
-                            <tr v-for="d in docs" :key="d.id" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+                            <tr v-for="d in docs" :key="d.id" @click="abrirDocumento(d)" class="hover:bg-surface-container-lowest transition-colors cursor-pointer group">
                                 <td class="px-6 py-4">
                                     <span class="px-2.5 py-1 bg-surface-container-highest border border-outline-variant/20 rounded text-[10px] font-black text-on-surface-variant shadow-sm">{{ d.tipo }}</span>
                                 </td>
@@ -926,7 +1153,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api, { getBackendBaseUrl } from '../../../services/api';
+import api, { getApiBaseUrl, getBackendBaseUrl } from '../../../services/api';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../../stores/authStore.js';
@@ -937,6 +1164,176 @@ const isAdmin = computed(() => authStore.role === 'administrador');
 const query = ref('');
 const selected = ref('todos');
 const activeTab = ref('ministerios');
+
+// --- Lógica de Alertas Inteligentes (Estados Reactivos) ---
+const alertasModalAbierto = ref(false);
+const alertasActivas = ref(false);
+const guardandoAlertas = ref(false);
+const alertasConfig = ref({
+    id: null,
+    email: '',
+    sicoin_alerts: true,
+    documento_alerts: true,
+    critica_alerts: true,
+    personal_alerts: true,
+    canal: 'email',
+    frecuencia: 'instante',
+    estado: false
+});
+
+function abrirAlertasModal() {
+    alertasModalAbierto.value = true;
+}
+
+function cerrarAlertasModal() {
+    alertasModalAbierto.value = false;
+}
+
+async function cargarAlertasBD() {
+    try {
+        const response = await api.get('/fiscalizacion/alertas');
+        if (response.data?.success && response.data.data) {
+            const config = response.data.data;
+            alertasConfig.value = {
+                id: config.id,
+                email: config.email,
+                sicoin_alerts: !!config.sicoin_alerts,
+                documento_alerts: !!config.documento_alerts,
+                critica_alerts: !!config.critica_alerts,
+                personal_alerts: !!config.personal_alerts,
+                canal: config.canal || 'email',
+                frecuencia: config.frecuencia || 'instante',
+                estado: !!config.estado
+            };
+            alertasActivas.value = !!config.estado;
+        }
+    } catch (error) {
+        console.error('Error al cargar la configuración de alertas:', error);
+    }
+}
+
+async function guardarConfiguracionAlertas() {
+    if (!alertasConfig.value.email || !alertasConfig.value.email.trim()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo obligatorio',
+            text: 'Por favor, ingrese un correo electrónico válido para recibir las alertas.',
+            confirmButtonColor: '#005D6B'
+        });
+        return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(alertasConfig.value.email.trim())) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Correo inválido',
+            text: 'El formato del correo electrónico ingresado no es válido.',
+            confirmButtonColor: '#005D6B'
+        });
+        return;
+    }
+
+    guardandoAlertas.value = true;
+    try {
+        const payload = {
+            ...alertasConfig.value,
+            estado: true
+        };
+        const response = await api.post('/fiscalizacion/alertas', payload);
+        if (response.data?.success) {
+            alertasActivas.value = true;
+            alertasConfig.value.estado = true;
+            cerrarAlertasModal();
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Alertas configuradas y activadas correctamente',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.data?.error || 'No se pudo guardar la configuración.',
+                confirmButtonColor: '#005D6B'
+            });
+        }
+    } catch (error) {
+        console.error('Error al guardar configuración de alertas:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor para guardar las alertas.',
+            confirmButtonColor: '#005D6B'
+        });
+    } finally {
+        guardandoAlertas.value = false;
+    }
+}
+
+async function desactivarAlertas() {
+    const result = await Swal.fire({
+        title: '¿Desactivar alertas?',
+        text: 'Dejarás de recibir notificaciones inteligentes sobre la ejecución presupuestaria y otros eventos críticos.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        customClass: {
+            popup: 'rounded-3xl shadow-2xl p-6 border border-outline-variant/10',
+            title: 'font-headline font-black text-xl text-on-surface pt-2',
+            confirmButton: 'rounded-xl font-bold px-6 py-2.5',
+            cancelButton: 'rounded-xl font-bold px-6 py-2.5'
+        }
+    });
+
+    if (!result.isConfirmed) return;
+
+    guardandoAlertas.value = true;
+    try {
+        const payload = {
+            ...alertasConfig.value,
+            estado: false
+        };
+        const response = await api.post('/fiscalizacion/alertas', payload);
+        if (response.data?.success) {
+            alertasActivas.value = false;
+            alertasConfig.value.estado = false;
+            cerrarAlertasModal();
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'Las alertas han sido desactivadas',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.data?.error || 'No se pudo desactivar las alertas.',
+                confirmButtonColor: '#005D6B'
+            });
+        }
+    } catch (error) {
+        console.error('Error al desactivar alertas:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor para desactivar las alertas.',
+            confirmButtonColor: '#005D6B'
+        });
+    } finally {
+        guardandoAlertas.value = false;
+    }
+}
 
 onMounted(async () => {
     try {
@@ -953,6 +1350,7 @@ onMounted(async () => {
     await cargarPersonalBD();
     await cargarDocumentosBD();
     await cargarFotosMinistros();
+    await cargarAlertasBD();
 });
 
 // --- Lógica de Autoridades / Personal ---
@@ -1164,6 +1562,8 @@ const docs = ref([]);
 const docModalAbierto = ref(false);
 const nuevoDoc = ref({ nombre: '', tipo: 'PDF', entidad: '', fecha: '' });
 const errorDoc = ref('');
+const selectedDocFile = ref(null);
+const docFileInputRef = ref(null);
 
 async function cargarPersonalBD() {
     try {
@@ -1215,6 +1615,43 @@ function onFotoChange(event) {
     const reader = new FileReader();
     reader.onload = (e) => { nuevoPersonal.value.fotoPreview = e.target.result; };
     reader.readAsDataURL(file);
+}
+
+function onDocFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.size > 50 * 1024 * 1024) {
+        errorDoc.value = 'El archivo supera el límite de tamaño permitido de 50MB.';
+        return;
+    }
+    
+    errorDoc.value = '';
+    selectedDocFile.value = file;
+    
+    const fullFilename = file.name;
+    const dotIndex = fullFilename.lastIndexOf('.');
+    let baseName = fullFilename;
+    let ext = '';
+    
+    if (dotIndex !== -1) {
+        baseName = fullFilename.substring(0, dotIndex);
+        ext = fullFilename.substring(dotIndex + 1).toUpperCase();
+    }
+    
+    nuevoDoc.value.nombre = baseName;
+    
+    if (['PDF'].includes(ext)) {
+        nuevoDoc.value.tipo = 'PDF';
+    } else if (['XLS', 'XLSX'].includes(ext)) {
+        nuevoDoc.value.tipo = 'XLSX';
+    } else if (['DOC', 'DOCX'].includes(ext)) {
+        nuevoDoc.value.tipo = 'DOCX';
+    } else if (['PPT', 'PPTX'].includes(ext)) {
+        nuevoDoc.value.tipo = 'PPTX';
+    } else {
+        nuevoDoc.value.tipo = 'PDF';
+    }
 }
 
 async function guardarPersonal() {
@@ -1272,6 +1709,10 @@ async function eliminarPersona(p) {
 }
 
 function abrirDocModal() {
+    selectedDocFile.value = null;
+    if (docFileInputRef.value) {
+        docFileInputRef.value.value = '';
+    }
     nuevoDoc.value = {
         nombre: '',
         tipo: 'PDF',
@@ -1283,11 +1724,19 @@ function abrirDocModal() {
 }
 
 function cerrarDocModal() {
+    selectedDocFile.value = null;
+    if (docFileInputRef.value) {
+        docFileInputRef.value.value = '';
+    }
     docModalAbierto.value = false;
     errorDoc.value = '';
 }
 
 async function guardarDocumento() {
+    if (!selectedDocFile.value) {
+        errorDoc.value = 'Debe seleccionar un archivo para cargar.';
+        return;
+    }
     if (!nuevoDoc.value.nombre.trim()) {
         errorDoc.value = 'El nombre del documento es obligatorio.';
         return;
@@ -1301,7 +1750,18 @@ async function guardarDocumento() {
         return;
     }
     try {
-        const response = await api.post('/fiscalizacion/documentos', nuevoDoc.value);
+        const formData = new FormData();
+        formData.append('archivo', selectedDocFile.value);
+        formData.append('nombre', nuevoDoc.value.nombre);
+        formData.append('tipo', nuevoDoc.value.tipo);
+        formData.append('entidad', nuevoDoc.value.entidad);
+        formData.append('fecha', nuevoDoc.value.fecha || '');
+
+        const response = await api.post('/fiscalizacion/documentos', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         if (response.data?.success) {
             await cargarDocumentosBD();
             cerrarDocModal();
@@ -1310,7 +1770,7 @@ async function guardarDocumento() {
         }
     } catch (error) {
         console.error('Error al guardar documento:', error);
-        errorDoc.value = 'Error de conexión con el servidor.';
+        errorDoc.value = error.response?.data?.error || 'Error de conexión con el servidor.';
     }
 }
 
@@ -1329,6 +1789,16 @@ async function eliminarDocumento(d) {
             alert('Error de conexión con el servidor.');
         }
     }
+}
+
+function abrirDocumento(d) {
+    if (!d.file_url) {
+        alert('Este documento no tiene un archivo asociado.');
+        return;
+    }
+    const baseUrl = getApiBaseUrl().replace('/api/v1', '');
+    const fullUrl = `${baseUrl}${d.file_url}`;
+    window.open(fullUrl, '_blank');
 }
 
 // Color único por ministerio basado en su posición

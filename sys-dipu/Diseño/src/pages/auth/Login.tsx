@@ -81,7 +81,7 @@ export default function Login({ onLogin }: { onLogin: (role: Role, category?: Ca
             <h2 className="text-xl font-bold text-on-surface mb-1 font-headline">Acceso Administrativo</h2>
             <p className="text-on-surface-variant text-sm">Ingrese sus credenciales para continuar.</p>
           </div>
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onLogin('superadmin'); }}>
+          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); onLogin('administrador'); }}>
             {/* Username Field */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest" htmlFor="username">

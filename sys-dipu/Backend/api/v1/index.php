@@ -7,6 +7,9 @@ use App\Controllers\UsuariosController;
 use App\Controllers\PresupuestoController;
 use App\Controllers\FiscalizacionController;
 use App\Controllers\CalendarioController;
+use App\Controllers\ModulosController;
+use App\Controllers\DashboardController;
+use App\Controllers\ArchivoController;
 
 // Backend/api/v1/index.php
 
@@ -46,6 +49,9 @@ $router->registerController(UsuariosController::class);
 $router->registerController(PresupuestoController::class);
 $router->registerController(FiscalizacionController::class);
 $router->registerController(CalendarioController::class);
+$router->registerController(ModulosController::class);
+$router->registerController(DashboardController::class);
+$router->registerController(ArchivoController::class);
 
 
 // 6. Dispatch

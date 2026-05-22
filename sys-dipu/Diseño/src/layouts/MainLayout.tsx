@@ -1,7 +1,7 @@
 import React from 'react';
 import { Role, Category } from '../types';
 
-const SidebarItem = ({ icon, label, active = false, onClick }: { icon: string, label: string, active?: boolean, onClick: () => void }) => (
+const SidebarItem = ({ icon, label, active = false, onClick }: { icon: string, label: string, active?: boolean, onClick: () => void, key?: React.Key }) => (
   <button
     onClick={onClick}
     className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group ${
