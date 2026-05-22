@@ -109,7 +109,7 @@ class FiscalizacionController extends Controller
     }
 
     #[Route('/fiscalizacion/ministro-foto/{id}', 'POST')]
-    #[Authorize(['administrador'])]
+    #[Authorize(['administrador', 'tecnico'])]
     public function storeMinistroFoto($id)
     {
         if (empty($id) || !is_numeric($id)) {
@@ -163,7 +163,7 @@ class FiscalizacionController extends Controller
     }
 
     #[Route('/fiscalizacion/ministro-foto/{id}', 'DELETE')]
-    #[Authorize(['administrador'])]
+    #[Authorize(['administrador', 'tecnico'])]
     public function destroyMinistroFoto($id)
     {
         if (empty($id) || !is_numeric($id)) {
@@ -204,7 +204,7 @@ class FiscalizacionController extends Controller
     }
 
     #[Route('/fiscalizacion/ministro-nombre/{id}', 'POST')]
-    #[Authorize(['administrador'])]
+    #[Authorize(['administrador', 'tecnico'])]
     public function storeMinistroNombre($id)
     {
         if (empty($id) || !is_numeric($id)) {

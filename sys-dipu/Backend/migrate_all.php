@@ -280,6 +280,30 @@ try {
         ]
     );
 
+    // 9. Asegurar directorios de uploads y permisos en producción
+    addLog("Verificando directorios de uploads...", "info");
+    $uploadsDir = __DIR__ . '/uploads';
+    $ministrosDir = $uploadsDir . '/ministros';
+    $documentosDir = $uploadsDir . '/documentos';
+
+    foreach ([$uploadsDir, $ministrosDir, $documentosDir] as $dir) {
+        if (!file_exists($dir)) {
+            if (@mkdir($dir, 0777, true)) {
+                addLog("Directorio creado: " . basename($dir), "success");
+            } else {
+                addLog("Error al crear directorio: " . basename($dir), "warning");
+            }
+        }
+        if (file_exists($dir)) {
+            @chmod($dir, 0777);
+            if (is_writable($dir)) {
+                addLog("Directorio es escribible: " . basename($dir), "success");
+            } else {
+                addLog("Advertencia: Directorio NO es escribible: " . basename($dir), "warning");
+            }
+        }
+    }
+
     echo "<div class='status success'>¡MIGRACIÓN Y SEMBRADO COMPLETADO CON ÉXITO!</div>";
 
 } catch (Exception $e) {

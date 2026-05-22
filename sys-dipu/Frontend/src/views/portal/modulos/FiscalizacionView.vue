@@ -1159,7 +1159,7 @@ import Swal from 'sweetalert2';
 import { useAuthStore } from '../../../stores/authStore.js';
 
 const authStore = useAuthStore();
-const isAdmin = computed(() => authStore.role === 'administrador');
+const isAdmin = computed(() => authStore.role === 'administrador' || authStore.role === 'tecnico');
 
 const query = ref('');
 const selected = ref('todos');
@@ -1436,7 +1436,8 @@ async function editarNombreMinistro(m) {
             }
         } catch (error) {
             console.error('Error al actualizar nombre del ministro:', error);
-            Swal.fire('Error de red', 'No se pudo conectar con el servidor.', 'error');
+            const errorMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo conectar con el servidor.';
+            Swal.fire('Error de red', errorMsg, 'error');
         }
     }
 }
@@ -1481,7 +1482,7 @@ async function onFotoMinistro(event, ministerioId) {
         }
     } catch (e) {
         console.error('Error al subir foto:', e);
-        const errorMsg = e.response?.data?.error || 'No se pudo conectar con el servidor o subir la imagen.';
+        const errorMsg = e.response?.data?.error || e.response?.data?.message || 'No se pudo conectar con el servidor o subir la imagen.';
         Swal.fire('Error al subir imagen', errorMsg, 'error');
     } finally {
         subiendoFoto.value = null;
@@ -1550,7 +1551,8 @@ async function eliminarFotoMinistro(ministerioId) {
             }
         } catch (e) {
             console.error('Error al eliminar foto:', e);
-            Swal.fire('Error', 'Hubo un error de red al intentar eliminar la foto.', 'error');
+            const errorMsg = e.response?.data?.error || e.response?.data?.message || 'Hubo un error de red al intentar eliminar la foto.';
+            Swal.fire('Error', errorMsg, 'error');
         }
     }
 }
