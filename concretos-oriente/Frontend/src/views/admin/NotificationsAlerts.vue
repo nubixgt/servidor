@@ -370,7 +370,7 @@ import {
 import api from '../../services/api'
 import Swal from 'sweetalert2';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 interface NotificationItem {
   id: string;

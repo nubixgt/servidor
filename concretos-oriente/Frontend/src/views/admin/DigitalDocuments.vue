@@ -411,7 +411,7 @@ import {
   BookOpenIcon,
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const authStore = useAuthStore();
 

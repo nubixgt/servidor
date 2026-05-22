@@ -333,7 +333,7 @@ import {
   XMarkIcon
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const getBackendUrl = (path: string) => {
   return `/concretos-oriente/Backend/${path}`;

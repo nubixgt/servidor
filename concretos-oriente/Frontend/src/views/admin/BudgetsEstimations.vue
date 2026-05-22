@@ -433,7 +433,7 @@ import {
   DocumentIcon
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const projects = ref<any[]>([]);
 const budgetItems = ref<any[]>([]);

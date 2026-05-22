@@ -390,7 +390,7 @@ import {
   PlusIcon
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const payrolls = ref<any[]>([]);
 const activePersonnel = ref<any[]>([]);

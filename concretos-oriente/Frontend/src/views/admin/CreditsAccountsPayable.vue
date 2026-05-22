@@ -422,7 +422,7 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const credits = ref<any[]>([]);
 const suppliers = ref<any[]>([]);
@@ -484,10 +484,9 @@ const fetchSuppliers = async () => {
 
 const fetchProjects = async () => {
   try {
-    const res = await fetch(`${API_URL}/projects`);
-    const data = await res.json();
-    if (data.status === 'success') {
-      projects.value = data.data;
+    const res = await api.get('/projects');
+    if (res.data.status === 'success') {
+      projects.value = res.data.data;
     }
   } catch (error) {
     console.error(error);

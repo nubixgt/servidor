@@ -308,7 +308,7 @@ import {
   CheckIcon
 } from '@heroicons/vue/24/outline'
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const searchTerm = ref('')
 const selectedPeriod = ref('Últimos 30 días')
