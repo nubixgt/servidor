@@ -9,7 +9,7 @@
       <div 
         v-for="(stat, i) in stats" 
         :key="i" 
-        class="glass-card p-8 rounded-[32px] border border-white/5 group"
+        class="glass-card p-8 rounded-[32px] border border-white/5 group" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div :class="`w-10 h-10 rounded-xl bg-${stat.color === 'primary' ? 'primary' : stat.color}/20 flex items-center justify-center text-${stat.color === 'primary' ? 'primary' : stat.color} mb-6`">
           <component :is="stat.icon" class="w-5 h-5" />
@@ -24,7 +24,7 @@
         v-for="(mq, i) in machinery" 
         :key="i"
         @click="selectedMachine = mq"
-        class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-8 group hover:border-primary/30 transition-all cursor-pointer hover:-translate-y-1"
+        class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-8 group hover:border-primary/30 transition-all cursor-pointer hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex items-center gap-8">
           <div class="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -82,7 +82,7 @@
           class="absolute inset-0 bg-black/80 backdrop-blur-md"
         ></div>
         
-        <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 shadow-[0_0_100px_rgba(99,102,241,0.15)] bg-slate-950 transform scale-100 transition-all duration-300">
+        <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 shadow-[0_0_100px_rgba(99,102,241,0.15)] bg-slate-950 transform scale-100 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
           <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">Reportar Cambio de Estado</h2>
           <p class="text-white/40 font-bold uppercase tracking-widest text-xs mb-10">{{ selectedMachine.name }} • {{ selectedMachine.code }}</p>
           

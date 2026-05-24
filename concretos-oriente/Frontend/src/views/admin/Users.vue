@@ -13,8 +13,8 @@
           </p>
         </div>
       </div>
-      <button @click="openModal()" class="group relative px-8 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(79,70,229,0.5)] transition-all duration-300 overflow-hidden flex items-center gap-3">
-        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+      <button @click="openModal()" class="group relative px-8 py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:shadow-[0_20px_40px_-15px_rgba(79,70,229,0.5)] transition-all duration-500 overflow-hidden flex items-center gap-3">
+        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
         <PlusIcon class="w-6 h-6 relative z-10" />
         <span class="relative z-10">Nuevo Usuario</span>
       </button>
@@ -103,10 +103,10 @@
 
     <!-- Modal Formulario -->
     <Transition
-      enter-active-class="transition duration-300 ease-out"
+      enter-active-class="transition duration-500 ease-out"
       enter-from-class="opacity-0 scale-95"
       enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition duration-200 ease-in"
+      leave-active-class="transition duration-500 ease-in"
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-95"
     >

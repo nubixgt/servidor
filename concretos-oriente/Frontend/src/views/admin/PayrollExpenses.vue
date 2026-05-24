@@ -61,7 +61,7 @@
       </div>
 
       <!-- Bonuses -->
-      <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-52">
+      <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-52" data-aos="zoom-in-up" data-aos-duration="1000">
         <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Bonos y Extras</span>
         <div>
           <h3 class="text-3xl font-black italic tracking-tighter">Q{{ totalBonuses.toLocaleString('es-GT', { minimumFractionDigits: 2 }) }}</h3>
@@ -70,7 +70,7 @@
       </div>
 
       <!-- Deductions -->
-      <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-52">
+      <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-52" data-aos="zoom-in-up" data-aos-duration="1000">
         <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Deducciones Totales</span>
         <div>
           <h3 class="text-3xl font-black italic tracking-tighter text-rose-400">Q{{ totalDeductions.toLocaleString('es-GT', { minimumFractionDigits: 2 }) }}</h3>
@@ -81,7 +81,7 @@
     </div>
 
     <!-- Employee Table -->
-    <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl">
+    <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
 
       <!-- Table Header Filters -->
       <div class="p-10 border-b border-white/5 bg-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
@@ -125,7 +125,7 @@
             <tr
               v-for="emp in filteredDetails"
               :key="emp.id"
-              class="hover:bg-white/5 transition-all duration-300"
+              class="hover:bg-white/5 transition-all duration-500"
             >
               <!-- Name -->
               <td class="px-10 py-6">
@@ -194,7 +194,7 @@
     <div v-if="showGenerateModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showGenerateModal = false"></div>
 
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Generar Planilla</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Inicia un nuevo período de pago masivo</p>
 
@@ -261,7 +261,7 @@
     <div v-if="showEditModal && editingDetail" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showEditModal = false"></div>
 
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Detalle de Planilla</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Ajuste individual para: {{ editingDetail.nombres }} {{ editingDetail.apellidos }}</p>
 
@@ -344,7 +344,7 @@
     <div v-if="showPayModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showPayModal = false"></div>
 
-      <div class="relative w-full max-w-md glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+      <div class="relative w-full max-w-md glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Confirmar Pagos</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">
           Estás por emitir los pagos de la planilla activa

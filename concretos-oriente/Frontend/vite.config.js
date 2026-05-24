@@ -5,4 +5,12 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
     plugins: [vue()],
     base: '/concretos-oriente/',
+    server: {
+        proxy: {
+            '/concretos-oriente/Backend': {
+                target: 'http://m.nubix.gt',
+                changeOrigin: true
+            }
+        }
+    }
 })

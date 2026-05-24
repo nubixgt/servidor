@@ -5,6 +5,9 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply text-white font-sans antialiased overflow-x-hidden;
     background: #0f172a; /* Deep slate fallback */

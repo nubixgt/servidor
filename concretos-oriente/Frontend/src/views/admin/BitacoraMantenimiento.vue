@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-[48px] p-10 border border-white/5 shadow-2xl relative overflow-hidden">
+        <div class="glass-card rounded-[48px] p-10 border border-white/5 shadow-2xl relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="absolute left-16 top-10 bottom-10 w-[2px] bg-white/5 pointer-events-none"></div>
 
           <div class="space-y-12 relative z-10">
@@ -65,7 +65,7 @@
             <div v-for="item in filteredLogs" :key="item.id" class="flex gap-6 relative group">
               <!-- Timeline bullet/icon indicator -->
               <div :class="[
-                'w-12 h-12 rounded-2xl flex items-center justify-center z-10 transition-transform duration-300 group-hover:scale-110 shadow-lg shrink-0',
+                'w-12 h-12 rounded-2xl flex items-center justify-center z-10 transition-transform duration-500 group-hover:scale-110 shadow-lg shrink-0',
                 item.tipo_mantenimiento === 'Preventivo' ? 'bg-primary/15 border border-primary/20 text-primary' : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
               ]">
                 <CheckCircleIcon v-if="item.tipo_mantenimiento === 'Preventivo'" class="w-5 h-5" />
@@ -119,7 +119,7 @@
                     <img
                       :src="getBackendUrl(imgUrl)"
                       alt="Foto Mantenimiento"
-                      class="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition-all duration-300"
+                      class="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition-all duration-500"
                     />
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                       <MagnifyingGlassIcon class="w-5 h-5 text-white" />
@@ -153,7 +153,7 @@
     <!-- Create Log Modal -->
     <div v-if="showAddLogModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
       <div class="absolute inset-0 cursor-pointer" @click="showAddLogModal = false"></div>
-      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-10 max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Orden de Mantenimiento</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Registrar nuevo servicio para maquinaria o vehículo</p>
 

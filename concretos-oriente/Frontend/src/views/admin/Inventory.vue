@@ -23,7 +23,7 @@
       <div
         v-for="(m, i) in metrics"
         :key="i"
-        class="glass-card p-10 rounded-[40px] border border-white/5 group relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5"
+        class="glass-card p-10 rounded-[40px] border border-white/5 group relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div :class="`absolute top-0 right-0 w-32 h-32 bg-${m.color}/10 blur-[60px] rounded-full translate-x-10 -translate-y-10 group-hover:bg-${m.color}/20 transition-all`"></div>
         <div class="relative z-10 flex items-start justify-between">
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Main Inventory Section -->
-    <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl transition-all duration-300">
+    <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
       <div class="p-12 border-b border-white/5 bg-white/5 backdrop-blur-3xl flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div class="relative flex-1 max-w-lg">
           <MagnifyingGlassIcon class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
@@ -158,7 +158,7 @@
     <transition name="fade">
       <div v-if="selectedItemDetails" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedItemDetails = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-slate-950">
+        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] bg-slate-950" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="flex flex-col lg:flex-row h-full max-h-[85vh]">
             <div class="flex-1 p-12 overflow-y-auto custom-scrollbar">
               <div class="flex justify-between items-start mb-12">
@@ -173,13 +173,13 @@
               </div>
 
               <div class="grid grid-cols-2 gap-8 mb-12">
-                <div class="glass-card p-8 rounded-[32px] border border-white/5">
+                <div class="glass-card p-8 rounded-[32px] border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                   <p class="text-[10px] font-black uppercase tracking-widest text-white/20 mb-4 flex items-center gap-2">
                     <Square3Stack3DIcon class="w-4 h-4" /> Existencia Actual
                   </p>
                   <h4 class="text-4xl font-black text-white italic">{{ Number(selectedItemDetails.stock_actual).toFixed(2) }} <span class="text-xl">{{ selectedItemDetails.unidad_medida }}</span></h4>
                 </div>
-                <div class="glass-card p-8 rounded-[32px] border border-white/5">
+                <div class="glass-card p-8 rounded-[32px] border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                   <p class="text-[10px] font-black uppercase tracking-widest text-white/20 mb-4 flex items-center gap-2">
                     <ChartBarIcon class="w-4 h-4" /> Salud de Stock
                   </p>
@@ -259,7 +259,7 @@
     <!-- CREATE/EDIT ITEM MODAL -->
     <div v-if="showItemModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeItemModal"></div>
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Ítem del Catálogo' : 'Nuevo Ítem del Catálogo' }}</h3>
           <button @click="closeItemModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -328,7 +328,7 @@
     <!-- KARDEX MOVEMENT MODAL -->
     <div v-if="showKardexModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeKardexModal"></div>
-      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registrar Movimiento (Kardex)</h3>
           <button @click="closeKardexModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">

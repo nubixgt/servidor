@@ -26,7 +26,7 @@
     <!-- Bento Grid Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <!-- Stat Card 1 -->
-      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden group">
+      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden group" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
         <div>
           <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Costo Estimado Global</span>
@@ -43,7 +43,7 @@
       </div>
 
       <!-- Stat Card 3 -->
-      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden">
+      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52 relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl"></div>
         <div>
           <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Estimaciones en Revisión</span>
@@ -55,7 +55,7 @@
       </div>
 
       <!-- Stat Card 4 -->
-      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52">
+      <div class="glass-card p-8 rounded-[40px] border border-white/5 flex flex-col justify-between h-52" data-aos="zoom-in-up" data-aos-duration="1000">
         <div>
           <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">Partidas Registradas</span>
           <div class="flex items-baseline gap-3 mt-4">
@@ -75,7 +75,7 @@
 
       <!-- Main Table Section (Col-Span 2) -->
       <div class="lg:col-span-2 space-y-6">
-        <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl">
+        <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="p-10 border-b border-white/5 bg-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Estimaciones de Avance</h3>
@@ -112,7 +112,7 @@
                 <tr
                   v-for="est in filteredEstimations"
                   :key="est.id"
-                  class="hover:bg-white/5 transition-all duration-300 cursor-pointer group"
+                  class="hover:bg-white/5 transition-all duration-500 cursor-pointer group"
                 >
                   <td class="px-10 py-6">
                     <h5 class="font-extrabold text-base text-white tracking-tight uppercase italic">{{ est.project_name || 'N/A' }}</h5>
@@ -148,7 +148,7 @@
 
       <!-- Detailed Cost Breakdown (Right Column) -->
       <div class="lg:col-span-1 space-y-8">
-        <div class="glass-card p-10 rounded-[44px] border-l-4 border-primary space-y-8">
+        <div class="glass-card p-10 rounded-[44px] border-l-4 border-primary space-y-8" data-aos="zoom-in-up" data-aos-duration="1000">
           <div>
             <h3 class="text-xl font-black italic uppercase tracking-tighter">Desglose de Costos</h3>
             <p class="text-[10px] font-black text-white/35 uppercase tracking-widest mt-1">Categorías base</p>
@@ -182,7 +182,7 @@
     <!-- Visual Chart Trends -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
       <!-- Trend Graph Visualization -->
-      <div class="lg:col-span-3 glass-card p-10 rounded-[48px] border border-white/5 space-y-8">
+      <div class="lg:col-span-3 glass-card p-10 rounded-[48px] border border-white/5 space-y-8" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div>
             <h3 class="text-2xl font-black italic uppercase tracking-tighter text-white">Avance Presupuestado vs Real</h3>
@@ -235,7 +235,7 @@
     <!-- Modal Partida Presupuestaria -->
     <div v-if="showAddItemModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showAddItemModal = false"></div>
-      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Partida Presupuestaria</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Defina los componentes del presupuesto</p>
 
@@ -333,7 +333,7 @@
     <!-- Modal Estimación de Avance -->
     <div v-if="showAddEstimationModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showAddEstimationModal = false"></div>
-      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-3xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Estimación de Avance</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Reporte periódico del progreso de obra</p>
 

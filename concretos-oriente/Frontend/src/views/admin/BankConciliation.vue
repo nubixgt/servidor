@@ -27,7 +27,7 @@
       
       <!-- Dynamic Accounts Cards -->
       <template v-if="accounts.length > 0">
-        <div v-for="(acc, index) in accounts.slice(0, 2)" :key="acc.id" class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-auto min-h-[14rem] cursor-pointer group relative overflow-hidden">
+        <div v-for="(acc, index) in accounts.slice(0, 2)" :key="acc.id" class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-auto min-h-[14rem] cursor-pointer group relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none" :class="index % 2 === 0 ? 'bg-primary/5' : 'bg-orange-500/5'"></div>
           <div class="flex justify-between items-start">
             <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">{{ acc.nombre_banco }}</span>
@@ -48,7 +48,7 @@
       </template>
       <template v-else>
         <!-- Skeleton / Empty State Cards -->
-        <div class="glass-card p-10 rounded-[40px] flex flex-col justify-center items-center h-auto min-h-[14rem] col-span-2 text-white/30">
+        <div class="glass-card p-10 rounded-[40px] flex flex-col justify-center items-center h-auto min-h-[14rem] col-span-2 text-white/30" data-aos="zoom-in-up" data-aos-duration="1000">
           <BuildingLibraryIcon class="w-10 h-10 mb-4 opacity-50" />
           <p class="font-bold uppercase tracking-widest text-xs">Sin Cuentas Registradas</p>
         </div>
@@ -60,7 +60,7 @@
       <!-- Sidebar Controls -->
       <div class="space-y-8 lg:col-span-1">
         <!-- Filters Card -->
-        <div class="glass-card p-8 rounded-[36px] border border-white/5 space-y-6">
+        <div class="glass-card p-8 rounded-[36px] border border-white/5 space-y-6" data-aos="zoom-in-up" data-aos-duration="1000">
           <h5 class="text-xs font-black uppercase tracking-widest text-white/50 border-b border-white/5 pb-3">Filtros</h5>
 
           <div class="space-y-2">
@@ -82,7 +82,7 @@
                 v-for="st in statusFilters"
                 :key="st.id"
                 @click="selectedStatus = st.id"
-                :class="['w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-300', selectedStatus === st.id ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10']"
+                :class="['w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-500', selectedStatus === st.id ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10']"
               >
                 <span>{{ st.label }}</span>
                 <span class="text-[10px] bg-white/10 px-2 py-0.5 rounded-lg">{{ st.count }}</span>
@@ -96,7 +96,7 @@
 
       <!-- Transactions Table Column -->
       <div class="lg:col-span-3 space-y-8">
-        <div class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl">
+        <div class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
           <!-- Table Header -->
           <div class="p-10 border-b border-white/5 bg-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
@@ -131,7 +131,7 @@
                 <tr
                   v-for="tx in paginatedTransactions"
                   :key="tx.id"
-                  class="hover:bg-white/5 transition-all duration-300 group"
+                  class="hover:bg-white/5 transition-all duration-500 group"
                 >
                   <td class="px-10 py-8 font-semibold text-white/50 text-xs">{{ tx.date }}</td>
                   <td class="px-10 py-8">
@@ -202,7 +202,7 @@
     <!-- Add Account Modal -->
     <div v-if="showAccountModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showAccountModal = false"></div>
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)]">
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)]" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Registro de Cuenta</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Introducir una nueva cuenta bancaria al sistema</p>
 
@@ -244,7 +244,7 @@
     <!-- Add Conciliation Modal -->
     <div v-if="showConciliationModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showConciliationModal = false"></div>
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)] max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.2)] max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Conciliación</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Marcar período y transacciones como conciliadas</p>
 

@@ -21,7 +21,7 @@
       <div
         v-for="(stat, i) in stats"
         :key="i"
-        class="glass-card p-8 rounded-[32px] flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-1.5 hover:scale-[1.02] transition-all duration-300"
+        class="glass-card p-8 rounded-[32px] flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:scale-105 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex items-center justify-between mb-4">
           <div :class="`p-3 rounded-2xl ${stat.bgColor} ${stat.color} border border-white/10 shadow-lg`">
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Table Section -->
-    <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-300">
+    <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
       <!-- Filter Bar -->
       <div class="p-8 border-b border-white/5 space-y-4">
         <div class="flex flex-wrap items-center gap-3">
@@ -118,7 +118,7 @@
                 <p v-if="activeFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
               </td>
             </tr>
-            <tr v-for="emp in paginatedPersonnel" :key="emp.id" class="hover:bg-white/5 group transition-colors duration-200">
+            <tr v-for="emp in paginatedPersonnel" :key="emp.id" class="hover:bg-white/5 group transition-colors duration-500">
               <!-- Nombre + foto + tipo badge -->
               <td class="px-8 py-6">
                 <div class="flex items-center gap-4">
@@ -231,7 +231,7 @@
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
 
-      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Empleado' : 'Añadir Nuevo Personal' }}</h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -417,7 +417,7 @@
     <div v-if="showViewModal && selectedEmp" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewModal"></div>
 
-      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Detalles del Empleado</h3>
           <button @click="closeViewModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">

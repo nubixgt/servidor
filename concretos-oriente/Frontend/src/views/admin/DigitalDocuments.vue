@@ -91,7 +91,7 @@
           :class="[
             'glass-card p-8 rounded-3xl border transition-all cursor-pointer relative group flex flex-col justify-between h-44',
             selectedFolderId === fold.id ? 'bg-primary/10 border-primary' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
-          ]"
+          ]" data-aos="zoom-in-up" data-aos-duration="1000"
         >
           <div class="flex justify-between items-start">
             <FolderIcon :class="['w-10 h-10', fold.colorClass]" />
@@ -133,7 +133,7 @@
           v-for="file in filteredFiles"
           :key="file.id"
           @click="openDetails(file)"
-          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between cursor-pointer"
+          class="glass-card rounded-3xl overflow-hidden border border-white/5 group hover:border-white/10 transition-all shadow-xl flex flex-col justify-between cursor-pointer" data-aos="zoom-in-up" data-aos-duration="1000"
         >
           <div class="h-44 bg-white/5 relative overflow-hidden flex items-center justify-center">
             <img
@@ -174,7 +174,7 @@
       </div>
 
       <!-- List View -->
-      <div v-else class="glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
+      <div v-else class="glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead>
@@ -225,7 +225,7 @@
     <!-- Upload Modal -->
     <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showUploadModal = false"></div>
-      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+      <div class="relative w-full max-w-xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Cargar Archivo</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Arrastre o seleccione el archivo digital para su almacenamiento</p>
         <form @submit.prevent="handleUploadFile" class="space-y-6">
@@ -335,7 +335,7 @@
     <!-- Document Details Modal -->
     <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showDetailsModal = false"></div>
-      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white">
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-6">Detalles del Documento</h3>
         
         <div v-if="selectedDocument" class="space-y-4">

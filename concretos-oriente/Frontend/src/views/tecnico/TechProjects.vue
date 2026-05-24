@@ -9,7 +9,7 @@
       <div 
         v-for="(prj, i) in myProjects" 
         :key="i"
-        class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl relative transition-all duration-300 hover:-translate-y-1.5"
+        class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl relative transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="absolute top-0 right-0 p-8">
            <span class="px-4 py-2 bg-primary/20 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-widest">{{ prj.status }}</span>

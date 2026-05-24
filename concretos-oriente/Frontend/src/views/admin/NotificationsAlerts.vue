@@ -32,7 +32,7 @@
 
       <div
         @click="activeTab = 'todas'; searchTerm = ''"
-        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-rose-500/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40"
+        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-rose-500/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex justify-between items-center">
           <ExclamationTriangleIcon class="w-5 h-5 text-rose-400" />
@@ -46,7 +46,7 @@
 
       <div
         @click="activeTab = 'todas'; searchTerm = ''"
-        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-primary/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40"
+        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-primary/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex justify-between items-center">
           <InformationCircleIcon class="w-5 h-5 text-primary" />
@@ -60,7 +60,7 @@
 
       <div
         @click="activeTab = 'finanzas'"
-        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-emerald-500/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40"
+        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-emerald-500/50 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex justify-between items-center">
           <CurrencyDollarIcon class="w-5 h-5 text-emerald-400" />
@@ -74,7 +74,7 @@
 
       <div
         @click="activeTab = 'todas'; searchTerm = ''"
-        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-white/20 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40"
+        class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-white/20 cursor-pointer hover:bg-white/[0.03] transition-all flex flex-col justify-between h-40" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex justify-between items-center">
           <BellIcon class="w-5 h-5 text-white/50" />
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Notifications Panel -->
-    <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl">
+    <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
 
       <!-- Tabs -->
       <div class="flex items-center gap-8 px-10 py-6 border-b border-white/5 bg-white/5 overflow-x-auto scrollbar-hide">
@@ -270,7 +270,7 @@
     <div v-if="showConfigModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
       <div class="absolute inset-0 cursor-pointer" @click="showConfigModal = false"></div>
 
-      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-8">
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white my-8" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Configuración de Alerta</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Define los parámetros para disparar alertas automáticas</p>
 

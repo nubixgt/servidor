@@ -31,7 +31,7 @@
       <div
         v-for="(metric, i) in metrics"
         :key="i"
-        class="glass-card p-8 rounded-3xl flex flex-col justify-between h-44 border border-white/5 transition-all cursor-pointer group hover:-translate-y-1.5 hover:scale-[1.02]"
+        class="glass-card p-8 rounded-3xl flex flex-col justify-between h-44 border border-white/5 transition-all cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:scale-105" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div>
           <p class="text-white/40 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">{{ metric.label }}</p>
@@ -121,14 +121,14 @@
       <!-- TAB: MAQUINARIA -->
       <section v-if="activeTab === 'machinery'" key="machinery">
         <div v-if="loading" class="text-center py-20 text-white/40">Cargando maquinaria...</div>
-        <div v-else-if="filteredMachinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-[40px] border border-white/10">
+        <div v-else-if="filteredMachinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-[40px] border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000">
           No hay maquinaria registrada.
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div 
             v-for="m in filteredMachinery" 
             :key="m.id"
-            class="glass-card rounded-[40px] overflow-hidden group hover:-translate-y-2 transition-all duration-500 border border-white/10"
+            class="glass-card rounded-[40px] overflow-hidden group hover:-translate-y-2 transition-all duration-500 border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000"
           >
             <!-- Imagen y Estado -->
             <div class="h-56 relative overflow-hidden cursor-pointer" @click="selectedMachine = m">
@@ -193,7 +193,7 @@
       </section>
 
       <!-- TAB: BITÁCORA -->
-      <section v-else-if="activeTab === 'log'" key="log" class="glass-card rounded-[40px] overflow-hidden border border-white/10">
+      <section v-else-if="activeTab === 'log'" key="log" class="glass-card rounded-[40px] overflow-hidden border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="overflow-x-auto px-4">
           <table class="w-full text-left">
             <thead>
@@ -270,7 +270,7 @@
     <div v-if="showMachineModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeMachineModal"></div>
       
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditingMachine ? 'Editar Maquinaria' : 'Registrar Nueva Maquinaria' }}</h3>
           <button @click="closeMachineModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -425,7 +425,7 @@
     <div v-if="showLogModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeLogModal"></div>
       
-      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registrar Bitácora Diaria</h3>
           <button @click="closeLogModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -500,7 +500,7 @@
     <transition name="fade">
       <div v-if="selectedMachine" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedMachine = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[85vh]">
+        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[85vh]" data-aos="zoom-in-up" data-aos-duration="1000">
           
           <button @click="selectedMachine = null" class="absolute top-8 right-8 z-10 w-12 h-12 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
             <XMarkIcon class="w-6 h-6" />
@@ -524,7 +524,7 @@
             <div class="space-y-8">
               <!-- Status & Usage -->
               <div class="flex gap-4">
-                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5">
+                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                   <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-4 flex items-center gap-2">
                     <ChartBarIcon class="w-4 h-4" /> Estado
                   </p>
@@ -533,7 +533,7 @@
                     <span class="text-lg font-black italic uppercase text-white">{{ selectedMachine.estado }}</span>
                   </div>
                 </div>
-                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5">
+                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                   <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-4 flex items-center gap-2">
                     <ClockIcon class="w-4 h-4" /> Horómetro
                   </p>
@@ -590,7 +590,7 @@
     <transition name="fade">
       <div v-if="selectedLog" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedLog = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl p-8">
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl p-8" data-aos="zoom-in-up" data-aos-duration="1000">
           <button @click="selectedLog = null" class="absolute top-8 right-8 z-10 w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
             <XMarkIcon class="w-5 h-5" />
           </button>

@@ -158,7 +158,7 @@
             v-for="proj in filteredProjects"
             :key="proj.id"
             @click="openProjectDetails(proj)"
-            class="glass-card rounded-[48px] overflow-hidden group cursor-pointer border border-white/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 relative"
+            class="glass-card rounded-[48px] overflow-hidden group cursor-pointer border border-white/10 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] flex flex-col h-full hover:-translate-y-2 transition-transform duration-500 relative" data-aos="zoom-in-up" data-aos-duration="1000"
           >
             <div class="h-64 relative overflow-hidden shrink-0">
               <img :src="getPhotoUrl(proj)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" :alt="proj.nombre" />
@@ -204,7 +204,7 @@
           class="absolute inset-0 bg-black/90 backdrop-blur-md"
         ></div>
 
-        <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transform scale-100 transition-all duration-300">
+        <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transform scale-100 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="absolute top-6 right-6 z-10 flex gap-3">
             <button
               @click="openEditModal(selectedProject)"
@@ -246,7 +246,7 @@
 
                 <!-- Estado y Contrato -->
                 <div class="flex gap-4">
-                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5">
+                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 flex items-center gap-2">
                       <ChartBarIcon class="w-4 h-4" /> Estado
                     </p>
@@ -255,7 +255,7 @@
                       <span class="text-base font-black italic uppercase text-white">{{ selectedProject.estado }}</span>
                     </div>
                   </div>
-                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5">
+                  <div class="flex-1 glass-card p-5 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2 flex items-center gap-2">
                       <DocumentTextIcon class="w-4 h-4" /> Contrato No.
                     </p>
@@ -370,7 +370,7 @@
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
 
-        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]">
+        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
             <h3 class="text-3xl font-black text-white italic uppercase tracking-tight">{{ isEditing ? 'Editar Proyecto' : 'Registrar Nuevo Proyecto' }}</h3>
             <button @click="closeModal" class="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white">

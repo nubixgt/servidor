@@ -5,7 +5,7 @@
       <div
         v-for="(kpi, i) in kpis"
         :key="i"
-        class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-48 cursor-pointer group hover:-translate-y-1.5 hover:scale-[1.02] transition-all duration-300"
+        class="glass-card p-10 rounded-[40px] flex flex-col justify-between h-48 cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:scale-105 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex justify-between items-start">
           <span class="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">{{ kpi.label }}</span>
@@ -25,7 +25,7 @@
 
     <!-- Charts Row -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-      <div class="lg:col-span-2 glass-card p-12 rounded-[56px] relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5">
+      <div class="lg:col-span-2 glass-card p-12 rounded-[56px] relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
         <div class="flex justify-between items-center mb-12 relative z-10">
           <div>
@@ -70,7 +70,7 @@
         </div>
       </div>
 
-      <div class="glass-card p-12 rounded-[56px] flex flex-col border border-white/5 transition-all duration-300 hover:-translate-y-1.5">
+      <div class="glass-card p-12 rounded-[56px] flex flex-col border border-white/5 transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white uppercase italic tracking-tighter">Vector de Presupuesto</h3>
         <p class="text-[10px] font-bold text-white/30 mt-2 mb-12 uppercase tracking-[0.2em]">Perfil de distribución de recursos</p>
         <div class="relative w-60 h-60 mx-auto mb-12 flex items-center justify-center">
@@ -98,7 +98,7 @@
     </section>
 
     <!-- Transactions Section -->
-    <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl transition-all duration-300 hover:-translate-y-1.5">
+    <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
       <div class="p-12 flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 bg-white/5 backdrop-blur-3xl">
         <div>
           <h3 class="text-4xl font-black text-white italic uppercase tracking-tighter">Protocolo de Transacciones</h3>
@@ -131,7 +131,7 @@
             <tr v-else-if="paginatedTransactions.length === 0">
               <td colspan="5" class="px-10 py-10 text-center text-white/40">No hay transacciones registradas.</td>
             </tr>
-            <tr v-for="tx in paginatedTransactions" :key="tx.id + tx.transaction_type" class="hover:bg-white/5 group transition-all duration-300 cursor-pointer">
+            <tr v-for="tx in paginatedTransactions" :key="tx.id + tx.transaction_type" class="hover:bg-white/5 group transition-all duration-500 cursor-pointer">
               <td class="px-10 py-10">
                 <div class="flex items-center gap-6">
                   <div :class="`w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-500 shadow-xl ${tx.transaction_type === 'Ingreso' ? 'text-primary group-hover:bg-primary group-hover:shadow-primary/30' : 'text-tertiary group-hover:bg-tertiary group-hover:shadow-tertiary/30'} group-hover:text-white`">
@@ -185,7 +185,7 @@
     <!-- NEW TRANSACTION MODAL -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registro Financiero</h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"><XMarkIcon class="w-6 h-6" /></button>

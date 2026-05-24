@@ -46,7 +46,7 @@
       <!-- Credit Lines Container -->
       <div class="col-span-12 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Status summary (Paid vs Pending) -->
-        <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-[260px]">
+        <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-[260px]" data-aos="zoom-in-up" data-aos-duration="1000">
           <div>
             <div class="flex justify-between items-center">
               <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.25em]">Métricas de Pago</span>
@@ -74,7 +74,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-[260px]">
+        <div class="glass-card p-10 rounded-[44px] border border-white/5 flex flex-col justify-between h-[260px]" data-aos="zoom-in-up" data-aos-duration="1000">
           <div>
              <div class="flex justify-between items-center">
               <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.25em]">Facturas Vencidas</span>
@@ -99,7 +99,7 @@
 
       <!-- Right column: Detailed Invoice Ledger -->
       <div class="col-span-12">
-        <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl">
+        <div class="glass-card rounded-[48px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
           <!-- Headers with Filters -->
           <div class="p-10 border-b border-white/5 bg-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
@@ -157,7 +157,7 @@
                 <tr
                   v-for="credit in paginatedCredits"
                   :key="credit.id"
-                  class="hover:bg-white/5 transition-all duration-300 group"
+                  class="hover:bg-white/5 transition-all duration-500 group"
                 >
                   <td class="px-10 py-6">
                     <div class="flex items-center gap-4">
@@ -220,7 +220,7 @@
     <!-- Modal Registro de Crédito -->
     <div v-if="showAddCreditModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showAddCreditModal = false"></div>
-      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Registro de Crédito / CxP</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Capturar nueva obligación con proveedor</p>
 
@@ -317,7 +317,7 @@
     <!-- Modal Abono o Pago Parcial -->
     <div v-if="showAddPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showAddPaymentModal = false"></div>
-      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="relative w-full max-w-2xl glass-card rounded-[56px] p-12 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white max-h-[90vh] overflow-y-auto custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">Abono o Pago</h3>
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Registrar pago a una cuenta por pagar</p>
 

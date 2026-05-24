@@ -5,7 +5,10 @@
       <div
         v-for="(metric, i) in metrics"
         :key="i"
-        class="glass-card p-7 rounded-3xl flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-1.5 hover:scale-[1.02] transition-all duration-300"
+        class="glass-card p-7 rounded-3xl flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] transition-all duration-500"
+        data-aos="zoom-in-up"
+        :data-aos-delay="i * 150"
+        data-aos-duration="1000"
       >
         <div class="flex justify-between items-start">
           <div :class="`p-3 rounded-2xl bg-${metric.color}/20 text-${metric.color} shadow-lg shadow-${metric.color}/20`">
@@ -23,8 +26,8 @@
     <!-- Main Grid: Financial & Alerts -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Mock Chart Area -->
-      <div class="lg:col-span-2 glass-card p-10 rounded-[40px] h-[480px] flex flex-col relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+      <div class="lg:col-span-2 glass-card p-10 rounded-[40px] h-[480px] flex flex-col relative overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_-20px_rgba(99,102,241,0.4)]" data-aos="flip-up" data-aos-duration="1200">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
         
         <div class="flex justify-between items-center mb-12 relative z-10">
           <div>
@@ -61,7 +64,7 @@
       </div>
 
       <!-- Inventory Alerts -->
-      <div class="glass-card p-10 rounded-[40px] flex flex-col border border-white/5 hover:border-tertiary/30 transition-all duration-300 hover:-translate-y-1.5">
+      <div class="glass-card p-10 rounded-[40px] flex flex-col border border-white/5 hover:border-tertiary/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_-20px_rgba(244,63,94,0.4)]" data-aos="zoom-in-left" data-aos-duration="1200" data-aos-delay="300">
         <div class="flex justify-between items-center mb-10">
           <h2 class="text-2xl font-bold text-white">Alertas de Inventario</h2>
           <span class="bg-tertiary/20 text-tertiary px-3 py-1.5 rounded-xl text-[11px] font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(244,63,94,0.2)]">3 Críticas</span>
@@ -101,7 +104,7 @@
     <!-- Bottom Row: Status & Operations -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
       <!-- Project Status -->
-      <div class="glass-card p-10 rounded-[40px] transition-all duration-300 hover:-translate-y-1.5">
+      <div class="glass-card p-10 rounded-[40px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_-20px_rgba(255,255,255,0.1)]" data-aos="fade-up-right" data-aos-duration="1000" data-aos-delay="200">
         <h2 class="text-2xl font-bold text-white mb-10">Estado de Proyectos</h2>
         <div class="space-y-10">
           <div v-for="proj in projects" :key="proj.name">
@@ -120,7 +123,7 @@
       </div>
 
       <!-- Operations Feed -->
-      <div class="glass-card p-10 rounded-[40px] transition-all duration-300 hover:-translate-y-1.5">
+      <div class="glass-card p-10 rounded-[40px] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_-20px_rgba(255,255,255,0.1)]" data-aos="fade-up-left" data-aos-duration="1000" data-aos-delay="400">
         <h2 class="text-2xl font-bold text-white mb-10">Flujo de Operaciones</h2>
         <div class="space-y-10">
           <div v-for="(feed, i) in feeds" :key="i" class="flex gap-6 relative">

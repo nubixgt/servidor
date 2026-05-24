@@ -5,7 +5,7 @@
     <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-tertiary/10 blur-[130px] rounded-full"></div>
 
     <transition name="scale-fade" appear>
-      <div class="w-full max-w-[520px] glass-card rounded-[48px] p-12 relative z-10 border border-white/20 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] bg-slate-950/40 backdrop-blur-3xl">
+      <div class="w-full max-w-[520px] glass-card rounded-[48px] p-12 relative z-10 border border-white/20 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] bg-slate-950/40 backdrop-blur-3xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="text-center mb-12">
           <div class="w-20 h-20 bg-primary/20 rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-xl border border-white/20">
             <WrenchScrewdriverIcon class="w-10 h-10 text-primary shadow-[0_0_15px_rgba(99,102,241,0.4)]" />
@@ -48,7 +48,7 @@
 
           <button 
             type="submit"
-            class="w-full glass-button-primary text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-1 active:translate-y-0 transition-all uppercase tracking-widest"
+            class="w-full glass-button-primary text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] active:translate-y-0 transition-all uppercase tracking-widest"
           >
             Sincronizar Acceso
             <ArrowRightIcon class="w-6 h-6" />
