@@ -367,10 +367,10 @@ import {
   BoltIcon,
   ServerIcon
 } from '@heroicons/vue/24/outline';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 interface NotificationItem {
   id: string;
@@ -417,7 +417,7 @@ const configs = ref<any[]>([]);
 
 const fetchNotifications = async () => {
   try {
-    const res = await axios.get(`${API_URL}/alerts_history`);
+    const res = await api.get(`/alerts_history`);
     if (res.data.status === 'success') {
       notifications.value = res.data.data.map((n: any) => ({
         id: n.id.toString(),
@@ -438,7 +438,7 @@ const fetchNotifications = async () => {
 
 const fetchConfigs = async () => {
   try {
-    const res = await axios.get(`${API_URL}/alerts_config`);
+    const res = await api.get(`/alerts_config`);
     if (res.data.status === 'success') {
       configs.value = res.data.data;
     }
@@ -449,7 +449,7 @@ const fetchConfigs = async () => {
 
 const handleDeleteConfig = async (id: number) => {
   try {
-    const res = await axios.delete(`${API_URL}/alerts_config/${id}`);
+    const res = await api.delete(`/alerts_config/${id}`);
     if (res.data.status === 'success') {
       showToast('Regla eliminada exitosamente');
       fetchConfigs();
@@ -498,7 +498,7 @@ const showToast = (msg: string) => {
 };
 
 const handleMarkAsRead = async (id: string) => {
-  // Aquí idealmente harías un await axios.post(`${API_URL}/alerts_history/mark_read/${id}`)
+  // Aquí idealmente harías un await api.post(`/alerts_history/mark_read/${id}`)
   const nt = notifications.value.find(n => n.id === id);
   if (nt && !nt.isRead) {
     nt.isRead = true;
@@ -513,7 +513,7 @@ const handleDeleteNotification = (id: string) => {
 
 async function handleSaveConfig() {
   try {
-    const res = await axios.post(`${API_URL}/alerts_config`, {
+    const res = await api.post(`/alerts_config`, {
       nombre: form.value.nombre,
       tipo_evento: form.value.tipo_evento,
       canales: form.value.canales,

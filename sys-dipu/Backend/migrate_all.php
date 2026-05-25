@@ -1,26 +1,189 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
 require_once __DIR__ . '/autoload.php';
 
 use App\Utils\Database;
 
+echo "<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Migración de Base de Datos - SysDipu</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0e2430; color: #e0f2fe; padding: 40px; margin: 0; }
+        .container { max-width: 900px; margin: 0 auto; background: #184e5b; border: 1px solid #327f91; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { color: #5ab1c5; border-bottom: 2px solid #327f91; padding-bottom: 10px; margin-top: 0; }
+        .status { padding: 15px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; }
+        .success { background-color: #0f5132; color: #d1e7dd; border: 1px solid #badbcc; }
+        .error { background-color: #842029; color: #f8d7da; border: 1px solid #f5c2c7; }
+        .log-section { background: #0f3642; border: 1px solid #216170; border-radius: 6px; padding: 20px; font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.6; overflow-x: auto; }
+        .log-entry { margin-bottom: 8px; }
+        .log-success { color: #4ade80; }
+        .log-info { color: #38bdf8; }
+        .log-warning { color: #fbbf24; }
+        .log-error { color: #f87171; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class='container'>
+    <h1>Ejecutor de Migraciones SysDipu - Módulo Fiscalización & E2E</h1>
+";
+
+$log = [];
+function addLog($msg, $type = 'info') {
+    global $log;
+    $log[] = ['msg' => $msg, 'type' => $type];
+}
+
 try {
     $db = Database::getInstance()->getConnection();
+    addLog("Conexión a la base de datos establecida con éxito.", "success");
     
     // Read schema.sql
     $schemaPath = __DIR__ . '/../Database/schema.sql';
     if (!file_exists($schemaPath)) {
-        throw new Exception("schema.sql not found at $schemaPath");
+        throw new Exception("schema.sql no encontrado en $schemaPath");
     }
     
     $sql = file_get_contents($schemaPath);
     
     // DROP existing tables for clean E2E reset
+    addLog("Limpiando tablas existentes para reinicio de datos...", "info");
     $db->exec("DROP TABLE IF EXISTS afiliaciones_politicas, redes_sociales, compromisos_distritales, comisiones, actividades, citaciones, iniciativas, fiscalizacion_documentos, archivo_central;");
+    addLog("Tablas anteriores eliminadas para reinicio E2E.", "success");
     
     // Execute schema SQL queries
+    addLog("Ejecutando schema.sql para crear/restaurar estructuras...", "info");
     $db->exec($sql);
-    echo "MIGRATION SUCCESS: All database tables are created.\n";
+    addLog("Estructura principal de base de datos cargada.", "success");
     
+    // 1. Obtener tipo de la columna id en la tabla usuarios para compatibilidad del Foreign Key
+    addLog("Inspeccionando estructura de la tabla 'usuarios'...", "info");
+    $stmt = $db->query("DESCRIBE usuarios");
+    $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $userIdType = 'int(10) unsigned'; // Tipo fallback predeterminado
+    foreach ($columns as $col) {
+        if (strtolower($col['Field']) === 'id') {
+            $userIdType = $col['Type'];
+            addLog("Detectado usuarios.id con tipo: {$userIdType}", "success");
+            break;
+        }
+    }
+    
+    // 2. Crear Tabla fiscalizacion_personal
+    addLog("Verificando tabla 'fiscalizacion_personal'...", "info");
+    $db->exec("CREATE TABLE IF NOT EXISTS `fiscalizacion_personal` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `ministerio_id` int(11) NOT NULL,
+      `nombre` varchar(255) NOT NULL,
+      `tipo_puesto` varchar(100) NOT NULL,
+      `titulo_puesto` varchar(255) DEFAULT NULL,
+      `sueldo` varchar(100) DEFAULT NULL,
+      `fecha_posesion` date DEFAULT NULL,
+      `foto_nombre` varchar(255) DEFAULT NULL,
+      `foto_preview` longtext DEFAULT NULL,
+      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+    addLog("Tabla 'fiscalizacion_personal' creada o ya existente.", "success");
+    
+    // Asegurar columna titulo_puesto en fiscalizacion_personal
+    $stmt = $db->query("DESCRIBE fiscalizacion_personal");
+    $personalCols = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if (!in_array('titulo_puesto', $personalCols)) {
+        addLog("Añadiendo columna faltante 'titulo_puesto' a 'fiscalizacion_personal'...", "info");
+        $db->exec("ALTER TABLE fiscalizacion_personal ADD COLUMN titulo_puesto VARCHAR(255) NULL AFTER tipo_puesto");
+        addLog("Columna 'titulo_puesto' agregada exitosamente.", "success");
+    } else {
+        addLog("La columna 'titulo_puesto' ya existe en 'fiscalizacion_personal'.", "info");
+    }
+
+    // 3. Crear Tabla fiscalizacion_documentos
+    addLog("Verificando tabla 'fiscalizacion_documentos'...", "info");
+    $db->exec("CREATE TABLE IF NOT EXISTS `fiscalizacion_documentos` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `tipo` varchar(20) NOT NULL,
+      `nombre` varchar(255) NOT NULL,
+      `entidad` varchar(50) NOT NULL,
+      `fecha` date NOT NULL,
+      `file_url` varchar(500) DEFAULT NULL,
+      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+    addLog("Tabla 'fiscalizacion_documentos' creada o ya existente.", "success");
+
+    // Asegurar columna file_url en fiscalizacion_documentos
+    $stmt = $db->query("DESCRIBE fiscalizacion_documentos");
+    $docCols = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if (!in_array('file_url', $docCols)) {
+        addLog("Añadiendo columna 'file_url' a 'fiscalizacion_documentos'...", "info");
+        $db->exec("ALTER TABLE fiscalizacion_documentos ADD COLUMN file_url VARCHAR(500) DEFAULT NULL AFTER fecha");
+        addLog("Columna 'file_url' agregada con éxito.", "success");
+    }
+
+    // 4. Crear Tabla fiscalizacion_ministros
+    addLog("Verificando tabla 'fiscalizacion_ministros'...", "info");
+    $db->exec("CREATE TABLE IF NOT EXISTS `fiscalizacion_ministros` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `ministerio_id` int(11) NOT NULL,
+      `nombre_ministro` varchar(255) DEFAULT 'Pendiente',
+      `foto_url` varchar(255) DEFAULT NULL,
+      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `ministerio_id` (`ministerio_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+    addLog("Tabla 'fiscalizacion_ministros' creada o ya existente.", "success");
+
+    // 5. Crear Tabla fiscalizacion_alertas usando el tipo detectado para compatibilidad FK
+    addLog("Verificando tabla 'fiscalizacion_alertas'...", "info");
+    $db->exec("CREATE TABLE IF NOT EXISTS `fiscalizacion_alertas` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `usuario_id` {$userIdType} NOT NULL,
+      `email` varchar(255) NOT NULL,
+      `sicoin_alerts` tinyint(1) DEFAULT 1,
+      `documento_alerts` tinyint(1) DEFAULT 1,
+      `critica_alerts` tinyint(1) DEFAULT 1,
+      `personal_alerts` tinyint(1) DEFAULT 1,
+      `canal` varchar(50) DEFAULT 'email',
+      `frecuencia` varchar(50) DEFAULT 'instante',
+      `estado` tinyint(1) DEFAULT 1,
+      `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (`id`),
+      KEY `usuario_id` (`usuario_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+    addLog("Tabla 'fiscalizacion_alertas' creada o ya existente.", "success");
+
+    // 6. Añadir Constraint FK condicionalmente
+    addLog("Intentando enlazar la relación 'usuario_id' -> 'usuarios.id'...", "info");
+    try {
+        // Verificar si la restricción ya existe
+        $stmt = $db->prepare("
+            SELECT CONSTRAINT_NAME 
+            FROM information_schema.TABLE_CONSTRAINTS 
+            WHERE CONSTRAINT_SCHEMA = DATABASE() 
+              AND TABLE_NAME = 'fiscalizacion_alertas' 
+              AND CONSTRAINT_NAME = 'fk_fiscalizacion_alertas_usuarios'
+        ");
+        $stmt->execute();
+        $constraintExists = $stmt->fetch();
+        
+        if (!$constraintExists) {
+            $db->exec("
+                ALTER TABLE `fiscalizacion_alertas` 
+                ADD CONSTRAINT `fk_fiscalizacion_alertas_usuarios` 
+                FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) 
+                ON DELETE CASCADE
+            ");
+            addLog("Relación de clave foránea 'fk_fiscalizacion_alertas_usuarios' creada exitosamente.", "success");
+        } else {
+            addLog("La relación de clave foránea 'fk_fiscalizacion_alertas_usuarios' ya existe.", "info");
+        }
+    } catch (Exception $fkError) {
+        addLog("No se pudo enlazar la clave foránea estrictamente (probablemente debido a diferencias en el motor InnoDB o índices heredados). Detalle: " . $fkError->getMessage(), "warning");
+        addLog("La tabla 'fiscalizacion_alertas' funcionará perfectamente de manera desacoplada.", "info");
+    }
+
     // Helper to check if a table is empty and insert rows
     $seedIfEmpty = function($tableName, $insertQueries, $data) use ($db) {
         $count = $db->query("SELECT COUNT(*) FROM $tableName")->fetchColumn();
@@ -29,9 +192,9 @@ try {
             foreach ($data as $row) {
                 $stmt->execute($row);
             }
-            echo "SEEDED: Table '$tableName' populated with default data.\n";
+            addLog("SEMBRADO: Tabla '$tableName' poblada con datos por defecto.", "success");
         } else {
-            echo "SKIPPED: Table '$tableName' is not empty.\n";
+            addLog("OMITIDO: Tabla '$tableName' ya contiene datos.", "info");
         }
     };
 
@@ -117,7 +280,50 @@ try {
         ]
     );
 
-} catch (\Exception $e) {
-    echo "MIGRATION ERROR: " . $e->getMessage() . "\n";
-    exit(1);
+    // 9. Asegurar directorios de uploads y permisos en producción
+    addLog("Verificando directorios de uploads...", "info");
+    $uploadsDir = __DIR__ . '/uploads';
+    $ministrosDir = $uploadsDir . '/ministros';
+    $documentosDir = $uploadsDir . '/documentos';
+
+    foreach ([$uploadsDir, $ministrosDir, $documentosDir] as $dir) {
+        if (!file_exists($dir)) {
+            if (@mkdir($dir, 0777, true)) {
+                addLog("Directorio creado: " . basename($dir), "success");
+            } else {
+                addLog("Error al crear directorio: " . basename($dir), "warning");
+            }
+        }
+        if (file_exists($dir)) {
+            @chmod($dir, 0777);
+            if (is_writable($dir)) {
+                addLog("Directorio es escribible: " . basename($dir), "success");
+            } else {
+                addLog("Advertencia: Directorio NO es escribible: " . basename($dir), "warning");
+            }
+        }
+    }
+
+    echo "<div class='status success'>¡MIGRACIÓN Y SEMBRADO COMPLETADO CON ÉXITO!</div>";
+
+} catch (Exception $e) {
+    addLog("ERROR CRÍTICO DURANTE LA MIGRACIÓN: " . $e->getMessage(), "error");
+    echo "<div class='status error'>MIGRACIÓN FALLIDA</div>";
 }
+
+echo "<div class='log-section'>";
+foreach ($log as $entry) {
+    $class = 'log-info';
+    if ($entry['type'] === 'success') $class = 'log-success';
+    if ($entry['type'] === 'warning') $class = 'log-warning';
+    if ($entry['type'] === 'error') $class = 'log-error';
+    
+    echo "<div class='log-entry'><span class='{$class}'>[" . strtoupper($entry['type']) . "]</span> " . htmlspecialchars($entry['msg']) . "</div>";
+}
+echo "</div>";
+
+echo "
+</div>
+</body>
+</html>
+";

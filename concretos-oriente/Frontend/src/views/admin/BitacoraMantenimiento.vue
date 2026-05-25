@@ -318,7 +318,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 import {
   ClipboardDocumentListIcon,
@@ -333,7 +333,7 @@ import {
   XMarkIcon
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const getBackendUrl = (path: string) => {
   return `/concretos-oriente/Backend/${path}`;
@@ -438,21 +438,21 @@ const initMap = (lat: number, lng: number) => {
 
 const fetchMachinery = async () => {
   try {
-    const res = await axios.get(`${API_URL}/maintenance/machinery`);
+    const res = await api.get(`/maintenance/machinery`);
     if (res.data.status === 'success') machineryList.value = res.data.data;
   } catch (error) { console.error(error); }
 };
 
 const fetchPersonnel = async () => {
   try {
-    const res = await axios.get(`${API_URL}/payrolls/active-personnel`);
+    const res = await api.get(`/payrolls/active-personnel`);
     if (res.data.status === 'success') personnelList.value = res.data.data;
   } catch (error) { console.error(error); }
 };
 
 const fetchLogs = async () => {
   try {
-    const res = await axios.get(`${API_URL}/maintenance/logs`);
+    const res = await api.get(`/maintenance/logs`);
     if (res.data.status === 'success') logsList.value = res.data.data;
   } catch (error) { console.error(error); }
 };
@@ -524,7 +524,7 @@ async function handleCreateLog() {
       formData.append('fotos[]', file);
     });
 
-    const res = await axios.post(`${API_URL}/maintenance/logs`, formData, {
+    const res = await api.post(`/maintenance/logs`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     

@@ -409,7 +409,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import api from '../../services/api'
 import Swal from 'sweetalert2';
 import {
   PlusIcon,
@@ -422,7 +422,7 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/vue/24/outline';
 
-const API_URL = '/concretos-oriente/Backend/api/v1';
+
 
 const credits = ref<any[]>([]);
 const suppliers = ref<any[]>([]);
@@ -462,7 +462,7 @@ onMounted(() => {
 
 const fetchCredits = async () => {
   try {
-    const res = await axios.get(`${API_URL}/credits`);
+    const res = await api.get(`/credits`);
     if (res.data.status === 'success') {
       credits.value = res.data.data;
     }
@@ -473,7 +473,7 @@ const fetchCredits = async () => {
 
 const fetchSuppliers = async () => {
   try {
-    const res = await axios.get(`${API_URL}/suppliers`);
+    const res = await api.get(`/suppliers`);
     if (res.data.status === 'success') {
       suppliers.value = res.data.data;
     }
@@ -484,10 +484,9 @@ const fetchSuppliers = async () => {
 
 const fetchProjects = async () => {
   try {
-    const res = await fetch(`${API_URL}/projects`);
-    const data = await res.json();
-    if (data.status === 'success') {
-      projects.value = data.data;
+    const res = await api.get('/projects');
+    if (res.data.status === 'success') {
+      projects.value = res.data.data;
     }
   } catch (error) {
     console.error(error);
@@ -496,7 +495,7 @@ const fetchProjects = async () => {
 
 const fetchAccounts = async () => {
   try {
-    const res = await axios.get(`${API_URL}/bank-accounts`);
+    const res = await api.get(`/bank-accounts`);
     if (res.data.status === 'success') {
       accounts.value = res.data.data;
     }
@@ -597,7 +596,7 @@ const submitCredit = async () => {
   });
 
   try {
-    const res = await axios.post(`${API_URL}/credits`, formData);
+    const res = await api.post(`/credits`, formData);
     if (res.data.status === 'success') {
       showAddCreditModal.value = false;
       newCredit.value = {
@@ -644,7 +643,7 @@ const submitPayment = async () => {
   }
 
   try {
-    const res = await axios.post(`${API_URL}/credit-payments`, formData, {
+    const res = await api.post(`/credit-payments`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
