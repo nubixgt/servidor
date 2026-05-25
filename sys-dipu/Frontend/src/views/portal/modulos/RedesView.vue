@@ -102,9 +102,15 @@
                                     </div>
                                 </td>
                                 <td class="px-8 py-6">
-                                    <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-sm text-on-surface-variant">{{ plataformaIcon(pub.plataforma) }}</span>
-                                        <span class="text-sm text-on-surface">{{ pub.plataforma }}</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span 
+                                            v-for="plat in (pub.plataforma || '').split(', ')" 
+                                            :key="plat" 
+                                            class="inline-flex items-center gap-1 bg-surface-container px-2.5 py-1 rounded-full text-xs font-bold text-on-surface"
+                                        >
+                                            <span class="material-symbols-outlined text-sm text-primary">{{ plataformaIcon(plat) }}</span>
+                                            <span>{{ plat }}</span>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="px-8 py-6">
@@ -159,22 +165,32 @@
                                 <input v-model="form.titulo" class="px-3 py-2 bg-surface-container-low text-on-surface border border-outline-variant/30 rounded-lg outline-none focus:ring-2 focus:ring-primary/20" placeholder="Ej. Post: Aprobación Ley de Movilidad" />
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Plataforma / Medio *</label>
-                                    <select v-model="form.plataforma" class="px-3 py-2 bg-surface-container-low text-on-surface border border-outline-variant/30 rounded-lg outline-none focus:ring-2 focus:ring-primary/20">
-                                        <option value="X / Twitter">X / Twitter</option>
-                                        <option value="Facebook">Facebook</option>
-                                        <option value="TikTok">TikTok</option>
-                                        <option value="Instagram">Instagram</option>
-                                        <option value="Medios Nacionales">Medios Nacionales</option>
-                                        <option value="Prensa">Prensa</option>
-                                    </select>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Plataforma / Medio *</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-surface-container-low p-3 rounded-xl border border-outline-variant/30">
+                                    <label 
+                                        v-for="plat in PLATFORM_OPTIONS" 
+                                        :key="plat.value"
+                                        class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border cursor-pointer select-none transition-all duration-200"
+                                        :class="selectedPlatforms.includes(plat.value)
+                                            ? 'bg-primary/10 border-primary text-primary font-bold shadow-sm'
+                                            : 'bg-surface-container-lowest border-outline-variant/10 text-on-surface hover:bg-surface-container-high'"
+                                    >
+                                        <input 
+                                            type="checkbox" 
+                                            :value="plat.value"
+                                            v-model="selectedPlatforms"
+                                            class="accent-primary w-3.5 h-3.5 rounded cursor-pointer"
+                                        />
+                                        <span class="material-symbols-outlined text-base flex-shrink-0">{{ plat.icon }}</span>
+                                        <span class="text-[11px] font-semibold uppercase tracking-wide truncate">{{ plat.label }}</span>
+                                    </label>
                                 </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Enlace / URL de la Publicación</label>
-                                    <input v-model="form.enlace" class="px-3 py-2 bg-surface-container-low text-on-surface border border-outline-variant/30 rounded-lg outline-none focus:ring-2 focus:ring-primary/20" placeholder="https://x.com/diputado/status/1" />
-                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Enlace / URL de la Publicación</label>
+                                <input v-model="form.enlace" class="px-3 py-2 bg-surface-container-low text-on-surface border border-outline-variant/30 rounded-lg outline-none focus:ring-2 focus:ring-primary/20" placeholder="https://x.com/diputado/status/1" />
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
@@ -251,8 +267,21 @@ const filtroTipo = ref('Todas')
 const showModal = ref(false)
 const editando = ref(null)
 const formError = ref('')
-const formVacio = () => ({ titulo: '', plataforma: 'X / Twitter', enlace: '', fecha: '', hora: '', estado: 'Publicado', impacto: 'Medio', interacciones: '-', descripcion: '' })
+const formVacio = () => ({ titulo: '', plataforma: '', enlace: '', fecha: '', hora: '', estado: 'Publicado', impacto: 'Medio', interacciones: '-', descripcion: '' })
 const form = ref(formVacio())
+
+const selectedPlatforms = ref([])
+
+const PLATFORM_OPTIONS = [
+  { value: 'X / Twitter', label: 'X / Twitter', icon: 'alternate_email' },
+  { value: 'Facebook', label: 'Facebook', icon: 'public' },
+  { value: 'TikTok', label: 'TikTok', icon: 'music_note' },
+  { value: 'Instagram', label: 'Instagram', icon: 'photo_camera' },
+  { value: 'Telegram', label: 'Telegram', icon: 'send' },
+  { value: 'WhatsApp', label: 'WhatsApp', icon: 'chat' },
+  { value: 'Medios Nacionales', label: 'Medios Nacionales', icon: 'newspaper' },
+  { value: 'Prensa', label: 'Prensa', icon: 'article' }
+]
 
 const cargarRedes = async () => {
     try {
@@ -272,9 +301,9 @@ onMounted(() => {
 const publicacionesFiltradas = computed(() => {
     let lista = redes.value || []
     if (filtroTipo.value === 'Redes') {
-        lista = lista.filter(r => r.plataforma !== 'Medios Nacionales' && r.plataforma !== 'Prensa')
+        lista = lista.filter(r => r.plataforma && r.plataforma.split(', ').some(p => p !== 'Medios Nacionales' && p !== 'Prensa'))
     } else if (filtroTipo.value === 'Prensa') {
-        lista = lista.filter(r => r.plataforma === 'Medios Nacionales' || r.plataforma === 'Prensa')
+        lista = lista.filter(r => r.plataforma && r.plataforma.split(', ').some(p => p === 'Medios Nacionales' || p === 'Prensa'))
     }
     if (busqueda.value.trim()) {
         const q = busqueda.value.toLowerCase()
@@ -288,20 +317,23 @@ const publicacionesFiltradas = computed(() => {
 })
 
 const publicacionesRedesCount = computed(() => {
-    return redes.value.filter(r => r.plataforma !== 'Medios Nacionales' && r.plataforma !== 'Prensa').length
+    return redes.value.filter(r => r.plataforma && r.plataforma.split(', ').some(p => p !== 'Medios Nacionales' && p !== 'Prensa')).length
 })
 
 const comunicadosPrensaCount = computed(() => {
-    return redes.value.filter(r => r.plataforma === 'Medios Nacionales' || r.plataforma === 'Prensa').length
+    return redes.value.filter(r => r.plataforma && r.plataforma.split(', ').some(p => p === 'Medios Nacionales' || p === 'Prensa')).length
 })
 
 function plataformaIcon(plataforma) {
-    if (plataforma === 'X / Twitter') return 'alternate_email'
-    if (plataforma === 'Facebook') return 'public'
-    if (plataforma === 'TikTok') return 'music_note'
-    if (plataforma === 'Instagram') return 'photo_camera'
-    if (plataforma === 'Medios Nacionales') return 'newspaper'
-    if (plataforma === 'Prensa') return 'article'
+    const plat = (plataforma || '').toLowerCase().trim();
+    if (plat.includes('x / twitter') || plat.includes('twitter')) return 'alternate_email'
+    if (plat.includes('facebook')) return 'public'
+    if (plat.includes('tiktok')) return 'music_note'
+    if (plat.includes('instagram')) return 'photo_camera'
+    if (plat.includes('telegram')) return 'send'
+    if (plat.includes('whatsapp')) return 'chat'
+    if (plat.includes('medios nacionales')) return 'newspaper'
+    if (plat.includes('prensa')) return 'article'
     return 'share'
 }
 
@@ -335,9 +367,11 @@ function openModal(pub = null) {
     if (pub) {
         editando.value = pub
         form.value = { ...pub }
+        selectedPlatforms.value = pub.plataforma ? pub.plataforma.split(', ') : []
     } else {
         editando.value = null
         form.value = formVacio()
+        selectedPlatforms.value = ['X / Twitter']
     }
     showModal.value = true
 }
@@ -348,8 +382,10 @@ function closeModal() {
 
 async function guardar() {
     formError.value = ''
+    form.value.plataforma = selectedPlatforms.value.join(', ')
+
     if (!form.value.titulo.trim()) { formError.value = 'El título de la publicación es obligatorio.'; return }
-    if (!form.value.plataforma) { formError.value = 'La plataforma o medio es obligatorio.'; return }
+    if (!form.value.plataforma) { formError.value = 'Debes seleccionar al menos una plataforma o medio.'; return }
     if (!form.value.fecha) { formError.value = 'La fecha es obligatoria.'; return }
     if (!form.value.hora || !form.value.hora.trim()) { formError.value = 'La hora de publicación es obligatoria.'; return }
 

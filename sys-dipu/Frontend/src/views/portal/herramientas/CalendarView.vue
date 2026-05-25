@@ -40,9 +40,33 @@
             </button>
           </div>
           <button class="cal-today-btn" @click="goToday">Hoy</button>
-          <button class="cal-new-btn" @click="openAdd(formatDate(new Date()))">
-            <span class="material-symbols-outlined">add</span>Nuevo evento
-          </button>
+          <!-- Botón de Google Calendar "+ Crear" -->
+          <div class="gcal-create-dropdown-wrap">
+            <button class="gcal-create-btn" @click.stop="toggleCreateDropdown">
+              <svg class="gcal-plus-icon" viewBox="0 0 36 36">
+                <path fill="#34A853" d="M16 16v14h4V20z"/>
+                <path fill="#4285F4" d="M30 16H20v4h10z"/>
+                <path fill="#FBBC05" d="M6 16h10v4H6z"/>
+                <path fill="#EA4335" d="M20 16V6h-4v10z"/>
+              </svg>
+              <span>Crear</span>
+              <span class="material-symbols-outlined gcal-arrow">arrow_drop_down</span>
+            </button>
+            <div class="gcal-create-menu" v-if="showCreateDropdown">
+              <button @click="triggerCreate('evento')" class="gcal-create-item">
+                <span class="material-symbols-outlined" style="color: #4285F4; font-variation-settings: 'FILL' 1;">event</span>
+                <span>Evento</span>
+              </button>
+              <button @click="triggerCreate('tarea')" class="gcal-create-item">
+                <span class="material-symbols-outlined" style="color: #34A853; font-variation-settings: 'FILL' 1;">task_alt</span>
+                <span>Tarea</span>
+              </button>
+              <button @click="triggerCreate('agenda')" class="gcal-create-item">
+                <span class="material-symbols-outlined" style="color: #8a3ffc; font-variation-settings: 'FILL' 1;">calendar_month</span>
+                <span>Agenda de citas</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -107,8 +131,14 @@
             @dragstart="handleDragStart($event, evt)"
             @dragend="dragItem = null; dragOverDate = null"
             @click.stop="openEdit(evt)">
-            <span class="cal-evt-dot" :style="{ background: getCatColor(evt.category) }"></span>
-            <span class="cal-evt-name">{{ evt.title }}</span>
+            <span v-if="evt.eventType === 'tarea'" class="material-symbols-outlined cal-evt-icon" :style="{ color: getCatColor(evt.category) }">task_alt</span>
+            <span v-else-if="evt.eventType === 'agenda'" class="material-symbols-outlined cal-evt-icon" :style="{ color: getCatColor(evt.category) }">calendar_month</span>
+            <span v-else class="cal-evt-dot" :style="{ background: getCatColor(evt.category) }"></span>
+            
+            <span class="cal-evt-name" :class="{ 'gcal-task-line': evt.eventType === 'tarea' }">
+              <span v-if="evt.timeStart" class="cal-evt-time">{{ formatTimeCompact(evt.timeStart) }} </span>
+              {{ evt.title }}
+            </span>
             <span v-if="evt.files?.length" class="material-symbols-outlined cal-evt-pin">attach_file</span>
           </div>
         </div>
@@ -141,13 +171,18 @@
 
   <EventModal :show="showModal" :editing="editingEvent" :date="selectedDate" :categories="CATEGORIES"
     @close="closeModal" @save="handleSave" @delete="handleDelete" />
+
+  <EventDetailModal :show="showDetailModal" :event="selectedDetailEvent" :categories="CATEGORIES"
+    @close="closeDetailModal" @edit="triggerEditFromDetail" @delete="handleDeleteFromDetail" />
 </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCalendar } from '../../../composables/useCalendar.js'
 import EventModal from '../../../components/calendar/EventModal.vue'
+import EventDetailModal from '../../../components/calendar/EventDetailModal.vue'
+import Swal from 'sweetalert2'
 
 const {
   currentDate, viewMode, searchQuery, activeFilters, events,
@@ -157,8 +192,38 @@ const {
   loadEvents
 } = useCalendar()
 
+const showCreateDropdown = ref(false)
+
+function toggleCreateDropdown(e) {
+  showCreateDropdown.value = !showCreateDropdown.value
+}
+
+function closeCreateDropdown() {
+  showCreateDropdown.value = false
+}
+
+function triggerCreate(type) {
+  showCreateDropdown.value = false
+  selectedDate.value = formatDate(new Date())
+  editingEvent.value = { 
+    id: null,
+    eventType: type, 
+    date: selectedDate.value, 
+    title: '', 
+    category: 'iniciativas', 
+    description: '', 
+    files: [] 
+  }
+  showModal.value = true
+}
+
 onMounted(() => {
   loadEvents()
+  window.addEventListener('click', closeCreateDropdown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeCreateDropdown)
 })
 
 const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
@@ -169,6 +234,9 @@ const editingEvent = ref(null)
 const selectedDate = ref('')
 const dragItem = ref(null)
 const dragOverDate = ref(null)
+
+const showDetailModal = ref(false)
+const selectedDetailEvent = ref(null)
 
 const todayDay = computed(() => {
   const now = new Date()
@@ -194,16 +262,79 @@ function formatDisplayDate(dateStr) {
   return `${d} ${months[m - 1]} ${y}`
 }
 
-function openAdd(date)  { editingEvent.value = null; selectedDate.value = date; showModal.value = true }
-function openEdit(evt)  { editingEvent.value = evt;  selectedDate.value = evt.date; showModal.value = true }
+function formatTimeCompact(timeStr) {
+  if (!timeStr) return ''
+  const [h, m] = timeStr.split(':').map(Number)
+  const ampm = h >= 12 ? 'p' : 'a'
+  const displayHour = h % 12 === 0 ? 12 : h % 12
+  const mm = m === 0 ? '' : `:${String(m).padStart(2, '0')}`
+  return `${displayHour}${mm}${ampm}`
+}
+
+function openAdd(date)  {
+  selectedDate.value = date
+  editingEvent.value = { 
+    id: null,
+    eventType: 'evento', 
+    date: date, 
+    title: '', 
+    category: 'iniciativas', 
+    description: '', 
+    files: [] 
+  }
+  showModal.value = true
+}
+function openEdit(evt) {
+  selectedDetailEvent.value = evt
+  showDetailModal.value = true
+}
+
+function closeDetailModal() {
+  showDetailModal.value = false
+  selectedDetailEvent.value = null
+}
+
+function triggerEditFromDetail(evt) {
+  showDetailModal.value = false
+  editingEvent.value = evt
+  selectedDate.value = evt.date
+  showModal.value = true
+}
+
+async function handleDeleteFromDetail(evt) {
+  const result = await Swal.fire({
+    title: '¿Eliminar evento?',
+    text: `¿Está seguro de eliminar el evento "${evt.title}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (result.isConfirmed) {
+    showDetailModal.value = false
+    deleteEvent(evt.id)
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Evento eliminado exitosamente',
+      showConfirmButton: false,
+      timer: 2000
+    });
+  }
+}
+
 function closeModal()   { showModal.value = false; editingEvent.value = null }
 
 function handleSave(data) {
-  if (editingEvent.value) updateEvent(editingEvent.value.id, data)
+  if (editingEvent.value && editingEvent.value.id) updateEvent(editingEvent.value.id, data)
   else addEvent(data)
   closeModal()
 }
-function handleDelete() { if (editingEvent.value) { deleteEvent(editingEvent.value.id); closeModal() } }
+function handleDelete() { if (editingEvent.value && editingEvent.value.id) { deleteEvent(editingEvent.value.id); closeModal() } }
 
 function handleDragStart(e, evt) {
   dragItem.value = evt
@@ -605,5 +736,110 @@ function handleDrop(date) {
 
   /* En móvil: ocultar pin de archivo para ahorrar espacio */
   .cal-evt-pin { display: none; }
+}
+
+/* ═══ GOOGLE CALENDAR "+ CREAR" DROPDOWN ═══ */
+.gcal-create-dropdown-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.gcal-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 24px 8px 16px;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: box-shadow 0.1s, background-color 0.1s;
+  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  height: 48px;
+}
+
+.gcal-create-btn:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.2);
+}
+
+.gcal-create-btn:active {
+  background-color: #f1f3f4;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.gcal-plus-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.gcal-arrow {
+  font-size: 18px !important;
+  color: #5f6368;
+  margin-left: 4px;
+}
+
+.gcal-create-menu {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+  min-width: 200px;
+  z-index: 100;
+  padding: 8px 0;
+  animation: gcalMenuIn 0.15s cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes gcalMenuIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.gcal-create-item {
+  width: 100%;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #3c4043;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.1s;
+  font-family: inherit;
+}
+
+.gcal-create-item:hover {
+  background-color: #f1f3f4;
+}
+
+.gcal-create-item .material-symbols-outlined {
+  font-size: 20px !important;
+}
+
+.cal-evt-icon {
+  font-size: 13px !important;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.gcal-task-line {
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.cal-evt-time {
+  font-weight: 700;
+  margin-right: 4px;
+  color: #3c4043;
 }
 </style>

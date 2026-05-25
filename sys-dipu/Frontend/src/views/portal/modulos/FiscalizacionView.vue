@@ -293,39 +293,79 @@
                             </div>
                             <div class="space-y-2.5">
                                 <div v-for="(p, idx) in personalPorMinisterio[m.id]" :key="idx"
-                                    class="flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 group/card hover:shadow-md cursor-default"
-                                    :style="`background: hsl(${ministryHue(mIdx)}, 40%, 97%); border-color: hsl(${ministryHue(mIdx)}, 35%, 90%)`">
-                                    <!-- Avatar con foto o iniciales -->
-                                    <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm"
-                                        :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 50%), hsl(${ministryHue(mIdx)}, 45%, 35%))`">
-                                        <img v-if="p.fotoPreview" :src="p.fotoPreview" class="w-full h-full object-cover" />
-                                        <div v-else class="w-full h-full flex items-center justify-center font-bold text-xs text-white uppercase">
-                                            {{ p.nombre.substring(0,2) }}
+                                    class="flex flex-col p-3 rounded-2xl border transition-all duration-300 group/card hover:shadow-md cursor-pointer transform hover:-translate-y-0.5"
+                                    @click="togglePersonaExpandida(p.id)"
+                                    :style="`background: hsl(${ministryHue(mIdx)}, 40%, 97%); border-color: hsl(${ministryHue(mIdx)}, 35%, 90%)`"
+                                    title="Haga clic para desglosar detalles">
+                                    <div class="flex items-center gap-3 w-full">
+                                        <!-- Avatar con foto o iniciales -->
+                                        <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm"
+                                            :style="`background: linear-gradient(135deg, hsl(${ministryHue(mIdx)}, 60%, 50%), hsl(${ministryHue(mIdx)}, 45%, 35%))`">
+                                            <img v-if="p.fotoPreview" :src="p.fotoPreview" class="w-full h-full object-cover" />
+                                            <div v-else class="w-full h-full flex items-center justify-center font-bold text-xs text-white uppercase">
+                                                {{ p.nombre.substring(0,2) }}
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <p class="text-sm font-bold text-on-surface leading-tight">{{ p.nombre }}</p>
+                                                <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
+                                                    :class="p.tipoPuesto === 'Ministro' ? 'bg-amber-100 text-amber-700' : p.tipoPuesto === 'Viceministro' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'">
+                                                    {{ p.tipoPuesto }}
+                                                </span>
+                                            </div>
+                                            <p v-if="p.tituloPuesto" class="text-xs text-on-surface-variant/80 mt-0.5 font-medium leading-none truncate">{{ p.tituloPuesto }}</p>
+                                            <div class="flex items-center gap-3 mt-1 flex-wrap" v-if="personaExpandidaId !== p.id">
+                                                <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
+                                                    <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
+                                                </span>
+                                                <span v-if="p.fechaPosesion" class="text-[11px] text-on-surface-variant flex items-center gap-0.5">
+                                                    <span class="material-symbols-outlined text-[11px]">event</span>{{ p.fechaPosesion }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <button @click.stop="eliminarPersona(p)"
+                                                class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0"
+                                                title="Eliminar funcionario">
+                                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                                            </button>
+                                            <span class="material-symbols-outlined text-on-surface-variant transition-transform duration-300" :class="{ 'rotate-180': personaExpandidaId === p.id }">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <p class="text-sm font-bold text-on-surface leading-tight">{{ p.nombre }}</p>
-                                            <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
-                                                :class="p.tipoPuesto === 'Ministro' ? 'bg-amber-100 text-amber-700' : p.tipoPuesto === 'Viceministro' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'">
-                                                {{ p.tipoPuesto }}
-                                            </span>
+
+                                    <!-- Desglose de Detalles Expandibles -->
+                                    <div v-if="personaExpandidaId === p.id" class="mt-3 pt-3 border-t border-outline-variant/10 space-y-3 w-full text-left animate-in fade-in slide-in-from-top-1 duration-200" @click.stop>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div class="bg-white/60 p-2.5 rounded-xl border border-outline-variant/5">
+                                                <p class="text-[9px] font-bold text-outline-variant uppercase tracking-wider mb-0.5">Entidad / Ministerio</p>
+                                                <p class="text-[11px] font-bold text-on-surface">{{ m.name }} ({{ m.short }})</p>
+                                            </div>
+                                            <div class="bg-white/60 p-2.5 rounded-xl border border-outline-variant/5">
+                                                <p class="text-[9px] font-bold text-outline-variant uppercase tracking-wider mb-0.5">Rango / Puesto Oficial</p>
+                                                <p class="text-[11px] font-bold text-on-surface truncate" :title="p.tituloPuesto || p.tipoPuesto">{{ p.tituloPuesto || p.tipoPuesto }}</p>
+                                            </div>
+                                            <div class="bg-white/60 p-2.5 rounded-xl border border-outline-variant/5">
+                                                <p class="text-[9px] font-bold text-outline-variant uppercase tracking-wider mb-0.5">Salario Mensual</p>
+                                                <p class="text-[11px] font-extrabold text-primary flex items-center gap-0.5">
+                                                    <span class="material-symbols-outlined text-[12px]">payments</span>Q{{ p.sueldo || 'No registrado' }}
+                                                </p>
+                                            </div>
+                                            <div class="bg-white/60 p-2.5 rounded-xl border border-outline-variant/5">
+                                                <p class="text-[9px] font-bold text-outline-variant uppercase tracking-wider mb-0.5">Fecha de Posesión</p>
+                                                <p class="text-[11px] font-bold text-on-surface flex items-center gap-0.5">
+                                                    <span class="material-symbols-outlined text-[12px]">event</span>{{ p.fechaPosesion || 'No registrada' }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p v-if="p.tituloPuesto" class="text-xs text-on-surface-variant/80 mt-0.5 font-medium leading-none">{{ p.tituloPuesto }}</p>
-                                        <div class="flex items-center gap-3 mt-1 flex-wrap">
-                                            <span v-if="p.sueldo" class="text-[11px] font-semibold text-on-surface-variant flex items-center gap-0.5">
-                                                <span class="material-symbols-outlined text-[11px]">payments</span>Q{{ p.sueldo }}
-                                            </span>
-                                            <span v-if="p.fechaPosesion" class="text-[11px] text-on-surface-variant flex items-center gap-0.5">
-                                                <span class="material-symbols-outlined text-[11px]">event</span>{{ p.fechaPosesion }}
-                                            </span>
+                                        
+                                        <!-- Gran visualización de foto si existe -->
+                                        <div v-if="p.fotoPreview" class="flex justify-center pt-1">
+                                            <img :src="p.fotoPreview" class="w-24 h-24 rounded-xl object-cover shadow-sm border border-white" />
                                         </div>
                                     </div>
-                                    <button @click="eliminarPersona(p)"
-                                        class="opacity-0 group-hover/card:opacity-100 transition-all p-1.5 rounded-xl hover:bg-error/10 text-error shrink-0"
-                                        title="Eliminar funcionario">
-                                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1360,6 +1400,15 @@ const ministerioSeleccionado = ref(null);
 const busquedaAutoridades = ref('');
 const ministerioFotos = ref({});
 const subiendoFoto = ref(null);
+
+const personaExpandidaId = ref(null);
+function togglePersonaExpandida(pId) {
+    if (personaExpandidaId.value === pId) {
+        personaExpandidaId.value = null;
+    } else {
+        personaExpandidaId.value = pId;
+    }
+}
 
 const ministeriosFiltrados = computed(() => {
     if (!busquedaAutoridades.value.trim()) return ministries.value;
