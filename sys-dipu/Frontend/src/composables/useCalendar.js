@@ -130,10 +130,25 @@ export function useCalendar() {
     try {
       const response = await api.get('/calendario/eventos')
       if (response.data && response.data.success) {
-        events.value = response.data.data.map(evt => ({
-          ...evt,
-          files: evt.files ? JSON.parse(evt.files) : []
-        }))
+        events.value = response.data.data.map(evt => {
+          let parsedDesc = { text: evt.description || '', eventType: 'evento', guests: '', location: '', meetLink: '', timeStart: '', timeEnd: '' };
+          try {
+            if (evt.description && evt.description.startsWith('{')) {
+              parsedDesc = { ...parsedDesc, ...JSON.parse(evt.description) };
+            }
+          } catch (e) {}
+          return {
+            ...evt,
+            description: parsedDesc.text,
+            eventType: parsedDesc.eventType,
+            guests: parsedDesc.guests,
+            location: parsedDesc.location,
+            meetLink: parsedDesc.meetLink,
+            timeStart: parsedDesc.timeStart || '',
+            timeEnd: parsedDesc.timeEnd || '',
+            files: evt.files ? JSON.parse(evt.files) : []
+          };
+        })
       }
     } catch (error) {
       console.error('Error al cargar eventos:', error)
@@ -189,11 +204,20 @@ export function useCalendar() {
     const evt = events.value.find(e => e.id === id)
     if (!evt) return
     try {
+      const serializedDesc = JSON.stringify({
+        text: evt.description || '',
+        eventType: evt.eventType || 'evento',
+        guests: evt.guests || '',
+        location: evt.location || '',
+        meetLink: evt.meetLink || '',
+        timeStart: evt.timeStart || '',
+        timeEnd: evt.timeEnd || ''
+      });
       const response = await api.put(`/calendario/eventos/${id}`, {
         title: evt.title,
         date: newDate,
         category: evt.category,
-        description: evt.description || '',
+        description: serializedDesc,
         files: JSON.stringify(evt.files || [])
       })
       if (response.data && response.data.success) {
