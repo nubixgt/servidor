@@ -1458,11 +1458,7 @@ async function onFotoMinistro(event, ministerioId) {
     formData.append('foto', file);
 
     try {
-        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const res = await api.post(`/fiscalizacion/ministro-foto/${ministerioId}`, formData);
         if (res.data?.success) {
             const base = getBackendBaseUrl();
             const url = res.data.url;
@@ -1757,11 +1753,7 @@ async function guardarDocumento() {
         formData.append('entidad', nuevoDoc.value.entidad);
         formData.append('fecha', nuevoDoc.value.fecha || '');
 
-        const response = await api.post('/fiscalizacion/documentos', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        const response = await api.post('/fiscalizacion/documentos', formData);
         if (response.data?.success) {
             await cargarDocumentosBD();
             cerrarDocModal();

@@ -54,6 +54,14 @@ api.interceptors.request.use(
         if (token) {
             config.headers.set('Authorization', `Bearer ${token}`);
         }
+        
+        // 🚀 Si enviamos FormData (subidas de archivos/fotos), eliminamos la cabecera 
+        // Content-Type por defecto para que el navegador genere la cabecera multipart
+        // correcta con su boundary único e indispensable.
+        if (config.data instanceof FormData) {
+            config.headers.delete('Content-Type');
+        }
+        
         return config;
     },
     error => {

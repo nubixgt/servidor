@@ -451,14 +451,10 @@ const guardarExpediente = async () => {
         let res;
         if (editandoItem.value) {
             // Update endpoint using POST route format to allow standard file uploading
-            res = await api.post(`/archivo/${editandoItem.value.id}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            res = await api.post(`/archivo/${editandoItem.value.id}`, formData);
         } else {
             // Create endpoint
-            res = await api.post('/archivo', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            res = await api.post('/archivo', formData);
         }
 
         if (res.data && res.data.success) {
