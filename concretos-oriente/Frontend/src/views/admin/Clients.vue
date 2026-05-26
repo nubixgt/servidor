@@ -566,7 +566,7 @@ const formClient = ref({
 });
 
 const currentPage = ref(1);
-const itemsPerPage = 8;
+const itemsPerPage = 10;
 
 const fetchClients = async () => {
   loading.value = true;
