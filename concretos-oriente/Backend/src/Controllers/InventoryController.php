@@ -44,8 +44,6 @@ class InventoryController extends Controller
                 'costo_unitario' => isset($_POST['costo_unitario']) && $_POST['costo_unitario'] !== '' ? (float)$_POST['costo_unitario'] : 0.00,
                 'stock_minimo'   => isset($_POST['stock_minimo']) && $_POST['stock_minimo'] !== '' ? (float)$_POST['stock_minimo'] : 0.00,
                 'descripcion'    => trim($_POST['descripcion'] ?? '') ?: null,
-                'codigo_qr'      => trim($_POST['codigo_qr'] ?? '') ?: null,
-                'codigo_barras'  => trim($_POST['codigo_barras'] ?? '') ?: null,
             ];
 
             $result = $this->inventoryService->createItem($data);
@@ -78,8 +76,6 @@ class InventoryController extends Controller
                 'costo_unitario' => isset($_POST['costo_unitario']) && $_POST['costo_unitario'] !== '' ? (float)$_POST['costo_unitario'] : 0.00,
                 'stock_minimo'   => isset($_POST['stock_minimo']) && $_POST['stock_minimo'] !== '' ? (float)$_POST['stock_minimo'] : 0.00,
                 'descripcion'    => trim($_POST['descripcion'] ?? '') ?: null,
-                'codigo_qr'      => trim($_POST['codigo_qr'] ?? '') ?: null,
-                'codigo_barras'  => trim($_POST['codigo_barras'] ?? '') ?: null,
             ];
 
             $this->inventoryService->updateItem((int)$id, $data);

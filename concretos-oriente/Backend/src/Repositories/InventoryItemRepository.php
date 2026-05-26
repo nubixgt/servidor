@@ -44,9 +44,9 @@ class InventoryItemRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO inventory_items
-                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, codigo_qr, codigo_barras, costo_unitario, stock_minimo, stock_actual)
+                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, costo_unitario, stock_minimo, stock_actual)
                 VALUES
-                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :codigo_qr, :codigo_barras, :costo_unitario, :stock_minimo, 0.00)";
+                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :costo_unitario, :stock_minimo, 0.00)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -55,8 +55,6 @@ class InventoryItemRepository
             'nombre'         => $data['nombre'],
             'descripcion'    => $data['descripcion'] ?? null,
             'unidad_medida'  => $data['unidad_medida'],
-            'codigo_qr'      => $data['codigo_qr'] ?? null,
-            'codigo_barras'  => $data['codigo_barras'] ?? null,
             'costo_unitario' => $data['costo_unitario'] ?? 0.00,
             'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
         ]);
@@ -72,14 +70,21 @@ class InventoryItemRepository
                     nombre         = :nombre,
                     descripcion    = :descripcion,
                     unidad_medida  = :unidad_medida,
-                    codigo_qr      = :codigo_qr,
-                    codigo_barras  = :codigo_barras,
                     costo_unitario = :costo_unitario,
                     stock_minimo   = :stock_minimo
                 WHERE id = :id";
 
-        $data['id'] = $id;
-        $this->pdo->prepare($sql)->execute($data);
+        $filteredData = [
+            'id'             => $id,
+            'tipo_item'      => $data['tipo_item'],
+            'codigo_sku'     => $data['codigo_sku'],
+            'nombre'         => $data['nombre'],
+            'descripcion'    => $data['descripcion'] ?? null,
+            'unidad_medida'  => $data['unidad_medida'],
+            'costo_unitario' => $data['costo_unitario'] ?? 0.00,
+            'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
+        ];
+        $this->pdo->prepare($sql)->execute($filteredData);
     }
 
     public function delete(int $id): void

@@ -231,10 +231,6 @@
                       <p class="text-sm font-black text-white uppercase italic">{{ selectedItemDetails.stock_minimo }}</p>
                     </div>
                     <div class="space-y-2">
-                      <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Código Barras / QR</p>
-                      <p class="text-sm font-black text-white uppercase italic">{{ selectedItemDetails.codigo_barras || 'N/A' }} / {{ selectedItemDetails.codigo_qr || 'N/A' }}</p>
-                    </div>
-                    <div class="space-y-2">
                       <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Descripción</p>
                       <p class="text-sm text-white/60">{{ selectedItemDetails.descripcion || 'Sin descripción' }}</p>
                     </div>
@@ -301,17 +297,9 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Costo Unitario (Q)</label>
               <input v-model="formItem.costo_unitario" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2 lg:col-span-1">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Stock Mínimo (Alerta)</label>
               <input v-model="formItem.stock_minimo" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
-            </div>
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código de Barras</label>
-              <input v-model="formItem.codigo_barras" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
-            </div>
-            <div class="space-y-2 lg:col-span-1">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código QR</label>
-              <input v-model="formItem.codigo_qr" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
           </div>
 
@@ -366,8 +354,8 @@
               <input v-model="formKardex.fecha_movimiento" type="datetime-local" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
 
-            <div v-if="formKardex.tipo_movimiento === 'Traslado'" class="space-y-2 md:col-span-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Destino *</label>
+            <div class="space-y-2 md:col-span-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Destino / Vinculado</label>
               <select v-model="formKardex.proyecto_destino_id" :required="formKardex.tipo_movimiento === 'Traslado'" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                 <option value="" disabled>Seleccione proyecto...</option>
                 <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
@@ -558,12 +546,12 @@ const isEditing = ref(false);
 const editItemId = ref(null);
 const formItem = ref({
   tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', 
-  unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: '', codigo_qr: ''
+  unidad_medida: '', costo_unitario: '', stock_minimo: ''
 });
 
 const openItemModal = () => {
   isEditing.value = false;
-  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', costo_unitario: '', stock_minimo: '', codigo_barras: '', codigo_qr: ''};
+  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', costo_unitario: '', stock_minimo: ''};
   showItemModal.value = true;
 };
 
