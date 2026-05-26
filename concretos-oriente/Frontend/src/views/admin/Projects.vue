@@ -55,7 +55,7 @@
               <!-- Cliente -->
               <select v-model="filterCliente" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[160px]">
                 <option value="">Todos los clientes</option>
-                <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+                <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.company_name }}</option>
               </select>
 
               <!-- Ordenar -->
@@ -398,7 +398,7 @@
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Cliente *</label>
                 <select v-model="formData.cliente_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none">
                   <option value="" disabled>Seleccionar cliente...</option>
-                  <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+                  <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.company_name }}</option>
                 </select>
               </div>
               <div>
@@ -609,24 +609,8 @@ import Swal from 'sweetalert2';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
-// Lista de clientes (estática)
-const CLIENTES = [
-  { id: 1,  nombre: 'Constructora Horizonte S.A.' },
-  { id: 2,  nombre: 'Inmobiliaria Los Pinos Ltda.' },
-  { id: 3,  nombre: 'Grupo Industrial Centroamérica' },
-  { id: 4,  nombre: 'Municipalidad de Guatemala' },
-  { id: 5,  nombre: 'Ministerio de Comunicaciones e Infraestructura' },
-  { id: 6,  nombre: 'Banco G&T Continental' },
-  { id: 7,  nombre: 'Desarrollos Urbanos del Norte S.A.' },
-  { id: 8,  nombre: 'Corporación Palmas de Oriente' },
-  { id: 9,  nombre: 'Industrias Cemento Progreso' },
-  { id: 10, nombre: 'Agexport — Asociación de Exportadores' },
-  { id: 11, nombre: 'Frigorífico La Montaña S.A.' },
-  { id: 12, nombre: 'Hotel & Resorts Tikal Maya' },
-  { id: 13, nombre: 'Ferrocarriles de Guatemala (FEGUA)' },
-  { id: 14, nombre: 'Cooperativa El Sembrador R.L.' },
-  { id: 15, nombre: 'Otro / Particular' },
-];
+// Lista de clientes
+const CLIENTES = ref([]);
 
 const view = ref('projects');
 const projects = ref([]);
@@ -763,7 +747,7 @@ const resetFilters = () => {
 };
 
 onMounted(async () => {
-  await Promise.all([fetchProjects(), fetchUsers()]);
+  await Promise.all([fetchProjects(), fetchUsers(), fetchClients()]);
 });
 
 const fetchProjects = async () => {
@@ -791,6 +775,18 @@ const fetchUsers = async () => {
     }
   } catch (error) {
     console.error('Error fetching users:', error);
+  }
+};
+
+const fetchClients = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/clients`);
+    const result = await response.json();
+    if (result.status === 'success') {
+      CLIENTES.value = result.data;
+    }
+  } catch (error) {
+    console.error('Error fetching clients:', error);
   }
 };
 
@@ -822,8 +818,8 @@ const getPhotoUrl = (proj) => {
 };
 
 const getClienteName = (id) => {
-  const found = CLIENTES.find(c => c.id == id);
-  return found ? found.nombre : '—';
+  const found = CLIENTES.value.find(c => c.id == id);
+  return found ? found.company_name : '—';
 };
 
 const getManagerName = (id) => {

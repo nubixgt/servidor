@@ -77,6 +77,7 @@ const allNavItemsArr = [
   { id: "machinery", label: "Maquinaria", icon: WrenchScrewdriverIcon, roles: ["admin", "supervisor"] },
   { id: "tech-machinery", label: "Estado Maquinaria", icon: WrenchScrewdriverIcon, roles: ["tecnico"] },
   { id: "projects", label: "Proyectos", icon: BriefcaseIcon, roles: ["admin", "supervisor"] },
+  { id: "clients", label: "Clientes", icon: UsersIcon, roles: ["admin"] },
   { id: "tech-projects", label: "Mis Proyectos", icon: BriefcaseIcon, roles: ["tecnico"] },
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
