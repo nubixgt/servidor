@@ -59,7 +59,7 @@
           <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Valor de Cartera</span>
           <div>
             <h3 class="text-4xl font-black italic text-white tracking-tighter">
-              Q{{ (kpis.totalPortfolio / 1000000).toFixed(1) }}M
+              {{ formatPortfolioValue(kpis.totalPortfolio) }}
             </h3>
             <p class="text-[10px] font-bold text-emerald-400 tracking-wider uppercase mt-1">
               Proyecciones estimadas de cierre
@@ -605,6 +605,16 @@ const kpis = computed(() => {
 const getInitials = (name) => {
   if (!name) return '';
   return name.split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase();
+};
+
+const formatPortfolioValue = (value) => {
+  const num = Number(value) || 0;
+  if (num >= 1000000) {
+    return 'Q' + (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return 'Q' + (num / 1000).toFixed(1) + 'k';
+  }
+  return 'Q' + num.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const getInitialsColor = (id) => {
