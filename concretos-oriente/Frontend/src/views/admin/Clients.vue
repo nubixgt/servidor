@@ -463,16 +463,6 @@
 
               <!-- Work stats and portfolio finances (optional for creation/edit) -->
               <div class="grid grid-cols-2 gap-5">
-                <div class="space-y-2">
-                  <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Monto de Cartera ($)</label>
-                  <input 
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    v-model="formClient.portfolio_value"
-                    class="w-full glass-input rounded-2xl p-3.5 text-sm font-bold placeholder:text-white/20 text-white outline-none focus:border-primary"
-                  />
-                </div>
               </div>
 
               <!-- Address text field area -->
