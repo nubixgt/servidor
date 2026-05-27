@@ -67,7 +67,7 @@
               <tr class="bg-black/20 text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">
                 <th class="px-8 py-6"># / Tipo</th>
                 <th class="px-8 py-6">% del Contrato</th>
-                <th class="px-8 py-6">Monto Total</th>
+                <th class="px-8 py-6">Salgo Pagado</th>
                 <th class="px-8 py-6">Fuentes y Estado</th>
                 <th class="px-8 py-6 text-right">% Cobrado Acumulado</th>
               </tr>
