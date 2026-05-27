@@ -195,7 +195,7 @@
 
               <div class="space-y-2" v-if="formMode === 'Estimacion'">
                 <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Número de Estimación</label>
-                <input type="text" :value="totals.ultima_estimacion + 1" disabled class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white/60 focus:outline-none" />
+                <input type="text" :value="Number(totals.ultima_estimacion) + 1" disabled class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white/60 focus:outline-none" />
               </div>
 
               <div class="space-y-2">
@@ -458,7 +458,7 @@ const formData = ref({
 
 const modalTitle = computed(() => {
   if (formMode.value === 'Estimacion') {
-    return `REGISTRAR ESTIMACION ${totals.value.ultima_estimacion + 1}`;
+    return `REGISTRAR ESTIMACION ${Number(totals.value.ultima_estimacion) + 1}`;
   }
   return `REGISTRAR ${formMode.value.toUpperCase()}`;
 });
