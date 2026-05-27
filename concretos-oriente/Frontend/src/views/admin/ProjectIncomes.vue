@@ -171,7 +171,7 @@
       <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="600">
         <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
           <div>
-            <h3 class="text-3xl font-black text-white italic tracking-tighter uppercase">Registrar {{ formMode }}</h3>
+            <h3 class="text-3xl font-black text-white italic tracking-tighter uppercase">{{ modalTitle }}</h3>
             <p class="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] mt-1">Completa los datos y divisiones por fuente</p>
           </div>
           <button @click="closeModal" class="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-white/40 hover:text-white"><XMarkIcon class="w-6 h-6" /></button>
@@ -189,7 +189,7 @@
               </div>
               
               <div class="space-y-2" v-if="formMode === 'Estimacion' || formMode === 'Pago Final'">
-                <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Total Acumulado Previo</label>
+                <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Saldo Pagado</label>
                 <input type="text" :value="'Q ' + Number(totals.total_cobrado).toLocaleString('en-US',{minimumFractionDigits:2})" disabled class="w-full bg-black/40 border border-white/5 rounded-2xl px-5 py-4 text-white/60 focus:outline-none" />
               </div>
 
@@ -199,13 +199,8 @@
               </div>
 
               <div class="space-y-2">
-                <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Monto de este Cobro (Q) *</label>
+                <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{ formMode === 'Estimacion' ? 'Valor de Estimacion (Q) *' : 'Monto de este Cobro (Q) *' }}</label>
                 <input type="number" step="0.01" min="0.01" :max="formMode === 'Estimacion' ? totals.restante : undefined" v-model="formData.monto_total" :disabled="formMode !== 'Estimacion'" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary/50 disabled:bg-black/40 disabled:text-white/60 disabled:border-white/5" />
-              </div>
-
-              <div class="space-y-2" v-if="formMode === 'Estimacion'">
-                <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">Período de Avance</label>
-                <input type="text" v-model="formData.periodo_avance" placeholder="Ej: Semana 3-6" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
               </div>
 
               <div class="space-y-2">
@@ -223,21 +218,17 @@
           <div class="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
             <div class="flex items-center justify-between mb-4">
               <h4 class="text-xs font-black text-white uppercase tracking-[0.2em] text-primary">División por Fuente</h4>
-              <span :class="['text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg', totalPorcentajeFuentes === 100 ? 'bg-primary/20 text-primary' : 'bg-tertiary/20 text-tertiary']">
-                Total: {{ totalPorcentajeFuentes }}%
+              <span :class="['text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg', totalMontoFuentes === parseFloat(formData.monto_total || 0) ? 'bg-primary/20 text-primary' : 'bg-tertiary/20 text-tertiary']">
+                Total Asignado: Q {{ Number(totalMontoFuentes).toLocaleString('en-US', {minimumFractionDigits:2}) }}
               </span>
             </div>
             
             <div v-for="(src, idx) in formData.sources" :key="src.fuente" class="p-6 rounded-2xl bg-black/20 border border-white/5 space-y-4">
               <h5 class="text-sm font-black text-white">{{ src.fuente }}</h5>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1">
-                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">% Aporte *</label>
-                  <input type="number" step="0.01" min="0" max="100" v-model.number="src.porcentaje_aporte" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Monto Calculado</label>
-                  <input type="text" :value="'Q ' + Number((formData.monto_total || 0) * (src.porcentaje_aporte / 100)).toLocaleString('en-US',{minimumFractionDigits:2})" disabled class="w-full bg-transparent border border-transparent rounded-xl px-4 py-3 text-white/60 text-sm" />
+                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Monto Aportado *</label>
+                  <input type="number" step="0.01" min="0" v-model.number="src.monto_aportado" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
                 </div>
                 <div class="space-y-1">
                   <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Estado Inicial</label>
@@ -262,8 +253,12 @@
                   </select>
                 </div>
                 <div class="space-y-1">
-                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">No. Cheque / Ref.</label>
+                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Numero de Boleta</label>
                   <input type="text" v-model="src.numero_documento" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Comprobante (Imagen/PDF)</label>
+                  <input type="file" @change="e => handleFormFileUpload(e, src)" accept="image/*,.pdf" class="w-full text-white/60 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[9px] file:uppercase file:tracking-widest file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer" />
                 </div>
               </div>
             </div>
@@ -271,7 +266,7 @@
 
           <div class="flex justify-end gap-4 pt-6">
             <button type="button" @click="closeModal" class="px-8 py-4 rounded-2xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all text-xs tracking-widest uppercase">Cancelar</button>
-            <button type="submit" :disabled="isSubmitting || totalPorcentajeFuentes !== 100" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all tracking-widest uppercase text-xs">
+            <button type="submit" :disabled="isSubmitting || totalMontoFuentes !== parseFloat(formData.monto_total || 0)" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] disabled:opacity-50 disabled:cursor-not-allowed transition-all tracking-widest uppercase text-xs">
               Guardar {{ formMode }}
             </button>
           </div>
@@ -436,10 +431,16 @@ const isSubmitting = ref(false);
 
 const formData = ref({
   monto_total: 0,
-  periodo_avance: '',
   fecha_registro: new Date().toISOString().slice(0,10),
   observaciones: '',
   sources: []
+});
+
+const modalTitle = computed(() => {
+  if (formMode.value === 'Estimacion') {
+    return `REGISTRAR ESTIMACION ${totals.value.ultima_estimacion + 1}`;
+  }
+  return `REGISTRAR ${formMode.value.toUpperCase()}`;
 });
 
 const openModal = (mode) => {
@@ -451,45 +452,68 @@ const openModal = (mode) => {
 
   formData.value = {
     monto_total: defaultMonto,
-    periodo_avance: '',
     fecha_registro: new Date().toISOString().slice(0,10),
     observaciones: '',
     sources: [
-      { fuente: 'Consejo de Desarrollo', porcentaje_aporte: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '' },
-      { fuente: 'Municipalidad', porcentaje_aporte: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '' },
-      { fuente: 'COCODE', porcentaje_aporte: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '' }
+      { fuente: 'Consejo de Desarrollo', monto_aportado: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '', file: null },
+      { fuente: 'Municipalidad', monto_aportado: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '', file: null },
+      { fuente: 'COCODE', monto_aportado: 0, estado: 'Pendiente', fecha_cobro: '', bank_account_id: '', numero_documento: '', file: null }
     ]
   };
   showModal.value = true;
 };
 
+const handleFormFileUpload = (e, src) => {
+  if (e.target.files.length > 0) {
+    src.file = e.target.files[0];
+  } else {
+    src.file = null;
+  }
+};
+
 const closeModal = () => showModal.value = false;
 
-const totalPorcentajeFuentes = computed(() => {
-  return formData.value.sources.reduce((acc, curr) => acc + (parseFloat(curr.porcentaje_aporte) || 0), 0);
+const totalMontoFuentes = computed(() => {
+  return formData.value.sources.reduce((acc, curr) => acc + (parseFloat(curr.monto_aportado) || 0), 0);
 });
 
 const submitForm = async () => {
-  if (totalPorcentajeFuentes.value !== 100) {
-    Swal.fire({background: '#0f172a', color: '#fff', icon: 'warning', text: "Los porcentajes de las fuentes deben sumar 100%."});
+  if (totalMontoFuentes.value !== parseFloat(formData.value.monto_total || 0)) {
+    Swal.fire({background: '#0f172a', color: '#fff', icon: 'warning', text: "Los montos de las fuentes deben sumar el valor total del cobro."});
     return;
   }
   isSubmitting.value = true;
   
-  const payload = {
-    tipo_cobro: formMode.value,
-    monto_total: parseFloat(formData.value.monto_total),
-    fecha_registro: formData.value.fecha_registro,
-    periodo_avance: formData.value.periodo_avance,
-    observaciones: formData.value.observaciones,
-    sources: formData.value.sources
-  };
+  const fd = new FormData();
+  fd.append('tipo_cobro', formMode.value);
+  fd.append('monto_total', formData.value.monto_total);
+  fd.append('fecha_registro', formData.value.fecha_registro);
+  fd.append('observaciones', formData.value.observaciones);
+
+  // Filter sources data avoiding sending the file object in the JSON
+  const cleanSources = formData.value.sources.map(s => {
+    return {
+      fuente: s.fuente,
+      monto_aportado: s.monto_aportado,
+      estado: s.estado,
+      fecha_cobro: s.fecha_cobro,
+      bank_account_id: s.bank_account_id,
+      numero_documento: s.numero_documento
+    };
+  });
+  
+  fd.append('sources', JSON.stringify(cleanSources));
+
+  formData.value.sources.forEach((src, idx) => {
+    if (src.file) {
+      fd.append(`comprobante_${idx}`, src.file);
+    }
+  });
 
   try {
     const res = await fetch(`${BASE_URL}/projects/${selectedProjectId.value}/incomes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: fd
     });
     const json = await res.json();
     if (json.status === 'success') {

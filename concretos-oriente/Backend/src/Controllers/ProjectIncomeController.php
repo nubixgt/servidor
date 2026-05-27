@@ -66,7 +66,7 @@ class ProjectIncomeController extends Controller
 
             $sourcesData = $input['sources'] ?? [];
 
-            $incomeId = $this->incomeService->registerIncome($data, $sourcesData);
+            $incomeId = $this->incomeService->registerIncome($data, $sourcesData, $_FILES);
 
             $this->json([
                 "status" => "success",

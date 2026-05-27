@@ -46,7 +46,7 @@ class ProjectIncomeService
         ];
     }
 
-    public function registerIncome(array $data, array $sourcesData): int
+    public function registerIncome(array $data, array $sourcesData, array $files = []): int
     {
         $projectId = (int)$data['project_id'];
         $project = $this->projectRepo->findById($projectId);
@@ -58,14 +58,7 @@ class ProjectIncomeService
         $presupuesto = (float)$project['presupuesto'];
         $tipoCobro = $data['tipo_cobro'];
 
-        // Validar que las fuentes sumen 100%
-        $sumaPorcentajes = 0;
-        foreach ($sourcesData as $source) {
-            $sumaPorcentajes += (float)$source['porcentaje_aporte'];
-        }
-        if (abs($sumaPorcentajes - 100) > 0.01) {
-            throw new Exception("La suma de los porcentajes de las fuentes debe ser exactamente 100%.");
-        }
+
 
         $totals = $this->incomeRepo->getTotalsByProject($projectId);
         $totalCobradoPrevio = (float)($totals['total_cobrado'] ?? 0);
@@ -115,6 +108,15 @@ class ProjectIncomeService
             throw new Exception("El monto total a cobrar supera el presupuesto del contrato.");
         }
 
+        // Validar que la suma de los montos aportados coincida con el monto total
+        $sumaMontos = 0;
+        foreach ($sourcesData as $source) {
+            $sumaMontos += (float)($source['monto_aportado'] ?? 0);
+        }
+        if (abs($sumaMontos - $montoTotal) > 0.01) {
+            throw new Exception("La suma de los montos de las fuentes (Q" . number_format($sumaMontos, 2) . ") debe ser exactamente igual al monto total del cobro (Q" . number_format($montoTotal, 2) . ").");
+        }
+
         $porcentajeContrato = ($montoTotal / $presupuesto) * 100;
 
         $incomeData = [
@@ -128,10 +130,13 @@ class ProjectIncomeService
             'observaciones' => $data['observaciones'] ?? null
         ];
 
-        // Ajustar montos por fuente según porcentaje
+        // Preparar datos de las fuentes
         $finalSources = [];
-        foreach ($sourcesData as $source) {
-            $montoAportado = $montoTotal * ((float)$source['porcentaje_aporte'] / 100);
+        $uploader = new Uploader('Uploads/ProjectIncomes');
+        
+        foreach ($sourcesData as $index => $source) {
+            $montoAportado = (float)($source['monto_aportado'] ?? 0);
+            $porcentajeAporte = ($montoTotal > 0) ? ($montoAportado / $montoTotal) * 100 : 0;
             
             if ($source['estado'] === 'Recibido') {
                 if (empty($source['fecha_cobro']) || empty($source['bank_account_id'])) {
@@ -139,14 +144,21 @@ class ProjectIncomeService
                 }
             }
 
+            $comprobantePath = null;
+            $fileKey = "comprobante_{$index}";
+            if (isset($files[$fileKey]) && $files[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $comprobantePath = $uploader->upload($files[$fileKey], "comprobante_" . time() . "_{$index}");
+            }
+
             $finalSources[] = [
                 'fuente' => $source['fuente'],
-                'porcentaje_aporte' => $source['porcentaje_aporte'],
+                'porcentaje_aporte' => $porcentajeAporte,
                 'monto_aportado' => $montoAportado,
                 'fecha_cobro' => $source['fecha_cobro'] ?? null,
                 'numero_documento' => $source['numero_documento'] ?? null,
                 'bank_account_id' => $source['bank_account_id'] ?? null,
-                'estado' => $source['estado'] ?? 'Pendiente'
+                'estado' => $source['estado'] ?? 'Pendiente',
+                'comprobante_path' => $comprobantePath
             ];
         }
 

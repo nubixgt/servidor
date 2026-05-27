@@ -80,9 +80,9 @@ class ProjectIncomeRepository
             $incomeId = (int) $this->pdo->lastInsertId();
 
             $sqlSource = "INSERT INTO project_income_sources 
-                          (project_income_id, fuente, porcentaje_aporte, monto_aportado, fecha_cobro, numero_documento, bank_account_id, estado)
+                          (project_income_id, fuente, porcentaje_aporte, monto_aportado, fecha_cobro, numero_documento, bank_account_id, estado, comprobante_path)
                           VALUES 
-                          (:project_income_id, :fuente, :porcentaje_aporte, :monto_aportado, :fecha_cobro, :numero_documento, :bank_account_id, :estado)";
+                          (:project_income_id, :fuente, :porcentaje_aporte, :monto_aportado, :fecha_cobro, :numero_documento, :bank_account_id, :estado, :comprobante_path)";
             $stmtSource = $this->pdo->prepare($sqlSource);
 
             foreach ($sourcesData as $source) {
@@ -94,7 +94,8 @@ class ProjectIncomeRepository
                     ':fecha_cobro' => $source['fecha_cobro'] ?? null,
                     ':numero_documento' => $source['numero_documento'] ?? null,
                     ':bank_account_id' => !empty($source['bank_account_id']) ? $source['bank_account_id'] : null,
-                    ':estado' => $source['estado'] ?? 'Pendiente'
+                    ':estado' => $source['estado'] ?? 'Pendiente',
+                    ':comprobante_path' => $source['comprobante_path'] ?? null
                 ]);
             }
 
