@@ -17,6 +17,7 @@ use App\Controllers\MaintenanceController;
 use App\Controllers\DocumentsController;
 use App\Controllers\AlertsController;
 use App\Controllers\ClientController;
+use App\Controllers\ProjectIncomeController;
 
 // Backend/api/v1/index.php
 
@@ -62,6 +63,7 @@ $router->registerController(MaintenanceController::class);
 $router->registerController(DocumentsController::class);
 $router->registerController(AlertsController::class);
 $router->registerController(ClientController::class);
+$router->registerController(ProjectIncomeController::class);
 
 
 

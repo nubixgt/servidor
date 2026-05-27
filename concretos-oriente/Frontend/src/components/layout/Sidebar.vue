@@ -82,6 +82,7 @@ const allNavItemsArr = [
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
 
+  { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "finance", label: "Finanzas", icon: BanknotesIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
   { id: "bank-conciliation", label: "Bancos y Conciliación", icon: BuildingLibraryIcon, roles: ["admin"] },
