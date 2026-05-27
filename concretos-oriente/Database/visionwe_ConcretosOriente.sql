@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 26-05-2026 a las 13:58:27
+-- Tiempo de generación: 27-05-2026 a las 21:13:37
 -- Versión del servidor: 11.4.11-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -152,6 +152,32 @@ INSERT INTO `budget_items` (`id`, `project_id`, `nombre_partida`, `categoria`, `
 (1, 1, 'Prueba 1', 'Mano de Obra', 'unidad', 100.00, 20.00, '2026-05-21 17:22:32'),
 (2, 1, 'asdf', 'Material', 'm3', 50.00, 30.00, '2026-05-21 17:26:25'),
 (3, 2, 'Prueba 2', 'Maquinaria', 'unidad', 100.00, 20.00, '2026-05-22 23:23:09');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clients`
+--
+
+CREATE TABLE `clients` (
+  `id` int(11) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `ruc` varchar(50) DEFAULT NULL,
+  `status` enum('active','prospect','inactive') NOT NULL DEFAULT 'active',
+  `contact_name` varchar(255) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `clients`
+--
+
+INSERT INTO `clients` (`id`, `company_name`, `ruc`, `status`, `contact_name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES
+(1, 'empresa1', '789461532', 'active', 'Ing. Mario', 'mario@gmail.com', '45289012', 'Parque las Americas', '2026-05-26 14:43:13', '2026-05-26 14:43:13');
 
 -- --------------------------------------------------------
 
@@ -354,8 +380,6 @@ CREATE TABLE `inventory_items` (
   `nombre` varchar(255) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `unidad_medida` varchar(50) NOT NULL,
-  `codigo_qr` varchar(255) DEFAULT NULL,
-  `codigo_barras` varchar(255) DEFAULT NULL,
   `costo_unitario` decimal(12,2) NOT NULL DEFAULT 0.00,
   `stock_minimo` decimal(12,2) NOT NULL DEFAULT 0.00,
   `stock_actual` decimal(12,2) NOT NULL DEFAULT 0.00,
@@ -367,9 +391,10 @@ CREATE TABLE `inventory_items` (
 -- Volcado de datos para la tabla `inventory_items`
 --
 
-INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `codigo_qr`, `codigo_barras`, `costo_unitario`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
-(3, 'Repuesto', '64564', 'Cemento', 'Cemento de buena calidad', 'm2', '984520', '98748915', 100.00, 100.00, 150.00, '2026-05-20 21:03:34', '2026-05-20 21:04:15'),
-(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 'SDF98741', '89461SDF', 20.00, 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09');
+INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `costo_unitario`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
+(3, 'Repuesto', '64564', 'Cemento', 'Cemento de buena calidad', 'm2', 10.00, 100.00, 170.00, '2026-05-20 21:03:34', '2026-05-26 14:12:31'),
+(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 20.00, 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09'),
+(5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 10.00, 200.00, 100.00, '2026-05-26 14:13:37', '2026-05-26 14:17:46');
 
 -- --------------------------------------------------------
 
@@ -397,7 +422,8 @@ CREATE TABLE `inventory_kardex` (
 
 INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_origen_id`, `proyecto_destino_id`, `cantidad`, `costo_unitario`, `referencia_documento`, `notas`, `fecha_movimiento`, `created_at`) VALUES
 (3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', '2026-05-20 21:03:00', '2026-05-20 21:04:15'),
-(4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', '2026-05-22 22:46:00', '2026-05-22 22:47:09');
+(4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', '2026-05-22 22:46:00', '2026-05-22 22:47:09'),
+(6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', '2026-05-26 14:17:00', '2026-05-26 14:17:46');
 
 -- --------------------------------------------------------
 
@@ -620,7 +646,7 @@ CREATE TABLE `projects` (
   `id` int(11) NOT NULL,
   `codigo` varchar(20) NOT NULL,
   `nombre` varchar(255) NOT NULL,
-  `cliente_id` int(11) NOT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
   `ubicacion` varchar(255) DEFAULT NULL,
   `coordenadas` varchar(100) DEFAULT NULL,
   `presupuesto` decimal(15,2) NOT NULL DEFAULT 0.00,
@@ -643,8 +669,8 @@ CREATE TABLE `projects` (
 --
 
 INSERT INTO `projects` (`id`, `codigo`, `nombre`, `cliente_id`, `ubicacion`, `coordenadas`, `presupuesto`, `fecha_inicio`, `fecha_fin_estimada`, `fecha_fin_real`, `estado`, `numero_contrato`, `contratos_archivos`, `foto`, `descripcion`, `contactos`, `gerente_id`, `created_at`, `updated_at`) VALUES
-(1, '2026-001', 'Puente', 5, 'Zona 14', '14.600518, -90.509191', 20000.00, '2026-05-01', '2026-05-14', '2026-05-20', 'Activo', '0000', '[\"Uploads\\/Projects\\/1\\/docs\\/FODA_de_trabajo_de_graduaci__n.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Propuesta_te__rica_y_dise__o_de_la_propuesta_te__rica.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Evaluaci__n_Final_____Pregunta_1.pdf\"]', 'Uploads/Projects/1/foto_1779738193.webp', 'Prueba para saber si todo funciona correctamente y sin problema', '[{\"tipo\":\"Proveedor\",\"nombre\":\"Prueba 1\",\"telefono\":\"98754132\",\"email\":\"prueba1@gmail.com\"}]', 2, '2026-05-20 18:18:29', '2026-05-25 19:43:13'),
-(2, 'PRY-001-2026', 'ASFALTO', 7, 'Zona 16', '14.628476, -90.510521', 250000.00, '2026-05-01', '2026-05-10', '2026-05-23', 'Activo', '89415615', '[\"Uploads\\/Projects\\/2\\/docs\\/PROYECTO_FINAL.pdf\",\"Uploads\\/Projects\\/2\\/docs\\/Evaluaci__n_Final_____Pregunta_4.pdf\"]', 'Uploads/Projects/2/foto_1779738092.png', 'Prueba 2 para saber si funciona todo correctamente', '[{\"tipo\":\"Supervisor\",\"nombre\":\"Rodrigo\",\"telefono\":\"8798-9874\",\"email\":\"prueba@gmail.com\"}]', 2, '2026-05-22 22:40:16', '2026-05-25 19:41:32');
+(1, '2026-001', 'Puente', 1, 'Zona 14', '14.600518, -90.509191', 20000.00, '2026-05-01', '2026-05-14', '2026-05-20', 'Activo', '0000', '[\"Uploads\\/Projects\\/1\\/docs\\/FODA_de_trabajo_de_graduaci__n.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Propuesta_te__rica_y_dise__o_de_la_propuesta_te__rica.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Evaluaci__n_Final_____Pregunta_1.pdf\"]', 'Uploads/Projects/1/foto_1779738193.webp', 'Prueba para saber si todo funciona correctamente y sin problema', '[{\"tipo\":\"Proveedor\",\"nombre\":\"Prueba 1\",\"telefono\":\"98754132\",\"email\":\"prueba1@gmail.com\"}]', 2, '2026-05-20 18:18:29', '2026-05-26 14:44:05'),
+(2, 'PRY-001-2026', 'ASFALTO', 1, 'Zona 16', '14.628476, -90.510521', 250000.00, '2026-05-01', '2026-05-10', '2026-05-23', 'Activo', '89415615', '[\"Uploads\\/Projects\\/2\\/docs\\/PROYECTO_FINAL.pdf\",\"Uploads\\/Projects\\/2\\/docs\\/Evaluaci__n_Final_____Pregunta_4.pdf\"]', 'Uploads/Projects/2/foto_1779738092.png', 'Prueba 2 para saber si funciona todo correctamente', '[{\"tipo\":\"Supervisor\",\"nombre\":\"Rodrigo\",\"telefono\":\"8798-9874\",\"email\":\"prueba@gmail.com\"}]', 2, '2026-05-22 22:40:16', '2026-05-26 14:43:48');
 
 -- --------------------------------------------------------
 
@@ -788,6 +814,12 @@ ALTER TABLE `budget_items`
   ADD KEY `project_id` (`project_id`);
 
 --
+-- Indices de la tabla `clients`
+--
+ALTER TABLE `clients`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `credits`
 --
 ALTER TABLE `credits`
@@ -914,7 +946,8 @@ ALTER TABLE `personnel`
 --
 ALTER TABLE `projects`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `codigo` (`codigo`);
+  ADD UNIQUE KEY `codigo` (`codigo`),
+  ADD KEY `fk_projects_client` (`cliente_id`);
 
 --
 -- Indices de la tabla `purchase_orders`
@@ -981,6 +1014,12 @@ ALTER TABLE `budget_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `clients`
+--
+ALTER TABLE `clients`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `credits`
 --
 ALTER TABLE `credits`
@@ -1026,13 +1065,13 @@ ALTER TABLE `incomes`
 -- AUTO_INCREMENT de la tabla `inventory_items`
 --
 ALTER TABLE `inventory_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `inventory_kardex`
 --
 ALTER TABLE `inventory_kardex`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery`
@@ -1215,6 +1254,12 @@ ALTER TABLE `payroll_details`
 --
 ALTER TABLE `personnel`
   ADD CONSTRAINT `fk_personnel_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `projects`
+--
+ALTER TABLE `projects`
+  ADD CONSTRAINT `fk_projects_client` FOREIGN KEY (`cliente_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `purchase_orders`
