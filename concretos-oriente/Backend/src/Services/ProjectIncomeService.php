@@ -132,7 +132,7 @@ class ProjectIncomeService
 
         // Preparar datos de las fuentes
         $finalSources = [];
-        $uploader = new Uploader('Uploads/ProjectIncomes');
+        $uploader = new Uploader("Uploads/ProjectIncomes/Proyecto_{$projectId}");
         
         foreach ($sourcesData as $index => $source) {
             $montoAportado = (float)($source['monto_aportado'] ?? 0);
@@ -176,8 +176,10 @@ class ProjectIncomeService
 
         $comprobantePath = null;
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $uploader = new Uploader('Uploads/ProjectIncomes');
-            $comprobantePath = $uploader->upload($file, "comprobante_{$sourceId}");
+            $projectId = $this->incomeRepo->getProjectIdBySource($sourceId);
+            $dir = $projectId ? "Proyecto_{$projectId}" : "Extras";
+            $uploader = new Uploader("Uploads/ProjectIncomes/{$dir}");
+            $comprobantePath = $uploader->upload($file, "comprobante_" . time() . "_{$sourceId}");
             $data['comprobante_path'] = $comprobantePath;
         }
 

@@ -200,7 +200,7 @@
 
               <div class="space-y-2">
                 <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{ formMode === 'Estimacion' ? 'Valor de Estimacion (Q) *' : 'Monto de este Cobro (Q) *' }}</label>
-                <input type="number" step="0.01" min="0.01" :max="formMode === 'Estimacion' ? totals.restante : undefined" v-model="formData.monto_total" :disabled="formMode !== 'Estimacion'" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary/50 disabled:bg-black/40 disabled:text-white/60 disabled:border-white/5" />
+                <input type="text" :value="getDisplayValue(formData.monto_total)" @input="e => updateCurrencyField(formData, 'monto_total', e)" :disabled="formMode !== 'Estimacion'" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary/50 disabled:bg-black/40 disabled:text-white/60 disabled:border-white/5" />
               </div>
 
               <div class="space-y-2">
@@ -228,7 +228,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1">
                   <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Monto Aportado *</label>
-                  <input type="number" step="0.01" min="0" v-model.number="src.monto_aportado" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
+                  <input type="text" :value="getDisplayValue(src.monto_aportado)" @input="e => updateCurrencyField(src, 'monto_aportado', e)" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
                 </div>
                 <div class="space-y-1">
                   <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Estado Inicial</label>
@@ -343,6 +343,26 @@ const projects = ref([]);
 const bankAccounts = ref([]);
 const selectedProjectId = ref('');
 const loading = ref(false);
+
+const getDisplayValue = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const str = String(val);
+  const parts = str.split('.');
+  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.length > 1 ? `Q ${numPart}.${parts[1]}` : `Q ${numPart}`;
+};
+
+const updateCurrencyField = (obj, key, event) => {
+  let raw = event.target.value.replace(/[^0-9.]/g, '');
+  const parts = raw.split('.');
+  if (parts.length > 2) raw = parts[0] + '.' + parts.slice(1).join('');
+  
+  obj[key] = raw === '' ? 0 : raw;
+  
+  // Force update the input visually to keep the Q and commas, 
+  // though it may shift cursor to the end
+  event.target.value = getDisplayValue(raw);
+};
 
 const timeline = ref([]);
 const summary = ref([]);

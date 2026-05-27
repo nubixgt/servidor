@@ -139,4 +139,16 @@ class ProjectIncomeRepository
         $stmt->execute(['project_id' => $projectId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getProjectIdBySource(int $sourceId): ?int
+    {
+        $sql = "SELECT i.project_id 
+                FROM project_income_sources s
+                JOIN project_incomes i ON s.project_income_id = i.id
+                WHERE s.id = :source_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['source_id' => $sourceId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int)$result['project_id'] : null;
+    }
 }
