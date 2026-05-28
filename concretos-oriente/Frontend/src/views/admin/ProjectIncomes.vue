@@ -376,7 +376,7 @@ const fetchProjects = async () => {
 
 const fetchBankAccounts = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/finance/bank-accounts`); // Asumiendo que esta ruta existe o crearemos un proxy si falla
+    const res = await fetch(`${BASE_URL}/bank-accounts`); 
     // En el script real de vue se debería adaptar a la ruta existente. 
     // Como vimos Finance.vue, allí estaba estático, pero la DB tiene bank_accounts. 
     // Trataré de obtenerlos de API o lo pongo vacío temporal.
