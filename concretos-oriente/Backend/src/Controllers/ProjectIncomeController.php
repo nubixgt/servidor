@@ -73,12 +73,12 @@ class ProjectIncomeController extends Controller
                 "message" => "Ingreso registrado exitosamente.",
                 "data" => ["income_id" => $incomeId]
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $code = $e->getCode() ?: 500;
             $code = $code >= 400 && $code < 600 ? $code : 500;
             $this->json([
                 "status" => "error",
-                "message" => $e->getMessage()
+                "message" => "Error interno: " . $e->getMessage() . " en " . basename($e->getFile()) . " línea " . $e->getLine()
             ], $code);
         }
     }
@@ -104,12 +104,12 @@ class ProjectIncomeController extends Controller
                 "status" => "success",
                 "message" => "Fuente actualizada exitosamente."
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $code = $e->getCode() ?: 500;
             $code = $code >= 400 && $code < 600 ? $code : 500;
             $this->json([
                 "status" => "error",
-                "message" => $e->getMessage()
+                "message" => "Error interno: " . $e->getMessage() . " en " . basename($e->getFile()) . " línea " . $e->getLine()
             ], $code);
         }
     }

@@ -16,7 +16,7 @@ class Uploader
         $this->targetDir = $baseDir . $this->relativePath;
         
         if (!is_dir($this->targetDir)) {
-            if (!mkdir($this->targetDir, 0777, true)) {
+            if (!@mkdir($this->targetDir, 0777, true)) {
                 throw new Exception("No se pudo crear el directorio de subida: {$this->relativePath}");
             }
         }
@@ -32,7 +32,7 @@ class Uploader
         $filename = $filenamePrefix . '.' . $extension;
         $targetPath = rtrim($this->targetDir, '/') . '/' . $filename;
 
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+        if (!@move_uploaded_file($file['tmp_name'], $targetPath)) {
             throw new Exception("Error al guardar el archivo en el servidor.");
         }
 
