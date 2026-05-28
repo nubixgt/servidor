@@ -61,9 +61,9 @@ class ProjectIncomeRepository
             $this->pdo->beginTransaction();
 
             $sql = "INSERT INTO project_incomes 
-                    (project_id, tipo_cobro, numero_estimacion, monto_total, porcentaje_contrato, fecha_registro, periodo_avance, observaciones) 
+                    (project_id, tipo_cobro, numero_estimacion, monto_total, porcentaje_contrato, fecha_registro, observaciones) 
                     VALUES 
-                    (:project_id, :tipo_cobro, :numero_estimacion, :monto_total, :porcentaje_contrato, :fecha_registro, :periodo_avance, :observaciones)";
+                    (:project_id, :tipo_cobro, :numero_estimacion, :monto_total, :porcentaje_contrato, :fecha_registro, :observaciones)";
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
@@ -73,7 +73,6 @@ class ProjectIncomeRepository
                 ':monto_total' => $data['monto_total'],
                 ':porcentaje_contrato' => $data['porcentaje_contrato'],
                 ':fecha_registro' => $data['fecha_registro'],
-                ':periodo_avance' => $data['periodo_avance'] ?? null,
                 ':observaciones' => $data['observaciones'] ?? null
             ]);
 
