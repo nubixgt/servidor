@@ -90,10 +90,10 @@ class ProjectIncomeController extends Controller
     {
         try {
             $data = [
-                'fecha_cobro' => $_POST['fecha_cobro'] ?? null,
-                'numero_documento' => $_POST['numero_documento'] ?? null,
-                'bank_account_id' => $_POST['bank_account_id'] ?? null,
-                'estado' => $_POST['estado'] ?? 'Pendiente'
+                'fecha_cobro' => !empty($_POST['fecha_cobro']) ? $_POST['fecha_cobro'] : null,
+                'numero_documento' => !empty($_POST['numero_documento']) ? $_POST['numero_documento'] : null,
+                'bank_account_id' => !empty($_POST['bank_account_id']) ? $_POST['bank_account_id'] : null,
+                'estado' => !empty($_POST['estado']) ? $_POST['estado'] : 'Pendiente'
             ];
 
             $file = $_FILES['comprobante'] ?? null;

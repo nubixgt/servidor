@@ -125,9 +125,9 @@ class ProjectIncomeService
             'numero_estimacion' => $numeroEstimacion,
             'monto_total' => $montoTotal,
             'porcentaje_contrato' => $porcentajeContrato,
-            'fecha_registro' => $data['fecha_registro'] ?? date('Y-m-d'),
-            'periodo_avance' => $data['periodo_avance'] ?? null,
-            'observaciones' => $data['observaciones'] ?? null
+            'fecha_registro' => !empty($data['fecha_registro']) ? $data['fecha_registro'] : date('Y-m-d'),
+            'periodo_avance' => !empty($data['periodo_avance']) ? $data['periodo_avance'] : null,
+            'observaciones' => !empty($data['observaciones']) ? $data['observaciones'] : null
         ];
 
         // Preparar datos de las fuentes
@@ -154,10 +154,10 @@ class ProjectIncomeService
                 'fuente' => $source['fuente'],
                 'porcentaje_aporte' => $porcentajeAporte,
                 'monto_aportado' => $montoAportado,
-                'fecha_cobro' => $source['fecha_cobro'] ?? null,
-                'numero_documento' => $source['numero_documento'] ?? null,
-                'bank_account_id' => $source['bank_account_id'] ?? null,
-                'estado' => $source['estado'] ?? 'Pendiente',
+                'fecha_cobro' => !empty($source['fecha_cobro']) ? $source['fecha_cobro'] : null,
+                'numero_documento' => !empty($source['numero_documento']) ? $source['numero_documento'] : null,
+                'bank_account_id' => !empty($source['bank_account_id']) ? $source['bank_account_id'] : null,
+                'estado' => !empty($source['estado']) ? $source['estado'] : 'Pendiente',
                 'comprobante_path' => $comprobantePath
             ];
         }

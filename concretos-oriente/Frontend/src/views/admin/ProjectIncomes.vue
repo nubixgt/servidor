@@ -230,17 +230,10 @@
                   <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Monto Aportado *</label>
                   <input type="text" :value="getDisplayValue(src.monto_aportado)" @input="e => updateCurrencyField(src, 'monto_aportado', e)" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
                 </div>
-                <div class="space-y-1">
-                  <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Estado Inicial</label>
-                  <select v-model="src.estado" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50 appearance-none">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Recibido">Recibido</option>
-                  </select>
-                </div>
               </div>
 
-              <!-- Campos extra si Estado es Recibido -->
-              <div v-if="src.estado === 'Recibido'" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+              <!-- Campos extra si hay monto aportado mayor a 0 (Se asume como Recibido) -->
+              <div v-if="parseFloat(src.monto_aportado || 0) > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
                 <div class="space-y-1">
                   <label class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Fecha Cobro Efectivo *</label>
                   <input type="date" v-model="src.fecha_cobro" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary/50" />
@@ -515,7 +508,7 @@ const submitForm = async () => {
     return {
       fuente: s.fuente,
       monto_aportado: s.monto_aportado,
-      estado: s.estado,
+      estado: parseFloat(s.monto_aportado || 0) > 0 ? 'Recibido' : 'Pendiente',
       fecha_cobro: s.fecha_cobro,
       bank_account_id: s.bank_account_id,
       numero_documento: s.numero_documento
