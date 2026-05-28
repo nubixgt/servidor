@@ -132,7 +132,16 @@ class ProjectIncomeService
 
         // Preparar datos de las fuentes
         $finalSources = [];
-        $uploader = new Uploader("Uploads/ProjectIncomes/Proyecto_{$projectId}");
+        
+        $carpetaTipo = '';
+        switch ($tipoCobro) {
+            case 'Anticipo': $carpetaTipo = 'Anticipos'; break;
+            case 'Estimacion': $carpetaTipo = 'Estimaciones'; break;
+            case 'Pago Final': $carpetaTipo = 'Pagos_Finales'; break;
+            default: $carpetaTipo = 'Otros';
+        }
+        
+        $uploader = new Uploader("Uploads/ProjectIncomes/Proyecto_{$projectId}/{$carpetaTipo}");
         
         foreach ($sourcesData as $index => $source) {
             $montoAportado = (float)($source['monto_aportado'] ?? 0);
@@ -176,8 +185,19 @@ class ProjectIncomeService
 
         $comprobantePath = null;
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $projectId = $this->incomeRepo->getProjectIdBySource($sourceId);
-            $dir = $projectId ? "Proyecto_{$projectId}" : "Extras";
+            $info = $this->incomeRepo->getProjectAndIncomeTypeBySource($sourceId);
+            $projectId = $info ? $info['project_id'] : null;
+            $tipoCobro = $info ? $info['tipo_cobro'] : 'Otros';
+            
+            $carpetaTipo = '';
+            switch ($tipoCobro) {
+                case 'Anticipo': $carpetaTipo = 'Anticipos'; break;
+                case 'Estimacion': $carpetaTipo = 'Estimaciones'; break;
+                case 'Pago Final': $carpetaTipo = 'Pagos_Finales'; break;
+                default: $carpetaTipo = 'Otros';
+            }
+            
+            $dir = $projectId ? "Proyecto_{$projectId}/{$carpetaTipo}" : "Extras/{$carpetaTipo}";
             $uploader = new Uploader("Uploads/ProjectIncomes/{$dir}");
             $comprobantePath = $uploader->upload($file, "comprobante_" . time() . "_{$sourceId}");
             $data['comprobante_path'] = $comprobantePath;
