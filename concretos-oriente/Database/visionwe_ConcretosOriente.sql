@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 27-05-2026 a las 21:13:37
--- Versión del servidor: 11.4.11-MariaDB
+-- Tiempo de generación: 29-05-2026 a las 16:14:40
+-- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -675,6 +675,82 @@ INSERT INTO `projects` (`id`, `codigo`, `nombre`, `cliente_id`, `ubicacion`, `co
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `project_incomes`
+--
+
+CREATE TABLE `project_incomes` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `tipo_cobro` enum('Anticipo','Estimacion','Pago Final') NOT NULL,
+  `numero_estimacion` int(11) DEFAULT NULL COMMENT 'Solo aplicable si tipo_cobro es Estimacion (1 al 8)',
+  `monto_total` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `porcentaje_contrato` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `fecha_registro` date NOT NULL,
+  `observaciones` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `project_incomes`
+--
+
+INSERT INTO `project_incomes` (`id`, `project_id`, `tipo_cobro`, `numero_estimacion`, `monto_total`, `porcentaje_contrato`, `fecha_registro`, `observaciones`, `created_at`, `updated_at`) VALUES
+(1, 2, 'Anticipo', NULL, 50000.00, 20.00, '2026-05-27', 'Prueba 1', '2026-05-27 21:51:18', '2026-05-27 21:51:18'),
+(2, 2, 'Estimacion', 1, 70000.00, 28.00, '2026-05-27', 'Prueba 1', '2026-05-27 22:09:47', '2026-05-27 22:09:47'),
+(3, 2, 'Estimacion', 2, 25000.00, 10.00, '2026-05-27', 'Prueba 2', '2026-05-27 22:13:42', '2026-05-27 22:13:42'),
+(4, 1, 'Anticipo', NULL, 4000.00, 20.00, '2026-05-28', 'Prueba 2 de Anticipo', '2026-05-28 14:14:53', '2026-05-28 14:14:53'),
+(5, 1, 'Estimacion', 1, 15000.00, 75.00, '2026-05-28', 'Prueba 1 de estimacion proyecto 1', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
+(6, 1, 'Estimacion', 2, 1000.00, 5.00, '2026-05-28', 'Prueba 3', '2026-05-28 14:37:00', '2026-05-28 14:37:00');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `project_income_sources`
+--
+
+CREATE TABLE `project_income_sources` (
+  `id` int(11) NOT NULL,
+  `project_income_id` int(11) NOT NULL,
+  `fuente` enum('Consejo de Desarrollo','Municipalidad','COCODE') NOT NULL,
+  `porcentaje_aporte` decimal(5,2) NOT NULL DEFAULT 0.00 COMMENT 'La suma de las 3 fuentes debe ser 100%',
+  `monto_aportado` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `fecha_cobro` date DEFAULT NULL,
+  `numero_documento` varchar(100) DEFAULT NULL,
+  `bank_account_id` int(11) DEFAULT NULL,
+  `comprobante_path` varchar(255) DEFAULT NULL,
+  `estado` enum('Pendiente','Recibido') NOT NULL DEFAULT 'Pendiente',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `project_income_sources`
+--
+
+INSERT INTO `project_income_sources` (`id`, `project_income_id`, `fuente`, `porcentaje_aporte`, `monto_aportado`, `fecha_cobro`, `numero_documento`, `bank_account_id`, `comprobante_path`, `estado`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Consejo de Desarrollo', 25.00, 12500.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 21:51:18', '2026-05-27 21:51:18'),
+(2, 1, 'Municipalidad', 25.00, 12500.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 21:51:18', '2026-05-27 21:51:18'),
+(3, 1, 'COCODE', 50.00, 25000.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 21:51:18', '2026-05-27 21:51:18'),
+(4, 2, 'Consejo de Desarrollo', 25.00, 17500.00, '0000-00-00', '', 1, NULL, 'Pendiente', '2026-05-27 22:09:47', '2026-05-27 22:09:47'),
+(5, 2, 'Municipalidad', 25.00, 17500.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 22:09:47', '2026-05-27 22:09:47'),
+(6, 2, 'COCODE', 50.00, 35000.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 22:09:47', '2026-05-27 22:09:47'),
+(7, 3, 'Consejo de Desarrollo', 98.00, 24500.00, '2026-05-29', '978410', 2, NULL, 'Recibido', '2026-05-27 22:13:42', '2026-05-27 22:13:42'),
+(8, 3, 'Municipalidad', 1.00, 250.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 22:13:42', '2026-05-27 22:13:42'),
+(9, 3, 'COCODE', 1.00, 250.00, '0000-00-00', '', NULL, NULL, 'Pendiente', '2026-05-27 22:13:42', '2026-05-27 22:13:42'),
+(10, 4, 'Consejo de Desarrollo', 25.00, 1000.00, '2026-05-31', '845120', 3, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779977693_0.png', 'Recibido', '2026-05-28 14:14:53', '2026-05-28 14:14:53'),
+(11, 4, 'Municipalidad', 50.00, 2000.00, '2026-06-05', '87451320', 2, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779977693_1.png', 'Recibido', '2026-05-28 14:14:53', '2026-05-28 14:14:53'),
+(12, 4, 'COCODE', 25.00, 1000.00, '2026-05-31', '89746150', 1, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779977693_2.png', 'Recibido', '2026-05-28 14:14:53', '2026-05-28 14:14:53'),
+(13, 5, 'Consejo de Desarrollo', 66.67, 10000.00, '2026-05-19', '784510', 3, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779978062_0.png', 'Recibido', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
+(14, 5, 'Municipalidad', 20.00, 3000.00, '2026-06-07', '9874150', 1, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779978062_1.png', 'Recibido', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
+(15, 5, 'COCODE', 13.33, 2000.00, '2026-06-05', '897746150', 2, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779978062_2.png', 'Recibido', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
+(16, 6, 'Consejo de Desarrollo', 100.00, 1000.00, '2026-06-07', '987150', 1, 'Uploads/ProjectIncomes/Proyecto_1/Estimaciones/comprobante_1779979020_0.png', 'Recibido', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
+(17, 6, 'Municipalidad', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
+(18, 6, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-05-28 14:37:00', '2026-05-28 14:37:00');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `purchase_orders`
 --
 
@@ -950,6 +1026,21 @@ ALTER TABLE `projects`
   ADD KEY `fk_projects_client` (`cliente_id`);
 
 --
+-- Indices de la tabla `project_incomes`
+--
+ALTER TABLE `project_incomes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_project_incomes_project` (`project_id`);
+
+--
+-- Indices de la tabla `project_income_sources`
+--
+ALTER TABLE `project_income_sources`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_income_sources_income` (`project_income_id`),
+  ADD KEY `fk_income_sources_bank` (`bank_account_id`);
+
+--
 -- Indices de la tabla `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
@@ -1122,6 +1213,18 @@ ALTER TABLE `projects`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `project_incomes`
+--
+ALTER TABLE `project_incomes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `project_income_sources`
+--
+ALTER TABLE `project_income_sources`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
 -- AUTO_INCREMENT de la tabla `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
@@ -1260,6 +1363,19 @@ ALTER TABLE `personnel`
 --
 ALTER TABLE `projects`
   ADD CONSTRAINT `fk_projects_client` FOREIGN KEY (`cliente_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `project_incomes`
+--
+ALTER TABLE `project_incomes`
+  ADD CONSTRAINT `fk_project_incomes_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `project_income_sources`
+--
+ALTER TABLE `project_income_sources`
+  ADD CONSTRAINT `fk_income_sources_bank` FOREIGN KEY (`bank_account_id`) REFERENCES `bank_accounts` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_income_sources_income` FOREIGN KEY (`project_income_id`) REFERENCES `project_incomes` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `purchase_orders`
