@@ -593,30 +593,40 @@
 
                         <div class="grid grid-cols-1 gap-5">
                             <!-- Front Photo Input -->
-                            <div class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden p-6 text-center">
-                                <Camera class="w-8 h-8 text-white/30 group-hover:text-primary transition-colors mb-2" />
-                                <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Foto Frontal / Tres cuartos</p>
-                                <p class="text-[10px] font-medium text-white/20 lowercase mt-1">
-                                    {{ frontPhotoName ? `✓ ${frontPhotoName}` : 'Seleccionar Archivo' }}
-                                </p>
+                            <div class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center">
+                                <img v-if="frontPhotoPreview" :src="frontPhotoPreview" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity z-0" />
+                                
+                                <div class="z-10 flex flex-col items-center justify-center relative p-3 rounded-xl transition-all" :class="frontPhotoPreview ? 'bg-slate-950/60 backdrop-blur-md opacity-0 group-hover:opacity-100' : ''">
+                                    <Camera class="w-8 h-8 text-white/30 group-hover:text-primary transition-colors mb-2" />
+                                    <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Foto Frontal / Tres cuartos</p>
+                                    <p class="text-[10px] font-medium text-white/20 lowercase mt-1">
+                                        {{ frontPhotoName ? `✓ ${frontPhotoName}` : 'Seleccionar Imagen' }}
+                                    </p>
+                                </div>
                                 <input
                                     type="file"
+                                    accept="image/*"
                                     @change="onFrontPhotoChange"
-                                    class="absolute inset-0 opacity-0 cursor-pointer"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                 />
                             </div>
 
                             <!-- Rear Photo Input -->
-                            <div class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden p-6 text-center">
-                                <Camera class="w-8 h-8 text-white/30 group-hover:text-primary transition-colors mb-2" />
-                                <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Foto Trasera / Placa</p>
-                                <p class="text-[10px] font-medium text-white/20 lowercase mt-1">
-                                    {{ rearPhotoName ? `✓ ${rearPhotoName}` : 'Seleccionar Archivo' }}
-                                </p>
+                            <div class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center">
+                                <img v-if="rearPhotoPreview" :src="rearPhotoPreview" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity z-0" />
+
+                                <div class="z-10 flex flex-col items-center justify-center relative p-3 rounded-xl transition-all" :class="rearPhotoPreview ? 'bg-slate-950/60 backdrop-blur-md opacity-0 group-hover:opacity-100' : ''">
+                                    <Camera class="w-8 h-8 text-white/30 group-hover:text-primary transition-colors mb-2" />
+                                    <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Foto Trasera / Placa</p>
+                                    <p class="text-[10px] font-medium text-white/20 lowercase mt-1">
+                                        {{ rearPhotoName ? `✓ ${rearPhotoName}` : 'Seleccionar Imagen' }}
+                                    </p>
+                                </div>
                                 <input
                                     type="file"
+                                    accept="image/*"
                                     @change="onRearPhotoChange"
-                                    class="absolute inset-0 opacity-0 cursor-pointer"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                                 />
                             </div>
                         </div>
@@ -924,6 +934,8 @@ const notes = ref("");
 
 const frontPhotoName = ref("");
 const rearPhotoName = ref("");
+const frontPhotoPreview = ref<string | null>(null);
+const rearPhotoPreview = ref<string | null>(null);
 
 const isActionModalOpen = ref(false);
 const modalType = ref<"assign-pilot" | "maintenance" | "report-issue" | "observations" | "new-movement">("assign-pilot");
@@ -1037,8 +1049,14 @@ const resetForm = () => {
     vehiclePriority.value = "Normal";
     vehicleStatus.value = "draft";
     notes.value = "";
+    
+    if (frontPhotoPreview.value) URL.revokeObjectURL(frontPhotoPreview.value);
+    if (rearPhotoPreview.value) URL.revokeObjectURL(rearPhotoPreview.value);
+    
     frontPhotoName.value = "";
     rearPhotoName.value = "";
+    frontPhotoPreview.value = null;
+    rearPhotoPreview.value = null;
     frontPhotoFile = null;
     rearPhotoFile = null;
 };
@@ -1330,6 +1348,8 @@ const onFrontPhotoChange = (e: Event) => {
     if (target.files?.[0]) {
         frontPhotoFile = target.files[0];
         frontPhotoName.value = target.files[0].name;
+        if (frontPhotoPreview.value) URL.revokeObjectURL(frontPhotoPreview.value);
+        frontPhotoPreview.value = URL.createObjectURL(target.files[0]);
     }
 };
 const onRearPhotoChange = (e: Event) => {
@@ -1337,6 +1357,8 @@ const onRearPhotoChange = (e: Event) => {
     if (target.files?.[0]) {
         rearPhotoFile = target.files[0];
         rearPhotoName.value = target.files[0].name;
+        if (rearPhotoPreview.value) URL.revokeObjectURL(rearPhotoPreview.value);
+        rearPhotoPreview.value = URL.createObjectURL(target.files[0]);
     }
 };
 </script>
