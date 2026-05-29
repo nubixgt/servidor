@@ -1234,7 +1234,7 @@ const stats = computed(() => {
     return { total, operational, maintenance, inactive, totalMileage };
 });
 
-const getPilotName = (id: string) => {
+const getPilotDisplay = (id: string) => {
     if (!id) return "Sin asignar";
     const found = pilots.value.find(p => p.id === id);
     return found ? `${found.name} (${found.license})` : "Sin asignar";
