@@ -27,7 +27,42 @@ class VehicleRepository
                 LEFT JOIN personnel p ON p.id = v.piloto_id
                 ORDER BY v.id DESC";
         $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch logs for history
+        $logStmt = $this->pdo->query("SELECT * FROM vehicle_logs ORDER BY fecha_registro DESC");
+        $allLogs = $logStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($vehicles as &$vehicle) {
+            $vehicle['history'] = [];
+            foreach ($allLogs as $log) {
+                if ($log['vehiculo_id'] == $vehicle['id']) {
+                    $type = "Movimiento / Bitácora";
+                    $description = "";
+                    
+                    if (!empty($log['reportar_averia'])) {
+                        $type = "Avería Reportada";
+                        $description = $log['reportar_averia'];
+                    } elseif (!empty($log['envio_servicio'])) {
+                        $type = "Servicio/Mantenimiento";
+                        $description = $log['envio_servicio'];
+                    } elseif (!empty($log['observaciones'])) {
+                        $type = "Observación";
+                        $description = $log['observaciones'];
+                    } else {
+                        $description = "Cambio de estado a " . strtoupper($log['estatus_vehiculo']);
+                    }
+
+                    $vehicle['history'][] = [
+                        'date' => explode(' ', $log['fecha_registro'])[0], // Just the date part
+                        'type' => $type,
+                        'description' => $description
+                    ];
+                }
+            }
+        }
+
+        return $vehicles;
     }
 
     public function findById(int $id): ?array

@@ -813,7 +813,8 @@ import {
     FileSpreadsheet,
     X,
     FileText,
-    UserPlus
+    UserPlus,
+    Eye
 } from 'lucide-vue-next';
 
 interface Pilot {
@@ -960,7 +961,7 @@ const fetchVehicles = async () => {
                 notes: v.observaciones || "",
                 frontPhoto: v.foto_frontal,
                 rearPhoto: v.foto_trasera,
-                history: [] // El historial requeriría un tabla adicional log
+                history: v.history || []
             }));
         }
     } catch (error) {
