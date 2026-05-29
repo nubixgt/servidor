@@ -281,17 +281,10 @@
                         </div>
 
                         <button
-                            @click="downloadReportSim"
-                            class="px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-white/10 transition-all flex items-center gap-2"
-                        >
-                            <FileSpreadsheet class="w-4 h-4 text-emerald-400" /> Exportar Copia Bitácora
-                        </button>
-
-                        <button
-                            @click="modalType = 'new-movement'; selectedVehicleForLog = null; newMoveVehicleName = ''; newMovePlate = ''; newMovePilotId = ''; newMoveStatus = 'active'; isActionModalOpen = true;"
+                            @click="openLogModal"
                             class="px-5 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shrink-0"
                         >
-                            <ClipboardList class="w-4 h-4" /> Registrar Movimiento
+                            <ClipboardList class="w-4 h-4" /> Registrar Bitácora
                         </button>
                     </div>
                 </div>
@@ -422,16 +415,6 @@
                     </div>
                 </div>
 
-                <!-- Underpinning instructions callout -->
-                <div class="glass-card p-6 rounded-2xl border border-white/5 flex gap-4 items-start max-w-4xl">
-                    <Info class="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <div class="space-y-1">
-                        <h5 class="text-xs font-black uppercase tracking-wider text-white">Instrucción de Enlace Real-Time</h5>
-                        <p class="text-[11px] font-bold text-white/40 leading-relaxed uppercase">
-                            Esta bitácora interactúa directamente con el catálogo general de vehículos de ConstructPro. Al cambiar el piloto, reportar fallas, o confirmar mantenimientos, el inventario general y las tarjetas digitales se actualizarán en tiempo real.
-                        </p>
-                    </div>
-                </div>
             </div>
         </template>
         <template v-else>
@@ -703,38 +686,26 @@
             </div>
         </template>
 
-        <!-- Sticky footer for premium suites -->
-        <footer class="pt-6 text-white/30 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-widest gap-4">
-            <p>© 2026 CONSTRUCTPRO - SISTEMA INTEGRADO DE GESTIÓN DE MAQUINARIA Y FLOTA</p>
-            <div class="flex gap-6">
-                <a href="#" class="hover:text-primary transition-colors">Privacidad</a>
-                <a href="#" class="hover:text-primary transition-colors">Normatividad Flota</a>
-                <a href="#" class="hover:text-primary transition-colors">Soporte Técnico</a>
-            </div>
-        </footer>
 
-        <!-- Actions & Movements Registrar Modal Dialog -->
+        <!-- Log Movement Registrar Modal Dialog -->
         <Transition name="modal">
-            <div v-if="isActionModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-6">
+            <div v-if="isLogModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-6">
                 <div
-                    @click="isActionModalOpen = false"
+                    @click="isLogModalOpen = false"
                     class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"
                 ></div>
 
                 <Transition name="modal-scale" appear>
-                    <div class="relative w-full max-w-md bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden text-white">
+                    <div class="relative w-full max-w-lg bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white">
                         <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
 
                         <!-- Modal Header -->
-                        <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6 sticky top-0 bg-slate-950 z-10">
                             <h4 class="text-sm font-black italic uppercase tracking-tight text-white">
-                                {{ modalType === 'assign-pilot' ? 'Asignar Piloto Homologado' :
-                                   modalType === 'maintenance' ? 'Envío a Servicio Técnico' :
-                                   modalType === 'report-issue' ? 'Reportar Avería o Falla Crítica' :
-                                   modalType === 'observations' ? 'Ficha de Observaciones' : 'Registrar Movimiento de Flota' }}
+                                Registrar Bitácora
                             </h4>
                             <button
-                                @click="isActionModalOpen = false"
+                                @click="isLogModalOpen = false"
                                 class="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-all"
                             >
                                 <X class="w-4 h-4" />
@@ -742,103 +713,87 @@
                         </div>
 
                         <!-- Modal Body -->
-                        <form @submit.prevent="handleLogActionConfirm" class="space-y-5">
-                            <!-- Selected vehicle showcase context -->
-                            <div v-if="selectedVehicleForLog" class="bg-white/5 p-4 rounded-2xl border border-white/5 flex items-center gap-3">
-                                <Car class="w-5 h-5 text-primary shrink-0" />
-                                <div>
-                                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Unidad Sincronizada</span>
-                                    <span class="text-xs font-black text-white">{{ selectedVehicleForLog.brand }} {{ selectedVehicleForLog.model }} [{{ selectedVehicleForLog.plate }}]</span>
-                                </div>
-                            </div>
-
-                            <!-- Sub UI Segment 1: Assign Pilot Selection -->
-                            <div v-if="modalType === 'assign-pilot'" class="space-y-2">
-                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Chofer asignado para operaciones</label>
+                        <form @submit.prevent="submitVehicleLog" class="space-y-6">
+                            
+                            <!-- Select Vehicle -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Seleccionar Vehículo <span class="text-rose-400">*</span></label>
                                 <select
-                                    v-model="detailsText"
+                                    v-model="logVehicleId"
+                                    required
                                     class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-xs font-black text-white focus:outline-none focus:border-primary uppercase"
                                 >
-                                    <option value="">Ninguno - Liberar / Dejar en Reserva</option>
-                                    <option v-for="p in pilots" :key="p.id" :value="p.id">{{ p.name }} ({{ p.license }})</option>
+                                    <option value="" disabled>Seleccione un vehículo</option>
+                                    <option v-for="v in vehicles" :key="v.id" :value="v.id">{{ v.plate }} - {{ v.brand }} {{ v.model }}</option>
                                 </select>
                             </div>
 
-                            <!-- Sub UI: Maintenance / Fault log standard text areas -->
-                            <div v-if="['maintenance', 'report-issue', 'observations'].includes(modalType)" class="space-y-2">
-                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1 text-white">
-                                    {{ modalType === 'maintenance' ? 'Detalles del Servicio Preventivo / Correctivo' :
-                                       modalType === 'report-issue' ? 'Descripción del Diagnóstico / Falla' : 'Comentarios vigentes de ficha' }}
-                                </label>
-                                <textarea
-                                    :required="modalType !== 'observations'"
-                                    v-model="detailsText"
-                                    :placeholder="
-                                        modalType === 'maintenance' ? 'Ej: Afinamiento de motor, cambio de bujías y cambio de filtros hidráulicos de tolva.' :
-                                        modalType === 'report-issue' ? 'Ej: Pérdida súbita de potencia en cilindro 3, humo blanco detectado en múltiple.' :
-                                        'Escriba los comentarios institucionales sobre el vehículo...'
-                                    "
-                                    rows="4"
-                                    class="w-full glass-input rounded-2xl p-4 text-xs font-bold placeholder:text-white/20 text-white resize-none"
-                                ></textarea>
-                            </div>
-
-                            <!-- Sub UI Segment 3: Custom register new entry movement Form -->
-                            <div v-if="modalType === 'new-movement'" class="space-y-4">
-                                <div class="space-y-1.5">
-                                    <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Vehículo (Marca y Modelo) <span class="text-rose-400">*</span></label>
-                                    <input
-                                        type="text"
-                                        required
-                                        v-model="newMoveVehicleName"
-                                        placeholder="Ej: Mack Granite Volquete Heavy"
-                                        class="w-full glass-input rounded-2xl p-3 text-xs font-bold text-white placeholder:text-white/20"
-                                    />
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="space-y-1.5">
-                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Placa de Rodaje <span class="text-rose-400">*</span></label>
-                                        <input
-                                            type="text"
-                                            required
-                                            v-model="newMovePlate"
-                                            placeholder="ABC-123"
-                                            class="w-full glass-input rounded-2xl p-3 text-xs font-bold text-white placeholder:text-white/20 uppercase font-mono tracking-widest"
-                                        />
-                                    </div>
-
-                                    <div class="space-y-1.5">
-                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Estado de Ingreso</label>
-                                        <select
-                                            v-model="newMoveStatus"
-                                            class="w-full bg-slate-900 border border-white/10 rounded-2xl p-3 text-xs font-black text-white focus:outline-none"
-                                        >
-                                            <option value="active">OPERATIVO</option>
-                                            <option value="maintenance">EN TALLER / SERVICIO</option>
-                                            <option value="inactive">AVERIADO / INACTIVO</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-1.5">
-                                    <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Chofer Inicial</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Asignar Piloto -->
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Asignar Piloto</label>
                                     <select
-                                        v-model="newMovePilotId"
-                                        class="w-full bg-slate-900 border border-white/10 rounded-2xl p-3 text-xs font-black text-white focus:outline-none uppercase"
+                                        v-model="logPilotId"
+                                        class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-xs font-black text-white focus:outline-none focus:border-primary uppercase"
                                     >
-                                        <option value="">Sin piloto incial</option>
+                                        <option value="">Ninguno / Sin Asignar</option>
                                         <option v-for="p in pilots" :key="p.id" :value="p.id">{{ p.name }}</option>
+                                    </select>
+                                </div>
+                                <!-- Estado -->
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Estado de la unidad</label>
+                                    <select
+                                        v-model="logStatus"
+                                        class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-xs font-black text-white focus:outline-none focus:border-primary uppercase"
+                                    >
+                                        <option value="active">OPERATIVO</option>
+                                        <option value="maintenance">EN TALLER / SERVICIO</option>
+                                        <option value="inactive">AVERIADO / INACTIVO</option>
+                                        <option value="draft">BORRADOR / SIN ASIGNAR</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- Operations buttons -->
-                            <div class="flex gap-3 justify-end pt-4 border-t border-white/5 mt-6">
+                            <!-- Envio a Servicio -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1 text-white">Envío a Servicio</label>
+                                <textarea
+                                    v-model="logServiceText"
+                                    placeholder="Detalles del servicio técnico o mantenimiento..."
+                                    rows="2"
+                                    class="w-full glass-input rounded-2xl p-4 text-xs font-bold placeholder:text-white/20 text-white resize-none"
+                                ></textarea>
+                            </div>
+
+                            <!-- Reportar Avería -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1 text-white">Reportar Avería</label>
+                                <textarea
+                                    v-model="logIssueText"
+                                    placeholder="Descripción del diagnóstico o falla reportada..."
+                                    rows="2"
+                                    class="w-full glass-input rounded-2xl p-4 text-xs font-bold placeholder:text-white/20 text-white resize-none"
+                                ></textarea>
+                            </div>
+
+                            <!-- Observaciones -->
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1 text-white">Observaciones</label>
+                                <textarea
+                                    v-model="logObservations"
+                                    placeholder="Comentarios adicionales o vigentes de la ficha..."
+                                    rows="2"
+                                    class="w-full glass-input rounded-2xl p-4 text-xs font-bold placeholder:text-white/20 text-white resize-none"
+                                ></textarea>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex gap-4 pt-4 border-t border-white/5">
                                 <button
                                     type="button"
-                                    @click="isActionModalOpen = false"
-                                    class="px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-white/50 cursor-pointer transition-all"
+                                    @click="isLogModalOpen = false"
+                                    class="w-1/2 py-3.5 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
                                 >
                                     Cancelar
                                 </button>
@@ -937,16 +892,35 @@ const rearPhotoName = ref("");
 const frontPhotoPreview = ref<string | null>(null);
 const rearPhotoPreview = ref<string | null>(null);
 
+// Vehicle Log (Bitácora) variables
+const isLogModalOpen = ref(false);
+const logVehicleId = ref("");
+const logPilotId = ref("");
+const logStatus = ref("active");
+const logServiceText = ref("");
+const logIssueText = ref("");
+const logObservations = ref("");
+
+// Auto-select pilot and status when vehicle changes in log form
+watch(logVehicleId, (newId) => {
+    if (newId) {
+        const vehicle = vehicles.value.find((v) => v.id === newId);
+        if (vehicle) {
+            logPilotId.value = vehicle.pilotId || "";
+            logStatus.value = vehicle.status || "active";
+        }
+    } else {
+        logPilotId.value = "";
+        logStatus.value = "active";
+    }
+});
+
 const isActionModalOpen = ref(false);
 const modalType = ref<"assign-pilot" | "maintenance" | "report-issue" | "observations" | "new-movement">("assign-pilot");
 const selectedVehicleForLog = ref<Vehicle | null>(null);
 
 const detailsText = ref("");
 const toastMessage = ref("");
-const newMoveVehicleName = ref("");
-const newMovePlate = ref("");
-const newMoveStatus = ref<"active" | "maintenance" | "inactive" | "draft">("active");
-const newMovePilotId = ref("");
 
 // Methods
 const triggerToast = (msg: string, icon: "success" | "error" | "warning" | "info" = "success") => {
@@ -1182,37 +1156,6 @@ const openLogActionModal = (type: "assign-pilot" | "maintenance" | "report-issue
 };
 
 const handleLogActionConfirm = () => {
-    if (modalType.value === "new-movement") {
-        if (!newMoveVehicleName.value.trim() || !newMovePlate.value.trim()) {
-            triggerToast("Por favor complete nombre y placa de la unidad.");
-            return;
-        }
-
-        const parts = newMoveVehicleName.value.split(" ");
-        const tempBrand = parts[0] || "Genérico";
-        const tempModel = parts.slice(1).join(" ") || "Unidad de Flota";
-
-        const newId = `VEH-${Math.floor(100 + Math.random() * 900)}`;
-
-        const newEntry: Vehicle = {
-            id: newId,
-            plate: newMovePlate.value.toUpperCase(),
-            mileage: 0,
-            brand: tempBrand,
-            model: tempModel,
-            pilotId: newMovePilotId.value,
-            status: newMoveStatus.value,
-            priority: "Normal",
-            notes: "Registro rápido de movimiento de entrada en bitácora.",
-            history: [{ date: new Date().toISOString().split("T")[0], type: "Movimiento", description: "Movimiento registrado de ingreso al parque de maquinarias." }]
-        };
-
-        vehicles.value.unshift(newEntry);
-        triggerToast(`Vehículo [${newEntry.plate}] cargado exitosamente desde Bitácora.`);
-        isActionModalOpen.value = false;
-        return;
-    }
-
     if (!selectedVehicleForLog.value) return;
     const targetId = selectedVehicleForLog.value.id;
 
@@ -1297,17 +1240,49 @@ const getPilotDisplay = (id: string) => {
     return found ? `${found.name} (${found.license})` : "Sin asignar";
 };
 
-const getPilotNameOnly = (id: string) => {
-    if (!id) return "Sin asignar";
-    const found = pilots.value.find(p => p.id === id);
-    return found ? found.name : "Sin asignar";
+const openLogModal = () => {
+    logVehicleId.value = "";
+    logPilotId.value = "";
+    logStatus.value = "active";
+    logServiceText.value = "";
+    logIssueText.value = "";
+    logObservations.value = "";
+    isLogModalOpen.value = true;
 };
 
-const getPilotInitials = (id: string) => {
-    if (!id) return "SA";
-    const found = pilots.value.find(p => p.id === id);
-    if (!found) return "SA";
-    return found.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+const submitVehicleLog = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const payload = {
+            vehiculo_id: logVehicleId.value,
+            piloto_id: logPilotId.value,
+            estatus_vehiculo: logStatus.value,
+            envio_servicio: logServiceText.value,
+            reportar_averia: logIssueText.value,
+            observaciones: logObservations.value
+        };
+
+        const response = await fetch(`${BASE_URL}/vehicle-logs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            triggerToast(result.message || 'Bitácora registrada y vehículo actualizado');
+            isLogModalOpen.value = false;
+            fetchVehicles(); // Refresh vehicles to see new status and pilot
+        } else {
+            alert('Error al registrar la bitácora: ' + (result.message || 'Error desconocido'));
+        }
+    } catch (error) {
+        console.error("Error submitting log:", error);
+        alert("Ocurrió un error al registrar la bitácora.");
+    }
 };
 
 const downloadReportSim = () => {
