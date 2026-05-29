@@ -960,7 +960,7 @@ const fetchPilots = async () => {
             }
         });
         const result = await response.json();
-        if (result.success) {
+        if (result.status === 'success' || result.success) {
             // Filtrar solo a los que son Pilotos
             const allPersonnel = result.data || [];
             pilots.value = allPersonnel
