@@ -63,7 +63,7 @@ import {
   BanknotesIcon, LifebuoyIcon, ArrowRightOnRectangleIcon, PlusIcon,
   CubeIcon, BuildingOfficeIcon, ShoppingBagIcon, ShieldCheckIcon,
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
-  CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon
+  CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -74,6 +74,7 @@ const role = computed(() => authStore.userRole);
 const allNavItemsArr = [
   { id: "dashboard", label: "Panel Principal", icon: Squares2X2Icon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "personnel", label: "Personal", icon: UsersIcon, roles: ["admin"] },
+  { id: "vehicles", label: "Vehículos", icon: TruckIcon, roles: ["admin"] },
   { id: "machinery", label: "Maquinaria", icon: WrenchScrewdriverIcon, roles: ["admin", "supervisor"] },
   { id: "tech-machinery", label: "Estado Maquinaria", icon: WrenchScrewdriverIcon, roles: ["tecnico"] },
   { id: "projects", label: "Proyectos", icon: BriefcaseIcon, roles: ["admin", "supervisor"] },
