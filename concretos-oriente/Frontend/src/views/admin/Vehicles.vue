@@ -371,35 +371,11 @@
                                     <td class="px-8 py-5 text-right">
                                         <div class="flex items-center justify-end gap-1.5">
                                             <button
-                                                @click="openLogActionModal('assign-pilot', v)"
-                                                title="Reasignar Chofer"
-                                                class="p-2 bg-white/5 hover:bg-white/10 text-white/50 hover:text-primary rounded-lg border border-white/5 transition-all text-[10px]"
+                                                @click="showVehicleHistory(v)"
+                                                title="Visualizar Historial"
+                                                class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl border border-white/10 transition-all text-[10px] font-black uppercase flex items-center gap-2"
                                             >
-                                                <UserPlus class="w-3.5 h-3.5" />
-                                            </button>
-
-                                            <button
-                                                @click="openLogActionModal('maintenance', v)"
-                                                title="Asignar Mantenimiento"
-                                                class="p-2 bg-white/5 hover:bg-white/10 text-white/50 hover:text-amber-400 rounded-lg border border-white/5 transition-all text-[10px]"
-                                            >
-                                                <Wrench class="w-3.5 h-3.5" />
-                                            </button>
-
-                                            <button
-                                                @click="openLogActionModal('report-issue', v)"
-                                                title="Notificar Falla Crítica"
-                                                class="p-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-rose-400 rounded-lg border border-white/5 transition-all text-[10px]"
-                                            >
-                                                <AlertTriangle class="w-3.5 h-3.5" />
-                                            </button>
-
-                                            <button
-                                                @click="openLogActionModal('observations', v)"
-                                                title="Editar Ficha de Notas"
-                                                class="p-2 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white rounded-lg border border-white/5 transition-all text-[10px]"
-                                            >
-                                                <FileText class="w-3.5 h-3.5" />
+                                                <Eye class="w-3.5 h-3.5" /> Visualizar
                                             </button>
                                         </div>
                                     </td>
@@ -1261,6 +1237,39 @@ const openLogModal = () => {
     logIssueText.value = "";
     logObservations.value = "";
     isLogModalOpen.value = true;
+};
+
+const showVehicleHistory = (vehicle: Vehicle) => {
+    let htmlContent = `<div class="text-left space-y-4 max-h-64 overflow-y-auto custom-scrollbar">`;
+    
+    if (!vehicle.history || vehicle.history.length === 0) {
+        htmlContent += `<p class="text-white/50 text-xs italic">No hay registros en la bitácora aún.</p>`;
+    } else {
+        vehicle.history.forEach(log => {
+            htmlContent += `
+                <div class="p-3 bg-white/5 border border-white/10 rounded-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[10px] font-black uppercase text-primary">${log.type}</span>
+                        <span class="text-[9px] font-mono text-white/40">${log.date}</span>
+                    </div>
+                    <p class="text-xs text-white/80">${log.description}</p>
+                </div>
+            `;
+        });
+    }
+    htmlContent += `</div>`;
+
+    Swal.fire({
+        title: `<span class="text-white font-black uppercase text-sm tracking-widest">Historial de Unidad [${vehicle.plate}]</span>`,
+        html: htmlContent,
+        background: '#0f172a',
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'rounded-3xl border border-white/10 shadow-2xl',
+            closeButton: 'text-white/50 hover:text-white'
+        }
+    });
 };
 
 const submitVehicleLog = async () => {
