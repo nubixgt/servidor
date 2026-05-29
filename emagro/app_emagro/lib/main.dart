@@ -58,8 +58,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    // Verificar si hay sesión activa
-    final tieneSesion = await AuthService().verificarSesion();
+    bool tieneSesion = false;
+    try {
+      // Verificar si hay sesión activa con un timeout de 4 segundos por seguridad
+      tieneSesion = await AuthService().verificarSesion().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          debugPrint('=== [EMAGRO] Timeout al verificar sesión. Continuando a login. ===');
+          return false;
+        },
+      );
+    } catch (e) {
+      debugPrint('=== [EMAGRO] Error al verificar sesión: $e. Continuando a login. ===');
+    }
 
     if (!mounted) return;
 

@@ -7,6 +7,7 @@ import 'nueva_venta_screen.dart';
 import 'ventas_screen.dart';
 import 'productos_screen.dart';
 import 'pagos_screen.dart';
+import 'estadisticas_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -197,6 +198,14 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.payment_outlined,
                       color: const Color(0xFFE91E63),
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PagosScreen())),
+                    ),
+
+                    _AnimatedMenuCard(
+                      index: 6,
+                      title: 'Estadísticas',
+                      icon: Icons.bar_chart_outlined,
+                      color: Colors.blueAccent,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EstadisticasScreen())),
                     ),
                   ],
                 ),

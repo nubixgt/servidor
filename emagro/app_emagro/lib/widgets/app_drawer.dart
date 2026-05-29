@@ -9,6 +9,7 @@ import '../screens/ventas_screen.dart';
 import '../screens/productos_screen.dart';
 import '../screens/inventario_screen.dart';
 import '../screens/pagos_screen.dart';
+import '../screens/estadisticas_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -174,6 +175,16 @@ class AppDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const PagosScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    context,
+                    icon: Icons.bar_chart_outlined,
+                    title: 'Estadísticas',
+                    color: Colors.blueAccent,
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const EstadisticasScreen()));
                     },
                   ),
 
