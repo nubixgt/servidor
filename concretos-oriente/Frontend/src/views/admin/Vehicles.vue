@@ -1234,10 +1234,23 @@ const stats = computed(() => {
     return { total, operational, maintenance, inactive, totalMileage };
 });
 
-const getPilotDisplay = (id: string) => {
+const getPilotName = (id: string) => {
     if (!id) return "Sin asignar";
     const found = pilots.value.find(p => p.id === id);
     return found ? `${found.name} (${found.license})` : "Sin asignar";
+};
+
+const getPilotNameOnly = (id: string) => {
+    if (!id) return "Sin asignar";
+    const found = pilots.value.find(p => p.id === id);
+    return found ? found.name : "Sin asignar";
+};
+
+const getPilotInitials = (id: string) => {
+    if (!id) return "SA";
+    const found = pilots.value.find(p => p.id === id);
+    if (!found) return "SA";
+    return found.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
 };
 
 const openLogModal = () => {
