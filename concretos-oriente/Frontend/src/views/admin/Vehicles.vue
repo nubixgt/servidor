@@ -508,27 +508,17 @@
                             </h3>
 
                             <div class="grid grid-cols-1 gap-6">
-                                <div class="flex flex-col md:flex-row gap-4 items-end">
-                                    <div class="w-full space-y-2">
-                                        <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Seleccionar Piloto Homologado</label>
-                                        <select
-                                            v-model="pilotId"
-                                            class="w-full h-12 pl-4 pr-10 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
-                                        >
-                                            <option value="" class="bg-slate-950 text-white/60">Ninguno seleccionado (Sin asignar)</option>
-                                            <option v-for="p in pilots" :key="p.id" :value="p.id" class="bg-slate-950 text-white">
-                                                {{ p.name }} ({{ p.license }})
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        @click="handleCreateNewPilot"
-                                        class="h-12 px-6 rounded-xl border border-primary text-primary hover:bg-primary/10 font-bold text-xs uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-2 shrink-0 active:scale-95"
+                                <div class="w-full space-y-2">
+                                    <label class="text-[9px] font-black text-white/30 uppercase tracking-widest ml-1">Seleccionar Piloto Homologado</label>
+                                    <select
+                                        v-model="pilotId"
+                                        class="w-full h-12 pl-4 pr-10 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
                                     >
-                                        <Plus class="w-4 h-4" /> Nuevo Piloto
-                                    </button>
+                                        <option value="" class="bg-slate-950 text-white/60">Ninguno seleccionado (Sin asignar)</option>
+                                        <option v-for="p in pilots" :key="p.id" :value="p.id" class="bg-slate-950 text-white">
+                                            {{ p.name }} ({{ p.license }})
+                                        </option>
+                                    </select>
                                 </div>
 
                                 <!-- System message check -->
@@ -858,7 +848,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import Swal from 'sweetalert2';
 import {
     Car,
     User,
@@ -911,80 +902,15 @@ interface Vehicle {
     history: VehicleLogEvent[];
 }
 
+const BASE_URL = '/concretos-oriente/Backend/api/v1';
+
 // State
 const activeTab = ref<"fleet" | "register" | "log">("fleet");
 const searchTerm = ref("");
 const statusFilter = ref<"all" | "active" | "maintenance" | "inactive" | "draft">("all");
 
-const pilots = ref<Pilot[]>([
-    { id: "1", name: "Carlos Méndez", license: "Lic. Tipo A" },
-    { id: "2", name: "Roberto García", license: "Lic. Tipo B" },
-    { id: "3", name: "Elena Rodríguez", license: "Lic. Tipo A" },
-    { id: "4", name: "Ricardo Méndez", license: "Lic. Tipo A" },
-    { id: "5", name: "Andrés López", license: "Lic. Tipo B" },
-    { id: "6", name: "Mariana Torres", license: "Lic. Tipo A" },
-    { id: "7", name: "Sofía Luna", license: "Lic. Especial Pesado" }
-]);
-
-const vehicles = ref<Vehicle[]>([
-    {
-        id: "VEH-101",
-        plate: "ABC-1234",
-        mileage: 45200,
-        brand: "Mack Granite",
-        model: "Dump Truck",
-        pilotId: "4",
-        status: "active",
-        priority: "Normal",
-        notes: "Soporte de tolva lubricado y amortiguadores delanteros verificados sin fugas.",
-        history: [
-            { date: "2026-05-12", type: "Mantenimiento", description: "Cambio de aceite de motor y filtros hidráulicos." },
-            { date: "2026-04-20", type: "Falla", description: "Fuga menor en manguera de sistema de refrigeración corregido." }
-        ]
-    },
-    {
-        id: "VEH-102",
-        plate: "XZY-9988",
-        mileage: 128450,
-        brand: "Caterpillar",
-        model: "320 GC Excavator",
-        pilotId: "",
-        status: "maintenance",
-        priority: "Preventiva",
-        notes: "Programado para cambio periódico de orugas e inspección de sellos mecánicos.",
-        history: [
-            { date: "2026-05-24", type: "Movimiento", description: "Ingreso al taller central de maquinarias." }
-        ]
-    },
-    {
-        id: "VEH-103",
-        plate: "P-781LLK",
-        mileage: 18900,
-        brand: "Ford",
-        model: "F-150 Raptor",
-        pilotId: "5",
-        status: "inactive",
-        priority: "Crítica",
-        notes: "Falla reportada: Sensor de sobrealimentación defectuoso, pérdida de potencia.",
-        history: [
-            { date: "2026-05-28", type: "Falla", description: "Pérdida súbita de potencia en autopista auxiliar norte." }
-        ]
-    },
-    {
-        id: "VEH-104",
-        plate: "WXB-345",
-        mileage: 85600,
-        brand: "Scania",
-        model: "G410 Heavy Truck",
-        pilotId: "6",
-        status: "active",
-        priority: "Normal",
-        notes: "Neumáticos con 85% de vida útil. Sistema de frenos óptimo.",
-        history: [
-            { date: "2026-04-18", type: "Mantenimiento", description: "Alineamiento axial y balanceo general." }
-        ]
-    }
-]);
+const pilots = ref<Pilot[]>([]);
+const vehicles = ref<Vehicle[]>([]);
 
 const editingVehicleId = ref<string | null>(null);
 const plate = ref("");
@@ -1011,10 +937,79 @@ const newMoveStatus = ref<"active" | "maintenance" | "inactive" | "draft">("acti
 const newMovePilotId = ref("");
 
 // Methods
-const triggerToast = (msg: string) => {
-    toastMessage.value = msg;
-    setTimeout(() => toastMessage.value = "", 4000);
+const triggerToast = (msg: string, icon: "success" | "error" | "warning" | "info" = "success") => {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: icon,
+        title: msg,
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        background: '#0f172a', // slate-900
+        color: '#ffffff'
+    });
 };
+
+const fetchPilots = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${BASE_URL}/personnel`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const result = await response.json();
+        if (result.success) {
+            // Filtrar solo a los que son Pilotos
+            const allPersonnel = result.data || [];
+            pilots.value = allPersonnel
+                .filter((p: any) => p.tipo_empleado === 'Piloto')
+                .map((p: any) => ({
+                    id: String(p.id),
+                    name: `${p.nombres} ${p.apellidos}`,
+                    license: "Piloto" // Si tuvieran licencia en DB iría aquí
+                }));
+        }
+    } catch (error) {
+        console.error("Error fetching pilots:", error);
+    }
+};
+
+const fetchVehicles = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${BASE_URL}/vehicles`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const result = await response.json();
+        if (result.success) {
+            vehicles.value = (result.data || []).map((v: any) => ({
+                id: String(v.id),
+                plate: v.placa,
+                mileage: Number(v.kilometraje),
+                brand: v.marca,
+                model: v.modelo,
+                pilotId: v.piloto_id ? String(v.piloto_id) : "",
+                status: v.estatus || "draft",
+                priority: v.frecuencia_prioridad || "Normal",
+                notes: v.observaciones || "",
+                frontPhoto: v.foto_frontal,
+                rearPhoto: v.foto_trasera,
+                history: [] // El historial requeriría un tabla adicional log
+            }));
+        }
+    } catch (error) {
+        console.error("Error fetching vehicles:", error);
+    }
+};
+
+onMounted(() => {
+    fetchPilots();
+    fetchVehicles();
+});
 
 const handleCreateNewPilot = () => {
     const pName = window.prompt("Ingrese el nombre completo del nuevo Piloto:");
@@ -1044,55 +1039,65 @@ const resetForm = () => {
     notes.value = "";
     frontPhotoName.value = "";
     rearPhotoName.value = "";
+    frontPhotoFile = null;
+    rearPhotoFile = null;
 };
 
-const handleSaveVehicle = () => {
+const handleSaveVehicle = async () => {
     if (!plate.value.trim()) {
-        triggerToast("Por favor especifique la placa del vehículo.");
+        triggerToast("Por favor especifique la placa del vehículo.", "warning");
         return;
     }
     if (!brand.value.trim() || !model.value.trim()) {
-        triggerToast("Por favor ingrese marca y modelo de la unidad.");
+        triggerToast("Por favor ingrese marca y modelo de la unidad.", "warning");
         return;
     }
 
-    if (editingVehicleId.value) {
-        const index = vehicles.value.findIndex(v => v.id === editingVehicleId.value);
-        if (index !== -1) {
-            vehicles.value[index] = {
-                ...vehicles.value[index],
-                plate: plate.value.toUpperCase(),
-                mileage: Number(mileage.value) || 0,
-                brand: brand.value,
-                model: model.value,
-                pilotId: pilotId.value,
-                status: vehicleStatus.value,
-                priority: vehiclePriority.value,
-                notes: notes.value,
-                history: [{ date: new Date().toISOString().split("T")[0], type: "Modificación", description: "Datos de catálogo e inventario actualizados directamente en ficha." }, ...vehicles.value[index].history]
-            };
+    try {
+        const formData = new FormData();
+        formData.append("placa", plate.value.toUpperCase());
+        formData.append("kilometraje", String(mileage.value || 0));
+        formData.append("marca", brand.value);
+        formData.append("modelo", model.value);
+        formData.append("piloto_id", pilotId.value);
+        formData.append("frecuencia_prioridad", vehiclePriority.value);
+        formData.append("estatus", editingVehicleId.value ? vehicleStatus.value : (pilotId.value ? "active" : "draft"));
+        formData.append("observaciones", notes.value);
+
+        if (frontPhotoFile) {
+            formData.append("foto_frontal", frontPhotoFile);
         }
-        triggerToast(`Ficha del vehículo ${plate.value.toUpperCase()} guardada correctamente.`);
-        resetForm();
-        activeTab.value = "fleet";
-    } else {
-        const newId = `VEH-${Math.floor(100 + Math.random() * 900)}`;
-        const newVehicle: Vehicle = {
-            id: newId,
-            plate: plate.value.toUpperCase(),
-            mileage: Number(mileage.value) || 0,
-            brand: brand.value,
-            model: model.value,
-            pilotId: pilotId.value,
-            status: pilotId.value ? "active" : "draft",
-            priority: vehiclePriority.value,
-            notes: notes.value || "Ninguna observación inicial cargada.",
-            history: [{ date: new Date().toISOString().split("T")[0], type: "Registro", description: "Ingreso inicial de la unidad a la flota de ConstructPro." }]
-        };
-        vehicles.value.unshift(newVehicle);
-        triggerToast(`Vehículo registrado exitosamente con ID: ${newId}`);
-        resetForm();
-        activeTab.value = "fleet";
+        if (rearPhotoFile) {
+            formData.append("foto_trasera", rearPhotoFile);
+        }
+
+        const token = localStorage.getItem('token');
+        const url = editingVehicleId.value 
+            ? `${BASE_URL}/vehicles/update/${editingVehicleId.value}`
+            : `${BASE_URL}/vehicles`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            triggerToast(editingVehicleId.value 
+                ? `Ficha del vehículo ${plate.value.toUpperCase()} guardada correctamente.`
+                : `Vehículo registrado exitosamente.`, "success");
+            resetForm();
+            activeTab.value = "fleet";
+            fetchVehicles();
+        } else {
+            triggerToast(result.message || "Error al procesar el vehículo.", "error");
+        }
+    } catch (error) {
+        triggerToast("Error de conexión al guardar.", "error");
     }
 };
 
@@ -1109,10 +1114,40 @@ const startEditVehicle = (vehicle: Vehicle) => {
     activeTab.value = "register";
 };
 
-const handleDeleteVehicle = (id: string, plateCode: string) => {
-    if (window.confirm(`¿Está seguro de que desea retirar el vehículo [${plateCode}] de la flota activa?`)) {
-        vehicles.value = vehicles.value.filter(v => v.id !== id);
-        triggerToast(`Vehículo [${plateCode}] retirado de la base de datos.`);
+const handleDeleteVehicle = async (id: string, plateCode: string) => {
+    const confirm = await Swal.fire({
+        title: '¿Retirar vehículo?',
+        text: `¿Está seguro de que desea retirar el vehículo [${plateCode}] de la flota activa?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f43f5e', // rose-500
+        cancelButtonColor: '#475569', // slate-600
+        confirmButtonText: 'Sí, retirar',
+        cancelButtonText: 'Cancelar',
+        background: '#0f172a',
+        color: '#ffffff'
+    });
+
+    if (confirm.isConfirmed) {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${BASE_URL}/vehicles/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                triggerToast(`Vehículo [${plateCode}] retirado de la base de datos.`);
+                fetchVehicles();
+            } else {
+                triggerToast(result.message || "Error al retirar.", "error");
+            }
+        } catch(error) {
+            triggerToast("Error de conexión.", "error");
+        }
     }
 };
 
@@ -1287,13 +1322,22 @@ const downloadReportSim = () => {
 };
 
 // Handle file input changes without re-rendering everything
+let frontPhotoFile: File | null = null;
+let rearPhotoFile: File | null = null;
+
 const onFrontPhotoChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    if (target.files?.[0]) frontPhotoName.value = target.files[0].name;
+    if (target.files?.[0]) {
+        frontPhotoFile = target.files[0];
+        frontPhotoName.value = target.files[0].name;
+    }
 };
 const onRearPhotoChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    if (target.files?.[0]) rearPhotoName.value = target.files[0].name;
+    if (target.files?.[0]) {
+        rearPhotoFile = target.files[0];
+        rearPhotoName.value = target.files[0].name;
+    }
 };
 </script>
 
