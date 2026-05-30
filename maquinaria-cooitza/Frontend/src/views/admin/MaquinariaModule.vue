@@ -87,11 +87,12 @@
               class="w-full border border-[#cbd5e1] px-3 py-2 text-xs bg-white outline-none cursor-pointer focus:border-[#835500]"
             >
               <option value="todos">Todos los Equipos</option>
-              <option value="Excavadora">Excavadora</option>
               <option value="Tractor">Tractor</option>
-              <option value="Cargadora">Cargadora</option>
-              <option value="Bulldozer">Bulldozer</option>
-              <option value="Grúa">Grúa</option>
+              <option value="Excavadora">Excavadora</option>
+              <option value="Retro Excavadora">Retro Excavadora</option>
+              <option value="Rodo">Rodo</option>
+              <option value="Pipa">Pipa</option>
+              <option value="Camion Volteo">Camion Volteo</option>
             </select>
           </div>
 
@@ -269,11 +270,12 @@
                       v-model="category"
                       class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800"
                     >
-                      <option value="Excavadora">Excavadora</option>
                       <option value="Tractor">Tractor</option>
-                      <option value="Cargadora">Cargadora</option>
-                      <option value="Bulldozer">Bulldozer</option>
-                      <option value="Grúa">Grúa</option>
+                      <option value="Excavadora">Excavadora</option>
+                      <option value="Retro Excavadora">Retro Excavadora</option>
+                      <option value="Rodo">Rodo</option>
+                      <option value="Pipa">Pipa</option>
+                      <option value="Camion Volteo">Camion Volteo</option>
                     </select>
                   </div>
                 </div>
@@ -374,7 +376,7 @@
                         />
                         <button 
                           type="button"
-                          @click.stop="photoPreview = null"
+                          @click.stop="clearFile"
                           class="absolute top-1.5 right-1.5 bg-[#ba1a1a] text-white p-1 rounded hover:bg-red-700 transition-colors"
                           title="Remover foto"
                         >
@@ -427,11 +429,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Tractor, Construction, Wrench, CircleSlash, Plus, Check, Edit, Trash2, X, CloudUpload, Search, MoreVertical, Filter, Forklift } from "lucide-vue-next";
+import Swal from 'sweetalert2';
 
 interface Machinery {
   id: string;
   name: string;
-  category: "Tractor" | "Excavadora" | "Cargadora" | "Bulldozer" | "Grúa";
+  category: "Tractor" | "Excavadora" | "Retro Excavadora" | "Rodo" | "Pipa" | "Camion Volteo";
   brand: string;
   serialId: string;
   accumulatedHours: number;
@@ -439,18 +442,6 @@ interface Machinery {
   status: "Operativo" | "Mantenimiento" | "Fuera de Servicio";
   photoUrl?: string;
 }
-
-const emit = defineEmits<{
-  (e: 'machineryChange', count: number): void;
-}>();
-
-const DEFAULT_MACHINERY_PHOTOS: Record<string, string> = {
-  "Excavadora": "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4-n0Uts09omCrK9hJAsromc1Y7GCJOZdeCvW2-u5sfFJXqom9XcKgbiq51rcx0mQNuEyHdpIGs8r9yViHSIpGwQ-Z7-RPkZ35ItK-6bQfr3kdlj5PT9e5KXQB3gtC7eSS279VcUjQS7-RNR9MPbwf5ypPuTg4CgEMIhyaVTzA00eWFBzQ74Pu3JtOSHdgJcFGtuDXY8l6dlcOrHUitHLowY1QP3UIFOg92Wkg41214T-JmcBsgoF8wyXoCRHv3C6SVyFE96IGl5b",
-  "Tractor": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtWEyh1Z-AVKb8m7r1Xd4QhYcVyxqNgGs7-QDVKHd0JvWlxT5MCJ0EPmyeydptGOjpmTw3CVlGGHGm53HGi_fza4tXXmiVp3tTR6S2n7gc02D3GN7Ko5Lc8Gv-BkHjm2F9kcmNC5ezQd7YofIuYhuYnHs-50gaNnQv7Livvi7M1RvyouOyT0-aegn6hvLevJh28ZSBMI76QCDIx27OkhuzjNPbxMQu8-cl0ANrBMiXuPsIX7-OsUgTo7TgPkIZQCwhWHSIMCSQg7PB",
-  "Cargadora": "https://lh3.googleusercontent.com/aida-public/AB6AXuAPH_LQU15grhFazspqrpDAmtqij-Yi5u8pti4HGaVVVa49RVExnL40aoKKWYuBPOrziyt5g1P6pGgUiFYDzWpjjdg10n6G293Fahquh4OpO2eXBRu_Yl-uUBULkorbqp9oN16B5Gt4PG24HIbpbL7Z1pnrdEmXpME2Gbn2PFyNe7t7rIkkdfW_i-cqfovF0AtH9eU5NaBycx-bhwYG18aVN7t9ZCam-M94lOheq8vxN54bn5Q1FiBKhPTQXuinSWwvEfzWYeJx3D4U",
-  "Bulldozer": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtWEyh1Z-AVKb8m7r1Xd4QhYcVyxqNgGs7-QDVKHd0JvWlxT5MCJ0EPmyeydptGOjpmTw3CVlGGHGm53HGi_fza4tXXmiVp3tTR6S2n7gc02D3GN7Ko5Lc8Gv-BkHjm2F9kcmNC5ezQd7YofIuYhuYnHs-50gaNnQv7Livvi7M1RvyouOyT0-aegn6hvLevJh28ZSBMI76QCDIx27OkhuzjNPbxMQu8-cl0ANrBMiXuPsIX7-OsUgTo7TgPkIZQCwhWHSIMCSQg7PB",
-  "Grúa": "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4-n0Uts09omCrK9hJAsromc1Y7GCJOZdeCvW2-u5sfFJXqom9XcKgbiq51rcx0mQNuEyHdpIGs8r9yViHSIpGwQ-Z7-RPkZ35ItK-6bQfr3kdlj5PT9e5KXQB3gtC7eSS279VcUjQS7-RNR9MPbwf5ypPuTg4CgEMIhyaVTzA00eWFBzQ74Pu3JtOSHdgJcFGtuDXY8l6dlcOrHUitHLowY1QP3UIFOg92Wkg41214T-JmcBsgoF8wyXoCRHv3C6SVyFE96IGl5b"
-};
 
 const machinery = ref<Machinery[]>([]);
 const isModalOpen = ref(false);
@@ -465,68 +456,59 @@ const activeDropdownId = ref<string | null>(null);
 
 const brand = ref("");
 const name = ref("");
-const category = ref<"Tractor" | "Excavadora" | "Cargadora" | "Bulldozer" | "Grúa">("Excavadora");
+const category = ref<"Tractor" | "Excavadora" | "Retro Excavadora" | "Rodo" | "Pipa" | "Camion Volteo">("Excavadora");
 const serialId = ref("");
 const accumulatedHours = ref("");
 const nextService = ref("");
 const status = ref<"Operativo" | "Mantenimiento" | "Fuera de Servicio">("Operativo");
 const photoPreview = ref<string | null>(null);
+const selectedFile = ref<File | null>(null);
 
 const isDragOver = ref(false);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
-const mapOldCategoryToNew = (oldCat: string): "Tractor" | "Excavadora" | "Cargadora" | "Bulldozer" | "Grúa" => {
-  const norm = oldCat.toLowerCase();
-  if (norm === "tractor") return "Tractor";
-  if (norm === "excavadora") return "Excavadora";
-  if (norm === "retro") return "Grúa";
-  if (norm === "rodo") return "Bulldozer";
-  if (norm === "pipa" || norm === "cargadora") return "Cargadora";
-  return "Excavadora";
+const emit = defineEmits<{
+  (e: 'machineryChange', count: number): void;
+}>();
+
+const DEFAULT_MACHINERY_PHOTOS: Record<string, string> = {
+  "Excavadora": "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4-n0Uts09omCrK9hJAsromc1Y7GCJOZdeCvW2-u5sfFJXqom9XcKgbiq51rcx0mQNuEyHdpIGs8r9yViHSIpGwQ-Z7-RPkZ35ItK-6bQfr3kdlj5PT9e5KXQB3gtC7eSS279VcUjQS7-RNR9MPbwf5ypPuTg4CgEMIhyaVTzA00eWFBzQ74Pu3JtOSHdgJcFGtuDXY8l6dlcOrHUitHLowY1QP3UIFOg92Wkg41214T-JmcBsgoF8wyXoCRHv3C6SVyFE96IGl5b",
+  "Tractor": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtWEyh1Z-AVKb8m7r1Xd4QhYcVyxqNgGs7-QDVKHd0JvWlxT5MCJ0EPmyeydptGOjpmTw3CVlGGHGm53HGi_fza4tXXmiVp3tTR6S2n7gc02D3GN7Ko5Lc8Gv-BkHjm2F9kcmNC5ezQd7YofIuYhuYnHs-50gaNnQv7Livvi7M1RvyouOyT0-aegn6hvLevJh28ZSBMI76QCDIx27OkhuzjNPbxMQu8-cl0ANrBMiXuPsIX7-OsUgTo7TgPkIZQCwhWHSIMCSQg7PB",
+  "Retro Excavadora": "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4-n0Uts09omCrK9hJAsromc1Y7GCJOZdeCvW2-u5sfFJXqom9XcKgbiq51rcx0mQNuEyHdpIGs8r9yViHSIpGwQ-Z7-RPkZ35ItK-6bQfr3kdlj5PT9e5KXQB3gtC7eSS279VcUjQS7-RNR9MPbwf5ypPuTg4CgEMIhyaVTzA00eWFBzQ74Pu3JtOSHdgJcFGtuDXY8l6dlcOrHUitHLowY1QP3UIFOg92Wkg41214T-JmcBsgoF8wyXoCRHv3C6SVyFE96IGl5b",
+  "Rodo": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtWEyh1Z-AVKb8m7r1Xd4QhYcVyxqNgGs7-QDVKHd0JvWlxT5MCJ0EPmyeydptGOjpmTw3CVlGGHGm53HGi_fza4tXXmiVp3tTR6S2n7gc02D3GN7Ko5Lc8Gv-BkHjm2F9kcmNC5ezQd7YofIuYhuYnHs-50gaNnQv7Livvi7M1RvyouOyT0-aegn6hvLevJh28ZSBMI76QCDIx27OkhuzjNPbxMQu8-cl0ANrBMiXuPsIX7-OsUgTo7TgPkIZQCwhWHSIMCSQg7PB",
+  "Pipa": "https://lh3.googleusercontent.com/aida-public/AB6AXuAPH_LQU15grhFazspqrpDAmtqij-Yi5u8pti4HGaVVVa49RVExnL40aoKKWYuBPOrziyt5g1P6pGgUiFYDzWpjjdg10n6G293Fahquh4OpO2eXBRu_Yl-uUBULkorbqp9oN16B5Gt4PG24HIbpbL7Z1pnrdEmXpME2Gbn2PFyNe7t7rIkkdfW_i-cqfovF0AtH9eU5NaBycx-bhwYG18aVN7t9ZCam-M94lOheq8vxN54bn5Q1FiBKhPTQXuinSWwvEfzWYeJx3D4U",
+  "Camion Volteo": "https://lh3.googleusercontent.com/aida-public/AB6AXuAPH_LQU15grhFazspqrpDAmtqij-Yi5u8pti4HGaVVVa49RVExnL40aoKKWYuBPOrziyt5g1P6pGgUiFYDzWpjjdg10n6G293Fahquh4OpO2eXBRu_Yl-uUBULkorbqp9oN16B5Gt4PG24HIbpbL7Z1pnrdEmXpME2Gbn2PFyNe7t7rIkkdfW_i-cqfovF0AtH9eU5NaBycx-bhwYG18aVN7t9ZCam-M94lOheq8vxN54bn5Q1FiBKhPTQXuinSWwvEfzWYeJx3D4U"
 };
 
-const triggerSync = (updated: Machinery[]) => {
-  emit('machineryChange', updated.length);
+const triggerSync = (count: number) => {
+  emit('machineryChange', count);
 };
 
-const persistMachinery = (updated: Machinery[]) => {
-  machinery.value = updated;
-  localStorage.setItem("cooitza_maquinaria", JSON.stringify(updated));
-  triggerSync(updated);
+const loadMachinery = async () => {
+  try {
+    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
+    const json = await res.json();
+    if (json.status === 'success') {
+      machinery.value = json.data.map((item: any) => ({
+        id: item.id.toString(),
+        brand: item.marca,
+        name: item.identificador,
+        category: item.tipo,
+        serialId: item.identificador,
+        accumulatedHours: parseFloat(item.horas_acumuladas) || 0,
+        nextService: item.proximo_servicio || "Sin Programar",
+        status: item.estado,
+        photoUrl: item.foto_path ? `/maquinaria-cooitza/Backend/${item.foto_path}` : DEFAULT_MACHINERY_PHOTOS[item.tipo]
+      }));
+      triggerSync(machinery.value.length);
+    }
+  } catch (error) {
+    console.error("Error cargando maquinaria:", error);
+  }
 };
 
 onMounted(() => {
-  const saved = localStorage.getItem("cooitza_maquinaria");
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      const mappedData = data.map((item: any) => ({
-        id: item.id,
-        brand: item.brand || (item.name?.split(" ")[1] ? item.name.split(" ")[0] : "Cooitzá Brand"),
-        name: item.name ? (item.name.includes(item.brand) ? item.name.replace(item.brand, "").trim() : item.name) : "Equipo No Definido",
-        category: mapOldCategoryToNew(item.category || "excavadora"),
-        serialId: item.serialId || "ID-" + item.id.toUpperCase(),
-        accumulatedHours: item.accumulatedHours || 0,
-        nextService: item.nextService || "25 DIC 26",
-        status: item.status || "Operativo",
-        photoUrl: item.photoUrl || DEFAULT_MACHINERY_PHOTOS[mapOldCategoryToNew(item.category || "excavadora")]
-      }));
-      machinery.value = mappedData;
-      triggerSync(mappedData);
-    } catch (err) {
-      console.error("Failed to parse machinery data", err);
-    }
-  } else {
-    const defaultMachinery: Machinery[] = [
-      { id: "m1", brand: "Caterpillar", name: "Excavator 320 GC", category: "Excavadora", serialId: "ID-7742-XP", accumulatedHours: 1240, nextService: "15 OCT 24", status: "Operativo", photoUrl: DEFAULT_MACHINERY_PHOTOS["Excavadora"] },
-      { id: "m2", brand: "John Deere", name: "8R 370 Series", category: "Tractor", serialId: "ID-9921-JD", accumulatedHours: 850, nextService: "22 NOV 24", status: "Operativo", photoUrl: DEFAULT_MACHINERY_PHOTOS["Tractor"] },
-      { id: "m3", brand: "Komatsu", name: "WA200-8", category: "Cargadora", serialId: "ID-4432-KM", accumulatedHours: 3120, nextService: "01 DEC 24", status: "Mantenimiento", photoUrl: DEFAULT_MACHINERY_PHOTOS["Cargadora"] }
-    ];
-    machinery.value = defaultMachinery;
-    localStorage.setItem("cooitza_maquinaria", JSON.stringify(defaultMachinery));
-    triggerSync(defaultMachinery);
-  }
-
+  loadMachinery();
   window.addEventListener('click', closeDropdowns);
 });
 
@@ -542,6 +524,7 @@ const closeDropdowns = () => {
 
 const processFile = (file: File) => {
   if (file && file.type.startsWith("image/")) {
+    selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
@@ -566,6 +549,14 @@ const handleFileChange = (e: Event) => {
   }
 };
 
+const clearFile = () => {
+  photoPreview.value = null;
+  selectedFile.value = null;
+  if (fileInputRef.value) {
+    fileInputRef.value.value = '';
+  }
+};
+
 const openAddModal = () => {
   editId.value = null;
   brand.value = "";
@@ -575,7 +566,7 @@ const openAddModal = () => {
   accumulatedHours.value = "";
   nextService.value = "";
   status.value = "Operativo";
-  photoPreview.value = null;
+  clearFile();
   isModalOpen.value = true;
 };
 
@@ -589,41 +580,114 @@ const openEditModal = (item: Machinery) => {
   nextService.value = item.nextService;
   status.value = item.status;
   photoPreview.value = item.photoUrl || null;
+  selectedFile.value = null;
   isModalOpen.value = true;
   activeDropdownId.value = null;
 };
 
-const handleDelete = (id: string) => {
-  if (window.confirm("¿Está seguro de remover permanentemente este activo de maquinaria pesada?")) {
-    const updated = machinery.value.filter(m => m.id !== id);
-    persistMachinery(updated);
+const handleDelete = async (id: string) => {
+  const result = await Swal.fire({
+    title: '¿Eliminar activo?',
+    text: "¿Está seguro de remover permanentemente este activo de maquinaria pesada?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ba1a1a',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const res = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        await loadMachinery();
+        Swal.fire({
+          title: '¡Eliminado!',
+          text: 'El activo ha sido removido de la flota.',
+          icon: 'success',
+          confirmButtonColor: '#f5a623'
+        });
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: 'Ocurrió un problema al intentar eliminar el activo.',
+          icon: 'error',
+          confirmButtonColor: '#ba1a1a'
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo conectar con el servidor.',
+        icon: 'error',
+        confirmButtonColor: '#ba1a1a'
+      });
+    }
+    activeDropdownId.value = null;
+  } else {
     activeDropdownId.value = null;
   }
 };
 
-const handleSaveMachinery = () => {
-  if (!name.value.trim() || !brand.value.trim() || !serialId.value.trim()) return;
+const handleSaveMachinery = async () => {
+  if (!brand.value.trim() || !serialId.value.trim()) return;
 
-  const chosenPhoto = photoPreview.value || DEFAULT_MACHINERY_PHOTOS[category.value] || DEFAULT_MACHINERY_PHOTOS["Excavadora"];
-
-  if (editId.value) {
-    const updated = machinery.value.map(m => m.id === editId.value ? {
-      ...m, brand: brand.value, name: name.value, category: category.value, serialId: serialId.value,
-      accumulatedHours: parseFloat(accumulatedHours.value) || 0, nextService: nextService.value || "Sin Programar",
-      status: status.value, photoUrl: chosenPhoto
-    } : m);
-    persistMachinery(updated);
-  } else {
-    const newM: Machinery = {
-      id: "m_" + Date.now(),
-      brand: brand.value, name: name.value, category: category.value, serialId: serialId.value,
-      accumulatedHours: parseFloat(accumulatedHours.value) || 0, nextService: nextService.value || "Sin Programar",
-      status: status.value, photoUrl: chosenPhoto
-    };
-    persistMachinery([newM, ...machinery.value]);
+  const formData = new FormData();
+  formData.append('marca', brand.value);
+  formData.append('tipo', category.value);
+  formData.append('identificador', serialId.value);
+  formData.append('estado', status.value);
+  formData.append('horas_acumuladas', accumulatedHours.value || '0');
+  formData.append('proximo_servicio', nextService.value || 'Sin Programar');
+  
+  if (selectedFile.value) {
+    formData.append('foto', selectedFile.value);
   }
 
-  isModalOpen.value = false;
+  try {
+    let url = '/maquinaria-cooitza/Backend/api/v1/maquinas';
+    if (editId.value) {
+      url = '/maquinaria-cooitza/Backend/api/v1/maquinas/update';
+      formData.append('id', editId.value);
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      await loadMachinery();
+      isModalOpen.value = false;
+      Swal.fire({
+        title: '¡Guardado!',
+        text: 'La maquinaria ha sido registrada con éxito.',
+        icon: 'success',
+        confirmButtonColor: '#f5a623'
+      });
+    } else {
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al guardar la maquinaria en la base de datos.',
+        icon: 'error',
+        confirmButtonColor: '#ba1a1a'
+      });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: 'Error de conexión',
+      text: 'No se pudo conectar con el servidor.',
+      icon: 'error',
+      confirmButtonColor: '#ba1a1a'
+    });
+  }
 };
 
 const filteredMachinery = computed(() => {
@@ -640,6 +704,7 @@ const filteredMachinery = computed(() => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 });
+
 </script>
 
 <style scoped>
