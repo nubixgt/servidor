@@ -2,7 +2,7 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\Core\Route;
+use App\Attributes\Route;
 use App\Services\VehiculoService;
 
 class VehiculoController
