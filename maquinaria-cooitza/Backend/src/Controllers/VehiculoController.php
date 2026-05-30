@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use App\Core\Response;
+use App\Utils\Response;
 use App\Attributes\Route;
 use App\Services\VehiculoService;
 
