@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/nota_envio_service.dart';
 import '../services/pago_service.dart';
+import '../services/producto_service.dart';
+import '../services/cliente_service.dart';
 import '../models/nota_envio.dart';
 import '../models/pago.dart';
 import '../widgets/app_drawer.dart';
@@ -27,6 +29,11 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
   double _cuentasPorCobrar = 0.0;
   int _clientesActivosCount = 0;
 
+  // Nuevas métricas para gráfica y resumen
+  int _ventasCount = 0;
+  int _productosCount = 0;
+  int _clientesTotalesCount = 0;
+
   List<MapEntry<String, double>> _topProductos = [];
   List<MapEntry<String, double>> _topClientes = [];
   List<MapEntry<String, double>> _topVendedores = [];
@@ -51,14 +58,18 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
     });
 
     try {
-      // 1. Obtener notas de envío y pagos de forma paralela
+      // 1. Obtener notas de envío, pagos, productos y clientes de forma paralela
       final resultados = await Future.wait([
         NotaEnvioService().listarNotas(),
         PagoService().listarPagos(),
+        ProductoService().listarProductos(),
+        ClienteService().listarClientes(),
       ]);
 
       final notasResult = resultados[0];
       final pagosResult = resultados[1];
+      final productosResult = resultados[2];
+      final clientesResult = resultados[3];
 
       if (!notasResult['success']) {
         throw Exception(notasResult['message'] ?? 'Error al cargar notas');
@@ -66,9 +77,17 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
       if (!pagosResult['success']) {
         throw Exception(pagosResult['message'] ?? 'Error al cargar pagos');
       }
+      if (!productosResult['success']) {
+        throw Exception(productosResult['message'] ?? 'Error al cargar productos');
+      }
+      if (!clientesResult['success']) {
+        throw Exception(clientesResult['message'] ?? 'Error al cargar clientes');
+      }
 
       final List<NotaEnvio> notas = List<NotaEnvio>.from(notasResult['notas'] ?? []);
       final List<Pago> pagos = List<Pago>.from(pagosResult['pagos'] ?? []);
+      final List<String> productos = List<String>.from(productosResult['productos'] ?? []);
+      final int clientesTotalesCount = clientesResult['total'] ?? (clientesResult['clientes'] as List?)?.length ?? 0;
 
       // 2. Procesar estadísticas básicas
       double ventasTotales = 0.0;
@@ -135,6 +154,10 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           _montoRecaudado = montoRecaudado;
           _cuentasPorCobrar = cuentasPorCobrar;
           _clientesActivosCount = clientesUnicos.length;
+
+          _ventasCount = notas.length;
+          _productosCount = productos.length;
+          _clientesTotalesCount = clientesTotalesCount;
 
           _topProductos = topProdsSorted.take(5).toList();
           _topClientes = topClientesSorted.take(5).toList();
@@ -366,6 +389,10 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
 
           const SizedBox(height: 32),
           _buildHealthIndicator(),
+          const SizedBox(height: 32),
+          _buildGeneralChart(),
+          const SizedBox(height: 32),
+          _buildStatisticalSummary(),
         ],
       ),
     );
@@ -708,6 +735,257 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGeneralChart() {
+    double maxVentasTarget = _ventasTotales > 30000 ? _ventasTotales : 30000.0;
+    double maxPagosTarget = _ventasTotales > 0 ? _ventasTotales : 1.0;
+    double maxCountTarget = 50.0; // standard count target
+
+    List<Map<String, dynamic>> metricas = [
+      {
+        'title': 'Ventas Totales',
+        'value': 'Q. ${_ventasTotales.toStringAsFixed(2)}',
+        'ratio': _ventasTotales / maxVentasTarget,
+        'color': Colors.amber.shade600,
+        'icon': Icons.monetization_on_outlined,
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VentasScreen())),
+      },
+      {
+        'title': 'Monto Recaudado',
+        'value': 'Q. ${_montoRecaudado.toStringAsFixed(2)}',
+        'ratio': _montoRecaudado / maxPagosTarget,
+        'color': Colors.green.shade600,
+        'icon': Icons.account_balance_wallet_outlined,
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PagosScreen())),
+      },
+      {
+        'title': 'Número de Ventas',
+        'value': '$_ventasCount Notas',
+        'ratio': _ventasCount / maxCountTarget,
+        'color': Colors.purple.shade600,
+        'icon': Icons.receipt_long_outlined,
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VentasScreen())),
+      },
+      {
+        'title': 'Productos en Catálogo',
+        'value': '$_productosCount Productos',
+        'ratio': _productosCount / maxCountTarget,
+        'color': Colors.teal.shade600,
+        'icon': Icons.inventory_2_outlined,
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductosScreen())),
+      },
+      {
+        'title': 'Clientes Registrados',
+        'value': '$_clientesTotalesCount Clientes',
+        'ratio': _clientesTotalesCount / maxCountTarget,
+        'color': Colors.blue.shade600,
+        'icon': Icons.people_alt_outlined,
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ClientesScreen())),
+      },
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.bar_chart_outlined, color: Colors.blueAccent),
+              SizedBox(width: 8),
+              Text(
+                'Gráfica Comparativa de Métricas',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Resumen visual de volumen y conteos operativos (Toca para ir)',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: metricas.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final metrica = metricas[index];
+              return InkWell(
+                onTap: metrica['onTap'],
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: (metrica['color'] as Color).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(metrica['icon'] as IconData, color: metrica['color'] as Color, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  metrica['title'] as String,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  metrica['value'] as String,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: metrica['color'] as Color,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0.0, end: metrica['ratio'] as double),
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, val, child) {
+                                return Container(
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: FractionallySizedBox(
+                                    alignment: Alignment.centerLeft,
+                                    widthFactor: val.clamp(0.0, 1.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: metrica['color'] as Color,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatisticalSummary() {
+    double ticketMedio = _ventasCount > 0 ? (_ventasTotales / _ventasCount) : 0.0;
+    double efectividadRecaudacion = _ventasTotales > 0 ? (_montoRecaudado / _ventasTotales * 100) : 0.0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.green.shade900.withOpacity(0.05),
+            Colors.green.shade50.withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.green.shade700.withOpacity(0.2),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade600.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.analytics_outlined, color: Colors.amber.shade700, size: 22),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Resumen Estadístico del Sistema',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'El sistema agrícola Emagro reporta una facturación total histórica de Q. ${_ventasTotales.toStringAsFixed(2)} distribuida en un total de $_ventasCount ventas concretadas, lo que representa un ticket promedio de Q. ${ticketMedio.toStringAsFixed(2)} por cada nota de envío generada.',
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Actualmente, se ha logrado una efectividad de caja del ${efectividadRecaudacion.toStringAsFixed(1)}%, acumulando Q. ${_montoRecaudado.toStringAsFixed(2)} en efectivo real y pagos cobrados. El saldo activo por cobrar en cuentas de crédito es de Q. ${_cuentasPorCobrar.toStringAsFixed(2)}.',
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'En cuanto a cobertura de mercado, la app cuenta con $_clientesTotalesCount clientes registrados en base de datos, de los cuales $_clientesActivosCount ya presentan compras activas registradas. El catálogo operativo cuenta con $_productosCount productos activos listos para su distribución.',
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }
