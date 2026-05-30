@@ -48,7 +48,7 @@ class UsuarioRepository
             'password_hash' => $usuario->password_hash,
             'full_name' => $usuario->full_name,
             'role' => $usuario->role,
-            'status' => $usuario->status ?? 'Active'
+            'status' => $usuario->status ?? 'activo'
         ]);
 
         return $success ? (int)$this->db->lastInsertId() : false;

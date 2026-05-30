@@ -41,7 +41,7 @@
           </div>
           <div class="mt-4 flex items-center gap-1.5 text-xs font-bold text-slate-500">
             <TrendingUp class="text-[#0054A3]" :size="16" />
-            <span>+12% este mes vs histórico</span>
+            <span>Actualizado en tiempo real</span>
           </div>
         </div>
 
@@ -113,7 +113,6 @@
               <option value="admin">Administrador</option>
               <option value="tecnico_dashboard">Panel Técnico</option>
               <option value="tecnico_piloto">Técnico Piloto</option>
-              <option value="tecnico">Técnico Común</option>
             </select>
 
             <!-- Status filter -->
@@ -123,8 +122,8 @@
               class="bg-white border border-[#cbd5e1] px-3 py-2 text-xs outline-none focus:border-[#0054A3] cursor-pointer text-slate-800"
             >
               <option value="all">Cualquier Estado</option>
-              <option value="Active">Activo</option>
-              <option value="Inactive">Inactivo</option>
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
             </select>
 
             <button 
@@ -177,10 +176,10 @@
                   <button
                     @click="handleToggleStatus(u.id, u.status, u.fullName)"
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border cursor-pointer select-none"
-                    :class="u.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'"
+                    :class="u.status === 'activo' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'"
                   >
-                    <span class="w-1.5 h-1.5 rounded-full" :class="u.status === 'Active' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'"></span>
-                    <span>{{ u.status === "Active" ? "Activo" : "Inactivo" }}</span>
+                    <span class="w-1.5 h-1.5 rounded-full" :class="u.status === 'activo' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'"></span>
+                    <span>{{ u.status === "activo" ? "Activo" : "Inactivo" }}</span>
                   </button>
                 </td>
                 <td class="p-4 text-right">
@@ -195,8 +194,8 @@
                     <button 
                       @click="handleToggleStatus(u.id, u.status, u.fullName)"
                       class="p-1.5 border border-[#cbd5e1] bg-white transition-all cursor-pointer"
-                      :class="u.status === 'Active' ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'"
-                      :title="u.status === 'Active' ? 'Suspender acceso' : 'Re-habilitar acceso'"
+                      :class="u.status === 'activo' ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'"
+                      :title="u.status === 'activo' ? 'Suspender acceso' : 'Re-habilitar acceso'"
                     >
                       <UserX :size="13" />
                     </button>
@@ -217,7 +216,7 @@
         <!-- Pagination bar matches Cooitzá style -->
         <div class="px-6 py-4 bg-slate-50 border-t border-[#cbd5e1] flex flex-col sm:flex-row justify-between items-center gap-3 select-none">
           <span class="font-display text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Mostrando {{ indexOfFirstItem + 1 }}-{{ Math.min(indexOfLastItem, totalItems) }} de {{ totalItems }} usuarios ({{ totalGlobalDatabaseCount }} registros totales en red)
+            Mostrando {{ indexOfFirstItem + 1 }}-{{ Math.min(indexOfLastItem, totalItems) }} de {{ totalItems }} usuarios ({{ totalGlobalDatabaseCount }} registros totales)
           </span>
 
           <div class="flex gap-1.5">
@@ -295,7 +294,7 @@
                 </div>
 
                 <!-- Grid wrap for dynamic elements -->
-                <div class="grid grid-cols-1 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <!-- Username -->
                   <div class="flex flex-col gap-1.5">
                     <label class="text-slate-600 text-[10px] font-bold uppercase tracking-wider">
@@ -306,6 +305,20 @@
                       required
                       placeholder="Ej: ariveral"
                       v-model="username"
+                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
+                    />
+                  </div>
+
+                  <!-- Password -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-slate-600 text-[10px] font-bold uppercase tracking-wider">
+                      Contraseña <span v-if="editUserId" class="text-neutral-400 font-normal lowercase">(Opcional)</span>
+                    </label>
+                    <input 
+                      type="password"
+                      :required="!editUserId"
+                      placeholder="Ej: clave123"
+                      v-model="password"
                       class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
                     />
                   </div>
@@ -322,7 +335,6 @@
                   >
                     <option value="tecnico_dashboard">Técnico Horómetros (Válido para enviar lecturas)</option>
                     <option value="tecnico_piloto">Técnico Piloto (Formulario de Piloto)</option>
-                    <option value="tecnico">Técnico Estándar</option>
                     <option value="admin">Administrador General de Sistemas Cooitzá</option>
                   </select>
                 </div>
@@ -336,8 +348,8 @@
                     v-model="status"
                     class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none cursor-pointer text-slate-800"
                   >
-                    <option value="Active">Permitido (Autorización Concedida)</option>
-                    <option value="Inactive">Suspendido (Remover Permisos de Acceso)</option>
+                    <option value="activo">Permitido (Autorización Concedida)</option>
+                    <option value="inactivo">Suspendido (Remover Permisos de Acceso)</option>
                   </select>
                 </div>
 
@@ -384,8 +396,8 @@ interface UserConfig {
   id: string;
   fullName: string;
   username: string;
-  role: "admin" | "tecnico" | "tecnico_dashboard" | "tecnico_piloto";
-  status: "Active" | "Inactive";
+  role: "admin" | "tecnico_dashboard" | "tecnico_piloto";
+  status: "activo" | "inactivo";
   lastAccess: string;
 }
 
@@ -406,8 +418,9 @@ const editUserId = ref<string | null>(null);
 
 const fullName = ref("");
 const username = ref("");
-const role = ref<"admin" | "tecnico" | "tecnico_dashboard" | "tecnico_piloto">("tecnico");
-const status = ref<"Active" | "Inactive">("Active");
+const password = ref("");
+const role = ref<"admin" | "tecnico_dashboard" | "tecnico_piloto">("tecnico_dashboard");
+const status = ref<"activo" | "inactivo">("activo");
 
 const Toast = Swal.mixin({
   toast: true,
@@ -452,8 +465,9 @@ const handleOpenCreateForm = () => {
   editUserId.value = null;
   fullName.value = "";
   username.value = "";
-  role.value = "tecnico";
-  status.value = "Active";
+  password.value = "";
+  role.value = "tecnico_dashboard";
+  status.value = "activo";
   isFormOpen.value = true;
 };
 
@@ -461,6 +475,7 @@ const handleOpenEditForm = (u: UserConfig) => {
   editUserId.value = u.id;
   fullName.value = u.fullName;
   username.value = u.username;
+  password.value = "";
   role.value = u.role;
   status.value = u.status;
   isFormOpen.value = true;
@@ -468,14 +483,22 @@ const handleOpenEditForm = (u: UserConfig) => {
 
 const handleSaveUserSubmit = async () => {
   if (!fullName.value.trim() || !username.value.trim()) return;
+  if (!editUserId.value && !password.value.trim()) {
+    Swal.fire('Error', 'La contraseña es obligatoria para nuevos usuarios', 'warning');
+    return;
+  }
 
-  const payload = {
+  const payload: any = {
     id: editUserId.value,
     full_name: fullName.value.trim(),
     username: username.value.toLowerCase().trim(),
     role: role.value,
     status: status.value
   };
+
+  if (password.value.trim()) {
+    payload.password = password.value.trim();
+  }
 
   try {
     let url = '/maquinaria-cooitza/Backend/api/v1/usuarios';
@@ -533,8 +556,8 @@ const handleDeleteUser = async (id: string, name: string) => {
   }
 };
 
-const handleToggleStatus = async (id: string, currentStatus: "Active" | "Inactive", name: string) => {
-  const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
+const handleToggleStatus = async (id: string, currentStatus: "activo" | "inactivo", name: string) => {
+  const nextStatus = currentStatus === "activo" ? "inactivo" : "activo";
   
   try {
     const res = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios/status', {
@@ -583,9 +606,9 @@ const indexOfLastItem = computed(() => currentPage.value * itemsPerPage);
 const indexOfFirstItem = computed(() => indexOfLastItem.value - itemsPerPage);
 const currentItems = computed(() => filteredUsers.value.slice(indexOfFirstItem.value, indexOfLastItem.value));
 
-const totalGlobalDatabaseCount = computed(() => 1284 + (usersList.value.length - 4));
+const totalGlobalDatabaseCount = computed(() => usersList.value.length);
 const adminsCount = computed(() => usersList.value.filter(u => u.role === "admin").length);
-const totalGlobalAdminsCount = computed(() => 39 + adminsCount.value);
+const totalGlobalAdminsCount = computed(() => adminsCount.value);
 const totalFieldOperatorsCount = computed(() => totalGlobalDatabaseCount.value - totalGlobalAdminsCount.value);
 
 const renderRoleBadge = (roleStr: string) => {

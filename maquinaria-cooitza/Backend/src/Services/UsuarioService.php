@@ -17,7 +17,7 @@ class UsuarioService
     {
         $usuario = $this->usuarioRepository->findByUsername($username);
 
-        if (!$usuario || strcasecmp($usuario->status, 'Active') !== 0) {
+        if (!$usuario || strcasecmp($usuario->status, 'activo') !== 0) {
             return ['success' => false, 'message' => 'Usuario no encontrado o inactivo'];
         }
 
@@ -56,15 +56,15 @@ class UsuarioService
 
     public function create($data)
     {
-        // Default password "123"
-        $password_hash = password_hash('123', PASSWORD_BCRYPT);
+        $raw_password = !empty($data['password']) ? $data['password'] : '123';
+        $password_hash = password_hash($raw_password, PASSWORD_BCRYPT);
         
         $usuario = new \App\Entities\Usuario();
         $usuario->username = $data['username'] ?? '';
         $usuario->password_hash = $password_hash;
         $usuario->full_name = $data['full_name'] ?? '';
-        $usuario->role = $data['role'] ?? 'tecnico';
-        $usuario->status = $data['status'] ?? 'Active';
+        $usuario->role = $data['role'] ?? 'tecnico_dashboard';
+        $usuario->status = $data['status'] ?? 'activo';
 
         $id = $this->usuarioRepository->create($usuario);
         
@@ -77,8 +77,8 @@ class UsuarioService
         $usuario->id = $data['id'];
         $usuario->username = $data['username'] ?? '';
         $usuario->full_name = $data['full_name'] ?? '';
-        $usuario->role = $data['role'] ?? 'tecnico';
-        $usuario->status = $data['status'] ?? 'Active';
+        $usuario->role = $data['role'] ?? 'tecnico_dashboard';
+        $usuario->status = $data['status'] ?? 'activo';
 
         $success = $this->usuarioRepository->update($usuario);
         
