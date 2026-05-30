@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories;
 
-use App\Core\Database;
+use App\Utils\Database;
 use App\Entities\Piloto;
 use PDO;
 
