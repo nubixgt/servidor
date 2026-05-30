@@ -1,0 +1,13 @@
+{
+  "name": "Cooitzá Machinery Log",
+  "description": "Industrial telemetry and operational log system for Cooitzá heavy machinery fleet.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "IoT",
+    "Fleet Management",
+    "Industrial Design"
+  ]
+}
