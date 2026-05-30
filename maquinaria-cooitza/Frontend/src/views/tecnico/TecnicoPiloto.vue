@@ -198,7 +198,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { 
   ClipboardSignature, Wifi, Database, Loader2, CheckCircle, XSquare 
 } from 'lucide-vue-next';
@@ -224,12 +224,22 @@ const isSubmitting = ref(false);
 const registrationSuccess = ref(false);
 const errorMessage = ref("");
 
-const machineryOptions = [
-  { id: "excavator-x1", label: "Excavadora Hidráulica X1-B" },
-  { id: "crane-tower", label: "Grúa Torre Automatizada" },
-  { id: "loader-industrial", label: "Cargador Frontal Industrial" },
-  { id: "telemetry-node", label: "Nodo de Telemetría Móvil" }
-];
+const machineryOptions = ref<{id: string, label: string}[]>([]);
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
+    const json = await res.json();
+    if (json.status === 'success') {
+      machineryOptions.value = json.data.map((m: any) => ({
+        id: String(m.id),
+        label: `${m.marca} - ${m.identificador || m.modelo}`
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching maquinas:", error);
+  }
+});
 
 const handleCheckboxChange = (id: string) => {
   if (selectedMachinery.value.includes(id)) {
@@ -258,36 +268,46 @@ const handleFormSubmit = () => {
   isSubmitting.value = true;
   statusText.value = "Procesando Enlace...";
 
-  setTimeout(() => {
-    const newRegistration = {
-      pilot_name: pilotName.value.toUpperCase().trim(),
-      pilot_phone: pilotPhone.value.trim(),
-      machinery: selectedMachinery.value,
-      registeredAt: new Date().toLocaleString("es-GT")
+  setTimeout(async () => {
+    const payload = {
+      nombre: pilotName.value.toUpperCase().trim(),
+      telefono: pilotPhone.value.trim(),
+      status: "activo",
+      maquinas: selectedMachinery.value
     };
 
     try {
-      const savedPilots = localStorage.getItem("cooitza_machinery_pilots");
-      const currentPilots = savedPilots ? JSON.parse(savedPilots) : [];
-      currentPilots.unshift(newRegistration);
-      localStorage.setItem("cooitza_machinery_pilots", JSON.stringify(currentPilots));
+      const res = await fetch('/maquinaria-cooitza/Backend/api/v1/pilotos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        isSubmitting.value = false;
+        registrationSuccess.value = true;
+        statusText.value = "Transmitido de Forma Estable";
+
+        setTimeout(() => {
+          pilotName.value = "";
+          pilotPhone.value = "";
+          selectedMachinery.value = [];
+          registrationSuccess.value = false;
+          statusText.value = "Listo para Transmitir";
+        }, 3000);
+      } else {
+        const err = await res.json();
+        errorMessage.value = err.message || "Error al registrar piloto en el servidor.";
+        isSubmitting.value = false;
+        statusText.value = "Error de Transmisión";
+      }
     } catch (err) {
       console.error("Error saving pilot registration", err);
+      errorMessage.value = "Error de conexión con el servidor central.";
+      isSubmitting.value = false;
+      statusText.value = "Enlace Caído";
     }
-
-    isSubmitting.value = false;
-    registrationSuccess.value = true;
-    statusText.value = "Transmitido de Forma Estable";
-
-    setTimeout(() => {
-      pilotName.value = "";
-      pilotPhone.value = "";
-      selectedMachinery.value = [];
-      registrationSuccess.value = false;
-      statusText.value = "Listo para Transmitir";
-    }, 3000);
-
-  }, 1500);
+  }, 800);
 };
 </script>
 
