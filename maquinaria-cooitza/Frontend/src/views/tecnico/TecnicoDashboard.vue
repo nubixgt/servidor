@@ -51,67 +51,46 @@
             Supervisión técnica de eventos del sistema, telemetría y logs de mantenimiento para la Estación 04-B de la división de Maquinaria Pesada Cooitzá.
           </p>
         </div>
-
-        <!-- Top Search and Export widgets -->
-        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <!-- Real-time search inside the view -->
-          <div class="relative flex-1 lg:flex-initial min-w-[240px]">
-            <Search class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <input 
-              type="text"
-              placeholder="Buscar registros específicos..."
-              v-model="searchTerm"
-              class="w-full pl-9 pr-3 py-2 border border-slate-200 outline-none bg-white text-xs focus:border-[#0054A3] transition-colors focus:ring-0"
-            />
-          </div>
-
-          <button 
-            type="button"
-            @click="handleExportData"
-            style="cursor: pointer"
-            class="flex items-center gap-1.5 px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 transition-colors font-display text-[10px] font-bold uppercase tracking-wider"
-          >
-            <Download :size="14" class="text-[#0054A3]" />
-            <span>EXPORTAR JSON</span>
-          </button>
-        </div>
       </div>
 
       <!-- Bento Grid Layout (Row 1: Summary Statistics) -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         
-        <!-- Stat Box 1: Total Events -->
+        <!-- Stat Box 1: Total Maquinaria -->
         <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group">
           <div class="absolute right-0 top-0 p-4 opacity-5 translate-x-3 -translate-y-3">
-            <Activity :size="80" />
+            <Construction :size="80" />
           </div>
           <div>
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-4">
-              EVENTOS TOTALES
+              MAQUINARIA REGISTRADA
             </span>
             <span class="font-display text-4xl font-extrabold text-[#191c1d]">
-              {{ totalSystemEventsCount.toLocaleString() }}
+              {{ machineryCount }}
             </span>
           </div>
           <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
-            <span class="text-[#524534]">Últimas 24h</span>
-            <span class="font-display font-semibold text-[#0054A3]">+{{ filteredEvents.length * 4 }} activos</span>
+            <span class="text-[#524534]">Inventario Total</span>
+            <span class="font-display font-semibold text-[#0054A3]">Cooitzá R.L.</span>
           </div>
         </div>
 
-        <!-- Stat Box 2: Critical alerts -->
+        <!-- Stat Box 2: Total Vehiculos -->
         <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div class="absolute right-0 top-0 p-4 opacity-5 translate-x-3 -translate-y-3">
+            <Truck :size="80" />
+          </div>
           <div>
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-4">
-              CRÍTICOS
+              VEHÍCULOS DE FLOTA
             </span>
-            <span class="font-display text-4xl font-extrabold text-red-600">
-              {{ criticalEventsCount < 10 ? `0${criticalEventsCount}` : criticalEventsCount }}
+            <span class="font-display text-4xl font-extrabold text-[#0054A3]">
+              {{ vehiclesCount }}
             </span>
           </div>
           <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
-            <span class="text-[#524534]">Estado de alertas</span>
-            <span class="font-display italic text-slate-500 font-bold">Monitoreado en vivo</span>
+            <span class="text-[#524534]">Transporte</span>
+            <span class="font-display italic text-slate-500 font-bold">Activos</span>
           </div>
         </div>
 
@@ -145,158 +124,6 @@
           <div class="flex justify-between items-center mt-3 text-[10px] text-slate-400 font-mono">
             <span>HACE 12 HORAS</span>
             <span>TIEMPO REAL</span>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Main Table Panel Log detailed views -->
-      <div class="bg-white border border-slate-200 overflow-hidden shadow-sm">
-        
-        <!-- Table header control row -->
-        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex flex-wrap justify-between items-center gap-4">
-          <div class="flex items-center gap-2">
-            <span class="font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">
-              REGISTRO DETALLADO DE EVENTOS
-            </span>
-          </div>
-
-          <!-- Active Level Color Filters -->
-          <div class="flex flex-wrap items-center gap-3">
-            <!-- All -->
-            <button 
-              type="button"
-              @click="filterLevel = 'ALL'; currentPage = 1"
-              class="px-2.5 py-1 text-[10px] font-bold font-display transition-all"
-              :class="filterLevel === 'ALL' ? 'bg-[#0054A3] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'"
-            >
-              TODOS
-            </button>
-            
-            <!-- Info Filter -->
-            <button 
-              type="button"
-              @click="filterLevel = 'INFO'; currentPage = 1"
-              class="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold font-display transition-all"
-              :class="filterLevel === 'INFO' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'"
-            >
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-              INFO
-            </button>
-
-            <!-- Warning Filter -->
-            <button 
-              type="button"
-              @click="filterLevel = 'WARN'; currentPage = 1"
-              class="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold font-display transition-all"
-              :class="filterLevel === 'WARN' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'"
-            >
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block"></span>
-              WARN
-            </button>
-
-            <!-- Error Filter -->
-            <button 
-              type="button"
-              @click="filterLevel = 'ERROR'; currentPage = 1"
-              class="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold font-display transition-all"
-              :class="filterLevel === 'ERROR' ? 'bg-red-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'"
-            >
-              <span class="w-1.5 h-1.5 rounded-full bg-red-600 inline-block"></span>
-              ERROR
-            </button>
-          </div>
-        </div>
-
-        <!-- Responsive Table Grid -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b border-slate-200 bg-slate-50/50">
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">ID EVENTO</th>
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">TIMESTAMP</th>
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">CATEGORÍA</th>
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">MENSAJE DEL SISTEMA</th>
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider text-center">NIVEL</th>
-                <th class="p-4 font-display text-[10px] font-bold text-[#524534] uppercase tracking-wider">OPERADOR</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr v-if="paginatedEvents.length === 0">
-                <td colspan="6" class="p-8 text-center text-slate-400 italic font-sans text-xs">
-                  No se encontraron registros activos con los filtros indicados.
-                </td>
-              </tr>
-              <tr 
-                v-else
-                v-for="event in paginatedEvents" 
-                :key="event.id" 
-                class="hover:bg-slate-50 transition-colors group cursor-pointer border-l-2 border-transparent hover:border-[#0054A3]"
-              >
-                <td class="p-4 font-mono text-xs font-bold text-slate-700">
-                  {{ event.id }}
-                </td>
-                <td class="p-4 font-mono text-xs text-slate-500 whitespace-nowrap">
-                  {{ event.timestamp }}
-                </td>
-                <td class="p-4">
-                  <span class="bg-slate-100 inline-block px-2.5 py-0.5 rounded text-[10px] font-display font-medium text-slate-700">
-                    {{ event.category }}
-                  </span>
-                </td>
-                <td class="p-4 text-xs font-sans text-slate-700">
-                  {{ event.message }}
-                </td>
-                <td class="p-4 text-center">
-                  <span class="w-2.5 h-2.5 rounded-full inline-block"
-                        :class="event.level === 'INFO' ? 'bg-emerald-500 shadow-sm' :
-                               event.level === 'WARN' ? 'bg-amber-400 shadow-sm' : 
-                               'bg-red-500 shadow-sm animate-pulse'" 
-                        :title="event.level"></span>
-                </td>
-                <td class="p-4 font-mono text-xs text-slate-600 font-medium">
-                  {{ event.operator }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Footer of log table including Pagination -->
-        <div class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50">
-          <span class="text-xs font-sans text-[#524534]">
-            Mostrando {{ paginatedEvents.length }} de {{ filteredEvents.length }} entradas ({{ totalSystemEventsCount.toLocaleString() }} totales en sistema)
-          </span>
-
-          <div class="flex items-center gap-1">
-            <button 
-              type="button"
-              :disabled="currentPage === 1"
-              @click="currentPage = Math.max(1, currentPage - 1)"
-              class="w-8 h-8 flex items-center justify-center border border-slate-200 disabled:opacity-45 bg-white hover:bg-slate-50 transition-colors text-slate-500"
-            >
-              <ChevronLeft :size="16" />
-            </button>
-
-            <button
-              v-for="pNum in totalPages"
-              :key="pNum"
-              type="button"
-              @click="currentPage = pNum"
-              class="w-8 h-8 flex items-center justify-center text-xs font-mono font-bold transition-all"
-              :class="currentPage === pNum ? 'bg-[#0054A3] text-white border border-[#0054A3]' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'"
-            >
-              {{ pNum }}
-            </button>
-
-            <button 
-              type="button"
-              :disabled="currentPage === totalPages"
-              @click="currentPage = Math.min(totalPages, currentPage + 1)"
-              class="w-8 h-8 flex items-center justify-center border border-slate-200 disabled:opacity-45 bg-white hover:bg-slate-50 transition-colors text-slate-500"
-            >
-              <ChevronRight :size="16" />
-            </button>
           </div>
         </div>
 
@@ -468,15 +295,6 @@ const handleLogout = () => {
   router.push('/login');
 };
 
-interface SystemEvent {
-  id: string;
-  timestamp: string;
-  category: string; // "Telemetría" | "Acceso" | "Mantenimiento" | "Crítico"
-  message: string;
-  level: "INFO" | "WARN" | "ERROR";
-  operator: string;
-}
-
 interface AssetDetails {
   id: string;
   name: string;
@@ -486,78 +304,51 @@ interface AssetDetails {
   note: string;
 }
 
-const searchTerm = ref("");
-const filterLevel = ref<"ALL" | "INFO" | "WARN" | "ERROR">("ALL");
-const filterCategory = ref("todos");
-const currentPage = ref(1);
-const itemsPerPage = 5;
-
-const selectedAssetId = ref("asset-1");
-const systemEvents = ref<SystemEvent[]>([]);
-const totalSystemEventsCount = ref(4281);
+const selectedAssetId = ref<string | null>(null);
+const machineryCount = ref(0);
+const vehiclesCount = ref(0);
 
 const cpuLoad = ref(24);
 const freeMemory = ref(82);
 const latency = ref(4);
 
-const assetsList = ref<AssetDetails[]>([
-  {
-    id: "asset-1",
-    name: "TURBINA T-04 (PRINCIPAL)",
-    category: "Generador de Fuerza",
-    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuAS9Jhi3aHz6hvNHkZbsh4wSd8jUg4j7ENX9-hTRqUo_iSI3bYWUZtb26N9Y3Qhzoqkg6DNp0zDe4XgWc0RBeEgb6Teccq_HtPHYiAbhl16rD3LHMDTENTs4BxJR-bSQAufpm2osCcCCNWL9XHrIrcVTb1y2FMGekiztxtlRL7T0Xm3O_dgYi9If8_3rCPCgL468tvInm-FJs6nxjRB_g4wwbpYEt-mVyZPAvrWQ459IoIFHuVxkWQM4MAJ8ltaj4qUU9uTbzjuTdfO",
-    lastInspection: "Mayo 20, 2024 - Operador Técnico J. Doe",
-    note: "Rendimiento nominal estable. Se recomienda seguimiento de vibración en el próximo ciclo."
-  },
-  {
-    id: "asset-2",
-    name: "EXCAVADORA CAT 320-B",
-    category: "Movimiento de Tierras",
-    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCW4-n0Uts09omCrK9hJAsromc1Y7GCJOZdeCvW2-u5sfFJXqom9XcKgbiq51rcx0mQNuEyHdpIGs8r9yViHSIpGwQ-Z7-RPkZ35ItK-6bQfr3kdlj5PT9e5KXQB3gtC7eSS279VcUjQS7-RNR9MPbwf5ypPuTg4CgEMIhyaVTzA00eWFBzQ74Pu3JtOSHdgJcFGtuDXY8l6dlcOrHUitHLowY1QP3UIFOg92Wkg41214T-JmcBsgoF8wyXoCRHv3C6SVyFE96IGl5b",
-    lastInspection: "Mayo 24, 2024 - Inspector Miguel Fuentes",
-    note: "Presión hidráulica en rangos estándar de operación. Pérdida menor detectada en manguera de retorno, ya resuelta."
-  },
-  {
-    id: "asset-3",
-    name: "TRACTOR JOHN DEERE 8R",
-    category: "Preparación de Campo",
-    imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCtWEyh1Z-AVKb8m7r1Xd4QhYcVyxqNgGs7-QDVKHd0JvWlxT5MCJ0EPmyeydptGOjpmTw3CVlGGHGm53HGi_fza4tXXmiVp3tTR6S2n7gc02D3GN7Ko5Lc8Gv-BkHjm2F9kcmNC5ezQd7YofIuYhuYnHs-50gaNnQv7Livvi7M1RvyouOyT0-aegn6hvLevJh28ZSBMI76QCDIx27OkhuzjNPbxMQu8-cl0ANrBMiXuPsIX7-OsUgTo7TgPkIZQCwhWHSIMCSQg7PB",
-    lastInspection: "Mayo 18, 2024 - Operador R. Andersson",
-    note: "Calibración del GPS de piloto automático certificada. Filtros de transmisión reemplazados."
-  }
-]);
+const assetsList = ref<AssetDetails[]>([]);
 
 const activeAsset = computed(() => assetsList.value.find(a => a.id === selectedAssetId.value) || assetsList.value[0]);
 
-watch(searchTerm, () => {
-  currentPage.value = 1;
-});
-
-const filteredEvents = computed(() => {
-  return systemEvents.value.filter(event => {
-    const matchesSearch = 
-      event.id.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      event.message.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      event.operator.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      event.category.toLowerCase().includes(searchTerm.value.toLowerCase());
-
-    const matchesLevel = filterLevel.value === "ALL" || event.level === filterLevel.value;
-    const matchesCategory = filterCategory.value === "todos" || event.category.toLowerCase() === filterCategory.value.toLowerCase();
-
-    return matchesSearch && matchesLevel && matchesCategory;
-  });
-});
-
-const totalPages = computed(() => Math.ceil(filteredEvents.value.length / itemsPerPage) || 1);
-
-const paginatedEvents = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return filteredEvents.value.slice(start, start + itemsPerPage);
-});
-
-const criticalEventsCount = computed(() => systemEvents.value.filter(e => e.level === "ERROR").length);
-
 let intervalTimer: number | null = null;
+
+const fetchDashboardData = async () => {
+  try {
+    // Fetch Maquinaria
+    const mRes = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
+    const mData = await mRes.json();
+    if (mData.status === 'success') {
+      const maquinas = mData.data;
+      machineryCount.value = maquinas.length;
+      if (maquinas.length > 0) {
+        assetsList.value = maquinas.map((m: any, idx: number) => ({
+          id: `asset-${m.id}`,
+          name: `${m.marca} - ${m.identificador || m.modelo}`,
+          category: m.tipo,
+          imageUrl: m.foto_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuAS9Jhi3aHz6hvNHkZbsh4wSd8jUg4j7ENX9-hTRqUo_iSI3bYWUZtb26N9Y3Qhzoqkg6DNp0zDe4XgWc0RBeEgb6Teccq_HtPHYiAbhl16rD3LHMDTENTs4BxJR-bSQAufpm2osCcCCNWL9XHrIrcVTb1y2FMGekiztxtlRL7T0Xm3O_dgYi9If8_3rCPCgL468tvInm-FJs6nxjRB_g4wwbpYEt-mVyZPAvrWQ459IoIFHuVxkWQM4MAJ8ltaj4qUU9uTbzjuTdfO",
+          lastInspection: `Horas Acumuladas: ${m.horas_acumuladas || 0}`,
+          note: `Próximo servicio: ${m.proximo_servicio || 'No definido'} - Estado: ${m.estado}`
+        }));
+        selectedAssetId.value = assetsList.value[0].id;
+      }
+    }
+
+    // Fetch Vehiculos
+    const vRes = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos');
+    const vData = await vRes.json();
+    if (vData.status === 'success') {
+      vehiclesCount.value = vData.data.length;
+    }
+  } catch (error) {
+    console.error("Error fetching technician dashboard data:", error);
+  }
+};
 
 onMounted(() => {
   intervalTimer = window.setInterval(() => {
@@ -565,89 +356,7 @@ onMounted(() => {
     latency.value = Math.max(2, Math.min(15, latency.value + Math.floor(Math.random() * 3) - 1));
   }, 5000);
 
-  const savedLogs = localStorage.getItem("cooitza_machinery_logs");
-  let mappedOperatorEvents: SystemEvent[] = [];
-  if (savedLogs) {
-    try {
-      const parsed = JSON.parse(savedLogs);
-      mappedOperatorEvents = parsed.map((log: any, index: number) => {
-        const isCritical = log.horometroValue > 9000;
-        const isWarning = log.regType === "final";
-        return {
-          id: `#LOG-${(log.id?.substring(4, 10).toUpperCase()) || (8800 + index)}`,
-          timestamp: log.dateTime || new Date().toLocaleString("es-GT"),
-          category: "Telemetría",
-          message: `Reporte de horómetro ${log.regType === "inicial" ? "Inicial" : "Final"} para ${log.machineType?.toUpperCase()}: ${log.horometroValue.toLocaleString()} HRS en ${log.location?.formattedAddress}`,
-          level: isCritical ? "ERROR" : isWarning ? "WARN" : "INFO",
-          operator: log.operatorName?.split(" ")[0] || "OPERADOR"
-        };
-      });
-    } catch (err) {
-      console.error("Error loading technician dashboard logs", err);
-    }
-  }
-
-  const defaultStaticEvents: SystemEvent[] = [
-    {
-      id: "#LOG-8821",
-      timestamp: "2024-05-24 14:22:10",
-      category: "Telemetría",
-      message: "Calibración de sensor térmico completada con éxito.",
-      level: "INFO",
-      operator: "SYS_AUTO"
-    },
-    {
-      id: "#LOG-8820",
-      timestamp: "2024-05-24 14:15:02",
-      category: "Acceso",
-      message: "Inicio de sesión detectado desde Terminal 04.",
-      level: "INFO",
-      operator: "R. Sanchez"
-    },
-    {
-      id: "#LOG-8819",
-      timestamp: "2024-05-24 13:58:45",
-      category: "Mantenimiento",
-      message: "Ciclo de lubricación preventiva programado para 16:00.",
-      level: "WARN",
-      operator: "SCHEDULER"
-    },
-    {
-      id: "#LOG-8818",
-      timestamp: "2024-05-24 13:40:12",
-      category: "Crítico",
-      message: "Fluctuación de voltaje fuera de rango en Nodo-B.",
-      level: "ERROR",
-      operator: "MONITOR_01"
-    },
-    {
-      id: "#LOG-8817",
-      timestamp: "2024-05-24 13:12:33",
-      category: "Telemetría",
-      message: "Lectura de presión hidráulica estable a 450 PSI.",
-      level: "INFO",
-      operator: "SYS_AUTO"
-    },
-    {
-      id: "#LOG-8816",
-      timestamp: "2022-05-24 12:45:10",
-      category: "Mantenimiento",
-      message: "Revisión preventiva de motor térmico realizada.",
-      level: "INFO",
-      operator: "M. Thorne"
-    },
-    {
-      id: "#LOG-8815",
-      timestamp: "2024-05-24 11:32:00",
-      category: "Telemetría",
-      message: "Nivel de combustible de tanque auxiliar de reserva verificado.",
-      level: "INFO",
-      operator: "E. Rodriguez"
-    }
-  ];
-
-  systemEvents.value = [...mappedOperatorEvents, ...defaultStaticEvents];
-  totalSystemEventsCount.value = 4281 + mappedOperatorEvents.length;
+  fetchDashboardData();
 });
 
 onUnmounted(() => {
@@ -655,16 +364,6 @@ onUnmounted(() => {
     clearInterval(intervalTimer);
   }
 });
-
-const handleExportData = () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(filteredEvents.value, null, 2));
-  const downloadAnchor = document.createElement("a");
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `cooitza_industrial_logs_${new Date().toISOString().substring(0, 10)}.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-};
 </script>
 
 <style scoped>

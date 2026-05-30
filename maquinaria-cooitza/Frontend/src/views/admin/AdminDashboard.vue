@@ -163,17 +163,13 @@
           
             <DashboardOverview 
             v-if="activeTab === 'dashboard'"
-            :logs="logs"
-            @deleteLog="deleteLog"
-            @addMockLog="addMockLog"
             :pilotsCount="pilotsCount"
             :pilotsActiveCount="pilotsActiveCount"
             :pilotsRestingCount="pilotsRestingCount"
             :vehiclesCount="vehiclesCount"
             :vehiclesActiveCount="vehiclesActiveCount"
             :vehiclesMaintenanceCount="vehiclesMaintenanceCount"
-            @openPhotoModal="selectedPhotoInModal = $event"
-            @triggerExport="handleTriggerExport"
+            :machineryCount="machineryCount"
           />
 
           <PilotosModule 
@@ -310,23 +306,22 @@ type AdminTab = "dashboard" | "pilotos" | "vehiculos" | "maquinaria" | "usuarios
 const router = useRouter();
 
 const activeTab = ref<AdminTab>("dashboard");
-const logs = ref<any[]>([]);
+const pilotsCount = ref(0);
+const pilotsActiveCount = ref(0);
+const pilotsRestingCount = ref(0);
+
+const vehiclesCount = ref(0);
+const vehiclesActiveCount = ref(0);
+const vehiclesMaintenanceCount = ref(0);
+
+const machineryCount = ref(0);
+const usersCount = ref(0);
+
 const showNotificationAlert = ref(false);
 const selectedPhotoInModal = ref<string | null>(null);
 
 const isExporting = ref(false);
 const exportMessage = ref("");
-
-const pilotsCount = ref(3);
-const pilotsActiveCount = ref(2);
-const pilotsRestingCount = ref(1);
-
-const vehiclesCount = ref(3);
-const vehiclesActiveCount = ref(2);
-const vehiclesMaintenanceCount = ref(1);
-
-const machineryCount = ref(3);
-const usersCount = ref(3);
 
 const mobileTabs = [
   { id: "dashboard", label: "Dashboard" },
@@ -336,32 +331,43 @@ const mobileTabs = [
   { id: "usuarios", label: "Usuarios" }
 ] as const;
 
-const syncStorageData = () => {
+const fetchDashboardData = async () => {
   try {
-    const p = localStorage.getItem("cooitza_pilotos");
-    if (p) {
-      const parsed = JSON.parse(p);
-      pilotsCount.value = parsed.length;
-      pilotsActiveCount.value = parsed.filter((item: any) => item.status === "En Turno").length;
-      pilotsRestingCount.value = parsed.filter((item: any) => item.status === "Descanso").length;
+    // Fetch Pilotos
+    const pRes = await fetch('/maquinaria-cooitza/Backend/api/v1/pilotos');
+    const pData = await pRes.json();
+    if (pData.status === 'success') {
+      const pilotos = pData.data;
+      pilotsCount.value = pilotos.length;
+      pilotsActiveCount.value = pilotos.filter((p: any) => p.status === 'activo').length;
+      pilotsRestingCount.value = pilotos.filter((p: any) => p.status === 'inactivo').length;
     }
-    const v = localStorage.getItem("cooitza_vehiculos");
-    if (v) {
-      const parsed = JSON.parse(v);
-      vehiclesCount.value = parsed.length;
-      vehiclesActiveCount.value = parsed.filter((item: any) => item.status === "Activo").length;
-      vehiclesMaintenanceCount.value = parsed.filter((item: any) => item.status === "Mantenimiento").length;
-    }
-    const m = localStorage.getItem("cooitza_maquinaria");
-    if (m) machineryCount.value = JSON.parse(m).length;
-    
-    const u = localStorage.getItem("cooitza_usuarios");
-    if (u) usersCount.value = JSON.parse(u).length;
 
-    const l = localStorage.getItem("cooitza_machinery_logs");
-    if (l) logs.value = JSON.parse(l);
-  } catch (e) {
-    console.warn("Storage syncing failed: ", e);
+    // Fetch Vehiculos
+    const vRes = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos');
+    const vData = await vRes.json();
+    if (vData.status === 'success') {
+      const vehiculos = vData.data;
+      vehiclesCount.value = vehiculos.length;
+      vehiclesActiveCount.value = vehiculos.filter((v: any) => v.status === 'activo').length;
+      vehiclesMaintenanceCount.value = vehiculos.filter((v: any) => v.status === 'mantenimiento').length;
+    }
+
+    // Fetch Maquinaria
+    const mRes = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
+    const mData = await mRes.json();
+    if (mData.status === 'success') {
+      machineryCount.value = mData.data.length;
+    }
+
+    // Fetch Usuarios
+    const uRes = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios');
+    const uData = await uRes.json();
+    if (uData.status === 'success') {
+      usersCount.value = uData.data.length;
+    }
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
   }
 };
 
@@ -369,28 +375,13 @@ const handleLogout = () => {
   router.push('/login');
 };
 
-const deleteLog = (id: string) => {
-  logs.value = logs.value.filter((l: any) => l.id !== id);
-  localStorage.setItem("cooitza_machinery_logs", JSON.stringify(logs.value));
-};
+onMounted(fetchDashboardData);
 
-const addMockLog = () => {
-  const newLog = {
-    id: `log_${Date.now()}`,
-    operatorName: "Operador Simulado",
-    machineType: "tractor",
-    regType: "inicial",
-    horometroValue: 125.5,
-    dateTime: new Date().toLocaleString(),
-    location: { lat: 14.6, lng: -90.5, formattedAddress: "Cooitzá HQ (Simulado)" }
-  };
-  logs.value.unshift(newLog);
-  localStorage.setItem("cooitza_machinery_logs", JSON.stringify(logs.value));
-};
-
-onMounted(syncStorageData);
-
-watch(activeTab, syncStorageData);
+watch(activeTab, (newTab) => {
+  if (newTab === 'dashboard') {
+    fetchDashboardData();
+  }
+});
 
 const handlePilotsChange = (count: number, active: number, resting: number) => {
   pilotsCount.value = count;
