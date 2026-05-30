@@ -34,7 +34,7 @@
             </span>
             <button 
               type="button"
-              @click="$emit('logout')"
+              @click="handleLogout"
               class="font-display text-[11px] font-black uppercase text-red-600 hover:underline cursor-pointer"
             >
               Cerrar Sesión
@@ -154,7 +154,7 @@
 
             <button 
               type="button"
-              @click="$emit('logout')"
+              @click="handleLogout"
               class="w-full border border-[#cbd5e1] text-[#004586] bg-white hover:bg-slate-50 font-display text-xs font-black tracking-[0.12em] py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer uppercase shadow-sm"
             >
               CANCELAR OPERACIÓN
@@ -203,13 +203,17 @@ import {
   ClipboardSignature, Wifi, Database, Loader2, CheckCircle, XSquare 
 } from 'lucide-vue-next';
 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const props = defineProps<{
-  currentUserFullName: string
+  currentUserFullName?: string
 }>();
 
-const emit = defineEmits<{
-  (e: 'logout'): void
-}>();
+const handleLogout = () => {
+  router.push('/login');
+};
 
 const pilotName = ref("");
 const pilotPhone = ref("");

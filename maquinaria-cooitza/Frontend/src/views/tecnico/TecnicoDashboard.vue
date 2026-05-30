@@ -26,7 +26,7 @@
           
           <button
             type="button"
-            @click="$emit('logout')"
+            @click="handleLogout"
             class="flex items-center gap-1.5 px-3.5 py-1.5 border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 font-display text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
           >
             <LogOut :size="12" />
@@ -460,9 +460,13 @@ import {
   Construction, Compass
 } from "lucide-vue-next";
 
-defineEmits<{
-  (e: 'logout'): void
-}>();
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const handleLogout = () => {
+  router.push('/login');
+};
 
 interface SystemEvent {
   id: string;

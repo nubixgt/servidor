@@ -40,7 +40,7 @@
           :class="activeTab === 'pilotos' ? 'bg-[#0054A3] text-white shadow-sm' : 'text-[#004586] hover:bg-[#cbd5e1]/30'"
         >
           <Users :size="18" />
-          <span>Pilotos ({{ pilotsCount }})</span>
+          <span>Pilotos</span>
         </button>
 
         <button 
@@ -50,7 +50,7 @@
           :class="activeTab === 'vehiculos' ? 'bg-[#0054A3] text-white shadow-sm' : 'text-[#004586] hover:bg-[#cbd5e1]/30'"
         >
           <Truck :size="18" />
-          <span>Vehículos ({{ vehiclesCount }})</span>
+          <span>Vehículos</span>
         </button>
 
         <button 
@@ -60,7 +60,7 @@
           :class="activeTab === 'maquinaria' ? 'bg-[#0054A3] text-white shadow-sm' : 'text-[#004586] hover:bg-[#cbd5e1]/30'"
         >
           <Tractor :size="18" />
-          <span>Maquinaria ({{ machineryCount }})</span>
+          <span>Maquinaria</span>
         </button>
 
         <button 
@@ -70,7 +70,7 @@
           :class="activeTab === 'usuarios' ? 'bg-[#0054A3] text-white shadow-sm' : 'text-[#004586] hover:bg-[#cbd5e1]/30'"
         >
           <Shield :size="18" />
-          <span>Usuarios ({{ usersCount }})</span>
+          <span>Usuarios</span>
         </button>
       </nav>
 
@@ -78,15 +78,7 @@
       <div class="mt-auto space-y-2 pt-4 border-t border-[#cbd5e1]">
         <button 
           type="button"
-          @click="isEmergencyActive = true"
-          class="w-full bg-[#ba1a1a] hover:bg-red-700 text-white font-display text-[10px] font-black tracking-widest py-3 uppercase transition-colors rounded-sm cursor-pointer"
-        >
-          PARADA DE EMERGENCIA
-        </button>
-
-        <button 
-          type="button"
-          @click="$emit('logout')"
+          @click="handleLogout"
           class="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 transition-colors text-xs font-sans font-bold cursor-pointer"
         >
           <LogOut :size="16" />
@@ -169,11 +161,11 @@
       <section class="p-4 md:p-8 flex-grow overflow-y-auto max-w-[1280px] w-full mx-auto flex flex-col gap-6">
         <transition name="fade" mode="out-in">
           
-          <DashboardOverview 
+            <DashboardOverview 
             v-if="activeTab === 'dashboard'"
             :logs="logs"
-            @deleteLog="$emit('deleteLog', $event)"
-            @addMockLog="$emit('addMockLog')"
+            @deleteLog="deleteLog"
+            @addMockLog="addMockLog"
             :pilotsCount="pilotsCount"
             :pilotsActiveCount="pilotsActiveCount"
             :pilotsRestingCount="pilotsRestingCount"
@@ -226,41 +218,7 @@
 
     </main>
 
-    <!-- EMERGENCY SUSPENSION SYSTEM (EMERGENCY HALT OVERLAY) -->
-    <transition name="fade">
-      <div v-if="isEmergencyActive" class="fixed inset-0 bg-red-950/95 z-50 flex items-center justify-center p-6">
-        <transition name="scale" appear>
-          <div class="bg-white border-4 border-red-600 max-w-lg p-8 text-center flex flex-col items-center gap-6">
-            <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center animate-bounce">
-              <AlertTriangle :size="52" />
-            </div>
 
-            <div>
-              <h3 class="font-display text-2xl font-black text-red-600 uppercase tracking-tight">
-                PARADA DE EMERGENCIA INICIALIZADA
-              </h3>
-              <p class="text-xs text-slate-600 font-sans font-bold leading-relaxed mt-2 uppercase tracking-wide">
-                Se ha ordenado la suspensión transitoria del envío de horómetros por parte de toda la red de técnicos de Cooitzá R.L.
-              </p>
-            </div>
-
-            <div class="bg-red-50 p-4 border border-red-200 text-left w-full font-mono text-[11px] text-red-800 space-y-1">
-              <div>• Código de Alerta: AL-04B-EMERGENCY</div>
-              <div>• Canal Satelital: Suministrando bloqueo TLS</div>
-              <div>• Sede Central Chimaltenango notificando protocolo de suspensión temporal.</div>
-            </div>
-
-            <button 
-              type="button"
-              @click="isEmergencyActive = false"
-              class="bg-red-600 text-white font-display text-xs font-black uppercase py-3.5 px-8 hover:bg-red-700 tracking-widest cursor-pointer shadow-md rounded-none"
-            >
-              DESBLOQUEAR SISTEMA
-            </button>
-          </div>
-        </transition>
-      </div>
-    </transition>
 
     <!-- REAL-TIME NOTIFICATIONS POPUP PREVIEW -->
     <transition name="slide-up">
@@ -345,20 +303,14 @@ import VehiculosModule from "./VehiculosModule.vue";
 import MaquinariaModule from "./MaquinariaModule.vue";
 import UsuariosModule from "./UsuariosModule.vue";
 
-const props = defineProps<{
-  logs: any[]
-}>();
-
-const emit = defineEmits<{
-  (e: 'deleteLog', id: string): void;
-  (e: 'addMockLog'): void;
-  (e: 'logout'): void;
-}>();
+import { useRouter } from 'vue-router';
 
 type AdminTab = "dashboard" | "pilotos" | "vehiculos" | "maquinaria" | "usuarios";
 
+const router = useRouter();
+
 const activeTab = ref<AdminTab>("dashboard");
-const isEmergencyActive = ref(false);
+const logs = ref<any[]>([]);
 const showNotificationAlert = ref(false);
 const selectedPhotoInModal = ref<string | null>(null);
 
@@ -405,9 +357,35 @@ const syncStorageData = () => {
     
     const u = localStorage.getItem("cooitza_usuarios");
     if (u) usersCount.value = JSON.parse(u).length;
+
+    const l = localStorage.getItem("cooitza_machinery_logs");
+    if (l) logs.value = JSON.parse(l);
   } catch (e) {
     console.warn("Storage syncing failed: ", e);
   }
+};
+
+const handleLogout = () => {
+  router.push('/login');
+};
+
+const deleteLog = (id: string) => {
+  logs.value = logs.value.filter((l: any) => l.id !== id);
+  localStorage.setItem("cooitza_machinery_logs", JSON.stringify(logs.value));
+};
+
+const addMockLog = () => {
+  const newLog = {
+    id: `log_${Date.now()}`,
+    operatorName: "Operador Simulado",
+    machineType: "tractor",
+    regType: "inicial",
+    horometroValue: 125.5,
+    dateTime: new Date().toLocaleString(),
+    location: { lat: 14.6, lng: -90.5, formattedAddress: "Cooitzá HQ (Simulado)" }
+  };
+  logs.value.unshift(newLog);
+  localStorage.setItem("cooitza_machinery_logs", JSON.stringify(logs.value));
 };
 
 onMounted(syncStorageData);
