@@ -76,13 +76,7 @@
           </button>
         </form>
 
-        <!-- Access Help Card -->
-        <div class="bg-slate-50 p-4 border border-[#cbd5e1] text-[11px] font-mono flex flex-col gap-1.5 text-slate-600">
-          <span class="font-sans font-bold uppercase tracking-wider text-xs text-[#0054A3]">Credenciales de Base de Datos</span>
-          <div><strong class="text-[#0054A3]">Admin:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">admin</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
-          <div><strong class="text-[#0054A3]">Técnico Piloto:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">piloto1</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
-          <div><strong class="text-[#0054A3]">Técnico Dashboard:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">analista</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
-        </div>
+
 
         <footer class="pt-4 border-t border-[#cbd5e1] text-center flex flex-col gap-2">
           <p class="font-display text-[11px] text-slate-500 font-semibold tracking-wider uppercase">

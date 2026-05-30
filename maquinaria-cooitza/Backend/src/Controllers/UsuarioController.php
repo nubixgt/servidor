@@ -15,7 +15,7 @@ class UsuarioController extends Controller
         $this->usuarioService = new UsuarioService();
     }
 
-    #[Route('POST', '/api/v1/usuarios/login')]
+    #[Route('/usuarios/login', 'POST')]
     public function login()
     {
         $data = json_decode(file_get_contents("php://input"), true);
