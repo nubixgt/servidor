@@ -325,10 +325,9 @@
                   <div class="flex flex-col gap-1">
                     <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Próximo Service Fija</label>
                     <input 
-                      type="text"
+                      type="date"
                       v-model="nextService"
-                      placeholder="Ej: 15 OCT 24"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 cursor-text"
                     />
                   </div>
 
