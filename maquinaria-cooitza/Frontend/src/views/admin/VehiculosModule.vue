@@ -63,10 +63,8 @@
                   v-model="tipo"
                   class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
                 >
-                  <option value="camion">Camión</option>
-                  <option value="pickup">Pickup</option>
-                  <option value="pipa">Pipa Cisterna</option>
-                  <option value="otros">Otros Equipos</option>
+                  <option value="Camión">Camión</option>
+                  <option value="Pickup">Pickup</option>
                 </select>
               </div>
 
@@ -80,6 +78,21 @@
                   placeholder="Ej. 2024"
                   class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800"
                 />
+              </div>
+
+              <div class="flex flex-col gap-1 md:col-span-2">
+                <label class="font-display text-[11px] font-extrabold text-slate-600 uppercase tracking-wider">
+                  Piloto Asignado
+                </label>
+                <select 
+                  v-model="piloto_asignado"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
+                >
+                  <option value="">-- Sin piloto asignado --</option>
+                  <option v-for="p in pilotos" :key="p.id" :value="p.full_name">
+                    {{ p.full_name }}
+                  </option>
+                </select>
               </div>
 
               <div class="flex flex-col gap-1 md:col-span-2">
@@ -108,9 +121,8 @@
                   v-model="status"
                   class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
                 >
-                  <option value="Activo">Operativo</option>
-                  <option value="Mantenimiento">Taller / Mantenimiento</option>
-                  <option value="Standby">En Reserva (Standby)</option>
+                  <option value="activo">Operativo / Activo</option>
+                  <option value="inactivo">Taller / Inactivo</option>
                 </select>
               </div>
 
@@ -210,25 +222,28 @@
               <!-- Photo container -->
               <div class="w-16 h-16 bg-slate-100 flex-shrink-0 overflow-hidden relative border border-slate-100">
                 <img 
-                  :src="v.photoUrl || DEFAULT_VEHICLE_PHOTOS[0]" 
-                  :alt="v.model" 
+                  :src="getPhotoUrl(v.foto)" 
+                  :alt="v.modelo" 
                   class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                 />
               </div>
 
               <div class="flex-grow min-w-0">
                 <p class="font-display text-[10px] font-bold text-slate-400 uppercase truncate">
-                  {{ v.model }} ({{ v.year || "2023" }})
+                  {{ v.marca }} ({{ v.modelo }})
                 </p>
                 <p class="font-display text-sm font-black text-slate-800 tracking-tight mt-0.5 truncate">
-                  {{ v.plate }}
+                  {{ v.placa }}
+                </p>
+                <p class="font-display text-[9px] text-[#0054A3] font-bold mt-0.5 uppercase truncate">
+                  Piloto: {{ v.piloto_asignado || 'N/A' }}
                 </p>
                 <div class="flex items-center gap-1.5 mt-1.5">
                   <span class="w-2 h-2 rounded-full"
-                        :class="v.status === 'Activo' ? 'bg-emerald-500' : v.status === 'Mantenimiento' ? 'bg-amber-500' : 'bg-slate-400'">
+                        :class="v.status === 'activo' ? 'bg-emerald-500' : 'bg-red-500'">
                   </span>
                   <span class="font-display text-[9px] font-extrabold text-slate-600 uppercase tracking-wider">
-                    {{ v.status === "Activo" ? "Operativo" : v.status === "Mantenimiento" ? "Mantenimiento" : "Standby" }}
+                    {{ v.status === "activo" ? "Operativo" : "Inactivo" }}
                   </span>
                 </div>
               </div>
@@ -321,29 +336,27 @@
                       :key="v.id" 
                       class="hover:bg-slate-50 transition-colors text-slate-800"
                     >
-                      <td class="py-3 px-3 font-mono font-bold text-[#0054A3]">{{ v.code }}</td>
+                      <td class="py-3 px-3 font-mono font-bold text-[#0054A3]">{{ v.id }}</td>
                       <td class="py-3 px-3">
                         <div class="flex items-center gap-2">
-                          <img v-if="v.photoUrl" :src="v.photoUrl" alt="" class="w-6 h-6 object-cover bg-slate-100" />
-                          <span class="font-semibold">{{ v.model }}</span>
+                          <img v-if="v.foto" :src="getPhotoUrl(v.foto)" alt="" class="w-6 h-6 object-cover bg-slate-100" />
+                          <span class="font-semibold">{{ v.marca }}</span>
                         </div>
                       </td>
-                      <td class="py-3 px-3 font-mono font-bold">{{ v.plate }}</td>
+                      <td class="py-3 px-3 font-mono font-bold">{{ v.placa }}</td>
                       <td class="py-3 px-3">
-                        <span class="uppercase text-slate-500 font-bold">{{ v.year }}</span>
+                        <span class="uppercase text-slate-500 font-bold">{{ v.modelo }}</span>
                         <span class="ml-1 text-[10px] bg-slate-100 px-1 py-0.5 uppercase border rounded-sm font-semibold text-slate-600">
-                          {{ v.type }}
+                          {{ v.tipo }}
                         </span>
                       </td>
                       <td class="py-3 px-3 font-mono font-bold">
-                        {{ v.mileage.toLocaleString() }} <span class="text-[10px] text-slate-400">KM</span>
+                        {{ v.kilometraje_registro.toLocaleString() }} <span class="text-[10px] text-slate-400">KM</span>
                       </td>
                       <td class="py-3 px-3">
                         <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase"
-                              :class="v.status === 'Activo' ? 'bg-emerald-100 text-emerald-800' :
-                                      v.status === 'Mantenimiento' ? 'bg-amber-100 text-amber-800' :
-                                      'bg-slate-100 text-slate-800'">
-                          {{ v.status === "Activo" ? "Operativo" : v.status === "Mantenimiento" ? "Taller" : "Standby" }}
+                              :class="v.status === 'activo' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'">
+                          {{ v.status === "activo" ? "Operativo" : "Inactivo" }}
                         </span>
                       </td>
                       <td class="py-3 px-3">
@@ -391,40 +404,49 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { Truck, CloudUpload, Search, Edit, Trash2, ArrowRight, X } from "lucide-vue-next";
+import Swal from 'sweetalert2';
 
 interface Vehicle {
   id: string;
-  code: string;
-  model: string;
-  plate: string;
-  type: "camion" | "pickup" | "pipa" | "otros";
-  status: "Activo" | "Mantenimiento" | "Standby";
-  year: string;
-  mileage: number;
-  photoUrl?: string;
+  marca: string;
+  placa: string;
+  tipo: "Camión" | "Pickup";
+  status: "activo" | "inactivo";
+  modelo: string;
+  kilometraje_registro: number;
+  piloto_asignado: string | null;
+  foto?: string | null;
 }
 
 const emit = defineEmits<{
   (e: 'vehiclesChange', count: number, activeCount: number, maintenanceCount: number): void
 }>();
 
-const DEFAULT_VEHICLE_PHOTOS = [
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBfCQxHMoSqylJtj62363vrKS4Ai0aSb8qAVt7Vxe7OrqjIXMky93gYA8fkKJ5NI234BDTazq23zLhJnD2FS5s7l6F6n53lXwZt9ykMZ1mHgocxXB85X1OimLy6_6zeYidMZPGnl51KC3KG2QK0v-25MkkEOFHoTzq3XSaYsi8wqQQ4E9FhsapVEDRzsLqlWWh_bSjIN7hgooh7Eno7Co11U4_AFWZ5F1x6PV8KiOhzF9aAvednwsyE0P7Pmgnvfo9FIu6x7CJDYFv4",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAOS7o83jWBjyOCa7Sy-JMKLT1aChKEr5Vfl6WYCfW3UNvOpY14pVAAVDMBCCBQmGz7d0keMVoNrSENiIZJqRP0DkPySV3YzA-Y9P68wI37H_hd4KSJ9bkmbO7HGVYCbbd8Ozn6DdGkM0Ocp-Ql4RrIJhdWNG7n54xYb6NZya35YtSfcbOQTUWLG-vnUJZuNdHA76wg9lCXDzMYtlzKLfrsSh5x8l4E8BMp4NhRqRKTHDXlis4zJwNr3W9wZXpyu99CYSnDb8QVh5O-",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBtxq1_ce_lH6LS17f9tAAI4LUKez8StI7z_g8Oj1bLpZF6CKykb_8CtlBzi0Q2mvFFm-UiluRsxEeaiuy7GuU7M-0qISKI70sFsyV2IFNnPGKAcZxNObUP2lAw2kSl2jYd8ugip5qTfhkPs-UUjo_DDlJEXPas4XhJCWnNYnqvH672FKRQXY1dFDNuBjWybUR-S2f6Iqnc8CJd26B4ZLnAMInrBbXfsH0ySl88b54eftYeBhdo_bhcPM9TjAZs0ZcB0UmtJFX47wqX",
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuDIO4iixhRl8ks22wCvo8FVysSOADgubwEgVWVRvCXJN3VSP4BwqaBT9hBoD6obwKzk8zYlU609d8UPAgY0TvKo-sYR0eH9C9emvqKpK8CWFz8d7kpRnMPsUG-SI14qGGQ5GDvgOrNqGWbnfaBlYmeDHxMwys23tvSNVyDNzjlwfz52UVjsTYQK8FOuhL022AkGVNHKhnhc6Dv2LIJZoxJvEs3quHXMMCy2L09rqOKoq031Q0ptFawvTDHWaqTZdAgCRuqTexXOzph7"
-];
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-start',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  background: '#191c1d',
+  color: '#ffffff',
+  iconColor: '#FFD200',
+});
 
 const vehicles = ref<Vehicle[]>([]);
+const pilotos = ref<any[]>([]);
 const editVehicleId = ref<string | null>(null);
 
 const marca = ref("");
 const placa = ref("");
-const tipo = ref<"camion" | "pickup" | "pipa" | "otros">("camion");
+const tipo = ref<"Camión" | "Pickup">("Camión");
 const yearModel = ref("");
 const mileage = ref("");
-const status = ref<"Activo" | "Mantenimiento" | "Standby">("Activo");
+const piloto_asignado = ref("");
+const status = ref<"activo" | "inactivo">("activo");
+
 const photoPreview = ref<string | null>(null);
+const selectedFile = ref<File | null>(null);
 
 const isDragOver = ref(false);
 const showInvoiceModal = ref(false);
@@ -432,50 +454,48 @@ const searchTerm = ref("");
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const triggerSync = (updated: Vehicle[]) => {
-  const active = updated.filter(v => v.status === "Activo").length;
-  const maint = updated.filter(v => v.status === "Mantenimiento").length;
-  emit('vehiclesChange', updated.length, active, maint);
+  const active = updated.filter(v => v.status === "activo").length;
+  const inact = updated.filter(v => v.status === "inactivo").length;
+  emit('vehiclesChange', updated.length, active, inact);
 };
 
-const persistVehicles = (updated: Vehicle[]) => {
-  vehicles.value = updated;
-  localStorage.setItem("cooitza_vehiculos", JSON.stringify(updated));
-  triggerSync(updated);
+const getPhotoUrl = (fotoPath?: string | null) => {
+  if (fotoPath) {
+    return `/maquinaria-cooitza/Backend/${fotoPath}`;
+  }
+  return "https://lh3.googleusercontent.com/aida-public/AB6AXuBfCQxHMoSqylJtj62363vrKS4Ai0aSb8qAVt7Vxe7OrqjIXMky93gYA8fkKJ5NI234BDTazq23zLhJnD2FS5s7l6F6n53lXwZt9ykMZ1mHgocxXB85X1OimLy6_6zeYidMZPGnl51KC3KG2QK0v-25MkkEOFHoTzq3XSaYsi8wqQQ4E9FhsapVEDRzsLqlWWh_bSjIN7hgooh7Eno7Co11U4_AFWZ5F1x6PV8KiOhzF9aAvednwsyE0P7Pmgnvfo9FIu6x7CJDYFv4";
+};
+
+const loadData = async () => {
+  try {
+    const [resVeh, resUsu] = await Promise.all([
+      fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos'),
+      fetch('/maquinaria-cooitza/Backend/api/v1/usuarios')
+    ]);
+    
+    if (resVeh.ok) {
+      const jsonVeh = await resVeh.json();
+      vehicles.value = jsonVeh.data;
+      triggerSync(vehicles.value);
+    }
+    
+    if (resUsu.ok) {
+      const jsonUsu = await resUsu.json();
+      // Filtrar solo a los que pueden ser pilotos
+      pilotos.value = jsonUsu.data.filter((u: any) => u.role === 'tecnico_piloto' || u.role === 'admin' || u.role === 'tecnico_dashboard');
+    }
+  } catch (e) {
+    console.error("Error cargando datos", e);
+  }
 };
 
 onMounted(() => {
-  const saved = localStorage.getItem("cooitza_vehiculos");
-  if (saved) {
-    const data = JSON.parse(saved);
-    vehicles.value = data;
-    triggerSync(data);
-  } else {
-    const defaultVehicles: Vehicle[] = [
-      { 
-        id: "v1", code: "VEH-104", model: "Volvo FH16", plate: "PLQ-9902", type: "camion", 
-        status: "Activo", year: "2023", mileage: 48900, photoUrl: DEFAULT_VEHICLE_PHOTOS[0]
-      },
-      { 
-        id: "v2", code: "VEH-88", model: "Ford Ranger", plate: "GST-5512", type: "pickup", 
-        status: "Mantenimiento", year: "2022", mileage: 12400, photoUrl: DEFAULT_VEHICLE_PHOTOS[1]
-      },
-      { 
-        id: "v3", code: "VEH-05", model: "Isuzu NPR", plate: "MXX-2281", type: "camion", 
-        status: "Activo", year: "2021", mileage: 81300, photoUrl: DEFAULT_VEHICLE_PHOTOS[2]
-      },
-      { 
-        id: "v4", code: "VEH-92", model: "Toyota Hilux", plate: "RDZ-0092", type: "pickup", 
-        status: "Activo", year: "2023", mileage: 37900, photoUrl: DEFAULT_VEHICLE_PHOTOS[3]
-      }
-    ];
-    vehicles.value = defaultVehicles;
-    localStorage.setItem("cooitza_vehiculos", JSON.stringify(defaultVehicles));
-    triggerSync(defaultVehicles);
-  }
+  loadData();
 });
 
 const processFile = (file: File) => {
   if (file && file.type.startsWith("image/")) {
+    selectedFile.value = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target?.result) {
@@ -483,6 +503,8 @@ const processFile = (file: File) => {
       }
     };
     reader.readAsDataURL(file);
+  } else {
+    Swal.fire('Formato no válido', 'Por favor selecciona una imagen válida.', 'warning');
   }
 };
 
@@ -504,63 +526,99 @@ const cancelEdit = () => {
   editVehicleId.value = null;
   marca.value = "";
   placa.value = "";
-  tipo.value = "camion";
+  tipo.value = "Camión";
   yearModel.value = "";
   mileage.value = "";
-  status.value = "Activo";
+  piloto_asignado.value = "";
+  status.value = "activo";
   photoPreview.value = null;
+  selectedFile.value = null;
+  if (fileInputRef.value) fileInputRef.value.value = "";
 };
 
-const handleSaveVehicle = () => {
+const handleSaveVehicle = async () => {
   if (!marca.value.trim() || !placa.value.trim()) return;
 
-  const chosenPhoto = photoPreview.value || DEFAULT_VEHICLE_PHOTOS[Math.floor(Math.random() * DEFAULT_VEHICLE_PHOTOS.length)];
+  const formData = new FormData();
+  formData.append('marca', marca.value.trim());
+  formData.append('placa', placa.value.trim());
+  formData.append('tipo', tipo.value);
+  formData.append('modelo', yearModel.value.trim());
+  formData.append('kilometraje_registro', mileage.value.toString());
+  formData.append('piloto_asignado', piloto_asignado.value);
+  formData.append('status', status.value);
 
-  if (editVehicleId.value) {
-    const updated = vehicles.value.map(v => v.id === editVehicleId.value ? {
-      ...v,
-      model: marca.value,
-      plate: placa.value,
-      type: tipo.value,
-      year: yearModel.value,
-      mileage: parseFloat(mileage.value) || 0,
-      status: status.value,
-      photoUrl: chosenPhoto
-    } : v);
-    persistVehicles(updated);
-  } else {
-    const newVehicle: Vehicle = {
-      id: "veh_" + Date.now(),
-      code: "VEH-" + (100 + vehicles.value.length),
-      model: marca.value,
-      plate: placa.value,
-      type: tipo.value,
-      status: status.value,
-      year: yearModel.value || "2024",
-      mileage: parseFloat(mileage.value) || 0,
-      photoUrl: chosenPhoto
-    };
-    persistVehicles([newVehicle, ...vehicles.value]);
+  if (selectedFile.value) {
+    formData.append('foto', selectedFile.value);
   }
 
-  cancelEdit();
+  try {
+    let url = '/maquinaria-cooitza/Backend/api/v1/vehiculos';
+    if (editVehicleId.value) {
+      url = '/maquinaria-cooitza/Backend/api/v1/vehiculos/update';
+      formData.append('id', editVehicleId.value);
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      await loadData();
+      Toast.fire({
+        icon: 'success',
+        title: editVehicleId.value ? `Vehículo ${placa.value} actualizado.` : `Vehículo ${placa.value} registrado con éxito.`
+      });
+      cancelEdit();
+    } else {
+      const data = await res.json();
+      Swal.fire('Error', data.message || 'Error al guardar el vehículo', 'error');
+    }
+  } catch (e) {
+    console.error(e);
+    Swal.fire('Error', 'Problema de conexión con el servidor', 'error');
+  }
 };
 
 const handleEditVehicle = (v: Vehicle) => {
   editVehicleId.value = v.id;
-  marca.value = v.model;
-  placa.value = v.plate;
-  tipo.value = v.type;
-  yearModel.value = v.year;
-  mileage.value = v.mileage.toString();
+  marca.value = v.marca;
+  placa.value = v.placa;
+  tipo.value = v.tipo;
+  yearModel.value = v.modelo;
+  mileage.value = v.kilometraje_registro.toString();
+  piloto_asignado.value = v.piloto_asignado || "";
   status.value = v.status;
-  photoPreview.value = v.photoUrl || null;
+  photoPreview.value = getPhotoUrl(v.foto);
+  selectedFile.value = null;
 };
 
-const handleDeleteVehicle = (id: string) => {
-  if (window.confirm("¿Está seguro de remover este vehículo de la flota?")) {
-    const updated = vehicles.value.filter(v => v.id !== id);
-    persistVehicles(updated);
+const handleDeleteVehicle = async (id: string) => {
+  const result = await Swal.fire({
+    title: '¿Eliminar vehículo?',
+    text: "El registro de este vehículo se eliminará permanentemente.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ba1a1a',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Sí, eliminar'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const res = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        await loadData();
+        Toast.fire({ icon: 'success', title: 'Vehículo eliminado de la flota.' });
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 };
 
@@ -569,9 +627,10 @@ const recentVehicles = computed(() => vehicles.value.slice(0, 4));
 const filteredVehicles = computed(() => {
   const query = searchTerm.value.toLowerCase();
   return vehicles.value.filter(v => 
-    v.model.toLowerCase().includes(query) ||
-    v.plate.toLowerCase().includes(query) ||
-    v.code.toLowerCase().includes(query)
+    v.marca.toLowerCase().includes(query) ||
+    v.placa.toLowerCase().includes(query) ||
+    v.modelo.toLowerCase().includes(query) ||
+    (v.piloto_asignado && v.piloto_asignado.toLowerCase().includes(query))
   );
 });
 </script>
