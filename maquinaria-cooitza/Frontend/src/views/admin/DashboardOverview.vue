@@ -79,44 +79,12 @@
             <div class="absolute inset-x-0 top-2/4 border-t border-slate-100"></div>
             <div class="absolute inset-x-0 top-3/4 border-t border-slate-100"></div>
 
-            <!-- Bar 1: Tractor -->
-            <div class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10">
+            <!-- Dynamic Bars -->
+            <div v-for="item in horasPorTipo" :key="item.tipo" class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10" :title="item.horas + ' HRS'">
               <div class="w-full bg-[#cbd5e1] h-1/2 relative">
-                <div class="absolute bottom-0 w-full bg-[#0054A3] h-[75%] group-hover:bg-[#004586] transition-all"></div>
+                <div class="absolute bottom-0 w-full bg-[#0054A3] group-hover:bg-[#004586] transition-all" :style="{ height: item.porcentaje + '%' }"></div>
               </div>
-              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">Tractores</span>
-            </div>
-
-            <!-- Bar 2: Excavadoras -->
-            <div class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10">
-              <div class="w-full bg-[#cbd5e1] h-1/2 relative">
-                <div class="absolute bottom-0 w-full bg-[#FFD200] h-[95%] group-hover:brightness-95 transition-all"></div>
-              </div>
-              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">Excavadoras</span>
-            </div>
-
-            <!-- Bar 3: Retro -->
-            <div class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10">
-              <div class="w-full bg-[#cbd5e1] h-1/2 relative">
-                <div class="absolute bottom-0 w-full bg-[#0054A3] h-[60%] group-hover:bg-[#004586] transition-all"></div>
-              </div>
-              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">Retros</span>
-            </div>
-
-            <!-- Bar 4: Volquetes -->
-            <div class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10">
-              <div class="w-full bg-[#cbd5e1] h-1/2 relative">
-                <div class="absolute bottom-0 w-full bg-[#FFD200] h-[85%] group-hover:brightness-95 transition-all"></div>
-              </div>
-              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">Volteos</span>
-            </div>
-
-            <!-- Bar 5: Pipa -->
-            <div class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10">
-              <div class="w-full bg-[#cbd5e1] h-1/2 relative">
-                <div class="absolute bottom-0 w-full bg-[#0054A3] h-[40%] group-hover:bg-[#004586] transition-all"></div>
-              </div>
-              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">Pipas</span>
+              <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">{{ item.tipo }}</span>
             </div>
           </div>
           
@@ -128,32 +96,17 @@
         <!-- Health diagnostics overview inside Dashboard -->
         <div class="lg:col-span-4 flex flex-col gap-6">
           
-          <!-- System Health checklist -->
           <div class="bg-white border border-[#cbd5e1] p-5 shadow-sm">
-            <h3 class="font-display text-xs font-black text-[#0054A3] uppercase tracking-wider mb-4">ESTADO DE ENLACES</h3>
+            <h3 class="font-display text-xs font-black text-[#0054A3] uppercase tracking-wider mb-4">MÁQUINAS CON MAYOR DESGASTE</h3>
             <div class="space-y-3 font-sans text-xs font-medium">
-              
-              <div class="flex justify-between items-center text-slate-600">
-                <span>Servidor Principal Cooitzá</span>
-                <span class="text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 font-bold uppercase text-[9px]">ONLINE</span>
+              <div v-if="topMaquinas.length === 0" class="text-slate-400 italic">No hay registros suficientes.</div>
+              <div v-for="(maq, index) in topMaquinas" :key="maq.id" class="flex justify-between items-center text-slate-600 border-b border-slate-100 pb-2 last:border-0">
+                <div>
+                  <span class="font-bold">{{ index + 1 }}. {{ maq.marca }}</span>
+                  <span class="text-[9px] text-slate-400 ml-1">({{ maq.identificador || maq.modelo }})</span>
+                </div>
+                <span class="text-amber-600 bg-amber-50 border border-amber-200 px-1.5 font-bold font-mono text-[10px]">{{ maq.horas_acumuladas || 0 }} HRS</span>
               </div>
-              <div class="w-full bg-slate-100 h-1.5">
-                <div class="bg-[#4CAF50] h-full w-[100%]"></div>
-              </div>
-
-              <div class="flex justify-between items-center text-slate-600">
-                <span>Criptografía de Sesión SSL</span>
-                <span class="text-[#0054A3] font-bold font-mono">256-BIT</span>
-              </div>
-              <div class="w-full bg-slate-100 h-1.5">
-                <div class="bg-[#0054A3] h-full w-[80%]"></div>
-              </div>
-
-              <div class="flex justify-between items-center text-slate-600">
-                <span>Servicio de Geolocalización</span>
-                <span class="text-emerald-600 font-bold font-mono text-[10px]">ACTIVO (99.8%)</span>
-              </div>
-
             </div>
           </div>
         </div>
@@ -163,6 +116,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { 
   Users, Truck, Tractor
 } from "lucide-vue-next";
@@ -175,7 +129,31 @@ const props = defineProps<{
   vehiclesActiveCount: number;
   vehiclesMaintenanceCount: number;
   machineryCount: number;
+  maquinas?: any[];
 }>();
+
+const horasPorTipo = computed(() => {
+  if (!props.maquinas || props.maquinas.length === 0) return [];
+  const agrupado: Record<string, number> = {};
+  let maxHoras = 0;
+  props.maquinas.forEach(m => {
+    const tipo = m.tipo || 'Otro';
+    agrupado[tipo] = (agrupado[tipo] || 0) + (parseFloat(m.horas_acumuladas) || 0);
+  });
+  const resultado = Object.keys(agrupado).map(tipo => {
+    if (agrupado[tipo] > maxHoras) maxHoras = agrupado[tipo];
+    return { tipo, horas: agrupado[tipo] };
+  });
+  return resultado.map(r => ({
+    ...r,
+    porcentaje: maxHoras > 0 ? (r.horas / maxHoras) * 100 : 0
+  }));
+});
+
+const topMaquinas = computed(() => {
+  if (!props.maquinas) return [];
+  return [...props.maquinas].sort((a, b) => (parseFloat(b.horas_acumuladas) || 0) - (parseFloat(a.horas_acumuladas) || 0)).slice(0, 5);
+});
 </script>
 
 <style scoped>

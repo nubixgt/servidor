@@ -170,6 +170,7 @@
             :vehiclesActiveCount="vehiclesActiveCount"
             :vehiclesMaintenanceCount="vehiclesMaintenanceCount"
             :machineryCount="machineryCount"
+            :maquinas="maquinasList"
           />
 
           <PilotosModule 
@@ -315,6 +316,7 @@ const vehiclesActiveCount = ref(0);
 const vehiclesMaintenanceCount = ref(0);
 
 const machineryCount = ref(0);
+const maquinasList = ref<any[]>([]);
 const usersCount = ref(0);
 
 const showNotificationAlert = ref(false);
@@ -358,6 +360,7 @@ const fetchDashboardData = async () => {
     const mData = await mRes.json();
     if (mData.status === 'success') {
       machineryCount.value = mData.data.length;
+      maquinasList.value = mData.data;
     }
 
     // Fetch Usuarios

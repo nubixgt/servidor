@@ -98,32 +98,31 @@
         <div class="col-span-12 md:col-span-6 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
           <div class="flex justify-between items-center mb-4">
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              DISTRIBUCIÓN DE ACTIVIDAD DE MAQUINARIA
+              KILOMETRAJE ACUMULADO POR VEHÍCULO (TOP 14)
             </span>
             <span class="text-[10px] font-mono bg-[#0054A3]/10 text-[#0054A3] px-2 py-0.5 font-bold">
-              ESTADO SATISFACTORIO
+              DATOS REALES
             </span>
           </div>
 
           <!-- Simple premium dynamic css grid bar chart representation -->
           <div class="h-24 flex items-end gap-1.5 pt-2">
             <div 
-              v-for="(h, i) in [40, 60, 80, 50, 95, 45, 70, 85, 30, 55, 75, 100, 60, 40]" 
-              :key="i" 
+              v-for="v in topVehiculos" 
+              :key="v.id" 
               class="bg-[#0054A3]/25 group-hover:bg-[#f5a623] hover:bg-[#0054A3] transition-all duration-300 w-full relative group"
-              :style="{ height: `${h}%` }"
-              :title="`Hora ${12-i}h atrás: ${h}% carga`"
+              :style="{ height: `${v.porcentaje}%` }"
+              :title="`${v.marca} - ${v.placa}: ${v.kilometraje} KM`"
             >
               <!-- Micro tooltip -->
               <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-black text-white text-[8px] p-1 rounded whitespace-nowrap z-10">
-                {{ h }}%
+                {{ v.kilometraje }}KM
               </div>
             </div>
           </div>
 
           <div class="flex justify-between items-center mt-3 text-[10px] text-slate-400 font-mono">
-            <span>HACE 12 HORAS</span>
-            <span>TIEMPO REAL</span>
+            <span>FLOTA COOITZÁ</span>
           </div>
         </div>
 
@@ -132,64 +131,28 @@
       <!-- Row 3: Hardware Health & Asset snapshot (Side-by-Side widgets) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Hardware Status Widget -->
+        <!-- Próximos Mantenimientos Widget -->
         <div class="col-span-12 lg:col-span-4 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
           <div>
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-5">
-              ESTADO DE HARDWARE PRINCIPAL
+              PRÓXIMOS MANTENIMIENTOS PROGRAMADOS
             </span>
             <div class="divide-y divide-slate-100">
               
-              <!-- Proc monitor -->
-              <div class="flex justify-between items-center py-3">
-                <span class="font-sans text-xs text-slate-700 flex items-center gap-2">
-                  <Cpu :size="14" class="text-[#0054A3]" />
-                  Procesador Central
-                </span>
-                <span class="font-mono text-xs font-bold text-emerald-600">
-                  {{ cpuLoad }}% (OPTIMAL)
-                </span>
+              <div v-if="proximosMantenimientos.length === 0" class="py-4 text-xs italic text-slate-400">
+                No hay mantenimientos próximos definidos.
               </div>
-
-              <!-- Buffer memory -->
-              <div class="flex justify-between items-center py-3">
-                <span class="font-sans text-xs text-slate-700 flex items-center gap-2">
-                  <Layers :size="14" class="text-[#0054A3]" />
-                  Memoria del Buffer
-                </span>
-                <span class="font-mono text-xs font-bold text-emerald-600">
-                  {{ freeMemory }}% LIBRE
-                </span>
-              </div>
-
-              <!-- Server Latency -->
-              <div class="flex justify-between items-center py-3">
-                <span class="font-sans text-xs text-slate-700 flex items-center gap-2">
-                  <Activity :size="14" class="text-[#0054A3]" />
-                  Conectividad Uplink
-                </span>
-                <span class="font-mono text-xs font-bold text-[#0054A3]">
-                  LATENCIA {{ latency }}ms
-                </span>
-              </div>
-
-              <!-- Node-B Sensors -->
-              <div class="flex justify-between items-center py-3">
-                <span class="font-sans text-xs text-slate-700 flex items-center gap-2">
-                  <AlertTriangle :size="14" class="text-red-500" />
-                  Sensores Nodo-B
-                </span>
-                <span class="font-mono text-xs font-bold text-red-600 animate-pulse">
-                  REVISIÓN REQ.
-                </span>
+              <div v-for="maq in proximosMantenimientos" :key="maq.id" class="flex flex-col py-3">
+                <span class="font-sans text-xs font-bold text-slate-700">{{ maq.marca }} ({{ maq.identificador || maq.modelo }})</span>
+                <div class="flex justify-between mt-1">
+                  <span class="text-[10px] text-slate-500 uppercase">{{ maq.tipo }}</span>
+                  <span class="font-mono text-[10px] font-bold text-[#0054A3]">
+                    {{ new Date(maq.proximo_servicio).toLocaleDateString('es-GT') }}
+                  </span>
+                </div>
               </div>
 
             </div>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100">
-            <p class="text-[9px] font-mono text-slate-400 uppercase tracking-wider text-center">
-              Frecuencia de telemetría de bus: 1 Hz
-            </p>
           </div>
         </div>
 
@@ -308,15 +271,33 @@ const selectedAssetId = ref<string | null>(null);
 const machineryCount = ref(0);
 const vehiclesCount = ref(0);
 
-const cpuLoad = ref(24);
-const freeMemory = ref(82);
-const latency = ref(4);
-
+const vehiculosList = ref<any[]>([]);
+const maquinasBrutasList = ref<any[]>([]);
 const assetsList = ref<AssetDetails[]>([]);
 
 const activeAsset = computed(() => assetsList.value.find(a => a.id === selectedAssetId.value) || assetsList.value[0]);
 
-let intervalTimer: number | null = null;
+const topVehiculos = computed(() => {
+  if (!vehiculosList.value || vehiculosList.value.length === 0) return [];
+  let maxKm = 0;
+  const sorted = [...vehiculosList.value].sort((a, b) => (parseFloat(b.kilometraje) || 0) - (parseFloat(a.kilometraje) || 0)).slice(0, 14);
+  sorted.forEach(v => {
+    if ((parseFloat(v.kilometraje) || 0) > maxKm) maxKm = parseFloat(v.kilometraje) || 0;
+  });
+  return sorted.map(v => ({
+    ...v,
+    porcentaje: maxKm > 0 ? ((parseFloat(v.kilometraje) || 0) / maxKm) * 100 : 0
+  }));
+});
+
+const proximosMantenimientos = computed(() => {
+  if (!maquinasBrutasList.value) return [];
+  // Sort by date assuming YYYY-MM-DD
+  return [...maquinasBrutasList.value]
+    .filter(m => m.proximo_servicio)
+    .sort((a, b) => new Date(a.proximo_servicio).getTime() - new Date(b.proximo_servicio).getTime())
+    .slice(0, 5);
+});
 
 const fetchDashboardData = async () => {
   try {
@@ -325,6 +306,7 @@ const fetchDashboardData = async () => {
     const mData = await mRes.json();
     if (mData.status === 'success') {
       const maquinas = mData.data;
+      maquinasBrutasList.value = maquinas;
       machineryCount.value = maquinas.length;
       if (maquinas.length > 0) {
         assetsList.value = maquinas.map((m: any, idx: number) => ({
@@ -343,6 +325,7 @@ const fetchDashboardData = async () => {
     const vRes = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos');
     const vData = await vRes.json();
     if (vData.status === 'success') {
+      vehiculosList.value = vData.data;
       vehiclesCount.value = vData.data.length;
     }
   } catch (error) {
@@ -351,18 +334,11 @@ const fetchDashboardData = async () => {
 };
 
 onMounted(() => {
-  intervalTimer = window.setInterval(() => {
-    cpuLoad.value = Math.max(12, Math.min(68, cpuLoad.value + Math.floor(Math.random() * 7) - 3));
-    latency.value = Math.max(2, Math.min(15, latency.value + Math.floor(Math.random() * 3) - 1));
-  }, 5000);
-
   fetchDashboardData();
 });
 
 onUnmounted(() => {
-  if (intervalTimer !== null) {
-    clearInterval(intervalTimer);
-  }
+  // cleanup
 });
 </script>
 
