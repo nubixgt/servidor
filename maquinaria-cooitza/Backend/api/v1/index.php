@@ -3,6 +3,7 @@
 use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\MaquinariaController;
+use App\Controllers\UsuarioController;
 
 // Backend/api/v1/index.php
 
@@ -34,6 +35,7 @@ $router = new Router();
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
 $router->registerController(MaquinariaController::class);
+$router->registerController(UsuarioController::class);
 
 
 // 6. Dispatch

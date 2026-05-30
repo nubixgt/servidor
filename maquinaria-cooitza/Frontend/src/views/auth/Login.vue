@@ -78,10 +78,10 @@
 
         <!-- Access Help Card -->
         <div class="bg-slate-50 p-4 border border-[#cbd5e1] text-[11px] font-mono flex flex-col gap-1.5 text-slate-600">
-          <span class="font-sans font-bold uppercase tracking-wider text-xs text-[#0054A3]">Autenticación de Prueba</span>
-          <div><strong class="text-[#0054A3]">Admin:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">admin</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">admin123</code></div>
-          <div><strong class="text-[#0054A3]">Técnico Piloto (Formulario):</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">tecnico</code> o <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">piloto</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">tecnico123</code></div>
-          <div><strong class="text-[#0054A3]">Técnico Dashboard (Logs):</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">dashboard</code> o <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">tecnico_dashboard</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">tecnico123</code></div>
+          <span class="font-sans font-bold uppercase tracking-wider text-xs text-[#0054A3]">Credenciales de Base de Datos</span>
+          <div><strong class="text-[#0054A3]">Admin:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">admin</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
+          <div><strong class="text-[#0054A3]">Técnico Piloto:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">piloto1</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
+          <div><strong class="text-[#0054A3]">Técnico Dashboard:</strong> <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">analista</code> / <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200">123</code></div>
         </div>
 
         <footer class="pt-4 border-t border-[#cbd5e1] text-center flex flex-col gap-2">
@@ -117,7 +117,7 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   errorMessage.value = '';
 
   if (!username.value.trim() || !password.value.trim()) {
@@ -127,30 +127,47 @@ const handleSubmit = () => {
 
   isLoading.value = true;
 
-  // Simulate reliable industrial authentication
-  setTimeout(() => {
-    isLoading.value = false;
-    const userLower = username.value.toLowerCase().trim();
-    
-    if (userLower === "admin" && password.value === "admin123") {
-      router.push('/admin');
-    } else if ((userLower === "tecnico" || userLower === "tecnico_piloto" || userLower === "piloto") && password.value === "tecnico123") {
-      router.push('/piloto');
-    } else if ((userLower === "tecnico_dashboard" || userLower === "dashboard") && password.value === "tecnico123") {
-      router.push('/tecnico');
-    } else if (password.value === "123") {
-      // Simple universal bypass for streamlined testing by the user
-      if (userLower.includes("admin")) {
-        router.push('/admin');
-      } else if (userLower.includes("dash") || userLower.includes("board")) {
-        router.push('/tecnico');
-      } else {
-        router.push('/piloto');
-      }
-    } else {
-      errorMessage.value = "Credenciales incorrectas. Pruebe 'admin', 'tecnico_dashboard', o 'tecnico' con contraseña 'tecnico123'.";
+  try {
+    const response = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username.value.trim(),
+        password: password.value.trim()
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.token) {
+      errorMessage.value = data.message || "Credenciales incorrectas o error en el servidor.";
+      return;
     }
-  }, 1000);
+
+    // Save token and user info
+    localStorage.setItem('cooitza_token', data.token);
+    localStorage.setItem('cooitza_user', JSON.stringify(data.user));
+
+    const role = data.user.role;
+    
+    if (role === 'admin') {
+      router.push('/admin');
+    } else if (role === 'tecnico_dashboard') {
+      router.push('/tecnico');
+    } else if (role === 'tecnico_piloto') {
+      router.push('/piloto');
+    } else {
+      router.push('/');
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    errorMessage.value = "Error de red. Verifique que el Backend de PHP esté funcionando.";
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
