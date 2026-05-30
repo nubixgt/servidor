@@ -33,8 +33,8 @@ class VehiculoRepository
 
     public function create(Vehiculo $vehiculo)
     {
-        $sql = "INSERT INTO vehiculos (marca, placa, tipo, modelo, kilometraje_registro, piloto_asignado, foto, status) 
-                VALUES (:marca, :placa, :tipo, :modelo, :kilometraje_registro, :piloto_asignado, :foto, :status)";
+        $sql = "INSERT INTO vehiculos (marca, placa, tipo, modelo, kilometraje_registro, piloto_id, foto, status) 
+                VALUES (:marca, :placa, :tipo, :modelo, :kilometraje, :piloto_id, :foto, :status)";
         $stmt = $this->db->prepare($sql);
         
         $success = $stmt->execute([
@@ -42,8 +42,8 @@ class VehiculoRepository
             'placa' => $vehiculo->placa,
             'tipo' => $vehiculo->tipo,
             'modelo' => $vehiculo->modelo,
-            'kilometraje_registro' => $vehiculo->kilometraje_registro,
-            'piloto_asignado' => $vehiculo->piloto_asignado,
+            'kilometraje' => $vehiculo->kilometraje_registro,
+            'piloto_id' => $vehiculo->piloto_id ?: null,
             'foto' => $vehiculo->foto,
             'status' => $vehiculo->status
         ]);
@@ -55,28 +55,20 @@ class VehiculoRepository
     {
         $sql = "UPDATE vehiculos 
                 SET marca = :marca, placa = :placa, tipo = :tipo, modelo = :modelo, 
-                    kilometraje_registro = :kilometraje_registro, piloto_asignado = :piloto_asignado, status = :status";
+                    kilometraje_registro = :kilometraje, piloto_id = :piloto_id, status = :status 
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
         
-        $params = [
+        return $stmt->execute([
             'marca' => $vehiculo->marca,
             'placa' => $vehiculo->placa,
             'tipo' => $vehiculo->tipo,
             'modelo' => $vehiculo->modelo,
-            'kilometraje_registro' => $vehiculo->kilometraje_registro,
-            'piloto_asignado' => $vehiculo->piloto_asignado,
+            'kilometraje' => $vehiculo->kilometraje_registro,
+            'piloto_id' => $vehiculo->piloto_id ?: null,
             'status' => $vehiculo->status,
             'id' => $vehiculo->id
-        ];
-
-        if ($vehiculo->foto !== null) {
-            $sql .= ", foto = :foto";
-            $params['foto'] = $vehiculo->foto;
-        }
-
-        $sql .= " WHERE id = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($params);
+        ]);
     }
 
     public function updateFotoPath($id, $path)

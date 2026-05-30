@@ -85,12 +85,12 @@
                   Piloto Asignado
                 </label>
                 <select 
-                  v-model="piloto_asignado"
+                  v-model="piloto_id"
                   class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
                 >
                   <option value="">-- Sin piloto asignado --</option>
-                  <option v-for="p in pilotos" :key="p.id" :value="p.full_name">
-                    {{ p.full_name }}
+                  <option v-for="p in pilotos" :key="p.id" :value="p.id">
+                    {{ p.nombre }}
                   </option>
                 </select>
               </div>
@@ -236,7 +236,7 @@
                   {{ v.placa }}
                 </p>
                 <p class="font-display text-[9px] text-[#0054A3] font-bold mt-0.5 uppercase truncate">
-                  Piloto: {{ v.piloto_asignado || 'N/A' }}
+                  Piloto: {{ getPilotName(v.piloto_id) }}
                 </p>
                 <div class="flex items-center gap-1.5 mt-1.5">
                   <span class="w-2 h-2 rounded-full"
@@ -414,7 +414,7 @@ interface Vehicle {
   status: "activo" | "inactivo";
   modelo: string;
   kilometraje_registro: number;
-  piloto_asignado: string | null;
+  piloto_id: string | null;
   foto?: string | null;
 }
 
@@ -442,7 +442,7 @@ const placa = ref("");
 const tipo = ref<"Camión" | "Pickup">("Camión");
 const yearModel = ref("");
 const mileage = ref("");
-const piloto_asignado = ref("");
+const piloto_id = ref("");
 const status = ref<"activo" | "inactivo">("activo");
 
 const photoPreview = ref<string | null>(null);
@@ -466,11 +466,17 @@ const getPhotoUrl = (fotoPath?: string | null) => {
   return "https://lh3.googleusercontent.com/aida-public/AB6AXuBfCQxHMoSqylJtj62363vrKS4Ai0aSb8qAVt7Vxe7OrqjIXMky93gYA8fkKJ5NI234BDTazq23zLhJnD2FS5s7l6F6n53lXwZt9ykMZ1mHgocxXB85X1OimLy6_6zeYidMZPGnl51KC3KG2QK0v-25MkkEOFHoTzq3XSaYsi8wqQQ4E9FhsapVEDRzsLqlWWh_bSjIN7hgooh7Eno7Co11U4_AFWZ5F1x6PV8KiOhzF9aAvednwsyE0P7Pmgnvfo9FIu6x7CJDYFv4";
 };
 
+const getPilotName = (id: string | null) => {
+  if (!id) return 'N/A';
+  const p = pilotos.value.find(x => x.id == id);
+  return p ? p.nombre : 'N/A';
+};
+
 const loadData = async () => {
   try {
     const [resVeh, resUsu] = await Promise.all([
       fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos'),
-      fetch('/maquinaria-cooitza/Backend/api/v1/usuarios')
+      fetch('/maquinaria-cooitza/Backend/api/v1/pilotos')
     ]);
     
     if (resVeh.ok) {
@@ -481,8 +487,7 @@ const loadData = async () => {
     
     if (resUsu.ok) {
       const jsonUsu = await resUsu.json();
-      // Filtrar solo a los que pueden ser pilotos
-      pilotos.value = jsonUsu.data.filter((u: any) => u.role === 'tecnico_piloto' || u.role === 'admin' || u.role === 'tecnico_dashboard');
+      pilotos.value = jsonUsu.data;
     }
   } catch (e) {
     console.error("Error cargando datos", e);
@@ -529,7 +534,7 @@ const cancelEdit = () => {
   tipo.value = "Camión";
   yearModel.value = "";
   mileage.value = "";
-  piloto_asignado.value = "";
+  piloto_id.value = "";
   status.value = "activo";
   photoPreview.value = null;
   selectedFile.value = null;
@@ -545,7 +550,7 @@ const handleSaveVehicle = async () => {
   formData.append('tipo', tipo.value);
   formData.append('modelo', yearModel.value.trim());
   formData.append('kilometraje_registro', mileage.value.toString());
-  formData.append('piloto_asignado', piloto_asignado.value);
+  formData.append('piloto_id', piloto_id.value);
   formData.append('status', status.value);
 
   if (selectedFile.value) {
@@ -588,7 +593,7 @@ const handleEditVehicle = (v: Vehicle) => {
   tipo.value = v.tipo;
   yearModel.value = v.modelo;
   mileage.value = v.kilometraje_registro.toString();
-  piloto_asignado.value = v.piloto_asignado || "";
+  piloto_id.value = v.piloto_id || "";
   status.value = v.status;
   photoPreview.value = getPhotoUrl(v.foto);
   selectedFile.value = null;
@@ -630,7 +635,7 @@ const filteredVehicles = computed(() => {
     v.marca.toLowerCase().includes(query) ||
     v.placa.toLowerCase().includes(query) ||
     v.modelo.toLowerCase().includes(query) ||
-    (v.piloto_asignado && v.piloto_asignado.toLowerCase().includes(query))
+    (getPilotName(v.piloto_id).toLowerCase().includes(query))
   );
 });
 </script>

@@ -9,7 +9,7 @@ class Vehiculo
     public $tipo;
     public $modelo;
     public $kilometraje_registro;
-    public $piloto_asignado;
+    public $piloto_id;
     public $foto;
     public $status;
     public $created_at;
@@ -22,7 +22,7 @@ class Vehiculo
         $this->tipo = $data['tipo'] ?? null;
         $this->modelo = $data['modelo'] ?? null;
         $this->kilometraje_registro = $data['kilometraje_registro'] ?? 0;
-        $this->piloto_asignado = $data['piloto_asignado'] ?? null;
+        $this->piloto_id = $data['piloto_id'] ?? null;
         $this->foto = $data['foto'] ?? null;
         $this->status = $data['status'] ?? 'activo';
         $this->created_at = $data['created_at'] ?? null;

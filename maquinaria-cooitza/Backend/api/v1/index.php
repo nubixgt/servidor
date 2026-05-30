@@ -6,6 +6,7 @@ use App\Controllers\MaquinariaController;
 use App\Controllers\MaquinaController;
 use App\Controllers\UsuarioController;
 use App\Controllers\VehiculoController;
+use App\Controllers\PilotoController;
 
 // Backend/api/v1/index.php
 
@@ -40,6 +41,7 @@ $router->registerController(MaquinariaController::class);
 $router->registerController(MaquinaController::class);
 $router->registerController(UsuarioController::class);
 $router->registerController(VehiculoController::class);
+$router->registerController(PilotoController::class);
 
 
 // 6. Dispatch
