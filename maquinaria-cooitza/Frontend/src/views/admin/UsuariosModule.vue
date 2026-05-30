@@ -144,9 +144,7 @@
             <thead>
               <tr class="border-b border-[#cbd5e1] bg-slate-50 select-none">
                 <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Nombre de Operador</th>
-                <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Email de Enlace</th>
                 <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Rol Asignado</th>
-                <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Sede Operación</th>
                 <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Último Acceso</th>
                 <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600">Estado</th>
                 <th class="p-4 font-display text-[10px] font-bold uppercase tracking-wider text-slate-600 text-right">Acciones</th>
@@ -173,9 +171,7 @@
                     <span class="block text-[10px] font-mono text-[#004586] tracking-tight">@{{ u.username }}</span>
                   </div>
                 </td>
-                <td class="p-4 text-xs font-medium text-slate-600">{{ u.email }}</td>
                 <td class="p-4 text-xs font-medium" v-html="renderRoleBadge(u.role)"></td>
-                <td class="p-4 text-xs font-medium text-slate-500">{{ u.site }}</td>
                 <td class="p-4 text-xs font-mono font-medium text-[#004586]">{{ u.lastAccess || "No disponible" }}</td>
                 <td class="p-4">
                   <button
@@ -255,49 +251,6 @@
 
       </div>
 
-      <!-- Additional Asymmetric Info Grid cards matching HTML -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 select-none">
-        
-        <!-- Compliance Card -->
-        <div class="p-6 bg-white border border-[#cbd5e1] flex gap-4 items-start shadow-sm">
-          <div class="p-3 bg-red-50 text-red-700 border border-red-200">
-            <Lock :size="26" />
-          </div>
-          <div>
-            <h3 class="font-display text-sm font-black text-[#191c1d] uppercase tracking-wide">
-              Protocolo de Seguridad Corporativa
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed mt-2">
-              Todos los técnicos con acceso a la telemetría deben completar el ciclo anual de certificación Q4. Renovación de firma requerida para 12 usuarios este mes.
-            </p>
-            <button class="mt-4 font-display text-[10px] font-black text-[#0054A3] uppercase hover:underline flex items-center gap-1 cursor-pointer">
-              <span>Auditar reporte de cumplimiento</span>
-              <Info :size="12" />
-            </button>
-          </div>
-        </div>
-
-        <!-- Logs Audit Card -->
-        <div class="p-6 bg-white border border-[#cbd5e1] flex gap-4 items-start shadow-sm">
-          <div class="p-3 bg-indigo-50 text-[#0054A3] border border-indigo-200">
-            <History :size="26" />
-          </div>
-          <div>
-            <h3 class="font-display text-sm font-black text-[#191c1d] uppercase tracking-wide">
-              Auditoría de Acceso TLS
-            </h3>
-            <p class="text-xs text-slate-500 leading-relaxed mt-2">
-              Sede central Guatemala auditó los logs hace 4 horas automáticamente. No se detectaron anomalías ni re-intentos fallidos en la estación satelital 04-B.
-            </p>
-            <button class="mt-4 font-display text-[10px] font-black text-[#0054A3] uppercase hover:underline flex items-center gap-1 cursor-pointer">
-              <span>Descargar logs criptográficos (.csv)</span>
-              <Download :size="12" />
-            </button>
-          </div>
-        </div>
-
-      </div>
-
       <!-- Slide-over Overlay Dialog for Adding/Editing credentials -->
       <transition name="fade">
         <div v-if="isFormOpen" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4">
@@ -342,7 +295,7 @@
                 </div>
 
                 <!-- Grid wrap for dynamic elements -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4">
                   <!-- Username -->
                   <div class="flex flex-col gap-1.5">
                     <label class="text-slate-600 text-[10px] font-bold uppercase tracking-wider">
@@ -353,20 +306,6 @@
                       required
                       placeholder="Ej: ariveral"
                       v-model="username"
-                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
-                    />
-                  </div>
-
-                  <!-- Email -->
-                  <div class="flex flex-col gap-1.5">
-                    <label class="text-slate-600 text-[10px] font-bold uppercase tracking-wider">
-                      Correo Electrónico
-                    </label>
-                    <input 
-                      type="email"
-                      required
-                      placeholder="Ej: a.rivera@cooitza.com"
-                      v-model="email"
                       class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
                     />
                   </div>
@@ -386,19 +325,6 @@
                     <option value="tecnico">Técnico Estándar</option>
                     <option value="admin">Administrador General de Sistemas Cooitzá</option>
                   </select>
-                </div>
-
-                <!-- Site location -->
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-slate-600 text-[10px] font-bold uppercase tracking-wider">
-                    Sede o Cantera Asignada
-                  </label>
-                  <input 
-                    type="text"
-                    placeholder="Ej: Sede Central / Cantera Chimaltenango"
-                    v-model="site"
-                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
-                  />
                 </div>
 
                 <!-- Access validation status -->
@@ -442,17 +368,6 @@
         </div>
       </transition>
 
-      <!-- Dynamic Action Notification Toast alert -->
-      <transition name="toast">
-        <div 
-          v-if="toastMessage" 
-          class="fixed bottom-6 left-6 bg-[#191c1d] text-white border-l-4 border-[#FFD200] p-4 shadow-xl z-50 flex items-center gap-3 font-sans text-xs max-w-sm rounded-none"
-        >
-          <div class="w-5 h-5 bg-[#0054A3]/30 rounded-full flex items-center justify-center text-[#FFD200] shrink-0 font-display">i</div>
-          <span class="font-bold">{{ toastMessage }}</span>
-        </div>
-      </transition>
-
     </div>
   </transition>
 </template>
@@ -463,14 +378,13 @@ import {
   Users, Shield, Wrench, TrendingUp, Search, Plus, Filter, Download, 
   ChevronLeft, ChevronRight, Lock, History, Edit2, Trash2, UserX, X, Check, ShieldCheck, Info 
 } from "lucide-vue-next";
+import Swal from 'sweetalert2';
 
 interface UserConfig {
   id: string;
   fullName: string;
   username: string;
-  email: string;
   role: "admin" | "tecnico" | "tecnico_dashboard" | "tecnico_piloto";
-  site: string;
   status: "Active" | "Inactive";
   lastAccess: string;
 }
@@ -485,69 +399,60 @@ const roleFilter = ref<string>("all");
 const statusFilter = ref<string>("all");
 
 const currentPage = ref(1);
-const itemsPerPage = 4;
+const itemsPerPage = 6;
 
 const isFormOpen = ref(false);
 const editUserId = ref<string | null>(null);
 
 const fullName = ref("");
 const username = ref("");
-const email = ref("");
 const role = ref<"admin" | "tecnico" | "tecnico_dashboard" | "tecnico_piloto">("tecnico");
-const site = ref("");
 const status = ref<"Active" | "Inactive">("Active");
 
-const toastMessage = ref("");
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'bottom-start',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  background: '#191c1d',
+  color: '#ffffff',
+  iconColor: '#FFD200',
+});
 
-const triggerSync = (updated: UserConfig[]) => {
-  emit('usersListChange', updated.length);
+const triggerSync = (count: number) => {
+  emit('usersListChange', count);
 };
 
-const initializeDefaults = () => {
-  const defaultUsers: UserConfig[] = [
-    { id: "u1", fullName: "Alejandro Rivera", username: "admin", email: "a.rivera@machinerylink.com", role: "admin", site: "Sede Central Chimaltenango", status: "Active", lastAccess: "2026-05-30 08:42" },
-    { id: "u2", fullName: "Beatriz Mendoza", username: "tecnico_dashboard", email: "b.mendoza@machinerylink.com", role: "tecnico_dashboard", site: "Planta El Rodeo", status: "Active", lastAccess: "2026-05-29 14:15" },
-    { id: "u3", fullName: "Carlos Salazar", username: "tecnico_piloto_carlos", email: "c.salazar@machinerylink.com", role: "tecnico_piloto", site: "Cantera Cooitzá", status: "Inactive", lastAccess: "2026-05-25 09:00" },
-    { id: "u4", fullName: "Diana López", username: "dlopez_cooitza", email: "d.lopez@machinerylink.com", role: "tecnico", site: "Terminal Sur Obra", status: "Active", lastAccess: "2026-05-30 07:30" },
-  ];
-  usersList.value = defaultUsers;
-  localStorage.setItem("cooitza_usuarios", JSON.stringify(defaultUsers));
-  triggerSync(defaultUsers);
+const loadUsers = async () => {
+  try {
+    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios');
+    const json = await res.json();
+    if (json.status === 'success') {
+      usersList.value = json.data.map((u: any) => ({
+        id: u.id.toString(),
+        fullName: u.full_name,
+        username: u.username,
+        role: u.role,
+        status: u.status,
+        lastAccess: u.last_access || "Sin accesos"
+      }));
+      triggerSync(usersList.value.length);
+    }
+  } catch (error) {
+    console.error("Error cargando usuarios:", error);
+  }
 };
 
 onMounted(() => {
-  const saved = localStorage.getItem("cooitza_usuarios");
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      usersList.value = data;
-      triggerSync(data);
-    } catch (e) {
-      initializeDefaults();
-    }
-  } else {
-    initializeDefaults();
-  }
+  loadUsers();
 });
-
-const persistUsers = (updated: UserConfig[]) => {
-  usersList.value = updated;
-  localStorage.setItem("cooitza_usuarios", JSON.stringify(updated));
-  triggerSync(updated);
-};
-
-const showToast = (msg: string) => {
-  toastMessage.value = msg;
-  setTimeout(() => toastMessage.value = "", 3000);
-};
 
 const handleOpenCreateForm = () => {
   editUserId.value = null;
   fullName.value = "";
   username.value = "";
-  email.value = "";
   role.value = "tecnico";
-  site.value = "";
   status.value = "Active";
   isFormOpen.value = true;
 };
@@ -556,65 +461,100 @@ const handleOpenEditForm = (u: UserConfig) => {
   editUserId.value = u.id;
   fullName.value = u.fullName;
   username.value = u.username;
-  email.value = u.email;
   role.value = u.role;
-  site.value = u.site;
   status.value = u.status;
   isFormOpen.value = true;
 };
 
-const handleSaveUserSubmit = () => {
-  if (!fullName.value.trim() || !username.value.trim() || !email.value.trim()) return;
+const handleSaveUserSubmit = async () => {
+  if (!fullName.value.trim() || !username.value.trim()) return;
 
-  if (editUserId.value) {
-    const updated = usersList.value.map(u => u.id === editUserId.value ? {
-      ...u,
-      fullName: fullName.value.trim(),
-      username: username.value.toLowerCase().trim(),
-      email: email.value.trim(),
-      role: role.value,
-      site: site.value.trim() || "Sede General",
-      status: status.value
-    } : u);
-    persistUsers(updated);
-    showToast(`Usuario "${fullName.value}" actualizado.`);
-  } else {
-    const newUser: UserConfig = {
-      id: "u_" + Date.now(),
-      fullName: fullName.value.trim(),
-      username: username.value.toLowerCase().trim(),
-      email: email.value.trim(),
-      role: role.value,
-      site: site.value.trim() || "Sede General",
-      status: status.value,
-      lastAccess: new Date().toISOString().replace('T', ' ').substring(0, 16)
-    };
-    persistUsers([newUser, ...usersList.value]);
-    showToast(`Usuario "${fullName.value}" registrado.`);
-  }
+  const payload = {
+    id: editUserId.value,
+    full_name: fullName.value.trim(),
+    username: username.value.toLowerCase().trim(),
+    role: role.value,
+    status: status.value
+  };
 
-  isFormOpen.value = false;
-};
+  try {
+    let url = '/maquinaria-cooitza/Backend/api/v1/usuarios';
+    if (editUserId.value) {
+      url = '/maquinaria-cooitza/Backend/api/v1/usuarios/update';
+    }
 
-const handleDeleteUser = (id: string, name: string) => {
-  if (window.confirm(`¿Está seguro de revocar permanentemente la autorización de seguridad para "${name}"?`)) {
-    const updated = usersList.value.filter(u => u.id !== id);
-    persistUsers(updated);
-    showToast(`Autorización de "${name}" revocada.`);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      await loadUsers();
+      isFormOpen.value = false;
+      Toast.fire({
+        icon: 'success',
+        title: editUserId.value ? `Usuario "${payload.full_name}" actualizado.` : `Usuario "${payload.full_name}" registrado con clave por defecto "123".`
+      });
+    } else {
+      Swal.fire('Error', 'Error al guardar el usuario', 'error');
+    }
+  } catch (e) {
+    console.error(e);
+    Swal.fire('Error', 'Problema de conexión con el servidor', 'error');
   }
 };
 
-const handleToggleStatus = (id: string, currentStatus: "Active" | "Inactive", name: string) => {
+const handleDeleteUser = async (id: string, name: string) => {
+  const result = await Swal.fire({
+    title: '¿Revocar acceso?',
+    text: `¿Está seguro de revocar permanentemente la autorización para "${name}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ba1a1a',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Sí, revocar'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const res = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        await loadUsers();
+        Toast.fire({ icon: 'success', title: `Autorización de "${name}" revocada.` });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+};
+
+const handleToggleStatus = async (id: string, currentStatus: "Active" | "Inactive", name: string) => {
   const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
-  const updated = usersList.value.map(u => u.id === id ? { ...u, status: nextStatus as "Active" | "Inactive" } : u);
-  persistUsers(updated);
-  showToast(`Estado de "${name}" cambiado a ${nextStatus === 'Active' ? 'Activo' : 'Inactivo'}.`);
+  
+  try {
+    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/usuarios/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: nextStatus })
+    });
+    if (res.ok) {
+      await loadUsers();
+      Toast.fire({ icon: 'success', title: `Estado de "${name}" cambiado.` });
+    }
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 const handleExportData = () => {
-  showToast("Exportando informe de personal de Cooitzá a CSV...");
-  const headers = "ID,Nombre,Email,Rol,Sede,Estado,UltimoAcceso\n";
-  const rows = usersList.value.map(u => `${u.id},${u.fullName},${u.email},${u.role},${u.site},${u.status},${u.lastAccess}`).join("\n");
+  Toast.fire({ icon: 'info', title: "Exportando informe de personal a CSV..." });
+  const headers = "ID,Nombre,Rol,Estado,UltimoAcceso\n";
+  const rows = usersList.value.map(u => `${u.id},${u.fullName},${u.role},${u.status},${u.lastAccess}`).join("\n");
   const blob = new Blob([headers + rows], { type: 'text/csv' });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -628,9 +568,7 @@ const filteredUsers = computed(() => {
   return usersList.value.filter(u => {
     const matchesKeyword = 
       u.fullName.toLowerCase().includes(query) || 
-      u.username.toLowerCase().includes(query) || 
-      u.email.toLowerCase().includes(query) || 
-      u.site.toLowerCase().includes(query);
+      u.username.toLowerCase().includes(query);
 
     const matchesRole = roleFilter.value === "all" || u.role === roleFilter.value;
     const matchesStatus = statusFilter.value === "all" || u.status === statusFilter.value;

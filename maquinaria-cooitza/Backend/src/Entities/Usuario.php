@@ -10,6 +10,7 @@ class Usuario
     public $role;
     public $status;
     public $created_at;
+    public $last_access;
 
     public function __construct($data = [])
     {
@@ -20,5 +21,6 @@ class Usuario
         $this->role = $data['role'] ?? null;
         $this->status = $data['status'] ?? null;
         $this->created_at = $data['created_at'] ?? null;
+        $this->last_access = $data['last_access'] ?? null;
     }
 }
