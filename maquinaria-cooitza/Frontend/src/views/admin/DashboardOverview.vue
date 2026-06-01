@@ -11,7 +11,7 @@
         
         <div class="flex flex-wrap items-center gap-3">
           <!-- Fechas -->
-          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm">
+          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm rounded-xl">
             <Calendar class="w-4 h-4 text-slate-400" />
             <select v-model="selectedDateFilter" class="bg-transparent outline-none cursor-pointer font-medium">
               <option value="Hoy">Hoy</option>
@@ -21,7 +21,7 @@
             </select>
           </div>
           <!-- Máquinas -->
-          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm">
+          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm rounded-xl">
             <Tractor class="w-4 h-4 text-slate-400" />
             <select class="bg-transparent outline-none cursor-pointer font-medium">
               <option>Todas las máquinas</option>
@@ -34,10 +34,10 @@
       <!-- 3 Statistical Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <!-- Maquinaria Activa -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#0054A3] transition-all">
+        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#0054A3] transition-all rounded-2xl">
           <div class="flex justify-between items-start mb-2">
             <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Maquinaria Activa</span>
-            <div class="bg-blue-50 p-2 rounded-sm"><Tractor class="text-[#0054A3] w-5 h-5" /></div>
+            <div class="bg-blue-50 p-2 rounded-lg"><Tractor class="text-[#0054A3] w-5 h-5" /></div>
           </div>
           <div class="font-display text-3xl font-black text-slate-800">
             {{ maquinasActivasCount }} <span class="text-sm font-medium text-slate-400">de {{ totalMaquinasCount }}</span>
@@ -48,10 +48,10 @@
         </div>
 
         <!-- Horas Totales -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-emerald-600 transition-all">
+        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-emerald-600 transition-all rounded-2xl">
           <div class="flex justify-between items-start mb-2">
             <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas Totales</span>
-            <div class="bg-emerald-50 p-2 rounded-sm"><Clock class="text-emerald-600 w-5 h-5" /></div>
+            <div class="bg-emerald-50 p-2 rounded-lg"><Clock class="text-emerald-600 w-5 h-5" /></div>
           </div>
           <div class="font-display text-3xl font-black text-slate-800">
             {{ totalHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
@@ -62,10 +62,10 @@
         </div>
 
         <!-- Horómetro Promedio -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#FFD200] transition-all">
+        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#FFD200] transition-all rounded-2xl">
           <div class="flex justify-between items-start mb-2">
             <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horómetro Promedio</span>
-            <div class="bg-amber-50 p-2 rounded-sm"><Activity class="text-amber-500 w-5 h-5" /></div>
+            <div class="bg-amber-50 p-2 rounded-lg"><Activity class="text-amber-500 w-5 h-5" /></div>
           </div>
           <div class="font-display text-3xl font-black text-slate-800">
             {{ promedioHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
@@ -80,10 +80,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Uso de Horómetros Chart -->
-        <div class="lg:col-span-5 bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col">
+        <div class="lg:col-span-5 bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col rounded-2xl">
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-display text-base font-bold text-slate-800">Uso de Horómetros</h3>
-            <select class="bg-white border border-[#cbd5e1] text-[10px] font-bold uppercase tracking-wider px-2 py-1 text-slate-600 shadow-sm outline-none cursor-pointer">
+            <select class="bg-white border border-[#cbd5e1] text-[10px] font-bold uppercase tracking-wider px-2 py-1 text-slate-600 shadow-sm outline-none cursor-pointer rounded-lg">
               <option>Esta semana</option>
               <option>Histórico</option>
             </select>
@@ -102,7 +102,7 @@
             <div class="absolute inset-x-0 top-3/4 border-t border-slate-100"></div>
 
             <div v-for="item in horasPorTipo" :key="item.tipo" class="flex flex-col items-center justify-end h-full group cursor-pointer z-10 w-16" :title="item.horas + ' h'">
-              <div class="w-10 bg-[#cbd5e1] h-full relative rounded-t-sm overflow-hidden">
+              <div class="w-10 bg-[#cbd5e1] h-full relative rounded-t-lg overflow-hidden">
                 <div class="absolute bottom-0 w-full bg-[#0054A3] group-hover:bg-[#004586] transition-all" :style="{ height: item.porcentaje + '%' }"></div>
               </div>
               <span class="font-sans text-[9px] font-bold text-slate-600 mt-2 text-center truncate w-full">{{ item.tipo }}</span>
@@ -111,7 +111,7 @@
         </div>
 
         <!-- Ubicación de Maquinaria Map -->
-        <div class="lg:col-span-7 bg-white border border-[#cbd5e1] shadow-sm flex flex-col relative h-[400px]">
+        <div class="lg:col-span-7 bg-white border border-[#cbd5e1] shadow-sm flex flex-col relative h-[400px] rounded-2xl overflow-hidden">
           <div class="absolute top-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm z-10 flex justify-between items-center border-b border-[#cbd5e1]">
             <h3 class="font-display text-base font-bold text-slate-800">Ubicación de Maquinaria</h3>
             <span class="text-[10px] font-bold text-[#0054A3] uppercase cursor-pointer hover:underline flex items-center gap-1">Ver mapa completo <ArrowRight class="w-3 h-3" /></span>
@@ -121,18 +121,18 @@
       </div>
 
       <!-- Bottom Section: Desempeño por Maquinaria -->
-      <div class="bg-white border border-[#cbd5e1] shadow-sm flex flex-col">
+      <div class="bg-white border border-[#cbd5e1] shadow-sm flex flex-col rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-[#cbd5e1] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <h3 class="font-display text-base font-bold text-slate-800">Desempeño por Maquinaria</h3>
           <div class="flex gap-3">
             <div class="relative">
               <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Buscar máquina..." class="pl-9 pr-4 py-2 text-sm border border-[#cbd5e1] outline-none focus:border-[#0054A3] w-64" />
+              <input type="text" placeholder="Buscar máquina..." class="pl-9 pr-4 py-2 text-sm border border-[#cbd5e1] outline-none focus:border-[#0054A3] w-64 rounded-lg" />
             </div>
-            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors rounded-lg">
               <Filter class="w-4 h-4" /> Filtros
             </button>
-            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors rounded-lg">
               <Download class="w-4 h-4" /> Exportar
             </button>
           </div>
@@ -157,7 +157,7 @@
               <tr v-for="row in tableData" :key="row.id" class="hover:bg-slate-50/50 transition-colors group">
                 <td class="p-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-slate-100 border border-slate-200 flex items-center justify-center rounded-sm overflow-hidden">
+                    <div class="w-10 h-10 bg-slate-100 border border-slate-200 flex items-center justify-center rounded-lg overflow-hidden">
                       <Tractor class="w-5 h-5 text-slate-400" />
                     </div>
                     <div>
@@ -181,7 +181,7 @@
                 </td>
                 
                 <td class="p-4">
-                  <span class="px-2 py-1 text-[9px] font-bold uppercase rounded-sm border" 
+                  <span class="px-2 py-1 text-[9px] font-bold uppercase rounded-md border" 
                     :class="row.estado === 'Operativo' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'">
                     {{ row.estado }}
                   </span>
@@ -196,7 +196,7 @@
                 </td>
                 
                 <td class="p-4 text-center">
-                  <button class="p-1.5 text-slate-400 hover:text-[#0054A3] transition-colors" title="Ver Detalles">
+                  <button class="p-1.5 text-slate-400 hover:text-[#0054A3] transition-colors rounded-lg hover:bg-slate-100" title="Ver Detalles">
                     <MoreHorizontal class="w-4 h-4" />
                   </button>
                 </td>
@@ -205,12 +205,12 @@
           </table>
         </div>
         
-        <div class="px-6 py-4 border-t border-[#cbd5e1] flex justify-between items-center text-xs text-slate-500">
+        <div class="px-6 py-4 border-t border-[#cbd5e1] flex justify-between items-center text-xs text-slate-500 bg-slate-50 rounded-b-2xl">
           <span>Mostrando 1 a {{ tableData.length }} de {{ tableData.length }} máquinas</span>
           <div class="flex gap-1">
-            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed"><ChevronLeft class="w-4 h-4" /></button>
-            <button class="w-8 h-8 flex items-center justify-center border border-[#0054A3] bg-[#0054A3] text-white font-bold">1</button>
-            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed"><ChevronRight class="w-4 h-4" /></button>
+            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed rounded-md"><ChevronLeft class="w-4 h-4" /></button>
+            <button class="w-8 h-8 flex items-center justify-center border border-[#0054A3] bg-[#0054A3] text-white font-bold rounded-md">1</button>
+            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed rounded-md"><ChevronRight class="w-4 h-4" /></button>
           </div>
         </div>
       </div>
