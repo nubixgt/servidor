@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 01-06-2026 a las 14:52:02
+-- Tiempo de generación: 01-06-2026 a las 22:03:14
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -39,14 +39,6 @@ CREATE TABLE `maquinas` (
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
---
--- Volcado de datos para la tabla `maquinas`
---
-
-INSERT INTO `maquinas` (`id`, `marca`, `tipo`, `identificador`, `foto_path`, `estado`, `horas_acumuladas`, `proximo_servicio`, `created_at`) VALUES
-(1, 'John Deere', 'Retro Excavadora', 'ID-5120', 'uploads/Maquinaria/1/foto.webp', 'Mantenimiento', 1240.00, '2026-06-07', '2026-05-30 04:22:21'),
-(2, 'Komatsu', 'Excavadora', 'ID-987410', 'uploads/Maquinaria/2/foto.webp', 'Operativo', 3600.00, '2026-06-04', '2026-05-30 04:28:10');
-
 -- --------------------------------------------------------
 
 --
@@ -66,10 +58,14 @@ CREATE TABLE `pilotos` (
 --
 
 INSERT INTO `pilotos` (`id`, `nombre`, `telefono`, `status`, `created_at`) VALUES
-(1, 'Juan Carlos', '45289012', 'activo', '2026-05-29 23:31:09'),
-(2, 'Ricardo', '98763214', 'activo', '2026-05-29 23:31:26'),
-(3, 'LUIS FERNANDO', '30154896', 'activo', '2026-05-29 23:59:10'),
-(4, 'PRUEBA 123', '87654321', 'inactivo', '2026-05-31 11:56:06');
+(5, 'ALEX TUX', '87654321', 'activo', '2026-06-01 11:51:26'),
+(6, 'ALEJANDRO DEL CID', '87654321', 'activo', '2026-06-01 11:52:02'),
+(7, 'BENJAMÍN GARCIA', '87654321', 'activo', '2026-06-01 11:52:18'),
+(8, 'VICTOR POP', '87654321', 'activo', '2026-06-01 11:52:32'),
+(9, 'JAVIER OCHOA', '87654321', 'activo', '2026-06-01 11:52:49'),
+(10, 'VIRGILIO DE LA CRUZ', '87654321', 'activo', '2026-06-01 11:53:01'),
+(11, 'MARIO CHE', '87654321', 'activo', '2026-06-01 11:53:14'),
+(12, 'ARNOLDO CUCUL', '87654321', 'activo', '2026-06-01 11:53:24');
 
 -- --------------------------------------------------------
 
@@ -81,17 +77,6 @@ CREATE TABLE `piloto_maquinas` (
   `piloto_id` int(11) NOT NULL,
   `maquina_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Volcado de datos para la tabla `piloto_maquinas`
---
-
-INSERT INTO `piloto_maquinas` (`piloto_id`, `maquina_id`) VALUES
-(1, 1),
-(1, 2),
-(2, 2),
-(3, 2),
-(4, 2);
 
 -- --------------------------------------------------------
 
@@ -124,7 +109,9 @@ INSERT INTO `registros_maquinaria` (`id`, `operador`, `usuario_id`, `maquina_id`
 (5, 'Alejandro del Cid', NULL, 'excavadora', 'inicial', 1500.00, 'uploads/registros_maquinaria/5/horometro.jpg', 14.92287199, -90.19528197, '2026-05-06 22:15:54'),
 (6, 'Robert Andersson', NULL, 'rodo', 'inicial', 1500.00, 'uploads/registros_maquinaria/6/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:16:09'),
 (7, 'Robert Andersson', NULL, 'pipa', 'inicial', 2000.00, 'uploads/registros_maquinaria/7/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:21:14'),
-(8, 'Robert Andersson', 3, 'rodo', 'inicial', 2000.00, 'uploads/registros_maquinaria/8/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:28:06');
+(8, 'Robert Andersson', NULL, 'rodo', 'inicial', 2000.00, 'uploads/registros_maquinaria/8/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:28:06'),
+(9, 'Robert Andersson', NULL, 'tractor', 'inicial', 11111.00, 'uploads/registros_maquinaria/9/horometro.jpeg', 14.63490000, -90.50690000, '2026-06-01 15:47:36'),
+(10, 'Prueba', 17, 'tractor', 'inicial', 15000.00, 'uploads/registros_maquinaria/10/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 21:58:00');
 
 -- --------------------------------------------------------
 
@@ -148,11 +135,16 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `username`, `password_hash`, `full_name`, `role`, `status`, `created_at`, `last_access`) VALUES
-(1, 'admin', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Administrador Principal', 'admin', 'activo', '2026-05-30 03:55:29', '2026-06-01 08:47:38'),
-(2, 'analista', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Técnico Analista', 'tecnico_dashboard', 'activo', '2026-05-30 03:55:29', '2026-05-30 00:00:30'),
-(3, 'piloto1', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Robert Andersson', 'tecnico_piloto', 'activo', '2026-05-30 03:55:29', '2026-06-01 08:27:53'),
-(5, 'prueba2', '$2y$10$CC9E/o3C7tPVOfgmEBPY4uf6QpzAQm73PVSSuHZxhM7AAFhUyFqZe', 'Prueba 2', 'admin', 'activo', '2026-05-30 04:47:27', '2026-05-29 22:48:03'),
-(8, 'jcarlos', '$2y$10$zxHGHxDm96rUvN0WlABI7.KmqSZQtY22lDNCilyxpt0IagFbpmiDa', 'Juan Carlos', 'tecnico_piloto', 'activo', '2026-06-01 14:51:17', NULL);
+(1, 'admin', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Administrador Principal', 'admin', 'activo', '2026-05-30 03:55:29', '2026-06-01 15:59:16'),
+(9, 'atux', '$2y$10$0YdaAlnB4aLnkKUywOQ0lefpudMyTXtNTXFILzpArrLo2lkAg4XDy', 'Alex Tux', 'tecnico_piloto', 'activo', '2026-06-01 18:09:44', '2026-06-01 12:15:19'),
+(10, 'acid', '$2y$10$EoQ9K4FyZpYkJ6OaiHzPK.K4H8noqUkV3iaYbXGj3vKnQnTAGJzYK', 'Alejandro Del Cid', 'tecnico_piloto', 'activo', '2026-06-01 18:10:39', '2026-06-01 12:15:30'),
+(11, 'bgarcia', '$2y$10$TJL/TxdAjONgoOBe8fNKr.BaACFHm9Sz.ZGl1uHSDgNQpwh.jR5tO', 'Benjamin Garcia', 'tecnico_piloto', 'activo', '2026-06-01 18:11:25', '2026-06-01 12:15:40'),
+(12, 'vpop', '$2y$10$poKrZToNBSj/b2gLmyHYvelXOHFh08xHEDs7nglzdEgkSncy7W1IO', 'Victor Pop', 'tecnico_piloto', 'activo', '2026-06-01 18:11:58', '2026-06-01 12:41:14'),
+(13, 'jochoa', '$2y$10$aP81EhpUTKnz.TWA7RYHKeUlPnzAk2HTkZEc0QBrizL.eSkI2Y88m', 'Javier Ochoa', 'tecnico_piloto', 'activo', '2026-06-01 18:12:34', '2026-06-01 12:16:04'),
+(14, 'vcruz', '$2y$10$Xo9SMUPPZHSetImLezNQrul6qhXjfdbMO5e7GXCe8gLUq3PRTouGW', 'Virgilio De La Cruz', 'tecnico_piloto', 'activo', '2026-06-01 18:13:10', '2026-06-01 12:16:15'),
+(15, 'mche', '$2y$10$UGO7utGjF0XfE8VrE1dtNe30gVmnInDOLVb39yN/Ds7oijZe5yE.2', 'Mario Che', 'tecnico_piloto', 'activo', '2026-06-01 18:13:45', '2026-06-01 15:47:55'),
+(16, 'acucul', '$2y$10$kIGaHGvAHKkq5XRoANUl9ucjFJMZWmT2IkEnWtIGyhUM8XGZ2OZuW', 'Arnoldo Cucul', 'tecnico_piloto', 'activo', '2026-06-01 18:14:31', '2026-06-01 12:16:36'),
+(17, 'piloto1', '$2y$10$pGpwnvn4GlTwhvuRhWKPK.CAn9AEL66WNqMa3Pa.2jWN659yjkk.a', 'Prueba', 'tecnico_piloto', 'activo', '2026-06-01 21:57:27', '2026-06-01 15:57:35');
 
 -- --------------------------------------------------------
 
@@ -178,7 +170,9 @@ CREATE TABLE `vehiculos` (
 --
 
 INSERT INTO `vehiculos` (`id`, `marca`, `placa`, `tipo`, `modelo`, `kilometraje_registro`, `foto`, `status`, `created_at`, `piloto_id`) VALUES
-(1, 'Volvo', 'ABC-123', 'Camión', '2026', 1600, 'uploads/Vehiculos/1/foto.jpg', 'activo', '2026-05-29 23:32:21', 1);
+(2, 'VOLTEO', '687BXM', 'Camión', '', 0, NULL, 'activo', '2026-06-01 11:49:46', NULL),
+(3, 'VOLTEO', '868CCB', 'Camión', '', 0, NULL, 'activo', '2026-06-01 11:50:24', NULL),
+(4, 'VOLTEO', '558BNC', 'Camión', '', 0, NULL, 'activo', '2026-06-01 11:50:39', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -240,25 +234,25 @@ ALTER TABLE `maquinas`
 -- AUTO_INCREMENT de la tabla `pilotos`
 --
 ALTER TABLE `pilotos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `registros_maquinaria`
 --
 ALTER TABLE `registros_maquinaria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
