@@ -49,7 +49,9 @@ class VehiculoService
         $vehiculo->tipo = $data['tipo'] ?? $vehiculo->tipo;
         $vehiculo->modelo = $data['modelo'] ?? $vehiculo->modelo;
         $vehiculo->kilometraje_registro = isset($data['kilometraje_registro']) ? (int)$data['kilometraje_registro'] : $vehiculo->kilometraje_registro;
-        $vehiculo->piloto_asignado = $data['piloto_asignado'] ?? $vehiculo->piloto_asignado;
+        if (array_key_exists('piloto_id', $data)) {
+            $vehiculo->piloto_id = $data['piloto_id'] !== '' ? $data['piloto_id'] : null;
+        }
         $vehiculo->status = $data['status'] ?? $vehiculo->status;
 
         $this->repository->update($vehiculo);
