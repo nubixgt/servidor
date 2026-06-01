@@ -520,7 +520,7 @@ const loadMachinery = async () => {
       machinery.value = json.data.map((item: any) => ({
         id: item.id.toString(),
         brand: item.marca,
-        name: item.identificador,
+        name: item.modelo || item.identificador, // fallback if missing
         category: item.tipo,
         serialId: item.identificador,
         accumulatedHours: parseFloat(item.horas_acumuladas) || 0,
@@ -669,6 +669,7 @@ const handleDelete = async (id: string) => {
 const handleSaveMachinery = async () => {
   const formData = new FormData();
   formData.append('marca', brand.value);
+  formData.append('modelo', name.value);
   formData.append('tipo', category.value);
   formData.append('identificador', serialId.value);
   formData.append('estado', status.value);

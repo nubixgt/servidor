@@ -57,6 +57,7 @@ class MaquinaService
 
             $maquina->marca = $data['marca'] ?? $maquina->marca;
             $maquina->tipo = $data['tipo'] ?? $maquina->tipo;
+            $maquina->modelo = $data['modelo'] ?? $maquina->modelo;
             $maquina->identificador = !empty($data['identificador']) ? $data['identificador'] : 'MQ-' . strtoupper(substr(uniqid(), -6));
             $maquina->estado = $data['estado'] ?? $maquina->estado;
             $maquina->horas_acumuladas = isset($data['horas_acumuladas']) && $data['horas_acumuladas'] !== '' ? (float)$data['horas_acumuladas'] : $maquina->horas_acumuladas;

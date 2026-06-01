@@ -290,7 +290,7 @@ const loadAssignedAssets = async () => {
       if (mJson.status === 'success') {
         const machines = mJson.data.filter((m: any) => String(m.piloto_id) === String(currentPilotId));
         machines.forEach((m: any) => {
-          assets.push({ id: m.identificador, label: `${m.marca} - ${m.identificador} (${m.tipo})` });
+          assets.push({ id: m.identificador, label: `${m.marca} - ${m.modelo || m.identificador} (${m.tipo})` });
         });
       }
 
