@@ -34,8 +34,8 @@ class MaquinaRepository
 
     public function create(Maquina $maquina)
     {
-        $sql = "INSERT INTO maquinas (marca, tipo, identificador, estado, horas_acumuladas, proximo_servicio) 
-                VALUES (:marca, :tipo, :identificador, :estado, :horas_acumuladas, :proximo_servicio)";
+        $sql = "INSERT INTO maquinas (marca, tipo, identificador, estado, horas_acumuladas, proximo_servicio, piloto_id) 
+                VALUES (:marca, :tipo, :identificador, :estado, :horas_acumuladas, :proximo_servicio, :piloto_id)";
         $stmt = $this->db->prepare($sql);
         
         $success = $stmt->execute([
@@ -44,7 +44,8 @@ class MaquinaRepository
             'identificador' => $maquina->identificador,
             'estado' => $maquina->estado,
             'horas_acumuladas' => $maquina->horas_acumuladas,
-            'proximo_servicio' => $maquina->proximo_servicio
+            'proximo_servicio' => $maquina->proximo_servicio,
+            'piloto_id' => $maquina->piloto_id ?: null
         ]);
 
         return $success ? (int)$this->db->lastInsertId() : false;
@@ -54,7 +55,7 @@ class MaquinaRepository
     {
         $sql = "UPDATE maquinas 
                 SET marca = :marca, tipo = :tipo, identificador = :identificador, 
-                    estado = :estado, horas_acumuladas = :horas, proximo_servicio = :proximo 
+                    estado = :estado, horas_acumuladas = :horas, proximo_servicio = :proximo, piloto_id = :piloto_id 
                 WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         
@@ -65,6 +66,7 @@ class MaquinaRepository
             'estado' => $maquina->estado,
             'horas' => $maquina->horas_acumuladas,
             'proximo' => $maquina->proximo_servicio,
+            'piloto_id' => $maquina->piloto_id ?: null,
             'id' => $maquina->id
         ]);
     }

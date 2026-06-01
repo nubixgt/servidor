@@ -50,16 +50,29 @@
           </div>
         </div>
 
-        <!-- Assigned Vehicle (Readonly) -->
+        <!-- Assigned Asset -->
         <div class="flex flex-col gap-2">
-          <label class="label-caps text-on-surface-variant">Vehículo Asignado</label>
+          <label class="label-caps text-on-surface-variant">Equipo Asignado</label>
           <div class="relative">
-            <input 
-              type="text" 
-              :value="assignedVehicle"
-              readonly
-              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium rounded-xl"
-            />
+            <template v-if="assignedAssets.length > 1">
+              <select 
+                v-model="form.maquina_id"
+                class="w-full bg-white border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none focus:border-primary font-medium rounded-xl cursor-pointer"
+              >
+                <option value="" disabled>Seleccione el equipo a registrar...</option>
+                <option v-for="asset in assignedAssets" :key="asset.id" :value="asset.id">
+                  {{ asset.label }}
+                </option>
+              </select>
+            </template>
+            <template v-else>
+              <input 
+                type="text" 
+                :value="assignedAssets.length === 1 ? assignedAssets[0].label : (isLoadingVehicle ? 'Buscando equipos...' : 'Sin equipo asignado')"
+                readonly
+                class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium rounded-xl"
+              />
+            </template>
           </div>
         </div>
 
@@ -228,7 +241,7 @@ const isFetchingGps = ref(false);
 const photoPreview = ref(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const assignedVehicle = ref('Cargando vehículo...');
+const assignedAssets = ref<{id: string, label: string}[]>([]);
 const isLoadingVehicle = ref(true);
 
 const form = reactive({
@@ -246,7 +259,7 @@ const form = reactive({
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
 
-const loadAssignedVehicle = async () => {
+const loadAssignedAssets = async () => {
   try {
     const pRes = await fetch('/maquinaria-cooitza/Backend/api/v1/pilotos');
     const pJson = await pRes.json();
@@ -259,25 +272,44 @@ const loadAssignedVehicle = async () => {
     }
 
     if (currentPilotId) {
-      const vRes = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos');
+      const assets: {id: string, label: string}[] = [];
+      const [vRes, mRes] = await Promise.all([
+        fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos'),
+        fetch('/maquinaria-cooitza/Backend/api/v1/maquinas')
+      ]);
       const vJson = await vRes.json();
+      const mJson = await mRes.json();
+
       if (vJson.status === 'success') {
-        const vehicle = vJson.data.find((v: any) => String(v.piloto_id) === String(currentPilotId));
-        if (vehicle) {
-          assignedVehicle.value = `${vehicle.marca} - ${vehicle.placa} (${vehicle.tipo})`;
-          form.maquina_id = vehicle.placa;
-        } else {
-          assignedVehicle.value = "Sin vehículo asignado";
-          form.maquina_id = "";
-        }
+        const vehicles = vJson.data.filter((v: any) => String(v.piloto_id) === String(currentPilotId));
+        vehicles.forEach((v: any) => {
+          assets.push({ id: v.placa, label: `${v.marca} - ${v.placa} (${v.tipo})` });
+        });
+      }
+      
+      if (mJson.status === 'success') {
+        const machines = mJson.data.filter((m: any) => String(m.piloto_id) === String(currentPilotId));
+        machines.forEach((m: any) => {
+          assets.push({ id: m.identificador, label: `${m.marca} - ${m.identificador} (${m.tipo})` });
+        });
+      }
+
+      assignedAssets.value = assets;
+
+      if (assets.length === 1) {
+        form.maquina_id = assets[0].id;
+      } else if (assets.length > 1) {
+        form.maquina_id = ""; // Force them to select one
+      } else {
+        form.maquina_id = "";
       }
     } else {
-      assignedVehicle.value = "Piloto no encontrado en base de datos";
       form.maquina_id = "";
+      assignedAssets.value = [];
     }
   } catch (e) {
     console.error(e);
-    assignedVehicle.value = "Error al cargar vehículo";
+    assignedAssets.value = [];
   } finally {
     isLoadingVehicle.value = false;
   }
@@ -413,7 +445,7 @@ onMounted(() => {
 
   initMap();
   getGeolocation();
-  loadAssignedVehicle();
+  loadAssignedAssets();
 });
 </script>
 

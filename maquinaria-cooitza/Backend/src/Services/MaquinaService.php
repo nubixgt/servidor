@@ -51,10 +51,14 @@ class MaquinaService
         $maquina->horas_acumuladas = isset($data['horas_acumuladas']) ? (float)$data['horas_acumuladas'] : $maquina->horas_acumuladas;
         $maquina->proximo_servicio = $data['proximo_servicio'] ?? $maquina->proximo_servicio;
 
+        if (array_key_exists('piloto_id', $data)) {
+            $maquina->piloto_id = $data['piloto_id'] !== '' ? $data['piloto_id'] : null;
+        }
+
         $this->repository->update($maquina);
 
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $path = $this->handleFileUpload($id, $file);
+            $path = $this->handleFileUpload($id, $file, $maquina->foto_path);
             if ($path) {
                 $this->repository->updateFotoPath($id, $path);
             }
@@ -70,7 +74,7 @@ class MaquinaService
         return ['success' => $success];
     }
 
-    private function handleFileUpload($id, $file)
+    private function handleFileUpload($id, $file, $oldPath = null)
     {
         $upload_dir = __DIR__ . "/../../uploads/Maquinaria/{$id}/";
         
@@ -78,8 +82,15 @@ class MaquinaService
             mkdir($upload_dir, 0777, true);
         }
 
+        if ($oldPath) {
+            $oldFile = __DIR__ . "/../../" . $oldPath;
+            if (file_exists($oldFile) && is_file($oldFile)) {
+                unlink($oldFile);
+            }
+        }
+
         $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $file_name = 'foto.' . $file_extension;
+        $file_name = 'foto_' . time() . '.' . $file_extension;
         $target_file = $upload_dir . $file_name;
 
         if (move_uploaded_file($file['tmp_name'], $target_file)) {

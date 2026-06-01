@@ -154,11 +154,14 @@
                 </span>
               </div>
 
-              <!-- Status Badge -->
-              <div class="mt-3">
+              <!-- Status Badge & Pilot -->
+              <div class="mt-3 flex items-center justify-between">
                 <span class="inline-block px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest"
                       :class="m.status === 'Operativo' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : m.status === 'Mantenimiento' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-red-50 text-red-800 border border-red-200'">
                   ● {{ m.status === "Operativo" ? "Operativo" : m.status === "Mantenimiento" ? "Taller" : "Fuera de Servicio" }}
+                </span>
+                <span class="font-display text-[9px] font-bold text-slate-500 uppercase">
+                  Piloto: {{ getPilotName(m.piloto_id) }}
                 </span>
               </div>
             </div>
@@ -301,6 +304,20 @@
                   </div>
                 </div>
 
+                <!-- Piloto Asignado -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Piloto Asignado</label>
+                  <select 
+                    v-model="piloto_id"
+                    class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800 rounded-2xl"
+                  >
+                    <option value="">-- Sin piloto asignado --</option>
+                    <option v-for="p in pilotos" :key="p.id" :value="p.id">
+                      {{ p.nombre }}
+                    </option>
+                  </select>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <!-- Current Hours -->
                   <div class="flex flex-col gap-1">
@@ -433,10 +450,12 @@ interface Machinery {
   accumulatedHours: number;
   nextService: string;
   status: "Operativo" | "Mantenimiento" | "Fuera de Servicio";
+  piloto_id: string | null;
   photoUrl?: string;
 }
 
 const machinery = ref<Machinery[]>([]);
+const pilotos = ref<any[]>([]);
 const isModalOpen = ref(false);
 const editId = ref<string | null>(null);
 
@@ -454,6 +473,7 @@ const serialId = ref("");
 const accumulatedHours = ref("");
 const nextService = ref("");
 const status = ref<"Operativo" | "Mantenimiento" | "Fuera de Servicio">("Operativo");
+const piloto_id = ref("");
 const photoPreview = ref<string | null>(null);
 const selectedFile = ref<File | null>(null);
 
@@ -477,10 +497,25 @@ const triggerSync = (count: number) => {
   emit('machineryChange', count);
 };
 
+const getPilotName = (id: string | null) => {
+  if (!id) return 'N/A';
+  const p = pilotos.value.find(x => x.id == id);
+  return p ? p.nombre : 'N/A';
+};
+
 const loadMachinery = async () => {
   try {
-    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
-    const json = await res.json();
+    const [resMaq, resUsu] = await Promise.all([
+      fetch('/maquinaria-cooitza/Backend/api/v1/maquinas'),
+      fetch('/maquinaria-cooitza/Backend/api/v1/pilotos')
+    ]);
+    
+    if (resUsu.ok) {
+      const jsonUsu = await resUsu.json();
+      pilotos.value = jsonUsu.data;
+    }
+
+    const json = await resMaq.json();
     if (json.status === 'success') {
       machinery.value = json.data.map((item: any) => ({
         id: item.id.toString(),
@@ -491,6 +526,7 @@ const loadMachinery = async () => {
         accumulatedHours: parseFloat(item.horas_acumuladas) || 0,
         nextService: item.proximo_servicio || "Sin Programar",
         status: item.estado,
+        piloto_id: item.piloto_id || null,
         photoUrl: item.foto_path ? `/maquinaria-cooitza/Backend/${item.foto_path}` : DEFAULT_MACHINERY_PHOTOS[item.tipo]
       }));
       triggerSync(machinery.value.length);
@@ -559,6 +595,7 @@ const openAddModal = () => {
   accumulatedHours.value = "";
   nextService.value = "";
   status.value = "Operativo";
+  piloto_id.value = "";
   clearFile();
   isModalOpen.value = true;
 };
@@ -572,6 +609,7 @@ const openEditModal = (item: Machinery) => {
   accumulatedHours.value = item.accumulatedHours.toString();
   nextService.value = item.nextService;
   status.value = item.status;
+  piloto_id.value = item.piloto_id || "";
   photoPreview.value = item.photoUrl || null;
   selectedFile.value = null;
   isModalOpen.value = true;
@@ -636,6 +674,7 @@ const handleSaveMachinery = async () => {
   formData.append('estado', status.value);
   formData.append('horas_acumuladas', accumulatedHours.value || '0');
   formData.append('proximo_servicio', nextService.value || 'Sin Programar');
+  formData.append('piloto_id', piloto_id.value);
   
   if (selectedFile.value) {
     formData.append('foto', selectedFile.value);
@@ -687,7 +726,8 @@ const filteredMachinery = computed(() => {
     const matchesSearch = 
       m.brand.toLowerCase().includes(q) ||
       m.name.toLowerCase().includes(q) ||
-      m.serialId.toLowerCase().includes(q);
+      m.serialId.toLowerCase().includes(q) ||
+      getPilotName(m.piloto_id).toLowerCase().includes(q);
     
     const matchesCategory = filterCategory.value === "todos" || m.category === filterCategory.value;
     const matchesStatus = filterStatus.value === "todos" || m.status === filterStatus.value;
