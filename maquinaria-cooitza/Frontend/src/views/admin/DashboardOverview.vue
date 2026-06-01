@@ -31,8 +31,8 @@
         </div>
       </div>
 
-      <!-- 4 Statistical Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- 3 Statistical Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <!-- Maquinaria Activa -->
         <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#0054A3] transition-all">
           <div class="flex justify-between items-start mb-2">
@@ -72,20 +72,6 @@
           </div>
           <div class="text-[10px] font-bold text-slate-500 mt-2 flex items-center gap-1">
             Promedio por unidad
-          </div>
-        </div>
-
-        <!-- Alertas Activas -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-red-500 transition-all">
-          <div class="flex justify-between items-start mb-2">
-            <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Alertas Activas</span>
-            <div class="bg-red-50 p-2 rounded-sm"><AlertTriangle class="text-red-500 w-5 h-5" /></div>
-          </div>
-          <div class="font-display text-3xl font-black text-slate-800">
-            {{ alertasActivasCount }} <span class="text-sm font-medium text-slate-400">equipos</span>
-          </div>
-          <div class="text-[10px] font-bold text-red-600 mt-2 flex items-center gap-1 cursor-pointer hover:underline">
-            Ver detalles <ArrowRight class="w-3 h-3" />
           </div>
         </div>
       </div>
