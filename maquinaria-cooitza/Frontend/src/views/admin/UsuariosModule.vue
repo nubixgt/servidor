@@ -517,7 +517,7 @@ const handleSaveUserSubmit = async () => {
       isFormOpen.value = false;
       Toast.fire({
         icon: 'success',
-        title: editUserId.value ? `Usuario "${payload.full_name}" actualizado.` : `Usuario "${payload.full_name}" registrado con clave por defecto "123".`
+        title: editUserId.value ? `Usuario "${payload.full_name}" actualizado.` : `Usuario "${payload.full_name}" registrado exitosamente.`
       });
     } else {
       Swal.fire('Error', 'Error al guardar el usuario', 'error');
