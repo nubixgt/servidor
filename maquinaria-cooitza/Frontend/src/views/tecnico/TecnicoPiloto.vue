@@ -143,7 +143,7 @@
               <label class="label-caps text-on-surface-variant">Foto del horometro</label>
               <div 
                 class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group"
-                @click="$refs.fileInput.click()"
+                @click="fileInput?.click()"
               >
                 <!-- capture="environment" forces the rear camera on mobile devices -->
                 <input 
@@ -229,12 +229,17 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
+// @ts-ignore
 import L from 'leaflet';
+// @ts-ignore
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in Leaflet + Vite
+// @ts-ignore
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
+// @ts-ignore
 import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+// @ts-ignore
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 delete L.Icon.Default.prototype._getIconUrl;
