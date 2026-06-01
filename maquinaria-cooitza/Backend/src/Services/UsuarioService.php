@@ -42,6 +42,7 @@ class UsuarioService
             'success' => true, 
             'token' => $token,
             'user' => [
+                'id' => $usuario->id,
                 'username' => $usuario->username,
                 'role' => $usuario->role,
                 'full_name' => $usuario->full_name
