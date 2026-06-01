@@ -1,324 +1,426 @@
 <template>
-  <div 
-    class="min-h-screen w-full flex flex-col items-center justify-center p-6 text-[#191c1d] relative font-sans"
-    style="background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 24px 24px; background-color: #f8f9fa;"
-  >
-    <!-- Visual Identity Title Anchor -->
-    <div class="mb-8 text-center select-none">
-      <h1 class="font-display text-3xl font-extrabold text-[#0054A3] uppercase tracking-wider mb-1">
-        IndustrialMS
-      </h1>
-      <p class="font-display text-[10px] font-bold tracking-[0.12em] text-[#004586]/75 uppercase">
-        Protocolo de Eficiencia Clínica v2.4
+  <div class="min-h-screen flex flex-col items-center py-12 px-6 md:px-8">
+    <!-- Header with Cooitzá Logo -->
+    <header class="mb-10 text-center flex flex-col items-center">
+      <div class="mb-4 max-w-[280px]">
+        <img src="../../assets/images/image.png" alt="Cooitzá Logo" class="w-full h-auto object-contain" />
+      </div>
+      <p class="font-mono-label text-sm text-on-surface-variant mt-6 font-bold uppercase tracking-widest">
+        Bitácora de Operación v4.2.1
       </p>
-    </div>
+    </header>
 
-    <main class="w-full max-w-[500px] relative z-10">
+    <!-- Main Registration Card -->
+    <main class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant p-8 shadow-sm">
       
-      <!-- Form Container -->
-      <div class="bg-white border border-[#cbd5e1] p-8 relative shadow-sm flex flex-col gap-6">
-        <!-- Header Accent Line -->
-        <div class="absolute top-0 left-0 w-full h-[3px] bg-[#FFD200]"></div>
+      <!-- Session state header matching Cooitzá exact design -->
+      <div class="flex justify-between items-center bg-slate-100 -mx-8 -mt-8 mb-8 px-8 py-3 border-b border-[#cbd5e1] select-none">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full animate-pulse bg-emerald-500"></span>
+          <span class="font-display text-xs font-black text-[#0054A3] uppercase">
+            Rol: Técnico Piloto
+          </span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="font-sans text-xs text-[#004586] max-w-[150px] truncate text-right font-medium">
+            {{ currentUserFullName }}
+          </span>
+          <button 
+            type="button"
+            @click="handleLogout"
+            class="font-display text-[11px] font-black uppercase text-red-600 hover:underline cursor-pointer"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
 
-        <!-- Session state header matching Cooitzá exact design -->
-        <div class="flex justify-between items-center bg-slate-100 -mx-8 -mt-8 px-8 py-3 border-b border-[#cbd5e1] select-none">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full animate-pulse" :class="registrationSuccess ? 'bg-green-500' : 'bg-emerald-500'"></span>
-            <span class="font-display text-xs font-black text-[#0054A3] uppercase">
-              Rol: Técnico Piloto
-            </span>
+      <form class="flex flex-col gap-8" @submit.prevent="submitForm">
+        
+        <!-- Pilot Selection (Readonly for Tecnico Piloto) -->
+        <div class="flex flex-col gap-2">
+          <label class="label-caps text-on-surface-variant">Operador Asignado</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              :value="currentUserFullName"
+              readonly
+              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium"
+            />
           </div>
-          <div class="flex items-center gap-4">
-            <span class="font-sans text-xs text-[#004586] max-w-[150px] truncate text-right font-medium">
-              {{ currentUserFullName }}
-            </span>
-            <button 
+        </div>
+
+        <!-- Machine Type Grid -->
+        <div class="flex flex-col gap-2">
+          <label class="label-caps text-on-surface-variant">Tipo de Maquinaria</label>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-1">
+            <button
+              v-for="m in machines"
+              :key="m.id"
               type="button"
-              @click="handleLogout"
-              class="font-display text-[11px] font-black uppercase text-red-600 hover:underline cursor-pointer"
+              @click="form.maquina_id = m.id"
+              :class="[
+                'border p-4 text-center flex flex-col items-center gap-1 transition-all',
+                form.maquina_id === m.id 
+                  ? 'border-primary bg-primary/10 ring-1 ring-primary' 
+                  : 'border-outline-variant hover:border-primary bg-white'
+              ]"
             >
-              Cerrar Sesión
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                :class="form.maquina_id === m.id ? 'text-primary' : 'text-on-surface-variant'"
+                v-html="m.iconPath"
+              ></svg>
+              <span :class="['font-display text-sm font-medium', form.maquina_id === m.id ? 'text-primary font-bold' : 'text-on-surface']">
+                {{ m.label }}
+              </span>
             </button>
           </div>
         </div>
 
-        <header class="mb-2 select-none border-b border-[#cbd5e1]/40 pb-4">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span class="w-2 h-2 rounded-full bg-[#FFD200]"></span>
-            <span class="font-display text-[11px] font-bold uppercase text-[#0054A3] tracking-wider">
-              Estado Enlace: {{ statusText }}
-            </span>
-          </div>
-          
-          <h2 class="font-display text-2xl font-black tracking-tight text-[#191c1d] uppercase">
-            Registro de Piloto
-          </h2>
-          <p class="text-xs leading-relaxed text-[#004586] mt-2 font-medium">
-            Gestione e inscriba la autorización de pilotos que despliegan operaciones técnico-industriales en campo.
-          </p>
-        </header>
-
-        <form class="space-y-5" @submit.prevent="handleFormSubmit">
-          
-          <!-- Error alerts inside the form layout -->
-          <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-3.5 text-xs text-red-800 font-sans flex items-center gap-2">
-            <XSquare class="w-4 h-4 text-red-600 flex-shrink-0" />
-            <span class="font-medium">{{ errorMessage }}</span>
-          </div>
-
-          <!-- Field: Name -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-slate-600 text-xs font-bold uppercase tracking-wider block" for="pilot_name">
-              Nombre Completo del Operador
-            </label>
-            <div class="relative group">
-              <input 
-                id="pilot_name" 
-                name="pilot_name" 
-                type="text" 
-                required
-                placeholder="EJ. MARCO A. SANDOVAL"
-                v-model="pilotName"
-                class="w-full bg-slate-50 border border-[#cbd5e1] p-3 font-sans text-sm text-slate-800 focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none appearance-none transition-all uppercase font-medium placeholder:text-slate-400"
-              />
-            </div>
-          </div>
-
-          <!-- Field: Phone -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-slate-600 text-xs font-bold uppercase tracking-wider block" for="pilot_phone">
-              Teléfono de Enlace Directo
-            </label>
-            <div class="relative">
-              <input 
-                id="pilot_phone" 
-                name="pilot_phone" 
-                type="tel" 
-                required
-                placeholder="+502 0000-0000"
-                v-model="pilotPhone"
-                class="w-full bg-slate-50 border border-[#cbd5e1] p-3 font-sans text-sm text-slate-800 focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none appearance-none transition-all font-medium placeholder:text-slate-400"
-              />
-            </div>
-          </div>
-
-          <!-- Field: Machinery List -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-slate-600 text-xs font-bold uppercase tracking-wider block">
-              Listado de Maquinarias Autorizadas
-            </label>
-            <div class="border border-[#cbd5e1] divide-y divide-[#cbd5e1] bg-slate-50 shadow-inner">
-              <label 
-                v-for="machinery in machineryOptions"
-                :key="machinery.id" 
-                @click.prevent="handleCheckboxChange(machinery.id)"
-                class="flex items-center px-4 py-3 cursor-pointer transition-colors group select-none"
-                :class="selectedMachinery.includes(machinery.id) ? 'bg-[#0054A3]/5' : 'hover:bg-slate-100'"
-              >
-                <!-- Custom Simulated checkbox with premium Cooitzá blue & yellow style -->
-                <div class="w-5 h-5 border flex items-center justify-center mr-3.5 transition-all duration-150"
-                     :class="selectedMachinery.includes(machinery.id) ? 'border-[#0054A3] bg-[#0054A3] text-white' : 'border-[#cbd5e1] bg-white group-hover:border-[#FFD200]'">
-                  <svg v-if="selectedMachinery.includes(machinery.id)" class="w-3.5 h-3.5 text-white stroke-2 fill-none stroke-current" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-
-                <span class="font-display text-xs font-bold uppercase tracking-tight transition-colors"
-                      :class="selectedMachinery.includes(machinery.id) ? 'text-[#0054A3]' : 'text-slate-600 group-hover:text-[#191c1d]'">
-                  {{ machinery.label }}
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Technical Footer / CTA -->
-          <div class="pt-2 mt-6 flex flex-col gap-3">
-            <div v-if="registrationSuccess" class="w-full bg-green-600 text-white font-display text-xs font-bold tracking-[0.1em] py-3.5 px-4 flex items-center justify-center gap-2 uppercase shadow-sm">
-              <CheckCircle :size="18" />
-              <span>REGISTRO EXPORTADO CORRECTAMENTE</span>
-            </div>
-            <button v-else
-              type="submit"
-              :disabled="isSubmitting"
-              class="w-full bg-[#FFD200] text-[#002d58] font-display text-xs font-black tracking-[0.12em] py-3.5 px-4 flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.99] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-wait shadow-sm uppercase"
-            >
-              <template v-if="isSubmitting">
-                <Loader2 :size="18" class="animate-spin text-[#0054A3]" />
-                <span>PROCESANDO ENLACE...</span>
-              </template>
-              <template v-else>
-                <ClipboardSignature :size="18" class="text-[#0054A3]" />
-                <span>REGISTRAR OPERADOR TÉCNICO</span>
-              </template>
-            </button>
-
-            <button 
+        <!-- Registration Type Toggle -->
+        <div class="flex flex-col gap-2">
+          <label class="label-caps text-on-surface-variant">Tipo de Registro</label>
+          <div class="flex bg-surface-container p-1 gap-1">
+            <button
               type="button"
-              @click="handleLogout"
-              class="w-full border border-[#cbd5e1] text-[#004586] bg-white hover:bg-slate-50 font-display text-xs font-black tracking-[0.12em] py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer uppercase shadow-sm"
+              @click="form.tipo_registro = 'inicial'"
+              :class="[
+                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
+                form.tipo_registro === 'inicial' 
+                  ? 'bg-white border border-outline-variant text-primary shadow-sm' 
+                  : 'text-on-surface-variant opacity-60 hover:opacity-100'
+              ]"
             >
-              CANCELAR OPERACIÓN
+              Horometro Inicial
+            </button>
+            <button
+              type="button"
+              @click="form.tipo_registro = 'final'"
+              :class="[
+                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
+                form.tipo_registro === 'final' 
+                  ? 'bg-white border border-outline-variant text-primary shadow-sm' 
+                  : 'text-on-surface-variant opacity-60 hover:opacity-100'
+              ]"
+            >
+              Horometro Final
             </button>
           </div>
+        </div>
 
-        </form>
+        <!-- Value Inputs -->
+        <Transition name="fade-slide" mode="out-in">
+          <div
+            :key="form.tipo_registro"
+            class="flex flex-col gap-6 p-6 bg-surface-container-low border-l-4 border-primary"
+          >
+            <div class="flex flex-col gap-2">
+              <label class="label-caps text-on-surface-variant">
+                {{ form.tipo_registro === 'inicial' ? 'Horometro Inicial (Value)' : 'Horometro Final (Value)' }}
+              </label>
+              <div class="flex items-center">
+                <input
+                  v-model="form.valor_horometro"
+                  type="number"
+                  placeholder="00000.0"
+                  step="0.1"
+                  required
+                  class="w-full bg-white border border-outline-variant py-3 px-4 font-display font-medium text-on-surface outline-none focus:border-primary"
+                />
+              </div>
+            </div>
 
-        <!-- Registration Success feedback sub-alert -->
-        <transition name="scale">
-          <div v-if="registrationSuccess" class="mt-2 bg-emerald-50 border border-emerald-200 p-4 shadow-sm">
-            <div class="flex gap-2.5">
-              <CheckCircle class="text-emerald-700 shrink-0 mt-0.5" :size="16" />
-              <div class="text-xs font-sans text-emerald-800">
-                <p class="font-bold">Formulario técnico transmitido con éxito.</p>
-                <p class="mt-1">Piloto registrado permanentemente en el sistema central de bitácoras de Cooitzá R.L.</p>
+            <div class="flex flex-col gap-2">
+              <label class="label-caps text-on-surface-variant">Foto del horometro</label>
+              <div 
+                class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group"
+                @click="$refs.fileInput.click()"
+              >
+                <!-- capture="environment" forces the rear camera on mobile devices -->
+                <input 
+                  ref="fileInput"
+                  type="file" 
+                  accept="image/*" 
+                  capture="environment" 
+                  class="hidden" 
+                  @change="handleFileUpload"
+                  required
+                />
+                
+                <div v-if="!photoPreview" class="flex flex-col items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-on-surface-variant group-hover:text-primary transition-colors"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                  <span class="font-sans text-sm text-on-surface-variant group-hover:text-on-surface text-center">
+                    Toca para abrir la cámara <br>
+                    <small class="opacity-70">(Solo permite captura en vivo)</small>
+                  </span>
+                </div>
+                <div v-else class="w-full h-32 relative">
+                  <img :src="photoPreview" class="w-full h-full object-cover rounded border border-outline" />
+                  <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span class="text-white text-xs font-bold uppercase">Cambiar Foto</span>
+                  </div>
+                </div>
+                
+                <span class="font-display text-[10px] uppercase tracking-widest text-outline">
+                  SOLO CAPTURA DE CÁMARA
+                </span>
               </div>
             </div>
           </div>
-        </transition>
+        </Transition>
 
-      </div>
-
-      <!-- System Metadata -->
-      <div class="mt-6 flex justify-between items-center px-1 text-slate-500 select-none">
-        <span class="font-display text-[10px] font-bold uppercase tracking-[0.1em]">
-          Auth Token: 992-PX-77
-        </span>
-        <div class="flex gap-4">
-          <span class="font-display text-[10px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5">
-            <Wifi :size="12" class="text-[#004586]/70" /> Online
-          </span>
-          <span class="font-display text-[10px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5">
-            <Database :size="12" class="text-[#004586]/70" /> Sync
-          </span>
+        <!-- Current Location -->
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between items-end">
+            <label class="label-caps text-on-surface-variant">Ubicación Actual</label>
+            <div class="flex flex-col items-end gap-1">
+              <span class="font-display text-[10px] text-primary flex items-center gap-1 font-bold">
+                <span :class="['w-2 h-2 rounded-full bg-primary', isFetchingGps ? 'animate-ping' : 'animate-pulse']" />
+                {{ isFetchingGps ? 'BUSCANDO GPS...' : 'GPS ACTIVO' }}
+              </span>
+              <button 
+                type="button" 
+                @click="getGeolocation"
+                class="text-[9px] text-primary underline uppercase font-bold tracking-tighter hover:opacity-70 transition-opacity"
+              >
+                Refrescar mi ubicación
+              </button>
+            </div>
+          </div>
+          <div class="h-64 w-full border border-outline-variant bg-surface-container relative overflow-hidden group">
+            <!-- Leaflet Map Container -->
+            <div id="map" class="h-full w-full z-0"></div>
+            
+            <div class="absolute bottom-2 right-2 bg-surface-container-lowest/80 backdrop-blur-sm px-2 py-1 border border-outline-variant z-10 pointer-events-none">
+              <p class="font-display text-[10px] font-bold text-on-surface">
+                {{ form.latitud.toFixed(6) }}° N, {{ form.longitud.toFixed(6) }}° W
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
+        <!-- Submit Button -->
+        <div class="mt-4">
+          <button
+            type="submit"
+            :disabled="isSubmitting"
+            class="w-full bg-primary-container py-4 text-on-primary-container font-display text-xl font-bold uppercase tracking-wider hover:brightness-95 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+          >
+            {{ isSubmitting ? 'Registrando...' : 'Registrar Operación' }}
+          </button>
+          <p v-if="submitMessage" :class="['text-center font-display text-xs mt-4 font-bold uppercase', submitError ? 'text-error' : 'text-primary']">
+            {{ submitMessage }}
+          </p>
+        </div>
+      </form>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { 
-  ClipboardSignature, Wifi, Database, Loader2, CheckCircle, XSquare 
-} from 'lucide-vue-next';
-
+import { ref, reactive, onMounted, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-const router = useRouter();
+// Fix for default marker icons in Leaflet + Vite
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIconRetina,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 const props = defineProps<{
   currentUserFullName?: string
 }>();
 
+const router = useRouter();
+
 const handleLogout = () => {
   router.push('/login');
 };
 
-const pilotName = ref("");
-const pilotPhone = ref("");
-const selectedMachinery = ref<string[]>([]);
-
-const statusText = ref("Listo para Transmitir");
 const isSubmitting = ref(false);
-const registrationSuccess = ref(false);
-const errorMessage = ref("");
+const isFetchingGps = ref(false);
+const submitMessage = ref('');
+const submitError = ref(false);
+const photoPreview = ref(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 
-const machineryOptions = ref<{id: string, label: string}[]>([]);
+const form = reactive({
+  operador: '',
+  maquina_id: 'excavadora',
+  tipo_registro: 'inicial',
+  valor_horometro: null as number | null,
+  foto_horometro: null as File | null,
+  latitud: 14.6349,
+  longitud: -90.5069
+});
 
-onMounted(async () => {
-  try {
-    const res = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinas');
-    const json = await res.json();
-    if (json.status === 'success') {
-      machineryOptions.value = json.data.map((m: any) => ({
-        id: String(m.id),
-        label: `${m.marca} - ${m.identificador || m.modelo}`
-      }));
-    }
-  } catch (error) {
-    console.error("Error fetching maquinas:", error);
+watchEffect(() => {
+  if (props.currentUserFullName) {
+    form.operador = props.currentUserFullName;
   }
 });
 
-const handleCheckboxChange = (id: string) => {
-  if (selectedMachinery.value.includes(id)) {
-    selectedMachinery.value = selectedMachinery.value.filter(item => item !== id);
-  } else {
-    selectedMachinery.value.push(id);
+let map: L.Map | null = null;
+let marker: L.Marker | null = null;
+
+const machines = [
+  { id: 'tractor', label: 'Tractor', iconPath: '<path d="m10 11 11 .9c.6 0 .9.5.8 1.1l-.8 4.5c-.1.5-.6.9-1.1.9H3c-.5 0-1-.4-1.1-.9L1 13c-.1-.6.3-1.1.8-1.1l11-.9"/><path d="M15 11V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v6"/><path d="m8 11V5"/><path d="m15 11 3 5"/><path d="M2 15h19"/><path d="M2 18h19"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/>' },
+  { id: 'excavadora', label: 'Excavadora', iconPath: '<path d="M2 21h15"/><path d="M5 21v-2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v2"/><path d="M18 21v-2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v2"/><path d="M8 18V5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v13"/><path d="m11 8 5 2 4-2v6l-4 2-5-2"/><line x1="15" x2="15" y1="9" y2="17"/>' },
+  { id: 'retro', label: 'Retro Excavadora', iconPath: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"/>' },
+  { id: 'rodo', label: 'Rodo', iconPath: '<circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/>' },
+  { id: 'pipa', label: 'Pipa', iconPath: '<path d="M7 7c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S3 9.1 3 7c0-1.1.9-2 2-2s2 .9 2 2Z"/><path d="M12 18c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S8 20.1 8 18c0-1.1.9-2 2-2s2 .9 2 2Z"/><path d="M17 7c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S13 9.1 13 7c0-1.1.9-2 2-2s2 .9 2 2Z"/>' },
+  { id: 'volteo', label: 'Camion Volteo', iconPath: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5h-4l-2-3h-3.5"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' },
+];
+
+const initMap = () => {
+  map = L.map('map', {
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    tap: false,
+    touchZoom: false
+  }).setView([form.latitud, form.longitud], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  marker = L.marker([form.latitud, form.longitud], {
+    draggable: false
+  }).addTo(map);
+};
+
+const handleFileUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (file) {
+    form.foto_horometro = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      photoPreview.value = e.target?.result as any;
+    };
+    reader.readAsDataURL(file);
   }
 };
 
-const handleFormSubmit = () => {
-  errorMessage.value = "";
+const getGeolocation = () => {
+  if (navigator.geolocation) {
+    isFetchingGps.value = true;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        form.latitud = latitude;
+        form.longitud = longitude;
+        
+        if (map && marker) {
+          const newPos: [number, number] = [latitude, longitude];
+          map.setView(newPos, 15);
+          marker.setLatLng(newPos);
+        }
+        isFetchingGps.value = false;
+      },
+      (error) => {
+        console.error("Error getting geolocation:", error);
+        isFetchingGps.value = false;
+      },
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  }
+};
 
-  if (!pilotName.value.trim()) {
-    errorMessage.value = "Por favor ingrese el nombre completo del piloto.";
-    return;
-  }
-  if (!pilotPhone.value.trim()) {
-    errorMessage.value = "Por favor ingrese un teléfono de enlace válido.";
-    return;
-  }
-  if (selectedMachinery.value.length === 0) {
-    errorMessage.value = "Debe seleccionar al menos una maquinaria autorizada.";
-    return;
-  }
+const submitForm = async () => {
+  const operadorName = form.operador || props.currentUserFullName || '';
 
   isSubmitting.value = true;
-  statusText.value = "Procesando Enlace...";
+  submitMessage.value = '';
+  submitError.value = false;
 
-  setTimeout(async () => {
-    const payload = {
-      nombre: pilotName.value.toUpperCase().trim(),
-      telefono: pilotPhone.value.trim(),
-      status: "activo",
-      maquinas: selectedMachinery.value
-    };
+  const formData = new FormData();
+  formData.append('operador', operadorName);
+  formData.append('maquina_id', form.maquina_id);
+  formData.append('tipo_registro', form.tipo_registro);
+  if (form.valor_horometro !== null) formData.append('valor_horometro', form.valor_horometro.toString());
+  if (form.foto_horometro) formData.append('foto_horometro', form.foto_horometro);
+  formData.append('latitud', form.latitud.toString());
+  formData.append('longitud', form.longitud.toString());
 
-    try {
-      const res = await fetch('/maquinaria-cooitza/Backend/api/v1/pilotos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+  try {
+    const response = await fetch('Backend/api/v1/maquinaria/registro', {
+      method: 'POST',
+      body: formData
+    });
 
-      if (res.ok) {
-        isSubmitting.value = false;
-        registrationSuccess.value = true;
-        statusText.value = "Transmitido de Forma Estable";
+    const result = await response.json();
 
-        setTimeout(() => {
-          pilotName.value = "";
-          pilotPhone.value = "";
-          selectedMachinery.value = [];
-          registrationSuccess.value = false;
-          statusText.value = "Listo para Transmitir";
-        }, 3000);
-      } else {
-        const err = await res.json();
-        errorMessage.value = err.message || "Error al registrar piloto en el servidor.";
-        isSubmitting.value = false;
-        statusText.value = "Error de Transmisión";
-      }
-    } catch (err) {
-      console.error("Error saving pilot registration", err);
-      errorMessage.value = "Error de conexión con el servidor central.";
-      isSubmitting.value = false;
-      statusText.value = "Enlace Caído";
+    if (response.ok) {
+      submitMessage.value = 'Registro completado con éxito';
+      form.valor_horometro = null;
+      form.foto_horometro = null;
+      photoPreview.value = null;
+    } else {
+      submitError.value = true;
+      submitMessage.value = result.message || 'Error al enviar el registro';
     }
-  }, 800);
+  } catch (error) {
+    submitError.value = true;
+    submitMessage.value = 'Error de conexión con el servidor';
+    console.error("Submission error:", error);
+  } finally {
+    isSubmitting.value = false;
+  }
 };
+
+onMounted(() => {
+  if (props.currentUserFullName) {
+    form.operador = props.currentUserFullName;
+  }
+  initMap();
+  getGeolocation();
+});
 </script>
 
 <style scoped>
-.scale-enter-active,
-.scale-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
 }
-.scale-enter-from,
-.scale-leave-to {
+
+.fade-slide-enter-from {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(10px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Ensure Leaflet controls are above the map but below modals */
+:deep(.leaflet-container) {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 </style>
