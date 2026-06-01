@@ -257,7 +257,6 @@
                       v-model="brand"
                       placeholder="Ej. Caterpillar, John Deere or Komatsu"
                       class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
-                      required
                     />
                   </div>
 
@@ -287,7 +286,6 @@
                       v-model="name"
                       placeholder="Ej. Excavator 320 GC o 8R 370"
                       class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
-                      required
                     />
                   </div>
 
@@ -299,7 +297,6 @@
                       v-model="serialId"
                       placeholder="Ej. ID-7742-XP"
                       class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
-                      required
                     />
                   </div>
                 </div>
@@ -315,7 +312,6 @@
                       class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
                       min="0"
                       step="0.1"
-                      required
                     />
                   </div>
 
@@ -633,8 +629,6 @@ const handleDelete = async (id: string) => {
 };
 
 const handleSaveMachinery = async () => {
-  if (!brand.value.trim() || !serialId.value.trim()) return;
-
   const formData = new FormData();
   formData.append('marca', brand.value);
   formData.append('tipo', category.value);

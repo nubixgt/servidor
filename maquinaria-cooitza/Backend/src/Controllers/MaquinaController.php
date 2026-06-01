@@ -29,10 +29,6 @@ class MaquinaController extends Controller
         $data = $_POST;
         $file = $_FILES['foto'] ?? null;
 
-        if (empty($data['marca']) || empty($data['tipo']) || empty($data['identificador'])) {
-            Response::json(['message' => 'Faltan campos obligatorios'], 400);
-            return;
-        }
 
         $result = $this->maquinaService->create($data, $file);
 
