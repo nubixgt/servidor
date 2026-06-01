@@ -71,13 +71,13 @@
           </div>
 
           <!-- Top-Tier Custom Dynamic Graph Grid -->
-          <div class="flex-1 flex items-end gap-3 h-48 pb-2 border-b border-[#cbd5e1] relative">
+          <div class="flex-1 flex items-end justify-center gap-8 h-48 pb-2 border-b border-[#cbd5e1] relative">
             <div class="absolute inset-x-0 top-1/4 border-t border-slate-100"></div>
             <div class="absolute inset-x-0 top-2/4 border-t border-slate-100"></div>
             <div class="absolute inset-x-0 top-3/4 border-t border-slate-100"></div>
 
-            <div v-for="item in horasPorTipo" :key="item.tipo" class="flex-1 flex flex-col items-center justify-end h-full group cursor-pointer z-10" :title="item.horas + ' HRS'">
-              <div class="w-full bg-[#cbd5e1] h-1/2 relative">
+            <div v-for="item in horasPorTipo" :key="item.tipo" class="flex flex-col items-center justify-end h-full group cursor-pointer z-10 w-20" :title="item.horas + ' HRS'">
+              <div class="w-12 bg-[#cbd5e1] h-full relative rounded-t-sm overflow-hidden">
                 <div class="absolute bottom-0 w-full bg-[#0054A3] group-hover:bg-[#004586] transition-all" :style="{ height: item.porcentaje + '%' }"></div>
               </div>
               <span class="font-sans text-[10px] font-bold text-slate-600 mt-2 text-center truncate w-full">{{ item.tipo }}</span>
