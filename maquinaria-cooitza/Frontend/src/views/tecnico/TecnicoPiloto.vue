@@ -11,7 +11,7 @@
     </header>
 
     <!-- Main Registration Card -->
-    <main class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant p-8 shadow-sm">
+    <main class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant p-8 shadow-sm rounded-2xl">
       
       <!-- Session state header matching Cooitzá exact design -->
       <div class="flex justify-between items-center bg-slate-100 -mx-8 -mt-8 mb-8 px-8 py-3 border-b border-[#cbd5e1] select-none">
@@ -45,7 +45,7 @@
               type="text" 
               :value="currentUserFullName"
               readonly
-              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium"
+              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium rounded-xl"
             />
           </div>
         </div>
@@ -59,7 +59,7 @@
               :key="m.id"
               type="button"
               @click="form.maquina_id = m.id"
-              :class="[ 'border p-4 text-center flex flex-col items-center gap-1 transition-all', form.maquina_id === m.id ? 'border-primary bg-primary/10 ring-1 ring-primary' : 'border-outline-variant hover:border-primary bg-white' ]"
+              :class="[ 'border p-4 text-center flex flex-col items-center gap-1 transition-all rounded-xl', form.maquina_id === m.id ? 'border-primary bg-primary/10 ring-1 ring-primary' : 'border-outline-variant hover:border-primary bg-white' ]"
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -84,18 +84,18 @@
         <!-- Registration Type Toggle -->
         <div class="flex flex-col gap-2">
           <label class="label-caps text-on-surface-variant">Tipo de Registro</label>
-          <div class="flex bg-surface-container p-1 gap-1">
+          <div class="flex bg-surface-container p-1 gap-1 rounded-xl">
             <button
               type="button"
               @click="form.tipo_registro = 'inicial'"
-              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all', form.tipo_registro === 'inicial' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
+              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl', form.tipo_registro === 'inicial' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
               Horometro Inicial
             </button>
             <button
               type="button"
               @click="form.tipo_registro = 'final'"
-              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all', form.tipo_registro === 'final' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
+              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl', form.tipo_registro === 'final' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
               Horometro Final
             </button>
@@ -106,7 +106,7 @@
         <Transition name="fade-slide" mode="out-in">
           <div
             :key="form.tipo_registro"
-            class="flex flex-col gap-6 p-6 bg-surface-container-low border-l-4 border-primary"
+            class="flex flex-col gap-6 p-6 bg-surface-container-low border-l-4 border-primary rounded-2xl"
           >
             <div class="flex flex-col gap-2">
               <label class="label-caps text-on-surface-variant">
@@ -119,7 +119,7 @@
                   placeholder="00000.0"
                   step="0.1"
                   required
-                  class="w-full bg-white border border-outline-variant py-3 px-4 font-display font-medium text-on-surface outline-none focus:border-primary"
+                  class="w-full bg-white border border-outline-variant py-3 px-4 font-display font-medium text-on-surface outline-none focus:border-primary rounded-xl"
                 />
               </div>
             </div>
@@ -127,7 +127,7 @@
             <div class="flex flex-col gap-2">
               <label class="label-caps text-on-surface-variant">Foto del horometro</label>
               <div 
-                class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group"
+                class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group rounded-2xl"
                 @click="fileInput?.click()"
               >
                 <!-- capture="environment" forces the rear camera on mobile devices -->

@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col items-center justify-center py-12 px-6 md:px-8 bg-slate-50">
     <transition name="fade-up" appear>
       <div 
-        class="w-full max-w-[420px] bg-white border border-[#cbd5e1] p-8 shadow-sm flex flex-col gap-6"
+        class="w-full max-w-[420px] bg-white border border-[#cbd5e1] p-8 shadow-sm flex flex-col gap-6 rounded-2xl"
       >
         <header class="text-center flex flex-col items-center">
           <img src="@/assets/images/image.png" alt="Cooitzá Logo" class="h-24 w-auto mb-3 mx-auto object-contain" />
@@ -14,7 +14,7 @@
           </p>
         </header>
 
-        <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-3 text-xs text-red-700 font-medium font-sans">
+        <div v-if="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-3 text-xs text-red-700 font-medium font-sans rounded-xl">
           {{ errorMessage }}
         </div>
 
@@ -29,7 +29,7 @@
                 id="username"
                 type="text"
                 v-model="username"
-                class="w-full pl-10 pr-3 py-2.5 border border-[#cbd5e1] focus:border-[#0054A3] outline-none font-sans text-sm focus:ring-1 focus:ring-[#FFD200]"
+                class="w-full pl-10 pr-3 py-2.5 border border-[#cbd5e1] focus:border-[#0054A3] outline-none font-sans text-sm focus:ring-1 focus:ring-[#FFD200] rounded-xl"
                 placeholder="Ej: tecnico o admin"
                 :disabled="isLoading"
               />
@@ -51,7 +51,7 @@
                 id="password"
                 type="password"
                 v-model="password"
-                class="w-full pl-10 pr-3 py-2.5 border border-[#cbd5e1] focus:border-[#0054A3] outline-none font-sans text-sm focus:ring-1 focus:ring-[#FFD200]"
+                class="w-full pl-10 pr-3 py-2.5 border border-[#cbd5e1] focus:border-[#0054A3] outline-none font-sans text-sm focus:ring-1 focus:ring-[#FFD200] rounded-xl"
                 placeholder="••••••••"
                 :disabled="isLoading"
               />
@@ -63,7 +63,7 @@
           <button
             type="submit"
             :disabled="isLoading"
-            class="w-full bg-[#0054A3] hover:bg-[#004586] disabled:bg-[#cbd5e1] text-white py-3 font-display text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98]"
+            class="w-full bg-[#0054A3] hover:bg-[#004586] disabled:bg-[#cbd5e1] text-white py-3 font-display text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] rounded-xl"
           >
             <template v-if="isLoading">
               <Loader2 class="w-4 h-4 animate-spin" />

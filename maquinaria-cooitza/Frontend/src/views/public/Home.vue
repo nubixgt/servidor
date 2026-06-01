@@ -11,7 +11,7 @@
     </header>
 
     <!-- Main Registration Card -->
-    <main class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant p-8 shadow-sm">
+    <main class="w-full max-w-[640px] bg-surface-container-lowest border border-outline-variant p-8 shadow-sm rounded-2xl">
       <form class="flex flex-col gap-8" @submit.prevent="submitForm">
         
         <!-- Pilot Selection -->
@@ -21,7 +21,7 @@
             <select 
               v-model="form.operador"
               required
-              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none transition-all"
+              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none transition-all rounded-xl"
             >
               <option value="">Seleccionar Operador...</option>
               <option v-for="op in operadores" :key="op" :value="op">{{ op }}</option>
@@ -42,7 +42,7 @@
               type="button"
               @click="form.maquina_id = m.id"
               :class="[
-                'border p-4 text-center flex flex-col items-center gap-1 transition-all',
+                'border p-4 text-center flex flex-col items-center gap-1 transition-all rounded-xl',
                 form.maquina_id === m.id 
                   ? 'border-primary bg-primary/10 ring-1 ring-primary' 
                   : 'border-outline-variant hover:border-primary bg-white'
@@ -71,12 +71,12 @@
         <!-- Registration Type Toggle -->
         <div class="flex flex-col gap-2">
           <label class="label-caps text-on-surface-variant">Tipo de Registro</label>
-          <div class="flex bg-surface-container p-1 gap-1">
+          <div class="flex bg-surface-container p-1 gap-1 rounded-xl">
             <button
               type="button"
               @click="form.tipo_registro = 'inicial'"
               :class="[
-                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
+                'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl',
                 form.tipo_registro === 'inicial' 
                   ? 'bg-white border border-outline-variant text-primary shadow-sm' 
                   : 'text-on-surface-variant opacity-60 hover:opacity-100'
@@ -88,7 +88,7 @@
               type="button"
               @click="form.tipo_registro = 'final'"
               :class="[
-                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
+                'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl',
                 form.tipo_registro === 'final' 
                   ? 'bg-white border border-outline-variant text-primary shadow-sm' 
                   : 'text-on-surface-variant opacity-60 hover:opacity-100'
@@ -103,7 +103,7 @@
         <Transition name="fade-slide" mode="out-in">
           <div
             :key="form.tipo_registro"
-            class="flex flex-col gap-6 p-6 bg-surface-container-low border-l-4 border-primary"
+            class="flex flex-col gap-6 p-6 bg-surface-container-low border-l-4 border-primary rounded-2xl"
           >
             <div class="flex flex-col gap-2">
               <label class="label-caps text-on-surface-variant">
@@ -116,7 +116,7 @@
                   placeholder="00000.0"
                   step="0.1"
                   required
-                  class="w-full bg-white border border-outline-variant py-3 px-4 font-display font-medium text-on-surface outline-none focus:border-primary"
+                  class="w-full bg-white border border-outline-variant py-3 px-4 font-display font-medium text-on-surface outline-none focus:border-primary rounded-xl"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@
             <div class="flex flex-col gap-2">
               <label class="label-caps text-on-surface-variant">Foto del horometro</label>
               <div 
-                class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group"
+                class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group rounded-2xl"
                 @click="$refs.fileInput.click()"
               >
                 <!-- capture="environment" forces the rear camera on mobile devices -->
@@ -146,7 +146,7 @@
                   </span>
                 </div>
                 <div v-else class="w-full h-32 relative">
-                  <img :src="photoPreview" class="w-full h-full object-cover rounded border border-outline" />
+                  <img :src="photoPreview" class="w-full h-full object-cover rounded-xl border border-outline" />
                   <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <span class="text-white text-xs font-bold uppercase">Cambiar Foto</span>
                   </div>
@@ -195,7 +195,7 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="w-full bg-primary-container py-4 text-on-primary-container font-display text-xl font-bold uppercase tracking-wider hover:brightness-95 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+            class="w-full bg-primary hover:bg-primary-dark text-on-primary py-4 font-display text-lg font-black uppercase tracking-wider transition-all active:scale-[0.98] rounded-xl cursor-pointer disabled:opacity-50"
           >
             {{ isSubmitting ? 'Registrando...' : 'Registrar Operación' }}
           </button>
