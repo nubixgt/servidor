@@ -1,216 +1,231 @@
 <template>
   <transition name="fade-up" appear>
-    <div class="flex flex-col gap-6 pb-12 font-sans w-full">
+    <!-- Contenedor principal con Glassmorphism Background -->
+    <div class="flex flex-col gap-6 p-6 font-sans w-full min-h-screen bg-gradient-to-br from-[#e0eaf5] via-[#f4f6f9] to-[#e8ebf2] rounded-3xl relative overflow-hidden">
       
-      <!-- Top Header & Filters -->
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h2 class="font-display text-3xl font-black text-slate-800 tracking-tight">Dashboard</h2>
-          <span class="text-sm font-medium text-slate-500">Resumen general de la flota</span>
-        </div>
-        
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Fechas -->
-          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm rounded-xl">
-            <Calendar class="w-4 h-4 text-slate-400" />
-            <select v-model="selectedDateFilter" class="bg-transparent outline-none cursor-pointer font-medium">
-              <option value="Hoy">Hoy</option>
-              <option value="Esta semana">Esta semana</option>
-              <option value="Este mes">Este mes</option>
-              <option value="Todos">Todos los registros</option>
-            </select>
-          </div>
-          <!-- Máquinas -->
-          <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm rounded-xl">
-            <Tractor class="w-4 h-4 text-slate-400" />
-            <select class="bg-transparent outline-none cursor-pointer font-medium">
-              <option>Todas las máquinas</option>
-              <option v-for="m in maquinas" :key="m.id" :value="m.id">{{ m.marca }} ({{ m.identificador }})</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <!-- Efectos de luz de fondo (Glows) -->
+      <div class="absolute top-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-400/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
-      <!-- 3 Statistical Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <!-- Maquinaria Activa -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#0054A3] transition-all rounded-2xl">
-          <div class="flex justify-between items-start mb-2">
-            <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Maquinaria Activa</span>
-            <div class="bg-blue-50 p-2 rounded-lg"><Tractor class="text-[#0054A3] w-5 h-5" /></div>
+      <div class="relative z-10 flex flex-col gap-6">
+        <!-- Top Header & Filters -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h2 class="font-display text-3xl font-black text-slate-800 tracking-tight">Dashboard</h2>
+            <span class="text-sm font-medium text-slate-500">Resumen general de la flota</span>
           </div>
-          <div class="font-display text-3xl font-black text-slate-800">
-            {{ maquinasActivasCount }} <span class="text-sm font-medium text-slate-400">de {{ totalMaquinasCount }}</span>
-          </div>
-          <div class="text-[10px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
-            <ArrowUp class="w-3 h-3" /> 100% operativos
+          
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Fechas -->
+            <div class="flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/50 px-4 py-2 text-sm text-slate-700 shadow-sm rounded-2xl hover:bg-white/90 transition-all">
+              <Calendar class="w-4 h-4 text-slate-500" />
+              <select v-model="selectedDateFilter" class="bg-transparent outline-none cursor-pointer font-medium text-slate-700">
+                <option value="Hoy">Hoy</option>
+                <option value="Esta semana">Esta semana</option>
+                <option value="Este mes">Este mes</option>
+                <option value="Todos">Todos los registros</option>
+              </select>
+            </div>
+            <!-- Máquinas -->
+            <div class="flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/50 px-4 py-2 text-sm text-slate-700 shadow-sm rounded-2xl hover:bg-white/90 transition-all">
+              <Tractor class="w-4 h-4 text-slate-500" />
+              <select class="bg-transparent outline-none cursor-pointer font-medium text-slate-700">
+                <option>Todas las máquinas</option>
+                <option v-for="m in maquinas" :key="m.id" :value="m.id">{{ m.marca }} ({{ m.identificador }})</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- Horas Totales -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-emerald-600 transition-all rounded-2xl">
-          <div class="flex justify-between items-start mb-2">
-            <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas Totales</span>
-            <div class="bg-emerald-50 p-2 rounded-lg"><Clock class="text-emerald-600 w-5 h-5" /></div>
-          </div>
-          <div class="font-display text-3xl font-black text-slate-800">
-            {{ totalHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
-          </div>
-          <div class="text-[10px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
-            Acumulado histórico
-          </div>
-        </div>
-
-        <!-- Horómetro Promedio -->
-        <div class="bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col justify-between hover:border-[#FFD200] transition-all rounded-2xl">
-          <div class="flex justify-between items-start mb-2">
-            <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horómetro Promedio</span>
-            <div class="bg-amber-50 p-2 rounded-lg"><Activity class="text-amber-500 w-5 h-5" /></div>
-          </div>
-          <div class="font-display text-3xl font-black text-slate-800">
-            {{ promedioHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
-          </div>
-          <div class="text-[10px] font-bold text-slate-500 mt-2 flex items-center gap-1">
-            Promedio por unidad
-          </div>
-        </div>
-      </div>
-
-      <!-- Middle Section: Chart & Map -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- Uso de Horómetros Chart -->
-        <div class="lg:col-span-5 bg-white border border-[#cbd5e1] p-6 shadow-sm flex flex-col rounded-2xl">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="font-display text-base font-bold text-slate-800">Uso de Horómetros</h3>
-            <select class="bg-white border border-[#cbd5e1] text-[10px] font-bold uppercase tracking-wider px-2 py-1 text-slate-600 shadow-sm outline-none cursor-pointer rounded-lg">
-              <option>Esta semana</option>
-              <option>Histórico</option>
-            </select>
-          </div>
-
-          <div class="flex gap-4 mb-4">
-            <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500">
-              <span class="w-3 h-3 bg-[#0054A3]"></span> Horas Acumuladas
+        <!-- 3 Statistical Cards (Glassmorphism) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          
+          <!-- Maquinaria Activa -->
+          <div class="bg-white/60 backdrop-blur-xl border border-white/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 rounded-3xl relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Maquinaria Activa</span>
+              <div class="bg-blue-100/80 p-3 rounded-2xl shadow-[0_0_15px_rgba(59,130,246,0.3)]"><Tractor class="text-blue-600 w-6 h-6" /></div>
+            </div>
+            <div class="font-display text-4xl font-black text-slate-800">
+              {{ maquinasActivasCount }} <span class="text-sm font-medium text-slate-400">de {{ totalMaquinasCount }}</span>
+            </div>
+            <div class="text-[11px] font-bold text-emerald-500 mt-3 flex items-center gap-1">
+              <ArrowUp class="w-3.5 h-3.5" /> 100% operativos
             </div>
           </div>
 
-          <!-- Top-Tier Custom Dynamic Graph Grid -->
-          <div class="w-full flex items-end justify-center gap-4 h-56 pb-2 border-b border-[#cbd5e1] relative mt-4">
-            <div class="absolute inset-x-0 top-1/4 border-t border-slate-100"></div>
-            <div class="absolute inset-x-0 top-2/4 border-t border-slate-100"></div>
-            <div class="absolute inset-x-0 top-3/4 border-t border-slate-100"></div>
+          <!-- Horas Totales -->
+          <div class="bg-white/60 backdrop-blur-xl border border-white/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 rounded-3xl relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horas Totales</span>
+              <div class="bg-emerald-100/80 p-3 rounded-2xl shadow-[0_0_15px_rgba(16,185,129,0.3)]"><Clock class="text-emerald-600 w-6 h-6" /></div>
+            </div>
+            <div class="font-display text-4xl font-black text-slate-800">
+              {{ totalHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
+            </div>
+            <div class="text-[11px] font-bold text-emerald-500 mt-3 flex items-center gap-1">
+              <ArrowUp class="w-3.5 h-3.5" /> Acumulado histórico
+            </div>
+          </div>
 
-            <div v-for="item in horasPorTipo" :key="item.tipo" class="flex flex-col items-center justify-end h-full group cursor-pointer z-10 w-16" :title="item.horas + ' h'">
-              <div class="w-10 bg-[#cbd5e1] h-full relative rounded-t-lg overflow-hidden">
-                <div class="absolute bottom-0 w-full bg-[#0054A3] group-hover:bg-[#004586] transition-all" :style="{ height: item.porcentaje + '%' }"></div>
+          <!-- Horómetro Promedio -->
+          <div class="bg-white/60 backdrop-blur-xl border border-white/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 rounded-3xl relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex justify-between items-start mb-4">
+              <span class="font-display text-[10px] font-black text-slate-500 uppercase tracking-widest">Horómetro Promedio</span>
+              <div class="bg-amber-100/80 p-3 rounded-2xl shadow-[0_0_15px_rgba(245,158,11,0.3)]"><Activity class="text-amber-600 w-6 h-6" /></div>
+            </div>
+            <div class="font-display text-4xl font-black text-slate-800">
+              {{ promedioHorasFleet }} <span class="text-sm font-medium text-slate-400">h</span>
+            </div>
+            <div class="text-[11px] font-bold text-emerald-500 mt-3 flex items-center gap-1">
+              <ArrowUp class="w-3.5 h-3.5" /> Promedio por unidad
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Section: Chart & Map -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Uso de Horómetros Chart -->
+          <div class="lg:col-span-5 bg-white/60 backdrop-blur-xl border border-white/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col rounded-3xl">
+            <div class="flex justify-between items-center mb-6">
+              <div class="flex items-center gap-2">
+                <h3 class="font-display text-base font-bold text-slate-800">Uso de Horómetros</h3>
+                <Info class="w-4 h-4 text-slate-400" />
               </div>
-              <span class="font-sans text-[9px] font-bold text-slate-600 mt-2 text-center truncate w-full">{{ item.tipo }}</span>
+              <select class="bg-white/80 border border-white/50 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 text-slate-600 shadow-sm outline-none cursor-pointer rounded-xl">
+                <option>Esta semana</option>
+                <option>Histórico</option>
+              </select>
+            </div>
+
+            <div class="flex gap-4 mb-4">
+              <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-500">
+                <span class="w-3 h-3 bg-blue-500 rounded-full"></span> Horas Acumuladas
+              </div>
+            </div>
+
+            <!-- Modern Graph Grid -->
+            <div class="w-full flex items-end justify-center gap-5 h-56 pb-2 border-b border-slate-200/50 relative mt-4">
+              <div class="absolute inset-x-0 top-1/4 border-t border-slate-200/50 dashed"></div>
+              <div class="absolute inset-x-0 top-2/4 border-t border-slate-200/50 dashed"></div>
+              <div class="absolute inset-x-0 top-3/4 border-t border-slate-200/50 dashed"></div>
+
+              <div v-for="item in horasPorTipo" :key="item.tipo" class="flex flex-col items-center justify-end h-full group cursor-pointer z-10 w-12" :title="item.horas + ' h'">
+                <div class="w-8 bg-blue-50/50 border border-white/50 h-full relative rounded-t-xl overflow-hidden shadow-inner">
+                  <div class="absolute bottom-0 w-full bg-gradient-to-t from-blue-600 to-blue-400 group-hover:from-blue-700 group-hover:to-blue-500 transition-all duration-300 rounded-t-xl" :style="{ height: item.porcentaje + '%' }"></div>
+                </div>
+                <span class="font-sans text-[9px] font-bold text-slate-600 mt-3 text-center truncate w-full">{{ item.tipo }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Ubicación de Maquinaria Map -->
-        <div class="lg:col-span-7 bg-white border border-[#cbd5e1] shadow-sm flex flex-col relative h-[400px] rounded-2xl overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm z-10 flex justify-between items-center border-b border-[#cbd5e1]">
-            <h3 class="font-display text-base font-bold text-slate-800">Ubicación de Maquinaria</h3>
-            <span class="text-[10px] font-bold text-[#0054A3] uppercase cursor-pointer hover:underline flex items-center gap-1">Ver mapa completo <ArrowRight class="w-3 h-3" /></span>
-          </div>
-          <div id="dashboard-map" class="w-full h-full z-0"></div>
-        </div>
-      </div>
-
-      <!-- Bottom Section: Desempeño por Maquinaria -->
-      <div class="bg-white border border-[#cbd5e1] shadow-sm flex flex-col rounded-2xl overflow-hidden">
-        <div class="px-6 py-4 border-b border-[#cbd5e1] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <h3 class="font-display text-base font-bold text-slate-800">Desempeño por Maquinaria</h3>
-          <div class="flex gap-3">
-            <div class="relative">
-              <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input type="text" placeholder="Buscar máquina..." class="pl-9 pr-4 py-2 text-sm border border-[#cbd5e1] outline-none focus:border-[#0054A3] w-64 rounded-lg" />
+          <!-- Ubicación de Maquinaria Map -->
+          <div class="lg:col-span-7 bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col relative h-[400px] rounded-3xl overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 p-5 bg-white/40 backdrop-blur-md z-10 flex justify-between items-center border-b border-white/40">
+              <h3 class="font-display text-base font-bold text-slate-800">Ubicación de Maquinaria</h3>
+              <span class="text-[10px] font-bold text-blue-600 uppercase cursor-pointer hover:underline flex items-center gap-1">Ver mapa completo <ArrowRight class="w-3 h-3" /></span>
             </div>
-            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors rounded-lg">
-              <Filter class="w-4 h-4" /> Filtros
-            </button>
-            <button class="flex items-center gap-2 px-4 py-2 border border-[#cbd5e1] text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors rounded-lg">
-              <Download class="w-4 h-4" /> Exportar
-            </button>
+            <div id="dashboard-map" class="w-full h-full z-0"></div>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-50 border-b border-[#cbd5e1]">
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Maquinaria</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Proyecto</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horómetro Inicial</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horómetro Final</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total de Horas</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Trabajo</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Estado</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Ubicación</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 text-sm">
-              <tr v-for="row in tableData" :key="row.id" class="hover:bg-slate-50/50 transition-colors group">
-                <td class="p-4">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-slate-100 border border-slate-200 flex items-center justify-center rounded-lg overflow-hidden">
-                      <Tractor class="w-5 h-5 text-slate-400" />
+        <!-- Bottom Section: Desempeño por Maquinaria -->
+        <div class="bg-white/60 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col rounded-3xl overflow-hidden">
+          <div class="px-6 py-5 border-b border-white/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/20">
+            <h3 class="font-display text-base font-bold text-slate-800">Desempeño por Maquinaria</h3>
+            <div class="flex gap-3">
+              <div class="relative">
+                <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input type="text" placeholder="Buscar máquina..." class="pl-10 pr-4 py-2 text-sm bg-white/70 border border-white/50 outline-none focus:border-blue-400 w-64 rounded-xl shadow-sm transition-all" />
+              </div>
+              <button class="flex items-center gap-2 px-4 py-2 bg-white/70 border border-white/50 text-sm font-medium text-slate-700 hover:bg-white transition-colors rounded-xl shadow-sm">
+                <Filter class="w-4 h-4" /> Filtros
+              </button>
+              <button class="flex items-center gap-2 px-4 py-2 bg-white/70 border border-white/50 text-sm font-medium text-slate-700 hover:bg-white transition-colors rounded-xl shadow-sm">
+                <Download class="w-4 h-4" /> Exportar
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-white/50 text-slate-500">
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Maquinaria</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Proyecto</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest text-center">Horómetro Inicial</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest text-center">Horómetro Final</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest text-center">Total de Horas</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest">% Trabajo</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest text-center">Estado</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Ubicación</th>
+                  <th class="p-5 text-[10px] font-bold uppercase tracking-widest text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/40 text-sm">
+                <tr v-for="row in tableData" :key="row.id" class="hover:bg-white/40 transition-colors group">
+                  <td class="p-5">
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-12 bg-white border border-white/60 shadow-sm flex items-center justify-center rounded-xl overflow-hidden shrink-0">
+                        <!-- Simulated vehicle icon based on type -->
+                        <img src="https://cdn-icons-png.flaticon.com/512/2882/2882890.png" class="w-7 h-7 object-contain opacity-80" alt="icon" />
+                      </div>
+                      <div>
+                        <div class="font-bold text-slate-800">{{ row.marca }} {{ row.modelo }}</div>
+                        <div class="text-[10px] font-mono text-slate-500 mt-0.5">{{ row.identificador }}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div class="font-bold text-[#0054A3] uppercase">{{ row.marca }} {{ row.modelo }}</div>
-                      <div class="text-[10px] font-mono text-slate-500">{{ row.identificador }}</div>
+                  </td>
+                  <td class="p-5 text-slate-600 text-xs font-medium">Ampliación Vial</td>
+                  <td class="p-5 text-center font-mono font-bold text-slate-600">{{ row.h_inicial }}</td>
+                  <td class="p-5 text-center font-mono font-bold text-slate-800">{{ row.h_final }}</td>
+                  <td class="p-5 text-center font-mono font-bold text-blue-600 bg-blue-50/30 rounded-lg">{{ row.total_trabajado }} h</td>
+                  
+                  <td class="p-5">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xs font-bold text-slate-700 w-8">{{ row.porcentaje_trabajo }}%</span>
+                      <div class="w-24 bg-slate-200/70 h-1.5 rounded-full overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full" :style="{ width: row.porcentaje_trabajo + '%' }"></div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td class="p-4 text-slate-600 text-xs font-medium">Sin Proyecto Asignado</td>
-                <td class="p-4 font-mono font-bold text-slate-600">{{ row.h_inicial }}</td>
-                <td class="p-4 font-mono font-bold text-slate-800">{{ row.h_final }}</td>
-                <td class="p-4 font-mono font-bold text-[#0054A3] bg-blue-50/50 border-l border-r border-blue-100 text-center">{{ row.total_trabajado }} h</td>
-                
-                <td class="p-4">
-                  <div class="flex items-center gap-2">
-                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                      <div class="bg-[#0054A3] h-full" :style="{ width: row.porcentaje_trabajo + '%' }"></div>
+                  </td>
+                  
+                  <td class="p-5 text-center">
+                    <span class="px-3 py-1 text-[10px] font-bold uppercase rounded-full" 
+                      :class="row.estado === 'Operativo' ? 'bg-emerald-100/80 text-emerald-700' : 'bg-red-100/80 text-red-700'">
+                      {{ row.estado === 'Operativo' ? 'Activo' : row.estado }}
+                    </span>
+                  </td>
+                  
+                  <td class="p-5">
+                    <div class="flex items-center gap-2 text-xs font-medium text-slate-600">
+                      <MapPin class="w-4 h-4 text-blue-500" v-if="row.latitud" />
+                      <span v-if="row.latitud" class="truncate max-w-[120px]">San Pedro</span>
+                      <span v-else class="text-slate-400 italic">Sin ubicación</span>
                     </div>
-                    <span class="text-xs font-bold text-slate-700 w-8">{{ row.porcentaje_trabajo }}%</span>
-                  </div>
-                </td>
-                
-                <td class="p-4">
-                  <span class="px-2 py-1 text-[9px] font-bold uppercase rounded-md border" 
-                    :class="row.estado === 'Operativo' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'">
-                    {{ row.estado }}
-                  </span>
-                </td>
-                
-                <td class="p-4">
-                  <div class="flex items-center gap-1.5 text-xs text-slate-600">
-                    <MapPin class="w-3.5 h-3.5 text-[#0054A3]" v-if="row.latitud" />
-                    <span v-if="row.latitud" class="font-mono text-[10px]">{{ row.latitud }}, {{ row.longitud }}</span>
-                    <span v-else class="text-slate-400 italic">Sin ubicación</span>
-                  </div>
-                </td>
-                
-                <td class="p-4 text-center">
-                  <button class="p-1.5 text-slate-400 hover:text-[#0054A3] transition-colors rounded-lg hover:bg-slate-100" title="Ver Detalles">
-                    <MoreHorizontal class="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        <div class="px-6 py-4 border-t border-[#cbd5e1] flex justify-between items-center text-xs text-slate-500 bg-slate-50 rounded-b-2xl">
-          <span>Mostrando 1 a {{ tableData.length }} de {{ tableData.length }} máquinas</span>
-          <div class="flex gap-1">
-            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed rounded-md"><ChevronLeft class="w-4 h-4" /></button>
-            <button class="w-8 h-8 flex items-center justify-center border border-[#0054A3] bg-[#0054A3] text-white font-bold rounded-md">1</button>
-            <button class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white text-slate-400 cursor-not-allowed rounded-md"><ChevronRight class="w-4 h-4" /></button>
+                  </td>
+                  
+                  <td class="p-5 text-center">
+                    <button class="w-8 h-8 flex items-center justify-center bg-white/60 border border-white/60 shadow-sm text-slate-400 hover:text-blue-600 transition-all rounded-xl mx-auto hover:bg-white" title="Opciones">
+                      <MoreHorizontal class="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="px-6 py-4 border-t border-white/50 flex justify-between items-center text-xs text-slate-500 bg-white/20">
+            <span>Mostrando 1 a {{ tableData.length }} de {{ tableData.length }} máquinas</span>
+            <div class="flex gap-2">
+              <button class="w-8 h-8 flex items-center justify-center border border-white/60 bg-white/50 text-slate-400 cursor-not-allowed rounded-lg shadow-sm"><ChevronLeft class="w-4 h-4" /></button>
+              <button class="w-8 h-8 flex items-center justify-center border border-blue-500 bg-blue-500 text-white font-bold rounded-lg shadow-md shadow-blue-500/30">1</button>
+              <button class="w-8 h-8 flex items-center justify-center border border-white/60 bg-white/50 text-slate-400 cursor-not-allowed rounded-lg shadow-sm"><ChevronRight class="w-4 h-4" /></button>
+            </div>
           </div>
         </div>
       </div>
@@ -222,7 +237,7 @@
 import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { 
   Users, Truck, Tractor, Clock, Activity, AlertTriangle, ArrowUp, ArrowRight,
-  Calendar, Search, Filter, Download, MapPin, MoreHorizontal, ChevronLeft, ChevronRight
+  Calendar, Search, Filter, Download, MapPin, MoreHorizontal, ChevronLeft, ChevronRight, Info
 } from "lucide-vue-next";
 
 // @ts-ignore
@@ -253,7 +268,6 @@ const emit = defineEmits(['refresh-registros']);
 // Statistical Cards Computed
 const totalMaquinasCount = computed(() => props.maquinas?.length || 0);
 const maquinasActivasCount = computed(() => props.maquinas?.filter(m => m.estado === 'Operativo').length || 0);
-const alertasActivasCount = computed(() => props.maquinas?.filter(m => m.estado === 'Mantenimiento' || m.estado === 'Fuera de Servicio').length || 0);
 
 const totalHorasFleet = computed(() => {
   if (!props.maquinas) return 0;
@@ -334,8 +348,6 @@ const tableData = computed(() => {
     if (machineRegistros.length > 1) {
       total_trabajado = Math.max(0, h_final - h_inicial);
     } else if (machineRegistros.length === 1 && machineRegistros[0].tipo_registro === 'final') {
-      // If only final exists, we don't know the exact initial of today unless we check yesterday, 
-      // but strictly we just show 0 or undefined. Let's just show 0 for total worked if no range.
       total_trabajado = 0;
     }
 
@@ -364,7 +376,7 @@ const initMap = () => {
     mapInstance.remove();
   }
   
-  mapInstance = L.map('dashboard-map', { zoomControl: false }).setView([14.6349, -90.5069], 7); // Default Guatemala center
+  mapInstance = L.map('dashboard-map', { zoomControl: false }).setView([14.6349, -90.5069], 7); 
   
   L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
 
@@ -391,19 +403,25 @@ const updateMarkers = () => {
     const lat = parseFloat(m.latitud);
     const lng = parseFloat(m.longitud);
     
-    // Create a custom icon based on the status
     const isOperativo = m.estado === 'Operativo';
-    const color = isOperativo ? '#059669' : '#dc2626'; // emerald-600 vs red-600
+    const color = isOperativo ? '#10b981' : '#f59e0b'; // Emerald or amber like mockup
     
     const svgIcon = L.divIcon({
       className: 'custom-pin',
-      html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
+      html: `
+        <div class="relative w-10 h-10 flex items-center justify-center">
+          <div class="absolute inset-0 bg-white rounded-full shadow-md border border-white"></div>
+          <div class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-white shadow-inner" style="background: ${color}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h12"/><path d="M7 14h12"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+          </div>
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-white drop-shadow-sm"></div>
+        </div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40]
     });
 
     const marker = L.marker([lat, lng], { icon: svgIcon })
-      .bindPopup(`<strong>${m.marca} ${m.modelo}</strong><br>Estado: ${m.estado}<br>Horas Totales: ${m.horas_acumuladas}`)
+      .bindPopup(`<strong>${m.marca} ${m.modelo}</strong><br>Estado: ${m.estado}<br>Horas: ${m.horas_acumuladas}`)
       .addTo(mapInstance!);
       
     markers.push(marker);
@@ -418,7 +436,7 @@ const updateMarkers = () => {
 onMounted(() => {
   setTimeout(() => {
     initMap();
-  }, 300); // Give time for DOM and transition
+  }, 300); 
 });
 
 watch(tableData, () => {
