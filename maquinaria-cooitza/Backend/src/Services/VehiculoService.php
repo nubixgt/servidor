@@ -57,7 +57,7 @@ class VehiculoService
         $this->repository->update($vehiculo);
 
         if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $path = $this->handleFileUpload($id, $file);
+            $path = $this->handleFileUpload($id, $file, $vehiculo->foto);
             if ($path) {
                 $this->repository->updateFotoPath($id, $path);
             }
@@ -72,7 +72,7 @@ class VehiculoService
         return ['success' => $success];
     }
 
-    private function handleFileUpload($id, $file)
+    private function handleFileUpload($id, $file, $oldPath = null)
     {
         $upload_dir = __DIR__ . "/../../uploads/Vehiculos/{$id}/";
         
@@ -80,8 +80,15 @@ class VehiculoService
             mkdir($upload_dir, 0777, true);
         }
 
+        if ($oldPath) {
+            $oldFile = __DIR__ . "/../../" . $oldPath;
+            if (file_exists($oldFile) && is_file($oldFile)) {
+                unlink($oldFile);
+            }
+        }
+
         $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $file_name = 'foto.' . $file_extension;
+        $file_name = 'foto_' . time() . '.' . $file_extension;
         $target_file = $upload_dir . $file_name;
 
         if (move_uploaded_file($file['tmp_name'], $target_file)) {
