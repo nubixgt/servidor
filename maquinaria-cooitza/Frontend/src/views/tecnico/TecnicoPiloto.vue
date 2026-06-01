@@ -217,9 +217,6 @@
           >
             {{ isSubmitting ? 'Registrando...' : 'Registrar Operación' }}
           </button>
-          <p v-if="submitMessage" :class="['text-center font-display text-xs mt-4 font-bold uppercase', submitError ? 'text-error' : 'text-primary']">
-            {{ submitMessage }}
-          </p>
         </div>
       </form>
     </main>
@@ -229,6 +226,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 // @ts-ignore
 import L from 'leaflet';
 // @ts-ignore
@@ -260,8 +258,6 @@ const handleLogout = () => {
 
 const isSubmitting = ref(false);
 const isFetchingGps = ref(false);
-const submitMessage = ref('');
-const submitError = ref(false);
 const photoPreview = ref(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -352,8 +348,6 @@ const getGeolocation = () => {
 
 const submitForm = async () => {
   isSubmitting.value = true;
-  submitMessage.value = '';
-  submitError.value = false;
 
   const formData = new FormData();
   formData.append('operador', form.operador);
@@ -376,17 +370,30 @@ const submitForm = async () => {
     const result = await response.json();
 
     if (response.ok) {
-      submitMessage.value = 'Registro completado con éxito';
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Registro completado correctamente',
+        icon: 'success',
+        confirmButtonColor: '#0054A3'
+      });
       form.valor_horometro = null;
       form.foto_horometro = null;
       photoPreview.value = null;
     } else {
-      submitError.value = true;
-      submitMessage.value = result.message || 'Error al enviar el registro';
+      Swal.fire({
+        title: 'Error',
+        text: result.message || 'Error al enviar el registro',
+        icon: 'error',
+        confirmButtonColor: '#0054A3'
+      });
     }
   } catch (error) {
-    submitError.value = true;
-    submitMessage.value = 'Error de conexión con el servidor';
+    Swal.fire({
+      title: 'Error',
+      text: 'Error de conexión con el servidor',
+      icon: 'error',
+      confirmButtonColor: '#0054A3'
+    });
     console.error("Submission error:", error);
   } finally {
     isSubmitting.value = false;
