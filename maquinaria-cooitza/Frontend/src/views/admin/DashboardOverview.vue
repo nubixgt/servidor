@@ -13,10 +13,11 @@
           <!-- Fechas -->
           <div class="flex items-center gap-2 bg-white border border-[#cbd5e1] px-3 py-2 text-sm text-slate-600 shadow-sm">
             <Calendar class="w-4 h-4 text-slate-400" />
-            <select class="bg-transparent outline-none cursor-pointer font-medium">
-              <option>Este mes</option>
-              <option>Esta semana</option>
-              <option>Último mes</option>
+            <select v-model="selectedDateFilter" class="bg-transparent outline-none cursor-pointer font-medium">
+              <option value="Hoy">Hoy</option>
+              <option value="Esta semana">Esta semana</option>
+              <option value="Este mes">Este mes</option>
+              <option value="Todos">Todos los registros</option>
             </select>
           </div>
           <!-- Máquinas -->
@@ -157,7 +158,9 @@
               <tr class="bg-slate-50 border-b border-[#cbd5e1]">
                 <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Maquinaria</th>
                 <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Proyecto</th>
-                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center" colspan="2">Horómetro (h)<br><span class="text-[9px] text-slate-400">Actual / Total</span></th>
+                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horómetro Inicial</th>
+                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horómetro Final</th>
+                <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total de Horas</th>
                 <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Trabajo</th>
                 <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Estado</th>
                 <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Ubicación</th>
@@ -178,8 +181,9 @@
                   </div>
                 </td>
                 <td class="p-4 text-slate-600 text-xs font-medium">Sin Proyecto Asignado</td>
-                <td class="p-4 text-right font-mono font-bold text-slate-800">{{ row.ultimo_horometro }}</td>
-                <td class="p-4 font-mono text-slate-500 border-l border-slate-100">{{ row.horas_acumuladas }}</td>
+                <td class="p-4 font-mono font-bold text-slate-600">{{ row.h_inicial }}</td>
+                <td class="p-4 font-mono font-bold text-slate-800">{{ row.h_final }}</td>
+                <td class="p-4 font-mono font-bold text-[#0054A3] bg-blue-50/50 border-l border-r border-blue-100 text-center">{{ row.total_trabajado }} h</td>
                 
                 <td class="p-4">
                   <div class="flex items-center gap-2">
@@ -294,30 +298,72 @@ const horasPorTipo = computed(() => {
   }));
 });
 
+// Filters
+const selectedDateFilter = ref('Hoy');
+
+const filteredRegistros = computed(() => {
+  if (!props.registros) return [];
+  const now = new Date();
+  
+  return props.registros.filter(r => {
+    if (selectedDateFilter.value === 'Todos') return true;
+    
+    const d = new Date(r.fecha_registro);
+    if (selectedDateFilter.value === 'Hoy') {
+      return d.toDateString() === now.toDateString();
+    }
+    if (selectedDateFilter.value === 'Esta semana') {
+      const weekAgo = new Date();
+      weekAgo.setDate(now.getDate() - 7);
+      return d >= weekAgo;
+    }
+    if (selectedDateFilter.value === 'Este mes') {
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }
+    return true;
+  });
+});
+
 // Table Data (Desempeño por Maquinaria)
 const tableData = computed(() => {
   if (!props.maquinas) return [];
   
   return props.maquinas.map(m => {
-    // Find the latest registro for this machine to get its current actual horometer and location
-    // Registros are usually chronological, assuming higher ID is newer.
-    const machineRegistros = props.registros?.filter(r => r.maquina_id === m.id) || [];
-    let latestRegistro = null;
+    // Find registros for this machine in the filtered time range
+    const machineRegistros = filteredRegistros.value.filter(r => r.maquina_id === m.id) || [];
+    
+    // Sort chronologically
+    machineRegistros.sort((a, b) => new Date(a.fecha_registro).getTime() - new Date(b.fecha_registro).getTime());
+    
+    let h_inicial = 0;
+    let h_final = 0;
+    
     if (machineRegistros.length > 0) {
-      latestRegistro = machineRegistros.reduce((latest, current) => {
-        return (parseInt(current.id) > parseInt(latest.id)) ? current : latest;
-      });
+      h_inicial = parseFloat(machineRegistros[0].valor_horometro) || 0;
+      h_final = parseFloat(machineRegistros[machineRegistros.length - 1].valor_horometro) || 0;
     }
     
+    // Calculate total hours worked in this period
+    let total_trabajado = 0;
+    if (machineRegistros.length > 1) {
+      total_trabajado = Math.max(0, h_final - h_inicial);
+    } else if (machineRegistros.length === 1 && machineRegistros[0].tipo_registro === 'final') {
+      // If only final exists, we don't know the exact initial of today unless we check yesterday, 
+      // but strictly we just show 0 or undefined. Let's just show 0 for total worked if no range.
+      total_trabajado = 0;
+    }
+
     // Simulate a work percentage based on accumulated hours vs fleet max
     const maxHorasFlota = parseFloat(totalHorasFleet.value) || 1;
     const porcentaje = Math.min(100, Math.max(10, Math.round(((parseFloat(m.horas_acumuladas) || 0) / (maxHorasFlota / props.maquinas!.length)) * 50)));
 
     return {
       ...m,
-      ultimo_horometro: latestRegistro ? parseFloat(latestRegistro.valor_horometro).toFixed(2) : '0.00',
-      latitud: latestRegistro ? latestRegistro.latitud : null,
-      longitud: latestRegistro ? latestRegistro.longitud : null,
+      h_inicial: h_inicial > 0 ? h_inicial.toFixed(2) : '-',
+      h_final: h_final > 0 ? h_final.toFixed(2) : '-',
+      total_trabajado: total_trabajado > 0 ? total_trabajado.toFixed(2) : '0.00',
+      latitud: machineRegistros.length > 0 ? machineRegistros[machineRegistros.length - 1].latitud : null,
+      longitud: machineRegistros.length > 0 ? machineRegistros[machineRegistros.length - 1].longitud : null,
       porcentaje_trabajo: porcentaje
     };
   });
@@ -389,7 +435,7 @@ onMounted(() => {
   }, 300); // Give time for DOM and transition
 });
 
-watch(() => props.registros, () => {
+watch(tableData, () => {
   updateMarkers();
 }, { deep: true });
 
