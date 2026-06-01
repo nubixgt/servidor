@@ -50,34 +50,16 @@
           </div>
         </div>
 
-        <!-- Machine Type Grid -->
+        <!-- Assigned Vehicle (Readonly) -->
         <div class="flex flex-col gap-2">
-          <label class="label-caps text-on-surface-variant">Tipo de Maquinaria</label>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-1">
-            <button
-              v-for="m in machines"
-              :key="m.id"
-              type="button"
-              @click="form.maquina_id = m.id"
-              :class="[ 'border p-4 text-center flex flex-col items-center gap-1 transition-all rounded-xl', form.maquina_id === m.id ? 'border-primary bg-primary/10 ring-1 ring-primary' : 'border-outline-variant hover:border-primary bg-white' ]"
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                stroke-width="2" 
-                stroke-linecap="round" 
-                stroke-linejoin="round"
-                :class="form.maquina_id === m.id ? 'text-primary' : 'text-on-surface-variant'"
-                v-html="m.iconPath"
-              ></svg>
-              <span :class="['font-display text-sm font-medium', form.maquina_id === m.id ? 'text-primary font-bold' : 'text-on-surface']">
-                {{ m.label }}
-              </span>
-            </button>
+          <label class="label-caps text-on-surface-variant">Vehículo Asignado</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              :value="assignedVehicle"
+              readonly
+              class="w-full bg-surface-container-lowest border border-outline-variant py-3 px-4 font-sans text-on-surface focus:outline-none appearance-none opacity-70 cursor-not-allowed font-medium rounded-xl"
+            />
           </div>
         </div>
 
@@ -197,7 +179,7 @@
         <div class="mt-4">
           <button
             type="submit"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting || !form.maquina_id"
             class="w-full bg-primary-container py-4 text-on-primary-container font-display text-xl font-bold uppercase tracking-wider hover:brightness-95 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
           >
             {{ isSubmitting ? 'Registrando...' : 'Registrar Operación' }}
@@ -246,9 +228,12 @@ const isFetchingGps = ref(false);
 const photoPreview = ref(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 
+const assignedVehicle = ref('Cargando vehículo...');
+const isLoadingVehicle = ref(true);
+
 const form = reactive({
   operador: '',
-  maquina_id: 'excavadora',
+  maquina_id: '',
   tipo_registro: 'inicial',
   valor_horometro: null as number | null,
   foto_horometro: null as File | null,
@@ -261,14 +246,42 @@ const form = reactive({
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
 
-const machines = [
-  { id: 'tractor', label: 'Tractor', iconPath: '<path d="m10 11 11 .9c.6 0 .9.5.8 1.1l-.8 4.5c-.1.5-.6.9-1.1.9H3c-.5 0-1-.4-1.1-.9L1 13c-.1-.6.3-1.1.8-1.1l11-.9"/><path d="M15 11V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v6"/><path d="m8 11V5"/><path d="m15 11 3 5"/><path d="M2 15h19"/><path d="M2 18h19"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/>' },
-  { id: 'excavadora', label: 'Excavadora', iconPath: '<path d="M2 21h15"/><path d="M5 21v-2a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v2"/><path d="M18 21v-2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v2"/><path d="M8 18V5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v13"/><path d="m11 8 5 2 4-2v6l-4 2-5-2"/><line x1="15" x2="15" y1="9" y2="17"/>' },
-  { id: 'retro', label: 'Retro Excavadora', iconPath: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"/>' },
-  { id: 'rodo', label: 'Rodo', iconPath: '<circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/>' },
-  { id: 'pipa', label: 'Pipa', iconPath: '<path d="M7 7c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S3 9.1 3 7c0-1.1.9-2 2-2s2 .9 2 2Z"/><path d="M12 18c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S8 20.1 8 18c0-1.1.9-2 2-2s2 .9 2 2Z"/><path d="M17 7c0-1.1.9-2 2-2s2 .9 2 2c0 2.1-4 4.6-4 4.6S13 9.1 13 7c0-1.1.9-2 2-2s2 .9 2 2Z"/>' },
-  { id: 'volteo', label: 'Camion Volteo', iconPath: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5h-4l-2-3h-3.5"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' },
-];
+const loadAssignedVehicle = async () => {
+  try {
+    const pRes = await fetch('/maquinaria-cooitza/Backend/api/v1/pilotos');
+    const pJson = await pRes.json();
+    let currentPilotId = null;
+    if (pJson.status === 'success') {
+      const pilot = pJson.data.find((p: any) => p.nombre.toLowerCase() === currentUserFullName.value.toLowerCase());
+      if (pilot) {
+        currentPilotId = pilot.id;
+      }
+    }
+
+    if (currentPilotId) {
+      const vRes = await fetch('/maquinaria-cooitza/Backend/api/v1/vehiculos');
+      const vJson = await vRes.json();
+      if (vJson.status === 'success') {
+        const vehicle = vJson.data.find((v: any) => String(v.piloto_id) === String(currentPilotId));
+        if (vehicle) {
+          assignedVehicle.value = `${vehicle.marca} - ${vehicle.placa} (${vehicle.tipo})`;
+          form.maquina_id = vehicle.placa;
+        } else {
+          assignedVehicle.value = "Sin vehículo asignado";
+          form.maquina_id = "";
+        }
+      }
+    } else {
+      assignedVehicle.value = "Piloto no encontrado en base de datos";
+      form.maquina_id = "";
+    }
+  } catch (e) {
+    console.error(e);
+    assignedVehicle.value = "Error al cargar vehículo";
+  } finally {
+    isLoadingVehicle.value = false;
+  }
+};
 
 const initMap = () => {
   map = L.map('map', {
@@ -400,6 +413,7 @@ onMounted(() => {
 
   initMap();
   getGeolocation();
+  loadAssignedVehicle();
 });
 </script>
 
