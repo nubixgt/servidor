@@ -524,7 +524,7 @@ const loadMachinery = async () => {
         category: item.tipo,
         serialId: item.identificador,
         accumulatedHours: parseFloat(item.horas_acumuladas) || 0,
-        nextService: item.proximo_servicio || "Sin Programar",
+        nextService: item.proximo_servicio === 'Sin Programar' ? '' : (item.proximo_servicio || ""),
         status: item.estado,
         piloto_id: item.piloto_id || null,
         photoUrl: item.foto_path ? `/maquinaria-cooitza/Backend/${item.foto_path}` : DEFAULT_MACHINERY_PHOTOS[item.tipo]
@@ -672,8 +672,8 @@ const handleSaveMachinery = async () => {
   formData.append('tipo', category.value);
   formData.append('identificador', serialId.value);
   formData.append('estado', status.value);
-  formData.append('horas_acumuladas', accumulatedHours.value || '0');
-  formData.append('proximo_servicio', nextService.value || 'Sin Programar');
+  formData.append('horas_acumuladas', accumulatedHours.value || '');
+  formData.append('proximo_servicio', nextService.value || '');
   formData.append('piloto_id', piloto_id.value);
   
   if (selectedFile.value) {

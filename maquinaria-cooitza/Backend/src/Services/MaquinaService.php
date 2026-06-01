@@ -20,51 +20,65 @@ class MaquinaService
 
     public function create($data, $file = null)
     {
-        $maquina = new Maquina($data);
-        $id = $this->repository->create($maquina);
-
-        if (!$id) {
-            return ['success' => false, 'message' => 'Error al guardar en base de datos.'];
-        }
-
-        if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $path = $this->handleFileUpload($id, $file);
-            if ($path) {
-                $this->repository->updateFotoPath($id, $path);
+        try {
+            $maquina = new Maquina($data);
+            
+            // If identificador is empty, generate one
+            if (empty($maquina->identificador)) {
+                $maquina->identificador = 'MQ-' . strtoupper(substr(uniqid(), -6));
             }
-        }
 
-        return ['success' => true, 'id' => $id];
+            $id = $this->repository->create($maquina);
+
+            if (!$id) {
+                return ['success' => false, 'message' => 'Error al guardar en base de datos.'];
+            }
+
+            if ($file && $file['error'] === UPLOAD_ERR_OK) {
+                $path = $this->handleFileUpload($id, $file);
+                if ($path) {
+                    $this->repository->updateFotoPath($id, $path);
+                }
+            }
+
+            return ['success' => true, 'id' => $id];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'message' => 'DB Error: ' . $e->getMessage()];
+        }
     }
 
     public function update($id, $data, $file = null)
     {
-        $maquina = $this->repository->findById($id);
-        if (!$maquina) {
-            return ['success' => false, 'message' => 'Máquina no encontrada.'];
-        }
-
-        $maquina->marca = $data['marca'] ?? $maquina->marca;
-        $maquina->tipo = $data['tipo'] ?? $maquina->tipo;
-        $maquina->identificador = $data['identificador'] ?? $maquina->identificador;
-        $maquina->estado = $data['estado'] ?? $maquina->estado;
-        $maquina->horas_acumuladas = isset($data['horas_acumuladas']) ? (float)$data['horas_acumuladas'] : $maquina->horas_acumuladas;
-        $maquina->proximo_servicio = $data['proximo_servicio'] ?? $maquina->proximo_servicio;
-
-        if (array_key_exists('piloto_id', $data)) {
-            $maquina->piloto_id = $data['piloto_id'] !== '' ? $data['piloto_id'] : null;
-        }
-
-        $this->repository->update($maquina);
-
-        if ($file && $file['error'] === UPLOAD_ERR_OK) {
-            $path = $this->handleFileUpload($id, $file, $maquina->foto_path);
-            if ($path) {
-                $this->repository->updateFotoPath($id, $path);
+        try {
+            $maquina = $this->repository->findById($id);
+            if (!$maquina) {
+                return ['success' => false, 'message' => 'Máquina no encontrada.'];
             }
-        }
 
-        return ['success' => true];
+            $maquina->marca = $data['marca'] ?? $maquina->marca;
+            $maquina->tipo = $data['tipo'] ?? $maquina->tipo;
+            $maquina->identificador = !empty($data['identificador']) ? $data['identificador'] : 'MQ-' . strtoupper(substr(uniqid(), -6));
+            $maquina->estado = $data['estado'] ?? $maquina->estado;
+            $maquina->horas_acumuladas = isset($data['horas_acumuladas']) && $data['horas_acumuladas'] !== '' ? (float)$data['horas_acumuladas'] : $maquina->horas_acumuladas;
+            $maquina->proximo_servicio = $data['proximo_servicio'] ?? $maquina->proximo_servicio;
+
+            if (array_key_exists('piloto_id', $data)) {
+                $maquina->piloto_id = $data['piloto_id'] !== '' ? $data['piloto_id'] : null;
+            }
+
+            $this->repository->update($maquina);
+
+            if ($file && $file['error'] === UPLOAD_ERR_OK) {
+                $path = $this->handleFileUpload($id, $file, $maquina->foto_path);
+                if ($path) {
+                    $this->repository->updateFotoPath($id, $path);
+                }
+            }
+
+            return ['success' => true];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'message' => 'DB Error: ' . $e->getMessage()];
+        }
     }
 
     public function delete($id)
