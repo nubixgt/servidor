@@ -18,7 +18,7 @@
 
         <button 
           @click="handleOpenCreateForm"
-          class="bg-[#0054A3] hover:bg-[#004586] text-white font-display text-xs font-black tracking-wider px-5 py-3 rounded-none uppercase flex items-center justify-center gap-2 self-start md:self-center cursor-pointer transition-all active:scale-[0.98] shadow-sm select-none"
+          class="bg-[#0054A3] hover:bg-[#004586] text-white font-display text-xs font-black tracking-wider px-5 py-3 rounded-xl uppercase flex items-center justify-center gap-2 self-start md:self-center cursor-pointer transition-all active:scale-[0.98] shadow-sm select-none"
         >
           <Plus :size="16" class="text-[#FFD200]" />
           <span>Nuevo Usuario</span>
@@ -29,7 +29,7 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 select-none">
         
         <!-- Dynamic Card 1 -->
-        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm">
+        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm rounded-2xl">
           <div class="absolute top-0 left-0 w-1.5 h-full bg-[#0054A3]"></div>
           <div>
             <span class="font-display text-[10px] font-black text-slate-600 uppercase tracking-wider">
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Dynamic Card 2 -->
-        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm">
+        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm rounded-2xl">
           <div class="absolute top-0 left-0 w-1.5 h-full bg-[#FFD200]"></div>
           <div>
             <span class="font-display text-[10px] font-black text-slate-600 uppercase tracking-wider">
@@ -62,7 +62,7 @@
         </div>
 
         <!-- Dynamic Card 3 -->
-        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm">
+        <div class="bg-white border border-[#cbd5e1] p-6 flex flex-col justify-between relative overflow-hidden group shadow-sm rounded-2xl">
           <div class="absolute top-0 left-0 w-1.5 h-full bg-[#10b981]"></div>
           <div>
             <span class="font-display text-[10px] font-black text-slate-600 uppercase tracking-wider">
@@ -80,7 +80,7 @@
       </div>
 
       <!-- Main Directory Table section -->
-      <div class="bg-white border border-[#cbd5e1] overflow-hidden shadow-sm flex flex-col">
+      <div class="bg-white border border-[#cbd5e1] overflow-hidden shadow-sm flex flex-col rounded-2xl">
         
         <!-- Table Filter Topbar Controls -->
         <div class="px-6 py-4 bg-slate-50 border-b border-[#cbd5e1] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none">
@@ -99,7 +99,7 @@
                 placeholder="Buscar por nombre, ID o email..."
                 v-model="searchQuery"
                 @input="currentPage = 1"
-                class="bg-white border border-[#cbd5e1] pl-9 pr-4 py-2 text-xs outline-none focus:border-[#0054A3] transition-all w-full placeholder:text-slate-400 text-slate-800"
+                class="bg-white border border-[#cbd5e1] pl-9 pr-4 py-2 text-xs outline-none focus:border-[#0054A3] transition-all w-full placeholder:text-slate-400 text-slate-800 rounded-2xl"
               />
             </div>
 
@@ -107,7 +107,7 @@
             <select
               v-model="roleFilter"
               @change="currentPage = 1"
-              class="bg-white border border-[#cbd5e1] px-3 py-2 text-xs outline-none focus:border-[#0054A3] cursor-pointer text-slate-800"
+              class="bg-white border border-[#cbd5e1] px-3 py-2 text-xs outline-none focus:border-[#0054A3] cursor-pointer text-slate-800 rounded-2xl"
             >
               <option value="all">Todos los Roles</option>
               <option value="admin">Administrador</option>
@@ -119,7 +119,7 @@
             <select
               v-model="statusFilter"
               @change="currentPage = 1"
-              class="bg-white border border-[#cbd5e1] px-3 py-2 text-xs outline-none focus:border-[#0054A3] cursor-pointer text-slate-800"
+              class="bg-white border border-[#cbd5e1] px-3 py-2 text-xs outline-none focus:border-[#0054A3] cursor-pointer text-slate-800 rounded-2xl"
             >
               <option value="all">Cualquier Estado</option>
               <option value="activo">Activo</option>
@@ -128,7 +128,7 @@
 
             <button 
               @click="handleExportData"
-              class="bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-display text-[10px] font-bold uppercase tracking-wider px-4 py-2.5 flex items-center gap-1.5 cursor-pointer select-none"
+              class="bg-white border border-[#cbd5e1] hover:bg-slate-50 text-slate-700 font-display text-[10px] font-bold uppercase tracking-wider px-4 py-2.5 flex items-center gap-1.5 cursor-pointer select-none rounded-2xl"
               title="Exportar base de datos a CSV"
             >
               <Download :size="14" class="text-[#0054A3]" />
@@ -186,14 +186,14 @@
                   <div class="flex justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                     <button 
                       @click="handleOpenEditForm(u)"
-                      class="p-1.5 text-[#0054A3] hover:bg-[#0054A3]/10 border border-[#cbd5e1] bg-white transition-all cursor-pointer"
+                      class="p-1.5 text-[#0054A3] hover:bg-[#0054A3]/10 border border-[#cbd5e1] bg-white transition-all cursor-pointer rounded-2xl"
                       title="Editar Autorización"
                     >
                       <Edit2 :size="13" />
                     </button>
                     <button 
                       @click="handleToggleStatus(u.id, u.status, u.fullName)"
-                      class="p-1.5 border border-[#cbd5e1] bg-white transition-all cursor-pointer"
+                      class="p-1.5 border border-[#cbd5e1] bg-white transition-all cursor-pointer rounded-2xl"
                       :class="u.status === 'activo' ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'"
                       :title="u.status === 'activo' ? 'Suspender acceso' : 'Re-habilitar acceso'"
                     >
@@ -201,7 +201,7 @@
                     </button>
                     <button 
                       @click="handleDeleteUser(u.id, u.fullName)"
-                      class="p-1.5 text-red-600 hover:bg-red-50 border border-[#cbd5e1] bg-white transition-all cursor-pointer"
+                      class="p-1.5 text-red-600 hover:bg-red-50 border border-[#cbd5e1] bg-white transition-all cursor-pointer rounded-2xl"
                       title="Eliminar permanentemente"
                     >
                       <Trash2 :size="13" />
@@ -223,7 +223,7 @@
             <button 
               :disabled="currentPage === 1"
               @click="currentPage = Math.max(currentPage - 1, 1)"
-              class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors text-slate-800"
+              class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors text-slate-800 rounded-2xl"
             >
               <ChevronLeft :size="16" />
             </button>
@@ -241,7 +241,7 @@
             <button 
               :disabled="currentPage === totalPages"
               @click="currentPage = Math.min(currentPage + 1, totalPages)"
-              class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors text-slate-800"
+              class="w-8 h-8 flex items-center justify-center border border-[#cbd5e1] bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors text-slate-800 rounded-2xl"
             >
               <ChevronRight :size="16" />
             </button>
@@ -255,7 +255,7 @@
         <div v-if="isFormOpen" class="fixed inset-0 bg-slate-900/40 z-50 flex items-center justify-center p-4">
           
           <transition name="scale" appear>
-            <div class="bg-white border-2 border-[#cbd5e1] w-full max-w-lg shadow-2xl relative flex flex-col overflow-hidden">
+            <div class="bg-white border-2 border-[#cbd5e1] w-full max-w-lg shadow-2xl relative flex flex-col overflow-hidden rounded-2xl">
               
               <!-- Gold Indicator Head accent -->
               <div class="w-full h-1 bg-[#FFD200]"></div>
@@ -289,7 +289,7 @@
                     required
                     placeholder="Ej: Alejandro Rivera de León"
                     v-model="fullName"
-                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none active:bg-white text-slate-800"
+                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none active:bg-white text-slate-800 rounded-2xl"
                   />
                 </div>
 
@@ -305,7 +305,7 @@
                       required
                       placeholder="Ej: ariveral"
                       v-model="username"
-                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
+                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800 rounded-2xl"
                     />
                   </div>
 
@@ -319,7 +319,7 @@
                       :required="!editUserId"
                       placeholder="Ej: clave123"
                       v-model="password"
-                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800"
+                      class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none text-slate-800 rounded-2xl"
                     />
                   </div>
                 </div>
@@ -331,7 +331,7 @@
                   </label>
                   <select
                     v-model="role"
-                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none cursor-pointer text-slate-800"
+                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none cursor-pointer text-slate-800 rounded-2xl"
                   >
                     <option value="tecnico_dashboard">Técnico Horómetros (Válido para enviar lecturas)</option>
                     <option value="tecnico_piloto">Técnico Piloto (Formulario de Piloto)</option>
@@ -346,7 +346,7 @@
                   </label>
                   <select
                     v-model="status"
-                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none cursor-pointer text-slate-800"
+                    class="w-full bg-slate-50 border border-[#cbd5e1] p-2.5 font-sans text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] focus:bg-white outline-none cursor-pointer text-slate-800 rounded-2xl"
                   >
                     <option value="activo">Permitido (Autorización Concedida)</option>
                     <option value="inactivo">Suspendido (Remover Permisos de Acceso)</option>
@@ -614,13 +614,13 @@ const totalFieldOperatorsCount = computed(() => totalGlobalDatabaseCount.value -
 const renderRoleBadge = (roleStr: string) => {
   switch (roleStr) {
     case "admin":
-      return '<span class="inline-block px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold uppercase rounded-sm border border-red-200">Admin</span>';
+      return '<span class="inline-block px-2 py-0.5 bg-red-100 text-red-800 text-[10px] font-bold uppercase rounded-lg border border-red-200">Admin</span>';
     case "tecnico_dashboard":
-      return '<span class="inline-block px-2 py-0.5 bg-indigo-100 text-[#0054A3] text-[10px] font-bold uppercase rounded-sm border border-indigo-200">Panel Técnico</span>';
+      return '<span class="inline-block px-2 py-0.5 bg-indigo-100 text-[#0054A3] text-[10px] font-bold uppercase rounded-lg border border-indigo-200">Panel Técnico</span>';
     case "tecnico_piloto":
-      return '<span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold uppercase rounded-sm border border-amber-200">Técnico Piloto</span>';
+      return '<span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold uppercase rounded-lg border border-amber-200">Técnico Piloto</span>';
     default:
-      return '<span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold uppercase rounded-sm border border-slate-200">Técnico</span>';
+      return '<span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold uppercase rounded-lg border border-slate-200">Técnico</span>';
   }
 };
 

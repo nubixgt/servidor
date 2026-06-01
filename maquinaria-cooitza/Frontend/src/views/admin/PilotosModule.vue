@@ -12,7 +12,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- Registration form block -->
-        <section class="lg:col-span-5 bg-white border border-[#cbd5e1] p-6 shadow-sm">
+        <section class="lg:col-span-5 bg-white border border-[#cbd5e1] p-6 shadow-sm rounded-2xl">
           <div class="flex items-center gap-2 mb-4 border-b pb-2">
             <UserPlus class="text-[#0054A3] w-5 h-5" />
             <h3 class="font-display text-xs font-bold uppercase text-slate-800">
@@ -27,7 +27,7 @@
                 type="text"
                 v-model="pilotForm.nombre"
                 placeholder="Ej. Ricardo Valdivia"
-                class="w-full px-3 py-2 border border-[#cbd5e1] text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] transition-colors bg-white outline-none text-slate-800"
+                class="w-full px-3 py-2 border border-[#cbd5e1] text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] transition-colors bg-white outline-none text-slate-800 rounded-2xl"
                 required
               />
             </div>
@@ -38,13 +38,13 @@
                 type="tel"
                 v-model="pilotForm.telefono"
                 placeholder="Ej: +502 5901 2234"
-                class="w-full px-3 py-2 border border-[#cbd5e1] text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] transition-colors bg-white outline-none text-slate-800"
+                class="w-full px-3 py-2 border border-[#cbd5e1] text-xs focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] transition-colors bg-white outline-none text-slate-800 rounded-2xl"
               />
             </div>
 
             <div>
               <label class="text-slate-600 text-[11px] font-bold block mb-1 uppercase tracking-wider">Maquinarias Autorizadas / Asignadas</label>
-              <div class="grid grid-cols-1 gap-1.5 p-3 bg-slate-50 border border-[#cbd5e1] max-h-44 overflow-y-auto">
+              <div class="grid grid-cols-1 gap-1.5 p-3 bg-slate-50 border border-[#cbd5e1] max-h-44 overflow-y-auto rounded-2xl">
                 <label 
                   v-for="machine in availableMachines" 
                   :key="machine.id" 
@@ -54,7 +54,7 @@
                     type="checkbox"
                     :checked="pilotForm.assignedMachines.includes(machine.id)"
                     @change="toggleMachineAssignment(machine.id)"
-                    class="w-4 h-4 rounded-sm border-[#cbd5e1] text-[#0054A3] focus:ring-0 cursor-pointer"
+                    class="w-4 h-4 rounded-lg border-[#cbd5e1] text-[#0054A3] focus:ring-0 cursor-pointer"
                   />
                   <span class="group-hover:text-[#0054A3] transition-colors">{{ machine.marca }} - {{ machine.identificador }}</span>
                 </label>
@@ -94,7 +94,7 @@
           </div>
 
           <div class="space-y-2">
-            <div v-if="pilots.length === 0" class="bg-white border border-[#cbd5e1] p-8 text-center text-slate-400 italic">
+            <div v-if="pilots.length === 0" class="bg-white border border-[#cbd5e1] p-8 text-center text-slate-400 italic rounded-2xl">
               Ningún piloto registrado actualmente
             </div>
             
@@ -102,7 +102,7 @@
               v-else 
               v-for="p in pilots" 
               :key="p.id" 
-              class="bg-white border border-[#cbd5e1] p-4 flex items-center gap-4 hover:border-[#0054A3] transition-colors shadow-sm"
+              class="bg-white border border-[#cbd5e1] p-4 flex items-center gap-4 hover:border-[#0054A3] transition-colors shadow-sm rounded-2xl"
             >
               <!-- Avatar -->
               <div class="w-10 h-10 bg-[#0054A3]/5 text-[#0054A3] rounded-full flex items-center justify-center font-display font-bold">
@@ -132,7 +132,7 @@
                 <button 
                   type="button"
                   @click="toggleStatus(p.id, p.status)"
-                  class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-sm hover:scale-95 transition-all text-left cursor-pointer"
+                  class="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-lg hover:scale-95 transition-all text-left cursor-pointer"
                   :class="p.status === 'activo' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'"
                 >
                   ● {{ p.status === "activo" ? "Activo" : "Inactivo" }}

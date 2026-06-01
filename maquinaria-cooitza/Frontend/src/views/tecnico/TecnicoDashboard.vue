@@ -57,7 +57,7 @@
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         
         <!-- Stat Box 1: Total Maquinaria -->
-        <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group">
+        <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden group rounded-2xl">
           <div class="absolute right-0 top-0 p-4 opacity-5 translate-x-3 -translate-y-3">
             <Construction :size="80" />
           </div>
@@ -76,7 +76,7 @@
         </div>
 
         <!-- Stat Box 2: Total Vehiculos -->
-        <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden">
+        <div class="col-span-12 md:col-span-3 bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-sm relative overflow-hidden rounded-2xl">
           <div class="absolute right-0 top-0 p-4 opacity-5 translate-x-3 -translate-y-3">
             <Truck :size="80" />
           </div>
@@ -95,7 +95,7 @@
         </div>
 
         <!-- Stat Box 3: Bar Distribution Chart of Activity -->
-        <div class="col-span-12 md:col-span-6 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+        <div class="col-span-12 md:col-span-6 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between rounded-2xl">
           <div class="flex justify-between items-center mb-4">
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest">
               KILOMETRAJE ACUMULADO POR VEHÍCULO (TOP 14)
@@ -132,7 +132,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Próximos Mantenimientos Widget -->
-        <div class="col-span-12 lg:col-span-4 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+        <div class="col-span-12 lg:col-span-4 bg-white border border-slate-200 p-6 shadow-sm flex flex-col justify-between rounded-2xl">
           <div>
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-5">
               PRÓXIMOS MANTENIMIENTOS PROGRAMADOS
@@ -157,7 +157,7 @@
         </div>
 
         <!-- Dynamic Asset Preview Widget -->
-        <div class="col-span-12 lg:col-span-8 bg-white border border-slate-200 p-6 shadow-sm flex flex-col">
+        <div class="col-span-12 lg:col-span-8 bg-white border border-slate-200 p-6 shadow-sm flex flex-col rounded-2xl">
           <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
             <span class="font-display text-[10px] font-bold text-slate-500 uppercase tracking-widest block">
               VISTA PREVIA DE ASSET OPERATIVO

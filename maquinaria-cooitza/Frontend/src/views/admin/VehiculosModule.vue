@@ -20,7 +20,7 @@
         
         <!-- Left Form Column (Registro de Vehículos) -->
         <section class="flex-1 space-y-4 w-full">
-          <div class="bg-white border border-[#cbd5e1] p-6 relative overflow-hidden">
+          <div class="bg-white border border-[#cbd5e1] p-6 relative overflow-hidden rounded-2xl">
             <div class="absolute top-0 left-0 w-full h-[3px] bg-[#0054A3]"></div>
             
             <h3 class="font-display text-xs font-black text-[#0054A3] uppercase tracking-wider mb-6 border-b pb-2">
@@ -37,7 +37,7 @@
                   type="text"
                   v-model="marca"
                   placeholder="Ej. Freightliner o Volvo FH16"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800 rounded-2xl"
                   required
                 />
               </div>
@@ -50,7 +50,7 @@
                   type="text"
                   v-model="placa"
                   placeholder="Ej. ABC-1234"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800 rounded-2xl"
                   required
                 />
               </div>
@@ -61,7 +61,7 @@
                 </label>
                 <select 
                   v-model="tipo"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800 rounded-2xl"
                 >
                   <option value="Camión">Camión</option>
                   <option value="Pickup">Pickup</option>
@@ -76,7 +76,7 @@
                   type="text"
                   v-model="yearModel"
                   placeholder="Ej. 2024"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 outline-none text-slate-800 rounded-2xl"
                 />
               </div>
 
@@ -86,7 +86,7 @@
                 </label>
                 <select 
                   v-model="piloto_id"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800 rounded-2xl"
                 >
                   <option value="">-- Sin piloto asignado --</option>
                   <option v-for="p in pilotos" :key="p.id" :value="p.id">
@@ -104,7 +104,7 @@
                     type="number"
                     v-model="mileage"
                     placeholder="000,000"
-                    class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 pl-3 pr-12 outline-none text-slate-800"
+                    class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 pl-3 pr-12 outline-none text-slate-800 rounded-2xl"
                     required
                   />
                   <span class="absolute right-3 top-1/2 -translate-y-1/2 font-display text-[10px] font-black text-slate-500">
@@ -119,7 +119,7 @@
                 </label>
                 <select
                   v-model="status"
-                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800"
+                  class="w-full border border-[#cbd5e1] focus:border-[#0054A3] text-xs py-2 px-3 bg-white outline-none cursor-pointer text-slate-800 rounded-2xl"
                 >
                   <option value="activo">Operativo / Activo</option>
                   <option value="inactivo">Taller / Inactivo</option>
@@ -145,7 +145,7 @@
                   @dragover.prevent="isDragOver = true"
                   @dragleave.prevent="isDragOver = false"
                   @drop.prevent="handleDrop"
-                  class="border-2 border-dashed p-8 flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer group rounded-sm"
+                  class="border-2 border-dashed p-8 flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer group rounded-lg"
                   :class="isDragOver ? 'border-[#0054A3] bg-[#0054A3]/5' : 'border-[#cbd5e1] bg-slate-50 hover:bg-slate-100'"
                 >
                   <template v-if="photoPreview">
@@ -158,7 +158,7 @@
                       <button 
                         type="button"
                         @click.stop="photoPreview = null"
-                        class="absolute top-1 right-1 bg-red-600 text-white p-0.5 rounded-sm hover:bg-red-700"
+                        class="absolute top-1 right-1 bg-red-600 text-white p-0.5 rounded-lg hover:bg-red-700"
                         title="Quitar foto"
                       >
                         <X :size="12" />
@@ -182,7 +182,7 @@
               <div class="md:col-span-2 pt-2 flex flex-col md:flex-row gap-4 items-center">
                 <button 
                   type="submit"
-                  class="w-full md:w-auto px-6 py-2.5 bg-[#FFD200] text-[#0054A3] font-display text-xs font-black uppercase tracking-widest hover:brightness-105 transition-all cursor-pointer shadow-sm rounded-none"
+                  class="w-full md:w-auto px-6 py-2.5 bg-[#FFD200] text-[#0054A3] font-display text-xs font-black uppercase tracking-widest hover:brightness-105 transition-all cursor-pointer shadow-sm rounded-xl"
                 >
                   {{ editVehicleId ? "Aplicar Cambios" : "Registrar Vehículo" }}
                 </button>
@@ -215,7 +215,7 @@
             <div 
               v-for="v in recentVehicles"
               :key="v.id" 
-              class="bg-white border border-[#cbd5e1] p-3 flex items-center gap-3 hover:border-[#0054A3] transition-all cursor-pointer group shadow-sm select-none"
+              class="bg-white border border-[#cbd5e1] p-3 flex items-center gap-3 hover:border-[#0054A3] transition-all cursor-pointer group shadow-sm select-none rounded-2xl"
               @click="handleEditVehicle(v)"
               title="Haga clic para editar los datos de este vehículo"
             >
@@ -264,7 +264,7 @@
           <button 
             type="button"
             @click="showInvoiceModal = true"
-            class="w-full mt-2 py-3 border border-[#cbd5e1] hover:border-[#0054A3] font-display text-[10px] font-black uppercase text-slate-600 hover:text-[#0054A3] transition-all flex items-center justify-center gap-2 cursor-pointer bg-white"
+            class="w-full mt-2 py-3 border border-[#cbd5e1] hover:border-[#0054A3] font-display text-[10px] font-black uppercase text-slate-600 hover:text-[#0054A3] transition-all flex items-center justify-center gap-2 cursor-pointer bg-white rounded-2xl"
           >
             <span>Ver Inventario Completo</span>
             <ArrowRight :size="13" />
@@ -302,7 +302,7 @@
                     type="text" 
                     placeholder="Filtrar por placa, marca, modelo o código..."
                     v-model="searchTerm"
-                    class="pl-9 pr-3 py-1.5 bg-white border border-[#cbd5e1] text-xs font-semibold outline-none focus:border-[#0054A3] w-full text-slate-800"
+                    class="pl-9 pr-3 py-1.5 bg-white border border-[#cbd5e1] text-xs font-semibold outline-none focus:border-[#0054A3] w-full text-slate-800 rounded-2xl"
                   />
                 </div>
                 <div class="text-[11px] font-bold text-slate-500 shrink-0 uppercase tracking-widest">
@@ -346,7 +346,7 @@
                       <td class="py-3 px-3 font-mono font-bold">{{ v.placa }}</td>
                       <td class="py-3 px-3">
                         <span class="uppercase text-slate-500 font-bold">{{ v.modelo }}</span>
-                        <span class="ml-1 text-[10px] bg-slate-100 px-1 py-0.5 uppercase border rounded-sm font-semibold text-slate-600">
+                        <span class="ml-1 text-[10px] bg-slate-100 px-1 py-0.5 uppercase border rounded-lg font-semibold text-slate-600">
                           {{ v.tipo }}
                         </span>
                       </td>

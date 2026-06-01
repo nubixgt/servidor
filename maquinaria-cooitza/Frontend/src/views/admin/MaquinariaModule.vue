@@ -22,13 +22,13 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
         
         <!-- KPI: Total Activos -->
-        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm">
+        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm rounded-2xl">
           <span class="font-display text-[11px] font-bold text-slate-600 uppercase tracking-wider">Total Activos</span>
           <span class="font-display text-4xl font-extrabold text-[#835500] mt-4">{{ machinery.length }}</span>
         </div>
 
         <!-- KPI: En Operación -->
-        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm">
+        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm rounded-2xl">
           <span class="font-display text-[11px] font-bold text-slate-600 uppercase tracking-wider">En Operación</span>
           <div class="flex items-center gap-2 mt-4">
             <div class="w-2.5 h-2.5 rounded-full bg-[#f5a623] animate-pulse"></div>
@@ -39,7 +39,7 @@
         </div>
 
         <!-- KPI: En Taller / Mantenimiento -->
-        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm">
+        <div class="bg-white p-5 border border-[#cbd5e1] flex flex-col justify-between shadow-sm rounded-2xl">
           <span class="font-display text-[11px] font-bold text-slate-600 uppercase tracking-wider">En Taller / Mando</span>
           <div class="flex items-center gap-2 mt-4">
             <div class="w-2.5 h-2.5 rounded-full bg-[#ba1a1a]"></div>
@@ -64,7 +64,7 @@
 
       <!-- FILTER DRAWER SLIDE DOWN PANEL -->
       <transition name="expand">
-        <div v-if="showFilters" class="overflow-hidden bg-white border border-[#cbd5e1] shadow-sm p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div v-if="showFilters" class="overflow-hidden bg-white border border-[#cbd5e1] shadow-sm p-5 grid grid-cols-1 md:grid-cols-3 gap-4 rounded-2xl">
           <!-- Search Input -->
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Buscar por Texto</label>
@@ -74,7 +74,7 @@
                 type="text"
                 placeholder="Ej. Caterpillar, WA200..."
                 v-model="searchTerm"
-                class="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none bg-white transition-colors"
+                class="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none bg-white transition-colors rounded-2xl"
               />
             </div>
           </div>
@@ -84,7 +84,7 @@
             <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Filtrar por Tipo</label>
             <select 
               v-model="filterCategory"
-              class="w-full border border-[#cbd5e1] px-3 py-2 text-xs bg-white outline-none cursor-pointer focus:border-[#835500]"
+              class="w-full border border-[#cbd5e1] px-3 py-2 text-xs bg-white outline-none cursor-pointer focus:border-[#835500] rounded-2xl"
             >
               <option value="todos">Todos los Equipos</option>
               <option value="Tractor">Tractor</option>
@@ -101,7 +101,7 @@
             <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Estado Técnico</label>
             <select 
               v-model="filterStatus"
-              class="w-full border border-[#cbd5e1] px-3 py-2 text-xs bg-white outline-none cursor-pointer focus:border-[#835500]"
+              class="w-full border border-[#cbd5e1] px-3 py-2 text-xs bg-white outline-none cursor-pointer focus:border-[#835500] rounded-2xl"
             >
               <option value="todos">Cualquier Estado</option>
               <option value="Operativo">Operativo (En Campo)</option>
@@ -113,14 +113,14 @@
       </transition>
 
       <!-- Machinery Cards Grid -->
-      <div v-if="filteredMachinery.length === 0" class="bg-white border border-[#cbd5e1] p-12 text-center text-slate-400 italic">
+      <div v-if="filteredMachinery.length === 0" class="bg-white border border-[#cbd5e1] p-12 text-center text-slate-400 italic rounded-2xl">
         No se encontraron activos industriales según los criterios especificados.
       </div>
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div 
           v-for="m in filteredMachinery" 
           :key="m.id" 
-          class="bg-white border border-[#cbd5e1] group hover:border-[#835500] transition-colors overflow-hidden flex flex-col md:flex-row h-full shadow-sm relative"
+          class="bg-white border border-[#cbd5e1] group hover:border-[#835500] transition-colors overflow-hidden flex flex-col md:flex-row h-full shadow-sm relative rounded-2xl"
         >
           
           <!-- Photo Box container -->
@@ -157,9 +157,7 @@
               <!-- Status Badge -->
               <div class="mt-3">
                 <span class="inline-block px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest"
-                      :class="m.status === 'Operativo' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
-                              m.status === 'Mantenimiento' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
-                              'bg-red-50 text-red-800 border border-red-200'">
+                      :class="m.status === 'Operativo' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : m.status === 'Mantenimiento' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-red-50 text-red-800 border border-red-200'">
                   ● {{ m.status === "Operativo" ? "Operativo" : m.status === "Mantenimiento" ? "Taller" : "Fuera de Servicio" }}
                 </span>
               </div>
@@ -196,7 +194,7 @@
 
                 <!-- Popover floating action panel -->
                 <transition name="fade">
-                  <div v-if="activeDropdownId === m.id" class="absolute right-0 bottom-full mb-1 w-44 bg-white border border-[#cbd5e1] shadow-xl z-20 font-sans text-xs">
+                  <div v-if="activeDropdownId === m.id" class="absolute right-0 bottom-full mb-1 w-44 bg-white border border-[#cbd5e1] shadow-xl z-20 font-sans text-xs rounded-2xl">
                     <button 
                       type="button"
                       @click="openEditModal(m)"
@@ -227,7 +225,7 @@
       <transition name="fade">
         <div v-if="isModalOpen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="isModalOpen = false">
           <transition name="scale" appear>
-            <div class="bg-white border border-[#cbd5e1] w-full max-w-2xl p-6 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+            <div class="bg-white border border-[#cbd5e1] w-full max-w-2xl p-6 shadow-2xl relative overflow-y-auto max-h-[90vh] rounded-2xl">
               
               <!-- Modal Header -->
               <div class="flex justify-between items-start mb-6 border-b border-[#cbd5e1] pb-4">
@@ -258,7 +256,7 @@
                       type="text"
                       v-model="brand"
                       placeholder="Ej. Caterpillar, John Deere or Komatsu"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
                       required
                     />
                   </div>
@@ -268,7 +266,7 @@
                     <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Tipo de Equipo</label>
                     <select 
                       v-model="category"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800 rounded-2xl"
                     >
                       <option value="Tractor">Tractor</option>
                       <option value="Excavadora">Excavadora</option>
@@ -288,7 +286,7 @@
                       type="text"
                       v-model="name"
                       placeholder="Ej. Excavator 320 GC o 8R 370"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
                       required
                     />
                   </div>
@@ -300,7 +298,7 @@
                       type="text"
                       v-model="serialId"
                       placeholder="Ej. ID-7742-XP"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
                       required
                     />
                   </div>
@@ -314,7 +312,7 @@
                       type="number"
                       v-model="accumulatedHours"
                       placeholder="Ej. 1240"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 rounded-2xl"
                       min="0"
                       step="0.1"
                       required
@@ -327,7 +325,7 @@
                     <input 
                       type="date"
                       v-model="nextService"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 cursor-text"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none font-sans transition-colors text-slate-800 cursor-text rounded-2xl"
                     />
                   </div>
 
@@ -336,7 +334,7 @@
                     <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Condición del Activo</label>
                     <select 
                       v-model="status"
-                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800"
+                      class="p-2.5 bg-white border border-[#cbd5e1] focus:border-[#835500] text-xs outline-none cursor-pointer font-sans transition-colors text-slate-800 rounded-2xl"
                     >
                       <option value="Operativo">Operativo (En Campo)</option>
                       <option value="Mantenimiento">Mantenimiento / Taller</option>
@@ -362,7 +360,7 @@
                     @dragover.prevent="isDragOver = true"
                     @dragleave.prevent="isDragOver = false"
                     @drop.prevent="handleDrop"
-                    class="border-2 border-dashed p-10 flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer group rounded-sm"
+                    class="border-2 border-dashed p-10 flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer group rounded-lg"
                     :class="isDragOver ? 'border-[#835500] bg-[#835500]/5' : 'border-[#cbd5e1] bg-slate-50 hover:bg-slate-100'"
                   >
                     <template v-if="photoPreview">
@@ -402,7 +400,7 @@
                   <button 
                     type="button"
                     @click="isModalOpen = false"
-                    class="px-6 py-2.5 border border-[#cbd5e1] hover:bg-slate-50 font-display text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer text-slate-600"
+                    class="px-6 py-2.5 border border-[#cbd5e1] hover:bg-slate-50 font-display text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer text-slate-600 rounded-2xl"
                   >
                     Cancelar
                   </button>

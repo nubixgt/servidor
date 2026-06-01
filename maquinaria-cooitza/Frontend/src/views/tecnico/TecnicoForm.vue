@@ -15,7 +15,7 @@
         </div>
 
         <!-- Diagnostic details -->
-        <div class="w-full bg-slate-50 p-4 border border-[#cbd5e1] rounded text-left font-mono text-xs flex flex-col gap-2 text-slate-600">
+        <div class="w-full bg-slate-50 p-4 border border-[#cbd5e1] rounded text-left font-mono text-xs flex flex-col gap-2 text-slate-600 rounded-2xl">
           <div><span class="text-[#0054A3] font-bold">FECHA/HORA:</span> {{ new Date().toLocaleString("es-GT") }}</div>
           <div><span class="text-[#0054A3] font-bold">HORÓMETRO:</span> {{ horometroValue }} HRS ({{ regType === 'incinal' ? 'Inicial' : 'Final' }})</div>
           <div><span class="text-[#0054A3] font-bold">UBICACIÓN:</span> {{ latitude }}° N, {{ longitude }}° W</div>
@@ -33,7 +33,7 @@
     </transition>
   </div>
 
-  <div v-else class="w-full max-w-[640px] bg-white border border-[#cbd5e1] p-8 shadow-sm flex flex-col gap-6">
+  <div v-else class="w-full max-w-[640px] bg-white border border-[#cbd5e1] p-8 shadow-sm flex flex-col gap-6 rounded-2xl">
     <!-- Session state header -->
     <div class="flex justify-between items-center bg-slate-100 -mx-8 -mt-8 px-8 py-3 border-b border-[#cbd5e1]">
       <div class="flex items-center gap-2">
@@ -69,7 +69,7 @@
         <div class="relative">
           <select 
             v-model="operatorName"
-            class="w-full bg-slate-50 border border-[#cbd5e1] py-3 px-4 font-sans text-sm text-slate-800 focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] outline-none appearance-none transition-all cursor-pointer"
+            class="w-full bg-slate-50 border border-[#cbd5e1] py-3 px-4 font-sans text-sm text-slate-800 focus:ring-1 focus:ring-[#FFD200] focus:border-[#0054A3] outline-none appearance-none transition-all cursor-pointer rounded-2xl"
           >
             <option value="">Seleccionar Operador...</option>
             <option value="Robert Andersson (Técnico)">Robert Andersson</option>
@@ -110,7 +110,7 @@
           <button
             type="button"
             @click="regType = 'incinal'"
-            class="flex-1 py-2 text-center font-display text-xs font-bold uppercase tracking-wider transition-all"
+            class="flex-1 py-2 text-center font-display text-xs font-bold uppercase tracking-wider transition-all rounded-2xl"
             :class="regType === 'incinal' ? 'bg-white border border-[#cbd5e1] text-[#0054A3]' : 'text-slate-500 opacity-60 hover:opacity-100'"
           >
             Horómetro Inicial
@@ -118,7 +118,7 @@
           <button
             type="button"
             @click="regType = 'final'"
-            class="flex-1 py-2 text-center font-display text-xs font-bold uppercase tracking-wider transition-all"
+            class="flex-1 py-2 text-center font-display text-xs font-bold uppercase tracking-wider transition-all rounded-2xl"
             :class="regType === 'final' ? 'bg-white border border-[#cbd5e1] text-[#0054A3]' : 'text-slate-500 opacity-60 hover:opacity-100'"
           >
             Horómetro Final
@@ -139,9 +139,9 @@
               step="0.1"
               min="0"
               v-model="horometroValue"
-              class="w-full bg-white border border-[#cbd5e1] py-2.5 px-4 font-display font-medium text-sm text-slate-800 outline-none focus:border-[#0054A3] focus:ring-1 focus:ring-[#FFD200]"
+              class="w-full bg-white border border-[#cbd5e1] py-2.5 px-4 font-display font-medium text-sm text-slate-800 outline-none focus:border-[#0054A3] focus:ring-1 focus:ring-[#FFD200] rounded-2xl"
             />
-            <div class="ml-3 bg-slate-100 px-4 py-2.5 border border-[#cbd5e1] font-display text-xs font-bold text-slate-600">
+            <div class="ml-3 bg-slate-100 px-4 py-2.5 border border-[#cbd5e1] font-display text-xs font-bold text-slate-600 rounded-2xl">
               HRS
             </div>
           </div>
@@ -152,7 +152,7 @@
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- File Upload Selector -->
-            <label class="border-2 border-dashed border-[#cbd5e1] py-6 px-4 flex flex-col items-center justify-center gap-1.5 hover:border-[#0054A3] cursor-pointer transition-colors bg-white group select-none">
+            <label class="border-2 border-dashed border-[#cbd5e1] py-6 px-4 flex flex-col items-center justify-center gap-1.5 hover:border-[#0054A3] cursor-pointer transition-colors bg-white group select-none rounded-2xl">
               <Camera :size="26" class="text-slate-500 group-hover:text-[#0054A3] transition-colors" />
               <span class="font-sans text-xs text-slate-500 group-hover:text-slate-800">
                 Subir o capturar foto
@@ -181,7 +181,7 @@
           </div>
 
           <transition name="scale">
-            <div v-if="selectedPhoto" class="mt-3 relative border border-[#cbd5e1] overflow-hidden">
+            <div v-if="selectedPhoto" class="mt-3 relative border border-[#cbd5e1] overflow-hidden rounded-2xl">
               <img 
                 :src="selectedPhoto" 
                 alt="Vista previa" 
@@ -212,7 +212,7 @@
         <div 
           @click="handleRandomizeCoordinates"
           title="Haga clic para simular otra ubicación de obra"
-          class="h-44 w-full border border-[#cbd5e1] bg-slate-50 relative overflow-hidden group cursor-pointer"
+          class="h-44 w-full border border-[#cbd5e1] bg-slate-50 relative overflow-hidden group cursor-pointer rounded-2xl"
         >
           <!-- Minimal grayscale topographical industrial styling construct -->
           <div class="absolute inset-0 bg-[#f1f5f9] flex items-center justify-center pointer-events-none opacity-40">
@@ -239,7 +239,7 @@
             ZONA OBRA INTERACTIVA • CLIC PARA CAMBIAR
           </div>
 
-          <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2.5 py-1 border border-[#cbd5e1] max-w-[90%] truncate text-right">
+          <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2.5 py-1 border border-[#cbd5e1] max-w-[90%] truncate text-right rounded-2xl">
             <p class="font-display text-[9px] font-bold text-slate-800 tracking-tight">
               {{ latitude }}° N, {{ longitude }}° W
             </p>

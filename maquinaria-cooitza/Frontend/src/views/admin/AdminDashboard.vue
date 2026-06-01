@@ -2,7 +2,7 @@
   <div class="flex min-h-screen bg-[#f8f9fa] w-full text-slate-800 overflow-x-hidden font-sans select-text">
     
     <!-- SideNavBar Menu Component -->
-    <aside class="hidden lg:flex flex-col w-64 bg-slate-100 border-r border-[#cbd5e1] h-screen sticky top-0 p-4 select-none">
+    <aside class="hidden lg:flex flex-col w-64 bg-slate-100 border-r border-[#cbd5e1] h-screen sticky top-0 p-4 select-none rounded-2xl">
       
       <!-- Brand Header -->
       <div class="mb-8">
@@ -118,7 +118,7 @@
               <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
             </button>
 
-            <div class="flex items-center gap-2 border-l pl-3 border-[#cbd5e1]">
+            <div class="flex items-center gap-2 border-l pl-3 border-[#cbd5e1] rounded-2xl">
               <div class="hidden sm:flex flex-col text-right">
                 <span class="font-sans text-xs font-bold text-slate-800">Admin Cooitzá</span>
                 <span class="font-mono text-[9px] text-[#0054A3] uppercase">Consola Principal</span>

@@ -59,12 +59,7 @@
               :key="m.id"
               type="button"
               @click="form.maquina_id = m.id"
-              :class="[
-                'border p-4 text-center flex flex-col items-center gap-1 transition-all',
-                form.maquina_id === m.id 
-                  ? 'border-primary bg-primary/10 ring-1 ring-primary' 
-                  : 'border-outline-variant hover:border-primary bg-white'
-              ]"
+              :class="[ 'border p-4 text-center flex flex-col items-center gap-1 transition-all', form.maquina_id === m.id ? 'border-primary bg-primary/10 ring-1 ring-primary' : 'border-outline-variant hover:border-primary bg-white' ]"
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -93,24 +88,14 @@
             <button
               type="button"
               @click="form.tipo_registro = 'inicial'"
-              :class="[
-                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
-                form.tipo_registro === 'inicial' 
-                  ? 'bg-white border border-outline-variant text-primary shadow-sm' 
-                  : 'text-on-surface-variant opacity-60 hover:opacity-100'
-              ]"
+              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all', form.tipo_registro === 'inicial' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
               Horometro Inicial
             </button>
             <button
               type="button"
               @click="form.tipo_registro = 'final'"
-              :class="[
-                'flex-1 py-2 text-center font-display text-sm font-medium transition-all',
-                form.tipo_registro === 'final' 
-                  ? 'bg-white border border-outline-variant text-primary shadow-sm' 
-                  : 'text-on-surface-variant opacity-60 hover:opacity-100'
-              ]"
+              :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all', form.tipo_registro === 'final' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
               Horometro Final
             </button>
