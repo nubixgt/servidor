@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 01-06-2026 a las 13:44:46
+-- Tiempo de generación: 01-06-2026 a las 14:52:02
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -102,6 +102,7 @@ INSERT INTO `piloto_maquinas` (`piloto_id`, `maquina_id`) VALUES
 CREATE TABLE `registros_maquinaria` (
   `id` int(11) NOT NULL,
   `operador` varchar(255) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
   `maquina_id` varchar(50) NOT NULL,
   `tipo_registro` enum('inicial','final') NOT NULL,
   `valor_horometro` decimal(10,2) NOT NULL,
@@ -115,12 +116,15 @@ CREATE TABLE `registros_maquinaria` (
 -- Volcado de datos para la tabla `registros_maquinaria`
 --
 
-INSERT INTO `registros_maquinaria` (`id`, `operador`, `maquina_id`, `tipo_registro`, `valor_horometro`, `foto_horometro`, `latitud`, `longitud`, `fecha_registro`) VALUES
-(1, 'Oscar Choc', 'tractor', 'inicial', 100.00, 'uploads/foto_69fb9d5f5d3ac8.00853558.jpg', 14.54317206, -90.54946079, '2026-05-06 19:58:23'),
-(2, 'Eduardo Choc', 'retro', 'final', 150.00, 'uploads/registros_maquinaria/2/horometro.jpg', 14.54317206, -90.54946079, '2026-05-06 20:06:13'),
-(3, 'Ulises Ruano', 'rodo', 'inicial', 200.00, 'uploads/registros_maquinaria/3/horometro.jpg', 14.54317206, -90.54946079, '2026-05-06 20:12:20'),
-(4, 'Gabriel Tun', 'tractor', 'inicial', 11111.00, 'uploads/registros_maquinaria/4/horometro.jpg', 14.63906080, -90.51281015, '2026-05-06 20:32:23'),
-(5, 'Alejandro del Cid', 'excavadora', 'inicial', 1500.00, 'uploads/registros_maquinaria/5/horometro.jpg', 14.92287199, -90.19528197, '2026-05-06 22:15:54');
+INSERT INTO `registros_maquinaria` (`id`, `operador`, `usuario_id`, `maquina_id`, `tipo_registro`, `valor_horometro`, `foto_horometro`, `latitud`, `longitud`, `fecha_registro`) VALUES
+(1, 'Oscar Choc', NULL, 'tractor', 'inicial', 100.00, 'uploads/foto_69fb9d5f5d3ac8.00853558.jpg', 14.54317206, -90.54946079, '2026-05-06 19:58:23'),
+(2, 'Eduardo Choc', NULL, 'retro', 'final', 150.00, 'uploads/registros_maquinaria/2/horometro.jpg', 14.54317206, -90.54946079, '2026-05-06 20:06:13'),
+(3, 'Ulises Ruano', NULL, 'rodo', 'inicial', 200.00, 'uploads/registros_maquinaria/3/horometro.jpg', 14.54317206, -90.54946079, '2026-05-06 20:12:20'),
+(4, 'Gabriel Tun', NULL, 'tractor', 'inicial', 11111.00, 'uploads/registros_maquinaria/4/horometro.jpg', 14.63906080, -90.51281015, '2026-05-06 20:32:23'),
+(5, 'Alejandro del Cid', NULL, 'excavadora', 'inicial', 1500.00, 'uploads/registros_maquinaria/5/horometro.jpg', 14.92287199, -90.19528197, '2026-05-06 22:15:54'),
+(6, 'Robert Andersson', NULL, 'rodo', 'inicial', 1500.00, 'uploads/registros_maquinaria/6/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:16:09'),
+(7, 'Robert Andersson', NULL, 'pipa', 'inicial', 2000.00, 'uploads/registros_maquinaria/7/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:21:14'),
+(8, 'Robert Andersson', 3, 'rodo', 'inicial', 2000.00, 'uploads/registros_maquinaria/8/horometro.jpg', 15.49740000, -90.25250000, '2026-06-01 14:28:06');
 
 -- --------------------------------------------------------
 
@@ -144,10 +148,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `username`, `password_hash`, `full_name`, `role`, `status`, `created_at`, `last_access`) VALUES
-(1, 'admin', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Administrador Principal', 'admin', 'activo', '2026-05-30 03:55:29', '2026-05-31 11:57:54'),
+(1, 'admin', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Administrador Principal', 'admin', 'activo', '2026-05-30 03:55:29', '2026-06-01 08:47:38'),
 (2, 'analista', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Técnico Analista', 'tecnico_dashboard', 'activo', '2026-05-30 03:55:29', '2026-05-30 00:00:30'),
-(3, 'piloto1', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Robert Andersson', 'tecnico_piloto', 'activo', '2026-05-30 03:55:29', '2026-05-31 11:56:21'),
-(5, 'prueba2', '$2y$10$CC9E/o3C7tPVOfgmEBPY4uf6QpzAQm73PVSSuHZxhM7AAFhUyFqZe', 'Prueba 2', 'admin', 'activo', '2026-05-30 04:47:27', '2026-05-29 22:48:03');
+(3, 'piloto1', '$2y$10$SODQ9CWCE5iCV2fbh4i6pO2l.lQ9SdwyNMdBwlVMPZwS4CxKIXNBC', 'Robert Andersson', 'tecnico_piloto', 'activo', '2026-05-30 03:55:29', '2026-06-01 08:27:53'),
+(5, 'prueba2', '$2y$10$CC9E/o3C7tPVOfgmEBPY4uf6QpzAQm73PVSSuHZxhM7AAFhUyFqZe', 'Prueba 2', 'admin', 'activo', '2026-05-30 04:47:27', '2026-05-29 22:48:03'),
+(8, 'jcarlos', '$2y$10$zxHGHxDm96rUvN0WlABI7.KmqSZQtY22lDNCilyxpt0IagFbpmiDa', 'Juan Carlos', 'tecnico_piloto', 'activo', '2026-06-01 14:51:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -203,7 +208,8 @@ ALTER TABLE `piloto_maquinas`
 -- Indices de la tabla `registros_maquinaria`
 --
 ALTER TABLE `registros_maquinaria`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_registro_usuario` (`usuario_id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -240,13 +246,13 @@ ALTER TABLE `pilotos`
 -- AUTO_INCREMENT de la tabla `registros_maquinaria`
 --
 ALTER TABLE `registros_maquinaria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`
@@ -264,6 +270,12 @@ ALTER TABLE `vehiculos`
 ALTER TABLE `piloto_maquinas`
   ADD CONSTRAINT `piloto_maquinas_ibfk_1` FOREIGN KEY (`piloto_id`) REFERENCES `pilotos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `piloto_maquinas_ibfk_2` FOREIGN KEY (`maquina_id`) REFERENCES `maquinas` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `registros_maquinaria`
+--
+ALTER TABLE `registros_maquinaria`
+  ADD CONSTRAINT `fk_registro_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `vehiculos`
