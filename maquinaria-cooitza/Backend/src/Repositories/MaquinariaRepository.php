@@ -48,4 +48,34 @@ class MaquinariaRepository
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['path' => $path, 'id' => $id]);
     }
+
+    public function getAllRegistros(): array
+    {
+        $sql = "SELECT rm.*, u.full_name as creador_nombre 
+                FROM registros_maquinaria rm 
+                LEFT JOIN usuarios u ON rm.usuario_id = u.id 
+                ORDER BY rm.fecha_registro DESC";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function updateRegistro(int $id, float $valor_horometro, string $tipo_registro): bool
+    {
+        $sql = "UPDATE registros_maquinaria 
+                SET valor_horometro = :valor_horometro, tipo_registro = :tipo_registro 
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'valor_horometro' => $valor_horometro,
+            'tipo_registro' => $tipo_registro,
+            'id' => $id
+        ]);
+    }
+
+    public function deleteRegistro(int $id): bool
+    {
+        $sql = "DELETE FROM registros_maquinaria WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
 }

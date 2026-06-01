@@ -171,6 +171,8 @@
             :vehiclesMaintenanceCount="vehiclesMaintenanceCount"
             :machineryCount="machineryCount"
             :maquinas="maquinasList"
+            :registros="registrosList"
+            @refresh-registros="fetchDashboardData"
           />
 
           <PilotosModule 
@@ -317,6 +319,7 @@ const vehiclesMaintenanceCount = ref(0);
 
 const machineryCount = ref(0);
 const maquinasList = ref<any[]>([]);
+const registrosList = ref<any[]>([]);
 const usersCount = ref(0);
 
 const showNotificationAlert = ref(false);
@@ -361,6 +364,13 @@ const fetchDashboardData = async () => {
     if (mData.status === 'success') {
       machineryCount.value = mData.data.length;
       maquinasList.value = mData.data;
+    }
+
+    // Fetch Registros
+    const rRes = await fetch('/maquinaria-cooitza/Backend/api/v1/maquinaria/registros');
+    const rData = await rRes.json();
+    if (rData.status === 'success') {
+      registrosList.value = rData.data;
     }
 
     // Fetch Usuarios
