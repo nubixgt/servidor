@@ -12,7 +12,8 @@ class RegistroMaquinaria
         public string $foto_horometro,
         public float $latitud,
         public float $longitud,
-        public ?string $fecha_registro = null
+        public ?string $fecha_registro = null,
+        public ?int $usuario_id = null
     ) {
     }
 }

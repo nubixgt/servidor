@@ -249,9 +249,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const props = defineProps<{
-  currentUserFullName?: string
-}>();
+const currentUserFullName = ref('');
+const currentUserId = ref<number | null>(null);
 
 const router = useRouter();
 
@@ -276,11 +275,7 @@ const form = reactive({
   longitud: -90.5069
 });
 
-watchEffect(() => {
-  if (props.currentUserFullName) {
-    form.operador = props.currentUserFullName;
-  }
-});
+
 
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
@@ -356,20 +351,21 @@ const getGeolocation = () => {
 };
 
 const submitForm = async () => {
-  const operadorName = form.operador || props.currentUserFullName || '';
-
   isSubmitting.value = true;
   submitMessage.value = '';
   submitError.value = false;
 
   const formData = new FormData();
-  formData.append('operador', operadorName);
+  formData.append('operador', form.operador);
   formData.append('maquina_id', form.maquina_id);
   formData.append('tipo_registro', form.tipo_registro);
   if (form.valor_horometro !== null) formData.append('valor_horometro', form.valor_horometro.toString());
   if (form.foto_horometro) formData.append('foto_horometro', form.foto_horometro);
   formData.append('latitud', form.latitud.toString());
   formData.append('longitud', form.longitud.toString());
+  if (currentUserId.value) {
+    formData.append('usuario_id', currentUserId.value.toString());
+  }
 
   try {
     const response = await fetch('Backend/api/v1/maquinaria/registro', {
@@ -398,9 +394,18 @@ const submitForm = async () => {
 };
 
 onMounted(() => {
-  if (props.currentUserFullName) {
-    form.operador = props.currentUserFullName;
+  const userData = localStorage.getItem('cooitza_user');
+  if (userData) {
+    try {
+      const user = JSON.parse(userData);
+      currentUserFullName.value = user.full_name || user.nombre || 'Operador Desconocido';
+      currentUserId.value = user.id || null;
+      form.operador = currentUserFullName.value;
+    } catch (e) {
+      console.error("Error parsing user data", e);
+    }
   }
+
   initMap();
   getGeolocation();
 });

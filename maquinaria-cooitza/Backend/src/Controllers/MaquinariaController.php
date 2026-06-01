@@ -18,6 +18,7 @@ class MaquinariaController extends Controller
         $valor_horometro = (float)($_POST['valor_horometro'] ?? 0);
         $latitud = (float)($_POST['latitud'] ?? 0);
         $longitud = (float)($_POST['longitud'] ?? 0);
+        $usuario_id = isset($_POST['usuario_id']) ? (int)$_POST['usuario_id'] : null;
 
         if (empty($operador) || empty($maquina_id) || empty($tipo_registro)) {
             $this->json(['status' => 'error', 'message' => 'Faltan campos obligatorios'], 400);
@@ -38,7 +39,9 @@ class MaquinariaController extends Controller
             $valor_horometro,
             '', // Temporary empty path
             $latitud,
-            $longitud
+            $longitud,
+            null, // fecha_registro
+            $usuario_id
         );
 
         $repo = new MaquinariaRepository();

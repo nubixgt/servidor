@@ -20,8 +20,8 @@ class MaquinariaRepository
     public function create(RegistroMaquinaria $registro): int|bool
     {
         $sql = "INSERT INTO registros_maquinaria 
-                (operador, maquina_id, tipo_registro, valor_horometro, foto_horometro, latitud, longitud) 
-                VALUES (:operador, :maquina_id, :tipo_registro, :valor_horometro, :foto_horometro, :latitud, :longitud)";
+                (operador, maquina_id, tipo_registro, valor_horometro, foto_horometro, latitud, longitud, usuario_id) 
+                VALUES (:operador, :maquina_id, :tipo_registro, :valor_horometro, :foto_horometro, :latitud, :longitud, :usuario_id)";
         
         $stmt = $this->pdo->prepare($sql);
         
@@ -32,7 +32,8 @@ class MaquinariaRepository
             'valor_horometro' => $registro->valor_horometro,
             'foto_horometro' => $registro->foto_horometro,
             'latitud' => $registro->latitud,
-            'longitud' => $registro->longitud
+            'longitud' => $registro->longitud,
+            'usuario_id' => $registro->usuario_id
         ]);
 
         return $success ? (int)$this->pdo->lastInsertId() : false;
