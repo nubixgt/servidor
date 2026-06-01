@@ -61,11 +61,7 @@
             <div class="flex gap-4">
               <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
                 <span class="w-3 h-3 bg-[#0054A3]"></span>
-                <span>Flota Cooitzá</span>
-              </div>
-              <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
-                <span class="w-3 h-3 bg-[#FFD200]"></span>
-                <span>Sello Operador</span>
+                <span>Horas de Operación</span>
               </div>
             </div>
           </div>
