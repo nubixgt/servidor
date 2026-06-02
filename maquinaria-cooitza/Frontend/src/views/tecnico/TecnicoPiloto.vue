@@ -85,14 +85,14 @@
               @click="form.tipo_registro = 'inicial'"
               :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl', form.tipo_registro === 'inicial' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
-              Horometro Inicial
+              Kilometraje Inicial
             </button>
             <button
               type="button"
               @click="form.tipo_registro = 'final'"
               :class="[ 'flex-1 py-2 text-center font-display text-sm font-medium transition-all rounded-xl', form.tipo_registro === 'final' ? 'bg-white border border-outline-variant text-primary shadow-sm' : 'text-on-surface-variant opacity-60 hover:opacity-100' ]"
             >
-              Horometro Final
+              Kilometraje Final
             </button>
           </div>
         </div>
@@ -105,7 +105,7 @@
           >
             <div class="flex flex-col gap-2">
               <label class="label-caps text-on-surface-variant">
-                {{ form.tipo_registro === 'inicial' ? 'Horometro Inicial (Value)' : 'Horometro Final (Value)' }}
+                {{ form.tipo_registro === 'inicial' ? 'Kilometraje Inicial (Value)' : 'Kilometraje Final (Value)' }}
               </label>
               <div class="flex items-center">
                 <input
@@ -120,7 +120,7 @@
             </div>
 
             <div class="flex flex-col gap-2">
-              <label class="label-caps text-on-surface-variant">Foto del horometro</label>
+              <label class="label-caps text-on-surface-variant">Foto del kilometraje</label>
               <div 
                 class="relative border-2 border-dashed border-outline-variant py-8 px-4 flex flex-col items-center gap-2 hover:border-primary focus-within:border-primary cursor-pointer transition-colors bg-white group rounded-2xl"
                 @click="fileInput?.click()"
