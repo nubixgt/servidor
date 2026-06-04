@@ -37,6 +37,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 import CivicModal from './components/CivicModal.vue';
 import { VOTE_OPTIONS } from '../data.js';
 
@@ -124,9 +125,14 @@ const handleSubmitVote = () => {
       // Maintain success state or toggle visibility
       submitText.value = '✔ PREFERENCIA REGISTRADA EN EL PADRÓN';
       submitColor.value = 'bg-emerald-600';
-      
-      // Navigate to results screen
-      router.push('/resultados');
+      // Show SweetAlert success message instead of navigating
+      Swal.fire({
+        title: '¡Respuesta Guardada!',
+        text: 'Tu selección se mandó correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#10b981'
+      });
     }, 1000);
   }, 1200);
 };

@@ -4,14 +4,11 @@
     <header class="text-center mb-10 md:mb-16 space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-xs text-primary-base font-semibold tracking-wider uppercase mb-2">
         <LucideIcon name="check-circle" class="w-3.5 h-3.5 text-secondary-base" />
-        Sondeo Ciudadano Oficial
+        Encuesta Baile
       </div>
       <h1 class="text-3xl md:text-5xl font-extrabold text-primary-base tracking-tight select-none">
         ¿CÓMO PREFERÍS EL EVENTO?
       </h1>
-      <p class="text-base md:text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-        Marcá tu preferencia para ayudarnos a organizar la mejor experiencia democrática y participativa.
-      </p>
     </header>
 
     <!-- Sub-grid options -->
@@ -136,9 +133,6 @@
         </span>
         <span v-else>{{ submitText }}</span>
       </button>
-      <p class="text-[11px] text-on-surface-variant text-center max-w-sm">
-        Al confirmar, tu preferencia se integrará con firmas criptográficas al registro oficial de Democratic Pulse.
-      </p>
     </div>
   </div>
 </template>
