@@ -44,6 +44,7 @@ class BankConciliationController extends Controller
                 'numero_cuenta' => trim($data['numero_cuenta'] ?? ''),
                 'tipo_cuenta'   => trim($data['tipo_cuenta'] ?? ''),
                 'moneda'        => trim($data['moneda'] ?? 'GTQ'),
+                'saldo_inicial' => isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : 0,
                 'activa'        => isset($data['activa']) ? (int)$data['activa'] : 1,
             ];
 
@@ -57,4 +58,18 @@ class BankConciliationController extends Controller
         }
     }
 
+    // ----------------------------------------------------------------
+    // GET /bank-accounts/{id}/history
+    // ----------------------------------------------------------------
+    #[Route('/bank-accounts/(\d+)/history', 'GET')]
+    public function getHistory(int $id)
+    {
+        try {
+            // Reusing the service/repository to fetch history
+            $transactions = $this->bankConciliationService->getAccountHistory($id);
+            $this->json(['status' => 'success', 'data' => $transactions]);
+        } catch (Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
 }

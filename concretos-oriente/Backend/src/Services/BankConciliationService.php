@@ -27,4 +27,8 @@ class BankConciliationService
         $this->accountRepository->create($data);
     }
 
+    public function getAccountHistory(int $accountId): array
+    {
+        return $this->accountRepository->findTransactions($accountId);
+    }
 }

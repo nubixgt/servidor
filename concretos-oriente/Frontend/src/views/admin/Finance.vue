@@ -410,12 +410,17 @@ const dbKpis = ref({
   net_balance: 0
 });
 
-const bankAccounts = ref([
-  'Banrural Principal - 03212',
-  'Banco Industrial - 99120',
-  'Caja General',
-  'GTC - 0012'
-]);
+const bankAccounts = ref([]);
+
+const fetchBankAccounts = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/bank-accounts`);
+    const data = await res.json();
+    if(data.status === 'success') {
+      bankAccounts.value = data.data.map(acc => `${acc.nombre_banco} - ${acc.numero_cuenta}`);
+    }
+  } catch(e) {}
+};
 
 const fetchTransactions = async () => {
   loading.value = true;
@@ -441,6 +446,7 @@ const fetchProjects = async () => {
 onMounted(() => {
   fetchTransactions();
   fetchProjects();
+  fetchBankAccounts();
 });
 
 // Dynamic KPIs
