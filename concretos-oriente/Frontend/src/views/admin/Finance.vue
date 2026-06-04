@@ -104,8 +104,9 @@
           <h3 class="text-4xl font-black text-white italic uppercase tracking-tighter">Protocolo de Transacciones</h3>
           <p class="text-[10px] font-bold text-white/30 mt-3 uppercase tracking-[0.3em]">Libro mayor financiero en tiempo real</p>
         </div>
-        <div class="flex items-center gap-4">
-          <select v-model="filterType" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-xs font-bold text-white uppercase tracking-widest focus:outline-none focus:border-primary/50 appearance-none cursor-pointer">
+        <div class="flex flex-col md:flex-row items-center gap-4">
+          <input v-model="searchQuery" type="text" placeholder="Buscar..." class="w-full md:w-64 bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-xs font-bold text-white tracking-widest focus:outline-none focus:border-primary/50 placeholder:text-white/30" />
+          <select v-model="filterType" class="w-full md:w-auto bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-xs font-bold text-white uppercase tracking-widest focus:outline-none focus:border-primary/50 appearance-none cursor-pointer">
             <option value="Todos">Todas las Transacciones</option>
             <option value="Ingreso">Solo Ingresos</option>
             <option value="Egreso">Solo Egresos</option>
@@ -536,24 +537,37 @@ const pieChartData = computed(() => {
 
 // Pagination & Filters
 const filterType = ref('Todos');
+const searchQuery = ref('');
 
 const filteredTransactions = computed(() => {
   let result = transactions.value;
   if (filterType.value !== 'Todos') {
     result = result.filter(tx => tx.transaction_type === filterType.value);
   }
+  if (searchQuery.value) {
+    const s = searchQuery.value.toLowerCase();
+    result = result.filter(tx => 
+      (tx.descripcion && tx.descripcion.toLowerCase().includes(s)) ||
+      (tx.tipo_ingreso && tx.tipo_ingreso.toLowerCase().includes(s)) ||
+      (tx.tipo_egreso && tx.tipo_egreso.toLowerCase().includes(s)) ||
+      (tx.pagador && tx.pagador.toLowerCase().includes(s)) ||
+      (tx.beneficiario && tx.beneficiario.toLowerCase().includes(s)) ||
+      (tx.proyecto_nombre && tx.proyecto_nombre.toLowerCase().includes(s)) ||
+      (tx.transaction_type.toLowerCase().includes(s))
+    );
+  }
   return result;
 });
 
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const itemsPerPage = 5;
 const totalPages = computed(() => Math.ceil(filteredTransactions.value.length / itemsPerPage) || 1);
 const paginatedTransactions = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredTransactions.value.slice(start, start + itemsPerPage);
 });
 
-watch(filterType, () => {
+watch([filterType, searchQuery], () => {
   currentPage.value = 1;
 });
 
