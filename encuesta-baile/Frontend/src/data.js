@@ -1,21 +1,36 @@
+import imgOptionA from './assets/images/OpcionA.jpeg';
+import imgOptionB from './assets/images/OpcionB.jpeg';
+
 export const VOTE_OPTIONS = [
   {
     id: 'option-a',
     title: 'Gran Baile en el Estadio',
     badge: 'OPCIÓN A',
     badgeColor: 'bg-surface-container text-primary-base',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDehXgFEtUcPQfjYRfjYRRZ8Be2eW1yjqXqEebKZtI_Po-vu6bfsFHlclLoJKFvkU21OOWj44EEnkbxMK2NuIZX5TlvTrRyVFHgSLd2P42BydCgl1g1pi_RNciMmQUFDmZ2Ts4Y3RDqKs5ycDakMzqPM8-PeoE1_7U3Wm9ZBNUTz8fui3XvpniinbPOhiySFr9QUZyGBKYclEME55iJvLMfO-P_8KR7U7xtbTmFSd4_ZL6xeAGmbRqFgoP6IjPTXgx_PbeNmBuC0qE',
+    image: imgOptionA,
     imageAlt: 'Estadio Arena luminoso',
-    description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante. Ideal para grandes anuncios y celebraciones colectivas.'
+    description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante. Ideal para grandes anuncios y celebraciones colectivas.',
+    details: [
+      { label: 'Lugar', value: 'Estadio municipal' },
+      { label: 'Música en vivo', value: 'Marimba orquesta' },
+      { label: 'Artista internacional', value: 'Eddy Herrera o Wilfredo Vargas' },
+      { label: 'Formato', value: 'Todo en un solo evento' }
+    ]
   },
   {
     id: 'option-b',
     title: 'Baile en Salón + Concierto',
     badge: 'OPCIÓN B',
     badgeColor: 'bg-secondary-fixed text-on-secondary-fixed',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCDxdR08zmMJTTTOpMPUwX_-xby-KTl018Kk0k64KGjs0zDdwwvIe9QhiB4E3LKHfUUOY1XFfSNdp1Py-5Szu9V0IO1ZtqLAFU2oBxJZaAHeygxdGdQnqYd2FBBcBrxNeJBFIzPnbMGYamok0_uFMXH2T60XKG0XW7T2xDUqULHobKeD16zQgf2BIXfd6g-dXnstTpEbTbgMLeoH3Ehgqosgu6G0q_Jv6Mep38fDOwBudSjDbCL2c4ZGqsYWkHedUXia9pQRJZviFPc',
+    image: imgOptionB,
     imageAlt: 'Salón de Concierto elegante',
-    description: 'Un formato híbrido que combina la elegancia de un salón privado con la energía de un concierto exclusivo. Una propuesta íntima y detallista para una interacción más cercana.'
+    description: 'Un formato híbrido que combina la elegancia de un salón privado con la energía de un concierto exclusivo. Una propuesta íntima y detallista para una interacción más cercana.',
+    details: [
+      { label: 'Lugar', value: 'Salón de eventos' },
+      { label: 'Formato baile', value: 'Baile social en salón' },
+      { label: 'Concierto', value: 'Artista internacional por separado' },
+      { label: 'Modalidad', value: 'Dos eventos distintos' }
+    ]
   }
 ];
 

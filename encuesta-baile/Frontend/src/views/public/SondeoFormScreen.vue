@@ -88,6 +88,27 @@
           <p class="text-sm md:text-base text-on-surface-variant leading-relaxed">
             {{ option.description }}
           </p>
+
+          <!-- Detalles adicionales que aparecen al seleccionar -->
+          <div 
+            v-if="selectedOptionId === option.id && option.details" 
+            class="mt-6 animate-fade-in"
+          >
+            <div class="bg-surface-base rounded-lg overflow-hidden border border-slate-200 shadow-inner">
+              <table class="w-full text-sm text-left">
+                <tbody>
+                  <tr v-for="(detail, index) in option.details" :key="index" :class="index % 2 === 0 ? 'bg-slate-50' : 'bg-white'">
+                    <th class="px-4 py-3.5 font-bold text-slate-700 w-2/5 border-b border-slate-100 last:border-0 align-top">
+                      {{ detail.label }}
+                    </th>
+                    <td class="px-4 py-3.5 text-slate-600 border-b border-slate-100 last:border-0">
+                      {{ detail.value }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <!-- Footer selector simulation -->
