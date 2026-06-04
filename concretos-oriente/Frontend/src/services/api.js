@@ -15,6 +15,10 @@ api.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            config.headers['X-User-Name'] = userName;
+        }
         return config;
     },
     error => {

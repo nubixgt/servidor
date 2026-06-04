@@ -150,7 +150,7 @@ const handleSubmit = () => {
     role = "tecnico";
   }
 
-  authStore.login(role);
+  authStore.login(role, username.value);
   
   if (role === "tecnico") {
     router.push("/tech-machinery");

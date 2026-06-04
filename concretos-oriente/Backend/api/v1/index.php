@@ -20,6 +20,7 @@ use App\Controllers\ClientController;
 use App\Controllers\ProjectIncomeController;
 use App\Controllers\VehicleController;
 use App\Controllers\VehicleLogController;
+use App\Controllers\RecurrentController;
 
 // Backend/api/v1/index.php
 
@@ -68,6 +69,7 @@ $router->registerController(ClientController::class);
 $router->registerController(ProjectIncomeController::class);
 $router->registerController(VehicleController::class);
 $router->registerController(VehicleLogController::class);
+$router->registerController(RecurrentController::class);
 
 
 

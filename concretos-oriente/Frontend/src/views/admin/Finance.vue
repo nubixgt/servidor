@@ -312,6 +312,14 @@
               </select>
             </div>
 
+            <div class="space-y-2" v-if="formExpense.tipo_egreso === 'Recurrentes'">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Seleccionar Recurrente *</label>
+              <select @change="handleRecurrentSelection" required class="w-full bg-primary/20 border border-primary/50 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary appearance-none transition-all">
+                <option value="" disabled selected>Elige un recurrente...</option>
+                <option v-for="r in recurrentsList" :key="r.id" :value="r.id">{{ r.concepto }} - Q{{ Number(r.monto).toLocaleString('en-US', {minimumFractionDigits: 2}) }}</option>
+              </select>
+            </div>
+
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha *</label>
               <input v-model="formExpense.fecha_egreso" type="date" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
@@ -411,6 +419,16 @@ const dbKpis = ref({
 });
 
 const bankAccounts = ref([]);
+const recurrentsList = ref([]);
+
+const fetchRecurrents = async () => {
+  try {
+    const res = await api.get(`/recurrents`);
+    if(res.data.status === 'success') {
+      recurrentsList.value = res.data.data;
+    }
+  } catch(e) {}
+};
 
 const fetchBankAccounts = async () => {
   try {
@@ -447,6 +465,7 @@ onMounted(() => {
   fetchTransactions();
   fetchProjects();
   fetchBankAccounts();
+  fetchRecurrents();
 });
 
 // Dynamic KPIs
@@ -700,6 +719,22 @@ const handleCurrencyInput = (event, record) => {
   let floatVal = (parseInt(num, 10) / 100);
   record.monto = floatVal;
   record.monto_display = 'Q' + floatVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const handleRecurrentSelection = (event) => {
+  const recurrentId = parseInt(event.target.value, 10);
+  const rec = recurrentsList.value.find(r => r.id === recurrentId);
+  if (rec) {
+    formExpense.value.descripcion = rec.concepto + (rec.descripcion ? ' - ' + rec.descripcion : '');
+    
+    if (formExpense.value.registros.length === 0) {
+      addRegistro(formExpense.value);
+    }
+    const montoFloat = Number(rec.monto) || 0;
+    formExpense.value.registros[0].descripcion = rec.concepto;
+    formExpense.value.registros[0].monto = montoFloat;
+    formExpense.value.registros[0].monto_display = 'Q' + montoFloat.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
 };
 
 const totalIncomeMonto = computed(() => {
