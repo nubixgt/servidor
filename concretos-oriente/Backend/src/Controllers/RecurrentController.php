@@ -18,8 +18,7 @@ class RecurrentController extends Controller
     private function getUsername(): string
     {
         // We use X-User-Name header to simulate the logged in user
-        $headers = getallheaders();
-        return $headers['X-User-Name'] ?? '';
+        return $_SERVER['HTTP_X_USER_NAME'] ?? '';
     }
 
     #[Route('/recurrents', 'GET')]
