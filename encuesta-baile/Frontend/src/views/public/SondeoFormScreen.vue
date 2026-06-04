@@ -85,14 +85,10 @@
           <h2 class="text-xl md:text-2xl font-bold text-primary-base mb-2 group-hover:text-secondary-base transition-colors">
             {{ option.title }}
           </h2>
-          <p class="text-sm md:text-base text-on-surface-variant leading-relaxed">
-            {{ option.description }}
-          </p>
-
-          <!-- Detalles adicionales que aparecen al seleccionar -->
+          <!-- Detalles adicionales siempre visibles -->
           <div 
-            v-if="selectedOptionId === option.id && option.details" 
-            class="mt-6 animate-fade-in"
+            v-if="option.details" 
+            class="mt-4"
           >
             <div class="bg-surface-base rounded-lg overflow-hidden border border-slate-200 shadow-inner">
               <table class="w-full text-sm text-left">
