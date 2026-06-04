@@ -5,24 +5,18 @@
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 md:px-10 py-10 md:py-14">
       <div class="space-y-12">
         
-        <!-- Active Screen Rendering -->
-        <SondeoFormScreen
-          v-if="activeScreen === 'survey'"
+        <!-- Router View now handles the active screen based on URL -->
+        <router-view
           :options="VOTE_OPTIONS"
           :selectedOptionId="selectedOptionId"
           :isSubmitting="isSubmitting"
           :submitText="submitText"
           :submitColor="submitColor"
-          @selectOption="handleSelectOption"
-          @submitVote="handleSubmitVote"
-        />
-
-        <!-- Results screen remains exactly here and functional, just in case you trigger it in state -->
-        <ResultsScreen
-          v-else-if="activeScreen === 'results'"
           :votesA="votesA"
           :votesB="votesB"
           :userVote="userVote"
+          @selectOption="handleSelectOption"
+          @submitVote="handleSubmitVote"
           @resetVote="handleResetVote"
         />
 
@@ -42,13 +36,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import SondeoFormScreen from './public/SondeoFormScreen.vue';
-import ResultsScreen from './public/ResultsScreen.vue';
+import { useRouter } from 'vue-router';
 import CivicModal from './components/CivicModal.vue';
 import { VOTE_OPTIONS } from '../data.js';
 
-// Navigation / views - Defaults directly to the Survey flow
-const activeScreen = ref('survey');
+const router = useRouter();
 
 // Voting states
 const selectedOptionId = ref(null);
@@ -132,6 +124,9 @@ const handleSubmitVote = () => {
       // Maintain success state or toggle visibility
       submitText.value = '✔ PREFERENCIA REGISTRADA EN EL PADRÓN';
       submitColor.value = 'bg-emerald-600';
+      
+      // Navigate to results screen
+      router.push('/resultados');
     }, 1000);
   }, 1200);
 };
@@ -145,7 +140,7 @@ const handleResetVote = () => {
 
   updateVotesRecord(false, null, newVotesA, newVotesB);
   selectedOptionId.value = null;
-  activeScreen.value = 'survey';
+  router.push('/');
   
   // reset button style to default if switching back to survey
   submitText.value = 'CONFIRMAR MI PREFERENCIA';

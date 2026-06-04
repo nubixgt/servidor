@@ -10,9 +10,12 @@ import MainLayout from '../components/layout/MainLayout.vue';
 const routes = [
     {
         path: '/',
-        name: 'Home',
         component: () => import('../views/Home.vue'),
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: false },
+        children: [
+            { path: '', name: 'Sondeo', component: () => import('../views/public/SondeoFormScreen.vue') },
+            { path: 'resultados', name: 'Resultados', component: () => import('../views/public/ResultsScreen.vue') }
+        ]
     },
     {
         path: '/login',
