@@ -33,26 +33,4 @@ class BankAccountRepository
         ]);
     }
 
-    public function findTransactions(?string $cuenta): array
-    {
-        $sqlIncomes = "SELECT id, 'in' as type, fecha_ingreso as date, 'INGRESO' as bankDesc, descripcion as detail, monto as amount, cuenta_bancaria as account
-                       FROM incomes";
-        if ($cuenta) $sqlIncomes .= " WHERE cuenta_bancaria LIKE :cuenta";
-
-        $stmtIncomes = $this->pdo->prepare($sqlIncomes);
-        if ($cuenta) $stmtIncomes->execute(['cuenta' => "%$cuenta%"]);
-        else $stmtIncomes->execute();
-        $incomes = $stmtIncomes->fetchAll(PDO::FETCH_ASSOC);
-
-        $sqlExpenses = "SELECT id, 'out' as type, fecha_egreso as date, 'EGRESO' as bankDesc, descripcion as detail, monto as amount, cuenta_origen as account
-                        FROM expenses";
-        if ($cuenta) $sqlExpenses .= " WHERE cuenta_origen LIKE :cuenta";
-
-        $stmtExpenses = $this->pdo->prepare($sqlExpenses);
-        if ($cuenta) $stmtExpenses->execute(['cuenta' => "%$cuenta%"]);
-        else $stmtExpenses->execute();
-        $expenses = $stmtExpenses->fetchAll(PDO::FETCH_ASSOC);
-
-        return array_merge($incomes, $expenses);
-    }
 }

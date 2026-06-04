@@ -86,7 +86,7 @@ const allNavItemsArr = [
   { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "finance", label: "Ingresos y Egresos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
-  { id: "bank-conciliation", label: "Bancos y Conciliación", icon: BuildingLibraryIcon, roles: ["admin"] },
+  { id: "bank-conciliation", label: "Bancos", icon: BuildingLibraryIcon, roles: ["admin"] },
   { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },
   { id: "budgets-estimations", label: "Presupuestos y Estimaciones", icon: CalculatorIcon, roles: ["admin"] },
   { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: CreditCardIcon, roles: ["admin"] },
