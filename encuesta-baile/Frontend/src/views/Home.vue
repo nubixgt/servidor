@@ -38,6 +38,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 import CivicModal from './components/CivicModal.vue';
 import { VOTE_OPTIONS } from '../data.js';
 
@@ -107,34 +108,40 @@ const handleSubmitVote = () => {
   if (!selectedOptionId.value) return;
 
   isSubmitting.value = true;
-  submitText.value = 'REGISTRANDO FIRMA DIGITAL...';
+  submitText.value = 'GUARDANDO...';
 
-  // Simulate cryptographic hashing / network post
-  setTimeout(() => {
-    submitText.value = '✔ PREFERENCIA REGISTRADA EN EL PADRÓN';
+  // Make API call to backend
+  axios.post('https://m.nubix.gt/encuesta-baile/Backend/api/v1/votes', {
+    option_id: selectedOptionId.value
+  })
+  .then((response) => {
+    isSubmitting.value = false;
+    submitText.value = '✔ PREFERENCIA REGISTRADA';
     submitColor.value = 'bg-emerald-600';
 
-    // Update counters
-    const newVotesA = selectedOptionId.value === 'option-a' ? votesA.value + 1 : votesA.value;
-    const newVotesB = selectedOptionId.value === 'option-b' ? votesB.value + 1 : votesB.value;
-    
-    updateVotesRecord(true, selectedOptionId.value, newVotesA, newVotesB);
+    // Show SweetAlert success message
+    Swal.fire({
+      title: '¡Respuesta Guardada!',
+      text: 'Tu selección se mandó correctamente.',
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+      confirmButtonColor: '#10b981'
+    });
 
-    setTimeout(() => {
-      isSubmitting.value = false;
-      // Maintain success state or toggle visibility
-      submitText.value = '✔ PREFERENCIA REGISTRADA EN EL PADRÓN';
-      submitColor.value = 'bg-emerald-600';
-      // Show SweetAlert success message instead of navigating
-      Swal.fire({
-        title: '¡Respuesta Guardada!',
-        text: 'Tu selección se mandó correctamente.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#10b981'
-      });
-    }, 1000);
-  }, 1200);
+    // We can also fetch the updated vote counts here later
+  })
+  .catch((error) => {
+    isSubmitting.value = false;
+    submitText.value = 'CONFIRMAR MI PREFERENCIA';
+    submitColor.value = 'bg-primary-base';
+    
+    Swal.fire({
+      title: 'Error',
+      text: 'Hubo un problema al guardar tu voto. Por favor, intenta de nuevo.',
+      icon: 'error',
+      confirmButtonText: 'Aceptar'
+    });
+  });
 };
 
 // Reset vote to change preference
