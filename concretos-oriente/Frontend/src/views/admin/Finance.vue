@@ -213,22 +213,7 @@
             
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Ingreso *</label>
-              <select v-model="formIncome.tipo_ingreso" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
-                <option value="Contrato">Contrato</option>
-                <option value="Estimación">Estimación</option>
-                <option value="Anticipo">Anticipo</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-
-            <div class="space-y-2 md:col-span-2" v-if="formIncome.tipo_ingreso === 'Otro'">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Especificar Otro Tipo *</label>
-              <input v-model="formIncome.tipo_ingreso_otro" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
-            </div>
-
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto (Q) *</label>
-              <input v-model="formIncome.monto" type="number" step="0.01" min="0" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
+              <input v-model="formIncome.tipo_ingreso" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
             <div class="space-y-2">
@@ -245,7 +230,7 @@
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Número Cheque / Ref.</label>
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Cheque Deposito / ref</label>
               <input v-model="formIncome.numero_cheque" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
@@ -262,6 +247,35 @@
             <div class="space-y-2 md:col-span-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Descripción o Concepto</label>
               <textarea v-model="formIncome.descripcion" rows="2" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50"></textarea>
+            </div>
+
+            <!-- REGISTROS DINAMICOS INGRESO -->
+            <div class="md:col-span-2 space-y-4 bg-white/5 p-6 rounded-3xl border border-white/5">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Registros</h4>
+                <button type="button" @click="addRegistro(formIncome)" class="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary/70 uppercase tracking-widest transition-all">
+                  <PlusIcon class="w-4 h-4" /> Agregar más
+                </button>
+              </div>
+              
+              <div v-for="(rec, idx) in formIncome.registros" :key="idx" class="flex gap-4 items-start">
+                <div class="flex-1 space-y-2">
+                  <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider">Descripción</label>
+                  <input v-model="rec.descripcion" type="text" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50" />
+                </div>
+                <div class="w-1/3 space-y-2">
+                  <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider">Monto</label>
+                  <input :value="rec.monto_display" @input="handleCurrencyInput($event, rec)" type="text" required placeholder="Q0.00" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50" />
+                </div>
+                <button type="button" @click="removeRegistro(formIncome, idx)" v-if="formIncome.registros.length > 1" class="mt-8 p-3 text-tertiary hover:bg-tertiary/20 rounded-xl transition-all">
+                  <TrashIcon class="w-5 h-5" />
+                </button>
+              </div>
+
+              <div class="pt-4 border-t border-white/10 flex justify-end items-center gap-4">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Total *</label>
+                <input v-model="formIncome.monto" type="number" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
+              </div>
             </div>
           </div>
 
@@ -293,12 +307,8 @@
                 <option value="Nómina">Nómina</option>
                 <option value="Mantenimiento">Mantenimiento</option>
                 <option value="Combustible">Combustible</option>
+                <option value="Recurrentes">Recurrentes</option>
               </select>
-            </div>
-
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto (Q) *</label>
-              <input v-model="formExpense.monto" type="number" step="0.01" min="0" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
             </div>
 
             <div class="space-y-2">
@@ -333,6 +343,35 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Descripción o Concepto</label>
               <textarea v-model="formExpense.descripcion" rows="2" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50"></textarea>
             </div>
+
+            <!-- REGISTROS DINAMICOS EGRESO -->
+            <div class="md:col-span-2 space-y-4 bg-white/5 p-6 rounded-3xl border border-white/5">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Registros</h4>
+                <button type="button" @click="addRegistro(formExpense)" class="flex items-center gap-2 text-xs font-bold text-tertiary hover:text-tertiary/70 uppercase tracking-widest transition-all">
+                  <PlusIcon class="w-4 h-4" /> Agregar más
+                </button>
+              </div>
+              
+              <div v-for="(rec, idx) in formExpense.registros" :key="idx" class="flex gap-4 items-start">
+                <div class="flex-1 space-y-2">
+                  <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider">Descripción</label>
+                  <input v-model="rec.descripcion" type="text" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-tertiary/50" />
+                </div>
+                <div class="w-1/3 space-y-2">
+                  <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider">Monto</label>
+                  <input :value="rec.monto_display" @input="handleCurrencyInput($event, rec)" type="text" required placeholder="Q0.00" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-tertiary/50" />
+                </div>
+                <button type="button" @click="removeRegistro(formExpense, idx)" v-if="formExpense.registros.length > 1" class="mt-8 p-3 text-tertiary hover:bg-tertiary/20 rounded-xl transition-all">
+                  <TrashIcon class="w-5 h-5" />
+                </button>
+              </div>
+
+              <div class="pt-4 border-t border-white/10 flex justify-end items-center gap-4">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Total *</label>
+                <input v-model="formExpense.monto" type="number" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
+              </div>
+            </div>
           </div>
 
           <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
@@ -353,7 +392,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { 
   WalletIcon, ArrowTrendingUpIcon, ClockIcon, ArrowTrendingDownIcon,
   BanknotesIcon, ArchiveBoxIcon, UserIcon, PlusIcon, DocumentArrowDownIcon, 
-  EllipsisVerticalIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon, XMarkIcon
+  EllipsisVerticalIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon, XMarkIcon, TrashIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -534,28 +573,32 @@ const txType = ref('Ingreso');
 const attachmentFile = ref(null);
 
 const formIncome = ref({
-  proyecto_id: '', tipo_ingreso: 'Contrato', tipo_ingreso_otro: '', monto: '', 
+  proyecto_id: '', tipo_ingreso: '', monto: 0, 
   fecha_ingreso: new Date().toISOString().slice(0,10), cuenta_bancaria: '', 
-  numero_cheque: '', pagador: '', descripcion: ''
+  numero_cheque: '', pagador: '', descripcion: '',
+  registros: []
 });
 
 const formExpense = ref({
-  proyecto_id: '', tipo_egreso: 'Proveedor', monto: '', 
+  proyecto_id: '', tipo_egreso: 'Proveedor', monto: 0, 
   fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '', 
-  numero_cheque: '', beneficiario: '', descripcion: ''
+  numero_cheque: '', beneficiario: '', descripcion: '',
+  registros: []
 });
 
 const openFinanceModal = () => {
   attachmentFile.value = null;
   formIncome.value = {
-    proyecto_id: '', tipo_ingreso: 'Contrato', tipo_ingreso_otro: '', monto: '', 
+    proyecto_id: '', tipo_ingreso: '', monto: 0, 
     fecha_ingreso: new Date().toISOString().slice(0,10), cuenta_bancaria: '', 
-    numero_cheque: '', pagador: '', descripcion: ''
+    numero_cheque: '', pagador: '', descripcion: '',
+    registros: [{ descripcion: '', monto: 0, monto_display: '' }]
   };
   formExpense.value = {
-    proyecto_id: '', tipo_egreso: 'Proveedor', monto: '', 
+    proyecto_id: '', tipo_egreso: 'Proveedor', monto: 0, 
     fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '', 
-    numero_cheque: '', beneficiario: '', descripcion: ''
+    numero_cheque: '', beneficiario: '', descripcion: '',
+    registros: [{ descripcion: '', monto: 0, monto_display: '' }]
   };
   showModal.value = true;
 };
@@ -570,7 +613,11 @@ const submitIncome = async () => {
   isSubmitting.value = true;
   const fd = new FormData();
   Object.keys(formIncome.value).forEach(k => {
-    if(formIncome.value[k] !== null && formIncome.value[k] !== '') fd.append(k, formIncome.value[k]);
+    if (k === 'registros') {
+      fd.append(k, JSON.stringify(formIncome.value[k]));
+    } else if (formIncome.value[k] !== null && formIncome.value[k] !== '') {
+      fd.append(k, formIncome.value[k]);
+    }
   });
   if(attachmentFile.value) fd.append('comprobante', attachmentFile.value);
 
@@ -592,7 +639,11 @@ const submitExpense = async () => {
   isSubmitting.value = true;
   const fd = new FormData();
   Object.keys(formExpense.value).forEach(k => {
-    if(formExpense.value[k] !== null && formExpense.value[k] !== '') fd.append(k, formExpense.value[k]);
+    if (k === 'registros') {
+      fd.append(k, JSON.stringify(formExpense.value[k]));
+    } else if (formExpense.value[k] !== null && formExpense.value[k] !== '') {
+      fd.append(k, formExpense.value[k]);
+    }
   });
   if(attachmentFile.value) fd.append('comprobante', attachmentFile.value);
 
@@ -610,6 +661,36 @@ const submitExpense = async () => {
   isSubmitting.value = false;
 };
 
+const addRegistro = (form) => {
+  form.registros.push({ descripcion: '', monto: 0, monto_display: '' });
+};
+
+const removeRegistro = (form, index) => {
+  form.registros.splice(index, 1);
+};
+
+const handleCurrencyInput = (event, record) => {
+  let val = event.target.value;
+  let num = val.replace(/\D/g, '');
+  if (!num) {
+    record.monto_display = '';
+    record.monto = 0;
+    return;
+  }
+  let floatVal = (parseInt(num, 10) / 100);
+  record.monto = floatVal;
+  record.monto_display = 'Q' + floatVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const totalIncomeMonto = computed(() => {
+  return formIncome.value.registros.reduce((sum, r) => sum + (Number(r.monto) || 0), 0);
+});
+watch(totalIncomeMonto, (newVal) => formIncome.value.monto = newVal);
+
+const totalExpenseMonto = computed(() => {
+  return formExpense.value.registros.reduce((sum, r) => sum + (Number(r.monto) || 0), 0);
+});
+watch(totalExpenseMonto, (newVal) => formExpense.value.monto = newVal);
 </script>
 
 <style scoped>

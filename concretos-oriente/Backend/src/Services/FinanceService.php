@@ -54,6 +54,16 @@ class FinanceService
         try {
             $newId = $this->incomeRepository->create($data);
 
+            if (!empty($data['registros']) && is_array($data['registros'])) {
+                foreach ($data['registros'] as $record) {
+                    $desc = trim($record['descripcion'] ?? '');
+                    $amt = (float)($record['monto'] ?? 0);
+                    if ($desc !== '' || $amt > 0) {
+                        $this->incomeRepository->addRecord($newId, $desc, $amt);
+                    }
+                }
+            }
+
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = __DIR__ . '/../../Uploads/Incomes/' . $newId . '/';
                 if (!is_dir($uploadDir)) {
@@ -87,6 +97,16 @@ class FinanceService
 
         try {
             $newId = $this->expenseRepository->create($data);
+
+            if (!empty($data['registros']) && is_array($data['registros'])) {
+                foreach ($data['registros'] as $record) {
+                    $desc = trim($record['descripcion'] ?? '');
+                    $amt = (float)($record['monto'] ?? 0);
+                    if ($desc !== '' || $amt > 0) {
+                        $this->expenseRepository->addRecord($newId, $desc, $amt);
+                    }
+                }
+            }
 
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = __DIR__ . '/../../Uploads/Expenses/' . $newId . '/';
