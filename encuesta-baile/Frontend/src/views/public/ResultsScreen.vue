@@ -3,11 +3,8 @@
     <!-- Custom page title heading -->
     <div class="text-center space-y-2 mb-6">
       <h2 class="text-3xl font-extrabold text-[#091426] tracking-tight">
-        Tablero de Escrutinio Abierto
+        Tablero de Encuesta Abierta
       </h2>
-      <p class="text-slate-500 text-sm max-w-xl mx-auto">
-        Analiza la deliberación de la comunidad en tiempo real. Todas las respuestas son públicas y transparentes.
-      </p>
     </div>
 
     <div class="bg-surface-container-lowest rounded-xl p-6 md:p-8 border border-slate-100 shadow-md">
@@ -24,7 +21,7 @@
       </div>
 
       <!-- Metrics Summary Rows -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="mb-8 max-w-sm">
         <div class="bg-slate-50 rounded-lg p-4 flex items-center gap-4 border border-slate-100">
           <div class="w-10 h-10 rounded-full bg-slate-900/5 flex items-center justify-center text-primary-base">
             <LucideIcon name="users" class="w-5 h-5" />
@@ -32,28 +29,6 @@
           <div>
             <div class="text-2xl font-bold text-primary-base">{{ total }}</div>
             <div class="text-xs text-on-surface-variant font-medium">Participaciones Totales</div>
-          </div>
-        </div>
-
-        <div class="bg-slate-50 rounded-lg p-4 flex items-center gap-4 border border-slate-100">
-          <div class="w-10 h-10 rounded-full bg-secondary-base/5 flex items-center justify-center text-secondary-base">
-            <LucideIcon name="award" class="w-5 h-5" />
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-secondary-base">
-              {{ votesA > votesB ? 'Opción A' : votesA < votesB ? 'Opción B' : 'Empate' }}
-            </div>
-            <div class="text-xs text-on-surface-variant font-medium">Preferencia Líder</div>
-          </div>
-        </div>
-
-        <div class="bg-slate-50 rounded-lg p-4 flex items-center gap-4 border border-slate-100">
-          <div class="w-10 h-10 rounded-full bg-emerald-500/5 flex items-center justify-center text-emerald-600">
-            <LucideIcon name="clock" class="w-5 h-5" />
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-emerald-600">Activo</div>
-            <div class="text-xs text-on-surface-variant font-medium">Cierre: En 3 días</div>
           </div>
         </div>
       </div>
@@ -155,46 +130,54 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
 import LucideIcon from '../components/LucideIcon.vue';
 
-const props = defineProps({
-  votesA: {
-    type: Number,
-    required: true
-  },
-  votesB: {
-    type: Number,
-    required: true
-  },
-  userVote: {
-    type: String,
-    default: null
+const votesA = ref(0);
+const votesB = ref(0);
+const userVote = ref(null);
+
+const fetchResults = async () => {
+  try {
+    const response = await axios.get('https://m.nubix.gt/encuesta-baile/Backend/api/v1/votes');
+    if (response.data && response.data.status === 'success') {
+      votesA.value = response.data.data['option-a'] || 0;
+      votesB.value = response.data.data['option-b'] || 0;
+    }
+  } catch (error) {
+    console.error('Error fetching votes:', error);
   }
+};
+
+onMounted(() => {
+  fetchResults();
+  // We can poll every 5 seconds for real-time updates
+  setInterval(fetchResults, 5000);
 });
 
 defineEmits(['resetVote']);
 
-const total = computed(() => props.votesA + props.votesB);
-const pctA = computed(() => total.value > 0 ? Math.round((props.votesA / total.value) * 100) : 0);
-const pctB = computed(() => total.value > 0 ? Math.round((props.votesB / total.value) * 100) : 0);
+const total = computed(() => votesA.value + votesB.value);
+const pctA = computed(() => total.value > 0 ? Math.round((votesA.value / total.value) * 100) : 0);
+const pctB = computed(() => total.value > 0 ? Math.round((votesB.value / total.value) * 100) : 0);
 
 // For the bar chart graph simulation
 const maxY = computed(() => {
-  const max = Math.max(props.votesA, props.votesB, 10);
+  const max = Math.max(votesA.value, votesB.value, 10);
   return Math.ceil(max * 1.2); // Add 20% headroom
 });
 
 const chartData = computed(() => [
   {
     name: 'Estadio (Opción A)',
-    votos: props.votesA,
+    votos: votesA.value,
     porcentaje: pctA.value,
     color: '#091426',
   },
   {
     name: 'Salón + Concierto (B)',
-    votos: props.votesB,
+    votos: votesB.value,
     porcentaje: pctB.value,
     color: '#4648d4',
   }
