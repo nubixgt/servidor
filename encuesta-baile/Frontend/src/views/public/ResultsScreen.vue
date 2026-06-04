@@ -15,19 +15,11 @@
         <div>
           <h2 class="text-2xl font-bold text-primary-base flex items-center gap-2">
             <LucideIcon name="bar-chart-3" class="w-6 h-6 text-secondary-base" />
-            Resultados del Sondeo en Tiempo Real
+            Resultados de la Encuesta en Tiempo Real
           </h2>
           <p class="text-xs md:text-sm text-on-surface-variant mt-1">
             Respuestas recopiladas y verificadas mediante nuestro portal seguro.
           </p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button
-            @click="$emit('resetVote')"
-            class="px-4 py-2 bg-slate-100 text-primary-base rounded-lg text-xs font-semibold hover:bg-slate-200 transition-colors"
-          >
-            Modificar mi preferencia
-          </button>
         </div>
       </div>
 
@@ -115,14 +107,6 @@
               Ambiente íntimo con acústica distinguida y mayor interacción.
             </p>
           </div>
-
-          <!-- Institutional note -->
-          <div class="p-3 bg-slate-50 rounded-lg text-xs text-on-surface-variant flex items-start gap-2.5 border border-slate-100">
-            <LucideIcon name="shield-alert" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-            <span>
-              Un ciudadano equivale a una preferencia registrada. El sistema valida las identificaciones civiles cifradas antes de contabilizar cada aporte democrático.
-            </span>
-          </div>
         </div>
 
         <!-- Custom HTML/CSS Bar Graph to replace Recharts -->
@@ -163,37 +147,6 @@
           </div>
           <div class="text-center pt-2 text-xs text-slate-400 font-mono">
             Actualizado hace unos segundos
-          </div>
-        </div>
-      </div>
-
-      <!-- Advanced insights section -->
-      <div class="bg-slate-50/50 rounded-lg p-5 border border-slate-100">
-        <h3 class="text-sm font-bold text-primary-base tracking-wider uppercase mb-3">
-          Tendencia Demográfica Estimada (por rangos etarios)
-        </h3>
-        <p class="text-xs text-on-surface-variant mb-4">
-          Visualiza qué segmentos de la comunidad se inclinan por cada alternativa según los datos censados.
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div v-for="(data, i) in demographicData" :key="i" class="bg-white rounded-lg p-3 border border-slate-100 shadow-sm">
-            <span class="text-xs font-bold text-primary-base block mb-2">{{ data.name }}</span>
-            <div class="space-y-1.5">
-              <div class="flex justify-between text-[11px] font-medium">
-                <span class="text-slate-500">Estadio (Opción A):</span>
-                <span class="text-primary-base font-bold">{{ data['Opción A (Estadio)'] }}%</span>
-              </div>
-              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-[#091426] h-full" :style="{ width: `${data['Opción A (Estadio)']}%` }" />
-              </div>
-              <div class="flex justify-between text-[11px] font-medium">
-                <span class="text-slate-500">Salón (Opción B):</span>
-                <span class="text-[#4648d4] font-bold">{{ data['Opción B (Salón)'] }}%</span>
-              </div>
-              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-[#4648d4] h-full" :style="{ width: `${data['Opción B (Salón)']}%` }" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -247,9 +200,5 @@ const chartData = computed(() => [
   }
 ]);
 
-const demographicData = [
-  { name: 'Jóvenes (18-30)', 'Opción A (Estadio)': 65, 'Opción B (Salón)': 35 },
-  { name: 'Adultos (31-50)', 'Opción A (Estadio)': 48, 'Opción B (Salón)': 52 },
-  { name: 'Mayores (51+)', 'Opción A (Estadio)': 25, 'Opción B (Salón)': 75 },
-];
+
 </script>
