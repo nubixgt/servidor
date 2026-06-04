@@ -13,6 +13,12 @@ class RecurrentRepository
         $this->pdo = Database::getInstance()->getConnection();
     }
 
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM recurrents ORDER BY id DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function findAllByUser(string $username): array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM recurrents WHERE creado_por = :username ORDER BY id DESC");
