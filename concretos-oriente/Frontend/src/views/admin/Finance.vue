@@ -274,7 +274,7 @@
 
               <div class="pt-4 border-t border-white/10 flex justify-end items-center gap-4">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Total *</label>
-                <input v-model="formIncome.monto" type="number" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
+                <input :value="'Q' + Number(formIncome.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})" type="text" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
               </div>
             </div>
           </div>
@@ -369,7 +369,7 @@
 
               <div class="pt-4 border-t border-white/10 flex justify-end items-center gap-4">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Total *</label>
-                <input v-model="formExpense.monto" type="number" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
+                <input :value="'Q' + Number(formExpense.monto || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})" type="text" readonly class="w-40 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none cursor-not-allowed font-black text-right" />
               </div>
             </div>
           </div>
