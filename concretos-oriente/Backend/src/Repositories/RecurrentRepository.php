@@ -21,7 +21,7 @@ class RecurrentRepository
 
     public function findAllByUser(string $username): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM recurrents WHERE creado_por = :username ORDER BY id DESC");
+        $stmt = $this->pdo->prepare("SELECT * FROM recurrents WHERE creado_por = :username OR creado_por = '' OR creado_por IS NULL ORDER BY id DESC");
         $stmt->execute(['username' => $username]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -45,7 +45,7 @@ class RecurrentRepository
     {
         $sql = "UPDATE recurrents 
                 SET concepto = :concepto, descripcion = :descripcion, monto = :monto, dia_pago = :dia_pago 
-                WHERE id = :id AND creado_por = :creado_por";
+                WHERE id = :id AND (creado_por = :creado_por OR creado_por = '' OR creado_por IS NULL)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'concepto'   => $data['concepto'],
@@ -59,7 +59,7 @@ class RecurrentRepository
 
     public function delete(int $id, string $username): void
     {
-        $stmt = $this->pdo->prepare("DELETE FROM recurrents WHERE id = :id AND creado_por = :username");
+        $stmt = $this->pdo->prepare("DELETE FROM recurrents WHERE id = :id AND (creado_por = :username OR creado_por = '' OR creado_por IS NULL)");
         $stmt->execute([
             'id' => $id,
             'username' => $username
