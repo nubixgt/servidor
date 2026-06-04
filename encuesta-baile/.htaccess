@@ -1,3 +1,14 @@
-RewriteEngine On
-RewriteRule ^$ Frontend/dist/ [R=301,L]
-RewriteRule ^index\.html$ Frontend/dist/index.html [L]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /encuesta-baile/
+
+    # Ignorar la redirección para el Backend (si la API está aquí)
+    RewriteCond %{REQUEST_URI} !^/encuesta-baile/Backend/
+    
+    # Prevenir bucles infinitos si ya estamos apuntando a Frontend/dist
+    RewriteCond %{REQUEST_URI} !^/encuesta-baile/Frontend/dist/
+
+    # Reescribir internamente cualquier otra petición a Frontend/dist/
+    # ¡Sin la bandera R=301 para que la URL en el navegador se mantenga limpia!
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+</IfModule>

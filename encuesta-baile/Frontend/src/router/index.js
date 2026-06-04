@@ -31,7 +31,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory('/encuesta-baile/Frontend/dist/'),
+    history: createWebHistory('/encuesta-baile/'),
     routes
 });
 
