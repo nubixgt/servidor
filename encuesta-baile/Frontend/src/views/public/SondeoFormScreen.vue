@@ -30,14 +30,14 @@
       >
         <div class="w-full">
           <!-- Image Frame -->
-          <div class="aspect-video w-full mb-6 rounded-lg overflow-hidden bg-slate-900 relative">
+          <div class="aspect-video w-full mb-6 rounded-lg overflow-hidden bg-slate-100 relative flex items-center justify-center">
             <template v-if="!imgFailed[option.id]">
               <img
                 :src="option.image"
                 :alt="option.imageAlt"
                 referrerpolicy="no-referrer"
                 @error="onImgError(option.id)"
-                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
             </template>
             <template v-else>
