@@ -4,7 +4,7 @@
     <header class="text-center mb-10 md:mb-16 space-y-4">
       <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-xs text-primary-base font-semibold tracking-wider uppercase mb-2">
         <LucideIcon name="check-circle" class="w-3.5 h-3.5 text-secondary-base" />
-        Encuesta Baile
+        Baile Social
       </div>
       <h1 class="text-3xl md:text-5xl font-extrabold text-primary-base tracking-tight select-none">
         ¿CÓMO PREFERÍS EL EVENTO?
@@ -19,52 +19,14 @@
         :id="`option-${option.id}`"
         @click="$emit('selectOption', option.id)"
         :class="[
-          'group relative text-left bg-surface-container-lowest rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 border-2 w-full',
+          'group relative text-left rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 border-2 w-full',
+          option.id === 'option-a' ? 'bg-blue-50' : 'bg-emerald-50',
           selectedOptionId === option.id 
             ? 'border-secondary-base shadow-lg ring-2 ring-secondary-base/20' 
             : 'border-slate-100 hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
         ]"
       >
         <div class="w-full">
-          <!-- Image Frame -->
-          <div class="aspect-video w-full mb-6 rounded-lg overflow-hidden bg-slate-100 relative flex items-center justify-center">
-            <template v-if="!imgFailed[option.id]">
-              <img
-                :src="option.image"
-                :alt="option.imageAlt"
-                referrerpolicy="no-referrer"
-                @error="onImgError(option.id)"
-                class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-              />
-            </template>
-            <template v-else>
-              <!-- Custom gorgeous SVG graphic gradient fallback per choice -->
-              <div class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#091426] to-[#1e293b] text-white relative">
-                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]" />
-                
-                <template v-if="option.id === 'option-a'">
-                  <div class="flex gap-1.5 mb-2">
-                    <span class="w-1.5 h-6 bg-secondary-base animate-pulse rounded-full" />
-                    <span class="w-1.5 h-8 bg-indigo-400 animate-pulse delay-75 rounded-full" />
-                    <span class="w-1.5 h-6 bg-secondary-base animate-pulse delay-150 rounded-full" />
-                  </div>
-                  <LucideIcon name="landmark" class="w-12 h-12 text-indigo-200 mb-2 opacity-90 stroke-[1.5]" />
-                  <span class="text-[11px] font-black tracking-widest uppercase text-slate-300">ESTADIO ARENA</span>
-                </template>
-                <template v-else>
-                  <LucideIcon name="music" class="w-12 h-12 text-secondary-fixed mb-2 stroke-[1.5]" />
-                  <span class="text-[11px] font-black tracking-widest uppercase text-indigo-300">SALÓN DE CONCIERTOS</span>
-                </template>
-                
-                <span class="absolute bottom-3 right-3 text-[9px] font-mono text-slate-500 bg-slate-950/40 px-2 py-0.5 rounded">
-                  Ilustración Digital Activa
-                </span>
-              </div>
-            </template>
-
-            <div v-if="selectedOptionId === option.id" class="absolute inset-0 bg-secondary-base/5 flex items-center justify-center transition-opacity" />
-          </div>
-
           <!-- Badge & Check Indicator -->
           <div class="flex items-center justify-between mb-4">
             <span :class="['text-xs font-bold px-3 py-1.5 rounded-full select-none', option.badgeColor]">
@@ -138,7 +100,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import LucideIcon from '../components/LucideIcon.vue';
 
 defineProps({
@@ -166,9 +127,5 @@ defineProps({
 
 defineEmits(['selectOption', 'submitVote']);
 
-const imgFailed = ref({});
 
-const onImgError = (id) => {
-  imgFailed.value[id] = true;
-};
 </script>

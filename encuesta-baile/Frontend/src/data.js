@@ -11,7 +11,7 @@ export const VOTE_OPTIONS = [
     imageAlt: 'Estadio Arena luminoso',
     description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante. Ideal para grandes anuncios y celebraciones colectivas.',
     details: [
-      { label: 'Lugar', value: 'Estadio municipal' },
+      { label: 'Lugar', value: 'estadio municipal (se colocara pista de baile)' },
       { label: 'Música en vivo', value: 'Marimba orquesta' },
       { label: 'Artista internacional', value: 'Eddy Herrera o Wilfredo Vargas' },
       { label: 'Formato', value: 'Todo en un solo evento' }
