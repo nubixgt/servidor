@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 29-05-2026 a las 16:14:40
+-- Tiempo de generación: 05-06-2026 a las 00:22:37
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -89,6 +89,8 @@ CREATE TABLE `bank_accounts` (
   `tipo_cuenta` varchar(100) NOT NULL,
   `moneda` varchar(10) DEFAULT 'GTQ',
   `activa` tinyint(1) DEFAULT 1,
+  `saldo_inicial` decimal(15,2) DEFAULT 0.00,
+  `saldo_actual` decimal(15,2) DEFAULT 0.00,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -97,35 +99,11 @@ CREATE TABLE `bank_accounts` (
 -- Volcado de datos para la tabla `bank_accounts`
 --
 
-INSERT INTO `bank_accounts` (`id`, `nombre_banco`, `numero_cuenta`, `tipo_cuenta`, `moneda`, `activa`, `created_at`, `updated_at`) VALUES
-(1, 'banco industrial', '984651023', 'monetaria', 'GTQ', 1, '2026-05-21 16:33:37', '2026-05-21 16:33:37'),
-(2, 'gyt continental', '87456120', 'ahorro', 'GTQ', 1, '2026-05-21 16:43:07', '2026-05-21 16:43:07'),
-(3, 'Banco gyt', '65410352130', 'ahorro', 'GTQ', 1, '2026-05-22 23:11:52', '2026-05-22 23:11:52');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `bank_reconciliations`
---
-
-CREATE TABLE `bank_reconciliations` (
-  `id` int(11) NOT NULL,
-  `bank_account_id` int(11) NOT NULL,
-  `periodo` varchar(100) NOT NULL,
-  `saldo_banco` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `partidas_conciliatorias` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `bank_reconciliations`
---
-
-INSERT INTO `bank_reconciliations` (`id`, `bank_account_id`, `periodo`, `saldo_banco`, `partidas_conciliatorias`, `created_at`, `updated_at`) VALUES
-(1, 1, '2026-06', 500.00, '[\"in-1\",\"out-1\"]', '2026-05-21 16:34:01', '2026-05-21 16:34:01'),
-(2, 2, '2026-07', 500.00, '[\"in-1\"]', '2026-05-21 16:46:57', '2026-05-21 16:46:57'),
-(3, 3, '2026-06', 6000.00, '[\"in-2\",\"out-2\"]', '2026-05-22 23:12:28', '2026-05-22 23:12:28');
+INSERT INTO `bank_accounts` (`id`, `nombre_banco`, `numero_cuenta`, `tipo_cuenta`, `moneda`, `activa`, `saldo_inicial`, `saldo_actual`, `created_at`, `updated_at`) VALUES
+(1, 'banco industrial', '984651023', 'monetaria', 'GTQ', 1, 0.00, 1200.00, '2026-05-21 16:33:37', '2026-06-05 00:07:06'),
+(2, 'gyt continental', '87456120', 'ahorro', 'GTQ', 1, 0.00, 0.00, '2026-05-21 16:43:07', '2026-05-21 16:43:07'),
+(3, 'Banco gyt', '65410352130', 'ahorro', 'GTQ', 1, 0.00, 0.00, '2026-05-22 23:11:52', '2026-05-22 23:11:52'),
+(4, 'Promerica', '7984651320', 'Monetaria', 'GTQ', 1, 500.00, 800.00, '2026-06-04 23:18:06', '2026-06-04 23:19:54');
 
 -- --------------------------------------------------------
 
@@ -336,8 +314,31 @@ CREATE TABLE `expenses` (
 --
 
 INSERT INTO `expenses` (`id`, `proyecto_id`, `tipo_egreso`, `monto`, `fecha_egreso`, `cuenta_origen`, `numero_cheque`, `beneficiario`, `descripcion`, `comprobante_path`, `created_at`) VALUES
-(1, 1, 'Nómina', 1000.00, '2026-05-20', 'Caja General', '984510', 'Prueba 1', 'Prueba 1 para saber si carga todo correctamente en el formulario de Egreso', 'Uploads/Expenses/1/1779314311_paisaje1.jpg', '2026-05-20 21:58:31'),
-(2, 2, 'Nómina', 350.00, '2026-05-22', 'Caja General', '9874610', 'Cliente', 'Prueba para saber si todo carga bien', 'Uploads/Expenses/2/1779490884_Tarea 1 – Unidad 9.pdf', '2026-05-22 23:01:24');
+(4, NULL, 'Proveedor', 500.00, '2026-06-04', 'banco industrial - 984651023', '978415230.', 'Prueba 2', 'Prueba 2 para saber si ahora me descuenta el dinero con el banco que ya le di un ingreso', 'Uploads/Expenses/4/1780615046_carro3.jpg', '2026-06-04 23:17:26'),
+(5, NULL, 'Recurrentes', 300.00, '2026-06-05', 'banco industrial - 984651023', '894615320', 'Prueba', 'Prueba para saber si todo funciona correctamente al cargar todo y que funcione el egreso en el banco seleccionado', 'Uploads/Expenses/5/1780618026_carro4.jpg', '2026-06-05 00:07:06');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `expense_records`
+--
+
+CREATE TABLE `expense_records` (
+  `id` int(11) NOT NULL,
+  `expense_id` int(11) NOT NULL,
+  `descripcion` text NOT NULL,
+  `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `expense_records`
+--
+
+INSERT INTO `expense_records` (`id`, `expense_id`, `descripcion`, `monto`, `created_at`) VALUES
+(3, 4, 'Registro 2', 500.00, '2026-06-04 23:17:26'),
+(4, 5, 'Registro 1', 150.00, '2026-06-05 00:07:06'),
+(5, 5, 'Registro 2', 150.00, '2026-06-05 00:07:06');
 
 -- --------------------------------------------------------
 
@@ -364,8 +365,31 @@ CREATE TABLE `incomes` (
 --
 
 INSERT INTO `incomes` (`id`, `proyecto_id`, `tipo_ingreso`, `monto`, `fecha_ingreso`, `cuenta_bancaria`, `numero_cheque`, `pagador`, `descripcion`, `comprobante_path`, `created_at`) VALUES
-(1, 1, 'Estimación', 1500.00, '2026-05-20', 'Banco Industrial - 99120', '8412010', 'Prueba 1', 'Prueba 1 para saber si todo carga correctamente en el formulario de Ingreso', 'Uploads/Incomes/1/1779314221_paisaje2.jpg', '2026-05-20 21:57:01'),
-(2, 2, 'Anticipo', 200.00, '2026-05-22', 'Banrural Principal - 03212', '9846150', 'Cliente', 'Prueba para saber si carga bien todo', 'Uploads/Incomes/2/1779490795_Evaluación Final – Pregunta 5.pdf', '2026-05-22 22:59:55');
+(4, 2, 'Prueba 1', 2000.00, '2026-06-04', 'banco industrial - 984651023', '978415320', 'Prueba 1', 'Prueba 1 para saber si todo conecta correctamente con el apartado de bancos y si suma todo bien', 'Uploads/Incomes/4/1780614971_carro2.jpg', '2026-06-04 23:16:11'),
+(5, NULL, 'Prueba 3', 300.00, '2026-06-04', 'Promerica - 7984651320', '9846510', 'Prueba 3', 'Prueba 3 para saber si carga bien todo', 'Uploads/Incomes/5/1780615194_carro4.jpg', '2026-06-04 23:19:54');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `income_records`
+--
+
+CREATE TABLE `income_records` (
+  `id` int(11) NOT NULL,
+  `income_id` int(11) NOT NULL,
+  `descripcion` text NOT NULL,
+  `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `income_records`
+--
+
+INSERT INTO `income_records` (`id`, `income_id`, `descripcion`, `monto`, `created_at`) VALUES
+(4, 4, 'Registro 1', 2000.00, '2026-06-04 23:16:11'),
+(5, 5, 'Registro 1', 100.00, '2026-06-04 23:19:54'),
+(6, 5, 'Registro 2', 200.00, '2026-06-04 23:19:54');
 
 -- --------------------------------------------------------
 
@@ -634,7 +658,7 @@ CREATE TABLE `personnel` (
 INSERT INTO `personnel` (`id`, `tipo_empleado`, `nombres`, `apellidos`, `dpi`, `nit`, `telefono`, `direccion`, `puesto`, `tipo_planilla`, `salario_base`, `tarifa_hora_extra`, `fecha_contratacion`, `fecha_baja`, `numero_cuenta`, `nombre_banco`, `foto_path`, `proyecto_id`, `created_at`, `updated_at`) VALUES
 (1, 'Operador', 'Juan', 'Perez', '6546516510650', '9874', '9878-4651', 'Prueba de direccion', 'Programador', 'Mensual', 5000.00, 25.00, '2026-05-01', NULL, '987415', 'sdfsdf', 'Uploads/Personal/1/foto.jpg', 1, '2026-05-20 18:43:35', '2026-05-21 17:57:18'),
 (2, 'Contratista', 'Karla', 'Archila', '8746135030356', '6845102', '6841-6515', 'Prueba', 'Contratista', 'Quincenal', 15000.00, 100.00, '2026-05-02', NULL, '68415302', 'asdf', 'Uploads/Personal/2/foto.jpg', 1, '2026-05-21 16:24:43', '2026-05-21 17:57:01'),
-(3, 'Administrativo', 'Santiago', 'Hernandez', '5481560332023', '984150', '9841-0320', 'Prueba para saber si carga bien', 'Programador', 'Semanal', 6000.00, 25.00, '2026-05-24', '2026-06-07', '5120', 'Prueba', 'Uploads/Personal/3/foto.jpg', 1, '2026-05-22 22:24:30', '2026-05-23 18:31:28');
+(3, 'Piloto', 'Santiago', 'Hernandez', '5481560332023', '984150', '9841-0320', 'Prueba para saber si carga bien', 'Programador', 'Semanal', 6000.00, 25.00, '2026-05-24', '2026-06-07', '5120', 'Prueba', 'Uploads/Personal/3/foto.jpg', 1, '2026-05-22 22:24:30', '2026-05-29 16:33:07');
 
 -- --------------------------------------------------------
 
@@ -802,6 +826,31 @@ INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `item_id`, `canti
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `recurrents`
+--
+
+CREATE TABLE `recurrents` (
+  `id` int(11) NOT NULL,
+  `concepto` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `monto` decimal(15,2) DEFAULT NULL,
+  `dia_pago` int(11) DEFAULT NULL,
+  `creado_por` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `recurrents`
+--
+
+INSERT INTO `recurrents` (`id`, `concepto`, `descripcion`, `monto`, `dia_pago`, `creado_por`, `created_at`, `updated_at`) VALUES
+(2, 'Pago de luz', 'Prueba 1 para saber si todo carga correctamente', 300.00, 16, 'admin_pro', '2026-06-04 23:58:55', '2026-06-05 00:15:31'),
+(3, 'Luz', 'Prueba', 2000.00, NULL, 'admin_pro', '2026-06-05 00:10:18', '2026-06-05 00:16:08');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `suppliers`
 --
 
@@ -853,6 +902,61 @@ INSERT INTO `users` (`id`, `nombre`, `usuario`, `password`, `rol`, `estado`, `fo
 (2, 'Admin', 'admin', '$2y$10$bU4xCoXE5sAwb6y7yS1Wl.N9xVsyq7SwY5nVWVVquWVL.5Ehc2Qly', 'admin', 'Activo', 'Uploads/Users/2/foto_1779295276.jpg', '2026-05-20 16:41:16', '2026-05-20 16:41:51'),
 (3, 'Maria Gomez', 'mgomez', '$2y$10$wODjihBDEAXDuRb0kNXQpeziPnvLp1Oo5RC3HLgD4lKhhYWuQV0Dq', 'tecnico', 'Activo', 'Uploads/Users/3/foto_1779491227.jpg', '2026-05-22 23:07:07', '2026-05-22 23:07:07');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vehicles`
+--
+
+CREATE TABLE `vehicles` (
+  `id` int(11) NOT NULL,
+  `placa` varchar(20) NOT NULL,
+  `kilometraje` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `marca` varchar(100) NOT NULL,
+  `modelo` varchar(100) NOT NULL,
+  `piloto_id` int(10) UNSIGNED DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
+  `foto_frontal` varchar(255) DEFAULT NULL,
+  `foto_trasera` varchar(255) DEFAULT NULL,
+  `frecuencia_prioridad` enum('Mantenimiento Inicial','Normal','Preventiva','Crítica') NOT NULL DEFAULT 'Normal',
+  `estatus` enum('draft','active','maintenance','inactive') NOT NULL DEFAULT 'draft',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `vehicles`
+--
+
+INSERT INTO `vehicles` (`id`, `placa`, `kilometraje`, `marca`, `modelo`, `piloto_id`, `observaciones`, `foto_frontal`, `foto_trasera`, `frecuencia_prioridad`, `estatus`, `created_at`, `updated_at`) VALUES
+(1, 'SAD-123', 1600.00, 'Toyota', '2026', 3, 'Prueba 1 para saber si todo carga bien incluyendo las fotos', 'Uploads/Vehicles/1/foto_frontal.jpg', 'Uploads/Vehicles/1/foto_trasera.jpg', 'Normal', 'active', '2026-05-29 16:50:17', '2026-05-29 17:01:41'),
+(2, 'WERF-123', 20.00, 'Mitsubishi', '2025', 3, 'Prueba 2', 'Uploads/Vehicles/2/foto_frontal.jpg', 'Uploads/Vehicles/2/foto_trasera.jpg', 'Crítica', 'inactive', '2026-05-29 17:04:34', '2026-05-29 17:45:43');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `vehicle_logs`
+--
+
+CREATE TABLE `vehicle_logs` (
+  `id` int(11) NOT NULL,
+  `vehiculo_id` int(11) NOT NULL,
+  `piloto_id` int(10) UNSIGNED DEFAULT NULL,
+  `estatus_vehiculo` enum('active','maintenance','inactive','draft') NOT NULL DEFAULT 'active',
+  `envio_servicio` text DEFAULT NULL,
+  `reportar_averia` text DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `vehicle_logs`
+--
+
+INSERT INTO `vehicle_logs` (`id`, `vehiculo_id`, `piloto_id`, `estatus_vehiculo`, `envio_servicio`, `reportar_averia`, `observaciones`, `fecha_registro`) VALUES
+(1, 2, 3, 'maintenance', 'Prueba 1 para saber si cambio todo correctamente a taller', 'Prueba 1 para saber si cambio todo correctamente a taller', 'Prueba 1 para saber si cambio todo correctamente a taller', '2026-05-29 17:43:18'),
+(2, 2, 3, 'inactive', 'Prueba 2 para ver si cambia de estado', 'Prueba 2 para ver si cambia de estado', 'Prueba 2 para ver si cambia de estado', '2026-05-29 17:45:43');
+
 --
 -- Índices para tablas volcadas
 --
@@ -874,13 +978,6 @@ ALTER TABLE `alerts_history`
 --
 ALTER TABLE `bank_accounts`
   ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `bank_reconciliations`
---
-ALTER TABLE `bank_reconciliations`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `bank_account_id` (`bank_account_id`);
 
 --
 -- Indices de la tabla `budget_items`
@@ -941,11 +1038,25 @@ ALTER TABLE `expenses`
   ADD KEY `fk_expense_project` (`proyecto_id`);
 
 --
+-- Indices de la tabla `expense_records`
+--
+ALTER TABLE `expense_records`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `expense_id` (`expense_id`);
+
+--
 -- Indices de la tabla `incomes`
 --
 ALTER TABLE `incomes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_income_project` (`proyecto_id`);
+
+--
+-- Indices de la tabla `income_records`
+--
+ALTER TABLE `income_records`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `income_id` (`income_id`);
 
 --
 -- Indices de la tabla `inventory_items`
@@ -1057,6 +1168,12 @@ ALTER TABLE `purchase_order_items`
   ADD KEY `fk_poi_item` (`item_id`);
 
 --
+-- Indices de la tabla `recurrents`
+--
+ALTER TABLE `recurrents`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `suppliers`
 --
 ALTER TABLE `suppliers`
@@ -1069,6 +1186,22 @@ ALTER TABLE `suppliers`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `usuario` (`usuario`);
+
+--
+-- Indices de la tabla `vehicles`
+--
+ALTER TABLE `vehicles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `placa_unica` (`placa`),
+  ADD KEY `fk_vehicle_pilot` (`piloto_id`);
+
+--
+-- Indices de la tabla `vehicle_logs`
+--
+ALTER TABLE `vehicle_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_vehicle_log_vehicle` (`vehiculo_id`),
+  ADD KEY `fk_vehicle_log_pilot` (`piloto_id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -1090,13 +1223,7 @@ ALTER TABLE `alerts_history`
 -- AUTO_INCREMENT de la tabla `bank_accounts`
 --
 ALTER TABLE `bank_accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `bank_reconciliations`
---
-ALTER TABLE `bank_reconciliations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `budget_items`
@@ -1144,13 +1271,25 @@ ALTER TABLE `estimation_items`
 -- AUTO_INCREMENT de la tabla `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `expense_records`
+--
+ALTER TABLE `expense_records`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `incomes`
 --
 ALTER TABLE `incomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `income_records`
+--
+ALTER TABLE `income_records`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `inventory_items`
@@ -1237,6 +1376,12 @@ ALTER TABLE `purchase_order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT de la tabla `recurrents`
+--
+ALTER TABLE `recurrents`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `suppliers`
 --
 ALTER TABLE `suppliers`
@@ -1249,14 +1394,20 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Restricciones para tablas volcadas
+-- AUTO_INCREMENT de la tabla `vehicles`
 --
+ALTER TABLE `vehicles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Filtros para la tabla `bank_reconciliations`
+-- AUTO_INCREMENT de la tabla `vehicle_logs`
 --
-ALTER TABLE `bank_reconciliations`
-  ADD CONSTRAINT `bank_reconciliations_ibfk_1` FOREIGN KEY (`bank_account_id`) REFERENCES `bank_accounts` (`id`) ON DELETE CASCADE;
+ALTER TABLE `vehicle_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Restricciones para tablas volcadas
+--
 
 --
 -- Filtros para la tabla `budget_items`
@@ -1304,10 +1455,22 @@ ALTER TABLE `expenses`
   ADD CONSTRAINT `fk_expense_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
 
 --
+-- Filtros para la tabla `expense_records`
+--
+ALTER TABLE `expense_records`
+  ADD CONSTRAINT `expense_records_ibfk_1` FOREIGN KEY (`expense_id`) REFERENCES `expenses` (`id`) ON DELETE CASCADE;
+
+--
 -- Filtros para la tabla `incomes`
 --
 ALTER TABLE `incomes`
   ADD CONSTRAINT `fk_income_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `income_records`
+--
+ALTER TABLE `income_records`
+  ADD CONSTRAINT `income_records_ibfk_1` FOREIGN KEY (`income_id`) REFERENCES `incomes` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `inventory_kardex`
@@ -1390,6 +1553,19 @@ ALTER TABLE `purchase_orders`
 ALTER TABLE `purchase_order_items`
   ADD CONSTRAINT `fk_poi_item` FOREIGN KEY (`item_id`) REFERENCES `inventory_items` (`id`),
   ADD CONSTRAINT `fk_poi_orden` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `vehicles`
+--
+ALTER TABLE `vehicles`
+  ADD CONSTRAINT `fk_vehicle_pilot` FOREIGN KEY (`piloto_id`) REFERENCES `personnel` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `vehicle_logs`
+--
+ALTER TABLE `vehicle_logs`
+  ADD CONSTRAINT `fk_vehicle_log_pilot` FOREIGN KEY (`piloto_id`) REFERENCES `personnel` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_vehicle_log_vehicle` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
