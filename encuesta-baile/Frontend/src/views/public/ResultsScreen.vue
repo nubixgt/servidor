@@ -1,138 +1,149 @@
 <template>
-  <div class="space-y-10 animate-fade-in">
-    <!-- Custom page title heading -->
-    <div class="text-center space-y-2 mb-6">
-      <h2 class="text-3xl font-extrabold text-[#091426] tracking-tight">
-        Tablero de Encuesta Abierta
-      </h2>
+  <div
+    class="relative min-h-screen flex flex-col overflow-x-hidden font-sans bg-[#0a0f1e] text-white -mt-10 md:-mt-14 -mb-[3rem]"
+    style="width: 100vw; margin-left: calc(-50vw + 50%);"
+  >
+    <!-- Cinematic Background -->
+    <div class="absolute top-0 right-0 w-full h-[614px] md:w-1/2 md:h-screen pointer-events-none opacity-30 md:opacity-50 overflow-hidden z-0">
+      <img
+        alt="Premium Event Scene"
+        class="w-full h-full object-cover object-center transition-all duration-1000 ease-out scale-105"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf-te7Jx8lFHnda-WiD_84QAIaiT4YyIPWEzclFHKDavGE0bI6_UaUAwYumD_jhr3rPCxBwymYe2VHHKFb_y0jgg1k2ZTSx_QDNtcXOUJQxIAdKpIO0U4ww7Y4SRTb-IpJCYmvlnMDths50SbIivZg16kaqcKoQ4L1s8LOEgyrmVdHlHjp1Fn6c9rAvYHzQbHpsVVMO4rQxWRpygU-_abcl4FXnhOTyHsKRaPnQb1Ifn0gXjnCkSVeE123-BKHw3tvtnhxxMjfsO3R"
+        referrerpolicy="no-referrer"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/10 via-[#0a0f1e]/80 to-[#0a0f1e]"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0a0f1e] via-[#0a0f1e]/30 to-transparent hidden md:block"></div>
+      <div class="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f2ca50]/5 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
-    <div class="bg-surface-container-lowest rounded-xl p-6 md:p-8 border border-slate-100 shadow-md">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
+    <!-- Content -->
+    <main class="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-8 pt-10 pb-16 flex flex-col gap-10 animate-fade-in">
+
+      <!-- Header -->
+      <div class="max-w-2xl">
+        <h1 class="font-serif text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 leading-tight">
+          Resultados en
+          <span class="text-[#f2ca50] italic font-normal font-serif"> tiempo real</span>
+        </h1>
+        <p class="text-sm md:text-base text-[#d0c5af] max-w-xl leading-relaxed">
+          Respuestas recopiladas y verificadas mediante nuestro portal seguro.
+        </p>
+      </div>
+
+      <!-- Total Participation Card -->
+      <div class="inline-flex items-center gap-4 bg-white/5 border border-[rgba(153,144,124,0.2)] rounded-xl px-6 py-4 w-fit">
+        <div class="w-10 h-10 rounded-full bg-[#f2ca50]/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[#f2ca50]" style="font-size:20px; font-variation-settings: 'FILL' 1;">groups</span>
+        </div>
         <div>
-          <h2 class="text-2xl font-bold text-primary-base flex items-center gap-2">
-            <LucideIcon name="bar-chart-3" class="w-6 h-6 text-secondary-base" />
-            Resultados de la Encuesta en Tiempo Real
-          </h2>
-          <p class="text-xs md:text-sm text-on-surface-variant mt-1">
-            Respuestas recopiladas y verificadas mediante nuestro portal seguro.
-          </p>
+          <div class="text-3xl font-bold text-[#f2ca50]">{{ total }}</div>
+          <div class="text-xs text-[#d0c5af] font-medium tracking-wide uppercase">Participaciones Totales</div>
         </div>
       </div>
 
-      <!-- Metrics Summary Rows -->
-      <div class="mb-8 max-w-sm">
-        <div class="bg-slate-50 rounded-lg p-4 flex items-center gap-4 border border-slate-100">
-          <div class="w-10 h-10 rounded-full bg-slate-900/5 flex items-center justify-center text-primary-base">
-            <LucideIcon name="users" class="w-5 h-5" />
-          </div>
-          <div>
-            <div class="text-2xl font-bold text-primary-base">{{ total }}</div>
-            <div class="text-xs text-on-surface-variant font-medium">Participaciones Totales</div>
-          </div>
-        </div>
-      </div>
+      <!-- Main Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
-      <!-- Core Votes Layout Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
-        <!-- Visual Percent Bar Meters -->
-        <div class="space-y-6">
-          <h3 class="text-base font-bold text-primary-base uppercase tracking-wider">
-            Detalle por Propuestas
-          </h3>
+        <!-- Progress Bars -->
+        <div class="flex flex-col gap-6">
+          <h3 class="text-sm font-bold text-[#f2ca50] uppercase tracking-widest">Detalle por Propuestas</h3>
 
-          <!-- Option A Progress -->
-          <div :class="['p-4 rounded-lg border transition-all', userVote === 'option-a' ? 'bg-indigo-50/20 border-indigo-100' : 'bg-transparent border-slate-100']">
-            <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-full bg-[#091426]" />
-                <span class="font-semibold text-primary-base text-sm md:text-base">Gran Baile en el Estadio</span>
-                <span v-if="userVote === 'option-a'" class="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded">Tu Voto</span>
+          <!-- Option A -->
+          <div :class="['p-5 rounded-2xl border-2 transition-all duration-300', userVote === 'option-a' ? 'border-[#f2ca50] bg-[#f2ca50]/5 gold-glow' : 'border-[rgba(153,144,124,0.2)] bg-white/5']">
+            <div class="flex justify-between items-center mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-[#f2ca50]"></span>
+                <span class="font-semibold text-white text-sm md:text-base">Baile Social en el Estadio</span>
+                <span v-if="userVote === 'option-a'" class="px-2 py-0.5 bg-[#f2ca50]/20 text-[#f2ca50] text-[10px] font-bold rounded-full">Tu Voto</span>
               </div>
-              <span class="font-black text-primary-base text-sm">{{ votesA }} votos ({{ pctA }}%)</span>
+              <span class="font-black text-[#f2ca50] text-sm">{{ votesA }} votos ({{ pctA }}%)</span>
             </div>
-            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div class="w-full bg-white/10 h-3 rounded-full overflow-hidden">
               <div
-                class="bg-[#091426] h-full rounded-full transition-all duration-1000"
+                class="h-full rounded-full transition-all duration-1000"
+                style="background: linear-gradient(90deg, #d4af37 0%, #f2ca50 100%);"
                 :style="{ width: `${pctA}%` }"
-              />
+              ></div>
             </div>
-            <p class="text-xs text-on-surface-variant mt-2 italic">
-              Convocatoria expansiva, ideal para toda la comunidad unificada.
-            </p>
+            <p class="text-xs text-[#d0c5af] mt-2 italic">Convocatoria expansiva, ideal para toda la comunidad unificada.</p>
           </div>
 
-          <!-- Option B Progress -->
-          <div :class="['p-4 rounded-lg border transition-all', userVote === 'option-b' ? 'bg-indigo-50/20 border-indigo-100' : 'bg-transparent border-slate-100']">
-            <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-full bg-[#4648d4]" />
-                <span class="font-semibold text-primary-base text-sm md:text-base">Baile en Salón + Concierto</span>
-                <span v-if="userVote === 'option-b'" class="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded">Tu Voto</span>
+          <!-- Option B -->
+          <div :class="['p-5 rounded-2xl border-2 transition-all duration-300', userVote === 'option-b' ? 'border-[#f2ca50] bg-[#f2ca50]/5 gold-glow' : 'border-[rgba(153,144,124,0.2)] bg-white/5']">
+            <div class="flex justify-between items-center mb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-[#bdc6e4]"></span>
+                <span class="font-semibold text-white text-sm md:text-base">Baile Social en Salón + Concierto</span>
+                <span v-if="userVote === 'option-b'" class="px-2 py-0.5 bg-[#f2ca50]/20 text-[#f2ca50] text-[10px] font-bold rounded-full">Tu Voto</span>
               </div>
-              <span class="font-black text-[#4648d4] text-sm">{{ votesB }} votos ({{ pctB }}%)</span>
+              <span class="font-black text-[#bdc6e4] text-sm">{{ votesB }} votos ({{ pctB }}%)</span>
             </div>
-            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div class="w-full bg-white/10 h-3 rounded-full overflow-hidden">
               <div
-                class="bg-[#4648d4] h-full rounded-full transition-all duration-1000"
+                class="bg-[#bdc6e4] h-full rounded-full transition-all duration-1000"
                 :style="{ width: `${pctB}%` }"
-              />
+              ></div>
             </div>
-            <p class="text-xs text-on-surface-variant mt-2 italic">
-              Ambiente íntimo con acústica distinguida y mayor interacción.
-            </p>
+            <p class="text-xs text-[#d0c5af] mt-2 italic">Ambiente íntimo con acústica distinguida y mayor interacción.</p>
           </div>
         </div>
 
-        <!-- Custom HTML/CSS Bar Graph to replace Recharts -->
-        <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 flex flex-col justify-between">
+        <!-- Bar Chart -->
+        <div class="bg-white/5 border border-[rgba(153,144,124,0.2)] rounded-2xl p-6 flex flex-col justify-between">
           <div class="mb-4">
-            <h4 class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+            <h4 class="text-xs font-bold text-[#d0c5af] uppercase tracking-widest">
               Distribución Gráfica de Preferencias
             </h4>
           </div>
-          <div class="h-60 w-full pb-6 relative flex text-[11px] text-[#45474c]">
+          <div class="h-60 w-full pb-6 relative flex text-[11px] text-[#d0c5af]">
             <!-- Y Axis -->
-            <div class="flex flex-col justify-between items-end pr-2 border-r border-[#45474c]/20 w-8 flex-shrink-0 relative z-10 bg-slate-50 pb-5">
+            <div class="flex flex-col justify-between items-end pr-2 border-r border-white/10 w-8 flex-shrink-0 relative z-10 pb-5">
               <span>{{ maxY }}</span>
               <span>{{ Math.round(maxY / 2) }}</span>
               <span>0</span>
             </div>
-            
+
             <!-- Chart Area -->
             <div class="flex-grow flex justify-around items-end pl-2 relative">
-              <div v-for="(entry, index) in chartData" :key="index" class="flex flex-col items-center group relative h-full w-full max-w-[50px]">
+              <div
+                v-for="(entry, index) in chartData"
+                :key="index"
+                class="flex flex-col items-center group relative h-full w-full max-w-[80px]"
+              >
                 <div class="w-full flex-grow flex items-end relative h-full pb-6 z-10">
-                   <div 
-                     class="w-full rounded-t-[4px] transition-all duration-1000 relative"
-                     :style="{ backgroundColor: entry.color, height: `${(entry.votos / maxY) * 100}%` }"
-                   >
-                     <!-- Tooltip logic to mimic Recharts -->
-                     <div class="opacity-0 group-hover:opacity-100 pointer-events-none absolute -top-14 left-1/2 -translate-x-1/2 bg-white border border-[#ECEEF0] rounded-lg px-3 py-2 text-xs font-bold text-primary-base shadow-sm whitespace-nowrap z-50 transition-opacity duration-200">
-                       {{ entry.name }}<br/><span style="font-weight:normal;color:#666">{{ entry.name }} : </span><span :style="{color: entry.color}">{{ entry.votos }}</span>
-                     </div>
-                   </div>
+                  <div
+                    class="w-full rounded-t-lg transition-all duration-1000 relative"
+                    :style="{ backgroundColor: entry.color, height: `${(entry.votos / maxY) * 100}%` }"
+                  >
+                    <!-- Tooltip -->
+                    <div class="opacity-0 group-hover:opacity-100 pointer-events-none absolute -top-14 left-1/2 -translate-x-1/2 bg-[#1d2023] border border-[rgba(153,144,124,0.3)] rounded-lg px-3 py-2 text-xs font-bold text-white shadow-lg whitespace-nowrap z-50 transition-opacity duration-200">
+                      {{ entry.name }}<br/>
+                      <span class="font-normal text-[#d0c5af]">Votos: </span>
+                      <span :style="{ color: entry.color }">{{ entry.votos }}</span>
+                    </div>
+                  </div>
                 </div>
-                <span class="absolute bottom-0 text-[11px] text-center w-24 left-1/2 -translate-x-1/2 truncate">{{ entry.name }}</span>
+                <span class="absolute bottom-0 text-[10px] text-center w-24 left-1/2 -translate-x-1/2 truncate text-[#d0c5af]">{{ entry.name }}</span>
               </div>
 
-              <!-- Horizontal Grid Line at bottom -->
-              <div class="absolute bottom-6 left-0 right-0 h-px bg-[#45474c]/20 z-0"></div>
+              <!-- Horizontal Grid Lines -->
+              <div class="absolute bottom-6 left-0 right-0 h-px bg-white/10 z-0"></div>
+              <div class="absolute bottom-1/2 left-0 right-0 h-px bg-white/5 z-0"></div>
             </div>
           </div>
-          <div class="text-center pt-2 text-xs text-slate-400 font-mono">
+          <div class="text-center pt-2 text-xs text-[#d0c5af]/50 font-mono">
             Actualizado hace unos segundos
           </div>
         </div>
       </div>
-    </div>
+
+    </main>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
-import LucideIcon from '../components/LucideIcon.vue';
 
 const votesA = ref(0);
 const votesB = ref(0);
@@ -152,7 +163,6 @@ const fetchResults = async () => {
 
 onMounted(() => {
   fetchResults();
-  // We can poll every 5 seconds for real-time updates
   setInterval(fetchResults, 5000);
 });
 
@@ -162,26 +172,43 @@ const total = computed(() => votesA.value + votesB.value);
 const pctA = computed(() => total.value > 0 ? Math.round((votesA.value / total.value) * 100) : 0);
 const pctB = computed(() => total.value > 0 ? Math.round((votesB.value / total.value) * 100) : 0);
 
-// For the bar chart graph simulation
 const maxY = computed(() => {
   const max = Math.max(votesA.value, votesB.value, 10);
-  return Math.ceil(max * 1.2); // Add 20% headroom
+  return Math.ceil(max * 1.2);
 });
 
 const chartData = computed(() => [
   {
-    name: 'Estadio (Opción A)',
+    name: 'Estadio (A)',
     votos: votesA.value,
     porcentaje: pctA.value,
-    color: '#091426',
+    color: '#f2ca50',
   },
   {
     name: 'Salón + Concierto (B)',
     votos: votesB.value,
     porcentaje: pctB.value,
-    color: '#4648d4',
+    color: '#bdc6e4',
   }
 ]);
-
-
 </script>
+
+<style scoped>
+.gold-glow {
+  box-shadow: 0 0 35px rgba(242, 202, 80, 0.18);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+</style>
