@@ -13,6 +13,21 @@
       </div>
     </div>
 
+    <!-- KPI -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up" data-aos-duration="1000">
+      <div class="glass-card p-6 rounded-[30px] relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="relative z-10 flex flex-col justify-between h-full space-y-4">
+          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Total Gastos Recurrentes</p>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-white italic tracking-tighter">
+              Q{{ totalRecurrentsAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Table -->
     <section class="glass-card p-10 rounded-[40px]" data-aos="zoom-in-up" data-aos-duration="1000">
       <div class="overflow-x-auto custom-scrollbar">
@@ -118,6 +133,10 @@ const itemsPerPage = 10;
 const handleSearch = () => {
   currentPage.value = 1;
 };
+
+const totalRecurrentsAmount = computed(() => {
+  return recurrents.value.reduce((sum, item) => sum + (Number(item.monto) || 0), 0);
+});
 
 const filteredRecurrents = computed(() => {
   let filtered = recurrents.value;
