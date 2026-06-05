@@ -23,8 +23,8 @@
         <!-- Header / Title Area -->
         <div class="max-w-2xl">
           <h1 class="font-serif text-4xl md:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">
-            ¿Cómo preferís
-            <span class="text-[#f2ca50] italic font-normal font-serif"> el evento?</span>
+            ¿Cómo prefieres
+            <span class="text-[#f2ca50] italic font-normal font-serif"> el baile social?</span>
           </h1>
           <p class="text-sm md:text-base text-[#d0c5af] font-sans max-w-xl leading-relaxed">
             Elegí la opción que más se ajuste a lo que tenés en mente. Tu preferencia define la noche.
@@ -74,11 +74,12 @@
                 />
               </div>
 
-              <!-- Content column -->
-              <div class="flex flex-col gap-3 text-center sm:text-left flex-grow">
-                <h3 class="font-serif text-xl md:text-2xl font-bold text-white tracking-wide leading-snug">
-                  {{ option.title }}
-                </h3>
+              <!-- Card main contents layout -->
+            <div class="flex flex-col gap-3 text-center sm:text-left flex-grow">
+              <span class="text-[#f2ca50] text-xs font-bold tracking-widest uppercase">{{ option.badge }}</span>
+              <h3 class="font-serif text-xl md:text-2xl font-bold text-white tracking-wide leading-snug uppercase">
+                {{ option.title }}
+              </h3>
                 <div class="h-[1px] w-8 bg-[#f2ca50] opacity-50 mx-auto sm:mx-0"></div>
 
                 <!-- Highlights list -->
@@ -87,12 +88,21 @@
                     <div class="text-[#f2ca50] flex-shrink-0 mt-0.5">
                       <span class="material-symbols-outlined" style="font-size:15px; font-variation-settings: 'FILL' 1;">{{ hl.matIcon }}</span>
                     </div>
-                    <div class="font-sans text-xs text-[#d0c5af] flex flex-col">
-                      <span class="font-medium text-white/90">{{ hl.value }}</span>
+                    <div class="font-sans text-xs text-[#d0c5af] flex flex-col mt-0.5">
+                      <span class="font-medium text-white/90">
+                        <span class="text-[#f2ca50] mr-1">{{ hl.label }}:</span>{{ hl.value }}
+                      </span>
                       <span v-if="hl.subLabel" class="text-[10px] opacity-70 mt-0.5">{{ hl.subLabel }}</span>
                     </div>
                   </li>
                 </ul>
+
+                <!-- Nota (solo para opción B) -->
+                <div v-if="option.voteId === 'option-b'" class="mt-2 p-3 bg-[#f2ca50]/5 border border-[#f2ca50]/20 rounded-lg text-left">
+                  <p class="text-[#d0c5af] text-xs font-sans leading-relaxed">
+                    <span class="text-[#f2ca50] font-bold">NOTA:</span> El baile social se realiza un dia y el concierto se realiza otro dia
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -201,11 +211,13 @@ const displayOptions = computed(() => {
     const visual = diseno2Data[opt.id] || {};
     return {
       voteId: opt.id,
+      badge: opt.badge,
       title: opt.title,
       imageUrl: visual.imageUrl,
       decorIcon: visual.decorIcon,
       highlights: (opt.details || []).map(d => ({
         matIcon: d.icon,
+        label: d.label,
         value: d.value,
         subLabel: d.subLabel || null,
       }))

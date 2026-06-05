@@ -11,9 +11,9 @@ export const VOTE_OPTIONS = [
     imageAlt: 'Estadio Arena luminoso',
     description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante.',
     details: [
-      { label: 'Lugar', value: 'Estadio municipal', subLabel: '(se colocará pista de baile)', icon: 'location_on' },
-      { label: 'Música en vivo', value: 'Música en vivo: Marimba orquesta', icon: 'music_note' },
-      { label: 'Artista internacional', value: 'Artista internacional', icon: 'star' },
+      { label: 'Baile Social', value: 'Estadio municipal', subLabel: '(se colocará pista de baile)', icon: 'location_on' },
+      { label: 'Música en vivo', value: 'Marimba orquesta', icon: 'music_note' },
+      { label: 'Artista internacional', value: 'Eddy Herrera o Wilfredo Vargas', icon: 'star' },
       { label: 'Formato', value: 'Todo en un solo evento', icon: 'groups' }
     ]
   },
@@ -26,10 +26,9 @@ export const VOTE_OPTIONS = [
     imageAlt: 'Salón de Concierto elegante',
     description: 'Un formato híbrido que combina la elegancia de un salón privado con la energía de un concierto exclusivo.',
     details: [
-      { label: 'Lugar', value: 'Salón de eventos', icon: 'apartment' },
-      { label: 'Música', value: 'Orquesta en vivo', icon: 'music_note' },
-      { label: 'Artista', value: 'Artista internacional', icon: 'star' },
-      { label: 'Modalidad', value: 'Concierto + Baile', icon: 'mic_external_on' }
+      { label: 'Lugar', value: 'Salón municipal', icon: 'apartment' },
+      { label: 'Concierto', value: 'Artista internacional por separado', icon: 'mic_external_on' },
+      { label: 'Modalidad', value: 'Dos eventos distintos', icon: 'event' }
     ]
   }
 ];
