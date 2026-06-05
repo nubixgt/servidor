@@ -8,6 +8,7 @@
         <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Gestión de Egresos Recurrentes</p>
       </div>
       <div class="flex items-center gap-4 relative z-20 flex-wrap">
+        <input v-model="searchQuery" @input="handleSearch" type="text" placeholder="Buscar concepto..." class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold placeholder:text-white/20 text-white focus:outline-none focus:border-primary/50" />
         <button @click="openModal()" class="px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white/80 font-black text-xs uppercase tracking-widest hover:bg-white/10 hover:scale-105 transition-all">Nuevo Recurrente</button>
       </div>
     </div>
@@ -29,7 +30,7 @@
             <tr v-if="recurrents.length === 0">
                <td colspan="5" class="p-10 text-center text-white/40 font-bold uppercase tracking-widest text-xs">No hay recurrentes registrados.</td>
             </tr>
-            <tr v-for="item in recurrents" :key="item.id" class="hover:bg-white/5 transition-all">
+            <tr v-for="item in paginatedRecurrents" :key="item.id" class="hover:bg-white/5 transition-all">
               <td class="p-6 font-black uppercase text-sm">{{ item.concepto }}</td>
               <td class="p-6 text-white/50 text-xs">{{ item.descripcion || '-' }}</td>
               <td class="p-6 text-primary font-bold">
@@ -43,6 +44,15 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div v-if="totalPages > 1" class="mt-8 flex items-center justify-between border-t border-white/5 pt-6">
+        <p class="text-xs font-bold text-white/40 uppercase tracking-widest">Página {{ currentPage }} de {{ totalPages }}</p>
+        <div class="flex gap-2">
+          <button @click="prevPage" :disabled="currentPage === 1" class="px-4 py-2 rounded-xl border border-white/5 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs font-bold uppercase disabled:opacity-50">Anterior</button>
+          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-4 py-2 rounded-xl border border-white/5 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs font-bold uppercase disabled:opacity-50">Siguiente</button>
+        </div>
       </div>
     </section>
 
@@ -65,7 +75,7 @@
           <div class="grid grid-cols-2 gap-6">
             <div class="space-y-2">
               <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Monto (Q)</label>
-              <input type="number" step="0.01" v-model="form.monto" placeholder="0.00" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
+              <input type="text" :value="form.monto_display" @input="handleCurrencyInput" placeholder="Q0.00" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
             </div>
             <div class="space-y-2">
               <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Día de Pago</label>
@@ -84,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../../services/api';
 import Swal from 'sweetalert2';
 
@@ -96,9 +106,54 @@ const editingId = ref(null);
 const form = ref({
   concepto: '',
   descripcion: '',
-  monto: '',
+  monto: 0,
+  monto_display: '',
   dia_pago: ''
 });
+
+const searchQuery = ref('');
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const handleSearch = () => {
+  currentPage.value = 1;
+};
+
+const filteredRecurrents = computed(() => {
+  let filtered = recurrents.value;
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(item => 
+      item.concepto.toLowerCase().includes(q) || 
+      (item.descripcion && item.descripcion.toLowerCase().includes(q))
+    );
+  }
+  return filtered;
+});
+
+const totalPages = computed(() => Math.ceil(filteredRecurrents.value.length / itemsPerPage) || 1);
+
+const paginatedRecurrents = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return filteredRecurrents.value.slice(start, end);
+});
+
+const prevPage = () => { if (currentPage.value > 1) currentPage.value--; };
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++; };
+
+const handleCurrencyInput = (event) => {
+  let val = event.target.value;
+  let num = val.replace(/\D/g, '');
+  if (!num) {
+    form.value.monto_display = '';
+    form.value.monto = 0;
+    return;
+  }
+  let floatVal = (parseInt(num, 10) / 100);
+  form.value.monto = floatVal;
+  form.value.monto_display = 'Q' + floatVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
 
 const fetchRecurrents = async () => {
   try {
@@ -119,23 +174,25 @@ const openModal = (item = null) => {
   if (item) {
     isEditing.value = true;
     editingId.value = item.id;
+    const m = item.monto ? Number(item.monto) : 0;
     form.value = {
       concepto: item.concepto,
       descripcion: item.descripcion || '',
-      monto: item.monto || '',
+      monto: m,
+      monto_display: m ? 'Q' + m.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
       dia_pago: item.dia_pago || ''
     };
   } else {
     isEditing.value = false;
     editingId.value = null;
-    form.value = { concepto: '', descripcion: '', monto: '', dia_pago: '' };
+    form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '' };
   }
   showModal.value = true;
 };
 
 const closeModal = () => {
   showModal.value = false;
-  form.value = { concepto: '', descripcion: '', monto: '', dia_pago: '' };
+  form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '' };
 };
 
 const saveRecurrent = async () => {
