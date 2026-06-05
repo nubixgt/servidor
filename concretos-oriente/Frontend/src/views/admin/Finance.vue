@@ -404,6 +404,7 @@ import {
   EllipsisVerticalIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon, XMarkIcon, TrashIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
+import api from '../../services/api';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
@@ -427,7 +428,9 @@ const fetchRecurrents = async () => {
     if(res.data.status === 'success') {
       recurrentsList.value = res.data.data;
     }
-  } catch(e) {}
+  } catch(e) {
+    console.error("Error fetching recurrents: ", e);
+  }
 };
 
 const fetchBankAccounts = async () => {
