@@ -20,10 +20,10 @@
         @click="$emit('selectOption', option.id)"
         :class="[
           'group relative text-left rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 border-2 w-full',
-          option.id === 'option-a' ? 'bg-blue-50' : 'bg-emerald-50',
+          option.id === 'option-a' ? 'bg-blue-100' : 'bg-amber-100',
           selectedOptionId === option.id 
             ? 'border-secondary-base shadow-lg ring-2 ring-secondary-base/20' 
-            : 'border-slate-100 hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
+            : 'border-slate-300 hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
         ]"
       >
         <div class="w-full">
