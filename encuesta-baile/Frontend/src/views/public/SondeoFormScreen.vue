@@ -19,11 +19,11 @@
         :id="`option-${option.id}`"
         @click="$emit('selectOption', option.id)"
         :class="[
-          'group relative text-left rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 border-2 w-full',
-          option.id === 'option-a' ? 'bg-blue-100' : 'bg-green-100',
+          'group relative text-left rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 w-full',
+          option.id === 'option-a' ? 'bg-[#eef5ff] border border-blue-200' : 'bg-[#e4fbe9] border border-green-200',
           selectedOptionId === option.id 
             ? 'border-secondary-base shadow-lg ring-2 ring-secondary-base/20' 
-            : 'border-slate-300 hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
+            : 'hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
         ]"
       >
         <div class="w-full">
@@ -49,17 +49,17 @@
             v-if="option.details" 
             class="mt-4"
           >
-            <div class="bg-surface-base rounded-lg overflow-hidden border border-slate-200 shadow-inner">
+            <div class="bg-white rounded-lg overflow-hidden">
               <table class="w-full text-sm text-left">
                 <tbody>
-                  <tr v-for="(detail, index) in option.details" :key="index" :class="index % 2 === 0 ? 'bg-slate-50' : 'bg-white'">
-                    <th class="px-4 py-3.5 font-bold text-slate-700 w-2/5 border-b border-slate-100 last:border-0 align-top">
+                  <tr v-for="(detail, index) in option.details" :key="index" class="bg-white">
+                    <th class="px-4 py-4 font-bold text-slate-700 w-2/5 border-b border-slate-100 last:border-0 align-top">
                       <div class="flex items-center gap-2">
                         <LucideIcon v-if="detail.icon" :name="detail.icon" class="w-4 h-4 text-slate-400" />
                         <span>{{ detail.label }}</span>
                       </div>
                     </th>
-                    <td class="px-4 py-3.5 text-slate-600 border-b border-slate-100 last:border-0" v-html="detail.value">
+                    <td class="px-4 py-4 text-slate-600 border-b border-slate-100 last:border-0" v-html="detail.value">
                     </td>
                   </tr>
                 </tbody>
