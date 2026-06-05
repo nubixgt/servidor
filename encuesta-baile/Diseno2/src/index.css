@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Manrope:wght@400;500;600;700&display=swap');
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Manrope", sans-serif;
+  
+  --color-primary-gold: #f2ca50;
+  --color-primary-gold-dark: #d4af37;
+  --color-brand-midnight: #0a0f1e;
+  --color-surface-card: rgba(39, 48, 71, 0.25);
+  --color-border-card: rgba(153, 144, 124, 0.2);
+  --color-on-surface-variant: #d0c5af;
+}
+
+body {
+  background-color: #0a0f1e;
+  font-family: var(--font-sans);
+  color: #e0e2e6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom layout effects */
+.gold-gradient-bg {
+  background: linear-gradient(90deg, #d4af37 0%, #f2ca50 50%, #d4af37 100%);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 25px rgba(242, 202, 80, 0.12);
+}
+
+.gold-glow {
+  box-shadow: 0 0 35px rgba(242, 202, 80, 0.18);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

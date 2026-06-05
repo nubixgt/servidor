@@ -1,110 +1,152 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <header class="text-center mb-10 md:mb-16 space-y-4">
-      <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-xs text-primary-base font-semibold tracking-wider uppercase mb-2">
-        <LucideIcon name="check-circle" class="w-3.5 h-3.5 text-secondary-base" />
-        Baile Social
-      </div>
-      <h1 class="text-3xl md:text-5xl font-extrabold text-primary-base tracking-tight select-none">
-        ¿CÓMO PREFIEREN EL BAILE SOCIAL?
-      </h1>
-    </header>
+  <div class="relative min-h-screen flex flex-col justify-between overflow-x-hidden font-sans bg-[#0a0f1e] text-white -mt-10 md:-mt-14 -mb-[3rem]" style="width: 100vw; margin-left: calc(-50vw + 50%);">
 
-    <!-- Sub-grid options -->
-    <div id="survey-options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mb-12">
-      <button
-        v-for="option in options"
-        :key="option.id"
-        :id="`option-${option.id}`"
-        @click="$emit('selectOption', option.id)"
-        :class="[
-          'group relative text-left rounded-xl p-6 md:p-8 flex flex-col justify-between overflow-hidden cursor-pointer transition-all duration-300 w-full',
-          option.id === 'option-a' ? 'bg-[#eef5ff] border border-blue-200' : 'bg-[#e4fbe9] border border-green-200',
-          selectedOptionId === option.id 
-            ? 'border-secondary-base shadow-lg ring-2 ring-secondary-base/20' 
-            : 'hover:border-secondary-base hover:-translate-y-1 hover:shadow-lg'
-        ]"
-      >
-        <div class="w-full">
-          <!-- Badge & Check Indicator -->
-          <div class="flex items-center justify-between mb-4">
-            <span :class="['text-xs font-bold px-3 py-1.5 rounded-full select-none', option.badgeColor]">
-              {{ option.badge }}
-            </span>
-            <div class="flex items-center gap-1.5">
-              <span v-if="selectedOptionId === option.id" class="flex items-center gap-1 text-secondary-base text-xs font-semibold animate-fade-in">
-                <LucideIcon name="check-circle-2" class="w-5 h-5 text-secondary-base fill-secondary-base/10" />
-              </span>
-              <div v-else class="w-5 h-5 rounded-full border-2 border-slate-200 group-hover:border-slate-300 transition-colors" />
-            </div>
-          </div>
 
-          <!-- Text Details -->
-          <h2 class="text-xl md:text-2xl font-bold text-primary-base mb-2 group-hover:text-secondary-base transition-colors">
-            {{ option.title }}
-          </h2>
-          <!-- Detalles adicionales siempre visibles -->
-          <div 
-            v-if="option.details" 
-            class="mt-4"
+    <!-- Cinematic Background Illustration (BackgroundDecoration) -->
+    <div class="absolute top-0 right-0 w-full h-[614px] md:w-1/2 md:h-screen pointer-events-none opacity-30 md:opacity-50 overflow-hidden z-0">
+      <img
+        alt="Premium Event Scene"
+        class="w-full h-full object-cover object-center transition-all duration-1000 ease-out scale-105"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf-te7Jx8lFHnda-WiD_84QAIaiT4YyIPWEzclFHKDavGE0bI6_UaUAwYumD_jhr3rPCxBwymYe2VHHKFb_y0jgg1k2ZTSx_QDNtcXOUJQxIAdKpIO0U4ww7Y4SRTb-IpJCYmvlnMDths50SbIivZg16kaqcKoQ4L1s8LOEgyrmVdHlHjp1Fn6c9rAvYHzQbHpsVVMO4rQxWRpygU-_abcl4FXnhOTyHsKRaPnQb1Ifn0gXjnCkSVeE123-BKHw3tvtnhxxMjfsO3R"
+        referrerpolicy="no-referrer"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0a0f1e]/10 via-[#0a0f1e]/80 to-[#0a0f1e]"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0a0f1e] via-[#0a0f1e]/30 to-transparent hidden md:block"></div>
+      <div class="absolute top-1/4 right-1/4 w-64 h-64 bg-[#f2ca50]/5 rounded-full blur-3xl pointer-events-none"></div>
+    </div>
+
+    <!-- Content wrapper -->
+    <main class="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-8 mt-6 flex-grow flex flex-col justify-start">
+
+      <div class="flex flex-col gap-8 md:gap-11 animate-fade-in">
+
+        <!-- Header / Title Area -->
+        <div class="max-w-2xl">
+          <h1 class="font-serif text-4xl md:text-5xl font-bold tracking-tight text-white mb-4 leading-tight">
+            ¿Cómo preferís
+            <span class="text-[#f2ca50] italic font-normal font-serif"> el evento?</span>
+          </h1>
+          <p class="text-sm md:text-base text-[#d0c5af] font-sans max-w-xl leading-relaxed">
+            Elegí la opción que más se ajuste a lo que tenés en mente. Tu preferencia define la noche.
+          </p>
+        </div>
+
+        <!-- Options Interactive Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div
+            v-for="option in displayOptions"
+            :key="option.id"
+            @click="$emit('selectOption', option.voteId)"
+            :class="[
+              'group cursor-pointer relative rounded-2xl p-6 md:p-8 flex flex-col justify-between gap-6 transition-all duration-300 overflow-hidden card-glow border-2',
+              selectedOptionId === option.voteId
+                ? 'bg-slate-900/45 border-[#f2ca50] gold-glow'
+                : 'bg-[#141b2e] border-[rgba(153,144,124,0.2)] hover:border-[#f2ca50]/40'
+            ]"
           >
-            <div class="bg-white rounded-lg overflow-hidden">
-              <table class="w-full text-sm text-left">
-                <tbody>
-                  <tr v-for="(detail, index) in option.details" :key="index" class="bg-white">
-                    <th class="px-4 py-4 font-bold text-slate-700 w-2/5 border-b border-slate-100 last:border-0 align-top">
-                      <div class="flex items-center gap-2">
-                        <LucideIcon v-if="detail.icon" :name="detail.icon" class="w-4 h-4 text-slate-400" />
-                        <span>{{ detail.label }}</span>
-                      </div>
-                    </th>
-                    <td class="px-4 py-4 text-slate-600 border-b border-slate-100 last:border-0" v-html="detail.value">
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Radio indicator -->
+            <div class="flex justify-between items-start">
+              <div
+                :class="[
+                  'w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center',
+                  selectedOptionId === option.voteId
+                    ? 'border-[#f2ca50] bg-[#0a0f1e]'
+                    : 'border-[#99907c]/60 group-hover:border-[#f2ca50]'
+                ]"
+              >
+                <div v-if="selectedOptionId === option.voteId" class="w-2.5 h-2.5 bg-[#f2ca50] rounded-full"></div>
+              </div>
             </div>
+
+            <!-- Card content -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+
+              <!-- Circle Thumbnail Image -->
+              <div class="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden border border-[#f2ca50]/40 shadow-inner bg-[#0a0f1e] flex items-center justify-center">
+                <div class="absolute inset-0 opacity-15 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[72px] text-[#f2ca50]">{{ option.decorIcon }}</span>
+                </div>
+                <img
+                  :alt="option.title"
+                  class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
+                  :src="option.imageUrl"
+                  referrerpolicy="no-referrer"
+                />
+              </div>
+
+              <!-- Content column -->
+              <div class="flex flex-col gap-3 text-center sm:text-left flex-grow">
+                <h3 class="font-serif text-xl md:text-2xl font-bold text-white tracking-wide leading-snug">
+                  {{ option.title }}
+                </h3>
+                <div class="h-[1px] w-8 bg-[#f2ca50] opacity-50 mx-auto sm:mx-0"></div>
+
+                <!-- Highlights list -->
+                <ul class="flex flex-col gap-3 mt-1.5">
+                  <li v-for="(hl, idx) in option.highlights" :key="idx" class="flex gap-3 text-left">
+                    <div class="text-[#f2ca50] flex-shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined" style="font-size:15px; font-variation-settings: 'FILL' 1;">{{ hl.matIcon }}</span>
+                    </div>
+                    <div class="font-sans text-xs text-[#d0c5af] flex flex-col">
+                      <span class="font-medium text-white/90">{{ hl.value }}</span>
+                      <span v-if="hl.subLabel" class="text-[10px] opacity-70 mt-0.5">{{ hl.subLabel }}</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Golden CTA button -->
+            <button
+              @click.stop="$emit('selectOption', option.voteId)"
+              :class="[
+                'w-full py-3.5 mt-4 text-xs font-bold rounded-lg uppercase tracking-widest transition-all active:scale-95 shadow-md',
+                selectedOptionId === option.voteId
+                  ? 'gold-gradient-bg text-[#0a0f1e] shadow-[#f2ca50]/15'
+                  : 'bg-white/5 text-[#f2ca50] border border-[#f2ca50]/30 hover:bg-[#f2ca50] hover:text-[#0a0f1e]'
+              ]"
+            >
+              {{ selectedOptionId === option.voteId ? 'Propuesta seleccionada' : 'Seleccionar esta propuesta' }}
+            </button>
           </div>
         </div>
 
-        <!-- Footer selector simulation -->
-        <div class="mt-8 pt-4 border-t border-slate-50 flex items-center font-semibold text-secondary-base text-xs md:text-sm tracking-wider w-full">
-          <span class="group-hover:mr-1 transition-all uppercase">
-            {{ selectedOptionId === option.id ? 'PROPUESTA SELECCIONADA' : 'SELECCIONAR ESTA PROPUESTA' }}
-          </span>
-          <LucideIcon name="arrow-right" :class="['w-4 h-4 ml-1.5 transition-transform', selectedOptionId === option.id ? 'translate-x-1' : 'group-hover:translate-x-1']" />
+        <!-- Security Banner -->
+        <div class="w-full bg-[#191c1f]/40 border border-[rgba(153,144,124,0.3)] rounded-xl p-4 flex items-center justify-center gap-3">
+          <span class="text-[#f2ca50] material-symbols-outlined" style="font-size:18px; font-variation-settings: 'FILL' 1;">verified_user</span>
+          <p class="text-[#d0c5af] text-xs md:text-sm text-center">
+            Tu respuesta es anónima y nos ayuda a crear
+            <span class="text-[#f2ca50] font-semibold"> el mejor evento para todos.</span>
+          </p>
         </div>
-      </button>
-    </div>
 
-    <!-- Dynamic Confirm trigger button -->
-    <div class="flex flex-col items-center justify-center space-y-3">
-      <button
-        id="submit-btn"
-        @click="$emit('submitVote')"
-        :disabled="!selectedOptionId || isSubmitting"
-        :class="[
-          'px-12 py-4 rounded-lg font-bold text-sm tracking-wide shadow-md transition-all duration-300 transform select-none cursor-pointer relative overflow-hidden min-w-[320px] text-center',
-          selectedOptionId 
-            ? `${submitColor} hover:bg-slate-800 text-white active:scale-95` 
-            : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
-        ]"
-      >
-        <span v-if="isSubmitting" class="flex items-center justify-center gap-2">
-          <span class="w-4 h-4 border-2 border-white/65 border-t-transparent rounded-full animate-spin" />
-          {{ submitText }}
-        </span>
-        <span v-else>{{ submitText }}</span>
-      </button>
-    </div>
+        <!-- Navigation -->
+        <div class="w-full flex justify-between items-center mt-2 pb-6">
+          <div></div>
+          <button
+            @click="$emit('submitVote')"
+            :disabled="!selectedOptionId || isSubmitting"
+            :class="[
+              'group flex items-center gap-3 py-3.5 px-8 gold-gradient-bg text-[#0a0f1e] hover:shadow-lg hover:shadow-[#f2ca50]/10 font-sans font-bold uppercase tracking-widest text-xs rounded-full transition-all active:scale-95 cursor-pointer',
+              !selectedOptionId || isSubmitting ? 'opacity-40 cursor-not-allowed' : ''
+            ]"
+          >
+            <span v-if="isSubmitting" class="w-4 h-4 border-2 border-[#0a0f1e] border-t-transparent rounded-full animate-spin"></span>
+            <span>{{ isSubmitting ? 'Enviando...' : 'Siguiente' }}</span>
+            <span v-if="!isSubmitting" class="material-symbols-outlined transition-transform group-hover:translate-x-1" style="font-size:14px;">chevron_right</span>
+          </button>
+        </div>
+
+      </div>
+    </main>
+
   </div>
 </template>
 
 <script setup>
-import LucideIcon from '../components/LucideIcon.vue';
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
   options: {
     type: Array,
     required: true
@@ -129,5 +171,73 @@ defineProps({
 
 defineEmits(['selectOption', 'submitVote']);
 
+// Map our vote options to the Diseno2 visual data (images, icons, highlights)
+const diseno2Data = {
+  'option-a': {
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuALhUMFkEhN6EP_y7bhrFvWAN8KLdk8hhObcZJsHEaEQFkRAj3-W2vkZhU_Rrn2hWnS9dtWYTNsrpQmDq-Ft4XPATTTfGQxdX05zT3AVKkb08WtL82wqSEMbXHthCod6hqM7WkS7jDZHHIx-EjUWbiDhQP3O4IqwzR-Jdin9LFVJOSaAPv7JJUT7PMEaOmZ9WyNxYuXZajz96ZzRdIsimI-5gwL5SARvddJJ8eLo1aZv_bMnwo1Fxad5BjsdGNOUnQh0WZVwSrEW3Ha',
+    decorIcon: 'stadium',
+  },
+  'option-b': {
+    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0207HjOnL5QK0J4FSNBKhVKwh4De7HoKSwv3yVwtY2YHEbGlDGQCC34IuZ7IhWnFvan5wSTusU55Bt2gQD1jra-bMbih852biH4d_6VbJjMIFtehhqjF0xr0Z7PA1FiyTN9l1T2wPR2ZXEOVVrh3aTVzrTp-sATBE2wsJod2-Z8Fp9fHn92sJzLmH6jJtX25xczRzCQGjDkMtOPCBUW54YpWkJhUTV6C1skOY-ijs0Z6PznDF7ddYvJHfdOob8qiZeRafYHwmatD3',
+    decorIcon: 'meeting_room',
+  }
+};
 
+// Map Lucide icon names used in data.js to Material Symbols names
+const iconMap = {
+  'location_on': 'location_on',
+  'music_note': 'music_note',
+  'star': 'star',
+  'groups': 'groups',
+  'apartment': 'apartment',
+  'featured_play_list': 'featured_play_list',
+  'mic_external_on': 'mic_external_on',
+  'event': 'event',
+};
+
+// Build display options merging our real data with Diseno2 visuals
+const displayOptions = computed(() => {
+  return props.options.map(opt => {
+    const visual = diseno2Data[opt.id] || {};
+    return {
+      voteId: opt.id,
+      title: opt.title,
+      imageUrl: visual.imageUrl,
+      decorIcon: visual.decorIcon,
+      highlights: (opt.details || []).map(d => ({
+        matIcon: d.icon,
+        value: d.value,
+        subLabel: d.subLabel || null,
+      }))
+    };
+  });
+});
 </script>
+
+<style scoped>
+.gold-gradient-bg {
+  background: linear-gradient(90deg, #d4af37 0%, #f2ca50 50%, #d4af37 100%);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 25px rgba(242, 202, 80, 0.12);
+}
+
+.gold-glow {
+  box-shadow: 0 0 35px rgba(242, 202, 80, 0.18);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+</style>

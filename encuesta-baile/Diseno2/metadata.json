@@ -1,0 +1,6 @@
+{
+  "name": "Encuesta de Evento Premium",
+  "description": "Una aplicación premium e interactiva para elegir los detalles de una gala de fin de año, que genera un boleto VIP personalizado y muestra estadísticas en tiempo real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -4,32 +4,32 @@ import imgOptionB from './assets/images/OpcionB.jpeg';
 export const VOTE_OPTIONS = [
   {
     id: 'option-a',
-    title: 'Gran Baile en el Estadio',
+    title: 'BAILE SOCIAL EN EL ESTADIO',
     badge: 'OPCIÓN A',
     badgeColor: 'bg-slate-200 text-slate-800',
     image: imgOptionA,
     imageAlt: 'Estadio Arena luminoso',
-    description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante. Ideal para grandes anuncios y celebraciones colectivas.',
+    description: 'Una experiencia masiva en el estadio principal, diseñada para albergar a toda la comunidad en un ambiente festivo y vibrante.',
     details: [
-      { label: 'Lugar', value: '<strong>Estadio Municipal</strong> (se colocara pista de baile)', icon: 'map-pin' },
-      { label: 'Música en vivo', value: 'Marimba orquesta', icon: 'music' },
-      { label: 'Artista internacional', value: 'Eddy Herrera o Wilfredo Vargas', icon: 'mic' },
-      { label: 'Formato', value: 'Todo en un solo evento', icon: 'layout' }
+      { label: 'Lugar', value: 'Estadio municipal', subLabel: '(se colocará pista de baile)', icon: 'location_on' },
+      { label: 'Música en vivo', value: 'Música en vivo: Marimba orquesta', icon: 'music_note' },
+      { label: 'Artista internacional', value: 'Artista internacional', icon: 'star' },
+      { label: 'Formato', value: 'Todo en un solo evento', icon: 'groups' }
     ]
   },
   {
     id: 'option-b',
-    title: 'Baile en Salón + Concierto',
+    title: 'BAILE SOCIAL EN SALÓN + CONCIERTO',
     badge: 'OPCIÓN B',
     badgeColor: 'bg-purple-200 text-purple-800',
     image: imgOptionB,
     imageAlt: 'Salón de Concierto elegante',
-    description: 'Un formato híbrido que combina la elegancia de un salón privado con la energía de un concierto exclusivo. Una propuesta íntima y detallista para una interacción más cercana.',
+    description: 'Un formato híbrido que combina la elegancia de un salón privado con la energía de un concierto exclusivo.',
     details: [
-      { label: 'Lugar', value: 'Salón municipal', icon: 'map-pin' },
-      { label: 'Formato baile', value: 'Baile social en salón', icon: 'users' },
-      { label: 'Concierto', value: 'Artista internacional por separado', icon: 'mic' },
-      { label: 'Modalidad', value: 'Dos eventos distintos', icon: 'calendar' }
+      { label: 'Lugar', value: 'Salón de eventos', icon: 'apartment' },
+      { label: 'Música', value: 'Orquesta en vivo', icon: 'music_note' },
+      { label: 'Artista', value: 'Artista internacional', icon: 'star' },
+      { label: 'Modalidad', value: 'Concierto + Baile', icon: 'mic_external_on' }
     ]
   }
 ];
