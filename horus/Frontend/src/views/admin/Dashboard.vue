@@ -22,7 +22,7 @@
                     <h3 class="font-label-caps text-on-surface-variant">Capital Colocado</h3>
                     <span class="material-symbols-outlined text-primary">trending_up</span>
                 </div>
-                <p class="font-headline-lg text-on-surface mb-1 relative z-10">$12,450,000</p>
+                <p class="font-headline-lg text-on-surface mb-1 relative z-10">Q12,450,000</p>
                 <div class="flex items-center gap-2 text-primary font-body-sm relative z-10">
                     <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
                     <span>+4.2% vs mes anterior</span>
@@ -35,7 +35,7 @@
                     <h3 class="font-label-caps text-on-surface-variant">Capital Disponible</h3>
                     <span class="material-symbols-outlined text-secondary">account_balance_wallet</span>
                 </div>
-                <p class="font-headline-lg text-on-surface mb-1 relative z-10">$3,200,000</p>
+                <p class="font-headline-lg text-on-surface mb-1 relative z-10">Q3,200,000</p>
                 <div class="flex items-center gap-2 text-on-surface-variant font-body-sm relative z-10">
                     <span>20.4% de liquidez</span>
                 </div>
@@ -49,7 +49,7 @@
                             <span class="material-symbols-outlined text-tertiary">monetization_on</span>
                             <h3 class="font-label-caps text-on-surface-variant">Ingresos por Intereses (YTD)</h3>
                         </div>
-                        <p class="font-headline-lg text-on-surface mb-1">$1,840,500</p>
+                        <p class="font-headline-lg text-on-surface mb-1">Q1,840,500</p>
                         <div class="flex items-center gap-2 text-primary font-body-sm">
                             <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
                             <span>+12.5% anual</span>
@@ -110,12 +110,12 @@
             <div class="bg-surface-container p-5 rounded-xl border border-outline-variant flex justify-between items-center">
                 <div>
                     <h3 class="font-label-caps text-on-surface-variant mb-1">Cobros (Hoy)</h3>
-                    <p class="font-title-md text-on-surface">$45,000</p>
+                    <p class="font-title-md text-on-surface">Q45,000</p>
                 </div>
                 <div class="h-10 w-px bg-outline-variant mx-4"></div>
                 <div>
                     <h3 class="font-label-caps text-on-surface-variant mb-1">Semana</h3>
-                    <p class="font-title-md text-on-surface">$210,000</p>
+                    <p class="font-title-md text-on-surface">Q210,000</p>
                 </div>
             </div>
         </section>

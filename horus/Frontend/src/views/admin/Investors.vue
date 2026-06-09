@@ -19,7 +19,7 @@
         <div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:bg-primary/10 transition-colors"></div>
             <h3 class="font-label-caps text-on-surface-variant mb-4">Capital Activo</h3>
-            <p class="font-headline-lg text-on-surface mb-1">$8,500,000</p>
+            <p class="font-headline-lg text-on-surface mb-1">Q8,500,000</p>
             <div class="flex items-center gap-2 text-primary font-body-sm">
                 <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
                 <span>+2.1% este mes</span>

@@ -46,7 +46,7 @@
                         <div>
                             <label class="block font-label-caps text-label-caps text-on-surface-variant mb-1.5">MONTO PRINCIPAL</label>
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">Q</span>
                                 <input class="w-full bg-surface-container border border-outline-variant rounded py-2.5 pl-8 pr-3 text-on-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-lg text-body-lg text-sm text-right" type="text" value="250,000.00"/>
                             </div>
                         </div>
@@ -110,21 +110,21 @@
                     <p class="font-label-caps text-label-caps text-on-surface-variant mb-1 flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[14px]">trending_up</span> TOTAL INTERESES
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl text-primary">$ 31,250.00</p>
+                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-primary whitespace-nowrap">Q 31,250.00</p>
                 </div>
                 
                 <div class="bg-surface-container p-4 rounded-xl border border-outline-variant relative overflow-hidden">
                     <p class="font-label-caps text-label-caps text-on-surface-variant mb-1 flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[14px]">health_and_safety</span> TOTAL SEGURO
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl text-on-surface">$ 2,400.00</p>
+                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-on-surface whitespace-nowrap">Q 2,400.00</p>
                 </div>
                 
                 <div class="bg-surface-container p-4 rounded-xl border border-outline-variant relative overflow-hidden shadow-[inset_0_1px_0_rgba(197,160,89,0.2)]">
                     <p class="font-label-caps text-label-caps text-primary-fixed-dim mb-1 flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-[14px]">account_balance</span> COSTO TOTAL
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl text-primary-fixed-dim">$ 283,650.00</p>
+                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-primary-fixed-dim whitespace-nowrap">Q 283,650.00</p>
                 </div>
             </div>
 
