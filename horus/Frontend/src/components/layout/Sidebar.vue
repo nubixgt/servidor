@@ -52,15 +52,23 @@
         <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
         <span class="font-label-caps text-label-caps">Configuración</span>
       </a>
-      <router-link to="/login" class="text-error hover:bg-error-container/10 px-4 py-2 flex items-center gap-3 rounded transition-all duration-200">
+      <a @click="handleLogout" class="text-error hover:bg-error-container/10 px-4 py-2 flex items-center gap-3 rounded transition-all duration-200 cursor-pointer">
         <span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
         <span class="font-label-caps text-label-caps">Cerrar Sesión</span>
-      </router-link>
+      </a>
     </div>
   </aside>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const handleLogout = () => {
+    localStorage.removeItem('token');
+    router.push('/login');
+};
 </script>
 
 <style scoped>
