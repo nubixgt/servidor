@@ -45,7 +45,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const handleLogin = () => {
-    // No backend yet, just redirect to dashboard
+    // No backend yet, set a dummy token to pass the auth guard
+    localStorage.setItem('token', 'dummy-token-123');
     router.push('/dashboard');
 };
 </script>
