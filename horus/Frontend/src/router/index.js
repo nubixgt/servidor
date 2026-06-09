@@ -38,14 +38,13 @@ const router = createRouter({
     routes
 });
 
-// Basic Guard Placeholder
 router.beforeEach((to, from, next) => {
-    // Implement Auth Check logic here
-    const isAuthenticated = false; // Replace with store check
+    const isAuthenticated = !!localStorage.getItem('token');
 
     if (to.meta.requiresAuth && !isAuthenticated) {
-        // next('/login'); // Uncomment to enable auth guard
-        next(); // Temporary allow all for template
+        next('/login');
+    } else if (to.path === '/login' && isAuthenticated) {
+        next('/dashboard');
     } else {
         next();
     }
