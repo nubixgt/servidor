@@ -318,7 +318,7 @@
                     </div>
 
                     <a v-for="(doc, index) in getDocArray(selectedClient?.documentacion)" :key="index"
-                       :href="`http://localhost/horus/Backend/${doc}`" target="_blank"
+                       :href="`/horus/Backend/${doc}`" target="_blank"
                        class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
                         <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">{{ getExtensionIcon(doc) }}</span>
                         <div class="text-center w-full">
