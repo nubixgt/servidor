@@ -3,7 +3,6 @@ import axios from 'axios';
 const api = axios.create({
     baseURL: '/horus/Backend/api/v1', // Adjust this to match your local setup
     headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
 });
