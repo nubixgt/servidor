@@ -52,4 +52,14 @@ class IncomeRepository
         $this->pdo->prepare("UPDATE incomes SET comprobante_path = :comp WHERE id = :id")
              ->execute(['comp' => $path, 'id' => $id]);
     }
+
+    public function addRecord(int $incomeId, string $descripcion, float $monto): void
+    {
+        $sql = "INSERT INTO income_records (income_id, descripcion, monto) VALUES (:income_id, :descripcion, :monto)";
+        $this->pdo->prepare($sql)->execute([
+            'income_id'   => $incomeId,
+            'descripcion' => $descripcion,
+            'monto'       => $monto
+        ]);
+    }
 }

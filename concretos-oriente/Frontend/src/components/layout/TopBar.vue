@@ -40,7 +40,7 @@ const title = computed(() => {
     case 'Personnel': return 'Gestión de Personal';
     case 'Machinery': return 'Gestión de Maquinaria';
     case 'Projects': return 'Portafolio de Proyectos';
-    case 'Finance': return 'Vista General de Finanzas';
+    case 'Finance': return 'Vista General de Ingresos y Egresos';
     case 'Inventory': return 'Gestión de Inventario';
     case 'Suppliers': return 'Directorio de Proveedores';
 

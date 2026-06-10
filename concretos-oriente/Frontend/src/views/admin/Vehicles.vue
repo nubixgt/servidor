@@ -229,6 +229,12 @@
                         <!-- Footer toggles buttons -->
                         <div class="flex items-center justify-end gap-2 pt-4 border-t border-white/5 mt-4">
                             <button
+                                @click="openDetailsModal(v)"
+                                class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl border border-primary/20 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5"
+                            >
+                                <Eye class="w-3.5 h-3.5" /> Detalles
+                            </button>
+                            <button
                                 @click="startEditVehicle(v)"
                                 class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5"
                             >
@@ -785,6 +791,103 @@
                 </Transition>
             </div>
         </Transition>
+
+        <!-- Vehicle Details Modal -->
+        <Transition name="modal">
+            <div v-if="isDetailsModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-6">
+                <div
+                    @click="isDetailsModalOpen = false"
+                    class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"
+                ></div>
+
+                <Transition name="modal-scale" appear>
+                    <div class="relative w-full max-w-4xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white">
+                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl"></div>
+
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6 sticky top-0 bg-slate-950 z-10">
+                            <h4 class="text-xl font-black italic uppercase tracking-tight text-white flex items-center gap-2">
+                                <Car class="w-5 h-5 text-primary" /> Detalles de Unidad: {{ selectedDetailsVehicle?.plate }}
+                            </h4>
+                            <button
+                                @click="isDetailsModalOpen = false"
+                                class="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-all"
+                            >
+                                <X class="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div v-if="selectedDetailsVehicle" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Info Column -->
+                            <div class="space-y-6">
+                                <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-4 flex items-center gap-2.5">
+                                    <Info class="w-4 h-4" /> Información General
+                                </h3>
+                                
+                                <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-4">
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Marca y Modelo</span>
+                                        <span class="text-sm font-black text-white uppercase">{{ selectedDetailsVehicle.brand }} {{ selectedDetailsVehicle.model }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Kilometraje</span>
+                                        <span class="text-sm font-black text-white uppercase">{{ selectedDetailsVehicle.mileage.toLocaleString() }} KM</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Prioridad / Frecuencia</span>
+                                        <span class="text-sm font-black text-white uppercase">{{ selectedDetailsVehicle.priority }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Estatus Actual</span>
+                                        <span class="text-sm font-black text-white uppercase">{{ selectedDetailsVehicle.status === 'active' ? 'Operativo' : selectedDetailsVehicle.status === 'maintenance' ? 'En Taller' : selectedDetailsVehicle.status === 'inactive' ? 'Con Avería' : 'Borrador' }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Piloto Asignado</span>
+                                        <span class="text-sm font-black text-white uppercase">{{ getPilotDisplay(selectedDetailsVehicle.pilotId) }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Observaciones</span>
+                                        <p class="text-xs font-medium text-white/80 mt-1 italic">{{ selectedDetailsVehicle.notes || 'Sin observaciones.' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photos Column -->
+                            <div class="space-y-6">
+                                <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-4 flex items-center gap-2.5">
+                                    <Camera class="w-4 h-4" /> Fotografías
+                                </h3>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-2">Foto Frontal / Tres cuartos</span>
+                                        <div class="aspect-video bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center">
+                                            <img v-if="selectedDetailsVehicle.frontPhoto" :src="getPhotoUrl(selectedDetailsVehicle.frontPhoto)" class="w-full h-full object-cover" />
+                                            <div v-else class="text-center text-white/20">
+                                                <Camera class="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                                <span class="text-[10px] font-black uppercase tracking-widest">Sin imagen</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-2">Foto Trasera / Placa</span>
+                                        <div class="aspect-video bg-white/5 rounded-2xl border border-white/10 overflow-hidden flex items-center justify-center">
+                                            <img v-if="selectedDetailsVehicle.rearPhoto" :src="getPhotoUrl(selectedDetailsVehicle.rearPhoto)" class="w-full h-full object-cover" />
+                                            <div v-else class="text-center text-white/20">
+                                                <Camera class="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                                <span class="text-[10px] font-black uppercase tracking-widest">Sin imagen</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -871,6 +974,9 @@ const rearPhotoPreview = ref<string | null>(null);
 
 // Vehicle Log (Bitácora) variables
 const isLogModalOpen = ref(false);
+const isDetailsModalOpen = ref(false);
+const selectedDetailsVehicle = ref<Vehicle | null>(null);
+
 const logVehicleId = ref("");
 const logPilotId = ref("");
 const logStatus = ref("active");
@@ -1238,6 +1344,17 @@ const openLogModal = () => {
     logIssueText.value = "";
     logObservations.value = "";
     isLogModalOpen.value = true;
+};
+
+const openDetailsModal = (vehicle: Vehicle) => {
+    selectedDetailsVehicle.value = vehicle;
+    isDetailsModalOpen.value = true;
+};
+
+const getPhotoUrl = (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `/concretos-oriente/Backend/${path}`;
 };
 
 const showVehicleHistory = (vehicle: Vehicle) => {

@@ -3,17 +3,20 @@ namespace App\Services;
 
 use App\Repositories\IncomeRepository;
 use App\Repositories\ExpenseRepository;
+use App\Repositories\BankAccountRepository;
 use Exception;
 
 class FinanceService
 {
     private IncomeRepository $incomeRepository;
     private ExpenseRepository $expenseRepository;
+    private BankAccountRepository $bankAccountRepository;
 
     public function __construct()
     {
         $this->incomeRepository = new IncomeRepository();
         $this->expenseRepository = new ExpenseRepository();
+        $this->bankAccountRepository = new BankAccountRepository();
     }
 
     public function getTransactionsData(): array
@@ -53,6 +56,21 @@ class FinanceService
 
         try {
             $newId = $this->incomeRepository->create($data);
+            
+            $cuentaName = trim($data['cuenta_bancaria'] ?? '');
+            if ($cuentaName) {
+                $this->bankAccountRepository->updateBalance($cuentaName, (float)$data['monto']);
+            }
+
+            if (!empty($data['registros']) && is_array($data['registros'])) {
+                foreach ($data['registros'] as $record) {
+                    $desc = trim($record['descripcion'] ?? '');
+                    $amt = (float)($record['monto'] ?? 0);
+                    if ($desc !== '' || $amt > 0) {
+                        $this->incomeRepository->addRecord($newId, $desc, $amt);
+                    }
+                }
+            }
 
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = __DIR__ . '/../../Uploads/Incomes/' . $newId . '/';
@@ -87,6 +105,21 @@ class FinanceService
 
         try {
             $newId = $this->expenseRepository->create($data);
+            
+            $cuentaName = trim($data['cuenta_origen'] ?? '');
+            if ($cuentaName) {
+                $this->bankAccountRepository->updateBalance($cuentaName, -abs((float)$data['monto']));
+            }
+
+            if (!empty($data['registros']) && is_array($data['registros'])) {
+                foreach ($data['registros'] as $record) {
+                    $desc = trim($record['descripcion'] ?? '');
+                    $amt = (float)($record['monto'] ?? 0);
+                    if ($desc !== '' || $amt > 0) {
+                        $this->expenseRepository->addRecord($newId, $desc, $amt);
+                    }
+                }
+            }
 
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $uploadDir = __DIR__ . '/../../Uploads/Expenses/' . $newId . '/';

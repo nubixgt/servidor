@@ -2,10 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Views
 import Login from '../views/auth/Login.vue';
-import Dashboard from '../views/admin/Dashboard.vue';
-
-// Layouts
-import MainLayout from '../components/layout/MainLayout.vue';
+import AdminDashboard from '../views/admin/AdminDashboard.vue';
+import TecnicoDashboard from '../views/tecnico/TecnicoDashboard.vue';
+import TecnicoPiloto from '../views/tecnico/TecnicoPiloto.vue';
 
 const routes = [
     {
@@ -21,12 +20,22 @@ const routes = [
         meta: { requiresAuth: false }
     },
     {
-        path: '/',
-        component: MainLayout,
-        meta: { requiresAuth: true },
-        children: [
-            { path: 'dashboard', name: 'Dashboard', component: Dashboard },
-        ]
+        path: '/admin',
+        name: 'AdminDashboard',
+        component: AdminDashboard,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/tecnico',
+        name: 'TecnicoDashboard',
+        component: TecnicoDashboard,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/piloto',
+        name: 'TecnicoPiloto',
+        component: TecnicoPiloto,
+        meta: { requiresAuth: false }
     }
 ];
 

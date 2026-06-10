@@ -18,6 +18,7 @@ class MaquinariaController extends Controller
         $valor_horometro = (float)($_POST['valor_horometro'] ?? 0);
         $latitud = (float)($_POST['latitud'] ?? 0);
         $longitud = (float)($_POST['longitud'] ?? 0);
+        $usuario_id = isset($_POST['usuario_id']) ? (int)$_POST['usuario_id'] : null;
 
         if (empty($operador) || empty($maquina_id) || empty($tipo_registro)) {
             $this->json(['status' => 'error', 'message' => 'Faltan campos obligatorios'], 400);
@@ -38,7 +39,9 @@ class MaquinariaController extends Controller
             $valor_horometro,
             '', // Temporary empty path
             $latitud,
-            $longitud
+            $longitud,
+            null, // fecha_registro
+            $usuario_id
         );
 
         $repo = new MaquinariaRepository();
@@ -71,6 +74,48 @@ class MaquinariaController extends Controller
             $this->json(['status' => 'success', 'message' => 'Registro guardado correctamente', 'id' => $id], 201);
         } else {
             $this->json(['status' => 'error', 'message' => 'Error al organizar la foto'], 500);
+        }
+    }
+
+    #[Route('/maquinaria/registros', 'GET')]
+    public function getAllRegistros()
+    {
+        $repo = new MaquinariaRepository();
+        $registros = $repo->getAllRegistros();
+        $this->json(['status' => 'success', 'data' => $registros]);
+    }
+
+    #[Route('/maquinaria/registros/update', 'POST')]
+    public function updateRegistro()
+    {
+        $data = json_decode(file_get_contents("php://input"), true) ?? $_POST;
+        if (empty($data['id'])) {
+            $this->json(['status' => 'error', 'message' => 'Falta el ID del registro'], 400);
+            return;
+        }
+        $repo = new MaquinariaRepository();
+        $success = $repo->updateRegistro((int)$data['id'], (float)($data['valor_horometro'] ?? 0), $data['tipo_registro'] ?? '');
+        if ($success) {
+            $this->json(['status' => 'success', 'message' => 'Registro actualizado correctamente']);
+        } else {
+            $this->json(['status' => 'error', 'message' => 'Error al actualizar el registro'], 500);
+        }
+    }
+
+    #[Route('/maquinaria/registros/delete', 'POST')]
+    public function deleteRegistro()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+        if (empty($data['id'])) {
+            $this->json(['status' => 'error', 'message' => 'Falta el ID del registro'], 400);
+            return;
+        }
+        $repo = new MaquinariaRepository();
+        $success = $repo->deleteRegistro((int)$data['id']);
+        if ($success) {
+            $this->json(['status' => 'success', 'message' => 'Registro eliminado permanentemente']);
+        } else {
+            $this->json(['status' => 'error', 'message' => 'Error al eliminar el registro'], 500);
         }
     }
 }

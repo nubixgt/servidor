@@ -20,8 +20,8 @@ class MaquinariaRepository
     public function create(RegistroMaquinaria $registro): int|bool
     {
         $sql = "INSERT INTO registros_maquinaria 
-                (operador, maquina_id, tipo_registro, valor_horometro, foto_horometro, latitud, longitud) 
-                VALUES (:operador, :maquina_id, :tipo_registro, :valor_horometro, :foto_horometro, :latitud, :longitud)";
+                (operador, maquina_id, tipo_registro, valor_horometro, foto_horometro, latitud, longitud, usuario_id) 
+                VALUES (:operador, :maquina_id, :tipo_registro, :valor_horometro, :foto_horometro, :latitud, :longitud, :usuario_id)";
         
         $stmt = $this->pdo->prepare($sql);
         
@@ -32,7 +32,8 @@ class MaquinariaRepository
             'valor_horometro' => $registro->valor_horometro,
             'foto_horometro' => $registro->foto_horometro,
             'latitud' => $registro->latitud,
-            'longitud' => $registro->longitud
+            'longitud' => $registro->longitud,
+            'usuario_id' => $registro->usuario_id
         ]);
 
         return $success ? (int)$this->pdo->lastInsertId() : false;
@@ -46,5 +47,35 @@ class MaquinariaRepository
         $sql = "UPDATE registros_maquinaria SET foto_horometro = :path WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute(['path' => $path, 'id' => $id]);
+    }
+
+    public function getAllRegistros(): array
+    {
+        $sql = "SELECT rm.*, u.full_name as creador_nombre 
+                FROM registros_maquinaria rm 
+                LEFT JOIN usuarios u ON rm.usuario_id = u.id 
+                ORDER BY rm.fecha_registro DESC";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function updateRegistro(int $id, float $valor_horometro, string $tipo_registro): bool
+    {
+        $sql = "UPDATE registros_maquinaria 
+                SET valor_horometro = :valor_horometro, tipo_registro = :tipo_registro 
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'valor_horometro' => $valor_horometro,
+            'tipo_registro' => $tipo_registro,
+            'id' => $id
+        ]);
+    }
+
+    public function deleteRegistro(int $id): bool
+    {
+        $sql = "DELETE FROM registros_maquinaria WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute(['id' => $id]);
     }
 }

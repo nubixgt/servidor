@@ -1,0 +1,6 @@
+{
+  "name": "Democratic Pulse Portal",
+  "description": "Una plataforma interactiva de participación y sondeo democrático para la toma de decisiones ciudadanas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -52,4 +52,14 @@ class ExpenseRepository
         $this->pdo->prepare("UPDATE expenses SET comprobante_path = :comp WHERE id = :id")
              ->execute(['comp' => $path, 'id' => $id]);
     }
+
+    public function addRecord(int $expenseId, string $descripcion, float $monto): void
+    {
+        $sql = "INSERT INTO expense_records (expense_id, descripcion, monto) VALUES (:expense_id, :descripcion, :monto)";
+        $this->pdo->prepare($sql)->execute([
+            'expense_id'  => $expenseId,
+            'descripcion' => $descripcion,
+            'monto'       => $monto
+        ]);
+    }
 }

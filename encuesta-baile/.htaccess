@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /encuesta-baile/
+
+    # Ignorar la redirección para el Backend (si la API está aquí)
+    RewriteCond %{REQUEST_URI} !^/encuesta-baile/Backend/
+    
+    # Prevenir bucles infinitos si ya estamos apuntando a Frontend/dist
+    RewriteCond %{REQUEST_URI} !^/encuesta-baile/Frontend/dist/
+
+    # 1. Si entran exactamente a la raíz, darles el index.html directo 
+    # (evita que Apache intente hacer una redirección 301 de carpeta)
+    RewriteRule ^$ Frontend/dist/index.html [L]
+
+    # 2. Reescribir internamente cualquier otra petición a Frontend/dist/
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+</IfModule>

@@ -44,6 +44,7 @@ class BankConciliationController extends Controller
                 'numero_cuenta' => trim($data['numero_cuenta'] ?? ''),
                 'tipo_cuenta'   => trim($data['tipo_cuenta'] ?? ''),
                 'moneda'        => trim($data['moneda'] ?? 'GTQ'),
+                'saldo_inicial' => isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : 0,
                 'activa'        => isset($data['activa']) ? (int)$data['activa'] : 1,
             ];
 
@@ -58,46 +59,17 @@ class BankConciliationController extends Controller
     }
 
     // ----------------------------------------------------------------
-    // GET /bank-transactions (Partidas conciliatorias)
+    // GET /bank-accounts/{id}/history
     // ----------------------------------------------------------------
-    #[Route('/bank-transactions', 'GET')]
-    public function getPendingTransactions()
+    #[Route('/bank-accounts/(\d+)/history', 'GET')]
+    public function getHistory(int $id)
     {
         try {
-            $cuenta = $_GET['cuenta'] ?? '';
-            
-            $formatted = $this->bankConciliationService->getPendingTransactions($cuenta);
-
-            $this->json(['status' => 'success', 'data' => $formatted]);
+            // Reusing the service/repository to fetch history
+            $transactions = $this->bankConciliationService->getAccountHistory($id);
+            $this->json(['status' => 'success', 'data' => $transactions]);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    // ----------------------------------------------------------------
-    // POST /bank-reconciliations
-    // ----------------------------------------------------------------
-    #[Route('/bank-reconciliations', 'POST')]
-    public function storeReconciliation()
-    {
-        try {
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (!$data) $data = $_POST;
-
-            $reconciliationData = [
-                'bank_account_id'         => isset($data['bank_account_id']) ? (int)$data['bank_account_id'] : null,
-                'periodo'                 => trim($data['periodo'] ?? ''),
-                'saldo_banco'             => isset($data['saldo_banco']) ? (float)$data['saldo_banco'] : 0.0,
-                'partidas_conciliatorias' => $data['partidas_conciliatorias'] ?? [],
-            ];
-
-            $this->bankConciliationService->createReconciliation($reconciliationData);
-
-            $this->json(['status' => 'success', 'message' => 'Conciliación registrada correctamente.']);
-        } catch (Exception $e) {
-            $code = $e->getCode() ?: 500;
-            $code = $code >= 400 && $code < 600 ? $code : 500;
-            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
         }
     }
 }
