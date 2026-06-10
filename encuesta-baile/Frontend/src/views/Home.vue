@@ -104,15 +104,18 @@ const handleSelectOption = (id) => {
 };
 
 // Submit vote with delay/spinner animation as in original code
-const handleSubmitVote = () => {
+const handleSubmitVote = (payload = null) => {
   if (!selectedOptionId.value) return;
+
+  const singer = payload?.singer || null;
 
   isSubmitting.value = true;
   submitText.value = 'GUARDANDO...';
 
   // Make API call to backend
   axios.post('https://m.nubix.gt/encuesta-baile/Backend/api/v1/votes', {
-    option_id: selectedOptionId.value
+    option_id: selectedOptionId.value,
+    singer: singer
   })
   .then((response) => {
     isSubmitting.value = false;

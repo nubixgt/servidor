@@ -103,6 +103,35 @@
                     <span class="text-[#f2ca50] font-bold">NOTA:</span> El baile social se realiza un dia y el concierto se realiza otro dia
                   </p>
                 </div>
+
+                <!-- Singer selection for Option A -->
+                <div v-if="option.voteId === 'option-a' && selectedOptionId === 'option-a'" class="mt-4 animate-fade-in w-full text-left">
+                  <p class="text-[#f2ca50] text-[10px] font-bold mb-2 uppercase tracking-wide">Elige un cantante:</p>
+                  <div class="flex flex-col sm:flex-row gap-2">
+                    <button 
+                      @click.stop="selectedSinger = 'Eddy Herrera'"
+                      :class="[
+                        'flex-1 py-2 rounded-md text-xs font-semibold transition-all border',
+                        selectedSinger === 'Eddy Herrera' 
+                          ? 'bg-[#f2ca50] text-[#0a0f1e] border-[#f2ca50]' 
+                          : 'bg-transparent text-[#d0c5af] border-[#99907c]/60 hover:border-[#f2ca50] hover:text-[#f2ca50]'
+                      ]"
+                    >
+                      Eddy Herrera
+                    </button>
+                    <button 
+                      @click.stop="selectedSinger = 'Wilfredo Vargas'"
+                      :class="[
+                        'flex-1 py-2 rounded-md text-xs font-semibold transition-all border',
+                        selectedSinger === 'Wilfredo Vargas' 
+                          ? 'bg-[#f2ca50] text-[#0a0f1e] border-[#f2ca50]' 
+                          : 'bg-transparent text-[#d0c5af] border-[#99907c]/60 hover:border-[#f2ca50] hover:text-[#f2ca50]'
+                      ]"
+                    >
+                      Wilfredo Vargas
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -134,11 +163,11 @@
         <div class="w-full flex justify-between items-center mt-2 pb-6">
           <div></div>
           <button
-            @click="$emit('submitVote')"
-            :disabled="!selectedOptionId || isSubmitting"
+            @click="$emit('submitVote', { optionId: selectedOptionId, singer: selectedSinger })"
+            :disabled="!selectedOptionId || isSubmitting || (selectedOptionId === 'option-a' && !selectedSinger)"
             :class="[
               'group flex items-center gap-3 py-3.5 px-8 gold-gradient-bg text-[#0a0f1e] hover:shadow-lg hover:shadow-[#f2ca50]/10 font-sans font-bold uppercase tracking-widest text-xs rounded-full transition-all active:scale-95 cursor-pointer',
-              !selectedOptionId || isSubmitting ? 'opacity-40 cursor-not-allowed' : ''
+              (!selectedOptionId || isSubmitting || (selectedOptionId === 'option-a' && !selectedSinger)) ? 'opacity-40 cursor-not-allowed' : ''
             ]"
           >
             <span v-if="isSubmitting" class="w-4 h-4 border-2 border-[#0a0f1e] border-t-transparent rounded-full animate-spin"></span>
@@ -154,7 +183,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+
+const selectedSinger = ref(null);
 
 const props = defineProps({
   options: {

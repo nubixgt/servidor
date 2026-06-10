@@ -19,7 +19,15 @@ class VoteService
             throw new \InvalidArgumentException('Invalid option_id');
         }
 
-        $this->repository->insert($dto->optionId);
+        if ($dto->optionId === 'option-b') {
+            $dto->singer = null;
+        }
+
+        if ($dto->optionId === 'option-a' && !in_array($dto->singer, ['Eddy Herrera', 'Wilfredo Vargas'])) {
+            throw new \InvalidArgumentException('Invalid singer selected for Option A');
+        }
+
+        $this->repository->insert($dto->optionId, $dto->singer);
     }
 
     public function getVoteSummary(): array

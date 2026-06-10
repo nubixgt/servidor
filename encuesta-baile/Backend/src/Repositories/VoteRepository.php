@@ -13,10 +13,13 @@ class VoteRepository
         $this->db = Database::getInstance()->getConnection();
     }
 
-    public function insert(string $optionId): void
+    public function insert(string $optionId, ?string $singer = null): void
     {
-        $stmt = $this->db->prepare('INSERT INTO votes (option_id) VALUES (:option_id)');
-        $stmt->execute([':option_id' => $optionId]);
+        $stmt = $this->db->prepare('INSERT INTO votes (option_id, singer) VALUES (:option_id, :singer)');
+        $stmt->execute([
+            ':option_id' => $optionId,
+            ':singer' => $singer
+        ]);
     }
 
     public function getCountsByOption(): array
