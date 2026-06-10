@@ -241,11 +241,10 @@
                         </div>
                     </div>
 
-                    <!-- Financial Summary Card -->
                     <div class="bento-card bg-surface-container-high/30 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] flex-1 hover:-translate-y-0.5 transition-transform">
                         <h3 class="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
-                            Perfil Financiero Declarado
+                            Status Financiero
                         </h3>
                         
                         <div class="space-y-4">
@@ -271,7 +270,7 @@
                             <hr class="border-white/10 my-4"/>
 
                             <div>
-                                <h4 class="font-label-caps text-[10px] text-outline mb-3 uppercase tracking-widest">Referencias Validadas</h4>
+                                <h4 class="font-label-caps text-[10px] text-outline mb-3 uppercase tracking-widest">Ultimo Pago</h4>
                                 <ul class="space-y-3">
                                     <li class="flex items-start gap-3">
                                         <span class="material-symbols-outlined text-tertiary-container text-[18px] mt-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
