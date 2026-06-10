@@ -71,13 +71,13 @@ export default {
                 "base": "8px"
             },
             fontFamily: {
-                "title-md": ["Hanken Grotesk"],
-                "headline-lg-mobile": ["Libre Caslon Text"],
-                "label-caps": ["Hanken Grotesk"],
-                "display-lg": ["Libre Caslon Text"],
-                "body-lg": ["Hanken Grotesk"],
-                "headline-lg": ["Libre Caslon Text"],
-                "body-sm": ["Hanken Grotesk"]
+                "title-md": ["Inter", "sans-serif"],
+                "headline-lg-mobile": ["Inter", "sans-serif"],
+                "label-caps": ["Inter", "sans-serif"],
+                "display-lg": ["Inter", "sans-serif"],
+                "body-lg": ["Inter", "sans-serif"],
+                "headline-lg": ["Inter", "sans-serif"],
+                "body-sm": ["Inter", "sans-serif"]
             },
             fontSize: {
                 "title-md": ["20px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "600" }],

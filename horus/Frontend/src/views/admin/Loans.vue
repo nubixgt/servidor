@@ -4,16 +4,16 @@
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
             <div class="flex items-center gap-3 mb-2">
-                <span class="px-2.5 py-1 rounded bg-secondary-container text-on-secondary-container font-label-caps text-label-caps border border-primary/30">ACTIVO</span>
-                <span class="text-on-surface-variant font-body-sm text-body-sm">Ref: LN-2023-8942</span>
+                <span class="px-2.5 py-1 rounded bg-secondary-container/20 text-tertiary-container font-label-caps text-[10px] tracking-wider uppercase border border-tertiary-container/30">ACTIVO</span>
+                <span class="text-on-surface-variant font-body-sm text-xs">Ref: LN-2023-8942</span>
             </div>
-            <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Gestión de Préstamo</h2>
+            <h2 class="font-headline-lg-mobile md:font-headline-lg text-primary tracking-wide font-medium">Gestión de Préstamo</h2>
         </div>
         <div class="flex gap-3">
-            <button class="px-4 py-2 rounded border border-outline-variant text-on-surface hover:text-primary hover:border-primary transition-colors font-title-md text-title-md text-sm flex items-center gap-2">
+            <button class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-5 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2 font-medium">
                 <span class="material-symbols-outlined text-[18px]">edit</span> Editar
             </button>
-            <button class="px-4 py-2 rounded bg-primary text-on-primary hover:bg-primary-fixed-dim transition-colors font-title-md text-title-md text-sm flex items-center gap-2 shadow-[0_0_15px_rgba(197,160,89,0.2)]">
+            <button class="bg-transparent border border-primary text-primary font-body-sm py-2 px-5 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm flex items-center gap-2 font-medium">
                 <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">save</span> Guardar
             </button>
         </div>
@@ -24,7 +24,7 @@
         <!-- Left Column: Configuration -->
         <div class="lg:col-span-4 space-y-6">
             <!-- Config Card -->
-            <div class="glass-panel p-6 rounded-xl flex flex-col gap-5 relative overflow-hidden group border border-surface-variant">
+            <div class="bg-surface-container-high/30 backdrop-blur-xl p-6 rounded-2xl flex flex-col gap-5 relative overflow-hidden group border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-container via-primary to-transparent opacity-70"></div>
                 <h3 class="font-title-md text-title-md text-on-surface border-b border-outline-variant pb-3 flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[20px]">tune</span> Configuración
@@ -89,7 +89,7 @@
             </div>
 
             <!-- Client Summary Mini-card -->
-            <div class="bg-surface-container-high p-5 rounded-xl border border-outline-variant flex items-start gap-4">
+            <div class="bg-surface-container-high/30 backdrop-blur-xl p-5 rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] flex items-center gap-4">
                 <div class="w-12 h-12 rounded bg-surface-variant flex items-center justify-center border border-outline shrink-0">
                     <span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">corporate_fare</span>
                 </div>
@@ -105,31 +105,34 @@
         <div class="lg:col-span-8 flex flex-col gap-6">
             <!-- Summary Cards Row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-surface-container p-4 rounded-xl border border-outline-variant relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-16 h-16 bg-primary/5 rounded-bl-full pointer-events-none"></div>
-                    <p class="font-label-caps text-label-caps text-on-surface-variant mb-1 flex items-center gap-1.5">
+                <div class="bg-surface-container-high/30 backdrop-blur-xl p-4 rounded-2xl border border-white/5 relative overflow-hidden group hover:border-primary/30 transition-all shadow-[0_8px_32px_rgba(233,193,118,0.05)]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-60"></div>
+                    <div class="absolute right-0 top-0 w-16 h-16 bg-primary/5 rounded-bl-full pointer-events-none group-hover:bg-primary/10 transition-colors"></div>
+                    <p class="font-body-sm text-on-surface-variant mb-1 flex items-center gap-1.5 uppercase tracking-widest font-bold text-[10px] relative z-10">
                         <span class="material-symbols-outlined text-[14px]">trending_up</span> TOTAL INTERESES
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-primary whitespace-nowrap">Q 31,250.00</p>
+                    <p class="font-headline-lg text-2xl lg:text-xl xl:text-2xl text-primary whitespace-nowrap relative z-10">Q 31,250.00</p>
                 </div>
                 
-                <div class="bg-surface-container p-4 rounded-xl border border-outline-variant relative overflow-hidden">
-                    <p class="font-label-caps text-label-caps text-on-surface-variant mb-1 flex items-center gap-1.5">
+                <div class="bg-surface-container-high/30 backdrop-blur-xl p-4 rounded-2xl border border-white/5 relative overflow-hidden group hover:border-primary/30 transition-all shadow-[0_8px_32px_rgba(233,193,118,0.05)]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-60"></div>
+                    <p class="font-body-sm text-on-surface-variant mb-1 flex items-center gap-1.5 uppercase tracking-widest font-bold text-[10px] relative z-10">
                         <span class="material-symbols-outlined text-[14px]">health_and_safety</span> TOTAL SEGURO
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-on-surface whitespace-nowrap">Q 2,400.00</p>
+                    <p class="font-headline-lg text-2xl lg:text-xl xl:text-2xl text-on-surface whitespace-nowrap relative z-10">Q 2,400.00</p>
                 </div>
                 
-                <div class="bg-surface-container p-4 rounded-xl border border-outline-variant relative overflow-hidden shadow-[inset_0_1px_0_rgba(197,160,89,0.2)]">
-                    <p class="font-label-caps text-label-caps text-primary-fixed-dim mb-1 flex items-center gap-1.5">
+                <div class="bg-surface-container-high/30 backdrop-blur-xl p-4 rounded-2xl border border-primary/40 relative overflow-hidden group hover:border-primary/60 transition-all shadow-[0_8px_32px_rgba(233,193,118,0.2)]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/5 to-transparent opacity-80"></div>
+                    <p class="font-body-sm text-primary mb-1 flex items-center gap-1.5 uppercase tracking-widest font-bold text-[10px] relative z-10">
                         <span class="material-symbols-outlined text-[14px]">account_balance</span> COSTO TOTAL
                     </p>
-                    <p class="font-display-lg text-display-lg text-2xl lg:text-xl xl:text-2xl text-primary-fixed-dim whitespace-nowrap">Q 283,650.00</p>
+                    <p class="font-headline-lg text-2xl lg:text-xl xl:text-2xl text-primary relative z-10 whitespace-nowrap drop-shadow-[0_0_8px_rgba(233,193,118,0.5)]">Q 283,650.00</p>
                 </div>
             </div>
 
             <!-- Amortization Table Panel -->
-            <div class="glass-panel border border-surface-variant flex-1 rounded-xl flex flex-col overflow-hidden">
+            <div class="bg-surface-container-high/30 backdrop-blur-xl border border-white/5 flex-1 rounded-2xl flex flex-col overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                 <!-- Table Header Actions -->
                 <div class="p-4 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-container/50">
                     <h3 class="font-title-md text-title-md text-on-surface">Tabla de Amortización</h3>
@@ -249,10 +252,3 @@
 
 <script setup>
 </script>
-
-<style scoped>
-.glass-panel {
-    background: linear-gradient(145deg, rgba(32, 32, 31, 0.7) 0%, rgba(28, 27, 27, 0.9) 100%);
-    backdrop-filter: blur(10px);
-}
-</style>
