@@ -10,6 +10,88 @@ import 'clientes_screen.dart';
 import 'ventas_screen.dart';
 import 'productos_screen.dart';
 import 'pagos_screen.dart';
+import '../models/cliente.dart';
+
+enum FiltroPeriodo {
+  historico,
+  esteMes,
+  mesAnterior,
+  ultimos3Meses,
+  ultimos6Meses,
+  personalizado
+}
+
+String nombreMes(int mes) {
+  const nombres = [
+    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+  ];
+  if (mes >= 1 && mes <= 12) {
+    return nombres[mes - 1];
+  }
+  return '';
+}
+
+String formatFechaCorta(DateTime fecha) {
+  return '${fecha.day.toString().padLeft(2, '0')}/${fecha.month.toString().padLeft(2, '0')}/${fecha.year}';
+}
+
+String formatMonedaCorta(double valor) {
+  if (valor >= 1000000) {
+    return 'Q ${(valor / 1000000).toStringAsFixed(1)}M';
+  } else if (valor >= 1000) {
+    return 'Q ${(valor / 1000).toStringAsFixed(1)}k';
+  } else {
+    return 'Q ${valor.toStringAsFixed(0)}';
+  }
+}
+
+Map<String, String> obtenerFechasPeriodoTexto(FiltroPeriodo filtro, DateTimeRange? rangoPers) {
+  DateTime ahora = DateTime.now();
+  DateTime inicio;
+  DateTime fin;
+
+  switch (filtro) {
+    case FiltroPeriodo.historico:
+      return {'titulo': 'Histórico', 'fechas': 'Todos los registros desde el inicio'};
+    case FiltroPeriodo.esteMes:
+      inicio = DateTime(ahora.year, ahora.month, 1);
+      fin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+      return {
+        'titulo': 'Este Mes',
+        'fechas': '${formatFechaCorta(inicio)} al ${formatFechaCorta(fin)}'
+      };
+    case FiltroPeriodo.mesAnterior:
+      inicio = DateTime(ahora.year, ahora.month - 1, 1);
+      fin = DateTime(ahora.year, ahora.month, 1).subtract(const Duration(days: 1));
+      return {
+        'titulo': 'Mes Anterior',
+        'fechas': '${formatFechaCorta(inicio)} al ${formatFechaCorta(fin)}'
+      };
+    case FiltroPeriodo.ultimos3Meses:
+      inicio = DateTime(ahora.year, ahora.month - 2, 1);
+      fin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+      return {
+        'titulo': 'Últimos 3 Meses',
+        'fechas': '${formatFechaCorta(inicio)} al ${formatFechaCorta(fin)}'
+      };
+    case FiltroPeriodo.ultimos6Meses:
+      inicio = DateTime(ahora.year, ahora.month - 5, 1);
+      fin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+      return {
+        'titulo': 'Últimos 6 Meses',
+        'fechas': '${formatFechaCorta(inicio)} al ${formatFechaCorta(fin)}'
+      };
+    case FiltroPeriodo.personalizado:
+      if (rangoPers != null) {
+        return {
+          'titulo': 'Rango Personalizado',
+          'fechas': '${formatFechaCorta(rangoPers.start)} al ${formatFechaCorta(rangoPers.end)}'
+        };
+      }
+      return {'titulo': 'Rango Personalizado', 'fechas': 'Seleccionar rango...'};
+  }
+}
 
 class EstadisticasScreen extends StatefulWidget {
   const EstadisticasScreen({Key? key}) : super(key: key);
@@ -38,6 +120,22 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
   List<MapEntry<String, double>> _topClientes = [];
   List<MapEntry<String, double>> _topVendedores = [];
 
+  // Datos históricos guardados
+  List<NotaEnvio> _allNotas = [];
+  List<Pago> _allPagos = [];
+  List<String> _allProductos = [];
+  List<Cliente> _allClientes = [];
+  int _allClientesTotalesCount = 0;
+
+  // Variables de filtrado
+  FiltroPeriodo _filtroSeleccionado = FiltroPeriodo.historico;
+  DateTimeRange? _rangoPersonalizado;
+
+  // Variables de tendencia por producto
+  String? _productoSeleccionadoTendencia;
+  List<MapEntry<String, double>> _tendenciaProducto = [];
+  int _clientesCreadosCount = 0;
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +156,6 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
     });
 
     try {
-      // 1. Obtener notas de envío, pagos, productos y clientes de forma paralela
       final resultados = await Future.wait([
         NotaEnvioService().listarNotas(),
         PagoService().listarPagos(),
@@ -87,84 +184,16 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
       final List<NotaEnvio> notas = List<NotaEnvio>.from(notasResult['notas'] ?? []);
       final List<Pago> pagos = List<Pago>.from(pagosResult['pagos'] ?? []);
       final List<String> productos = List<String>.from(productosResult['productos'] ?? []);
-      final int clientesTotalesCount = clientesResult['total'] ?? (clientesResult['clientes'] as List?)?.length ?? 0;
+      final List<Cliente> clientes = List<Cliente>.from(clientesResult['clientes'] ?? []);
+      final int clientesTotalesCount = clientesResult['total'] ?? clientes.length;
 
-      // 2. Procesar estadísticas básicas
-      double ventasTotales = 0.0;
-      double totalContado = 0.0;
-      double totalCredito = 0.0;
-      Set<int> clientesUnicos = {};
+      _allNotas = notas;
+      _allPagos = pagos;
+      _allProductos = productos;
+      _allClientes = clientes;
+      _allClientesTotalesCount = clientesTotalesCount;
 
-      Map<String, double> productosContador = {};
-      Map<String, double> clientesCompras = {};
-      Map<String, double> vendedoresVentas = {};
-
-      for (var nota in notas) {
-        ventasTotales += nota.total;
-        clientesUnicos.add(nota.clienteId);
-
-        if (nota.tipoVenta == 'Contado') {
-          totalContado += nota.total;
-        } else if (nota.tipoVenta == 'Crédito') {
-          totalCredito += nota.total;
-        }
-
-        // Top Vendedores (por monto de venta)
-        String vendedor = nota.vendedor.trim();
-        if (vendedor.isNotEmpty) {
-          vendedoresVentas[vendedor] = (vendedoresVentas[vendedor] ?? 0.0) + nota.total;
-        }
-
-        // Top Clientes (por monto total comprado)
-        String cliente = nota.clienteNombre.trim();
-        if (cliente.isNotEmpty) {
-          clientesCompras[cliente] = (clientesCompras[cliente] ?? 0.0) + nota.total;
-        }
-
-        // Top Productos (por cantidad total vendida)
-        for (var prod in nota.productos) {
-          String prodKey = '${prod.producto} (${prod.presentacion})';
-          productosContador[prodKey] = (productosContador[prodKey] ?? 0.0) + prod.cantidad.toDouble();
-        }
-      }
-
-      // Sumar todos los abonos a facturas a crédito
-      double totalAbonos = 0.0;
-      for (var pago in pagos) {
-        totalAbonos += pago.montoPago;
-      }
-
-      // Monto Recaudado = Ventas de contado + todos los abonos registrados
-      double montoRecaudado = totalContado + totalAbonos;
-      // Cuentas por Cobrar = Ventas a crédito - abonos registrados
-      double cuentasPorCobrar = totalCredito - totalAbonos;
-      if (cuentasPorCobrar < 0) cuentasPorCobrar = 0.0;
-
-      // Ordenar y tomar los top 5
-      var topProdsSorted = productosContador.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      var topClientesSorted = clientesCompras.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      var topVendedoresSorted = vendedoresVentas.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-
-      if (mounted) {
-        setState(() {
-          _ventasTotales = ventasTotales;
-          _montoRecaudado = montoRecaudado;
-          _cuentasPorCobrar = cuentasPorCobrar;
-          _clientesActivosCount = clientesUnicos.length;
-
-          _ventasCount = notas.length;
-          _productosCount = productos.length;
-          _clientesTotalesCount = clientesTotalesCount;
-
-          _topProductos = topProdsSorted.take(5).toList();
-          _topClientes = topClientesSorted.take(5).toList();
-          _topVendedores = topVendedoresSorted.take(5).toList();
-          _isLoading = false;
-        });
-      }
+      _filtrarYProcesarDatos();
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -173,6 +202,246 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
         });
       }
     }
+  }
+
+  void _filtrarYProcesarDatos() {
+    DateTime ahora = DateTime.now();
+    DateTime? fechaInicio;
+    DateTime? fechaFin;
+
+    switch (_filtroSeleccionado) {
+      case FiltroPeriodo.historico:
+        break;
+      case FiltroPeriodo.esteMes:
+        fechaInicio = DateTime(ahora.year, ahora.month, 1);
+        fechaFin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+        break;
+      case FiltroPeriodo.mesAnterior:
+        fechaInicio = DateTime(ahora.year, ahora.month - 1, 1);
+        fechaFin = DateTime(ahora.year, ahora.month, 1).subtract(const Duration(days: 1));
+        break;
+      case FiltroPeriodo.ultimos3Meses:
+        fechaInicio = DateTime(ahora.year, ahora.month - 2, 1);
+        fechaFin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+        break;
+      case FiltroPeriodo.ultimos6Meses:
+        fechaInicio = DateTime(ahora.year, ahora.month - 5, 1);
+        fechaFin = DateTime(ahora.year, ahora.month + 1, 1).subtract(const Duration(days: 1));
+        break;
+      case FiltroPeriodo.personalizado:
+        if (_rangoPersonalizado != null) {
+          fechaInicio = _rangoPersonalizado!.start;
+          fechaFin = _rangoPersonalizado!.end;
+        }
+        break;
+    }
+
+    List<NotaEnvio> notasFiltradas = [];
+    for (var nota in _allNotas) {
+      DateTime? fechaNota = DateTime.tryParse(nota.fecha);
+      if (fechaNota == null && nota.fecha.length >= 10) {
+        fechaNota = DateTime.tryParse(nota.fecha.substring(0, 10));
+      }
+      if (fechaNota != null) {
+        if (fechaInicio != null && fechaNota.isBefore(fechaInicio)) continue;
+        if (fechaFin != null && fechaNota.isAfter(fechaFin.add(const Duration(hours: 23, minutes: 59, seconds: 59)))) continue;
+      }
+      notasFiltradas.add(nota);
+    }
+
+    List<Pago> pagosFiltrados = [];
+    for (var pago in _allPagos) {
+      DateTime? fechaPago = DateTime.tryParse(pago.fechaPago);
+      if (fechaPago == null && pago.fechaPago.length >= 10) {
+        fechaPago = DateTime.tryParse(pago.fechaPago.substring(0, 10));
+      }
+      if (fechaPago != null) {
+        if (fechaInicio != null && fechaPago.isBefore(fechaInicio)) continue;
+        if (fechaFin != null && fechaPago.isAfter(fechaFin.add(const Duration(hours: 23, minutes: 59, seconds: 59)))) continue;
+      }
+      pagosFiltrados.add(pago);
+    }
+
+    double ventasTotales = 0.0;
+    double totalContado = 0.0;
+    double totalCredito = 0.0;
+    Set<int> clientesUnicos = {};
+
+    Map<String, double> productosContador = {};
+    Map<String, double> clientesCompras = {};
+    Map<String, double> vendedoresVentas = {};
+
+    for (var nota in notasFiltradas) {
+      ventasTotales += nota.total;
+      clientesUnicos.add(nota.clienteId);
+
+      if (nota.tipoVenta == 'Contado') {
+        totalContado += nota.total;
+      } else if (nota.tipoVenta == 'Crédito') {
+        totalCredito += nota.total;
+      }
+
+      String vendedor = nota.vendedor.trim();
+      if (vendedor.isNotEmpty) {
+        vendedoresVentas[vendedor] = (vendedoresVentas[vendedor] ?? 0.0) + nota.total;
+      }
+
+      String cliente = nota.clienteNombre.trim();
+      if (cliente.isNotEmpty) {
+        clientesCompras[cliente] = (clientesCompras[cliente] ?? 0.0) + nota.total;
+      }
+
+      for (var prod in nota.productos) {
+        String prodKey = '${prod.producto} (${prod.presentacion})';
+        productosContador[prodKey] = (productosContador[prodKey] ?? 0.0) + prod.cantidad.toDouble();
+      }
+    }
+
+    double totalAbonos = 0.0;
+    for (var pago in pagosFiltrados) {
+      totalAbonos += pago.montoPago;
+    }
+
+    double montoRecaudado = totalContado + totalAbonos;
+    double cuentasPorCobrar = totalCredito - totalAbonos;
+    if (cuentasPorCobrar < 0) cuentasPorCobrar = 0.0;
+
+    var topProdsSorted = productosContador.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    var topClientesSorted = clientesCompras.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    var topVendedoresSorted = vendedoresVentas.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    // Calcular clientes creados en período
+    int clientesCreadosEnPeriodo = 0;
+    for (var cliente in _allClientes) {
+      if (cliente.fechaCreacion != null) {
+        DateTime? fecha = DateTime.tryParse(cliente.fechaCreacion!);
+        if (fecha == null && cliente.fechaCreacion!.length >= 10) {
+          fecha = DateTime.tryParse(cliente.fechaCreacion!.substring(0, 10));
+        }
+        if (fecha != null) {
+          if (fechaInicio != null && fecha.isBefore(fechaInicio)) continue;
+          if (fechaFin != null && fecha.isAfter(fechaFin.add(const Duration(hours: 23, minutes: 59, seconds: 59)))) continue;
+          clientesCreadosEnPeriodo++;
+        }
+      }
+    }
+
+    _procesarTendenciaProducto();
+
+    if (mounted) {
+      setState(() {
+        _ventasTotales = ventasTotales;
+        _montoRecaudado = montoRecaudado;
+        _cuentasPorCobrar = cuentasPorCobrar;
+        _clientesActivosCount = clientesUnicos.length;
+
+        _ventasCount = notasFiltradas.length;
+        _productosCount = _filtroSeleccionado == FiltroPeriodo.historico 
+            ? _allProductos.length 
+            : productosContador.length;
+        _clientesTotalesCount = _allClientesTotalesCount;
+        _clientesCreadosCount = clientesCreadosEnPeriodo;
+
+        _topProductos = topProdsSorted.take(5).toList();
+        _topClientes = topClientesSorted.take(5).toList();
+        _topVendedores = topVendedoresSorted.take(5).toList();
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _procesarTendenciaProducto() {
+    if (_productoSeleccionadoTendencia == null && _allNotas.isNotEmpty) {
+      Set<String> prods = {};
+      for (var n in _allNotas) {
+        for (var p in n.productos) {
+          prods.add(p.producto);
+        }
+      }
+      if (prods.isNotEmpty) {
+        _productoSeleccionadoTendencia = (prods.toList()..sort()).first;
+      }
+    }
+
+    if (_productoSeleccionadoTendencia == null) {
+      _tendenciaProducto = [];
+      return;
+    }
+
+    DateTime ahora = DateTime.now();
+    List<DateTime> meses = [];
+    for (int i = 5; i >= 0; i--) {
+      meses.add(DateTime(ahora.year, ahora.month - i, 1));
+    }
+
+    Map<String, double> agrupado = {};
+    for (var m in meses) {
+      String key = '${m.year}-${m.month.toString().padLeft(2, '0')}';
+      agrupado[key] = 0.0;
+    }
+
+    for (var nota in _allNotas) {
+      DateTime? fecha = DateTime.tryParse(nota.fecha);
+      if (fecha == null && nota.fecha.length >= 10) {
+        fecha = DateTime.tryParse(nota.fecha.substring(0, 10));
+      }
+      if (fecha != null) {
+        String key = '${fecha.year}-${fecha.month.toString().padLeft(2, '0')}';
+        if (agrupado.containsKey(key)) {
+          for (var prod in nota.productos) {
+            if (prod.producto == _productoSeleccionadoTendencia) {
+              agrupado[key] = agrupado[key]! + prod.cantidad.toDouble();
+            }
+          }
+        }
+      }
+    }
+
+    _tendenciaProducto = agrupado.entries.map((entry) {
+      List<String> partes = entry.key.split('-');
+      int anio = int.parse(partes[0]);
+      int mes = int.parse(partes[1]);
+      String nombre = '${nombreMes(mes)} ${anio.toString().substring(2)}';
+      return MapEntry(nombre, entry.value);
+    }).toList();
+  }
+
+  List<MapEntry<String, double>> _calcularVentasMensualesGenerales() {
+    DateTime ahora = DateTime.now();
+    List<DateTime> meses = [];
+    for (int i = 5; i >= 0; i--) {
+      meses.add(DateTime(ahora.year, ahora.month - i, 1));
+    }
+
+    Map<String, double> agrupado = {};
+    for (var m in meses) {
+      String key = '${m.year}-${m.month.toString().padLeft(2, '0')}';
+      agrupado[key] = 0.0;
+    }
+
+    for (var nota in _allNotas) {
+      DateTime? fecha = DateTime.tryParse(nota.fecha);
+      if (fecha == null && nota.fecha.length >= 10) {
+        fecha = DateTime.tryParse(nota.fecha.substring(0, 10));
+      }
+      if (fecha != null) {
+        String key = '${fecha.year}-${fecha.month.toString().padLeft(2, '0')}';
+        if (agrupado.containsKey(key)) {
+          agrupado[key] = agrupado[key]! + nota.total;
+        }
+      }
+    }
+
+    return agrupado.entries.map((entry) {
+      List<String> partes = entry.key.split('-');
+      int anio = int.parse(partes[0]);
+      int mes = int.parse(partes[1]);
+      String nombre = '${nombreMes(mes)} ${anio.toString().substring(2)}';
+      return MapEntry(nombre, entry.value);
+    }).toList();
   }
 
   @override
@@ -201,7 +470,6 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
       drawer: const AppDrawer(),
       body: Stack(
         children: [
-          // Fondo Gradiente Fijo a tono con Emagro
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -215,7 +483,6 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
               ),
             ),
           ),
-
           SafeArea(
             child: _isLoading
                 ? _buildLoadingState()
@@ -285,7 +552,8 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
   Widget _buildContentState() {
     return Column(
       children: [
-        // TabBar con diseño curado
+        _buildFilterBar(),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Container(
@@ -313,7 +581,6 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
         ),
 
-        // Contenedor principal de pestañas
         Expanded(
           child: TabBarView(
             controller: _tabController,
@@ -326,6 +593,206 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFilterBar() {
+    final info = obtenerFechasPeriodoTexto(_filtroSeleccionado, _rangoPersonalizado);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.25)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.yellow.shade700,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.date_range, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Período: ${info['titulo']}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    info['fechas']!,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: _mostrarSeleccionadorPeriodo,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.green.shade900,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Filtrar', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 4),
+                  Icon(Icons.keyboard_arrow_down, size: 16),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _mostrarSeleccionadorPeriodo() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Período de Análisis',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildPeriodOption(FiltroPeriodo.historico, 'Histórico (Todo)'),
+              _buildPeriodOption(FiltroPeriodo.esteMes, 'Este Mes'),
+              _buildPeriodOption(FiltroPeriodo.mesAnterior, 'Mes Anterior'),
+              _buildPeriodOption(FiltroPeriodo.ultimos3Meses, 'Últimos 3 Meses'),
+              _buildPeriodOption(FiltroPeriodo.ultimos6Meses, 'Últimos 6 Meses'),
+              _buildPeriodOption(FiltroPeriodo.personalizado, 'Rango Personalizado...'),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPeriodOption(FiltroPeriodo filtro, String titulo) {
+    final info = obtenerFechasPeriodoTexto(filtro, _rangoPersonalizado);
+    final esSeleccionado = _filtroSeleccionado == filtro;
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        titulo,
+        style: TextStyle(
+          fontWeight: esSeleccionado ? FontWeight.bold : FontWeight.normal,
+          color: esSeleccionado ? Colors.green.shade900 : Colors.black87,
+        ),
+      ),
+      subtitle: Text(
+        info['fechas']!,
+        style: TextStyle(
+          color: esSeleccionado ? Colors.green.shade700 : Colors.grey.shade600,
+          fontSize: 12,
+        ),
+      ),
+      trailing: esSeleccionado
+          ? Icon(Icons.check_circle, color: Colors.green.shade700)
+          : null,
+      onTap: () async {
+        Navigator.pop(context);
+        if (filtro == FiltroPeriodo.personalizado) {
+          final rango = await showDateRangePicker(
+            context: context,
+            initialDateRange: _rangoPersonalizado ??
+                DateTimeRange(
+                  start: DateTime.now().subtract(const Duration(days: 30)),
+                  end: DateTime.now(),
+                ),
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2030),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: Colors.green.shade900,
+                    onPrimary: Colors.white,
+                    onSurface: Colors.black87,
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          );
+          if (rango != null) {
+            setState(() {
+              _filtroSeleccionado = FiltroPeriodo.personalizado;
+              _rangoPersonalizado = rango;
+            });
+            _filtrarYProcesarDatos();
+          }
+        } else {
+          setState(() {
+            _filtroSeleccionado = filtro;
+          });
+          _filtrarYProcesarDatos();
+        }
+      },
     );
   }
 
@@ -347,7 +814,6 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
           const SizedBox(height: 16),
 
-          // Grid de Tarjetas de KPI Premium con Glassmorphism
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -392,7 +858,134 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           const SizedBox(height: 32),
           _buildGeneralChart(),
           const SizedBox(height: 32),
+          _buildVentasMensualesChart(),
+          const SizedBox(height: 32),
           _buildStatisticalSummary(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVentasMensualesChart() {
+    final datos = _calcularVentasMensualesGenerales();
+    double maxVal = datos.map((e) => e.value).fold(0.0, (max, val) => val > max ? val : max);
+    if (maxVal == 0) maxVal = 1.0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.analytics, color: Colors.blue),
+              SizedBox(width: 8),
+              Text(
+                'Facturación Mensual (Últimos 6 Meses)',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Comparativa de facturación histórica por meses',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 170,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: datos.map((entry) {
+                double pct = entry.value / maxVal;
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          formatMonedaCorta(entry.value),
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Expanded(
+                        child: FractionallySizedBox(
+                          heightFactor: pct.clamp(0.02, 1.0),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: pct),
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Container(
+                                width: 22,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.green.shade700,
+                                      Colors.green.shade400,
+                                    ],
+                                  ),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(6),
+                                    topRight: Radius.circular(6),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.shade700.withOpacity(0.15),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        entry.key,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -549,16 +1142,222 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
   }
 
   Widget _buildProductosTab() {
-    return _buildRankingList(
-      title: 'Top 5 Productos más Vendidos',
-      subtitle: 'Cantidad de unidades despachadas (Toca para ver)',
-      items: _topProductos,
-      formatValue: (val) => '${val.toInt()} uds.',
-      icon: Icons.inventory_2_outlined,
-      barColor: Colors.teal.shade500,
-      onItemTap: (key) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductosScreen()));
-      },
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          _buildRankingList(
+            title: 'Top 5 Productos más Vendidos',
+            subtitle: 'Cantidad de unidades despachadas en el período (Toca para ver)',
+            items: _topProductos,
+            formatValue: (val) => '${val.toInt()} uds.',
+            icon: Icons.inventory_2_outlined,
+            barColor: Colors.teal.shade500,
+            onItemTap: (key) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProductosScreen()));
+            },
+            insideScroll: true,
+          ),
+          const SizedBox(height: 24),
+          _buildProductTrendSection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductTrendSection() {
+    Set<String> uniqueProductsSet = {};
+    for (var nota in _allNotas) {
+      for (var prod in nota.productos) {
+        uniqueProductsSet.add(prod.producto);
+      }
+    }
+    List<String> listProductos = uniqueProductsSet.toList()..sort();
+
+    if (listProductos.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            'No hay productos vendidos registrados para mostrar tendencias.',
+            style: TextStyle(color: Colors.black54),
+          ),
+        ),
+      );
+    }
+
+    if (_productoSeleccionadoTendencia == null || !listProductos.contains(_productoSeleccionadoTendencia)) {
+      _productoSeleccionadoTendencia = listProductos.first;
+      _procesarTendenciaProducto();
+    }
+
+    double maxVal = _tendenciaProducto.map((e) => e.value).fold(0.0, (max, val) => val > max ? val : max);
+    if (maxVal == 0) maxVal = 1.0;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.trending_up, color: Colors.teal),
+              SizedBox(width: 8),
+              Text(
+                'Estacionalidad del Producto',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Analiza las cantidades vendidas mes a mes en el último semestre',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _productoSeleccionadoTendencia,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.teal),
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                items: listProductos.map((prod) {
+                  return DropdownMenuItem<String>(
+                    value: prod,
+                    child: Text(prod, overflow: TextOverflow.ellipsis),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _productoSeleccionadoTendencia = val;
+                      _procesarTendenciaProducto();
+                    });
+                  }
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 150,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: _tendenciaProducto.map((entry) {
+                double pct = entry.value / maxVal;
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '${entry.value.toInt()} uds',
+                          style: const TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Expanded(
+                        child: FractionallySizedBox(
+                          heightFactor: pct.clamp(0.02, 1.0),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: pct),
+                            duration: const Duration(milliseconds: 800),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Container(
+                                width: 22,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.teal.shade700,
+                                      Colors.teal.shade400,
+                                    ],
+                                  ),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(6),
+                                    topRight: Radius.circular(6),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.teal.shade700.withOpacity(0.15),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        entry.key,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -598,6 +1397,7 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
     required IconData icon,
     required Color barColor,
     void Function(String)? onItemTap,
+    bool insideScroll = false,
   }) {
     if (items.isEmpty) {
       return Center(
@@ -618,131 +1418,137 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
     double maxValue = items.first.value;
     if (maxValue == 0) maxValue = 1.0;
 
+    final cardContent = Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: barColor),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 20),
+            itemBuilder: (context, index) {
+              final entry = items[index];
+              double percentage = entry.value / maxValue;
+
+              return InkWell(
+                onTap: onItemTap != null ? () => onItemTap(entry.key) : null,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${index + 1}. ${entry.key}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            formatValue(entry.value),
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: barColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 0, end: percentage),
+                        duration: const Duration(milliseconds: 800),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, val, child) {
+                          return Container(
+                            height: 10,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: FractionallySizedBox(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: val.clamp(0.0, 1.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: barColor,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    if (insideScroll) {
+      return cardContent;
+    }
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16.0),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: barColor),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade500,
-              ),
-            ),
-            const SizedBox(height: 24),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 20),
-              itemBuilder: (context, index) {
-                final entry = items[index];
-                double percentage = entry.value / maxValue;
-
-                return InkWell(
-                  onTap: onItemTap != null ? () => onItemTap(entry.key) : null,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '${index + 1}. ${entry.key}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Text(
-                              formatValue(entry.value),
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: barColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: 0, end: percentage),
-                          duration: const Duration(milliseconds: 800),
-                          curve: Curves.easeOutCubic,
-                          builder: (context, val, child) {
-                            return Container(
-                              height: 10,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: val.clamp(0.0, 1.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: barColor,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      child: cardContent,
     );
   }
 
   Widget _buildGeneralChart() {
     double maxVentasTarget = _ventasTotales > 30000 ? _ventasTotales : 30000.0;
     double maxPagosTarget = _ventasTotales > 0 ? _ventasTotales : 1.0;
-    double maxCountTarget = 50.0; // standard count target
+    double maxCountTarget = 50.0;
 
     List<Map<String, dynamic>> metricas = [
       {
@@ -917,6 +1723,11 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
     double ticketMedio = _ventasCount > 0 ? (_ventasTotales / _ventasCount) : 0.0;
     double efectividadRecaudacion = _ventasTotales > 0 ? (_montoRecaudado / _ventasTotales * 100) : 0.0;
 
+    final info = obtenerFechasPeriodoTexto(_filtroSeleccionado, _rangoPersonalizado);
+    final isHistorico = _filtroSeleccionado == FiltroPeriodo.historico;
+    final periodoLabel = isHistorico ? 'histórica' : 'para el período seleccionado (${info['titulo']})';
+    final acumuladoLabel = isHistorico ? 'acumulando' : 'registrando';
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -960,7 +1771,7 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
           const SizedBox(height: 16),
           Text(
-            'El sistema agrícola Emagro reporta una facturación total histórica de Q. ${_ventasTotales.toStringAsFixed(2)} distribuida en un total de $_ventasCount ventas concretadas, lo que representa un ticket promedio de Q. ${ticketMedio.toStringAsFixed(2)} por cada nota de envío generada.',
+            'El sistema agrícola Emagro reporta una facturación total $periodoLabel de Q. ${_ventasTotales.toStringAsFixed(2)} distribuida en un total de $_ventasCount ventas concretadas, lo que representa un ticket promedio de Q. ${ticketMedio.toStringAsFixed(2)} por cada nota de envío generada.',
             style: const TextStyle(
               fontSize: 13,
               color: Colors.black87,
@@ -969,7 +1780,7 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
           const SizedBox(height: 12),
           Text(
-            'Actualmente, se ha logrado una efectividad de caja del ${efectividadRecaudacion.toStringAsFixed(1)}%, acumulando Q. ${_montoRecaudado.toStringAsFixed(2)} en efectivo real y pagos cobrados. El saldo activo por cobrar en cuentas de crédito es de Q. ${_cuentasPorCobrar.toStringAsFixed(2)}.',
+            'Actualmente, se ha logrado una efectividad de caja del ${efectividadRecaudacion.toStringAsFixed(1)}%, $acumuladoLabel Q. ${_montoRecaudado.toStringAsFixed(2)} en efectivo real y pagos cobrados. El saldo activo por cobrar en cuentas de crédito generado en el período es de Q. ${_cuentasPorCobrar.toStringAsFixed(2)}.',
             style: const TextStyle(
               fontSize: 13,
               color: Colors.black87,
@@ -978,7 +1789,9 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
           ),
           const SizedBox(height: 12),
           Text(
-            'En cuanto a cobertura de mercado, la app cuenta con $_clientesTotalesCount clientes registrados en base de datos, de los cuales $_clientesActivosCount ya presentan compras activas registradas. El catálogo operativo cuenta con $_productosCount productos activos listos para su distribución.',
+            isHistorico
+                ? 'En cuanto a cobertura de mercado, la app cuenta con $_clientesTotalesCount clientes registrados en base de datos, de los cuales $_clientesActivosCount ya presentan compras activas registradas. El catálogo operativo cuenta con $_productosCount productos activos listos para su distribución.'
+                : 'En cuanto a cobertura de mercado, en el período seleccionado se registraron $_clientesCreadosCount nuevos clientes y $_clientesActivosCount clientes realizaron compras. Asimismo, se movilizaron $_productosCount productos distintos del catálogo operativo.',
             style: const TextStyle(
               fontSize: 13,
               color: Colors.black87,
