@@ -19,14 +19,14 @@
                     <label class="block mb-2 font-label-caps text-xs text-on-surface-variant uppercase tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">Usuario</label>
                     <div class="relative focus-within:text-primary transition-colors text-on-surface-variant group/input">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] group-focus-within/input:drop-shadow-[0_0_8px_rgba(233,193,118,0.8)]">person</span>
-                        <input type="text" class="w-full px-3 py-3 pl-10 border border-white/10 bg-surface-container-high/30 backdrop-blur-xl rounded-xl shadow-inner appearance-none text-on-surface font-body-lg focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_15px_rgba(233,193,118,0.3)] outline-none transition-all placeholder-on-surface-variant/50" placeholder="Nombre de usuario" />
+                        <input v-model="username" type="text" class="w-full px-3 py-3 pl-10 border border-white/10 bg-surface-container-high/30 backdrop-blur-xl rounded-xl shadow-inner appearance-none text-on-surface font-body-lg focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_15px_rgba(233,193,118,0.3)] outline-none transition-all placeholder-on-surface-variant/50" placeholder="Nombre de usuario" required />
                     </div>
                 </div>
                 <div class="relative z-10">
                     <label class="block mb-2 font-label-caps text-xs text-on-surface-variant uppercase tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">Contraseña</label>
                     <div class="relative focus-within:text-primary transition-colors text-on-surface-variant group/input">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] group-focus-within/input:drop-shadow-[0_0_8px_rgba(233,193,118,0.8)]">lock</span>
-                        <input type="password" class="w-full px-3 py-3 pl-10 border border-white/10 bg-surface-container-high/30 backdrop-blur-xl rounded-xl shadow-inner appearance-none text-on-surface font-body-lg focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_15px_rgba(233,193,118,0.3)] outline-none transition-all placeholder-on-surface-variant/50" placeholder="••••••••" />
+                        <input v-model="password" type="password" class="w-full px-3 py-3 pl-10 border border-white/10 bg-surface-container-high/30 backdrop-blur-xl rounded-xl shadow-inner appearance-none text-on-surface font-body-lg focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_15px_rgba(233,193,118,0.3)] outline-none transition-all placeholder-on-surface-variant/50" placeholder="••••••••" required />
                     </div>
                 </div>
                 
@@ -42,13 +42,42 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { authService } from '../../services/authService';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
+const username = ref('');
+const password = ref('');
+const isLoading = ref(false);
 
-const handleLogin = () => {
-    // No backend yet, set a dummy token to pass the auth guard
-    localStorage.setItem('token', 'dummy-token-123');
-    router.push('/dashboard');
+const handleLogin = async () => {
+    isLoading.value = true;
+    try {
+        const response = await authService.login({
+            username: username.value,
+            password: password.value
+        });
+        
+        localStorage.setItem('token', response.data.token);
+        router.push('/dashboard');
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            title: 'Error de Autenticación',
+            text: error.response?.data?.error || 'Usuario o contraseña incorrectos',
+            icon: 'error',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl',
+                title: 'text-error font-headline-lg',
+            }
+        });
+    } finally {
+        isLoading.value = false;
+    }
 };
 </script>
