@@ -69,9 +69,29 @@ class ReferidoService
 
         $uploads = $this->handleFileUploads($id, true);
         
-        $foto_perfil = $uploads['foto_perfil'] ?? $existing->foto_perfil;
-        $dpi_anverso = $uploads['dpi_anverso'] ?? $existing->dpi_anverso;
-        $dpi_reverso = $uploads['dpi_reverso'] ?? $existing->dpi_reverso;
+        $foto_perfil = $existing->foto_perfil;
+        if (isset($uploads['foto_perfil'])) {
+            if ($foto_perfil && file_exists(__DIR__ . '/../../' . $foto_perfil)) {
+                unlink(__DIR__ . '/../../' . $foto_perfil);
+            }
+            $foto_perfil = $uploads['foto_perfil'];
+        }
+
+        $dpi_anverso = $existing->dpi_anverso;
+        if (isset($uploads['dpi_anverso'])) {
+            if ($dpi_anverso && file_exists(__DIR__ . '/../../' . $dpi_anverso)) {
+                unlink(__DIR__ . '/../../' . $dpi_anverso);
+            }
+            $dpi_anverso = $uploads['dpi_anverso'];
+        }
+
+        $dpi_reverso = $existing->dpi_reverso;
+        if (isset($uploads['dpi_reverso'])) {
+            if ($dpi_reverso && file_exists(__DIR__ . '/../../' . $dpi_reverso)) {
+                unlink(__DIR__ . '/../../' . $dpi_reverso);
+            }
+            $dpi_reverso = $uploads['dpi_reverso'];
+        }
 
         $entity = new ReferidoEntity(
             $id,
