@@ -62,4 +62,48 @@ class ClientController extends Controller
             ], 400);
         }
     }
+
+    #[Route('/clientes/{id}', 'PUT')]
+    // #[Authorize(['admin', 'user'])]
+    public function update(int $id)
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $dto = ClientDTO::fromRequest($data);
+        $service = new ClientService();
+
+        try {
+            $client = $service->updateClient($id, $dto);
+            $this->json([
+                'status' => 'success',
+                'message' => 'Cliente actualizado exitosamente',
+                'data' => $client
+            ]);
+        } catch (\Exception $e) {
+            $this->json([
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    #[Route('/clientes/{id}', 'DELETE')]
+    // #[Authorize(['admin', 'user'])]
+    public function delete(int $id)
+    {
+        $service = new ClientService();
+
+        try {
+            $service->deleteClient($id);
+            $this->json([
+                'status' => 'success',
+                'message' => 'Cliente eliminado exitosamente'
+            ]);
+        } catch (\Exception $e) {
+            $this->json([
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
 }
+

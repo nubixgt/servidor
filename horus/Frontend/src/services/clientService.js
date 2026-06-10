@@ -11,5 +11,13 @@ export const clientService = {
     
     createClient(clientData) {
         return api.post('/clientes', clientData);
+    },
+    
+    updateClient(id, clientData) {
+        return api.put(`/clientes/${id}`, clientData);
+    },
+    
+    deleteClient(id) {
+        return api.delete(`/clientes/${id}`);
     }
 };

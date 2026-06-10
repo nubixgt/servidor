@@ -4,7 +4,8 @@
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div class="bg-surface-container-high/90 border border-white/10 p-6 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
             <h2 class="font-headline-lg text-primary mb-4 flex items-center gap-2">
-                <span class="material-symbols-outlined">person_add</span> Nuevo Cliente
+                <span class="material-symbols-outlined">{{ isEditing ? 'edit' : 'person_add' }}</span> 
+                {{ isEditing ? 'Editar Cliente' : 'Nuevo Cliente' }}
             </h2>
             <form @submit.prevent="saveClient" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Fecha -->
@@ -25,7 +26,7 @@
                 <!-- Capital -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Capital</label>
-                    <input v-model="form.capital" @focus="unformat('capital')" @blur="formatCurrency('capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                    <input v-model="form.capital" @input="formatInputCurrency('capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
                 </div>
                 <!-- Plazo -->
                 <div class="flex flex-col gap-1">
@@ -35,22 +36,22 @@
                 <!-- Porcentaje -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Porcentaje (%)</label>
-                    <input v-model="form.porcentaje" @focus="unformat('porcentaje')" @blur="formatPercent('porcentaje')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
+                    <input v-model="form.porcentaje" @input="formatInputPercent('porcentaje')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
                 </div>
                 <!-- Interes a Pagar -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Interés a Pagar</label>
-                    <input v-model="form.interes_pagar" @focus="unformat('interes_pagar')" @blur="formatCurrency('interes_pagar')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                    <input v-model="form.interes_pagar" @input="formatInputCurrency('interes_pagar')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
                 </div>
                 <!-- Devolvió Capital -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Devolvió Capital</label>
-                    <input v-model="form.devolvio_capital" @focus="unformat('devolvio_capital')" @blur="formatCurrency('devolvio_capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                    <input v-model="form.devolvio_capital" @input="formatInputCurrency('devolvio_capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
                 </div>
                 <!-- Pago Interés -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Pago Interés</label>
-                    <input v-model="form.pago_interes" @focus="unformat('pago_interes')" @blur="formatCurrency('pago_interes')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                    <input v-model="form.pago_interes" @input="formatInputCurrency('pago_interes')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
                 </div>
                 <!-- Observaciones -->
                 <div class="flex flex-col gap-1 md:col-span-2">
@@ -60,7 +61,9 @@
 
                 <div class="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
                     <button type="button" @click="showModal = false" class="px-5 py-2 rounded-xl border border-white/10 text-on-surface hover:bg-white/5 font-body-sm transition-colors">Cancelar</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30 font-body-sm transition-colors shadow-[0_0_15px_rgba(233,193,118,0.2)]">Guardar Cliente</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30 font-body-sm transition-colors shadow-[0_0_15px_rgba(233,193,118,0.2)]">
+                        {{ isEditing ? 'Actualizar Cliente' : 'Guardar Cliente' }}
+                    </button>
                 </div>
             </form>
         </div>
@@ -76,7 +79,7 @@
                         <h2 class="font-headline-lg text-primary tracking-wide font-medium">Gestión de Clientes</h2>
                         <p class="font-body-sm text-on-surface-variant mt-1">Directorio y análisis de cartera</p>
                     </div>
-                    <button @click="showModal = true" class="bg-transparent border border-primary text-primary font-body-sm py-2 px-5 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm hidden md:flex items-center gap-2 font-medium">
+                    <button @click="openNewModal" class="bg-transparent border border-primary text-primary font-body-sm py-2 px-5 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm hidden md:flex items-center gap-2 font-medium">
                         <span class="material-symbols-outlined text-lg">person_add</span>
                         Nuevo
                     </button>
@@ -139,13 +142,13 @@
                     <span v-if="selectedClient" class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Expediente: C-{{ selectedClient.id?.toString().padStart(5, '0') }}</span>
                 </div>
                 <div class="flex gap-3">
-                    <button class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-4 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
+                    <button v-if="selectedClient" @click="editClient" class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-4 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px]">edit</span>
                         Editar Perfil
                     </button>
-                    <button class="bg-transparent border border-primary text-primary font-body-sm py-2 px-4 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">history</span>
-                        Historial Crediticio
+                    <button v-if="selectedClient" @click="deleteClient" class="bg-error/20 border border-error/50 text-error font-body-sm py-2 px-4 rounded-xl hover:bg-error/30 transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                        Eliminar
                     </button>
                 </div>
             </div>
@@ -340,12 +343,15 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { clientService } from '../../services/clientService';
+import Swal from 'sweetalert2';
 
 const clients = ref([]);
 const showModal = ref(false);
+const isEditing = ref(false);
 const selectedClient = ref(null);
 
 const form = ref({
+    id: null,
     fecha: '',
     cliente: '',
     refiere: '',
@@ -364,6 +370,11 @@ const loadClients = async () => {
         clients.value = response.data.data;
         if(clients.value.length > 0 && !selectedClient.value) {
             selectedClient.value = clients.value[0];
+        } else if (clients.value.length === 0) {
+            selectedClient.value = null;
+        } else {
+            // update selected client ref if it exists in the new list
+            selectedClient.value = clients.value.find(c => c.id === selectedClient.value.id) || null;
         }
     } catch (e) {
         console.error(e);
@@ -379,32 +390,43 @@ const parseFormatted = (val) => {
     return parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
 };
 
-const formatCurrency = (field) => {
-    let val = form.value[field];
-    if (!val) return;
-    const num = parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
-    if (isNaN(num)) {
+const formatInputCurrency = (field) => {
+    let val = form.value[field]?.toString().replace(/[^0-9]/g, '');
+    if (!val) {
         form.value[field] = '';
         return;
     }
+    let num = parseInt(val, 10) / 100;
     form.value[field] = 'Q' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 };
 
-const formatPercent = (field) => {
-    let val = form.value[field];
-    if (!val) return;
-    const num = parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
-    if (isNaN(num)) {
+const formatInputPercent = (field) => {
+    let val = form.value[field]?.toString().replace(/[^0-9.]/g, '');
+    if (!val) {
         form.value[field] = '';
         return;
     }
-    form.value[field] = num + '%';
+    form.value[field] = val + '%';
 };
 
-const unformat = (field) => {
-    let val = form.value[field];
-    if (!val) return;
-    form.value[field] = val.toString().replace(/[^0-9.-]+/g,"");
+const openNewModal = () => {
+    isEditing.value = false;
+    form.value = { id: null, fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', interes_pagar: '', devolvio_capital: '', pago_interes: '', observaciones: '' };
+    showModal.value = true;
+};
+
+const editClient = () => {
+    if(!selectedClient.value) return;
+    isEditing.value = true;
+    form.value = {
+        ...selectedClient.value,
+        capital: selectedClient.value.capital ? 'Q' + Number(selectedClient.value.capital).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
+        interes_pagar: selectedClient.value.interesPagar ? 'Q' + Number(selectedClient.value.interesPagar).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
+        devolvio_capital: selectedClient.value.devolvioCapital ? 'Q' + Number(selectedClient.value.devolvioCapital).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
+        pago_interes: selectedClient.value.pagoInteres ? 'Q' + Number(selectedClient.value.pagoInteres).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
+        porcentaje: selectedClient.value.porcentaje ? selectedClient.value.porcentaje + '%' : ''
+    };
+    showModal.value = true;
 };
 
 const saveClient = async () => {
@@ -417,16 +439,90 @@ const saveClient = async () => {
             devolvio_capital: parseFormatted(form.value.devolvio_capital),
             pago_interes: parseFormatted(form.value.pago_interes),
         };
-        await clientService.createClient(payload);
-        showModal.value = false;
-        form.value = { fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', interes_pagar: '', devolvio_capital: '', pago_interes: '', observaciones: '' };
-        await loadClients();
-        if(clients.value.length > 0) {
-            selectedClient.value = clients.value[0];
+        
+        if (isEditing.value) {
+            await clientService.updateClient(form.value.id, payload);
+        } else {
+            await clientService.createClient(payload);
         }
+
+        showModal.value = false;
+        
+        Swal.fire({
+            title: '¡Éxito!',
+            text: isEditing.value ? 'Cliente actualizado correctamente' : 'Cliente guardado correctamente',
+            icon: 'success',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl',
+                title: 'text-primary font-headline-lg',
+            }
+        });
+
+        await loadClients();
     } catch (e) {
         console.error(e);
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al procesar la solicitud',
+            icon: 'error',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176'
+        });
     }
+};
+
+const deleteClient = () => {
+    if(!selectedClient.value) return;
+    
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esto! El cliente se eliminará por completo.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ffb4ab', // error color
+        cancelButtonColor: '#353535',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        background: '#131313',
+        color: '#ffffff',
+        customClass: {
+            popup: 'border border-white/10 rounded-2xl',
+            title: 'text-error font-headline-lg',
+            confirmButton: 'text-black'
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await clientService.deleteClient(selectedClient.value.id);
+                Swal.fire({
+                    title: '¡Eliminado!',
+                    text: 'El cliente ha sido eliminado.',
+                    icon: 'success',
+                    background: '#131313',
+                    color: '#ffffff',
+                    confirmButtonColor: '#e9c176',
+                    customClass: {
+                        popup: 'border border-white/10 rounded-2xl',
+                    }
+                });
+                await loadClients();
+            } catch (e) {
+                console.error(e);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo eliminar el cliente',
+                    icon: 'error',
+                    background: '#131313',
+                    color: '#ffffff',
+                    confirmButtonColor: '#e9c176'
+                });
+            }
+        }
+    });
 };
 </script>
 

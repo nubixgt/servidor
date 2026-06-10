@@ -47,4 +47,34 @@ class ClientService
         $id = $this->repository->create($entity);
         return $this->repository->findById($id);
     }
+
+    public function updateClient(int $id, ClientDTO $dto)
+    {
+        if (empty($dto->cliente)) {
+            throw new \Exception("El nombre del cliente es obligatorio");
+        }
+
+        $entity = new ClientEntity(
+            $id,
+            $dto->fecha,
+            $dto->cliente,
+            $dto->refiere,
+            $dto->capital,
+            $dto->plazo,
+            $dto->porcentaje,
+            $dto->interesPagar,
+            $dto->devolvioCapital,
+            $dto->pagoInteres,
+            $dto->observaciones
+        );
+        
+        $this->repository->update($id, $entity);
+        return $this->repository->findById($id);
+    }
+
+    public function deleteClient(int $id)
+    {
+        return $this->repository->delete($id);
+    }
 }
+

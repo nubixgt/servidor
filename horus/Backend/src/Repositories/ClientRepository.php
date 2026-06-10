@@ -90,4 +90,41 @@ class ClientRepository
 
         return (int)$this->pdo->lastInsertId();
     }
+
+    public function update(int $id, ClientEntity $entity): bool
+    {
+        $sql = "UPDATE clientes SET 
+            fecha = :fecha, 
+            cliente = :cliente, 
+            refiere = :refiere, 
+            capital = :capital, 
+            plazo = :plazo, 
+            porcentaje = :porcentaje, 
+            interes_pagar = :interes_pagar, 
+            devolvio_capital = :devolvio_capital, 
+            pago_interes = :pago_interes, 
+            observaciones = :observaciones
+            WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'fecha' => $entity->fecha,
+            'cliente' => $entity->cliente,
+            'refiere' => $entity->refiere,
+            'capital' => $entity->capital,
+            'plazo' => $entity->plazo,
+            'porcentaje' => $entity->porcentaje,
+            'interes_pagar' => $entity->interesPagar,
+            'devolvio_capital' => $entity->devolvioCapital,
+            'pago_interes' => $entity->pagoInteres,
+            'observaciones' => $entity->observaciones
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM clientes WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }
