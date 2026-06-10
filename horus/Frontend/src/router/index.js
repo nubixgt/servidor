@@ -25,6 +25,7 @@ const routes = [
         children: [
             { path: 'dashboard', name: 'Dashboard', component: Dashboard },
             { path: 'clients', name: 'Clients', component: () => import('../views/admin/Clients.vue') },
+            { path: 'referidos', name: 'Referidos', component: () => import('../views/admin/Referidos.vue') },
             { path: 'loans', name: 'Loans', component: () => import('../views/admin/Loans.vue') },
             { path: 'investors', name: 'Investors', component: () => import('../views/admin/Investors.vue') },
             { path: 'payments', name: 'Payments', component: () => import('../views/admin/Payments.vue') },

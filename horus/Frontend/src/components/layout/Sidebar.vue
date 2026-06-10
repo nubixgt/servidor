@@ -29,6 +29,11 @@
         <span class="font-body-sm text-body-sm font-medium">Clientes</span>
       </router-link>
 
+      <router-link to="/referidos" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
+        <span class="material-symbols-outlined" data-icon="handshake">handshake</span>
+        <span class="font-body-sm text-body-sm font-medium">Referidos</span>
+      </router-link>
+
       <router-link to="/investors" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
         <span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
         <span class="font-body-sm text-body-sm font-medium">Inversionistas</span>

@@ -37,6 +37,7 @@ $router->registerController(ExampleController::class);
 $router->registerController(ClientController::class);
 $router->registerController(AuthController::class);
 $router->registerController(SetupController::class);
+$router->registerController(ReferidoController::class);
 
 
 // 6. Dispatch
