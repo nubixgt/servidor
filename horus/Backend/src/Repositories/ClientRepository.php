@@ -16,7 +16,7 @@ class ClientRepository
 
     public function findAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM clientes ORDER BY id DESC");
+        $stmt = $this->pdo->query("SELECT c.*, r.nombre AS refiere_nombre FROM clientes c LEFT JOIN referidos r ON c.refiere = r.id ORDER BY c.id DESC");
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $clients = [];
@@ -33,7 +33,8 @@ class ClientRepository
                 $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
                 $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
                 $row['observaciones'],
-                $row['documentacion'] ?? null
+                $row['documentacion'] ?? null,
+                $row['refiere_nombre'] ?? null
             );
         }
 
@@ -42,7 +43,7 @@ class ClientRepository
 
     public function findById(int $id): ?ClientEntity
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM clientes WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT c.*, r.nombre AS refiere_nombre FROM clientes c LEFT JOIN referidos r ON c.refiere = r.id WHERE c.id = :id");
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -62,7 +63,8 @@ class ClientRepository
             $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
             $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
             $row['observaciones'],
-            $row['documentacion'] ?? null
+            $row['documentacion'] ?? null,
+            $row['refiere_nombre'] ?? null
         );
     }
 

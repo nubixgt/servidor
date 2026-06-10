@@ -21,7 +21,13 @@
                 <!-- Refiere -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Refiere</label>
-                    <input v-model="form.refiere" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                    <div class="relative">
+                        <select v-model="form.refiere" class="w-full bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors appearance-none cursor-pointer">
+                            <option value="">Ninguno</option>
+                            <option v-for="ref in referidos" :key="ref.id" :value="ref.id" class="bg-surface-container text-on-surface">{{ ref.nombre }}</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+                    </div>
                 </div>
                 <!-- Capital -->
                 <div class="flex flex-col gap-1">
@@ -169,7 +175,7 @@
                         </div>
                         <div>
                             <h2 class="font-headline-lg text-title-md text-primary mb-1">{{ selectedClient.cliente }}</h2>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Referido por: {{ selectedClient.refiere || 'N/A' }}</p>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Referido por: {{ selectedClient.refiere_nombre || 'N/A' }}</p>
                             <div class="flex gap-2">
                                 <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Fecha: {{ selectedClient.fecha }}</span>
                                 <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Plazo: {{ selectedClient.plazo || 'N/A' }}</span>
@@ -328,9 +334,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { clientService } from '../../services/clientService';
+import { referidoService } from '../../services/referidoService';
 import Swal from 'sweetalert2';
 
 const clients = ref([]);
+const referidos = ref([]);
 const searchQuery = ref('');
 const showModal = ref(false);
 const isEditing = ref(false);
@@ -341,7 +349,7 @@ const filteredClients = computed(() => {
     const query = searchQuery.value.toLowerCase();
     return clients.value.filter(client => 
         client.cliente.toLowerCase().includes(query) || 
-        (client.refiere && client.refiere.toLowerCase().includes(query))
+        (client.refiere_nombre && client.refiere_nombre.toLowerCase().includes(query))
     );
 });
 
@@ -407,6 +415,15 @@ const getFilename = (path) => {
     return parts[parts.length - 1];
 };
 
+const loadReferidos = async () => {
+    try {
+        const response = await referidoService.getReferidos();
+        referidos.value = response.data.data;
+    } catch (e) {
+        console.error(e);
+    }
+};
+
 const loadClients = async () => {
     try {
         const response = await clientService.getAllClients();
@@ -426,6 +443,7 @@ const loadClients = async () => {
 
 onMounted(() => {
     loadClients();
+    loadReferidos();
 });
 
 const parseFormatted = (val) => {
@@ -471,6 +489,7 @@ const editClient = () => {
         pago_interes: selectedClient.value.pagoInteres ? 'Q' + Number(selectedClient.value.pagoInteres).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
         porcentaje: selectedClient.value.porcentaje ? selectedClient.value.porcentaje + '%' : ''
     };
+    if (!form.value.refiere) form.value.refiere = ''; // Ensure select falls back to Ninguno
     showModal.value = true;
 };
 

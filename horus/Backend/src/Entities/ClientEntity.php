@@ -7,7 +7,7 @@ class ClientEntity
         public ?int $id = null,
         public ?string $fecha = null,
         public ?string $cliente = null,
-        public ?string $refiere = null,
+        public ?int $refiere = null,
         public ?float $capital = null,
         public ?string $plazo = null,
         public ?float $porcentaje = null,
@@ -15,7 +15,8 @@ class ClientEntity
         public ?float $devolvioCapital = null,
         public ?float $pagoInteres = null,
         public ?string $observaciones = null,
-        public ?string $documentacion = null
+        public ?string $documentacion = null,
+        public ?string $refiere_nombre = null
     ) {
     }
 }
