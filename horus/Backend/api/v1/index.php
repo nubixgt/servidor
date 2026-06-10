@@ -5,6 +5,7 @@ use App\Controllers\ExampleController;
 use App\Controllers\ClientController;
 use App\Controllers\AuthController;
 use App\Controllers\SetupController;
+use App\Controllers\ReferidoController;
 
 // Backend/api/v1/index.php
 
