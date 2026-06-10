@@ -2,6 +2,7 @@
 // imports
 use App\Core\Router;
 use App\Controllers\ExampleController;
+use App\Controllers\ClientController;
 
 // Backend/api/v1/index.php
 
@@ -31,7 +32,7 @@ $router = new Router();
 
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
-// $router->registerController(YourController::class);
+$router->registerController(ClientController::class);
 
 
 // 6. Dispatch

@@ -1,5 +1,71 @@
 <template>
   <div>
+    <!-- Create Client Modal -->
+    <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-surface-container-high/90 border border-white/10 p-6 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+            <h2 class="font-headline-lg text-primary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">person_add</span> Nuevo Cliente
+            </h2>
+            <form @submit.prevent="saveClient" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Fecha -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Fecha</label>
+                    <input v-model="form.fecha" type="date" required class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                </div>
+                <!-- Cliente -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Cliente</label>
+                    <input v-model="form.cliente" type="text" required class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                </div>
+                <!-- Refiere -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Refiere</label>
+                    <input v-model="form.refiere" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                </div>
+                <!-- Capital -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Capital</label>
+                    <input v-model="form.capital" @focus="unformat('capital')" @blur="formatCurrency('capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                </div>
+                <!-- Plazo -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Plazo</label>
+                    <input v-model="form.plazo" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                </div>
+                <!-- Porcentaje -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Porcentaje (%)</label>
+                    <input v-model="form.porcentaje" @focus="unformat('porcentaje')" @blur="formatPercent('porcentaje')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
+                </div>
+                <!-- Interes a Pagar -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Interés a Pagar</label>
+                    <input v-model="form.interes_pagar" @focus="unformat('interes_pagar')" @blur="formatCurrency('interes_pagar')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                </div>
+                <!-- Devolvió Capital -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Devolvió Capital</label>
+                    <input v-model="form.devolvio_capital" @focus="unformat('devolvio_capital')" @blur="formatCurrency('devolvio_capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                </div>
+                <!-- Pago Interés -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Pago Interés</label>
+                    <input v-model="form.pago_interes" @focus="unformat('pago_interes')" @blur="formatCurrency('pago_interes')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                </div>
+                <!-- Observaciones -->
+                <div class="flex flex-col gap-1 md:col-span-2">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Observaciones</label>
+                    <textarea v-model="form.observaciones" rows="3" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors custom-scrollbar"></textarea>
+                </div>
+
+                <div class="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
+                    <button type="button" @click="showModal = false" class="px-5 py-2 rounded-xl border border-white/10 text-on-surface hover:bg-white/5 font-body-sm transition-colors">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-primary/20 text-primary border border-primary/50 hover:bg-primary/30 font-body-sm transition-colors shadow-[0_0_15px_rgba(233,193,118,0.2)]">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="flex flex-col xl:flex-row gap-gutter h-[calc(100vh-8rem)]">
         <!-- Left Column: Search & List -->
         <section class="w-full xl:w-1/3 flex flex-col gap-6 h-full">
@@ -10,7 +76,7 @@
                         <h2 class="font-headline-lg text-primary tracking-wide font-medium">Gestión de Clientes</h2>
                         <p class="font-body-sm text-on-surface-variant mt-1">Directorio y análisis de cartera</p>
                     </div>
-                    <button class="bg-transparent border border-primary text-primary font-body-sm py-2 px-5 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm hidden md:flex items-center gap-2 font-medium">
+                    <button @click="showModal = true" class="bg-transparent border border-primary text-primary font-body-sm py-2 px-5 rounded-xl hover:bg-primary/10 transition-colors shadow-[0_0_10px_rgba(233,193,118,0.15)] backdrop-blur-sm hidden md:flex items-center gap-2 font-medium">
                         <span class="material-symbols-outlined text-lg">person_add</span>
                         Nuevo
                     </button>
@@ -39,68 +105,24 @@
             <!-- Customer List -->
             <div class="flex-1 bg-surface-container-high/30 backdrop-blur-xl rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col min-h-0">
                 <div class="overflow-y-auto custom-scrollbar flex-1 p-2 space-y-2">
-                    <!-- Selected Customer Item -->
-                    <div class="p-4 rounded-2xl bg-surface-container-high/40 backdrop-blur-xl border border-primary shadow-[0_0_15px_rgba(233,193,118,0.2)] cursor-pointer relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-primary shadow-[0_0_10px_rgba(233,193,118,0.8)]"></div>
+                    <div v-if="clients.length === 0" class="text-center text-on-surface-variant p-4">No hay clientes registrados</div>
+                    
+                    <div v-for="client in clients" :key="client.id" 
+                         @click="selectedClient = client"
+                         :class="['p-4 rounded-2xl backdrop-blur-xl border cursor-pointer relative overflow-hidden group transition-all', 
+                                  selectedClient?.id === client.id ? 'bg-surface-container-high/40 border-primary shadow-[0_0_15px_rgba(233,193,118,0.2)]' : 'bg-transparent border-transparent hover:bg-surface-container-high/30 hover:border-white/5']">
+                        <div v-if="selectedClient?.id === client.id" class="absolute top-0 left-0 w-1 h-full bg-primary shadow-[0_0_10px_rgba(233,193,118,0.8)]"></div>
                         <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-title-md text-title-md text-on-surface">Roberto Alejandro Muñoz V.</h3>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-tertiary-container/20 text-tertiary-container border border-tertiary-container/30 uppercase">Activo</span>
+                            <h3 :class="['font-title-md text-title-md transition-colors', selectedClient?.id === client.id ? 'text-on-surface' : 'text-on-surface group-hover:text-primary']">{{ client.cliente }}</h3>
                         </div>
                         <div class="flex justify-between items-end">
                             <div class="space-y-1">
                                 <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">badge</span> DPI: 2938 48392 0101
+                                    <span class="material-symbols-outlined text-[14px]">event</span> {{ client.fecha }}
                                 </p>
                                 <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">call</span> +502 4432-1928
+                                    <span class="material-symbols-outlined text-[14px]">payments</span> Capital: Q{{ Number(client.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}
                                 </p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-label-caps text-label-caps text-outline mb-0.5">Score</p>
-                                <p class="font-title-md text-title-md text-primary">A-</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Other Customer Items -->
-                    <div class="p-4 rounded-2xl bg-transparent border border-transparent hover:bg-surface-container-high/30 hover:backdrop-blur-md hover:border-white/5 cursor-pointer transition-all group">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">María Fernanda Lázaro</h3>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-error/10 text-error border border-error/20 uppercase">En Mora</span>
-                        </div>
-                        <div class="flex justify-between items-end">
-                            <div class="space-y-1">
-                                <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">badge</span> DPI: 3049 11203 0101
-                                </p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">call</span> +502 5543-9988
-                                </p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-label-caps text-label-caps text-outline mb-0.5">Score</p>
-                                <p class="font-title-md text-title-md text-error">C</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-transparent border border-transparent hover:bg-surface-container-high/30 hover:backdrop-blur-md hover:border-white/5 cursor-pointer transition-all group">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Constructora Cúspide S.A.</h3>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-outline/20 text-on-surface-variant border border-outline/30 uppercase">Potencial</span>
-                        </div>
-                        <div class="flex justify-between items-end">
-                            <div class="space-y-1">
-                                <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">receipt</span> NIT: 984392-K
-                                </p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">call</span> +502 2233-4455
-                                </p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-label-caps text-label-caps text-outline mb-0.5">Score</p>
-                                <p class="font-title-md text-title-md text-on-surface-variant">N/A</p>
                             </div>
                         </div>
                     </div>
@@ -114,7 +136,7 @@
             <div class="flex justify-between items-center bg-surface-container-high/30 backdrop-blur-xl p-4 rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] shrink-0">
                 <div class="flex items-center gap-3">
                     <span class="w-3 h-3 rounded-full bg-tertiary-container shadow-[0_0_8px_rgba(143,165,214,0.6)]"></span>
-                    <span class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Expediente: C-10492</span>
+                    <span v-if="selectedClient" class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Expediente: C-{{ selectedClient.id?.toString().padStart(5, '0') }}</span>
                 </div>
                 <div class="flex gap-3">
                     <button class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-4 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
@@ -140,38 +162,42 @@
                                 <span class="material-symbols-outlined text-primary text-xl drop-shadow-[0_0_8px_rgba(233,193,118,0.8)]">upload</span>
                             </div>
                         </div>
-                        <div>
-                            <h2 class="font-headline-lg text-title-md text-primary mb-1">Roberto Alejandro Muñoz Villalobos</h2>
-                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Ingeniero Civil / Contratista Independiente</p>
+                        <div v-if="selectedClient">
+                            <h2 class="font-headline-lg text-title-md text-primary mb-1">{{ selectedClient.cliente }}</h2>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Referido por: {{ selectedClient.refiere || 'N/A' }}</p>
                             <div class="flex gap-2">
-                                <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Casado</span>
-                                <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Guatemalteco</span>
+                                <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Fecha: {{ selectedClient.fecha }}</span>
+                                <span class="px-2 py-0.5 rounded-lg bg-surface-container-high/30 border border-white/5 text-[11px] text-on-surface-variant uppercase tracking-wider">Plazo: {{ selectedClient.plazo || 'N/A' }}</span>
                             </div>
                         </div>
                     </div>
 
                     <hr class="border-white/10"/>
                     
-                    <div class="grid grid-cols-2 gap-y-4 gap-x-2">
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-2" v-if="selectedClient">
                         <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">DPI</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">2938 48392 0101</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Capital</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
                         </div>
                         <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">NIT</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">492019-K</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Porcentaje</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">{{ selectedClient.porcentaje }}%</p>
+                        </div>
+                        <div>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Interés a Pagar</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.interesPagar || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
+                        </div>
+                        <div>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Devolvió Capital</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.devolvioCapital || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
+                        </div>
+                        <div>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Pago Interés</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.pagoInteres || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
                         </div>
                         <div class="col-span-2">
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Dirección Residencia</p>
-                            <p class="font-body-sm text-body-sm text-on-surface leading-tight">14 Avenida 3-45 Zona 10, Edificio Las Margaritas, Apto 4B. Guatemala, Guatemala.</p>
-                        </div>
-                        <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Teléfono</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">+502 4432-1928</p>
-                        </div>
-                        <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Correo Electrónico</p>
-                            <p class="font-body-sm text-body-sm text-on-surface truncate" title="roberto.munoz@constructora-rm.com">roberto.munoz@constructora-rm.com</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Observaciones</p>
+                            <p class="font-body-sm text-body-sm text-on-surface leading-tight">{{ selectedClient.observaciones || 'Sin observaciones' }}</p>
                         </div>
                     </div>
                 </div>
@@ -312,6 +338,96 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+import { clientService } from '../../services/clientService';
+
+const clients = ref([]);
+const showModal = ref(false);
+const selectedClient = ref(null);
+
+const form = ref({
+    fecha: '',
+    cliente: '',
+    refiere: '',
+    capital: '',
+    plazo: '',
+    porcentaje: '',
+    interes_pagar: '',
+    devolvio_capital: '',
+    pago_interes: '',
+    observaciones: ''
+});
+
+const loadClients = async () => {
+    try {
+        const response = await clientService.getAllClients();
+        clients.value = response.data.data;
+        if(clients.value.length > 0 && !selectedClient.value) {
+            selectedClient.value = clients.value[0];
+        }
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+onMounted(() => {
+    loadClients();
+});
+
+const parseFormatted = (val) => {
+    if(!val) return null;
+    return parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
+};
+
+const formatCurrency = (field) => {
+    let val = form.value[field];
+    if (!val) return;
+    const num = parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
+    if (isNaN(num)) {
+        form.value[field] = '';
+        return;
+    }
+    form.value[field] = 'Q' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const formatPercent = (field) => {
+    let val = form.value[field];
+    if (!val) return;
+    const num = parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
+    if (isNaN(num)) {
+        form.value[field] = '';
+        return;
+    }
+    form.value[field] = num + '%';
+};
+
+const unformat = (field) => {
+    let val = form.value[field];
+    if (!val) return;
+    form.value[field] = val.toString().replace(/[^0-9.-]+/g,"");
+};
+
+const saveClient = async () => {
+    try {
+        const payload = {
+            ...form.value,
+            capital: parseFormatted(form.value.capital),
+            porcentaje: parseFormatted(form.value.porcentaje),
+            interes_pagar: parseFormatted(form.value.interes_pagar),
+            devolvio_capital: parseFormatted(form.value.devolvio_capital),
+            pago_interes: parseFormatted(form.value.pago_interes),
+        };
+        await clientService.createClient(payload);
+        showModal.value = false;
+        form.value = { fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', interes_pagar: '', devolvio_capital: '', pago_interes: '', observaciones: '' };
+        await loadClients();
+        if(clients.value.length > 0) {
+            selectedClient.value = clients.value[0];
+        }
+    } catch (e) {
+        console.error(e);
+    }
+};
 </script>
 
 <style scoped>
