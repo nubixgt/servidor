@@ -44,7 +44,8 @@ class ClientController extends Controller
     // #[Authorize(['admin', 'user'])]
     public function create()
     {
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+        $data = $isJson ? json_decode(file_get_contents('php://input'), true) ?? [] : $_POST;
         $dto = ClientDTO::fromRequest($data);
         $service = new ClientService();
 
@@ -63,11 +64,12 @@ class ClientController extends Controller
         }
     }
 
-    #[Route('/clientes/{id}', 'PUT')]
+    #[Route('/clientes/{id}', 'POST')]
     // #[Authorize(['admin', 'user'])]
     public function update(int $id)
     {
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+        $data = $isJson ? json_decode(file_get_contents('php://input'), true) ?? [] : $_POST;
         $dto = ClientDTO::fromRequest($data);
         $service = new ClientService();
 

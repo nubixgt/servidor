@@ -14,7 +14,7 @@ export const clientService = {
     },
     
     updateClient(id, clientData) {
-        return api.put(`/clientes/${id}`, clientData);
+        return api.post(`/clientes/${id}`, clientData);
     },
     
     deleteClient(id) {

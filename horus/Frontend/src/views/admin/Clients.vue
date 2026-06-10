@@ -56,7 +56,16 @@
                 <!-- Observaciones -->
                 <div class="flex flex-col gap-1 md:col-span-2">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Observaciones</label>
-                    <textarea v-model="form.observaciones" rows="3" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors custom-scrollbar"></textarea>
+                    <textarea v-model="form.observaciones" rows="3" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors"></textarea>
+                </div>
+
+                <!-- Documentación -->
+                <div class="flex flex-col gap-1 md:col-span-2">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Documentación (Máx. 5 archivos)</label>
+                    <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" @change="handleFileUpload" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
+                    <p v-if="isEditing && selectedClient?.documentacion" class="text-xs text-primary mt-1">
+                        Archivos actuales guardados. Si subes nuevos, se reemplazarán.
+                    </p>
                 </div>
 
                 <div class="col-span-1 md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
@@ -156,16 +165,13 @@
             <!-- Bento Grid Details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
                 <!-- Personal Info Card -->
-                <div class="bento-card rounded-2xl p-6 border border-white/5 flex flex-col gap-6 relative overflow-hidden bg-surface-container-high/30 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-transform">
+                <div class="bento-card rounded-2xl p-6 border border-white/5 flex flex-col gap-6 relative overflow-hidden bg-surface-container-high/30 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-transform" v-if="selectedClient">
                     <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl pointer-events-none"></div>
                     <div class="flex gap-4 items-start">
                         <div class="w-20 h-20 rounded-2xl bg-surface-container-high/50 border border-white/10 flex items-center justify-center overflow-hidden shrink-0 relative group shadow-inner">
                             <span class="material-symbols-outlined text-4xl text-outline group-hover:hidden">person</span>
-                            <div class="absolute inset-0 bg-black/60 hidden group-hover:flex items-center justify-center cursor-pointer transition-all">
-                                <span class="material-symbols-outlined text-primary text-xl drop-shadow-[0_0_8px_rgba(233,193,118,0.8)]">upload</span>
-                            </div>
                         </div>
-                        <div v-if="selectedClient">
+                        <div>
                             <h2 class="font-headline-lg text-title-md text-primary mb-1">{{ selectedClient.cliente }}</h2>
                             <p class="font-body-sm text-body-sm text-on-surface-variant mb-2">Referido por: {{ selectedClient.refiere || 'N/A' }}</p>
                             <div class="flex gap-2">
@@ -177,7 +183,7 @@
 
                     <hr class="border-white/10"/>
                     
-                    <div class="grid grid-cols-2 gap-y-4 gap-x-2" v-if="selectedClient">
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-2">
                         <div>
                             <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Capital</p>
                             <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
@@ -186,21 +192,35 @@
                             <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Porcentaje</p>
                             <p class="font-body-sm text-body-sm text-on-surface">{{ selectedClient.porcentaje }}%</p>
                         </div>
+                        <!-- Devolvió Capital -->
                         <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Interés a Pagar</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.interesPagar || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
+                            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Devolvió Capital</p>
+                            <p class="font-body-md text-on-surface">{{ selectedClient.devolvioCapital ? 'Q' + Number(selectedClient.devolvioCapital).toLocaleString('en-US', {minimumFractionDigits: 2}) : '-' }}</p>
                         </div>
+                        
+                        <!-- Pago Interés -->
                         <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Devolvió Capital</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.devolvioCapital || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
+                            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Pago Interés</p>
+                            <p class="font-body-md text-on-surface">{{ selectedClient.pagoInteres ? 'Q' + Number(selectedClient.pagoInteres).toLocaleString('en-US', {minimumFractionDigits: 2}) : '-' }}</p>
                         </div>
-                        <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Pago Interés</p>
-                            <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.pagoInteres || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Observaciones</p>
-                            <p class="font-body-sm text-body-sm text-on-surface leading-tight">{{ selectedClient.observaciones || 'Sin observaciones' }}</p>
+                    </div>
+                    
+                    <div class="mt-6 border-t border-white/10 pt-6">
+                        <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Observaciones</p>
+                        <p class="font-body-md text-on-surface leading-relaxed">
+                            {{ selectedClient.observaciones || 'Sin observaciones registradas.' }}
+                        </p>
+                    </div>
+
+                    <div v-if="selectedClient.documentacion" class="mt-6 border-t border-white/10 pt-6">
+                        <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Documentación Adjunta</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <a v-for="(doc, index) in (typeof selectedClient.documentacion === 'string' ? JSON.parse(selectedClient.documentacion) : selectedClient.documentacion)" :key="index"
+                               :href="`http://localhost/horus/Backend/public/${doc}`" target="_blank"
+                               class="flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition-colors text-xs font-medium">
+                                <span class="material-symbols-outlined text-[16px]">description</span>
+                                Archivo {{ index + 1 }}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -364,6 +384,12 @@ const form = ref({
     observaciones: ''
 });
 
+const archivos = ref([]);
+
+const handleFileUpload = (event) => {
+    archivos.value = Array.from(event.target.files).slice(0, 5); // limit to 5
+};
+
 const loadClients = async () => {
     try {
         const response = await clientService.getAllClients();
@@ -412,12 +438,14 @@ const formatInputPercent = (field) => {
 const openNewModal = () => {
     isEditing.value = false;
     form.value = { id: null, fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', interes_pagar: '', devolvio_capital: '', pago_interes: '', observaciones: '' };
+    archivos.value = [];
     showModal.value = true;
 };
 
 const editClient = () => {
     if(!selectedClient.value) return;
     isEditing.value = true;
+    archivos.value = [];
     form.value = {
         ...selectedClient.value,
         capital: selectedClient.value.capital ? 'Q' + Number(selectedClient.value.capital).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
@@ -431,14 +459,21 @@ const editClient = () => {
 
 const saveClient = async () => {
     try {
-        const payload = {
-            ...form.value,
-            capital: parseFormatted(form.value.capital),
-            porcentaje: parseFormatted(form.value.porcentaje),
-            interes_pagar: parseFormatted(form.value.interes_pagar),
-            devolvio_capital: parseFormatted(form.value.devolvio_capital),
-            pago_interes: parseFormatted(form.value.pago_interes),
-        };
+        const payload = new FormData();
+        payload.append('fecha', form.value.fecha || '');
+        payload.append('cliente', form.value.cliente || '');
+        payload.append('refiere', form.value.refiere || '');
+        payload.append('capital', parseFormatted(form.value.capital) ?? '');
+        payload.append('plazo', form.value.plazo || '');
+        payload.append('porcentaje', parseFormatted(form.value.porcentaje) ?? '');
+        payload.append('interes_pagar', parseFormatted(form.value.interes_pagar) ?? '');
+        payload.append('devolvio_capital', parseFormatted(form.value.devolvio_capital) ?? '');
+        payload.append('pago_interes', parseFormatted(form.value.pago_interes) ?? '');
+        payload.append('observaciones', form.value.observaciones || '');
+
+        archivos.value.forEach((file) => {
+            payload.append('documentos[]', file);
+        });
         
         if (isEditing.value) {
             await clientService.updateClient(form.value.id, payload);

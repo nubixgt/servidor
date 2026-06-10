@@ -13,7 +13,8 @@ class ClientDTO
         public ?float $interesPagar,
         public ?float $devolvioCapital,
         public ?float $pagoInteres,
-        public ?string $observaciones
+        public ?string $observaciones,
+        public ?string $documentacion = null
     ) {
     }
 
@@ -29,7 +30,8 @@ class ClientDTO
             isset($data['interes_pagar']) ? (float)$data['interes_pagar'] : null,
             isset($data['devolvio_capital']) ? (float)$data['devolvio_capital'] : null,
             isset($data['pago_interes']) ? (float)$data['pago_interes'] : null,
-            $data['observaciones'] ?? null
+            $data['observaciones'] ?? null,
+            $data['documentacion'] ?? null
         );
     }
 }

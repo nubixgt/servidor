@@ -32,7 +32,8 @@ class ClientRepository
                 $row['interes_pagar'] !== null ? (float)$row['interes_pagar'] : null,
                 $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
                 $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
-                $row['observaciones']
+                $row['observaciones'],
+                $row['documentacion'] ?? null
             );
         }
 
@@ -60,7 +61,8 @@ class ClientRepository
             $row['interes_pagar'] !== null ? (float)$row['interes_pagar'] : null,
             $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
             $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
-            $row['observaciones']
+            $row['observaciones'],
+            $row['documentacion'] ?? null
         );
     }
 
@@ -68,10 +70,10 @@ class ClientRepository
     {
         $sql = "INSERT INTO clientes (
             fecha, cliente, refiere, capital, plazo, porcentaje, 
-            interes_pagar, devolvio_capital, pago_interes, observaciones
+            interes_pagar, devolvio_capital, pago_interes, observaciones, documentacion
         ) VALUES (
             :fecha, :cliente, :refiere, :capital, :plazo, :porcentaje,
-            :interes_pagar, :devolvio_capital, :pago_interes, :observaciones
+            :interes_pagar, :devolvio_capital, :pago_interes, :observaciones, :documentacion
         )";
 
         $stmt = $this->pdo->prepare($sql);
@@ -85,7 +87,8 @@ class ClientRepository
             'interes_pagar' => $entity->interesPagar,
             'devolvio_capital' => $entity->devolvioCapital,
             'pago_interes' => $entity->pagoInteres,
-            'observaciones' => $entity->observaciones
+            'observaciones' => $entity->observaciones,
+            'documentacion' => $entity->documentacion
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -103,7 +106,8 @@ class ClientRepository
             interes_pagar = :interes_pagar, 
             devolvio_capital = :devolvio_capital, 
             pago_interes = :pago_interes, 
-            observaciones = :observaciones
+            observaciones = :observaciones,
+            documentacion = :documentacion
             WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
@@ -118,7 +122,8 @@ class ClientRepository
             'interes_pagar' => $entity->interesPagar,
             'devolvio_capital' => $entity->devolvioCapital,
             'pago_interes' => $entity->pagoInteres,
-            'observaciones' => $entity->observaciones
+            'observaciones' => $entity->observaciones,
+            'documentacion' => $entity->documentacion
         ]);
     }
 

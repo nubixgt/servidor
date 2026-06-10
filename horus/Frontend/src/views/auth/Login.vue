@@ -61,6 +61,21 @@ const handleLogin = async () => {
         });
         
         localStorage.setItem('token', response.data.token);
+        
+        await Swal.fire({
+            title: '¡Bienvenido!',
+            text: 'Has iniciado sesión correctamente',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+            background: '#131313',
+            color: '#ffffff',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl',
+                title: 'text-primary font-headline-lg',
+            }
+        });
+
         router.push('/dashboard');
     } catch (error) {
         console.error(error);

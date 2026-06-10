@@ -14,7 +14,8 @@ class ClientEntity
         public ?float $interesPagar = null,
         public ?float $devolvioCapital = null,
         public ?float $pagoInteres = null,
-        public ?string $observaciones = null
+        public ?string $observaciones = null,
+        public ?string $documentacion = null
     ) {
     }
 }
