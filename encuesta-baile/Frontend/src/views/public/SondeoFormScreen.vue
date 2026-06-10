@@ -137,15 +137,18 @@
 
             <!-- Golden CTA button -->
             <button
-              @click.stop="$emit('selectOption', option.voteId)"
+              @click.stop="handleButtonClick(option.voteId)"
+              :disabled="selectedOptionId === option.voteId && option.voteId === 'option-a' && !selectedSinger"
               :class="[
-                'w-full py-3.5 mt-4 text-xs font-bold rounded-lg uppercase tracking-widest transition-all active:scale-95 shadow-md',
+                'w-full py-3.5 mt-4 text-xs font-bold rounded-lg uppercase tracking-widest transition-all active:scale-95 shadow-md flex justify-center items-center gap-2',
                 selectedOptionId === option.voteId
                   ? 'gold-gradient-bg text-[#0a0f1e] shadow-[#f2ca50]/15'
-                  : 'bg-white/5 text-[#f2ca50] border border-[#f2ca50]/30 hover:bg-[#f2ca50] hover:text-[#0a0f1e]'
+                  : 'bg-white/5 text-[#f2ca50] border border-[#f2ca50]/30 hover:bg-[#f2ca50] hover:text-[#0a0f1e]',
+                (selectedOptionId === option.voteId && option.voteId === 'option-a' && !selectedSinger) ? 'opacity-60 cursor-not-allowed' : ''
               ]"
             >
-              {{ selectedOptionId === option.voteId ? 'Propuesta seleccionada' : 'Seleccionar esta propuesta' }}
+              <span v-if="isSubmitting && selectedOptionId === option.voteId" class="w-4 h-4 border-2 border-[#0a0f1e] border-t-transparent rounded-full animate-spin"></span>
+              {{ getButtonText(option.voteId) }}
             </button>
           </div>
         </div>
@@ -157,23 +160,6 @@
             Tu respuesta es anónima y nos ayuda a crear
             <span class="text-[#f2ca50] font-semibold"> el mejor evento para todos.</span>
           </p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="w-full flex justify-between items-center mt-2 pb-6">
-          <div></div>
-          <button
-            @click="$emit('submitVote', { optionId: selectedOptionId, singer: selectedSinger })"
-            :disabled="!selectedOptionId || isSubmitting || (selectedOptionId === 'option-a' && !selectedSinger)"
-            :class="[
-              'group flex items-center gap-3 py-3.5 px-8 gold-gradient-bg text-[#0a0f1e] hover:shadow-lg hover:shadow-[#f2ca50]/10 font-sans font-bold uppercase tracking-widest text-xs rounded-full transition-all active:scale-95 cursor-pointer',
-              (!selectedOptionId || isSubmitting || (selectedOptionId === 'option-a' && !selectedSinger)) ? 'opacity-40 cursor-not-allowed' : ''
-            ]"
-          >
-            <span v-if="isSubmitting" class="w-4 h-4 border-2 border-[#0a0f1e] border-t-transparent rounded-full animate-spin"></span>
-            <span>{{ isSubmitting ? 'Enviando...' : 'Siguiente' }}</span>
-            <span v-if="!isSubmitting" class="material-symbols-outlined transition-transform group-hover:translate-x-1" style="font-size:14px;">chevron_right</span>
-          </button>
         </div>
 
       </div>
@@ -210,7 +196,32 @@ const props = defineProps({
   }
 });
 
-defineEmits(['selectOption', 'submitVote']);
+const emit = defineEmits(['selectOption', 'submitVote']);
+
+const handleButtonClick = (voteId) => {
+  if (props.selectedOptionId !== voteId) {
+    emit('selectOption', voteId);
+  } else {
+    if (voteId === 'option-a' && !selectedSinger.value) return;
+    emit('submitVote', { optionId: props.selectedOptionId, singer: selectedSinger.value });
+  }
+};
+
+const getButtonText = (voteId) => {
+  if (props.isSubmitting && props.selectedOptionId === voteId) {
+    return 'ENVIANDO...';
+  }
+  
+  if (props.selectedOptionId !== voteId) {
+    return 'SELECCIONAR ESTA PROPUESTA';
+  }
+
+  if (voteId === 'option-a' && !selectedSinger.value) {
+    return 'ELIGE UN CANTANTE PARA ENVIAR';
+  }
+
+  return 'ENVIAR MI VOTO';
+};
 
 // Map our vote options to the Diseno2 visual data (images, icons, highlights)
 const diseno2Data = {
