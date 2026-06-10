@@ -106,30 +106,16 @@
 
                 <div class="relative focus-within:ring-1 focus-within:ring-primary rounded-xl transition-shadow shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                    <input class="w-full bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm text-body-sm py-3 pl-10 pr-4 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors placeholder-on-surface-variant" placeholder="Buscar por Nombre, NIT o DPI..." type="text"/>
-                </div>
-
-                <!-- Filters -->
-                <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-                    <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-high/50 backdrop-blur-md text-on-surface font-label-caps text-label-caps border border-white/10 hover:border-primary transition-colors">Todos (245)</button>
-                    <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-high/30 backdrop-blur-md text-on-surface font-label-caps text-label-caps border border-white/5 hover:border-primary transition-colors flex items-center gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                        <span class="w-2 h-2 rounded-full bg-tertiary-container shadow-[0_0_8px_rgba(143,165,214,0.6)]"></span> Activos
-                    </button>
-                    <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-high/30 backdrop-blur-md text-on-surface font-label-caps text-label-caps border border-white/5 hover:border-primary transition-colors flex items-center gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                        <span class="w-2 h-2 rounded-full bg-error shadow-[0_0_8px_rgba(255,180,171,0.6)]"></span> En Mora
-                    </button>
-                    <button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-container-high/30 backdrop-blur-md text-on-surface font-label-caps text-label-caps border border-white/5 hover:border-primary transition-colors flex items-center gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
-                        <span class="w-2 h-2 rounded-full bg-outline"></span> Potenciales
-                    </button>
+                    <input v-model="searchQuery" class="w-full bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm text-body-sm py-3 pl-10 pr-4 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors placeholder-on-surface-variant" placeholder="Buscar por Nombre o Referido..." type="text"/>
                 </div>
             </div>
 
             <!-- Customer List -->
             <div class="flex-1 bg-surface-container-high/30 backdrop-blur-xl rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col min-h-0">
                 <div class="overflow-y-auto custom-scrollbar flex-1 p-2 space-y-2">
-                    <div v-if="clients.length === 0" class="text-center text-on-surface-variant p-4">No hay clientes registrados</div>
+                    <div v-if="filteredClients.length === 0" class="text-center text-on-surface-variant p-4">No hay clientes encontrados</div>
                     
-                    <div v-for="client in clients" :key="client.id" 
+                    <div v-for="client in filteredClients" :key="client.id" 
                          @click="selectedClient = client"
                          :class="['p-4 rounded-2xl backdrop-blur-xl border cursor-pointer relative overflow-hidden group transition-all', 
                                   selectedClient?.id === client.id ? 'bg-surface-container-high/40 border-primary shadow-[0_0_15px_rgba(233,193,118,0.2)]' : 'bg-transparent border-transparent hover:bg-surface-container-high/30 hover:border-white/5']">
@@ -158,7 +144,7 @@
             <div class="flex justify-between items-center bg-surface-container-high/30 backdrop-blur-xl p-4 rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] shrink-0">
                 <div class="flex items-center gap-3">
                     <span class="w-3 h-3 rounded-full bg-tertiary-container shadow-[0_0_8px_rgba(143,165,214,0.6)]"></span>
-                    <span v-if="selectedClient" class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Expediente: C-{{ selectedClient.id?.toString().padStart(5, '0') }}</span>
+                    <span class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Detalle del Cliente</span>
                 </div>
                 <div class="flex gap-3">
                     <button v-if="selectedClient" @click="editClient" class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-4 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
@@ -340,14 +326,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { clientService } from '../../services/clientService';
 import Swal from 'sweetalert2';
 
 const clients = ref([]);
+const searchQuery = ref('');
 const showModal = ref(false);
 const isEditing = ref(false);
 const selectedClient = ref(null);
+
+const filteredClients = computed(() => {
+    if (!searchQuery.value) return clients.value;
+    const query = searchQuery.value.toLowerCase();
+    return clients.value.filter(client => 
+        client.cliente.toLowerCase().includes(query) || 
+        (client.refiere && client.refiere.toLowerCase().includes(query))
+    );
+});
 
 const form = ref({
     id: null,
