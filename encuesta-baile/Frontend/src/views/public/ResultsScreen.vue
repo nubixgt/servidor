@@ -66,6 +66,31 @@
               ></div>
             </div>
             <p class="text-xs text-[#d0c5af] mt-2 italic">Convocatoria expansiva, ideal para toda la comunidad unificada.</p>
+            
+            <!-- Singer Breakdown -->
+            <div class="mt-4 pt-4 border-t border-[rgba(153,144,124,0.2)]">
+              <h4 class="text-[10px] font-bold text-[#f2ca50] uppercase tracking-widest mb-3">Preferencia de Cantante</h4>
+              <div class="flex flex-col gap-3">
+                <div class="w-full">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-white">Eddy Herrera</span>
+                    <span class="font-bold text-[#f2ca50]">{{ votesEddy }} votos ({{ pctEddy }}%)</span>
+                  </div>
+                  <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-[#f2ca50] h-full rounded-full transition-all duration-1000" :style="{ width: `${pctEddy}%` }"></div>
+                  </div>
+                </div>
+                <div class="w-full">
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-white">Wilfredo Vargas</span>
+                    <span class="font-bold text-[#f2ca50]">{{ votesWilfredo }} votos ({{ pctWilfredo }}%)</span>
+                  </div>
+                  <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-[#f2ca50] h-full rounded-full transition-all duration-1000 opacity-70" :style="{ width: `${pctWilfredo}%` }"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Option B -->
@@ -147,6 +172,8 @@ import axios from 'axios';
 
 const votesA = ref(0);
 const votesB = ref(0);
+const votesEddy = ref(0);
+const votesWilfredo = ref(0);
 const userVote = ref(null);
 
 const fetchResults = async () => {
@@ -155,6 +182,11 @@ const fetchResults = async () => {
     if (response.data && response.data.status === 'success') {
       votesA.value = response.data.data['option-a'] || 0;
       votesB.value = response.data.data['option-b'] || 0;
+      
+      if (response.data.data.singers) {
+        votesEddy.value = response.data.data.singers['Eddy Herrera'] || 0;
+        votesWilfredo.value = response.data.data.singers['Wilfredo Vargas'] || 0;
+      }
     }
   } catch (error) {
     console.error('Error fetching votes:', error);
@@ -171,6 +203,10 @@ defineEmits(['resetVote']);
 const total = computed(() => votesA.value + votesB.value);
 const pctA = computed(() => total.value > 0 ? Math.round((votesA.value / total.value) * 100) : 0);
 const pctB = computed(() => total.value > 0 ? Math.round((votesB.value / total.value) * 100) : 0);
+
+const totalSingers = computed(() => votesEddy.value + votesWilfredo.value);
+const pctEddy = computed(() => totalSingers.value > 0 ? Math.round((votesEddy.value / totalSingers.value) * 100) : 0);
+const pctWilfredo = computed(() => totalSingers.value > 0 ? Math.round((votesWilfredo.value / totalSingers.value) * 100) : 0);
 
 const maxY = computed(() => {
   const max = Math.max(votesA.value, votesB.value, 10);

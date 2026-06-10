@@ -30,10 +30,23 @@ class VoteRepository
         $summary = [
             'option-a' => 0,
             'option-b' => 0,
+            'singers' => [
+                'Eddy Herrera' => 0,
+                'Wilfredo Vargas' => 0
+            ]
         ];
 
         foreach ($results as $row) {
-            $summary[$row['option_id']] = (int) $row['count'];
+            if (isset($summary[$row['option_id']])) {
+                $summary[$row['option_id']] = (int) $row['count'];
+            }
+        }
+
+        $singerStmt = $this->db->query("SELECT singer, COUNT(*) as count FROM votes WHERE option_id = 'option-a' AND singer IS NOT NULL GROUP BY singer");
+        $singerResults = $singerStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($singerResults as $row) {
+            $summary['singers'][$row['singer']] = (int) $row['count'];
         }
 
         return $summary;
