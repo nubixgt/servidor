@@ -63,8 +63,18 @@
                 <div class="flex flex-col gap-1 md:col-span-2">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Documentación (Máx. 5 archivos)</label>
                     <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" @change="handleFileUpload" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
+                    
+                    <div v-if="archivos.length > 0" class="mt-2 flex flex-col gap-2">
+                        <div v-for="(file, index) in archivos" :key="index" class="flex justify-between items-center bg-surface-container-high/50 px-3 py-2 rounded-xl border border-white/10">
+                            <span class="text-xs text-on-surface truncate pr-2">{{ file.name }}</span>
+                            <button type="button" @click="removeFile(index)" class="text-error hover:text-error-fixed transition-colors flex items-center">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <p v-if="isEditing && selectedClient?.documentacion" class="text-xs text-primary mt-1">
-                        Archivos actuales guardados. Si subes nuevos, se reemplazarán.
+                        El cliente ya tiene archivos guardados. Si subes nuevos archivos, reemplazarán a los existentes.
                     </p>
                 </div>
 
@@ -211,18 +221,6 @@
                             {{ selectedClient.observaciones || 'Sin observaciones registradas.' }}
                         </p>
                     </div>
-
-                    <div v-if="selectedClient.documentacion" class="mt-6 border-t border-white/10 pt-6">
-                        <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-2">Documentación Adjunta</p>
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <a v-for="(doc, index) in (typeof selectedClient.documentacion === 'string' ? JSON.parse(selectedClient.documentacion) : selectedClient.documentacion)" :key="index"
-                               :href="`http://localhost/horus/Backend/public/${doc}`" target="_blank"
-                               class="flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition-colors text-xs font-medium">
-                                <span class="material-symbols-outlined text-[16px]">description</span>
-                                Archivo {{ index + 1 }}
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Financial & Risk Summary Card -->
@@ -315,43 +313,24 @@
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    <!-- Doc Items -->
-                    <div class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
-                        <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">id_card</span>
-                        <div class="text-center w-full">
-                            <p class="font-label-caps text-[10px] text-on-surface uppercase truncate">DPI - Frente</p>
-                            <p class="font-body-sm text-[10px] text-tertiary-container mt-0.5">Validado</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
-                        <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">id_card</span>
-                        <div class="text-center w-full">
-                            <p class="font-label-caps text-[10px] text-on-surface uppercase truncate">DPI - Reverso</p>
-                            <p class="font-body-sm text-[10px] text-tertiary-container mt-0.5">Validado</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
-                        <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">receipt</span>
-                        <div class="text-center w-full">
-                            <p class="font-label-caps text-[10px] text-on-surface uppercase truncate">Recibo Luz</p>
-                            <p class="font-body-sm text-[10px] text-tertiary-container mt-0.5">Validado</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
-                        <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">description</span>
-                        <div class="text-center w-full">
-                            <p class="font-label-caps text-[10px] text-on-surface uppercase truncate">Contrato Base</p>
-                            <p class="font-body-sm text-[10px] text-tertiary-container mt-0.5">Firmado</p>
-                        </div>
+                    <div v-if="!selectedClient?.documentacion" class="col-span-full text-center py-4 text-on-surface-variant font-body-sm border border-dashed border-white/10 rounded-xl">
+                        No hay documentos guardados para este cliente.
                     </div>
 
-                    <!-- Add New Doc -->
-                    <div class="bg-surface-container-high/10 border border-dashed border-white/20 rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 hover:shadow-[0_0_15px_rgba(233,193,118,0.1)] cursor-pointer transition-all group">
+                    <a v-for="(doc, index) in getDocArray(selectedClient?.documentacion)" :key="index"
+                       :href="`http://localhost/horus/Backend/${doc}`" target="_blank"
+                       class="bg-surface-container-high/30 rounded-xl border border-white/5 p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:shadow-[0_0_15px_rgba(233,193,118,0.15)] cursor-pointer transition-all group">
+                        <span class="material-symbols-outlined text-3xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all" style="font-variation-settings: 'FILL' 1;">{{ getExtensionIcon(doc) }}</span>
+                        <div class="text-center w-full">
+                            <p class="font-label-caps text-[10px] text-on-surface uppercase truncate" :title="getFilename(doc)">{{ getFilename(doc) }}</p>
+                            <p class="font-body-sm text-[10px] text-tertiary-container mt-0.5">Archivo {{ index + 1 }}</p>
+                        </div>
+                    </a>
+
+                    <!-- Add New Doc (Open edit modal) -->
+                    <div @click="editClient" class="bg-surface-container-high/10 border border-dashed border-white/20 rounded-xl p-3 flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-primary/5 hover:shadow-[0_0_15px_rgba(233,193,118,0.1)] cursor-pointer transition-all group">
                         <span class="material-symbols-outlined text-2xl text-outline group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(233,193,118,0.6)] transition-all">add_circle</span>
-                        <p class="font-label-caps text-[10px] text-outline group-hover:text-primary transition-all uppercase">Añadir Doc</p>
+                        <p class="font-label-caps text-[10px] text-outline group-hover:text-primary transition-all uppercase">Actualizar Docs</p>
                     </div>
                 </div>
             </div>
@@ -387,7 +366,49 @@ const form = ref({
 const archivos = ref([]);
 
 const handleFileUpload = (event) => {
-    archivos.value = Array.from(event.target.files).slice(0, 5); // limit to 5
+    const newFiles = Array.from(event.target.files);
+    if (archivos.value.length + newFiles.length > 5) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Límite alcanzado',
+            text: 'Solo puedes subir un máximo de 5 archivos en total.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176'
+        });
+        event.target.value = '';
+        return;
+    }
+    archivos.value = [...archivos.value, ...newFiles];
+    event.target.value = ''; // Reset to allow same file again if removed
+};
+
+const removeFile = (index) => {
+    archivos.value.splice(index, 1);
+};
+
+const getExtensionIcon = (filename) => {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (['png', 'jpg', 'jpeg'].includes(ext)) return 'image';
+    if (['pdf'].includes(ext)) return 'picture_as_pdf';
+    if (['xls', 'xlsx'].includes(ext)) return 'table_chart';
+    if (['doc', 'docx'].includes(ext)) return 'description';
+    return 'insert_drive_file';
+};
+
+const getDocArray = (docs) => {
+    if (!docs) return [];
+    try {
+        return typeof docs === 'string' ? JSON.parse(docs) : docs;
+    } catch (e) {
+        return [];
+    }
+};
+
+const getFilename = (path) => {
+    if (!path) return '';
+    const parts = path.split('/');
+    return parts[parts.length - 1];
 };
 
 const loadClients = async () => {
