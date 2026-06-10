@@ -47,9 +47,9 @@ class ReferidoService
         $uploads = $this->handleFileUploads($id, false);
         if (!empty($uploads)) {
             $entity->id = $id;
-            $entity->fotoPerfil = $uploads['foto_perfil'] ?? null;
-            $entity->dpiAnverso = $uploads['dpi_anverso'] ?? null;
-            $entity->dpiReverso = $uploads['dpi_reverso'] ?? null;
+            $entity->foto_perfil = $uploads['foto_perfil'] ?? null;
+            $entity->dpi_anverso = $uploads['dpi_anverso'] ?? null;
+            $entity->dpi_reverso = $uploads['dpi_reverso'] ?? null;
             $this->repository->update($id, $entity);
         }
 
@@ -69,9 +69,9 @@ class ReferidoService
 
         $uploads = $this->handleFileUploads($id, true);
         
-        $fotoPerfil = $uploads['foto_perfil'] ?? $existing->fotoPerfil;
-        $dpiAnverso = $uploads['dpi_anverso'] ?? $existing->dpiAnverso;
-        $dpiReverso = $uploads['dpi_reverso'] ?? $existing->dpiReverso;
+        $foto_perfil = $uploads['foto_perfil'] ?? $existing->foto_perfil;
+        $dpi_anverso = $uploads['dpi_anverso'] ?? $existing->dpi_anverso;
+        $dpi_reverso = $uploads['dpi_reverso'] ?? $existing->dpi_reverso;
 
         $entity = new ReferidoEntity(
             $id,
@@ -82,9 +82,9 @@ class ReferidoService
             $dto->numeroCuenta,
             $dto->banco,
             $dto->tipoCuenta,
-            $fotoPerfil,
-            $dpiAnverso,
-            $dpiReverso
+            $foto_perfil,
+            $dpi_anverso,
+            $dpi_reverso
         );
         
         $this->repository->update($id, $entity);

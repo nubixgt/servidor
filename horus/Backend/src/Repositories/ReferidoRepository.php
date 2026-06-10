@@ -51,12 +51,12 @@ class ReferidoRepository
             'dpi' => $entity->dpi,
             'telefono' => $entity->telefono,
             'direccion' => $entity->direccion,
-            'numero_cuenta' => $entity->numeroCuenta,
+            'numero_cuenta' => $entity->numero_cuenta,
             'banco' => $entity->banco,
-            'tipo_cuenta' => $entity->tipoCuenta,
-            'foto_perfil' => $entity->fotoPerfil,
-            'dpi_anverso' => $entity->dpiAnverso,
-            'dpi_reverso' => $entity->dpiReverso
+            'tipo_cuenta' => $entity->tipo_cuenta,
+            'foto_perfil' => $entity->foto_perfil,
+            'dpi_anverso' => $entity->dpi_anverso,
+            'dpi_reverso' => $entity->dpi_reverso
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -84,12 +84,12 @@ class ReferidoRepository
             'dpi' => $entity->dpi,
             'telefono' => $entity->telefono,
             'direccion' => $entity->direccion,
-            'numero_cuenta' => $entity->numeroCuenta,
+            'numero_cuenta' => $entity->numero_cuenta,
             'banco' => $entity->banco,
-            'tipo_cuenta' => $entity->tipoCuenta,
-            'foto_perfil' => $entity->fotoPerfil,
-            'dpi_anverso' => $entity->dpiAnverso,
-            'dpi_reverso' => $entity->dpiReverso
+            'tipo_cuenta' => $entity->tipo_cuenta,
+            'foto_perfil' => $entity->foto_perfil,
+            'dpi_anverso' => $entity->dpi_anverso,
+            'dpi_reverso' => $entity->dpi_reverso
         ]);
     }
 

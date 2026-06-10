@@ -9,12 +9,12 @@ class ReferidoEntity
         public ?string $dpi = null,
         public ?string $telefono = null,
         public ?string $direccion = null,
-        public ?string $numeroCuenta = null,
+        public ?string $numero_cuenta = null,
         public ?string $banco = null,
-        public ?string $tipoCuenta = null,
-        public ?string $fotoPerfil = null,
-        public ?string $dpiAnverso = null,
-        public ?string $dpiReverso = null
+        public ?string $tipo_cuenta = null,
+        public ?string $foto_perfil = null,
+        public ?string $dpi_anverso = null,
+        public ?string $dpi_reverso = null
     ) {
     }
 }
