@@ -6,6 +6,7 @@ use App\Controllers\ClientController;
 use App\Controllers\AuthController;
 use App\Controllers\SetupController;
 use App\Controllers\ReferidoController;
+use App\Controllers\PagoController;
 
 // Backend/api/v1/index.php
 
@@ -39,7 +40,7 @@ $router->registerController(ClientController::class);
 $router->registerController(AuthController::class);
 $router->registerController(SetupController::class);
 $router->registerController(ReferidoController::class);
-
+$router->registerController(PagoController::class);
 
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
