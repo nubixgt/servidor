@@ -520,6 +520,11 @@ const savePayment = async () => {
 
         closeModal();
         await loadPayments();
+        
+        // Actualizar el pago seleccionado con los nuevos datos de la API para refrescar las imágenes
+        if (selectedPayment.value) {
+            selectedPayment.value = payments.value.find(p => p.id === selectedPayment.value.id) || null;
+        }
     } catch (e) {
         console.error(e);
         Swal.fire({
