@@ -53,13 +53,53 @@ class PagoService
         $comprobante_capital = $this->handleFileUpload('comprobante_capital', $id, 'capital');
 
         if ($foto || $comprobante_interes || $comprobante_capital) {
-            $updateEntity = new PagoEntity();
-            $updateEntity->foto = $foto;
-            $updateEntity->comprobante_interes = $comprobante_interes;
-            $updateEntity->comprobante_capital = $comprobante_capital;
-            $this->repository->update($id, $updateEntity);
+            $entity->id = $id;
+            $entity->foto = $foto ?: $entity->foto;
+            $entity->comprobante_interes = $comprobante_interes ?: $entity->comprobante_interes;
+            $entity->comprobante_capital = $comprobante_capital ?: $entity->comprobante_capital;
+            $this->repository->update($id, $entity);
         }
 
+        return $this->repository->findById($id);
+    }
+
+    public function updatePago(int $id, PagoDTO $dto)
+    {
+        if (empty($dto->cliente_id) || empty($dto->monto_pagado) || empty($dto->fecha)) {
+            throw new \Exception("Fecha, cliente y monto son obligatorios");
+        }
+
+        $existing = $this->repository->findById($id);
+        if (!$existing) {
+            throw new \Exception("Pago no encontrado");
+        }
+
+        $entity = new PagoEntity(
+            $id,
+            $dto->fecha,
+            $dto->cliente_id,
+            $dto->banco,
+            $dto->referencia,
+            $dto->monto_pagado,
+            $existing->foto,
+            $dto->interes,
+            $existing->comprobante_interes,
+            $dto->fecha_interes,
+            $dto->capital,
+            $existing->comprobante_capital,
+            $dto->fecha_capital
+        );
+
+        $newFoto = $this->handleFileUpload('foto', $id, 'foto', true);
+        if ($newFoto) $entity->foto = $newFoto;
+
+        $newInteres = $this->handleFileUpload('comprobante_interes', $id, 'intereses', true);
+        if ($newInteres) $entity->comprobante_interes = $newInteres;
+
+        $newCapital = $this->handleFileUpload('comprobante_capital', $id, 'capital', true);
+        if ($newCapital) $entity->comprobante_capital = $newCapital;
+
+        $this->repository->update($id, $entity);
         return $this->repository->findById($id);
     }
 
@@ -82,7 +122,7 @@ class PagoService
         return $this->repository->delete($id);
     }
 
-    private function handleFileUpload(string $inputName, int $pagoId, string $folder): ?string
+    private function handleFileUpload(string $inputName, int $pagoId, string $folder, bool $isUpdate = false): ?string
     {
         if (!isset($_FILES[$inputName]) || empty($_FILES[$inputName]['name'])) {
             return null;
@@ -94,7 +134,12 @@ class PagoService
 
         $uploadDir = __DIR__ . '/../../uploads/pagos/' . $folder . '/' . $pagoId . '/';
         
-        if (!is_dir($uploadDir)) {
+        if ($isUpdate && is_dir($uploadDir)) {
+            $files = glob($uploadDir . '*');
+            foreach ($files as $file) {
+                if (is_file($file)) unlink($file);
+            }
+        } elseif (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 

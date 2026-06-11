@@ -13,6 +13,10 @@ export const paymentService = {
         return api.post('/pagos', paymentData);
     },
     
+    updatePayment(id, paymentData) {
+        return api.post(`/pagos/${id}`, paymentData);
+    },
+    
     deletePayment(id) {
         return api.delete(`/pagos/${id}`);
     }

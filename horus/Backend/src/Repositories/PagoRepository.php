@@ -57,15 +57,24 @@ class PagoRepository
     {
         $stmt = $this->db->prepare("
             UPDATE pagos SET 
-                foto = COALESCE(?, foto),
-                comprobante_interes = COALESCE(?, comprobante_interes),
-                comprobante_capital = COALESCE(?, comprobante_capital)
+                fecha = ?, cliente_id = ?, banco = ?, referencia = ?, monto_pagado = ?, 
+                foto = ?, interes = ?, comprobante_interes = ?, fecha_interes = ?, 
+                capital = ?, comprobante_capital = ?, fecha_capital = ?
             WHERE id = ?
         ");
         return $stmt->execute([
+            $pago->fecha,
+            $pago->cliente_id,
+            $pago->banco,
+            $pago->referencia,
+            $pago->monto_pagado,
             $pago->foto,
+            $pago->interes,
             $pago->comprobante_interes,
+            $pago->fecha_interes,
+            $pago->capital,
             $pago->comprobante_capital,
+            $pago->fecha_capital,
             $id
         ]);
     }

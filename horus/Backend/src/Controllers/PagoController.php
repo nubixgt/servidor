@@ -60,6 +60,29 @@ class PagoController extends Controller
         }
     }
 
+    #[Route('/pagos/{id}', 'POST')]
+    public function update(int $id)
+    {
+        $isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+        $data = $isJson ? json_decode(file_get_contents('php://input'), true) ?? [] : $_POST;
+        $dto = PagoDTO::fromRequest($data);
+        $service = new PagoService();
+
+        try {
+            $pago = $service->updatePago($id, $dto);
+            $this->json([
+                'status' => 'success',
+                'message' => 'Pago actualizado exitosamente',
+                'data' => $pago
+            ]);
+        } catch (\Exception $e) {
+            $this->json([
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
     #[Route('/pagos/{id}', 'DELETE')]
     public function delete(int $id)
     {

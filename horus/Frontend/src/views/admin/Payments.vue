@@ -62,6 +62,16 @@
                         <span class="w-3 h-3 rounded-full bg-tertiary-container shadow-[0_0_8px_rgba(143,165,214,0.6)]"></span>
                         <span class="font-label-caps text-label-caps text-on-surface tracking-widest uppercase">Detalle de Pago</span>
                     </div>
+                    <div class="flex gap-3">
+                        <button @click="editPayment" class="bg-surface-container-high/50 border border-white/10 text-on-surface font-body-sm py-2 px-4 rounded-xl hover:border-primary/50 hover:text-primary transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                            Editar
+                        </button>
+                        <button @click="deletePayment" class="bg-surface-container-high/50 border border-error/20 text-error font-body-sm py-2 px-4 rounded-xl hover:bg-error/10 transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.1)] backdrop-blur-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                            Eliminar
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Details Card -->
@@ -148,7 +158,7 @@
         
         <div class="relative w-full max-w-3xl max-h-[90vh] bg-surface-container border border-white/10 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
             <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-surface-container-high">
-                <h2 class="font-title-lg text-title-lg text-on-surface">Registrar Nuevo Pago</h2>
+                <h2 class="font-title-lg text-title-lg text-on-surface">{{ isEditing ? 'Editar Pago' : 'Registrar Nuevo Pago' }}</h2>
                 <button @click="closeModal" class="text-on-surface-variant hover:text-error transition-colors rounded-full p-1 hover:bg-error/10">
                     <span class="material-symbols-outlined">close</span>
                 </button>
@@ -200,8 +210,8 @@
                         <div class="flex flex-col gap-1">
                             <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Adjuntar Foto (1 foto)</label>
                             <input type="file" accept=".png,.jpg,.jpeg" @change="(e) => handleImageUpload(e, 'foto')" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
-                            <div v-if="previewFotos.foto" class="mt-2 text-primary text-xs flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto
+                            <div v-if="previewFotos.foto || (isEditing && form.foto)" class="mt-2 text-primary text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto {{ previewFotos.foto ? '(Nuevo)' : '(Existente)' }}
                             </div>
                         </div>
                     </div>
@@ -219,8 +229,8 @@
                             <div class="flex flex-col gap-1">
                                 <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Comprobante (Interés)</label>
                                 <input type="file" accept=".png,.jpg,.jpeg,.pdf" @change="(e) => handleImageUpload(e, 'comprobante_interes')" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
-                                <div v-if="previewFotos.comprobante_interes" class="mt-2 text-primary text-xs flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto
+                                <div v-if="previewFotos.comprobante_interes || (isEditing && form.comprobante_interes)" class="mt-2 text-primary text-xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto {{ previewFotos.comprobante_interes ? '(Nuevo)' : '(Existente)' }}
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1">
@@ -241,8 +251,8 @@
                             <div class="flex flex-col gap-1">
                                 <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Comprobante (Capital)</label>
                                 <input type="file" accept=".png,.jpg,.jpeg,.pdf" @change="(e) => handleImageUpload(e, 'comprobante_capital')" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
-                                <div v-if="previewFotos.comprobante_capital" class="mt-2 text-primary text-xs flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto
+                                <div v-if="previewFotos.comprobante_capital || (isEditing && form.comprobante_capital)" class="mt-2 text-primary text-xs flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Archivo adjunto {{ previewFotos.comprobante_capital ? '(Nuevo)' : '(Existente)' }}
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1">
@@ -276,6 +286,7 @@ const clients = ref([]);
 const payments = ref([]); // Placeholder for actual backend fetching
 const searchQuery = ref('');
 const showModal = ref(false);
+const isEditing = ref(false);
 const selectedPayment = ref(null);
 
 const filteredPayments = computed(() => {
@@ -363,7 +374,9 @@ const formatInputCurrency = (field) => {
 };
 
 const openNewModal = () => {
+    isEditing.value = false;
     form.value = {
+        id: null,
         fecha: '',
         cliente_id: '',
         banco: '',
@@ -372,7 +385,10 @@ const openNewModal = () => {
         interes: '',
         fecha_interes: '',
         capital: '',
-        fecha_capital: ''
+        fecha_capital: '',
+        foto: null,
+        comprobante_interes: null,
+        comprobante_capital: null
     };
     filesToUpload.value = { foto: null, comprobante_interes: null, comprobante_capital: null };
     previewFotos.value = { foto: false, comprobante_interes: false, comprobante_capital: false };
@@ -381,6 +397,75 @@ const openNewModal = () => {
 
 const closeModal = () => {
     showModal.value = false;
+};
+
+const editPayment = () => {
+    if(!selectedPayment.value) return;
+    isEditing.value = true;
+    form.value = {
+        id: selectedPayment.value.id,
+        fecha: selectedPayment.value.fecha || '',
+        cliente_id: selectedPayment.value.cliente_id || '',
+        banco: selectedPayment.value.banco || '',
+        referencia: selectedPayment.value.referencia || '',
+        monto_pagado: selectedPayment.value.monto_pagado ? 'Q' + Number(selectedPayment.value.monto_pagado).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
+        interes: selectedPayment.value.interes ? 'Q' + Number(selectedPayment.value.interes).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
+        fecha_interes: selectedPayment.value.fecha_interes || '',
+        capital: selectedPayment.value.capital ? 'Q' + Number(selectedPayment.value.capital).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
+        fecha_capital: selectedPayment.value.fecha_capital || '',
+        foto: selectedPayment.value.foto,
+        comprobante_interes: selectedPayment.value.comprobante_interes,
+        comprobante_capital: selectedPayment.value.comprobante_capital
+    };
+    filesToUpload.value = { foto: null, comprobante_interes: null, comprobante_capital: null };
+    previewFotos.value = { foto: false, comprobante_interes: false, comprobante_capital: false };
+    showModal.value = true;
+};
+
+const deletePayment = async () => {
+    if(!selectedPayment.value) return;
+    
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción no se puede deshacer y borrará los archivos asociados.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
+        cancelButtonColor: '#303030',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        background: '#131313',
+        color: '#ffffff',
+        customClass: {
+            popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(255,0,0,0.2)]',
+        }
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await paymentService.deletePayment(selectedPayment.value.id);
+            selectedPayment.value = null;
+            await loadPayments();
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El pago fue eliminado.',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176',
+            });
+        } catch (e) {
+            console.error(e);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo eliminar el pago',
+                icon: 'error',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176'
+            });
+        }
+    }
 };
 
 const savePayment = async () => {
@@ -415,7 +500,11 @@ const savePayment = async () => {
         }
 
         // Send payload to backend
-        await paymentService.createPayment(payload);
+        if (isEditing.value) {
+            await paymentService.updatePayment(form.value.id, payload);
+        } else {
+            await paymentService.createPayment(payload);
+        }
 
         Swal.fire({
             icon: 'success',
