@@ -84,7 +84,7 @@ class PagoService
 
     private function handleFileUpload(string $inputName, int $pagoId, string $folder): ?string
     {
-        if (empty($_FILES[$inputName]['name'])) {
+        if (!isset($_FILES[$inputName]) || empty($_FILES[$inputName]['name'])) {
             return null;
         }
 

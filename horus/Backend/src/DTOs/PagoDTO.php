@@ -18,15 +18,15 @@ class PagoDTO
     public static function fromRequest(array $data): self
     {
         return new self(
-            $data['fecha'] ?? null,
-            isset($data['cliente_id']) && $data['cliente_id'] !== '' ? (int)$data['cliente_id'] : null,
-            $data['banco'] ?? null,
-            $data['referencia'] ?? null,
+            !empty($data['fecha']) ? $data['fecha'] : null,
+            !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null,
+            !empty($data['banco']) ? $data['banco'] : null,
+            !empty($data['referencia']) ? $data['referencia'] : null,
             isset($data['monto_pagado']) && $data['monto_pagado'] !== '' ? (float)$data['monto_pagado'] : null,
             isset($data['interes']) && $data['interes'] !== '' ? (float)$data['interes'] : null,
-            $data['fecha_interes'] ?? null,
+            !empty($data['fecha_interes']) ? $data['fecha_interes'] : null,
             isset($data['capital']) && $data['capital'] !== '' ? (float)$data['capital'] : null,
-            $data['fecha_capital'] ?? null
+            !empty($data['fecha_capital']) ? $data['fecha_capital'] : null
         );
     }
 }
