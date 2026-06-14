@@ -4,7 +4,8 @@ export const SERVICIOS_PRESTADOS = [
   'Re-Despique',
   'Vacuna Pechuga',
   'Doble Pechuga',
-  'Aerosol'
+  'Aerosol',
+  'Desinfección'
 ];
 
 export const SERVICE_COSTS = {
@@ -14,7 +15,8 @@ export const SERVICE_COSTS = {
   'Vacuna Pechuga': 0.0070,
   'Doble Pechuga': 0.0070,
   'Aerosol_GT_100': 0.0015,
-  'Aerosol_LT_100': 0.0010
+  'Aerosol_LT_100': 0.0010,
+  'Desinfección': 154.00
 };
 
 export function getServiceUnitCost(servicio, cantidad) {
