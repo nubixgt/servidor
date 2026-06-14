@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { SEED_RECORDS, INITIAL_REMINDERS, SERVICE_COSTS } from '../utils/data';
+import api from '../services/api';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -21,8 +22,11 @@ export const useAppStore = defineStore('app', {
       localStorage.setItem('vaxpoultry_efficiency', this.efficiencyRate.toString());
       localStorage.setItem('vaxpoultry_rates', JSON.stringify(this.vaccineRates));
     },
-    handleAddRecord(recordData) {
-      const words = recordData.cliente.trim().split(/\s+/);
+    async handleAddRecord(recordData) {
+      try {
+        const response = await api.post('/registros-vacunacion', recordData);
+        if (response.status === 201 || response.status === 200) {
+          const words = recordData.cliente.trim().split(/\s+/);
       let initials = 'AV';
       if (words.length > 0) {
         if (words.length >= 2) {
@@ -49,6 +53,12 @@ export const useAppStore = defineStore('app', {
 
       this.records.unshift(newRecord);
       this.syncLocalStorage();
+      return { success: true };
+      }
+      } catch (error) {
+        console.error('Error adding record:', error);
+        throw error;
+      }
     },
     handleDeleteRecord(id) {
       this.records = this.records.filter(r => r.id !== id);

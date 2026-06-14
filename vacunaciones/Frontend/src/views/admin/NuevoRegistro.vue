@@ -169,6 +169,7 @@
 import { ref, computed, watch } from 'vue';
 import { useAppStore } from '../../stores/appStore';
 import { getServiceUnitCost, SERVICIOS_PRESTADOS, formatCurrency } from '../../utils/data';
+import Swal from 'sweetalert2';
 import { 
   CalendarIcon, 
   UserIcon, 
@@ -203,18 +204,16 @@ watch([servicio, cantidad], ([newServicio, newCantidad]) => {
   totalEstimado.value = qty * unitCost;
 });
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!servicio.value || !cantidad.value || !cliente.value || !vacunador.value || !direccion.value) {
-    alert('Por favor complete todos los datos del servicio.');
+    Swal.fire('Atención', 'Por favor complete todos los datos del servicio.', 'warning');
     return;
   }
 
   submitStatus.value = 'processing';
 
-  setTimeout(() => {
-    submitStatus.value = 'success';
-
-    store.handleAddRecord({
+  try {
+    await store.handleAddRecord({
       fecha: fecha.value,
       vacunador: vacunador.value,
       cliente: cliente.value,
@@ -226,6 +225,15 @@ const handleSubmit = () => {
       estado: 'Completado'
     });
 
+    submitStatus.value = 'success';
+    
+    Swal.fire({
+      title: '¡Registro Exitoso!',
+      text: 'El servicio se ha guardado correctamente en la base de datos.',
+      icon: 'success',
+      confirmButtonColor: '#3455b9',
+    });
+
     setTimeout(() => {
       submitStatus.value = 'idle';
       cliente.value = '';
@@ -234,6 +242,9 @@ const handleSubmit = () => {
       cantidad.value = '';
     }, 2000);
 
-  }, 1200);
+  } catch (error) {
+    submitStatus.value = 'idle';
+    Swal.fire('Error', 'Hubo un problema al guardar el registro en el servidor.', 'error');
+  }
 };
 </script>
