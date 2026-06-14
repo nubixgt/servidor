@@ -218,31 +218,31 @@
     </div>
 
     <!-- Edit Modal -->
-    <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/60 backdrop-blur-md p-4">
-      <div class="bg-white rounded-[32px] shadow-2xl w-[98%] max-w-2xl p-5 md:p-8 overflow-y-auto max-h-[90vh]">
-        <div class="flex justify-between items-center mb-6">
+    <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/50 backdrop-blur-sm p-4">
+      <div class="bg-white/80 backdrop-blur-2xl rounded-[32px] shadow-2xl w-[95%] max-w-2xl p-6 md:p-10 overflow-y-auto max-h-[90vh] border border-white/60">
+        <div class="flex justify-between items-center mb-8">
           <div>
             <h3 class="text-2xl font-black text-[#3455b9]">Editar Registro</h3>
             <p class="text-xs text-gray-500 font-medium mt-1">Modifique los detalles del servicio prestado.</p>
           </div>
-          <button @click="closeEditModal" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all cursor-pointer">
+          <button @click="closeEditModal" class="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center text-gray-400 hover:bg-white hover:text-red-500 transition-all cursor-pointer shadow-sm border border-white/50">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
-        <form @submit.prevent="submitEditForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <form @submit.prevent="submitEditForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Row 1 -->
           <div class="space-y-2">
             <label class="block text-xs font-black text-[#475569] uppercase tracking-wider">Fecha</label>
             <div class="relative group">
               <CalendarIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80 transition-colors group-focus-within:text-[#3455b9]" />
-              <input type="date" required v-model="editFormData.fecha" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm font-medium text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all" />
+              <input type="date" required v-model="editFormData.fecha" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-4 text-[#1e293b] font-medium focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all" />
             </div>
           </div>
           <div class="space-y-2">
             <label class="block text-xs font-black text-[#475569] uppercase tracking-wider">Vacunador</label>
             <div class="relative group">
               <UserIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80 transition-colors group-focus-within:text-[#3455b9]" />
-              <input type="text" required v-model="editFormData.vacunador" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm font-medium text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all" />
+              <input type="text" required v-model="editFormData.vacunador" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-4 text-[#1e293b] font-medium focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all" />
             </div>
           </div>
           
@@ -251,7 +251,7 @@
             <label class="block text-xs font-black text-[#475569] uppercase tracking-wider">Cliente / Granja</label>
             <div class="relative group">
               <BuildingOfficeIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80 transition-colors group-focus-within:text-[#3455b9]" />
-              <input type="text" required v-model="editFormData.cliente" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm font-medium text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all" />
+              <input type="text" required v-model="editFormData.cliente" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-4 text-[#1e293b] font-medium focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all" />
             </div>
           </div>
           
@@ -260,7 +260,7 @@
             <label class="block text-xs font-black text-[#475569] uppercase tracking-wider">Dirección</label>
             <div class="relative group">
               <MapPinIcon class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80 transition-colors group-focus-within:text-[#3455b9]" />
-              <input type="text" required v-model="editFormData.direccion" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm font-medium text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all" />
+              <input type="text" required v-model="editFormData.direccion" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-4 text-[#1e293b] font-medium focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all" />
             </div>
           </div>
           
@@ -271,7 +271,7 @@
               <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
               </svg>
-              <select required v-model="editFormData.servicio" @change="updateEditTotal" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-10 text-sm font-bold text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all appearance-none cursor-pointer">
+              <select required v-model="editFormData.servicio" @change="updateEditTotal" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-10 text-sm font-bold text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all appearance-none cursor-pointer">
                 <option v-for="serv in SERVICIOS_PRESTADOS" :key="serv" :value="serv">{{ serv }}</option>
               </select>
               <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none">
@@ -287,21 +287,21 @@
               <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#3455b9]/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <input type="number" required min="1" v-model.number="editFormData.cantidad" @input="updateEditTotal" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm font-bold text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white transition-all" />
+              <input type="number" required min="1" v-model.number="editFormData.cantidad" @input="updateEditTotal" class="w-full bg-white/50 border border-white/60 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-[#1e293b] focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/80 transition-all" />
             </div>
           </div>
           
           <!-- Row 5 (Calculated values) -->
-          <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-5 sm:p-6 mt-2 rounded-3xl bg-slate-50 border border-slate-100">
+          <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-5 sm:p-6 mt-4 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xs">
             <div class="space-y-2">
-              <span class="block text-[11px] font-black text-[#475569] uppercase tracking-wider">Costo por Ave (Q)</span>
-              <div class="bg-[#3455b9]/10 text-[#3455b9] px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-black text-center text-lg">
+              <span class="block text-xs font-extrabold text-[#475569] uppercase tracking-wider">Costo por Ave (Q)</span>
+              <div class="bg-[#3455b9]/15 text-[#3455b9] border border-[#3455b9]/20 px-4 sm:px-6 py-4.5 rounded-2xl font-black text-center text-lg shadow-2xs">
                 Q {{ (editFormData.costoPorAve || 0).toFixed(4) }}
               </div>
             </div>
             <div class="space-y-2">
-              <span class="block text-[11px] font-black text-[#475569] uppercase tracking-wider">Total Estimado del Servicio</span>
-              <div class="bg-emerald-500/10 text-emerald-700 px-4 sm:px-6 py-3 sm:py-4 rounded-2xl font-black text-center text-2xl">
+              <span class="block text-xs font-extrabold text-[#475569] uppercase tracking-wider">Total Estimado del Servicio</span>
+              <div class="bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 px-4 sm:px-6 py-4.5 rounded-2xl font-black text-center text-2xl shadow-2xs transition-all">
                 {{ formatCurrency(editFormData.total || 0) }}
               </div>
             </div>
