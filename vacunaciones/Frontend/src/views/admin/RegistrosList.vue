@@ -218,6 +218,7 @@
     </div>
 
     <!-- Edit Modal -->
+    <Teleport to="body">
     <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#1e293b]/50 backdrop-blur-sm p-4">
       <div class="bg-white/80 backdrop-blur-2xl rounded-[32px] shadow-2xl w-[95%] max-w-2xl p-6 md:p-10 overflow-y-auto max-h-[90vh] border border-white/60">
         <div class="flex justify-between items-center mb-8">
@@ -326,6 +327,7 @@
         </form>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
