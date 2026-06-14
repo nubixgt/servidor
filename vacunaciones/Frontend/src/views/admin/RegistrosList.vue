@@ -34,7 +34,7 @@
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#3455b9]" />
           <input
             type="text"
-            placeholder="Buscar por cliente, veterinario, dirección..."
+            placeholder="Buscar por cliente, vacunador, dirección..."
             v-model="searchTerm"
             class="w-full pl-10 pr-4 py-2.5 bg-white/40 border border-slate-200 rounded-xl text-sm text-[#1e293b] placeholder-gray-500 font-medium focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/60 transition-all"
           />
@@ -128,7 +128,7 @@
                   <ArrowsUpDownIcon class="w-3.5 h-3.5 text-gray-400" />
                 </div>
               </th>
-              <th class="px-6 py-4.5 text-xs font-bold text-gray-600 uppercase tracking-wider">Veterinario</th>
+              <th class="px-6 py-4.5 text-xs font-bold text-gray-600 uppercase tracking-wider">Vacunador</th>
               <th class="px-6 py-4.5 text-xs font-bold text-gray-600 uppercase tracking-wider">Estado</th>
               <th class="px-6 py-4.5 text-xs font-bold text-gray-600 uppercase tracking-wider text-right">Acción</th>
             </tr>
