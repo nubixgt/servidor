@@ -115,6 +115,42 @@
       </div>
     </section>
 
+    <!-- Charts Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Tendencias (Bar) -->
+      <div class="glass-panel p-6 rounded-[32px] lg:col-span-2 flex flex-col">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-gray-800">Tendencias de Vacunación</h3>
+            <p class="text-xs text-gray-500">
+              Proyección de aplicaciones por {{ selectedMonth === 0 ? 'mes' : 'semana' }} (Aves) 
+              <span class="font-bold text-[#3455b9]">[{{ selectedYear === 'all' ? 'Todos los años' : selectedYear }}]</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex-1 min-h-[250px] relative w-full">
+          <Bar v-if="barChartData.datasets[0].data.some(v => v > 0)" :data="barChartData" :options="barChartOptions" />
+          <div v-else class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm font-semibold">
+            No hay datos completados para este período
+          </div>
+        </div>
+      </div>
+
+      <!-- Servicios Prestados (Doughnut) -->
+      <div class="glass-panel p-6 rounded-[32px] flex flex-col">
+        <div class="mb-4">
+          <h3 class="text-lg font-bold text-gray-800">Servicios Prestados</h3>
+          <p class="text-xs text-gray-500">Distribución por categoría (Dosis)</p>
+        </div>
+        <div class="flex-1 min-h-[250px] relative w-full flex items-center justify-center">
+          <Doughnut v-if="doughnutChartData.datasets[0].data.length > 0" :data="doughnutChartData" :options="doughnutChartOptions" />
+          <div v-else class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm font-semibold">
+            No hay datos completados para este período
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Main Records Table Section -->
     <section class="w-full">
       <!-- Recent records table -->
@@ -195,8 +231,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAppStore } from '../../stores/appStore';
+import { Bar, Doughnut } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement);
 import { useRouter } from 'vue-router';
 import { formatCurrency, formatNumber, formatCompactDate } from '../../utils/data';
 import { 
@@ -212,13 +252,17 @@ import {
 const store = useAppStore();
 const router = useRouter();
 
+onMounted(() => {
+  store.fetchRecords();
+});
+
 const selectedMonth = ref(0);
 const selectedYear = ref('2026');
 
 const availableYears = computed(() => {
-  const years = new Set();
+  const years = new Set(['2024', '2025', '2026']);
   store.records.forEach(r => {
-    const parts = r.fecha.split('-');
+    const parts = String(r.fecha).split('-');
     if (parts.length >= 1) {
       const yr = parts[0];
       if (yr && yr.length === 4) {
@@ -226,15 +270,12 @@ const availableYears = computed(() => {
       }
     }
   });
-  if (years.size === 0) {
-    years.add('2026');
-  }
   return Array.from(years).sort();
 });
 
 const monthlyFilteredRecords = computed(() => {
   return store.records.filter(r => {
-    const parts = r.fecha.split('-');
+    const parts = String(r.fecha).split('-');
     if (parts.length >= 3) {
       const recordYear = parts[0];
       const recordMonth = parseInt(parts[1], 10);
@@ -247,6 +288,83 @@ const monthlyFilteredRecords = computed(() => {
     return false;
   });
 });
+
+const barChartData = computed(() => {
+  const labels = selectedMonth.value === 0 
+    ? meses.map(m => m.label.substring(0, 3)) // Ene, Feb, Mar...
+    : ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5'];
+    
+  const data = new Array(labels.length).fill(0);
+  
+  monthlyFilteredRecords.value.forEach(r => {
+    if (r.estado !== 'Completado') return;
+    const parts = String(r.fecha).split('-');
+    if (parts.length >= 3) {
+      if (selectedMonth.value === 0) {
+        const mIdx = parseInt(parts[1], 10) - 1;
+        if (mIdx >= 0 && mIdx < 12) data[mIdx] += r.cantidad;
+      } else {
+        const day = parseInt(parts[2], 10);
+        const wIdx = Math.min(Math.floor((day - 1) / 7), 4);
+        data[wIdx] += r.cantidad;
+      }
+    }
+  });
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Aves Vacunadas',
+        backgroundColor: '#3455b9',
+        borderRadius: 4,
+        data
+      }
+    ]
+  };
+});
+
+const barChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false }
+  },
+  scales: {
+    y: { beginAtZero: true }
+  }
+};
+
+const doughnutChartData = computed(() => {
+  const serviceCounts = {};
+  monthlyFilteredRecords.value.forEach(r => {
+    if (r.estado !== 'Completado') return;
+    serviceCounts[r.servicio] = (serviceCounts[r.servicio] || 0) + r.cantidad;
+  });
+  
+  const labels = Object.keys(serviceCounts);
+  const data = Object.values(serviceCounts);
+  
+  const backgroundColors = ['#3455b9', '#0f766e', '#be123c', '#475569', '#ca8a04', '#7e22ce'];
+  
+  return {
+    labels,
+    datasets: [
+      {
+        backgroundColor: labels.map((_, i) => backgroundColors[i % backgroundColors.length]),
+        data
+      }
+    ]
+  };
+});
+
+const doughnutChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'bottom' }
+  }
+};
 
 const stats = computed(() => {
   const avesVacunadas = monthlyFilteredRecords.value.reduce((sum, r) => sum + (r.estado === 'Completado' ? r.cantidad : 0), 0);
