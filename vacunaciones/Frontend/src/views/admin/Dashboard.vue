@@ -78,14 +78,13 @@
     </div>
 
     <!-- KPI Stats Cards row -->
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <!-- KPI 1 - Aves Vacunadas -->
       <div class="glass-panel glass-panel-hover p-6 rounded-[32px]">
         <div class="flex justify-between items-start mb-4">
           <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center text-emerald-700">
             <BoltIcon class="w-5 h-5" />
           </div>
-          <span class="text-emerald-700 font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded-lg">+12%</span>
         </div>
         <p class="text-[#475569] text-xs font-bold uppercase tracking-wider mb-1">Aves Vacunadas</p>
         <h3 class="text-2xl font-black text-[#1e293b]">{{ formatNumber(stats.avesVacunadas || 125400) }}</h3>
@@ -97,21 +96,9 @@
           <div class="w-10 h-10 rounded-2xl bg-[#3455b9]/15 flex items-center justify-center text-[#3455b9]">
             <ArrowTrendingUpIcon class="w-5 h-5" />
           </div>
-          <span class="text-[#3455b9] font-bold text-xs bg-[#3455b9]/10 px-2 py-0.5 rounded-lg">+8.4%</span>
         </div>
         <p class="text-[#475569] text-xs font-bold uppercase tracking-wider mb-1">Ingresos Totales</p>
         <h3 class="text-2xl font-black text-[#1e293b]">{{ formatCurrency(stats.ingresosTotales || 84200) }}</h3>
-      </div>
-
-      <!-- KPI 3 - Eficiencia Promedio -->
-      <div class="glass-panel glass-panel-hover p-6 rounded-[32px]">
-        <div class="flex justify-between items-start mb-4">
-          <div class="w-10 h-10 rounded-2xl bg-teal-500/15 flex items-center justify-center text-[#006a63]">
-            <TrophyIcon class="w-5 h-5" />
-          </div>
-        </div>
-        <p class="text-[#475569] text-xs font-bold uppercase tracking-wider mb-1">Eficiencia promedio</p>
-        <h3 class="text-2xl font-black text-[#1e293b]">{{ store.efficiencyRate }}%</h3>
       </div>
     </section>
 
@@ -242,7 +229,6 @@ import { formatCurrency, formatNumber, formatCompactDate } from '../../utils/dat
 import { 
   BoltIcon, 
   ArrowTrendingUpIcon, 
-  TrophyIcon, 
   FunnelIcon, 
   PlusIcon, 
   CalendarIcon, 
