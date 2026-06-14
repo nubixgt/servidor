@@ -27,7 +27,7 @@
 
     <!-- Filter and search utilities bar -->
     <div class="glass-panel p-4 md:p-6 space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         
         <!-- Real-time search term bar -->
         <div class="relative md:col-span-2">
@@ -61,6 +61,19 @@
             <option value="Completado" class="text-gray-900 font-semibold">Completado</option>
             <option value="Pendiente" class="text-gray-900 font-semibold">Pendiente</option>
             <option value="Cancelado" class="text-gray-900 font-semibold">Cancelado</option>
+          </select>
+        </div>
+
+        <!-- Year Dropdown category filter -->
+        <div>
+          <select
+            v-model="selectedYear"
+            class="w-full px-3 py-2.5 bg-white/40 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-[#3455b9]/10 focus:bg-white/60 transition-all cursor-pointer font-bold text-[#1e293b]"
+          >
+            <option value="Todos" class="text-gray-900 font-semibold">Todos los Años</option>
+            <option value="2026" class="text-gray-900 font-semibold">2026</option>
+            <option value="2025" class="text-gray-900 font-semibold">2025</option>
+            <option value="2024" class="text-gray-900 font-semibold">2024</option>
           </select>
         </div>
 
@@ -181,7 +194,14 @@
               </td>
 
               <!-- Delete actions -->
-              <td class="px-6 py-4 text-right">
+              <td class="px-6 py-4 text-right flex justify-end gap-2">
+                <button
+                  @click="openEditModal(rec)"
+                  class="p-1.5 text-gray-400 hover:text-[#3455b9] hover:bg-[#3455b9]/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                  title="Editar este registro"
+                >
+                  <PencilIcon class="w-4 h-4" />
+                </button>
                 <button
                   @click="handleDeleteClick(rec.id, rec.cliente)"
                   class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
@@ -196,28 +216,99 @@
         </table>
       </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 md:p-8 overflow-y-auto max-h-[90vh]">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-[#3455b9]">Editar Registro</h3>
+          <button @click="closeEditModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+        <form @submit.prevent="submitEditForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Fecha</label>
+            <input type="date" required v-model="editFormData.fecha" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Vacunador</label>
+            <input type="text" required v-model="editFormData.vacunador" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Cliente</label>
+            <input type="text" required v-model="editFormData.cliente" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2 md:col-span-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Dirección</label>
+            <input type="text" required v-model="editFormData.direccion" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Servicio Prestado</label>
+            <select required v-model="editFormData.servicio" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50 cursor-pointer">
+              <option v-for="serv in SERVICIOS_PRESTADOS" :key="serv" :value="serv">{{ serv }}</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Cantidad (Aves)</label>
+            <input type="number" required min="1" v-model.number="editFormData.cantidad" @input="updateEditTotal" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Costo por Ave (Q)</label>
+            <input type="number" step="0.0001" required v-model.number="editFormData.costoPorAve" @input="updateEditTotalCost" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-black text-[#475569] uppercase">Total Estimado</label>
+            <input type="number" step="0.01" required v-model.number="editFormData.total" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-[#3455b9] focus:outline-none focus:ring-2 focus:ring-[#3455b9]/50" />
+          </div>
+          <div class="md:col-span-2 flex justify-end gap-3 mt-4">
+            <button type="button" @click="closeEditModal" class="px-5 py-2.5 rounded-xl border border-gray-300 font-bold text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors">Cancelar</button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#3455b9] font-bold text-white hover:bg-[#3455b9]/90 cursor-pointer transition-colors flex items-center gap-2">
+               <template v-if="isSaving">
+                  <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span>Guardando...</span>
+               </template>
+               <template v-else>
+                  <span>Guardar Cambios</span>
+               </template>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/appStore';
-import { formatCurrency, formatNumber, formatCompactDate, SERVICIOS_PRESTADOS } from '../../utils/data';
+import { formatCurrency, formatNumber, formatCompactDate, SERVICIOS_PRESTADOS, getServiceUnitCost } from '../../utils/data';
+import Swal from 'sweetalert2';
 import { 
   MagnifyingGlassIcon, 
   ArrowDownTrayIcon, 
   ArrowsUpDownIcon, 
   TrashIcon, 
-  PlusIcon 
+  PlusIcon,
+  PencilIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline';
 
 const store = useAppStore();
 const router = useRouter();
 
+onMounted(() => {
+  store.fetchRecords();
+});
+
 const searchTerm = ref('');
 const selectedService = ref('Todos');
 const selectedStatus = ref('Todos');
+const selectedYear = ref('Todos');
 const sortBy = ref('fecha');
 const sortOrder = ref('desc');
 
@@ -232,8 +323,9 @@ const filteredRecords = computed(() => {
       
       const matchesService = selectedService.value === 'Todos' || rec.servicio === selectedService.value;
       const matchesStatus = selectedStatus.value === 'Todos' || rec.estado === selectedStatus.value;
+      const matchesYear = selectedYear.value === 'Todos' || String(rec.fecha).startsWith(selectedYear.value);
 
-      return matchesSearch && matchesService && matchesStatus;
+      return matchesSearch && matchesService && matchesStatus && matchesYear;
     })
     .sort((a, b) => {
       let valA = a.fecha;
@@ -284,13 +376,75 @@ const handleExportCSV = () => {
 
 const navigateToNuevo = () => router.push('/admin/nuevo-registro');
 
-const handleStatusChange = (id, newStatus) => {
-  store.handleUpdateStatus(id, newStatus);
+const handleStatusChange = async (id, newStatus) => {
+  try {
+    await store.handleUpdateStatus(id, newStatus);
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Estado actualizado', showConfirmButton: false, timer: 1500 });
+  } catch (e) {
+    Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
+  }
 };
 
-const handleDeleteClick = (id, cliente) => {
-  if (confirm(`¿Está seguro de eliminar el registro de ${cliente}?`)) {
-    store.handleDeleteRecord(id);
+const handleDeleteClick = async (id, cliente) => {
+  const result = await Swal.fire({
+    title: '¿Eliminar registro?',
+    text: `¿Está seguro de eliminar el registro de ${cliente}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+  
+  if (result.isConfirmed) {
+    try {
+      await store.handleDeleteRecord(id);
+      Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
+    } catch (error) {
+      Swal.fire('Error', 'Ocurrió un problema al eliminar el registro.', 'error');
+    }
+  }
+};
+
+// --- Edit Modal Logic ---
+const isEditModalOpen = ref(false);
+const isSaving = ref(false);
+const editFormData = ref({});
+
+const openEditModal = (rec) => {
+  editFormData.value = { ...rec }; // Copy data to form
+  isEditModalOpen.value = true;
+};
+
+const closeEditModal = () => {
+  isEditModalOpen.value = false;
+  editFormData.value = {};
+};
+
+const updateEditTotal = () => {
+  const qty = Number(editFormData.value.cantidad) || 0;
+  const unitCost = getServiceUnitCost(editFormData.value.servicio, qty);
+  editFormData.value.costoPorAve = unitCost;
+  editFormData.value.total = qty * unitCost;
+};
+
+const updateEditTotalCost = () => {
+  const qty = Number(editFormData.value.cantidad) || 0;
+  const cost = Number(editFormData.value.costoPorAve) || 0;
+  editFormData.value.total = qty * cost;
+};
+
+const submitEditForm = async () => {
+  isSaving.value = true;
+  try {
+    await store.handleUpdateRecord(editFormData.value.id, editFormData.value);
+    isSaving.value = false;
+    closeEditModal();
+    Swal.fire('¡Actualizado!', 'El registro se ha modificado correctamente.', 'success');
+  } catch (error) {
+    isSaving.value = false;
+    Swal.fire('Error', 'Ocurrió un problema al editar el registro.', 'error');
   }
 };
 </script>

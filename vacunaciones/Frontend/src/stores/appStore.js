@@ -60,15 +60,78 @@ export const useAppStore = defineStore('app', {
         throw error;
       }
     },
-    handleDeleteRecord(id) {
-      this.records = this.records.filter(r => r.id !== id);
-      this.syncLocalStorage();
+    async fetchRecords() {
+      try {
+        const response = await api.get('/registros-vacunacion');
+        if (response.data && response.data.status === 'success') {
+          // Calculate initials and formatting
+          this.records = response.data.data.map(rec => {
+            const words = rec.cliente.trim().split(/\s+/);
+            let initials = 'AV';
+            if (words.length > 0) {
+              if (words.length >= 2) {
+                initials = (words[0][0] + words[1][0]).toUpperCase();
+              } else {
+                initials = words[0].slice(0, 2).toUpperCase();
+              }
+            }
+
+            // Extract time from created_at if possible, or just mock time for now
+            const timeDate = new Date(rec.created_at || rec.fecha);
+            let hoursStr = timeDate.getHours();
+            const ampm = hoursStr >= 12 ? 'PM' : 'AM';
+            hoursStr = hoursStr % 12;
+            hoursStr = hoursStr ? hoursStr : 12;
+            const minutesStr = timeDate.getMinutes().toString().padStart(2, '0');
+            const hora = `${hoursStr.toString().padStart(2, '0')}:${minutesStr} ${ampm}`;
+
+            return {
+              ...rec,
+              id: rec.id, // ID is number from DB
+              hora,
+              clienteIniciales: initials,
+              cantidad: Number(rec.cantidad),
+              costoPorAve: Number(rec.costo_por_ave || rec.costoPorAve),
+              total: Number(rec.total)
+            };
+          });
+          this.syncLocalStorage();
+        }
+      } catch (error) {
+        console.error('Error fetching records:', error);
+      }
     },
-    handleUpdateStatus(id, newStatus) {
-      const idx = this.records.findIndex(r => r.id === id);
-      if (idx !== -1) {
-        this.records[idx].estado = newStatus;
+    async handleDeleteRecord(id) {
+      try {
+        await api.delete(`/registros-vacunacion/${id}`);
+        this.records = this.records.filter(r => r.id !== id);
         this.syncLocalStorage();
+      } catch (error) {
+        console.error('Error deleting record:', error);
+        throw error;
+      }
+    },
+    async handleUpdateStatus(id, newStatus) {
+      try {
+        await api.put(`/registros-vacunacion/${id}/estado`, { estado: newStatus });
+        const idx = this.records.findIndex(r => r.id === id);
+        if (idx !== -1) {
+          this.records[idx].estado = newStatus;
+          this.syncLocalStorage();
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        throw error;
+      }
+    },
+    async handleUpdateRecord(id, updatedData) {
+      try {
+        await api.put(`/registros-vacunacion/${id}`, updatedData);
+        // Refresh records to get accurate data
+        await this.fetchRecords();
+      } catch (error) {
+        console.error('Error updating record:', error);
+        throw error;
       }
     },
     handleAddReminder(titulo, descripcion, importancia) {
