@@ -39,12 +39,17 @@
           </div>
 
           <div class="border-t border-gray-200/50 pt-4">
-            <ul class="space-y-3">
+            <ul class="space-y-3 mb-5">
               <li v-for="(bullet, index) in prod.bullets" :key="index" class="flex items-start gap-2.5 text-xs text-gray-700 font-medium leading-relaxed">
                 <CheckCircleIcon class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 <span>{{ bullet }}</span>
               </li>
             </ul>
+            
+            <!-- Dosis Text under the list -->
+            <p class="text-xs font-black text-[#3455b9] uppercase tracking-widest bg-[#3455b9]/5 py-2.5 px-4 rounded-xl border border-[#3455b9]/10 inline-block">
+              {{ prod.dosis || 'Dosis' }}
+            </p>
           </div>
         </div>
       </div>
