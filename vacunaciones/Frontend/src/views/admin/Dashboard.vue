@@ -257,7 +257,7 @@ onMounted(() => {
 });
 
 const selectedMonth = ref(0);
-const selectedYear = ref('2026');
+const selectedYear = ref('all');
 
 const availableYears = computed(() => {
   const years = new Set(['2024', '2025', '2026']);
