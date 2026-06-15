@@ -61,7 +61,6 @@ CREATE TABLE `pagos` (
   `id` int(11) NOT NULL,
   `fecha` date DEFAULT NULL,
   `cliente_id` int(11) DEFAULT NULL,
-  `banco` varchar(150) DEFAULT NULL,
   `referencia` varchar(150) DEFAULT NULL,
   `monto_pagado` decimal(12,2) DEFAULT NULL,
   `foto` text DEFAULT NULL,
@@ -78,8 +77,8 @@ CREATE TABLE `pagos` (
 -- Volcado de datos para la tabla `pagos`
 --
 
-INSERT INTO `pagos` (`id`, `fecha`, `cliente_id`, `banco`, `referencia`, `monto_pagado`, `foto`, `interes`, `comprobante_interes`, `fecha_interes`, `capital`, `comprobante_capital`, `fecha_capital`, `created_at`) VALUES
-(1, '2026-06-12', 1, 'Banco Industrial', '798465132', 5000.00, 'uploads/pagos/foto/1/6a2add99e09ea_paisaje1.jpg', 500.00, 'uploads/pagos/intereses/1/6a2add99e0b2a_paisaje2.jpg', '2026-06-12', 500.00, 'uploads/pagos/capital/1/6a2add99e0c2c_paisaje2.jpg', '2026-06-12', '2026-06-11 15:53:18');
+INSERT INTO `pagos` (`id`, `fecha`, `cliente_id`, `referencia`, `monto_pagado`, `foto`, `interes`, `comprobante_interes`, `fecha_interes`, `capital`, `comprobante_capital`, `fecha_capital`, `created_at`) VALUES
+(1, '2026-06-12', 1, '798465132', 5000.00, 'uploads/pagos/foto/1/6a2add99e09ea_paisaje1.jpg', 500.00, 'uploads/pagos/intereses/1/6a2add99e0b2a_paisaje2.jpg', '2026-06-12', 500.00, 'uploads/pagos/capital/1/6a2add99e0c2c_paisaje2.jpg', '2026-06-12', '2026-06-11 15:53:18');
 
 -- --------------------------------------------------------
 

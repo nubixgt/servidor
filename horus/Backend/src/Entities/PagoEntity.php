@@ -7,7 +7,6 @@ class PagoEntity
         public ?int $id = null,
         public ?string $fecha = null,
         public ?int $cliente_id = null,
-        public ?string $banco = null,
         public ?string $referencia = null,
         public ?float $monto_pagado = null,
         public ?string $foto = null,

@@ -33,13 +33,12 @@ class PagoRepository
     public function create(PagoEntity $pago)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO pagos (fecha, cliente_id, banco, referencia, monto_pagado, foto, interes, comprobante_interes, fecha_interes, capital, comprobante_capital, fecha_capital) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO pagos (fecha, cliente_id, referencia, monto_pagado, foto, interes, comprobante_interes, fecha_interes, capital, comprobante_capital, fecha_capital) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $pago->fecha,
             $pago->cliente_id,
-            $pago->banco,
             $pago->referencia,
             $pago->monto_pagado,
             $pago->foto,
@@ -57,7 +56,7 @@ class PagoRepository
     {
         $stmt = $this->db->prepare("
             UPDATE pagos SET 
-                fecha = ?, cliente_id = ?, banco = ?, referencia = ?, monto_pagado = ?, 
+                fecha = ?, cliente_id = ?, referencia = ?, monto_pagado = ?, 
                 foto = ?, interes = ?, comprobante_interes = ?, fecha_interes = ?, 
                 capital = ?, comprobante_capital = ?, fecha_capital = ?
             WHERE id = ?
@@ -65,7 +64,6 @@ class PagoRepository
         return $stmt->execute([
             $pago->fecha,
             $pago->cliente_id,
-            $pago->banco,
             $pago->referencia,
             $pago->monto_pagado,
             $pago->foto,

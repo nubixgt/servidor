@@ -6,7 +6,6 @@ class PagoDTO
     public function __construct(
         public ?string $fecha,
         public ?int $cliente_id,
-        public ?string $banco,
         public ?string $referencia,
         public ?float $monto_pagado,
         public ?float $interes,
@@ -20,7 +19,6 @@ class PagoDTO
         return new self(
             !empty($data['fecha']) ? $data['fecha'] : null,
             !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null,
-            !empty($data['banco']) ? $data['banco'] : null,
             !empty($data['referencia']) ? $data['referencia'] : null,
             isset($data['monto_pagado']) && $data['monto_pagado'] !== '' ? (float)$data['monto_pagado'] : null,
             isset($data['interes']) && $data['interes'] !== '' ? (float)$data['interes'] : null,

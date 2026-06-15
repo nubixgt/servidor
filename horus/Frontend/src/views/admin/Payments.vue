@@ -95,10 +95,7 @@
                             <p class="font-body-md text-on-surface">{{ selectedPayment.fecha }}</p>
                         </div>
                         
-                        <div>
-                            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Banco</p>
-                            <p class="font-body-md text-on-surface">{{ selectedPayment.banco || 'N/A' }}</p>
-                        </div>
+
                         
                         <div>
                             <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Monto Pagado</p>
@@ -188,11 +185,7 @@
                             </div>
                         </div>
 
-                        <!-- Banco -->
-                        <div class="flex flex-col gap-1">
-                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Banco</label>
-                            <input v-model="form.banco" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
-                        </div>
+
 
                         <!-- Referencia -->
                         <div class="flex flex-col gap-1">
@@ -301,7 +294,6 @@ const filteredPayments = computed(() => {
 const form = ref({
     fecha: '',
     cliente_id: '',
-    banco: '',
     referencia: '',
     monto_pagado: '',
     interes: '',
@@ -379,7 +371,6 @@ const openNewModal = () => {
         id: null,
         fecha: '',
         cliente_id: '',
-        banco: '',
         referencia: '',
         monto_pagado: '',
         interes: '',
@@ -406,7 +397,6 @@ const editPayment = () => {
         id: selectedPayment.value.id,
         fecha: selectedPayment.value.fecha || '',
         cliente_id: selectedPayment.value.cliente_id || '',
-        banco: selectedPayment.value.banco || '',
         referencia: selectedPayment.value.referencia || '',
         monto_pagado: selectedPayment.value.monto_pagado ? 'Q' + Number(selectedPayment.value.monto_pagado).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
         interes: selectedPayment.value.interes ? 'Q' + Number(selectedPayment.value.interes).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
@@ -473,7 +463,6 @@ const savePayment = async () => {
         const payload = new FormData();
         payload.append('fecha', form.value.fecha);
         payload.append('cliente_id', form.value.cliente_id);
-        payload.append('banco', form.value.banco || '');
         payload.append('referencia', form.value.referencia || '');
         payload.append('monto_pagado', parseFormatted(form.value.monto_pagado));
         
