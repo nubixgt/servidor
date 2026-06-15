@@ -20,7 +20,7 @@ class GastoRecurrenteController extends Controller {
         }
     }
 
-    #[Route('/gastos-recurrentes/:id', 'GET')]
+    #[Route('/gastos-recurrentes/{id}', 'GET')]
     public function getById($id) {
         try {
             $service = new GastoRecurrenteService();
@@ -50,7 +50,7 @@ class GastoRecurrenteController extends Controller {
         }
     }
 
-    #[Route('/gastos-recurrentes/:id', 'PUT')]
+    #[Route('/gastos-recurrentes/{id}', 'PUT')]
     public function update($id) {
         try {
             $input = json_decode(file_get_contents('php://input'), true);
@@ -66,7 +66,7 @@ class GastoRecurrenteController extends Controller {
         }
     }
 
-    #[Route('/gastos-recurrentes/:id', 'DELETE')]
+    #[Route('/gastos-recurrentes/{id}', 'DELETE')]
     public function delete($id) {
         try {
             $service = new GastoRecurrenteService();
