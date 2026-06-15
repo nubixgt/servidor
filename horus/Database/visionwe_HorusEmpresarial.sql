@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 11-06-2026 a las 15:20:25
+-- Tiempo de generación: 15-06-2026 a las 13:36:26
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -50,6 +50,36 @@ CREATE TABLE `clientes` (
 INSERT INTO `clientes` (`id`, `fecha`, `cliente`, `refiere`, `capital`, `plazo`, `porcentaje`, `interes_pagar`, `devolvio_capital`, `pago_interes`, `observaciones`, `created_at`, `documentacion`) VALUES
 (1, '2026-06-11', 'Prueba 1', 1, 5000.00, '3', 8.00, 400.00, 5000.00, 400.00, 'REF. 655146315', '2026-06-10 17:00:59', '[\"uploads\\/Clientes\\/1\\/paisaje1.jpg\"]'),
 (2, '2026-06-10', 'Prueba 2', 1, 10000.00, '24', 10.00, 15000.00, 0.00, 0.00, '', '2026-06-10 23:03:54', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `id` int(11) NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
+  `banco` varchar(150) DEFAULT NULL,
+  `referencia` varchar(150) DEFAULT NULL,
+  `monto_pagado` decimal(12,2) DEFAULT NULL,
+  `foto` text DEFAULT NULL,
+  `interes` decimal(12,2) DEFAULT NULL,
+  `comprobante_interes` text DEFAULT NULL,
+  `fecha_interes` date DEFAULT NULL,
+  `capital` decimal(12,2) DEFAULT NULL,
+  `comprobante_capital` text DEFAULT NULL,
+  `fecha_capital` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`id`, `fecha`, `cliente_id`, `banco`, `referencia`, `monto_pagado`, `foto`, `interes`, `comprobante_interes`, `fecha_interes`, `capital`, `comprobante_capital`, `fecha_capital`, `created_at`) VALUES
+(1, '2026-06-12', 1, 'Banco Industrial', '798465132', 5000.00, 'uploads/pagos/foto/1/6a2add99e09ea_paisaje1.jpg', 500.00, 'uploads/pagos/intereses/1/6a2add99e0b2a_paisaje2.jpg', '2026-06-12', 500.00, 'uploads/pagos/capital/1/6a2add99e0c2c_paisaje2.jpg', '2026-06-12', '2026-06-11 15:53:18');
 
 -- --------------------------------------------------------
 
@@ -114,6 +144,13 @@ ALTER TABLE `clientes`
   ADD KEY `fk_cliente_referido` (`refiere`);
 
 --
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_pago_cliente` (`cliente_id`);
+
+--
 -- Indices de la tabla `referidos`
 --
 ALTER TABLE `referidos`
@@ -137,6 +174,12 @@ ALTER TABLE `clientes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `referidos`
 --
 ALTER TABLE `referidos`
@@ -157,6 +200,12 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `clientes`
   ADD CONSTRAINT `fk_cliente_referido` FOREIGN KEY (`refiere`) REFERENCES `referidos` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `fk_pago_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
