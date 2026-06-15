@@ -62,8 +62,6 @@
                             <select v-model="form.tipo_interes" @change="calculateAmortization" class="w-full bg-surface-container border border-outline-variant rounded p-2.5 text-on-surface focus:border-primary focus:ring-1 focus:ring-primary font-body-lg text-body-lg text-sm">
                                 <option value="Decreciente">Decreciente</option>
                                 <option value="Fijo">Fijo</option>
-                                <option value="Compuesto">Compuesto</option>
-                                <option value="Simple">Simple</option>
                             </select>
                         </div>
                         <div>
