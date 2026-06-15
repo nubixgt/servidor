@@ -129,13 +129,10 @@
                 <div class="p-4 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-container/50">
                     <h3 class="font-title-md text-title-md text-on-surface">Tabla de Amortización</h3>
                     <div class="flex gap-2">
-                        <button @click="calculateAmortization" class="p-2 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors group" title="Recalcular">
-                            <span class="material-symbols-outlined text-[20px] group-active:rotate-180 transition-transform duration-300">calculate</span>
-                        </button>
-                        <button class="p-2 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors" title="Imprimir PDF">
+                        <button @click="printPDF" class="p-2 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors" title="Imprimir PDF">
                             <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
                         </button>
-                        <button class="p-2 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors" title="Exportar Excel">
+                        <button @click="exportExcel" class="p-2 rounded bg-surface border border-outline-variant text-on-surface-variant hover:text-primary hover:border-primary transition-colors" title="Exportar Excel">
                             <span class="material-symbols-outlined text-[20px]">table_view</span>
                         </button>
                     </div>
@@ -396,6 +393,46 @@ const saveLoan = async () => {
         console.error(error);
         Swal.fire('Error', 'Hubo un problema al guardar el préstamo', 'error');
     }
+};
+
+const printPDF = () => {
+    if (amortizationTable.value.length === 0) {
+        Swal.fire('Atención', 'No hay datos en la tabla para imprimir', 'warning');
+        return;
+    }
+    window.print();
+};
+
+const exportExcel = () => {
+    if (amortizationTable.value.length === 0) {
+        Swal.fire('Atención', 'No hay datos en la tabla para exportar', 'warning');
+        return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "N°,FECHA,CAPITAL,INTERES,SEGURO,TOTAL CUOTA,SALDO PEND.\n";
+
+    amortizationTable.value.forEach(row => {
+        let rowData = [
+            row.cuota,
+            row.fecha,
+            row.capital.toFixed(2),
+            row.interes.toFixed(2),
+            row.seguro.toFixed(2),
+            row.totalCuota.toFixed(2),
+            row.saldoPendiente.toFixed(2)
+        ];
+        csvContent += rowData.join(",") + "\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    const fileName = selectedClient.value ? `Amortizacion_${selectedClient.value.cliente.replace(/[^a-z0-9]/gi, '_')}.csv` : "Amortizacion.csv";
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
 
 onMounted(() => {
