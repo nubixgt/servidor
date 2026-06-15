@@ -30,6 +30,10 @@ const routes = [
             { path: 'investors', name: 'Investors', component: () => import('../views/admin/Investors.vue') },
             { path: 'payments', name: 'Payments', component: () => import('../views/admin/Payments.vue') },
             { path: 'portfolio', name: 'Portfolio', component: () => import('../views/admin/Portfolio.vue') },
+            { path: 'recurring-expenses', name: 'RecurringExpenses', component: () => import('../views/admin/RecurringExpenses.vue') },
+            { path: 'expenses', name: 'Expenses', component: () => import('../views/admin/Expenses.vue') },
+            { path: 'reports', name: 'Reports', component: () => import('../views/admin/Reports.vue') },
+            { path: 'alerts', name: 'Alerts', component: () => import('../views/admin/Alerts.vue') },
         ]
     }
 ];

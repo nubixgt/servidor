@@ -48,6 +48,26 @@
         <span class="material-symbols-outlined" data-icon="account_tree">trending_up</span>
         <span class="font-body-sm text-body-sm font-medium">Cartera</span>
       </router-link>
+
+      <router-link to="/recurring-expenses" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
+        <span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+        <span class="font-body-sm text-body-sm font-medium">Gastos Recurrentes</span>
+      </router-link>
+
+      <router-link to="/expenses" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
+        <span class="material-symbols-outlined" data-icon="money_off">money_off</span>
+        <span class="font-body-sm text-body-sm font-medium">Egresos</span>
+      </router-link>
+
+      <router-link to="/reports" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
+        <span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+        <span class="font-body-sm text-body-sm font-medium">Reportes</span>
+      </router-link>
+
+      <router-link to="/alerts" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
+        <span class="material-symbols-outlined" data-icon="notifications">notifications_active</span>
+        <span class="font-body-sm text-body-sm font-medium">Alertas</span>
+      </router-link>
     </nav>
 
     <!-- Footer Actions -->
