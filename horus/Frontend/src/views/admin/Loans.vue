@@ -88,8 +88,7 @@
                 </div>
                 <div>
                     <h4 class="font-title-md text-title-md text-sm text-on-surface">{{ selectedClient.cliente }}</h4>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-1">DPI: {{ selectedClient.dpi || 'N/A' }}</p>
-                    <a class="text-primary font-label-caps text-label-caps text-[10px] mt-2 inline-block hover:underline" href="#">VER PERFIL COMPLETO</a>
+                    <router-link to="/clients" class="text-primary font-label-caps text-label-caps text-[10px] mt-2 inline-block hover:underline">VER PERFIL COMPLETO</router-link>
                 </div>
             </div>
         </div>
