@@ -35,9 +35,8 @@ CREATE TABLE `clientes` (
   `capital` decimal(12,2) DEFAULT NULL,
   `plazo` varchar(100) DEFAULT NULL,
   `porcentaje` decimal(5,2) DEFAULT NULL,
+  `porcentaje_referido` decimal(5,2) DEFAULT NULL,
   `interes_pagar` decimal(12,2) DEFAULT NULL,
-  `devolvio_capital` decimal(12,2) DEFAULT NULL,
-  `pago_interes` decimal(12,2) DEFAULT NULL,
   `observaciones` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `documentacion` text DEFAULT NULL
@@ -47,9 +46,9 @@ CREATE TABLE `clientes` (
 -- Volcado de datos para la tabla `clientes`
 --
 
-INSERT INTO `clientes` (`id`, `fecha`, `cliente`, `refiere`, `capital`, `plazo`, `porcentaje`, `interes_pagar`, `devolvio_capital`, `pago_interes`, `observaciones`, `created_at`, `documentacion`) VALUES
-(1, '2026-06-11', 'Prueba 1', 1, 5000.00, '3', 8.00, 400.00, 5000.00, 400.00, 'REF. 655146315', '2026-06-10 17:00:59', '[\"uploads\\/Clientes\\/1\\/paisaje1.jpg\"]'),
-(2, '2026-06-10', 'Prueba 2', 1, 10000.00, '24', 10.00, 15000.00, 0.00, 0.00, '', '2026-06-10 23:03:54', NULL);
+INSERT INTO `clientes` (`id`, `fecha`, `cliente`, `refiere`, `capital`, `plazo`, `porcentaje`, `porcentaje_referido`, `interes_pagar`, `observaciones`, `created_at`, `documentacion`) VALUES
+(1, '2026-06-11', 'Prueba 1', 1, 5000.00, '3', 8.00, NULL, 1200.00, 'REF. 655146315', '2026-06-10 17:00:59', '[\"uploads\\/Clientes\\/1\\/paisaje1.jpg\"]'),
+(2, '2026-06-10', 'Prueba 2', 1, 10000.00, '24', 10.00, NULL, 24000.00, '', '2026-06-10 23:03:54', NULL);
 
 -- --------------------------------------------------------
 

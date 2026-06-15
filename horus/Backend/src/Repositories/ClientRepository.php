@@ -29,9 +29,8 @@ class ClientRepository
                 $row['capital'] !== null ? (float)$row['capital'] : null,
                 $row['plazo'],
                 $row['porcentaje'] !== null ? (float)$row['porcentaje'] : null,
+                $row['porcentaje_referido'] !== null ? (float)$row['porcentaje_referido'] : null,
                 $row['interes_pagar'] !== null ? (float)$row['interes_pagar'] : null,
-                $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
-                $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
                 $row['observaciones'],
                 $row['documentacion'] ?? null,
                 $row['refiere_nombre'] ?? null
@@ -59,9 +58,8 @@ class ClientRepository
             $row['capital'] !== null ? (float)$row['capital'] : null,
             $row['plazo'],
             $row['porcentaje'] !== null ? (float)$row['porcentaje'] : null,
+            $row['porcentaje_referido'] !== null ? (float)$row['porcentaje_referido'] : null,
             $row['interes_pagar'] !== null ? (float)$row['interes_pagar'] : null,
-            $row['devolvio_capital'] !== null ? (float)$row['devolvio_capital'] : null,
-            $row['pago_interes'] !== null ? (float)$row['pago_interes'] : null,
             $row['observaciones'],
             $row['documentacion'] ?? null,
             $row['refiere_nombre'] ?? null
@@ -71,11 +69,11 @@ class ClientRepository
     public function create(ClientEntity $entity): int
     {
         $sql = "INSERT INTO clientes (
-            fecha, cliente, refiere, capital, plazo, porcentaje, 
-            interes_pagar, devolvio_capital, pago_interes, observaciones, documentacion
+            fecha, cliente, refiere, capital, plazo, porcentaje, porcentaje_referido,
+            interes_pagar, observaciones, documentacion
         ) VALUES (
-            :fecha, :cliente, :refiere, :capital, :plazo, :porcentaje,
-            :interes_pagar, :devolvio_capital, :pago_interes, :observaciones, :documentacion
+            :fecha, :cliente, :refiere, :capital, :plazo, :porcentaje, :porcentaje_referido,
+            :interes_pagar, :observaciones, :documentacion
         )";
 
         $stmt = $this->pdo->prepare($sql);
@@ -86,9 +84,8 @@ class ClientRepository
             'capital' => $entity->capital,
             'plazo' => $entity->plazo,
             'porcentaje' => $entity->porcentaje,
+            'porcentaje_referido' => $entity->porcentajeReferido,
             'interes_pagar' => $entity->interesPagar,
-            'devolvio_capital' => $entity->devolvioCapital,
-            'pago_interes' => $entity->pagoInteres,
             'observaciones' => $entity->observaciones,
             'documentacion' => $entity->documentacion
         ]);
@@ -105,9 +102,8 @@ class ClientRepository
             capital = :capital, 
             plazo = :plazo, 
             porcentaje = :porcentaje, 
+            porcentaje_referido = :porcentaje_referido,
             interes_pagar = :interes_pagar, 
-            devolvio_capital = :devolvio_capital, 
-            pago_interes = :pago_interes, 
             observaciones = :observaciones,
             documentacion = :documentacion
             WHERE id = :id";
@@ -121,9 +117,8 @@ class ClientRepository
             'capital' => $entity->capital,
             'plazo' => $entity->plazo,
             'porcentaje' => $entity->porcentaje,
+            'porcentaje_referido' => $entity->porcentajeReferido,
             'interes_pagar' => $entity->interesPagar,
-            'devolvio_capital' => $entity->devolvioCapital,
-            'pago_interes' => $entity->pagoInteres,
             'observaciones' => $entity->observaciones,
             'documentacion' => $entity->documentacion
         ]);

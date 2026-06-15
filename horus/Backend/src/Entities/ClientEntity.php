@@ -11,9 +11,8 @@ class ClientEntity
         public ?float $capital = null,
         public ?string $plazo = null,
         public ?float $porcentaje = null,
+        public ?float $porcentajeReferido = null,
         public ?float $interesPagar = null,
-        public ?float $devolvioCapital = null,
-        public ?float $pagoInteres = null,
         public ?string $observaciones = null,
         public ?string $documentacion = null,
         public ?string $refiere_nombre = null

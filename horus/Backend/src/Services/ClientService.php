@@ -38,9 +38,8 @@ class ClientService
             $dto->capital,
             $dto->plazo,
             $dto->porcentaje,
+            $dto->porcentajeReferido,
             $dto->interesPagar,
-            $dto->devolvioCapital,
-            $dto->pagoInteres,
             $dto->observaciones,
             null
         );
@@ -80,9 +79,8 @@ class ClientService
             $dto->capital,
             $dto->plazo,
             $dto->porcentaje,
+            $dto->porcentajeReferido,
             $dto->interesPagar,
-            $dto->devolvioCapital,
-            $dto->pagoInteres,
             $dto->observaciones,
             $finalDocs
         );

@@ -29,35 +29,30 @@
                         <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
                     </div>
                 </div>
-                <!-- Capital -->
+                <!-- Cantidad a prestar -->
                 <div class="flex flex-col gap-1">
-                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Capital</label>
-                    <input v-model="form.capital" @input="formatInputCurrency('capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Cantidad a prestar</label>
+                    <input v-model="form.capital" @input="formatInputCurrency('capital'); calculateInteres()" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
                 </div>
                 <!-- Plazo -->
                 <div class="flex flex-col gap-1">
-                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Plazo</label>
-                    <input v-model="form.plazo" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Plazo (Meses)</label>
+                    <input v-model="form.plazo" @input="calculateInteres()" type="number" min="1" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
                 </div>
                 <!-- Porcentaje -->
                 <div class="flex flex-col gap-1">
                     <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Porcentaje (%)</label>
-                    <input v-model="form.porcentaje" @input="formatInputPercent('porcentaje')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
+                    <input v-model="form.porcentaje" @input="formatInputPercent('porcentaje'); calculateInteres()" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
+                </div>
+                <!-- Porcentaje Referido -->
+                <div class="flex flex-col gap-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">% PAR REFERIDO</label>
+                    <input v-model="form.porcentaje_referido" @input="formatInputPercent('porcentaje_referido')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="0%" />
                 </div>
                 <!-- Interes a Pagar -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Interés a Pagar</label>
-                    <input v-model="form.interes_pagar" @input="formatInputCurrency('interes_pagar')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
-                </div>
-                <!-- Devolvió Capital -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Devolvió Capital</label>
-                    <input v-model="form.devolvio_capital" @input="formatInputCurrency('devolvio_capital')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
-                </div>
-                <!-- Pago Interés -->
-                <div class="flex flex-col gap-1">
-                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Pago Interés</label>
-                    <input v-model="form.pago_interes" @input="formatInputCurrency('pago_interes')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                <div class="flex flex-col gap-1 md:col-span-2">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Interés a Pagar (Automático)</label>
+                    <input v-model="form.interes_pagar" readonly type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-primary font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:ring-0 transition-colors opacity-80 cursor-not-allowed font-semibold" placeholder="Q0.00" />
                 </div>
                 <!-- Observaciones -->
                 <div class="flex flex-col gap-1 md:col-span-2">
@@ -135,7 +130,7 @@
                                     <span class="material-symbols-outlined text-[14px]">event</span> {{ client.fecha }}
                                 </p>
                                 <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">payments</span> Capital: Q{{ Number(client.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}
+                                    <span class="material-symbols-outlined text-[14px]">payments</span> Cantidad a prestar: Q{{ Number(client.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}
                                 </p>
                             </div>
                         </div>
@@ -187,23 +182,20 @@
                     
                     <div class="grid grid-cols-2 gap-y-4 gap-x-2">
                         <div>
-                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Capital</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Cantidad a prestar</p>
                             <p class="font-body-sm text-body-sm text-on-surface">Q{{ Number(selectedClient.capital).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
                         </div>
                         <div>
                             <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Porcentaje</p>
                             <p class="font-body-sm text-body-sm text-on-surface">{{ selectedClient.porcentaje }}%</p>
                         </div>
-                        <!-- Devolvió Capital -->
                         <div>
-                            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Devolvió Capital</p>
-                            <p class="font-body-md text-on-surface">{{ selectedClient.devolvioCapital ? 'Q' + Number(selectedClient.devolvioCapital).toLocaleString('en-US', {minimumFractionDigits: 2}) : '-' }}</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">% Par Referido</p>
+                            <p class="font-body-sm text-body-sm text-on-surface">{{ selectedClient.porcentajeReferido || '0' }}%</p>
                         </div>
-                        
-                        <!-- Pago Interés -->
                         <div>
-                            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Pago Interés</p>
-                            <p class="font-body-md text-on-surface">{{ selectedClient.pagoInteres ? 'Q' + Number(selectedClient.pagoInteres).toLocaleString('en-US', {minimumFractionDigits: 2}) : '-' }}</p>
+                            <p class="font-label-caps text-[10px] text-outline mb-1 uppercase tracking-widest">Interés a Pagar</p>
+                            <p class="font-body-sm text-body-sm text-primary font-semibold">Q{{ Number(selectedClient.interesPagar).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</p>
                         </div>
                     </div>
                     
@@ -360,9 +352,8 @@ const form = ref({
     capital: '',
     plazo: '',
     porcentaje: '',
+    porcentaje_referido: '',
     interes_pagar: '',
-    devolvio_capital: '',
-    pago_interes: '',
     observaciones: ''
 });
 
@@ -450,6 +441,19 @@ const parseFormatted = (val) => {
     return parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
 };
 
+const calculateInteres = () => {
+    const cap = parseFormatted(form.value.capital) || 0;
+    const porc = parseFormatted(form.value.porcentaje) || 0;
+    const plaz = parseFloat(form.value.plazo) || 0;
+    
+    if (cap && porc && plaz) {
+        const interes = cap * (porc / 100) * plaz;
+        form.value.interes_pagar = 'Q' + interes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+        form.value.interes_pagar = 'Q0.00';
+    }
+};
+
 const formatInputCurrency = (field) => {
     let val = form.value[field]?.toString().replace(/[^0-9]/g, '');
     if (!val) {
@@ -471,7 +475,7 @@ const formatInputPercent = (field) => {
 
 const openNewModal = () => {
     isEditing.value = false;
-    form.value = { id: null, fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', interes_pagar: '', devolvio_capital: '', pago_interes: '', observaciones: '' };
+    form.value = { id: null, fecha: '', cliente: '', refiere: '', capital: '', plazo: '', porcentaje: '', porcentaje_referido: '', interes_pagar: '', observaciones: '' };
     archivos.value = [];
     showModal.value = true;
 };
@@ -484,9 +488,8 @@ const editClient = () => {
         ...selectedClient.value,
         capital: selectedClient.value.capital ? 'Q' + Number(selectedClient.value.capital).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
         interes_pagar: selectedClient.value.interesPagar ? 'Q' + Number(selectedClient.value.interesPagar).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
-        devolvio_capital: selectedClient.value.devolvioCapital ? 'Q' + Number(selectedClient.value.devolvioCapital).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
-        pago_interes: selectedClient.value.pagoInteres ? 'Q' + Number(selectedClient.value.pagoInteres).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
-        porcentaje: selectedClient.value.porcentaje ? selectedClient.value.porcentaje + '%' : ''
+        porcentaje: selectedClient.value.porcentaje ? selectedClient.value.porcentaje + '%' : '',
+        porcentaje_referido: selectedClient.value.porcentajeReferido ? selectedClient.value.porcentajeReferido + '%' : ''
     };
     if (!form.value.refiere) form.value.refiere = ''; // Ensure select falls back to Ninguno
     showModal.value = true;
@@ -502,8 +505,7 @@ const saveClient = async () => {
         payload.append('plazo', form.value.plazo || '');
         payload.append('porcentaje', parseFormatted(form.value.porcentaje) ?? '');
         payload.append('interes_pagar', parseFormatted(form.value.interes_pagar) ?? '');
-        payload.append('devolvio_capital', parseFormatted(form.value.devolvio_capital) ?? '');
-        payload.append('pago_interes', parseFormatted(form.value.pago_interes) ?? '');
+        payload.append('porcentaje_referido', parseFormatted(form.value.porcentaje_referido) ?? '');
         payload.append('observaciones', form.value.observaciones || '');
 
         archivos.value.forEach((file) => {
