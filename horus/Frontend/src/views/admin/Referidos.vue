@@ -306,7 +306,12 @@
 
                             <div class="flex flex-col gap-1">
                                 <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">¿Qué tipo de clientes refiere?</label>
-                                <input v-model="form.tipo_clientes_refiere" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                                <select v-model="form.tipo_clientes_refiere" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors">
+                                    <option value="" disabled>Seleccione una opción</option>
+                                    <option value="Buenos">Buenos</option>
+                                    <option value="Malos">Malos</option>
+                                    <option value="No Recomendables">No Recomendables</option>
+                                </select>
                             </div>
 
                             <div class="flex flex-col gap-1">

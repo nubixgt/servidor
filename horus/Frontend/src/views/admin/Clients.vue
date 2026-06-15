@@ -214,8 +214,8 @@
                         <div>
                             <h3 class="font-label-caps text-label-caps text-outline mb-2 uppercase tracking-widest">Nivel de Riesgo Crediticio</h3>
                             <div class="flex items-end gap-3">
-                                <span class="font-display-lg text-[40px] text-primary leading-none drop-shadow-[0_0_15px_rgba(233,193,118,0.5)]">A-</span>
-                                <span class="font-body-sm text-body-sm text-tertiary-container mb-1 flex items-center drop-shadow-[0_0_8px_rgba(143,165,214,0.5)]"><span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Estable</span>
+                                <span :class="['font-display-lg text-[40px] leading-none drop-shadow-[0_0_15px_rgba(233,193,118,0.5)]', riskScore.colorClass]">{{ riskScore.letter }}</span>
+                                <span :class="['font-body-sm text-body-sm mb-1 flex items-center drop-shadow-[0_0_8px_rgba(143,165,214,0.5)]', riskScore.statusColor]"><span class="material-symbols-outlined text-[16px] mr-1">{{ riskScore.icon }}</span> {{ riskScore.status }}</span>
                             </div>
                         </div>
                         <!-- Abstract sparkline -->
@@ -342,6 +342,19 @@ const filteredClients = computed(() => {
         client.cliente.toLowerCase().includes(query) || 
         (client.refiere_nombre && client.refiere_nombre.toLowerCase().includes(query))
     );
+});
+
+const riskScore = computed(() => {
+    if (!selectedClient.value || !selectedClient.value.refiere) return { letter: 'A-', status: 'Estable', icon: 'trending_up', colorClass: 'text-primary', statusColor: 'text-tertiary-container' };
+    const ref = referidos.value.find(r => r.id == selectedClient.value.refiere);
+    if (!ref || !ref.tipo_clientes_refiere) return { letter: 'B', status: 'Moderado', icon: 'trending_flat', colorClass: 'text-primary', statusColor: 'text-tertiary-container' };
+    
+    switch (ref.tipo_clientes_refiere) {
+        case 'Buenos': return { letter: 'A+', status: 'Excelente', icon: 'trending_up', colorClass: 'text-primary', statusColor: 'text-primary' };
+        case 'Malos': return { letter: 'C-', status: 'Riesgoso', icon: 'trending_down', colorClass: 'text-error', statusColor: 'text-error' };
+        case 'No Recomendables': return { letter: 'F', status: 'Crítico', icon: 'warning', colorClass: 'text-error', statusColor: 'text-error' };
+        default: return { letter: 'B', status: 'Moderado', icon: 'trending_flat', colorClass: 'text-primary', statusColor: 'text-tertiary-container' };
+    }
 });
 
 const form = ref({
