@@ -492,6 +492,7 @@ const editClient = () => {
         porcentaje_referido: selectedClient.value.porcentajeReferido ? selectedClient.value.porcentajeReferido + '%' : ''
     };
     if (!form.value.refiere) form.value.refiere = ''; // Ensure select falls back to Ninguno
+    calculateInteres(); // Recalculate immediately with the new formula
     showModal.value = true;
 };
 
