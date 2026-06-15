@@ -9,6 +9,7 @@ use App\Controllers\ReferidoController;
 use App\Controllers\PagoController;
 use App\Controllers\InversionistaController;
 use App\Controllers\PrestamoController;
+use App\Controllers\GastoRecurrenteController;
 
 // Backend/api/v1/index.php
 
@@ -45,6 +46,7 @@ $router->registerController(ReferidoController::class);
 $router->registerController(PagoController::class);
 $router->registerController(InversionistaController::class);
 $router->registerController(PrestamoController::class);
+$router->registerController(GastoRecurrenteController::class);
 
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
