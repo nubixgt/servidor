@@ -205,6 +205,35 @@ ALTER TABLE `clientes`
 --
 ALTER TABLE `pagos`
   ADD CONSTRAINT `fk_pago_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE SET NULL;
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inversionistas`
+--
+
+CREATE TABLE `inversionistas` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `capital` decimal(12,2) DEFAULT NULL,
+  `banco` varchar(150) DEFAULT NULL,
+  `numero_cuenta` varchar(50) DEFAULT NULL,
+  `porcentaje` decimal(5,2) DEFAULT NULL,
+  `documentos` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Indices de la tabla `inversionistas`
+--
+ALTER TABLE `inversionistas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT de la tabla `inversionistas`
+--
+ALTER TABLE `inversionistas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
