@@ -38,7 +38,7 @@ class GastoRecurrenteController extends Controller {
     #[Route('/gastos-recurrentes', 'POST')]
     public function create() {
         try {
-            $input = $this->getJsonInput();
+            $input = json_decode(file_get_contents('php://input'), true);
             $dto = new GastoRecurrenteDTO($input);
             $service = new GastoRecurrenteService();
             $data = $service->createGasto($dto);
@@ -53,7 +53,7 @@ class GastoRecurrenteController extends Controller {
     #[Route('/gastos-recurrentes/:id', 'PUT')]
     public function update($id) {
         try {
-            $input = $this->getJsonInput();
+            $input = json_decode(file_get_contents('php://input'), true);
             $dto = new GastoRecurrenteDTO($input);
             $service = new GastoRecurrenteService();
             $data = $service->updateGasto($id, $dto);
