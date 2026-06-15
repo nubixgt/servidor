@@ -186,8 +186,6 @@
                             <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Foto o Documento (Máximo 3 archivos)</label>
                             <input type="file" multiple accept=".png,.jpg,.jpeg,.pdf,.doc,.docx" @change="handleFilesUpload" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
                             
-                            <p v-if="filesLimitExceeded" class="text-error text-xs mt-1">Solo puedes tener un máximo de 3 archivos a la vez.</p>
-                            
                             <div v-if="selectedFiles.length > 0" class="mt-3">
                                 <p class="text-xs text-on-surface-variant mb-2">Archivos seleccionados listos para subir:</p>
                                 <ul class="space-y-1">
@@ -212,7 +210,7 @@
                 
                 <div class="px-6 py-4 border-t border-white/10 bg-surface-container-high flex justify-end gap-3">
                     <button @click="closeModal" class="px-4 py-2 font-body-sm text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
-                    <button @click="saveInvestor" :disabled="filesLimitExceeded" class="bg-primary text-on-primary font-label-lg px-6 py-2 rounded-full hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(233,193,118,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button @click="saveInvestor" class="bg-primary text-on-primary font-label-lg px-6 py-2 rounded-full hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(233,193,118,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
                         Guardar
                     </button>
                 </div>
@@ -249,7 +247,6 @@ const form = ref({
 });
 
 const selectedFiles = ref([]);
-const filesLimitExceeded = ref(false);
 
 const loadInvestors = async () => {
     try {
@@ -299,15 +296,25 @@ const formatInputCurrency = (field) => {
 
 const handleFilesUpload = (event) => {
     const files = Array.from(event.target.files);
+    const availableSlots = 3 - selectedFiles.value.length;
     
-    // Calculate new total
-    const totalFiles = selectedFiles.value.length + files.length;
-    
-    if (totalFiles > 3) {
-        filesLimitExceeded.value = true;
-        // Don't add if it exceeds the limit
+    if (files.length > availableSlots) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Límite de archivos',
+            text: 'Solo puedes subir un máximo de 3 archivos por Inversionista.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(233,193,118,0.2)]',
+            }
+        });
+        
+        if (availableSlots > 0) {
+            selectedFiles.value = [...selectedFiles.value, ...files.slice(0, availableSlots)];
+        }
     } else {
-        filesLimitExceeded.value = false;
         selectedFiles.value = [...selectedFiles.value, ...files];
     }
     
@@ -316,9 +323,6 @@ const handleFilesUpload = (event) => {
 
 const removeFile = (index) => {
     selectedFiles.value.splice(index, 1);
-    if (selectedFiles.value.length <= 3) {
-        filesLimitExceeded.value = false;
-    }
 };
 
 const openNewModal = () => {
@@ -333,7 +337,6 @@ const openNewModal = () => {
         documentos: []
     };
     selectedFiles.value = [];
-    filesLimitExceeded.value = false;
     showModal.value = true;
 };
 
@@ -360,7 +363,6 @@ const editInvestor = () => {
         documentos: selectedInvestor.value.documentos || []
     };
     selectedFiles.value = [];
-    filesLimitExceeded.value = false;
     showModal.value = true;
 };
 
@@ -411,8 +413,6 @@ const deleteInvestor = async () => {
 };
 
 const saveInvestor = async () => {
-    if (filesLimitExceeded.value) return;
-
     try {
         const payload = new FormData();
         payload.append('nombre', form.value.nombre);
