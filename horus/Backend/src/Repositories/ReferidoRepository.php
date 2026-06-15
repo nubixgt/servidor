@@ -39,10 +39,10 @@ class ReferidoRepository
     {
         $sql = "INSERT INTO referidos (
             nombre, dpi, telefono, direccion, numero_cuenta, banco, tipo_cuenta, 
-            foto_perfil, dpi_anverso, dpi_reverso
+            foto_perfil, dpi_anverso, dpi_reverso, historial_pagos_mensual, historial_pagos_anual, tipo_clientes_refiere, cantidad_clientes
         ) VALUES (
             :nombre, :dpi, :telefono, :direccion, :numero_cuenta, :banco, :tipo_cuenta,
-            :foto_perfil, :dpi_anverso, :dpi_reverso
+            :foto_perfil, :dpi_anverso, :dpi_reverso, :historial_pagos_mensual, :historial_pagos_anual, :tipo_clientes_refiere, :cantidad_clientes
         )";
 
         $stmt = $this->pdo->prepare($sql);
@@ -56,7 +56,11 @@ class ReferidoRepository
             'tipo_cuenta' => $entity->tipo_cuenta,
             'foto_perfil' => $entity->foto_perfil,
             'dpi_anverso' => $entity->dpi_anverso,
-            'dpi_reverso' => $entity->dpi_reverso
+            'dpi_reverso' => $entity->dpi_reverso,
+            'historial_pagos_mensual' => $entity->historial_pagos_mensual,
+            'historial_pagos_anual' => $entity->historial_pagos_anual,
+            'tipo_clientes_refiere' => $entity->tipo_clientes_refiere,
+            'cantidad_clientes' => $entity->cantidad_clientes
         ]);
 
         return (int)$this->pdo->lastInsertId();
@@ -74,7 +78,11 @@ class ReferidoRepository
             tipo_cuenta = :tipo_cuenta,
             foto_perfil = :foto_perfil,
             dpi_anverso = :dpi_anverso,
-            dpi_reverso = :dpi_reverso
+            dpi_reverso = :dpi_reverso,
+            historial_pagos_mensual = :historial_pagos_mensual,
+            historial_pagos_anual = :historial_pagos_anual,
+            tipo_clientes_refiere = :tipo_clientes_refiere,
+            cantidad_clientes = :cantidad_clientes
             WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
@@ -89,7 +97,11 @@ class ReferidoRepository
             'tipo_cuenta' => $entity->tipo_cuenta,
             'foto_perfil' => $entity->foto_perfil,
             'dpi_anverso' => $entity->dpi_anverso,
-            'dpi_reverso' => $entity->dpi_reverso
+            'dpi_reverso' => $entity->dpi_reverso,
+            'historial_pagos_mensual' => $entity->historial_pagos_mensual,
+            'historial_pagos_anual' => $entity->historial_pagos_anual,
+            'tipo_clientes_refiere' => $entity->tipo_clientes_refiere,
+            'cantidad_clientes' => $entity->cantidad_clientes
         ]);
     }
 
@@ -112,7 +124,11 @@ class ReferidoRepository
             $row['tipo_cuenta'],
             $row['foto_perfil'] ?? null,
             $row['dpi_anverso'] ?? null,
-            $row['dpi_reverso'] ?? null
+            $row['dpi_reverso'] ?? null,
+            $row['historial_pagos_mensual'] !== null ? (float)$row['historial_pagos_mensual'] : null,
+            $row['historial_pagos_anual'] !== null ? (float)$row['historial_pagos_anual'] : null,
+            $row['tipo_clientes_refiere'] ?? null,
+            $row['cantidad_clientes'] !== null ? (int)$row['cantidad_clientes'] : null
         );
     }
 }

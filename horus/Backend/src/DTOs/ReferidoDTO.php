@@ -13,7 +13,11 @@ class ReferidoDTO
         public ?string $tipoCuenta,
         public ?string $fotoPerfil = null,
         public ?string $dpiAnverso = null,
-        public ?string $dpiReverso = null
+        public ?string $dpiReverso = null,
+        public ?float $historialPagosMensual = null,
+        public ?float $historialPagosAnual = null,
+        public ?string $tipoClientesRefiere = null,
+        public ?int $cantidadClientes = null
     ) {
     }
 
@@ -29,7 +33,11 @@ class ReferidoDTO
             $data['tipo_cuenta'] ?? null,
             $data['foto_perfil'] ?? null,
             $data['dpi_anverso'] ?? null,
-            $data['dpi_reverso'] ?? null
+            $data['dpi_reverso'] ?? null,
+            isset($data['historial_pagos_mensual']) ? (float)$data['historial_pagos_mensual'] : null,
+            isset($data['historial_pagos_anual']) ? (float)$data['historial_pagos_anual'] : null,
+            $data['tipo_clientes_refiere'] ?? null,
+            isset($data['cantidad_clientes']) ? (int)$data['cantidad_clientes'] : null
         );
     }
 }

@@ -97,6 +97,10 @@ CREATE TABLE `referidos` (
   `foto_perfil` text DEFAULT NULL,
   `dpi_anverso` text DEFAULT NULL,
   `dpi_reverso` text DEFAULT NULL,
+  `historial_pagos_mensual` decimal(12,2) DEFAULT NULL,
+  `historial_pagos_anual` decimal(12,2) DEFAULT NULL,
+  `tipo_clientes_refiere` varchar(255) DEFAULT NULL,
+  `cantidad_clientes` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
@@ -104,8 +108,8 @@ CREATE TABLE `referidos` (
 -- Volcado de datos para la tabla `referidos`
 --
 
-INSERT INTO `referidos` (`id`, `nombre`, `dpi`, `telefono`, `direccion`, `numero_cuenta`, `banco`, `tipo_cuenta`, `foto_perfil`, `dpi_anverso`, `dpi_reverso`, `created_at`) VALUES
-(1, 'Zoe Villalobos', '7894 61532 0689', '8794-1532', 'Prueba 1 Referidos', '7984615', 'Banco Industrial', 'monetaria', 'uploads/Referidos/1/foto_perfil/6a29ec24be842_Logo_Horus_Empresarial.jpeg', 'uploads/Referidos/1/dpi/6a29b9838b2b5_paisaje1.jpg', 'uploads/Referidos/1/dpi/6a29b9838b37e_paisaje2.jpg', '2026-06-10 19:13:43');
+INSERT INTO `referidos` (`id`, `nombre`, `dpi`, `telefono`, `direccion`, `numero_cuenta`, `banco`, `tipo_cuenta`, `foto_perfil`, `dpi_anverso`, `dpi_reverso`, `historial_pagos_mensual`, `historial_pagos_anual`, `tipo_clientes_refiere`, `cantidad_clientes`, `created_at`) VALUES
+(1, 'Zoe Villalobos', '7894 61532 0689', '8794-1532', 'Prueba 1 Referidos', '7984615', 'Banco Industrial', 'monetaria', 'uploads/Referidos/1/foto_perfil/6a29ec24be842_Logo_Horus_Empresarial.jpeg', 'uploads/Referidos/1/dpi/6a29b9838b2b5_paisaje1.jpg', 'uploads/Referidos/1/dpi/6a29b9838b37e_paisaje2.jpg', NULL, NULL, NULL, NULL, '2026-06-10 19:13:43');
 
 -- --------------------------------------------------------
 

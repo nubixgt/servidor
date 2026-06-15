@@ -120,6 +120,25 @@
                                     {{ selectedReferido.tipo_cuenta || 'N/A' }}
                                 </span>
                             </div>
+
+                            <div class="col-span-1 md:col-span-2 mt-4 border-t border-white/10 pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                <div>
+                                    <p class="font-label-caps text-[10px] text-primary uppercase tracking-widest mb-1">Historial de Pagos (Mensual)</p>
+                                    <p class="font-body-md text-on-surface">{{ selectedReferido.historial_pagos_mensual ? 'Q' + Number(selectedReferido.historial_pagos_mensual).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'Q0.00' }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-label-caps text-[10px] text-primary uppercase tracking-widest mb-1">Historial de Pagos (Anual)</p>
+                                    <p class="font-body-md text-on-surface">{{ selectedReferido.historial_pagos_anual ? 'Q' + Number(selectedReferido.historial_pagos_anual).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'Q0.00' }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Tipo de Clientes que Refiere</p>
+                                    <p class="font-body-md text-on-surface">{{ selectedReferido.tipo_clientes_refiere || 'No especificado' }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Cantidad de Clientes</p>
+                                    <p class="font-body-md text-on-surface">{{ selectedReferido.cantidad_clientes || '0' }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -271,6 +290,29 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="flex flex-col gap-1 md:col-span-2 border-t border-white/10 pt-4 mt-2">
+                                <h4 class="font-label-caps text-[12px] text-primary uppercase tracking-widest">Información Adicional Comercial</h4>
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Historial de Pagos (Mensual)</label>
+                                <input v-model="form.historial_pagos_mensual" @input="formatInputCurrency('historial_pagos_mensual')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Historial de Pagos (Anual)</label>
+                                <input v-model="form.historial_pagos_anual" @input="formatInputCurrency('historial_pagos_anual')" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" placeholder="Q0.00" />
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">¿Qué tipo de clientes refiere?</label>
+                                <input v-model="form.tipo_clientes_refiere" type="text" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Cantidad de Clientes Referidos</label>
+                                <input v-model="form.cantidad_clientes" type="number" min="0" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                            </div>
                         </div>
 
                     </form>
@@ -318,7 +360,11 @@ const form = ref({
     tipo_cuenta: 'monetaria',
     foto_perfil: null,
     dpi_anverso: null,
-    dpi_reverso: null
+    dpi_reverso: null,
+    historial_pagos_mensual: '',
+    historial_pagos_anual: '',
+    tipo_clientes_refiere: '',
+    cantidad_clientes: ''
 });
 
 // To store File objects temporarily before upload
@@ -363,6 +409,21 @@ const handlePhoneInput = (e) => {
 const formatDPI = (dpi) => dpi || '0000 00000 0000';
 const formatPhone = (phone) => phone || '0000-0000';
 
+const formatInputCurrency = (field) => {
+    let val = form.value[field]?.toString().replace(/[^0-9]/g, '');
+    if (!val) {
+        form.value[field] = '';
+        return;
+    }
+    let num = parseInt(val, 10) / 100;
+    form.value[field] = 'Q' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const parseFormatted = (val) => {
+    if(!val) return null;
+    return parseFloat(val.toString().replace(/[^0-9.-]+/g,""));
+};
+
 const handleImageUpload = (event, type) => {
     const file = event.target.files[0];
     if (file) {
@@ -388,7 +449,11 @@ const loadReferidos = async () => {
 
 const editReferido = () => {
     isEditing.value = true;
-    form.value = { ...selectedReferido.value };
+    form.value = { 
+        ...selectedReferido.value,
+        historial_pagos_mensual: selectedReferido.value.historial_pagos_mensual ? 'Q' + Number(selectedReferido.value.historial_pagos_mensual).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
+        historial_pagos_anual: selectedReferido.value.historial_pagos_anual ? 'Q' + Number(selectedReferido.value.historial_pagos_anual).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : ''
+    };
     filesToUpload.value = { foto_perfil: null, dpi_anverso: null, dpi_reverso: null };
     previewFotos.value = { foto_perfil: null, dpi_anverso: null, dpi_reverso: null };
     showModal.value = true;
@@ -397,7 +462,7 @@ const editReferido = () => {
 const closeModal = () => {
     showModal.value = false;
     isEditing.value = false;
-    form.value = { id: null, nombre: '', dpi: '', telefono: '', direccion: '', numero_cuenta: '', banco: '', tipo_cuenta: 'monetaria', foto_perfil: null, dpi_anverso: null, dpi_reverso: null };
+    form.value = { id: null, nombre: '', dpi: '', telefono: '', direccion: '', numero_cuenta: '', banco: '', tipo_cuenta: 'monetaria', foto_perfil: null, dpi_anverso: null, dpi_reverso: null, historial_pagos_mensual: '', historial_pagos_anual: '', tipo_clientes_refiere: '', cantidad_clientes: '' };
     filesToUpload.value = { foto_perfil: null, dpi_anverso: null, dpi_reverso: null };
     previewFotos.value = { foto_perfil: null, dpi_anverso: null, dpi_reverso: null };
 };
@@ -412,6 +477,10 @@ const saveReferido = async () => {
         payload.append('numero_cuenta', form.value.numero_cuenta || '');
         payload.append('banco', form.value.banco || '');
         payload.append('tipo_cuenta', form.value.tipo_cuenta || 'monetaria');
+        payload.append('historial_pagos_mensual', parseFormatted(form.value.historial_pagos_mensual) ?? '');
+        payload.append('historial_pagos_anual', parseFormatted(form.value.historial_pagos_anual) ?? '');
+        payload.append('tipo_clientes_refiere', form.value.tipo_clientes_refiere || '');
+        payload.append('cantidad_clientes', form.value.cantidad_clientes || '');
 
         if (filesToUpload.value.foto_perfil) payload.append('foto_perfil', filesToUpload.value.foto_perfil);
         if (filesToUpload.value.dpi_anverso) payload.append('dpi_anverso', filesToUpload.value.dpi_anverso);

@@ -39,7 +39,11 @@ class ReferidoService
             $dto->numeroCuenta,
             $dto->banco,
             $dto->tipoCuenta,
-            null, null, null
+            null, null, null,
+            $dto->historialPagosMensual,
+            $dto->historialPagosAnual,
+            $dto->tipoClientesRefiere,
+            $dto->cantidadClientes
         );
         
         $id = $this->repository->create($entity);
@@ -104,7 +108,11 @@ class ReferidoService
             $dto->tipoCuenta,
             $foto_perfil,
             $dpi_anverso,
-            $dpi_reverso
+            $dpi_reverso,
+            $dto->historialPagosMensual,
+            $dto->historialPagosAnual,
+            $dto->tipoClientesRefiere,
+            $dto->cantidadClientes
         );
         
         $this->repository->update($id, $entity);

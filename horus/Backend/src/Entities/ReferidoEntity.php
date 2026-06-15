@@ -14,7 +14,11 @@ class ReferidoEntity
         public ?string $tipo_cuenta = null,
         public ?string $foto_perfil = null,
         public ?string $dpi_anverso = null,
-        public ?string $dpi_reverso = null
+        public ?string $dpi_reverso = null,
+        public ?float $historial_pagos_mensual = null,
+        public ?float $historial_pagos_anual = null,
+        public ?string $tipo_clientes_refiere = null,
+        public ?int $cantidad_clientes = null
     ) {
     }
 }
