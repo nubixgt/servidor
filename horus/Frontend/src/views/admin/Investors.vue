@@ -166,7 +166,7 @@
 
                             <div class="flex flex-col gap-1">
                                 <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">% para el Inversionista</label>
-                                <input v-model="form.porcentaje" type="number" step="0.01" min="0" max="100" placeholder="0.00" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                                <input v-model="form.porcentaje" @input="formatInputPercentage('porcentaje')" type="text" placeholder="0%" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
                             </div>
 
                             <div class="flex flex-col gap-1">
@@ -186,16 +186,21 @@
                             <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Foto o Documento (Máximo 3 archivos)</label>
                             <input type="file" multiple accept=".png,.jpg,.jpeg,.pdf,.doc,.docx" @change="handleFilesUpload" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors file:mr-4 file:py-1 file:px-4 file:rounded-xl file:border-0 file:bg-primary/20 file:text-primary file:font-semibold hover:file:bg-primary/30 file:cursor-pointer cursor-pointer text-sm" />
                             
-                            <p v-if="filesLimitExceeded" class="text-error text-xs mt-1">Solo puedes subir un máximo de 3 archivos a la vez.</p>
+                            <p v-if="filesLimitExceeded" class="text-error text-xs mt-1">Solo puedes tener un máximo de 3 archivos a la vez.</p>
                             
                             <div v-if="selectedFiles.length > 0" class="mt-3">
-                                <p class="text-xs text-on-surface-variant mb-2">Archivos seleccionados:</p>
-                                <ul class="list-disc pl-5 text-sm text-primary">
-                                    <li v-for="(f, i) in selectedFiles" :key="i">{{ f.name }}</li>
+                                <p class="text-xs text-on-surface-variant mb-2">Archivos seleccionados listos para subir:</p>
+                                <ul class="space-y-1">
+                                    <li v-for="(f, i) in selectedFiles" :key="i" class="flex items-center justify-between text-sm text-primary bg-surface-container-highest px-3 py-2 rounded-lg border border-white/5">
+                                        <span class="truncate">{{ f.name }}</span>
+                                        <button type="button" @click.prevent="removeFile(i)" class="text-error/80 hover:text-error ml-2 focus:outline-none">
+                                            <span class="material-symbols-outlined text-[16px]">close</span>
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                             <div v-else-if="isEditing && form.documentos && form.documentos.length > 0" class="mt-3">
-                                <p class="text-xs text-on-surface-variant mb-2">Archivos existentes (subir nuevos los reemplazará):</p>
+                                <p class="text-xs text-on-surface-variant mb-2">Archivos existentes (si subes nuevos, se eliminarán los viejos):</p>
                                 <ul class="list-disc pl-5 text-sm text-primary">
                                     <li v-for="(doc, i) in form.documentos" :key="i">Documento guardado {{ i+1 }}</li>
                                 </ul>
@@ -269,6 +274,19 @@ const parseFormatted = (val) => {
     return parseFloat(val.toString().replace(/[^0-9.-]+/g,"")) || 0;
 };
 
+const formatInputPercentage = (field) => {
+    let val = form.value[field]?.toString().replace(/[^0-9]/g, '');
+    if (!val) {
+        form.value[field] = '';
+        return;
+    }
+    // Limit to 100
+    let num = parseInt(val, 10);
+    if (num > 100) num = 100;
+    
+    form.value[field] = num + '%';
+};
+
 const formatInputCurrency = (field) => {
     let val = form.value[field]?.toString().replace(/[^0-9]/g, '');
     if (!val) {
@@ -281,13 +299,25 @@ const formatInputCurrency = (field) => {
 
 const handleFilesUpload = (event) => {
     const files = Array.from(event.target.files);
-    if (files.length > 3) {
+    
+    // Calculate new total
+    const totalFiles = selectedFiles.value.length + files.length;
+    
+    if (totalFiles > 3) {
         filesLimitExceeded.value = true;
-        selectedFiles.value = [];
-        event.target.value = ''; // clear input
+        // Don't add if it exceeds the limit
     } else {
         filesLimitExceeded.value = false;
-        selectedFiles.value = files;
+        selectedFiles.value = [...selectedFiles.value, ...files];
+    }
+    
+    event.target.value = ''; // clear input so the user can select the same file again if they want
+};
+
+const removeFile = (index) => {
+    selectedFiles.value.splice(index, 1);
+    if (selectedFiles.value.length <= 3) {
+        filesLimitExceeded.value = false;
     }
 };
 
@@ -314,13 +344,19 @@ const closeModal = () => {
 const editInvestor = () => {
     if(!selectedInvestor.value) return;
     isEditing.value = true;
+    
+    let displayPorcentaje = '';
+    if (selectedInvestor.value.porcentaje) {
+        displayPorcentaje = selectedInvestor.value.porcentaje + '%';
+    }
+
     form.value = {
         id: selectedInvestor.value.id,
         nombre: selectedInvestor.value.nombre || '',
         capital: selectedInvestor.value.capital ? 'Q' + Number(selectedInvestor.value.capital).toLocaleString('en-US', {minimumFractionDigits: 2}) : '',
         banco: selectedInvestor.value.banco || '',
         numero_cuenta: selectedInvestor.value.numero_cuenta || '',
-        porcentaje: selectedInvestor.value.porcentaje || '',
+        porcentaje: displayPorcentaje,
         documentos: selectedInvestor.value.documentos || []
     };
     selectedFiles.value = [];
@@ -383,7 +419,8 @@ const saveInvestor = async () => {
         payload.append('capital', parseFormatted(form.value.capital));
         payload.append('banco', form.value.banco || '');
         payload.append('numero_cuenta', form.value.numero_cuenta || '');
-        payload.append('porcentaje', form.value.porcentaje || '');
+        let cleanPorcentaje = form.value.porcentaje ? form.value.porcentaje.toString().replace(/[^0-9]/g, '') : '';
+        payload.append('porcentaje', cleanPorcentaje);
         
         if (selectedFiles.value.length > 0) {
             selectedFiles.value.forEach(file => {
