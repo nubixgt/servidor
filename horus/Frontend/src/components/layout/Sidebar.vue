@@ -6,10 +6,7 @@
       <div class="text-center flex flex-col items-center w-full px-2">
         <img src="../../assets/images/LogoHorus-2.png" alt="Horus Empresarial" class="w-full max-w-[160px] object-contain" style="filter: drop-shadow(0 0 10px rgba(233,193,118,0.8)) drop-shadow(0 0 20px rgba(233,193,118,0.4));" />
       </div>
-      <button class="mt-6 w-full bg-transparent border border-primary text-primary hover:bg-primary/10 font-title-md text-sm py-2.5 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_0_10px_rgba(233,193,118,0.1)] backdrop-blur-sm">
-        <span class="material-symbols-outlined text-lg">add</span>
-        Nuevo Crédito
-      </button>
+
     </div>
 
     <!-- Navigation Tabs -->
@@ -44,10 +41,7 @@
         <span class="font-body-sm text-body-sm font-medium">Pagos</span>
       </router-link>
       
-      <router-link to="/portfolio" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
-        <span class="material-symbols-outlined" data-icon="account_tree">trending_up</span>
-        <span class="font-body-sm text-body-sm font-medium">Cartera</span>
-      </router-link>
+
 
       <router-link to="/recurring-expenses" active-class="bg-surface-container-high text-primary border border-primary shadow-[0_0_10px_rgba(233,193,118,0.1)]" class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 rounded-xl hover:bg-surface-container-high transition-all duration-200">
         <span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
