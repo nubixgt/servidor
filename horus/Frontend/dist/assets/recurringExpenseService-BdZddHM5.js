@@ -1,1 +1,0 @@
-import{p as t}from"./index-DgIxEY3x.js";const a={getAllGastos:()=>t.get("/gastos-recurrentes"),getGastoById:e=>t.get(`/gastos-recurrentes/${e}`),createGasto:e=>t.post("/gastos-recurrentes",e),updateGasto:(e,s)=>t.put(`/gastos-recurrentes/${e}`,s),deleteGasto:e=>t.delete(`/gastos-recurrentes/${e}`)};export{a as r};

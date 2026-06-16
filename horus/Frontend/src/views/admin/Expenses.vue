@@ -386,8 +386,7 @@ const deleteEgreso = (egreso) => {
 };
 
 const viewFile = (path) => {
-    const url = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : 'http://localhost/Antigravity/servidor/horus/Backend';
-    window.open(`${url}/${path}`, '_blank');
+    window.open(`/horus/Backend/${path}`, '_blank');
 };
 </script>
 
