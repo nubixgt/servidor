@@ -1,1 +1,0 @@
-import{p as t}from"./index-Cul7t7SW.js";const n={getAllInvestors(){return t.get("/inversionistas")},getInvestorById(e){return t.get(`/inversionistas/${e}`)},createInvestor(e){return t.post("/inversionistas",e)},updateInvestor(e,s){return t.post(`/inversionistas/${e}`,s)},deleteInvestor(e){return t.delete(`/inversionistas/${e}`)}};export{n as i};

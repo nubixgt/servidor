@@ -21,4 +21,8 @@ class ReportService {
             ]
         ];
     }
+
+    public function getClienteReport(int $cliente_id) {
+        return $this->repository->getClienteEstadoCuenta($cliente_id);
+    }
 }

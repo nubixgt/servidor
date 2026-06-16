@@ -43,4 +43,25 @@ class ReportRepository {
         $stmt = $this->db->query("SELECT nombre, capital FROM inversionistas ORDER BY capital DESC LIMIT 5");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getClienteEstadoCuenta(int $cliente_id) {
+        // Fetch client details
+        $stmtClient = $this->db->prepare("SELECT id, cliente as nombre, capital, plazo, porcentaje, porcentaje_referido, interes_pagar, created_at, fecha FROM clientes WHERE id = :id");
+        $stmtClient->execute(['id' => $cliente_id]);
+        $client = $stmtClient->fetch(PDO::FETCH_ASSOC);
+
+        if (!$client) {
+            return null;
+        }
+
+        // Fetch payments
+        $stmtPagos = $this->db->prepare("SELECT id, fecha, referencia, monto_pagado, interes, capital as abono_capital FROM pagos WHERE cliente_id = :id ORDER BY fecha ASC, id ASC");
+        $stmtPagos->execute(['id' => $cliente_id]);
+        $pagos = $stmtPagos->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'cliente' => $client,
+            'pagos' => $pagos
+        ];
+    }
 }

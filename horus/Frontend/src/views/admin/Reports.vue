@@ -53,13 +53,89 @@
         </div>
     </div>
 
-    <!-- Modal Reporte Inversionista -->
+    <!-- Sección Estado de Cuenta Cliente -->
+    <div class="mt-8">
+        <h3 class="font-headline-md text-primary mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            Estado de Cuenta por Cliente
+        </h3>
+        <div class="bg-surface-container-high/30 backdrop-blur-xl p-6 rounded-2xl border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+            <div class="flex flex-col md:flex-row md:items-end gap-4 mb-6">
+                <div class="flex-1">
+                    <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest block mb-2">Seleccionar Cliente</label>
+                    <div class="relative">
+                        <select v-model="selectedClientId" @change="onClientChange" class="w-full bg-surface-container-high/50 backdrop-blur-xl text-on-surface font-body-lg py-3 px-4 rounded-xl border border-white/10 focus:border-primary focus:ring-0 transition-colors appearance-none cursor-pointer">
+                            <option value="" disabled>-- Busque y seleccione un cliente --</option>
+                            <option v-for="client in clientesList" :key="client.id" :value="client.id" class="bg-surface-container text-on-surface">{{ client.cliente }}</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+                    </div>
+                </div>
+                <button :disabled="!selectedClientReport" @click="generateClientPDF" :class="['px-5 py-3 rounded-xl border font-body-sm transition-colors shadow-[0_0_15px_rgba(233,193,118,0.2)] flex items-center gap-2', selectedClientReport ? 'bg-primary/20 text-primary border-primary/50 hover:bg-primary/30' : 'bg-surface-container border-transparent text-on-surface-variant opacity-50 cursor-not-allowed']">
+                    <span class="material-symbols-outlined text-lg">download</span>
+                    Descargar Estado de Cuenta
+                </button>
+            </div>
+
+            <!-- Tabla de Historial (Preview) -->
+            <div v-if="selectedClientReport" class="border border-white/5 rounded-2xl overflow-hidden bg-surface-container/30">
+                <!-- Info Header -->
+                <div class="bg-surface-container/50 p-5 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-white/5">
+                    <div>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Capital Prestado</p>
+                        <p class="text-on-surface font-medium">Q{{ formatCurrency(selectedClientReport.cliente.capital) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Tasa de Interés</p>
+                        <p class="text-on-surface font-medium">{{ selectedClientReport.cliente.porcentaje }}%</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Plazo</p>
+                        <p class="text-on-surface font-medium">{{ selectedClientReport.cliente.plazo }} Meses</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">Total Pagado a la Fecha</p>
+                        <p class="text-tertiary-container font-medium">Q{{ formatCurrency(totalPagadoCliente) }}</p>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-body-sm">
+                        <thead class="bg-surface-container text-on-surface-variant">
+                            <tr>
+                                <th class="py-3 px-4 font-medium uppercase text-[10px] tracking-wider">Fecha</th>
+                                <th class="py-3 px-4 font-medium uppercase text-[10px] tracking-wider">Referencia</th>
+                                <th class="py-3 px-4 font-medium uppercase text-[10px] tracking-wider">Abono Capital</th>
+                                <th class="py-3 px-4 font-medium uppercase text-[10px] tracking-wider">Abono Interés</th>
+                                <th class="py-3 px-4 font-medium uppercase text-[10px] tracking-wider text-right">Total Pagado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <tr v-if="selectedClientReport.pagos.length === 0">
+                                <td colspan="5" class="py-6 text-center text-on-surface-variant">No hay pagos registrados para este cliente.</td>
+                            </tr>
+                            <tr v-for="pago in selectedClientReport.pagos" :key="pago.id" class="hover:bg-white/5 transition-colors">
+                                <td class="py-3 px-4 text-on-surface">{{ formatDate(pago.fecha) }}</td>
+                                <td class="py-3 px-4 text-on-surface-variant">{{ pago.referencia || 'N/A' }}</td>
+                                <td class="py-3 px-4 text-on-surface">Q{{ formatCurrency(pago.abono_capital) }}</td>
+                                <td class="py-3 px-4 text-on-surface">Q{{ formatCurrency(pago.interes) }}</td>
+                                <td class="py-3 px-4 text-tertiary-container text-right font-medium">Q{{ formatCurrency(pago.monto_pagado) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Reporte Inversionista (Original) -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div class="bg-surface-container-high/95 border border-white/10 p-8 rounded-3xl w-full max-w-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
             <div class="flex justify-between items-start mb-6">
                 <h2 class="font-headline-md text-primary flex items-center gap-2">
                     <span class="material-symbols-outlined">description</span>
-                    Generar Reporte
+                    Reporte Inversionista
                 </h2>
                 <button @click="showModal = false" class="text-on-surface-variant hover:text-error transition-colors">
                     <span class="material-symbols-outlined">close</span>
@@ -106,14 +182,14 @@
         </div>
     </div>
 
-    <!-- Hidden HTML Template for PDF -->
+    <!-- Hidden HTML Template for PDF Inversionista -->
     <div style="display:none;">
         <div id="pdf-template" class="pdf-container" style="padding: 40px; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #131313; width: 800px; box-sizing: border-box;">
             <!-- Header -->
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e9c176; padding-bottom: 20px; margin-bottom: 30px;">
                 <div>
                     <h1 style="font-size: 28px; color: #131313; margin: 0; font-weight: 700;">HORUS <span style="color: #e9c176;">EMPRESARIAL</span></h1>
-                    <p style="font-size: 12px; color: #555555; margin: 5px 0 0 0;">Reporte de Estado de Cuenta</p>
+                    <p style="font-size: 12px; color: #555555; margin: 5px 0 0 0;">Reporte de Inversión</p>
                 </div>
                 <div style="text-align: right;">
                     <p style="font-size: 12px; color: #555555; margin: 0;">Fecha de emisión: <strong style="color: #131313;">{{ currentDate }}</strong></p>
@@ -167,14 +243,92 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Hidden HTML Template for PDF Cliente -->
+    <div style="display:none;">
+        <div id="pdf-template-cliente" class="pdf-container" style="padding: 40px; font-family: 'Inter', sans-serif; background-color: #ffffff; color: #131313; width: 800px; box-sizing: border-box;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e9c176; padding-bottom: 20px; margin-bottom: 30px;">
+                <div>
+                    <h1 style="font-size: 28px; color: #131313; margin: 0; font-weight: 700;">HORUS <span style="color: #e9c176;">EMPRESARIAL</span></h1>
+                    <p style="font-size: 12px; color: #555555; margin: 5px 0 0 0;">Estado de Cuenta</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 12px; color: #555555; margin: 0;">Fecha de emisión: <strong style="color: #131313;">{{ currentDate }}</strong></p>
+                </div>
+            </div>
+
+            <div v-if="selectedClientReport">
+                <h2 style="font-size: 20px; color: #131313; margin-bottom: 20px; border-left: 4px solid #e9c176; padding-left: 10px;">Información del Cliente</h2>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; width: 30%; color: #555555; font-size: 14px;">Nombre Cliente:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; font-weight: bold; font-size: 14px;">{{ selectedClientReport.cliente.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; color: #555555; font-size: 14px;">Capital Otorgado:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; font-weight: bold; font-size: 14px;">Q {{ formatCurrency(selectedClientReport.cliente.capital) }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; color: #555555; font-size: 14px;">Plazo del Crédito:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px;">{{ selectedClientReport.cliente.plazo }} Meses</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; color: #555555; font-size: 14px;">Tasa de Interés:</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #eeeeee; font-size: 14px;">{{ selectedClientReport.cliente.porcentaje }}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 style="font-size: 20px; color: #131313; margin-bottom: 20px; border-left: 4px solid #e9c176; padding-left: 10px;">Historial de Pagos Recibidos</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: left; color: #333;">Fecha</th>
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: left; color: #333;">Referencia</th>
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: right; color: #333;">Capital</th>
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: right; color: #333;">Interés</th>
+                            <th style="padding: 10px; border: 1px solid #dddddd; text-align: right; color: #333;">Monto Pagado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="selectedClientReport.pagos.length === 0">
+                            <td colspan="5" style="padding: 15px; border: 1px solid #eeeeee; text-align: center; color: #888;">No hay pagos registrados.</td>
+                        </tr>
+                        <tr v-for="pago in selectedClientReport.pagos" :key="pago.id">
+                            <td style="padding: 10px; border: 1px solid #eeeeee;">{{ formatDate(pago.fecha) }}</td>
+                            <td style="padding: 10px; border: 1px solid #eeeeee; color: #555;">{{ pago.referencia || 'N/A' }}</td>
+                            <td style="padding: 10px; border: 1px solid #eeeeee; text-align: right;">Q{{ formatCurrency(pago.abono_capital) }}</td>
+                            <td style="padding: 10px; border: 1px solid #eeeeee; text-align: right;">Q{{ formatCurrency(pago.interes) }}</td>
+                            <td style="padding: 10px; border: 1px solid #eeeeee; text-align: right; font-weight: bold;">Q{{ formatCurrency(pago.monto_pagado) }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color: #fafafa;">
+                            <td colspan="4" style="padding: 15px 10px; text-align: right; font-weight: bold; font-size: 14px; border: 1px solid #dddddd;">Total Abonado</td>
+                            <td style="padding: 15px 10px; text-align: right; font-weight: bold; font-size: 16px; border: 1px solid #dddddd; color: #131313;">Q{{ formatCurrency(totalPagadoCliente) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 60px; text-align: center; border-top: 1px solid #eeeeee; padding-top: 20px;">
+                <p style="font-size: 12px; color: #888888; margin: 0;">Estado de Cuenta Oficial emitido por Horus Empresarial S.A.</p>
+                <p style="font-size: 12px; color: #888888; margin: 5px 0 0 0;">Generado automáticamente el {{ currentDate }}</p>
+            </div>
+        </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-// Correct imports
 import { reportService } from '../../services/reportService';
 import { investorService } from '../../services/investorService';
+import { clientService } from '../../services/clientService';
 import html2pdf from 'html2pdf.js';
 import {
   Chart as ChartJS,
@@ -252,13 +406,24 @@ const pieChartOptions = {
     }
 };
 
+// Modal Inversionista
 const showModal = ref(false);
 const inversionistasList = ref([]);
 const selectedInvestorId = ref("");
 const selectedInvestor = ref(null);
 
+// Cliente Reporte
+const clientesList = ref([]);
+const selectedClientId = ref("");
+const selectedClientReport = ref(null);
+
 const currentDate = computed(() => {
     return new Date().toLocaleDateString('es-GT', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+});
+
+const totalPagadoCliente = computed(() => {
+    if (!selectedClientReport.value || !selectedClientReport.value.pagos) return 0;
+    return selectedClientReport.value.pagos.reduce((sum, pago) => sum + parseFloat(pago.monto_pagado || 0), 0);
 });
 
 const formatCurrency = (val) => {
@@ -321,6 +486,15 @@ const loadDashboardData = async () => {
     }
 };
 
+const loadClientes = async () => {
+    try {
+        const res = await clientService.getAllClients();
+        clientesList.value = res.data.data || [];
+    } catch (error) {
+        console.error("Error loading clients", error);
+    }
+};
+
 const openInvestorModal = async () => {
     showModal.value = true;
     selectedInvestorId.value = "";
@@ -340,12 +514,22 @@ const onInvestorChange = () => {
     selectedInvestor.value = inversionistasList.value.find(i => i.id === selectedInvestorId.value);
 };
 
+const onClientChange = async () => {
+    if (!selectedClientId.value) return;
+    try {
+        const res = await reportService.getClientReport(selectedClientId.value);
+        if (res.data && res.data.data) {
+            selectedClientReport.value = res.data.data;
+        }
+    } catch (error) {
+        console.error("Error loading client report", error);
+    }
+};
+
 const generatePDF = () => {
     if (!selectedInvestor.value) return;
 
     const element = document.getElementById('pdf-template');
-    
-    // Temporarily show the element to render it properly
     element.parentElement.style.display = 'block';
 
     const opt = {
@@ -357,14 +541,33 @@ const generatePDF = () => {
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-        // Hide again after generating
         element.parentElement.style.display = 'none';
         showModal.value = false;
     });
 };
 
+const generateClientPDF = () => {
+    if (!selectedClientReport.value) return;
+
+    const element = document.getElementById('pdf-template-cliente');
+    element.parentElement.style.display = 'block';
+
+    const opt = {
+        margin:       0,
+        filename:     `Estado_Cuenta_${selectedClientReport.value.cliente.nombre.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        element.parentElement.style.display = 'none';
+    });
+};
+
 onMounted(() => {
     loadDashboardData();
+    loadClientes();
 });
 </script>
 
