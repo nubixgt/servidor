@@ -3,10 +3,12 @@ namespace App\Controllers;
 
 use App\Services\ReportService;
 use App\Repositories\ReportRepository;
-use App\Core\Database;
+use App\Utils\Database;
+use App\Attributes\Route;
+use App\Core\Controller;
 use Exception;
 
-class ReportController {
+class ReportController extends Controller {
     private $service;
 
     public function __construct() {
@@ -15,6 +17,7 @@ class ReportController {
         $this->service = new ReportService($repository);
     }
 
+    #[Route('/reports/dashboard', 'GET')]
     public function getDashboardData() {
         try {
             $data = $this->service->getDashboardData();

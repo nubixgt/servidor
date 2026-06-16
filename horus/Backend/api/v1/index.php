@@ -52,7 +52,5 @@ $router->registerController(GastoRecurrenteController::class);
 $router->registerController(EgresoController::class);
 $router->registerController(ReportController::class);
 
-$router->add('GET', '/reports/dashboard', 'ReportController', 'getDashboardData');
-
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
