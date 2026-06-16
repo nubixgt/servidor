@@ -11,6 +11,7 @@ use App\Controllers\InversionistaController;
 use App\Controllers\PrestamoController;
 use App\Controllers\GastoRecurrenteController;
 use App\Controllers\EgresoController;
+use App\Controllers\ReportController;
 
 // Backend/api/v1/index.php
 
@@ -49,6 +50,9 @@ $router->registerController(InversionistaController::class);
 $router->registerController(PrestamoController::class);
 $router->registerController(GastoRecurrenteController::class);
 $router->registerController(EgresoController::class);
+$router->registerController(ReportController::class);
+
+$router->add('GET', '/reports/dashboard', 'ReportController', 'getDashboardData');
 
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
