@@ -29,12 +29,24 @@
                         label="Registrar Check-in"
                         to="/checkin"
                     />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="pets"
+                        label="Registrar Sacrificio"
+                        to="/sacrificio/nuevo"
+                    />
                     <!-- Administradores only -->
                     <SidebarItem
                         v-if="auth.role === 'administrador'"
                         icon="assignment"
                         label="Historial de Check-ins"
                         to="/checkin-list"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="assignment_turned_in"
+                        label="Control de Sacrificios"
+                        to="/sacrificios"
                     />
                 </div>
             </nav>

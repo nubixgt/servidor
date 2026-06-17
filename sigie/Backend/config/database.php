@@ -5,8 +5,9 @@ $isLocal = (str_contains(__DIR__, 'di3go') ||
             str_contains(__DIR__, 'OneDrive') || 
             (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1')));
 
-$username = $isLocal ? 'root' : 'visionwe';
-$password = $isLocal ? '' : 'Guate25#';
+$username = $isLocal ? 'root' : 'visionwe_sigie';
+$password = $isLocal ? '' : 'gb_Sf^aJaLK!~!2X';
+
 
 return [
     'host'     => 'localhost',

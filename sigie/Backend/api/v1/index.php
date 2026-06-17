@@ -12,6 +12,7 @@ use App\Core\Router;
 use App\Controllers\AuthController;
 use App\Controllers\InspectoresController;
 use App\Controllers\CheckinController;
+use App\Controllers\AnimalesController;
 
 // Set Headers / CORS
 header("Access-Control-Allow-Origin: *");
@@ -33,6 +34,8 @@ $router = new Router();
 $router->registerController(AuthController::class);
 $router->registerController(InspectoresController::class);
 $router->registerController(CheckinController::class);
+$router->registerController(AnimalesController::class);
+
 
 // Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

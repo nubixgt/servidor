@@ -65,3 +65,26 @@ CREATE TABLE IF NOT EXISTS check_ins (
     FOREIGN KEY (visita_id) REFERENCES visitas(id) ON DELETE SET NULL,
     FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 5. TABLA DE REGISTROS DE ANIMALES SACRIFICADOS
+-- ==========================================
+CREATE TABLE IF NOT EXISTS animales_sacrificados (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    inspector_id INT UNSIGNED NULL,
+    fecha_sacrificio DATE NOT NULL,
+    procedencia_departamento VARCHAR(100) NOT NULL,
+    procedencia_municipio VARCHAR(100) NOT NULL,
+    procedencia_finca VARCHAR(150) NOT NULL,
+    clasificacion VARCHAR(50) NOT NULL, -- vaca, novillo, toro, ternero, etc.
+    lote VARCHAR(50) NOT NULL,
+    propietario VARCHAR(150) NOT NULL,
+    cantidad INT UNSIGNED NOT NULL,
+    decomisos TEXT NULL,
+    muestreo_oficial TINYINT(1) DEFAULT 0,
+    documento_path VARCHAR(255) NULL COMMENT 'Ruta del documento adjunto (PDF, imagen)',
+    observaciones TEXT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

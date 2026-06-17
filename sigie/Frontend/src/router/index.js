@@ -11,6 +11,8 @@ import Login from '../views/auth/Login.vue';
 import Dashboard from '../views/portal/Dashboard.vue';
 import CheckinRegister from '../views/portal/checkin/CheckinRegister.vue';
 import CheckinList from '../views/portal/checkin/CheckinList.vue';
+import SacrificioRegister from '../views/portal/sacrificio/SacrificioRegister.vue';
+import SacrificioList from '../views/portal/sacrificio/SacrificioList.vue';
 
 const routes = [
     {
@@ -42,6 +44,18 @@ const routes = [
                 name: 'CheckinList', 
                 component: CheckinList, 
                 meta: { roles: ['administrador'] } 
+            },
+            {
+                path: 'sacrificio/nuevo',
+                name: 'SacrificioRegister',
+                component: SacrificioRegister,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'sacrificios',
+                name: 'SacrificioList',
+                component: SacrificioList,
+                meta: { roles: ['administrador'] }
             }
         ]
     },
