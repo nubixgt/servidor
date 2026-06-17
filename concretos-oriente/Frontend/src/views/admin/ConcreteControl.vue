@@ -1,0 +1,514 @@
+<template>
+  <div class="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+      <div data-aos="fade-right" data-aos-duration="1000">
+        <h1 class="text-4xl font-black text-white italic uppercase tracking-tighter leading-none mb-2">Control <span class="text-primary">Concreto</span></h1>
+        <p class="text-white/60 font-bold uppercase tracking-widest text-sm">Gestión de Despachos y Colocación</p>
+      </div>
+
+      <div data-aos="fade-left" data-aos-duration="1000" class="flex gap-4">
+        <button v-if="authStore.userRole === 'admin'" @click="openStep1Modal" class="glass-button-primary text-white py-4 px-8 rounded-2xl font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_40px_rgba(var(--primary),0.5)] transition-all">
+          <PlusIcon class="w-6 h-6" /> Nuevo Despacho (Planta)
+        </button>
+      </div>
+    </div>
+
+    <!-- Kanban / List -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      
+      <!-- Col 1: Pendiente Piloto (Paso 2) -->
+      <div v-if="['admin', 'tecnico'].includes(authStore.userRole)" class="glass-card rounded-[32px] p-6 border border-white/5 relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="100">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 blur-3xl rounded-full pointer-events-none"></div>
+        <h2 class="text-lg font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+          <TruckIcon class="w-6 h-6 text-amber-400" /> Pendiente Piloto
+        </h2>
+        <div class="space-y-4">
+           <div v-for="trip in pendingPilot" :key="trip.id" class="bg-black/40 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-amber-400/50 hover:shadow-[0_0_20px_rgba(251,191,36,0.1)] transition-all group" @click="openStep2Modal(trip)">
+             <div class="flex justify-between items-start mb-3">
+               <span class="text-[10px] font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md text-white/50 group-hover:text-amber-400 transition-colors">{{ trip.placa }}</span>
+               <span class="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-md">{{ trip.hora_planta }}</span>
+             </div>
+             <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.producto }} - {{ trip.m3 }} M³</p>
+             <p class="text-[10px] text-white/20 uppercase mt-2">Piloto: {{ trip.piloto_nombre }}</p>
+           </div>
+           <p v-if="pendingPilot.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes pendientes</p>
+        </div>
+      </div>
+
+      <!-- Col 2: Pendiente Colocación (Paso 3) -->
+      <div v-if="['admin', 'supervisor'].includes(authStore.userRole)" class="glass-card rounded-[32px] p-6 border border-white/5 relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="200">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-sky-500/10 blur-3xl rounded-full pointer-events-none"></div>
+        <h2 class="text-lg font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+          <MapPinIcon class="w-6 h-6 text-sky-400" /> En Tránsito
+        </h2>
+        <div class="space-y-4">
+           <div v-for="trip in pendingPlacement" :key="trip.id" class="bg-black/40 p-5 rounded-2xl border border-white/10 cursor-pointer hover:border-sky-400/50 hover:shadow-[0_0_20px_rgba(56,189,248,0.1)] transition-all group" @click="openStep3Modal(trip)">
+             <div class="flex justify-between items-start mb-3">
+               <span class="text-[10px] font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md text-white/50 group-hover:text-sky-400 transition-colors">{{ trip.placa }}</span>
+               <span class="text-xs font-black text-sky-400 bg-sky-400/10 px-2 py-1 rounded-md">Salió: {{ trip.hora_salida }}</span>
+             </div>
+             <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.producto }} - {{ trip.m3 }} M³</p>
+           </div>
+           <p v-if="pendingPlacement.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes en tránsito</p>
+        </div>
+      </div>
+
+      <!-- Col 3: Completados -->
+      <div v-if="['admin', 'supervisor', 'tecnico'].includes(authStore.userRole)" class="glass-card rounded-[32px] p-6 border border-white/5 relative overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="300">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
+        <h2 class="text-lg font-black text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+          <CheckCircleIcon class="w-6 h-6 text-emerald-400" /> Completados
+        </h2>
+        <div class="space-y-4">
+           <div v-for="trip in completedTrips" :key="trip.id" class="bg-black/40 p-5 rounded-2xl border border-white/5 opacity-70 hover:opacity-100 transition-opacity">
+             <div class="flex justify-between items-start mb-3">
+               <span class="text-[10px] font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md text-white/40">{{ trip.placa }}</span>
+               <span class="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">Llegada: {{ trip.hora_llegada_obra }}</span>
+             </div>
+             <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.tipo_concreto || trip.producto }}</p>
+           </div>
+           <p v-if="completedTrips.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes completados hoy</p>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- MODALS -->
+    <!-- ============================================== -->
+
+    <!-- Modal 1: Planta Concreto -->
+    <transition name="fade">
+      <div v-if="showModalStep1" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+        <div @click="closeModalStep1" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+          <div class="p-8 md:p-10">
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-8 flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center text-primary text-sm not-italic">1</span> 
+              Planta Concreto
+            </h3>
+            
+            <form @submit.prevent="submitStep1" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Proyecto -->
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Proyecto</label>
+                  <select v-model="formStep1.proyecto_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
+                    <option value="" disabled>Seleccione un proyecto...</option>
+                    <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+                  </select>
+                </div>
+
+                <!-- Placa -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Vehículo (Placa)</label>
+                  <select v-model="formStep1.placa" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
+                    <option value="" disabled>Seleccione...</option>
+                    <option v-for="v in vehicles" :key="v.id" :value="v.placa">{{ v.placa }} - {{ v.marca }}</option>
+                  </select>
+                </div>
+
+                <!-- Piloto -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Piloto</label>
+                  <select v-model="formStep1.piloto_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
+                    <option value="" disabled>Seleccione...</option>
+                    <option v-for="t in technicians" :key="t.id" :value="t.id">{{ t.nombres }} {{ t.apellidos }}</option>
+                  </select>
+                </div>
+
+                <!-- Producto -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Producto</label>
+                  <select v-model="formStep1.producto" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
+                    <option value="" disabled>Seleccione...</option>
+                    <option value="Arena">Arena</option>
+                    <option value="Piedrin">Piedrín</option>
+                    <option value="Cemento">Cemento</option>
+                  </select>
+                </div>
+
+                <!-- M3 -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">M3</label>
+                  <input type="number" step="0.01" v-model="formStep1.m3" required placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
+                <button type="button" @click="closeModalStep1" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+                <button type="submit" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all">
+                  Crear Despacho (con GPS)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal 2: Piloto -->
+    <transition name="fade">
+      <div v-if="showModalStep2" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+        <div @click="closeModalStep2" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl border-amber-500/20" data-aos="zoom-in-up" data-aos-duration="1000">
+          <div class="p-8 md:p-10">
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-8 flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm not-italic">2</span> 
+              Formulario Piloto
+            </h3>
+            
+            <form @submit.prevent="submitStep2" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Placa Asignada (Readonly) -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Placa Asignada</label>
+                  <input type="text" :value="formStep2.placa" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold" />
+                </div>
+                <!-- Proyecto (Readonly) -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Proyecto</label>
+                  <input type="text" :value="formStep2.proyecto_nombre" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold truncate" />
+                </div>
+                <!-- M3 (Readonly) -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Cantidad M3</label>
+                  <input type="text" :value="formStep2.m3 + ' M³ - ' + formStep2.producto" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold" />
+                </div>
+                <div class="hidden md:block"></div> <!-- Spacer -->
+
+                <!-- Hora Salida -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Hora Salida</label>
+                  <input type="time" v-model="formStep2.hora_salida" required class="w-full bg-black/40 border border-amber-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-amber-400 transition-all font-bold" />
+                </div>
+
+                <!-- Hora Llegada -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Hora Llegada</label>
+                  <input type="time" v-model="formStep2.hora_llegada" required class="w-full bg-black/40 border border-amber-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-amber-400 transition-all font-bold" />
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
+                <button type="button" @click="closeModalStep2" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-amber-500/20 transition-all">
+                  Guardar y Enviar (con GPS)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal 3: Colocación -->
+    <transition name="fade">
+      <div v-if="showModalStep3" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+        <div @click="closeModalStep3" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl border-sky-500/20" data-aos="zoom-in-up" data-aos-duration="1000">
+          <div class="p-8 md:p-10">
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-8 flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-sky-500/20 flex items-center justify-center text-sky-400 text-sm not-italic">3</span> 
+              Encargado Colocación
+            </h3>
+            
+            <form @submit.prevent="submitStep3" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Hora Salida Camión (Readonly) -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Salida de Camión</label>
+                  <input type="text" :value="formStep3.hora_salida" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold" />
+                </div>
+                <!-- Proyecto (Readonly) -->
+                <div>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Proyecto</label>
+                  <input type="text" :value="formStep3.proyecto_nombre" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold truncate" />
+                </div>
+
+                <!-- Tipo Concreto -->
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Tipo de Concreto</label>
+                  <select v-model="formStep3.tipo_concreto" required class="w-full bg-black/40 border border-sky-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-sky-400 transition-all font-bold">
+                    <option value="" disabled>Seleccione...</option>
+                    <option value="Carpeta">Carpeta</option>
+                    <option value="Opcion 2">Opción 2</option>
+                    <option value="Opcion 3">Opción 3</option>
+                  </select>
+                </div>
+
+                <!-- Hora Llegada Obra -->
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Hora Llegada (Obra)</label>
+                  <input type="time" v-model="formStep3.hora_llegada_obra" required class="w-full bg-black/40 border border-sky-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-sky-400 transition-all font-bold" />
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
+                <button type="button" @click="closeModalStep3" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+                <button type="submit" class="bg-sky-500 hover:bg-sky-400 text-black py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-sky-500/20 transition-all">
+                  Finalizar Viaje (con GPS)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import Swal from 'sweetalert2';
+import { 
+  PlusIcon, TruckIcon, MapPinIcon, CheckCircleIcon
+} from '@heroicons/vue/24/outline';
+
+const authStore = useAuthStore();
+
+// MOCK DATA PARA EL FRONTEND
+const projects = ref([
+  { id: 1, nombre: 'Proyecto Asfalto Zona 1' },
+  { id: 2, nombre: 'Residencial Los Pinos' }
+]);
+
+const vehicles = ref([
+  { id: 1, placa: 'C-123XYZ', marca: 'Kenworth' },
+  { id: 2, placa: 'C-999ABC', marca: 'Freightliner' }
+]);
+
+const technicians = ref([
+  { id: 1, nombres: 'Juan', apellidos: 'Perez' },
+  { id: 2, nombres: 'Carlos', apellidos: 'Gomez' }
+]);
+
+// Trips state (1 = Planta, 2 = Piloto, 3 = Colocación, 4 = Completado)
+const trips = ref([
+  {
+    id: 101,
+    estado: 2,
+    proyecto_id: 1,
+    proyecto_nombre: 'Proyecto Asfalto Zona 1',
+    placa: 'C-123XYZ',
+    piloto_id: 1,
+    piloto_nombre: 'Juan Perez',
+    hora_planta: '08:30',
+    producto: 'Cemento',
+    m3: 10,
+    hora_salida: '',
+    hora_llegada: '',
+    tipo_concreto: '',
+    hora_llegada_obra: ''
+  },
+  {
+    id: 102,
+    estado: 3,
+    proyecto_id: 2,
+    proyecto_nombre: 'Residencial Los Pinos',
+    placa: 'C-999ABC',
+    piloto_id: 2,
+    piloto_nombre: 'Carlos Gomez',
+    hora_planta: '09:00',
+    producto: 'Piedrin',
+    m3: 15,
+    hora_salida: '09:15',
+    hora_llegada: '09:45',
+    tipo_concreto: '',
+    hora_llegada_obra: ''
+  }
+]);
+
+const pendingPilot = computed(() => trips.value.filter(t => t.estado === 2));
+const pendingPlacement = computed(() => trips.value.filter(t => t.estado === 3));
+const completedTrips = computed(() => trips.value.filter(t => t.estado === 4));
+
+// Modals
+const showModalStep1 = ref(false);
+const showModalStep2 = ref(false);
+const showModalStep3 = ref(false);
+
+const formStep1 = ref({
+  proyecto_id: '',
+  placa: '',
+  piloto_id: '',
+  producto: '',
+  m3: ''
+});
+
+const formStep2 = ref({
+  tripId: null,
+  placa: '',
+  proyecto_nombre: '',
+  producto: '',
+  m3: '',
+  hora_salida: '',
+  hora_llegada: ''
+});
+
+const formStep3 = ref({
+  tripId: null,
+  hora_salida: '',
+  proyecto_nombre: '',
+  tipo_concreto: '',
+  hora_llegada_obra: ''
+});
+
+// Step 1: Planta
+const openStep1Modal = () => {
+  formStep1.value = { proyecto_id: '', placa: '', piloto_id: '', producto: '', m3: '' };
+  showModalStep1.value = true;
+};
+
+const closeModalStep1 = () => { showModalStep1.value = false; };
+
+const submitStep1 = () => {
+  // Simular validación de inventario
+  if (formStep1.value.m3 > 50) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Inventario Insuficiente',
+      text: `No hay suficiente ${formStep1.value.producto} en el inventario.`,
+      background: '#0f172a',
+      color: '#fff'
+    });
+    return;
+  }
+
+  // Get geolocation (mocking the prompt logic)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
+    });
+  }
+
+  const proj = projects.value.find(p => p.id === formStep1.value.proyecto_id);
+  const pil = technicians.value.find(t => t.id === formStep1.value.piloto_id);
+
+  trips.value.push({
+    id: Date.now(),
+    estado: 2,
+    proyecto_id: proj.id,
+    proyecto_nombre: proj.nombre,
+    placa: formStep1.value.placa,
+    piloto_id: pil.id,
+    piloto_nombre: `${pil.nombres} ${pil.apellidos}`,
+    hora_planta: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+    producto: formStep1.value.producto,
+    m3: formStep1.value.m3,
+    hora_salida: '',
+    hora_llegada: '',
+    tipo_concreto: '',
+    hora_llegada_obra: ''
+  });
+
+  closeModalStep1();
+  Swal.fire({
+    icon: 'success',
+    title: 'Despacho Creado',
+    text: 'Se ha enviado al piloto exitosamente con coordenadas GPS.',
+    background: '#0f172a',
+    color: '#fff',
+    timer: 2000,
+    showConfirmButton: false
+  });
+};
+
+// Step 2: Piloto
+const openStep2Modal = (trip) => {
+  // Only Admin or Tecnico can open
+  if (!['admin', 'tecnico'].includes(authStore.userRole)) return;
+
+  formStep2.value = {
+    tripId: trip.id,
+    placa: trip.placa,
+    proyecto_nombre: trip.proyecto_nombre,
+    producto: trip.producto,
+    m3: trip.m3,
+    hora_salida: '',
+    hora_llegada: ''
+  };
+  showModalStep2.value = true;
+};
+
+const closeModalStep2 = () => { showModalStep2.value = false; };
+
+const submitStep2 = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
+    });
+  }
+
+  const trip = trips.value.find(t => t.id === formStep2.value.tripId);
+  if (trip) {
+    trip.estado = 3;
+    trip.hora_salida = formStep2.value.hora_salida;
+    trip.hora_llegada = formStep2.value.hora_llegada;
+  }
+
+  closeModalStep2();
+  Swal.fire({
+    icon: 'success',
+    title: 'Guardado',
+    text: 'Datos de viaje guardados con coordenadas GPS.',
+    background: '#0f172a',
+    color: '#fff',
+    timer: 2000,
+    showConfirmButton: false
+  });
+};
+
+// Step 3: Colocación
+const openStep3Modal = (trip) => {
+  // Only Admin or Supervisor can open
+  if (!['admin', 'supervisor'].includes(authStore.userRole)) return;
+
+  formStep3.value = {
+    tripId: trip.id,
+    hora_salida: trip.hora_salida,
+    proyecto_nombre: trip.proyecto_nombre,
+    tipo_concreto: '',
+    hora_llegada_obra: ''
+  };
+  showModalStep3.value = true;
+};
+
+const closeModalStep3 = () => { showModalStep3.value = false; };
+
+const submitStep3 = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
+    });
+  }
+
+  const trip = trips.value.find(t => t.id === formStep3.value.tripId);
+  if (trip) {
+    trip.estado = 4;
+    trip.tipo_concreto = formStep3.value.tipo_concreto;
+    trip.hora_llegada_obra = formStep3.value.hora_llegada_obra;
+  }
+
+  closeModalStep3();
+  Swal.fire({
+    icon: 'success',
+    title: 'Viaje Completado',
+    text: 'Colocación registrada con coordenadas GPS.',
+    background: '#0f172a',
+    color: '#fff',
+    timer: 2000,
+    showConfirmButton: false
+  });
+};
+
+</script>

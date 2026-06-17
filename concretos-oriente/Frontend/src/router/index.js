@@ -28,6 +28,7 @@ const routes = [
             { path: 'recurrents', name: 'Recurrents', component: () => import('../views/admin/Recurrents.vue') },
             { path: 'inventory', name: 'Inventory', component: () => import('../views/admin/Inventory.vue') },
             { path: 'suppliers', name: 'Suppliers', component: () => import('../views/admin/Suppliers.vue') },
+            { path: 'concrete-control', name: 'ConcreteControl', component: () => import('../views/admin/ConcreteControl.vue') },
 
             { path: 'users', name: 'Users', component: () => import('../views/admin/Users.vue') },
             { path: 'tech-machinery', name: 'MachineryStatus', component: () => import('../views/tecnico/MachineryStatus.vue') },

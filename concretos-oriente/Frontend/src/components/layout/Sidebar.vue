@@ -79,6 +79,7 @@ const allNavItemsArr = [
   { id: "clients", label: "Clientes", icon: UsersIcon, roles: ["admin"] },
   { id: "tech-projects", label: "Mis Proyectos", icon: BriefcaseIcon, roles: ["tecnico"] },
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
+  { id: "concrete-control", label: "Control Concreto", icon: TruckIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
 
   { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
