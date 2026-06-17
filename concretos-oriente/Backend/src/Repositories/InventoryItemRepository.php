@@ -20,10 +20,7 @@ class InventoryItemRepository
 
     public function findAll(): array
     {
-        $sql = "SELECT i.*, p.nombre as proyecto_nombre 
-                FROM inventory_items i 
-                LEFT JOIN projects p ON i.proyecto_id = p.id 
-                ORDER BY i.nombre ASC";
+        $sql = "SELECT * FROM inventory_items ORDER BY nombre ASC";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -47,9 +44,9 @@ class InventoryItemRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO inventory_items
-                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, stock_minimo, stock_actual, proyecto_id)
+                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, stock_minimo, stock_actual)
                 VALUES
-                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :stock_minimo, 0.00, :proyecto_id)";
+                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :stock_minimo, 0.00)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -59,7 +56,6 @@ class InventoryItemRepository
             'descripcion'    => $data['descripcion'] ?? null,
             'unidad_medida'  => $data['unidad_medida'],
             'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
-            'proyecto_id'    => $data['proyecto_id'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -73,8 +69,7 @@ class InventoryItemRepository
                     nombre         = :nombre,
                     descripcion    = :descripcion,
                     unidad_medida  = :unidad_medida,
-                    stock_minimo   = :stock_minimo,
-                    proyecto_id    = :proyecto_id
+                    stock_minimo   = :stock_minimo
                 WHERE id = :id";
 
         $filteredData = [
@@ -85,7 +80,6 @@ class InventoryItemRepository
             'descripcion'    => $data['descripcion'] ?? null,
             'unidad_medida'  => $data['unidad_medida'],
             'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
-            'proyecto_id'    => $data['proyecto_id'] ?? null,
         ];
         $this->pdo->prepare($sql)->execute($filteredData);
     }

@@ -42,7 +42,6 @@ class InventoryController extends Controller
                 'nombre'         => trim($_POST['nombre'] ?? ''),
                 'unidad_medida'  => trim($_POST['unidad_medida'] ?? ''),
                 'stock_minimo'   => isset($_POST['stock_minimo']) && $_POST['stock_minimo'] !== '' ? (float)$_POST['stock_minimo'] : 0.00,
-                'proyecto_id'    => isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '' ? (int)$_POST['proyecto_id'] : null,
                 'descripcion'    => trim($_POST['descripcion'] ?? '') ?: null,
             ];
 
@@ -74,7 +73,6 @@ class InventoryController extends Controller
                 'nombre'         => trim($_POST['nombre'] ?? ''),
                 'unidad_medida'  => trim($_POST['unidad_medida'] ?? ''),
                 'stock_minimo'   => isset($_POST['stock_minimo']) && $_POST['stock_minimo'] !== '' ? (float)$_POST['stock_minimo'] : 0.00,
-                'proyecto_id'    => isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '' ? (int)$_POST['proyecto_id'] : null,
                 'descripcion'    => trim($_POST['descripcion'] ?? '') ?: null,
             ];
 

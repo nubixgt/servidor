@@ -77,7 +77,6 @@
               <th class="px-12 py-8">Recurso / Código</th>
               <th class="px-12 py-8">Categoría</th>
               <th class="px-12 py-8">Disponibilidad</th>
-              <th class="px-12 py-8 text-right">Proyecto</th>
               <th class="px-12 py-8 text-right">Acciones</th>
             </tr>
           </thead>
@@ -122,9 +121,6 @@
                     ></div>
                   </div>
                 </div>
-              </td>
-              <td class="px-12 py-10 text-right" @click="openItemDetails(item)">
-                <p class="font-bold text-white text-sm">{{ item.proyecto_nombre || 'General/Todos' }}</p>
               </td>
               <td class="px-12 py-10 text-right">
                 <div class="flex justify-end gap-2">
@@ -226,10 +222,6 @@
                   <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Información General</h5>
                   <div class="space-y-6">
                     <div class="space-y-2">
-                      <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Proyecto Asignado</p>
-                      <p class="text-sm font-black text-white uppercase italic">{{ selectedItemDetails.proyecto_nombre || 'General / Todos' }}</p>
-                    </div>
-                    <div class="space-y-2">
                       <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Stock Mínimo</p>
                       <p class="text-sm font-black text-white uppercase italic">{{ selectedItemDetails.stock_minimo }}</p>
                     </div>
@@ -296,13 +288,6 @@
               <textarea v-model="formItem.descripcion" rows="2" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50"></textarea>
             </div>
 
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Asignado (Opcional)</label>
-              <select v-model="formItem.proyecto_id" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
-                <option value="">Ninguno / General</option>
-                <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
-              </select>
-            </div>
             <div class="space-y-2 lg:col-span-1">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Stock Mínimo (Alerta)</label>
               <input v-model="formItem.stock_minimo" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
@@ -462,7 +447,12 @@ const filteredItems = computed(() => {
     const s = searchQuery.value.toLowerCase();
     const matchSearch = item.nombre.toLowerCase().includes(s) || (item.codigo_sku && item.codigo_sku.toLowerCase().includes(s)) || item.tipo_item.toLowerCase().includes(s);
     const matchType = filterType.value === '' || item.tipo_item === filterType.value;
-    const matchProject = filterProject.value === '' || item.proyecto_id === filterProject.value;
+    
+    let matchProject = true;
+    if (filterProject.value !== '') {
+      matchProject = kardex.value.some(k => k.item_id === item.id && k.proyecto_destino_id === filterProject.value);
+    }
+    
     return matchSearch && matchType && matchProject;
   });
 });
@@ -552,12 +542,12 @@ const isEditing = ref(false);
 const editItemId = ref(null);
 const formItem = ref({
   tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', 
-  unidad_medida: '', stock_minimo: '', proyecto_id: ''
+  unidad_medida: '', stock_minimo: ''
 });
 
 const openItemModal = () => {
   isEditing.value = false;
-  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', stock_minimo: '', proyecto_id: ''};
+  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', stock_minimo: ''};
   showItemModal.value = true;
 };
 
