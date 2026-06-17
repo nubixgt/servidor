@@ -12,6 +12,17 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install & Build Frontend
+        run: |
+          cd sigie/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -24,9 +35,10 @@ jobs:
           rsync -avz --delete \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
+            --exclude '**/node_modules/' \
             --exclude '.git/' \
             --exclude '.github/' \
             --chmod=D755,F644 \
             -e "ssh -p ${{ secrets.SSH_PORT }}" \
             ./ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}
