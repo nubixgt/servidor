@@ -60,7 +60,10 @@ class ConcreteControlController extends Controller
             
             $this->json(['status' => 'success', 'message' => 'Viaje creado exitosamente', 'data' => ['id' => $tripId]]);
         } catch (\Throwable $e) {
-            $this->json(['status' => 'error', 'message' => $e->getMessage() . ' en la linea ' . $e->getLine()], 500);
+            http_response_code(500);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "ERROR EXACTO: " . $e->getMessage() . " en la linea " . $e->getLine() . " de " . basename($e->getFile());
+            exit;
         }
     }
 

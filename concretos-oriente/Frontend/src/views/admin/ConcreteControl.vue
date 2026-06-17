@@ -413,10 +413,14 @@ const submitStep1 = async () => {
       Swal.fire({ icon: 'error', title: 'Error', text: res.data.message || 'Error al crear el despacho', background: '#0f172a', color: '#fff' });
     }
   } catch (error) {
-    const msg = error.response?.data?.message || 'Revisa el inventario disponible.';
+    console.error(error);
+    let msg = 'Revisa el inventario disponible.';
+    if (error.response?.data) {
+      msg = typeof error.response.data === 'string' ? error.response.data : (error.response.data.message || msg);
+    }
     Swal.fire({
       icon: 'error',
-      title: 'Inventario Insuficiente o Error',
+      title: 'Error de Servidor',
       text: msg,
       background: '#0f172a',
       color: '#fff'
