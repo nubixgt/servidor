@@ -16,7 +16,7 @@ class UserRepository
     public function findAll(): array
     {
         // No seleccionamos la contraseña por seguridad
-        $stmt = $this->pdo->query("SELECT id, nombre, usuario, rol, estado, permisos, foto, created_at, updated_at FROM users ORDER BY created_at DESC");
+        $stmt = $this->pdo->query("SELECT id, nombre, usuario, rol, estado, permisos, proyectos, foto, created_at, updated_at FROM users ORDER BY created_at DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -49,15 +49,16 @@ class UserRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO users (nombre, usuario, password, rol, estado, permisos) VALUES (:nombre, :usuario, :password, :rol, :estado, :permisos)";
+        $sql = "INSERT INTO users (nombre, usuario, password, rol, estado, permisos, proyectos) VALUES (:nombre, :usuario, :password, :rol, :estado, :permisos, :proyectos)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'nombre'   => $data['nombre'],
-            'usuario'  => $data['usuario'],
-            'password' => $data['password'],
-            'rol'      => $data['rol'],
-            'estado'   => $data['estado'],
-            'permisos' => $data['permisos'] ?? null
+            'nombre'    => $data['nombre'],
+            'usuario'   => $data['usuario'],
+            'password'  => $data['password'],
+            'rol'       => $data['rol'],
+            'estado'    => $data['estado'],
+            'permisos'  => $data['permisos'] ?? null,
+            'proyectos' => $data['proyectos'] ?? null
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -77,6 +78,11 @@ class UserRepository
         if (array_key_exists('permisos', $data)) {
             $updates[] = "permisos = :permisos";
             $params['permisos'] = $data['permisos'];
+        }
+
+        if (array_key_exists('proyectos', $data)) {
+            $updates[] = "proyectos = :proyectos";
+            $params['proyectos'] = $data['proyectos'];
         }
 
         if (isset($data['password']) && !empty($data['password'])) {

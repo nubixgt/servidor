@@ -191,6 +191,39 @@
                 </div>
               </div>
 
+              <!-- Proyectos section (solo para roles que no sean admin) -->
+              <div v-if="formData.rol !== 'admin'" class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4 mt-6">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Proyectos Asignados</h3>
+                    <p class="text-[10px] text-white/40 mt-1 uppercase">Selecciona los proyectos a los que este usuario tendrá acceso</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    @click="toggleAllProyectos"
+                    class="px-3 py-1.5 bg-primary/20 hover:bg-primary/40 text-primary border border-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                  >
+                    {{ formData.proyectos.length === availableProjects.length && availableProjects.length > 0 ? 'Desmarcar Todos' : 'Acceso Completo' }}
+                  </button>
+                </div>
+                
+                <div v-if="availableProjects.length === 0" class="text-white/40 text-sm mt-4 italic">No hay proyectos disponibles.</div>
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                  <label v-for="proj in availableProjects" :key="proj.id" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all group">
+                    <div class="relative flex items-center justify-center w-5 h-5">
+                      <input 
+                        type="checkbox" 
+                        :value="proj.id" 
+                        v-model="formData.proyectos"
+                        class="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                      />
+                      <CheckIcon class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                    </div>
+                    <span class="text-xs font-bold text-white/70 group-hover:text-white transition-colors truncate" :title="proj.nombre">{{ proj.codigo }} - {{ proj.nombre }}</span>
+                  </label>
+                </div>
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Estado de la Cuenta</label>
@@ -247,6 +280,7 @@ import {
 const API_URL = '/concretos-oriente/Backend/api/v1';
 
 const users = ref([]);
+const availableProjects = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
 const isSubmitting = ref(false);
@@ -277,7 +311,8 @@ const formData = ref({
   rol: 'admin',
   estado: 'Activo',
   foto: null,
-  permisos: []
+  permisos: [],
+  proyectos: []
 });
 
 const availableModules = [
@@ -311,9 +346,30 @@ const toggleAllPermissions = () => {
   }
 };
 
+const toggleAllProyectos = () => {
+  if (formData.value.proyectos.length === availableProjects.value.length) {
+    formData.value.proyectos = [];
+  } else {
+    formData.value.proyectos = availableProjects.value.map(p => p.id);
+  }
+};
+
 onMounted(() => {
   fetchUsers();
+  fetchProjects();
 });
+
+const fetchProjects = async () => {
+  try {
+    const response = await fetch(`${API_URL}/projects`);
+    const data = await response.json();
+    if (data.status === 'success') {
+      availableProjects.value = data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching projects", error);
+  }
+};
 
 const fetchUsers = async () => {
   loading.value = true;
@@ -355,6 +411,11 @@ const openModal = (user = null) => {
     if (user.permisos) {
        parsedPermisos = typeof user.permisos === 'string' ? JSON.parse(user.permisos) : user.permisos;
     }
+    
+    let parsedProyectos = [];
+    if (user.proyectos) {
+       parsedProyectos = typeof user.proyectos === 'string' ? JSON.parse(user.proyectos) : user.proyectos;
+    }
 
     formData.value = {
       nombre: user.nombre,
@@ -363,7 +424,8 @@ const openModal = (user = null) => {
       rol: user.rol,
       estado: user.estado,
       foto: null,
-      permisos: parsedPermisos || []
+      permisos: parsedPermisos || [],
+      proyectos: parsedProyectos || []
     };
   } else {
     isEditing.value = false;
@@ -375,7 +437,8 @@ const openModal = (user = null) => {
       rol: 'admin',
       estado: 'Activo',
       foto: null,
-      permisos: []
+      permisos: [],
+      proyectos: []
     };
   }
   showModal.value = true;
@@ -411,9 +474,11 @@ const submitForm = async () => {
   
   if (formData.value.rol !== 'admin') {
     data.append('permisos', JSON.stringify(formData.value.permisos));
+    data.append('proyectos', JSON.stringify(formData.value.proyectos));
   } else {
     // Si es admin, puede tener acceso a todo y la DB puede estar nula
     data.append('permisos', JSON.stringify([])); 
+    data.append('proyectos', JSON.stringify([])); 
   }
   
   if (formData.value.foto) {

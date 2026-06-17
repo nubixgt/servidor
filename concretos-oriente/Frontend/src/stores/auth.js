@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
     const userName = ref(localStorage.getItem('userName') || null);
     const token = ref(localStorage.getItem('token') || null);
     const userPermisos = ref(JSON.parse(localStorage.getItem('userPermisos') || '[]'));
+    const userProyectos = ref(JSON.parse(localStorage.getItem('userProyectos') || '[]'));
 
     const login = async (username, password) => {
         try {
@@ -32,16 +33,23 @@ export const useAuthStore = defineStore('auth', () => {
                 permisosArray = typeof data.user.permisos === 'string' ? JSON.parse(data.user.permisos) : data.user.permisos;
             }
 
+            let proyectosArray = [];
+            if (data.user.proyectos) {
+                proyectosArray = typeof data.user.proyectos === 'string' ? JSON.parse(data.user.proyectos) : data.user.proyectos;
+            }
+
             // Éxito
             userRole.value = data.user.rol;
             userName.value = data.user.nombre;
             token.value = data.token;
             userPermisos.value = permisosArray;
+            userProyectos.value = proyectosArray;
 
             localStorage.setItem('userRole', data.user.rol);
             localStorage.setItem('userName', data.user.nombre);
             localStorage.setItem('token', data.token);
             localStorage.setItem('userPermisos', JSON.stringify(permisosArray));
+            localStorage.setItem('userProyectos', JSON.stringify(proyectosArray));
 
             return data;
         } catch (error) {
@@ -55,12 +63,14 @@ export const useAuthStore = defineStore('auth', () => {
         userName.value = null;
         token.value = null;
         userPermisos.value = [];
+        userProyectos.value = [];
         
         localStorage.removeItem('userRole');
         localStorage.removeItem('userName');
         localStorage.removeItem('token');
         localStorage.removeItem('userPermisos');
+        localStorage.removeItem('userProyectos');
     };
 
-    return { userRole, userName, token, userPermisos, login, logout };
+    return { userRole, userName, token, userPermisos, userProyectos, login, logout };
 });

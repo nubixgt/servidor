@@ -46,6 +46,7 @@ class UserController extends Controller
                 'rol'         => $_POST['rol'] ?? 'admin',
                 'estado'      => $_POST['estado'] ?? 'Activo',
                 'permisos'    => $_POST['permisos'] ?? null,
+                'proyectos'   => $_POST['proyectos'] ?? null,
             ];
 
             $fotoFile = $_FILES['foto'] ?? null;
@@ -78,6 +79,7 @@ class UserController extends Controller
                 'rol'         => $_POST['rol'] ?? null,
                 'estado'      => $_POST['estado'] ?? null,
                 'permisos'    => $_POST['permisos'] ?? null,
+                'proyectos'   => $_POST['proyectos'] ?? null,
                 'passwordRaw' => $_POST['password'] ?? '',
             ];
 

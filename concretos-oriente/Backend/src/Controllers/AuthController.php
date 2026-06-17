@@ -57,12 +57,18 @@ class AuthController extends Controller
                 $permisosArray = json_decode($user['permisos'], true);
             }
 
+            $proyectosArray = [];
+            if (!empty($user['proyectos'])) {
+                $proyectosArray = json_decode($user['proyectos'], true);
+            }
+
             // Generar token JWT
             $payload = [
                 'id' => $user['id'],
                 'usuario' => $user['usuario'],
                 'role' => $user['rol'],
                 'permisos' => $permisosArray,
+                'proyectos' => $proyectosArray,
                 'exp' => time() + (60 * 60 * 24 * 7) // 7 días de validez
             ];
 
