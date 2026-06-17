@@ -694,7 +694,7 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
               ),
             ],
           ),
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -716,14 +716,24 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> with SingleTick
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              _buildPeriodOption(FiltroPeriodo.historico, 'Histórico (Todo)'),
-              _buildPeriodOption(FiltroPeriodo.esteMes, 'Este Mes'),
-              _buildPeriodOption(FiltroPeriodo.mesAnterior, 'Mes Anterior'),
-              _buildPeriodOption(FiltroPeriodo.ultimos3Meses, 'Últimos 3 Meses'),
-              _buildPeriodOption(FiltroPeriodo.ultimos6Meses, 'Últimos 6 Meses'),
-              _buildPeriodOption(FiltroPeriodo.personalizado, 'Rango Personalizado...'),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
+              Flexible(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildPeriodOption(FiltroPeriodo.historico, 'Histórico (Todo)'),
+                      _buildPeriodOption(FiltroPeriodo.esteMes, 'Este Mes'),
+                      _buildPeriodOption(FiltroPeriodo.mesAnterior, 'Mes Anterior'),
+                      _buildPeriodOption(FiltroPeriodo.ultimos3Meses, 'Últimos 3 Meses'),
+                      _buildPeriodOption(FiltroPeriodo.ultimos6Meses, 'Últimos 6 Meses'),
+                      _buildPeriodOption(FiltroPeriodo.personalizado, 'Rango Personalizado...'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
             ],
           ),
         );
