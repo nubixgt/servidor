@@ -64,57 +64,7 @@
         </form>
 
         <div class="mt-12 pt-8 border-t border-white/5">
-          <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-6 text-center italic">Credenciales por Rol</p>
-          
-          <div class="grid grid-cols-1 gap-4">
-            <button 
-              @click="autofill('admin_pro', 'admin123')"
-              class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group"
-            >
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                  <ShieldCheckIcon class="w-5 h-5" />
-                </div>
-                <div class="text-left">
-                  <p class="text-[10px] font-black text-white italic uppercase tracking-widest">Administrador</p>
-                  <p class="text-xs text-white/40 font-bold">admin_pro • PWD: admin123</p>
-                </div>
-              </div>
-              <PlusIcon class="w-4 h-4 text-white/20" />
-            </button>
-
-            <button 
-              @click="autofill('supervisor_site', 'super456')"
-              class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all group"
-            >
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                  <UserGroupIcon class="w-5 h-5" />
-                </div>
-                <div class="text-left">
-                  <p class="text-[10px] font-black text-white italic uppercase tracking-widest">Supervisor</p>
-                  <p class="text-xs text-white/40 font-bold">supervisor_site • PWD: super456</p>
-                </div>
-              </div>
-              <PlusIcon class="w-4 h-4 text-white/20" />
-            </button>
-
-            <button 
-              @click="autofill('tecnico_base', 'tech789')"
-              class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/30 transition-all group"
-            >
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/60 group-hover:scale-110 transition-transform">
-                  <WrenchIcon class="w-5 h-5" />
-                </div>
-                <div class="text-left">
-                  <p class="text-[10px] font-black text-white italic uppercase tracking-widest">Técnico</p>
-                  <p class="text-xs text-white/40 font-bold">tecnico_base • PWD: tech789</p>
-                </div>
-              </div>
-              <PlusIcon class="w-4 h-4 text-white/20" />
-            </button>
-          </div>
+          <!-- Botones de prueba eliminados a petición del usuario -->
         </div>
       </div>
     </transition>
@@ -131,6 +81,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import Swal from 'sweetalert2';
 import { 
   WrenchScrewdriverIcon, UserIcon, LockClosedIcon, EyeIcon, ArrowRightIcon, 
   ShieldCheckIcon, UserGroupIcon, WrenchIcon, PlusIcon 
@@ -156,6 +107,22 @@ const handleSubmit = async () => {
   try {
     const data = await authStore.login(username.value, password.value);
     
+    // Configuración de SweetAlert Toast
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#0f172a',
+      color: '#fff'
+    });
+
+    Toast.fire({
+      icon: 'success',
+      title: `Bienvenido, ${data.user.nombre}`
+    });
+    
     // Redirect based on role
     if (data.user.rol === "tecnico") {
       router.push("/tech-machinery");
@@ -164,6 +131,13 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     errorMessage.value = error.message;
+    Swal.fire({
+      background: '#0f172a', 
+      color: '#fff', 
+      icon: 'error', 
+      title: '¡Error!',
+      text: error.message || 'Usuario o contraseña incorrectos'
+    });
   } finally {
     isLoading.value = false;
   }
