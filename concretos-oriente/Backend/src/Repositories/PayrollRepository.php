@@ -20,7 +20,7 @@ class PayrollRepository
 
     public function findActivePersonnel(): array
     {
-        $stmt = $this->pdo->query("SELECT id, nombres, apellidos, puesto, salario_base, tipo_planilla FROM personnel WHERE fecha_baja IS NULL OR fecha_baja = '0000-00-00' OR fecha_baja >= CURDATE()");
+        $stmt = $this->pdo->query("SELECT id, nombres, apellidos, puesto, salario_base, tipo_planilla, tipo_empleado FROM personnel WHERE fecha_baja IS NULL OR fecha_baja = '0000-00-00' OR fecha_baja >= CURDATE()");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

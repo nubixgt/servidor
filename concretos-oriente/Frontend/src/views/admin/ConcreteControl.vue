@@ -328,7 +328,7 @@ const fetchTechnicians = async () => {
     const res = await api.get('/payrolls/active-personnel');
     if (res.data.success === true || res.data.status === 'success') {
       technicians.value = res.data.data.filter(p => {
-        const title = (p.puesto || '').toLowerCase();
+        const title = ((p.puesto || '') + ' ' + (p.tipo_empleado || '')).toLowerCase();
         return title.includes('piloto') || title.includes('técnico') || title.includes('tecnico') || title.includes('operador');
       });
     }
