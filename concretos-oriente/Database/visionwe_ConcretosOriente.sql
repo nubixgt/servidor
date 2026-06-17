@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 17-06-2026 a las 16:32:12
+-- Tiempo de generación: 17-06-2026 a las 21:42:26
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -156,6 +156,35 @@ CREATE TABLE `clients` (
 
 INSERT INTO `clients` (`id`, `company_name`, `ruc`, `status`, `contact_name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES
 (1, 'empresa1', '789461532', 'active', 'Ing. Mario', 'mario@gmail.com', '45289012', 'Parque las Americas', '2026-05-26 14:43:13', '2026-05-26 14:43:13');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `concrete_trips`
+--
+
+CREATE TABLE `concrete_trips` (
+  `id` int(11) NOT NULL,
+  `proyecto_id` int(11) NOT NULL,
+  `vehiculo_id` int(11) NOT NULL,
+  `piloto_id` int(10) UNSIGNED NOT NULL,
+  `producto` varchar(50) NOT NULL,
+  `m3` decimal(10,2) NOT NULL,
+  `hora_planta` time NOT NULL,
+  `lat_planta` decimal(10,8) DEFAULT NULL,
+  `lng_planta` decimal(11,8) DEFAULT NULL,
+  `hora_salida` time DEFAULT NULL,
+  `hora_llegada` time DEFAULT NULL,
+  `lat_piloto` decimal(10,8) DEFAULT NULL,
+  `lng_piloto` decimal(11,8) DEFAULT NULL,
+  `tipo_concreto` varchar(100) DEFAULT NULL,
+  `hora_llegada_obra` time DEFAULT NULL,
+  `lat_colocacion` decimal(10,8) DEFAULT NULL,
+  `lng_colocacion` decimal(11,8) DEFAULT NULL,
+  `estado` int(11) DEFAULT 2,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -400,11 +429,10 @@ INSERT INTO `income_records` (`id`, `income_id`, `descripcion`, `monto`, `create
 CREATE TABLE `inventory_items` (
   `id` int(11) NOT NULL,
   `tipo_item` enum('Material','Repuesto','Herramienta','Consumible') NOT NULL,
-  `codigo_sku` varchar(100) NOT NULL,
+  `codigo_sku` varchar(100) DEFAULT NULL,
   `nombre` varchar(255) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `unidad_medida` varchar(50) NOT NULL,
-  `costo_unitario` decimal(12,2) NOT NULL DEFAULT 0.00,
   `stock_minimo` decimal(12,2) NOT NULL DEFAULT 0.00,
   `stock_actual` decimal(12,2) NOT NULL DEFAULT 0.00,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
@@ -415,11 +443,13 @@ CREATE TABLE `inventory_items` (
 -- Volcado de datos para la tabla `inventory_items`
 --
 
-INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `costo_unitario`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
-(3, 'Repuesto', '64564', 'Cemento', 'Cemento de buena calidad', 'm2', 10.00, 100.00, 170.00, '2026-05-20 21:03:34', '2026-05-26 14:12:31'),
-(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 20.00, 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09'),
-(5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 10.00, 200.00, 100.00, '2026-05-26 14:13:37', '2026-05-26 14:17:46'),
-(6, 'Herramienta', '0000', 'palas', NULL, 'unidad', 100.00, 0.00, 20.00, '2026-06-17 16:20:53', '2026-06-17 16:21:23');
+INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
+(3, 'Material', '64564', 'Cemento', 'Cemento de buena calidad', 'Unidades', 100.00, 270.00, '2026-05-20 21:03:34', '2026-06-17 20:50:15'),
+(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09'),
+(5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 50.00, 100.00, '2026-05-26 14:13:37', '2026-06-17 17:52:10'),
+(6, 'Herramienta', '0000', 'palas', NULL, 'unidad', 0.00, 15.00, '2026-06-17 16:20:53', '2026-06-17 20:53:08'),
+(7, 'Material', '984615', 'Arena', NULL, 'm3', 1.00, 100.00, '2026-06-17 20:47:09', '2026-06-17 20:47:50'),
+(8, 'Material', '987461502', 'Piedrin', NULL, 'm3', 1.00, 100.00, '2026-06-17 20:48:23', '2026-06-17 20:48:46');
 
 -- --------------------------------------------------------
 
@@ -449,7 +479,11 @@ INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_or
 (3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', '2026-05-20 21:03:00', '2026-05-20 21:04:15'),
 (4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', '2026-05-22 22:46:00', '2026-05-22 22:47:09'),
 (6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', '2026-05-26 14:17:00', '2026-05-26 14:17:46'),
-(7, 'Entrada', 6, NULL, 2, 20.00, 100.00, NULL, NULL, '2026-06-17 16:21:00', '2026-06-17 16:21:23');
+(7, 'Entrada', 6, NULL, 2, 20.00, 100.00, NULL, NULL, '2026-06-17 16:21:00', '2026-06-17 16:21:23'),
+(8, 'Entrada', 7, NULL, 2, 100.00, 80.00, '841520', NULL, '2026-06-17 20:47:00', '2026-06-17 20:47:50'),
+(9, 'Entrada', 8, NULL, 2, 100.00, 80.00, '8974120', NULL, '2026-06-17 20:48:00', '2026-06-17 20:48:46'),
+(10, 'Entrada', 3, NULL, 2, 100.00, 80.00, '98746150', NULL, '2026-06-17 20:50:00', '2026-06-17 20:50:15'),
+(11, 'Salida', 6, NULL, 2, 5.00, 0.00, '8974160', NULL, '2026-06-17 20:51:00', '2026-06-17 20:53:08');
 
 -- --------------------------------------------------------
 
@@ -476,16 +510,18 @@ CREATE TABLE `machinery` (
   `costo_adquisicion` decimal(12,2) DEFAULT NULL,
   `fecha_adquisicion` date DEFAULT NULL,
   `foto_path` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `created_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `machinery`
 --
 
-INSERT INTO `machinery` (`id`, `categoria`, `codigo_interno`, `marca`, `modelo`, `numero_serie`, `anio_fabricacion`, `placa`, `horometro_actual`, `kilometraje_actual`, `intervalo_servicio`, `fecha_ultimo_servicio`, `operador_id`, `proyecto_id`, `estado`, `costo_adquisicion`, `fecha_adquisicion`, `foto_path`, `created_at`) VALUES
-(1, 'Maquinaria Especial', '001-2026', 'CAT', 'MOTONIVELADORA', '234DFSDF234', 2001, '567sfd', 1950, 15000, 360, '2026-05-03', 1, 1, 'Activo', 700000.00, '2026-05-22', 'Uploads/Machinery/1/foto.jpg', '2026-05-20 19:45:11'),
-(2, 'Maquinaria Pesada', 'EX-042', 'CATERPILAR', '2026', 'SDFDF23423', 2002, 'MD234M', 1600, 30000, 500, '2026-05-16', 3, 1, 'Activo', 500.00, '2026-05-20', 'Uploads/Machinery/2/foto.jpg', '2026-05-22 22:31:16');
+INSERT INTO `machinery` (`id`, `categoria`, `codigo_interno`, `marca`, `modelo`, `numero_serie`, `anio_fabricacion`, `placa`, `horometro_actual`, `kilometraje_actual`, `intervalo_servicio`, `fecha_ultimo_servicio`, `operador_id`, `proyecto_id`, `estado`, `costo_adquisicion`, `fecha_adquisicion`, `foto_path`, `created_at`, `created_by`) VALUES
+(1, 'Maquinaria Especial', '001-2026', 'CAT', 'MOTONIVELADORA', '234DFSDF234', 2001, '567sfd', 1950, 15000, 360, '2026-05-03', 1, 1, 'Activo', 700000.00, '2026-05-22', 'Uploads/Machinery/1/foto.jpg', '2026-05-20 19:45:11', NULL),
+(2, 'Maquinaria Pesada', 'EX-042', 'CATERPILAR', '2026', 'SDFDF23423', 2002, 'MD234M', 1600, 30000, 500, '2026-05-16', 3, 2, 'Activo', 500.00, '2026-05-20', 'Uploads/Machinery/2/foto.jpg', '2026-05-22 22:31:16', NULL),
+(3, 'Transporte Pesado', 'EXC-8451', 'PJD', 'SDFC202', 'SDFSF', 2026, 'SDCSEEF', 1000, 10000, 500, '2026-06-11', 3, 2, 'Activo', 20000.00, '2026-06-21', 'Uploads/Machinery/3/foto.jpg', '2026-06-17 18:04:23', 2);
 
 -- --------------------------------------------------------
 
@@ -503,16 +539,17 @@ CREATE TABLE `machinery_log` (
   `combustible_consumido` decimal(8,2) DEFAULT NULL,
   `observaciones` text DEFAULT NULL,
   `operador_id` int(10) UNSIGNED DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `created_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `machinery_log`
 --
 
-INSERT INTO `machinery_log` (`id`, `maquina_id`, `proyecto_id`, `fecha`, `horometro_inicial`, `horometro_final`, `combustible_consumido`, `observaciones`, `operador_id`, `created_at`) VALUES
-(1, 1, 1, '2026-05-20', 15000, 30000, 95641.00, 'Prueba para saber si todo funciona correctamente', 1, '2026-05-20 19:46:39'),
-(3, 2, 1, '2026-05-22', 600, 1500, 3600.00, 'Prueba para saber si todo carga bien', 3, '2026-05-22 22:32:14');
+INSERT INTO `machinery_log` (`id`, `maquina_id`, `proyecto_id`, `fecha`, `horometro_inicial`, `horometro_final`, `combustible_consumido`, `observaciones`, `operador_id`, `created_at`, `created_by`) VALUES
+(1, 1, 1, '2026-05-20', 15000, 30000, 95641.00, 'Prueba para saber si todo funciona correctamente', 1, '2026-05-20 19:46:39', NULL),
+(3, 2, 1, '2026-05-22', 600, 1500, 3600.00, 'Prueba para saber si todo carga bien', 3, '2026-05-22 22:32:14', NULL);
 
 -- --------------------------------------------------------
 
@@ -837,7 +874,7 @@ CREATE TABLE `recurrents` (
   `descripcion` text DEFAULT NULL,
   `monto` decimal(15,2) DEFAULT NULL,
   `dia_pago` int(11) DEFAULT NULL,
-  `creado_por` varchar(100) DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -846,9 +883,8 @@ CREATE TABLE `recurrents` (
 -- Volcado de datos para la tabla `recurrents`
 --
 
-INSERT INTO `recurrents` (`id`, `concepto`, `descripcion`, `monto`, `dia_pago`, `creado_por`, `created_at`, `updated_at`) VALUES
-(2, 'Pago de luz', 'Prueba 1 para saber si todo carga correctamente', 300.00, 16, 'admin_pro', '2026-06-04 23:58:55', '2026-06-05 00:15:31'),
-(3, 'Luz', 'Prueba', 2000.00, NULL, 'admin_pro', '2026-06-05 00:10:18', '2026-06-05 00:16:08');
+INSERT INTO `recurrents` (`id`, `concepto`, `descripcion`, `monto`, `dia_pago`, `created_by`, `created_at`, `updated_at`) VALUES
+(4, 'Pago de luz', 'prueba para saber si todo carga correctamente', 200.00, 16, 2, '2026-06-17 18:01:08', '2026-06-17 18:01:08');
 
 -- --------------------------------------------------------
 
@@ -893,16 +929,18 @@ CREATE TABLE `users` (
   `estado` enum('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
   `foto` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `permisos` text DEFAULT NULL,
+  `proyectos` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `nombre`, `usuario`, `password`, `rol`, `estado`, `foto`, `created_at`, `updated_at`) VALUES
-(2, 'Admin', 'admin', '$2y$10$bU4xCoXE5sAwb6y7yS1Wl.N9xVsyq7SwY5nVWVVquWVL.5Ehc2Qly', 'admin', 'Activo', 'Uploads/Users/2/foto_1779295276.jpg', '2026-05-20 16:41:16', '2026-05-20 16:41:51'),
-(3, 'Maria Gomez', 'mgomez', '$2y$10$wODjihBDEAXDuRb0kNXQpeziPnvLp1Oo5RC3HLgD4lKhhYWuQV0Dq', 'tecnico', 'Activo', 'Uploads/Users/3/foto_1779491227.jpg', '2026-05-22 23:07:07', '2026-05-22 23:07:07');
+INSERT INTO `users` (`id`, `nombre`, `usuario`, `password`, `rol`, `estado`, `foto`, `created_at`, `updated_at`, `permisos`, `proyectos`) VALUES
+(2, 'Admin', 'admin', '$2y$10$bU4xCoXE5sAwb6y7yS1Wl.N9xVsyq7SwY5nVWVVquWVL.5Ehc2Qly', 'admin', 'Activo', 'Uploads/Users/2/foto_1779295276.jpg', '2026-05-20 16:41:16', '2026-05-20 16:41:51', NULL, NULL),
+(3, 'Maria Gomez', 'mgomez', '$2y$10$0W9yy2AQRFF4IMO5sU3Z/OFzIdZoIq4IhYY7MkqqHufVTLUhduwPS', 'tecnico', 'Activo', 'Uploads/Users/3/foto_1779491227.jpg', '2026-05-22 23:07:07', '2026-06-17 20:55:13', '[\"machinery\",\"projects\"]', '[\"2\",\"1\"]');
 
 -- --------------------------------------------------------
 
@@ -995,6 +1033,16 @@ ALTER TABLE `clients`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `concrete_trips`
+--
+ALTER TABLE `concrete_trips`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `proyecto_id` (`proyecto_id`),
+  ADD KEY `vehiculo_id` (`vehiculo_id`),
+  ADD KEY `piloto_id` (`piloto_id`),
+  ADD KEY `created_by` (`created_by`);
+
+--
 -- Indices de la tabla `credits`
 --
 ALTER TABLE `credits`
@@ -1082,7 +1130,8 @@ ALTER TABLE `inventory_kardex`
 ALTER TABLE `machinery`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_machinery_operador` (`operador_id`),
-  ADD KEY `fk_machinery_proyecto` (`proyecto_id`);
+  ADD KEY `fk_machinery_proyecto` (`proyecto_id`),
+  ADD KEY `fk_machinery_created_by` (`created_by`);
 
 --
 -- Indices de la tabla `machinery_log`
@@ -1091,7 +1140,8 @@ ALTER TABLE `machinery_log`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_log_maquina` (`maquina_id`),
   ADD KEY `fk_log_proyecto` (`proyecto_id`),
-  ADD KEY `fk_log_operador` (`operador_id`);
+  ADD KEY `fk_log_operador` (`operador_id`),
+  ADD KEY `fk_machinery_log_created_by` (`created_by`);
 
 --
 -- Indices de la tabla `maintenance_logs`
@@ -1173,7 +1223,8 @@ ALTER TABLE `purchase_order_items`
 -- Indices de la tabla `recurrents`
 --
 ALTER TABLE `recurrents`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_recurrents_created_by` (`created_by`);
 
 --
 -- Indices de la tabla `suppliers`
@@ -1240,6 +1291,12 @@ ALTER TABLE `clients`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de la tabla `concrete_trips`
+--
+ALTER TABLE `concrete_trips`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `credits`
 --
 ALTER TABLE `credits`
@@ -1297,19 +1354,19 @@ ALTER TABLE `income_records`
 -- AUTO_INCREMENT de la tabla `inventory_items`
 --
 ALTER TABLE `inventory_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `inventory_kardex`
 --
 ALTER TABLE `inventory_kardex`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery`
 --
 ALTER TABLE `machinery`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery_log`
@@ -1381,7 +1438,7 @@ ALTER TABLE `purchase_order_items`
 -- AUTO_INCREMENT de la tabla `recurrents`
 --
 ALTER TABLE `recurrents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `suppliers`
@@ -1416,6 +1473,15 @@ ALTER TABLE `vehicle_logs`
 --
 ALTER TABLE `budget_items`
   ADD CONSTRAINT `budget_items_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `concrete_trips`
+--
+ALTER TABLE `concrete_trips`
+  ADD CONSTRAINT `concrete_trips_ibfk_1` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `concrete_trips_ibfk_2` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `concrete_trips_ibfk_3` FOREIGN KEY (`piloto_id`) REFERENCES `personnel` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `concrete_trips_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Filtros para la tabla `credits`
@@ -1486,6 +1552,7 @@ ALTER TABLE `inventory_kardex`
 -- Filtros para la tabla `machinery`
 --
 ALTER TABLE `machinery`
+  ADD CONSTRAINT `fk_machinery_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_machinery_operador` FOREIGN KEY (`operador_id`) REFERENCES `personnel` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_machinery_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
 
@@ -1495,7 +1562,8 @@ ALTER TABLE `machinery`
 ALTER TABLE `machinery_log`
   ADD CONSTRAINT `fk_log_maquina` FOREIGN KEY (`maquina_id`) REFERENCES `machinery` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_log_operador` FOREIGN KEY (`operador_id`) REFERENCES `personnel` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `fk_log_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_log_proyecto` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_machinery_log_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `maintenance_logs`
@@ -1555,6 +1623,12 @@ ALTER TABLE `purchase_orders`
 ALTER TABLE `purchase_order_items`
   ADD CONSTRAINT `fk_poi_item` FOREIGN KEY (`item_id`) REFERENCES `inventory_items` (`id`),
   ADD CONSTRAINT `fk_poi_orden` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `recurrents`
+--
+ALTER TABLE `recurrents`
+  ADD CONSTRAINT `fk_recurrents_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `vehicles`
