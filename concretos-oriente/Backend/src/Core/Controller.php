@@ -12,6 +12,13 @@ abstract class Controller
         exit;
     }
 
+    protected function getJsonInput(): ?array
+    {
+        $raw = file_get_contents('php://input');
+        if (empty($raw)) return null;
+        return json_decode($raw, true) ?: null;
+    }
+
     // Helper method to get the current authenticated user's payload
     protected function getUser()
     {
