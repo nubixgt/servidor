@@ -41,6 +41,16 @@ class InventoryItemRepository
         return $result ?: null;
     }
 
+    public function findByNombre(string $nombre): ?array
+    {
+        $sql = "SELECT id, stock_actual, nombre FROM inventory_items WHERE nombre = :nombre LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['nombre' => $nombre]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ?: null;
+    }
+
     public function create(array $data): int
     {
         $sql = "INSERT INTO inventory_items

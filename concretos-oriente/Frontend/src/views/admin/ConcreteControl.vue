@@ -106,9 +106,10 @@
                 <!-- Placa -->
                 <div>
                   <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Vehículo (Placa)</label>
-                  <select v-model="formStep1.placa" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
+                  <select v-model="formStep1.vehiculo_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
                     <option value="" disabled>Seleccione...</option>
-                    <option v-for="v in vehicles" :key="v.id" :value="v.placa">{{ v.placa }} - {{ v.marca }}</option>
+                    <!-- Filter only operative vehicles -->
+                    <option v-for="v in operativeVehicles" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }}</option>
                   </select>
                 </div>
 
@@ -132,9 +133,9 @@
                   </select>
                 </div>
 
-                <!-- M3 -->
+                <!-- M3 / Unidades -->
                 <div>
-                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">M3</label>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">{{ productUnit }}</label>
                   <input type="number" step="0.01" v-model="formStep1.m3" required placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
                 </div>
               </div>
@@ -233,14 +234,20 @@
                 </div>
 
                 <!-- Tipo Concreto -->
-                <div class="md:col-span-2">
+                <div :class="formStep3.tipo_concreto === 'Otro' ? 'md:col-span-1' : 'md:col-span-2'">
                   <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Tipo de Concreto</label>
                   <select v-model="formStep3.tipo_concreto" required class="w-full bg-black/40 border border-sky-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-sky-400 transition-all font-bold">
                     <option value="" disabled>Seleccione...</option>
                     <option value="Carpeta">Carpeta</option>
-                    <option value="Opcion 2">Opción 2</option>
-                    <option value="Opcion 3">Opción 3</option>
+                    <option value="Cuneta">Cuneta</option>
+                    <option value="Bordillo">Bordillo</option>
+                    <option value="Otro">Otro</option>
                   </select>
+                </div>
+
+                <div v-if="formStep3.tipo_concreto === 'Otro'" class="md:col-span-1">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Especificar Tipo</label>
+                  <input type="text" v-model="formStep3.tipo_concreto_otro" required class="w-full bg-black/40 border border-sky-500/30 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-sky-400 transition-all font-bold" placeholder="Escriba el tipo..." />
                 </div>
 
                 <!-- Hora Llegada Obra -->
@@ -269,6 +276,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/auth';
+import api from '../../services/api';
 import Swal from 'sweetalert2';
 import { 
   PlusIcon, TruckIcon, MapPinIcon, CheckCircleIcon
@@ -276,61 +284,59 @@ import {
 
 const authStore = useAuthStore();
 
-// MOCK DATA PARA EL FRONTEND
-const projects = ref([
-  { id: 1, nombre: 'Proyecto Asfalto Zona 1' },
-  { id: 2, nombre: 'Residencial Los Pinos' }
-]);
+// REAL DATA STATE
+const projects = ref([]);
+const vehicles = ref([]);
+const technicians = ref([]);
+const trips = ref([]);
 
-const vehicles = ref([
-  { id: 1, placa: 'C-123XYZ', marca: 'Kenworth' },
-  { id: 2, placa: 'C-999ABC', marca: 'Freightliner' }
-]);
+const pendingPilot = computed(() => trips.value.filter(t => parseInt(t.estado) === 2));
+const pendingPlacement = computed(() => trips.value.filter(t => parseInt(t.estado) === 3));
+const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado) === 4));
 
-const technicians = ref([
-  { id: 1, nombres: 'Juan', apellidos: 'Perez' },
-  { id: 2, nombres: 'Carlos', apellidos: 'Gomez' }
-]);
+const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'Operativo'));
 
-// Trips state (1 = Planta, 2 = Piloto, 3 = Colocación, 4 = Completado)
-const trips = ref([
-  {
-    id: 101,
-    estado: 2,
-    proyecto_id: 1,
-    proyecto_nombre: 'Proyecto Asfalto Zona 1',
-    placa: 'C-123XYZ',
-    piloto_id: 1,
-    piloto_nombre: 'Juan Perez',
-    hora_planta: '08:30',
-    producto: 'Cemento',
-    m3: 10,
-    hora_salida: '',
-    hora_llegada: '',
-    tipo_concreto: '',
-    hora_llegada_obra: ''
-  },
-  {
-    id: 102,
-    estado: 3,
-    proyecto_id: 2,
-    proyecto_nombre: 'Residencial Los Pinos',
-    placa: 'C-999ABC',
-    piloto_id: 2,
-    piloto_nombre: 'Carlos Gomez',
-    hora_planta: '09:00',
-    producto: 'Piedrin',
-    m3: 15,
-    hora_salida: '09:15',
-    hora_llegada: '09:45',
-    tipo_concreto: '',
-    hora_llegada_obra: ''
-  }
-]);
+const productUnit = computed(() => {
+  return formStep1.value.producto === 'Cemento' ? 'Cantidad (Unidades)' : 'M3';
+});
 
-const pendingPilot = computed(() => trips.value.filter(t => t.estado === 2));
-const pendingPlacement = computed(() => trips.value.filter(t => t.estado === 3));
-const completedTrips = computed(() => trips.value.filter(t => t.estado === 4));
+onMounted(() => {
+  fetchProjects();
+  fetchVehicles();
+  fetchTechnicians();
+  fetchTrips();
+});
+
+const fetchProjects = async () => {
+  try {
+    const res = await api.get('/projects');
+    if (res.data.status === 'success') projects.value = res.data.data;
+  } catch (e) { console.error(e); }
+};
+
+const fetchVehicles = async () => {
+  try {
+    const res = await api.get('/vehicles');
+    if (res.data.status === 'success') vehicles.value = res.data.data;
+  } catch (e) { console.error(e); }
+};
+
+const fetchTechnicians = async () => {
+  try {
+    // Ideally filtered to only pilots/technicians. We'll use active-personnel.
+    const res = await api.get('/payrolls/active-personnel');
+    if (res.data.status === 'success') {
+      technicians.value = res.data.data.filter(p => p.puesto.toLowerCase().includes('piloto') || p.puesto.toLowerCase().includes('técnico') || p.puesto.toLowerCase().includes('tecnico'));
+    }
+  } catch (e) { console.error(e); }
+};
+
+const fetchTrips = async () => {
+  try {
+    const res = await api.get('/concrete/trips');
+    if (res.data.status === 'success') trips.value = res.data.data;
+  } catch (e) { console.error(e); }
+};
 
 // Modals
 const showModalStep1 = ref(false);
@@ -339,7 +345,7 @@ const showModalStep3 = ref(false);
 
 const formStep1 = ref({
   proyecto_id: '',
-  placa: '',
+  vehiculo_id: '',
   piloto_id: '',
   producto: '',
   m3: ''
@@ -360,67 +366,57 @@ const formStep3 = ref({
   hora_salida: '',
   proyecto_nombre: '',
   tipo_concreto: '',
+  tipo_concreto_otro: '',
   hora_llegada_obra: ''
 });
 
 // Step 1: Planta
 const openStep1Modal = () => {
-  formStep1.value = { proyecto_id: '', placa: '', piloto_id: '', producto: '', m3: '' };
+  formStep1.value = { proyecto_id: '', vehiculo_id: '', piloto_id: '', producto: '', m3: '' };
   showModalStep1.value = true;
 };
 
 const closeModalStep1 = () => { showModalStep1.value = false; };
 
-const submitStep1 = () => {
-  // Simular validación de inventario
-  if (formStep1.value.m3 > 50) {
+const submitStep1 = async () => {
+  let lat = null;
+  let lng = null;
+
+  if (navigator.geolocation) {
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      lat = position.coords.latitude;
+      lng = position.coords.longitude;
+    } catch (err) {
+      console.warn("No GPS data available");
+    }
+  }
+
+  try {
+    const res = await api.post('/concrete/trips', {
+      ...formStep1.value,
+      lat_planta: lat,
+      lng_planta: lng
+    });
+
+    if (res.data.status === 'success') {
+      Swal.fire({ icon: 'success', title: 'Despacho Creado', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+      closeModalStep1();
+      fetchTrips();
+    } else {
+      Swal.fire({ icon: 'error', title: 'Error', text: res.data.message || 'Error al crear el despacho', background: '#0f172a', color: '#fff' });
+    }
+  } catch (error) {
     Swal.fire({
       icon: 'error',
-      title: 'Inventario Insuficiente',
-      text: `No hay suficiente ${formStep1.value.producto} en el inventario.`,
+      title: 'Inventario Insuficiente o Error',
+      text: error.response?.data?.message || 'Revisa el inventario disponible.',
       background: '#0f172a',
       color: '#fff'
     });
-    return;
   }
-
-  // Get geolocation (mocking the prompt logic)
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
-    });
-  }
-
-  const proj = projects.value.find(p => p.id === formStep1.value.proyecto_id);
-  const pil = technicians.value.find(t => t.id === formStep1.value.piloto_id);
-
-  trips.value.push({
-    id: Date.now(),
-    estado: 2,
-    proyecto_id: proj.id,
-    proyecto_nombre: proj.nombre,
-    placa: formStep1.value.placa,
-    piloto_id: pil.id,
-    piloto_nombre: `${pil.nombres} ${pil.apellidos}`,
-    hora_planta: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-    producto: formStep1.value.producto,
-    m3: formStep1.value.m3,
-    hora_salida: '',
-    hora_llegada: '',
-    tipo_concreto: '',
-    hora_llegada_obra: ''
-  });
-
-  closeModalStep1();
-  Swal.fire({
-    icon: 'success',
-    title: 'Despacho Creado',
-    text: 'Se ha enviado al piloto exitosamente con coordenadas GPS.',
-    background: '#0f172a',
-    color: '#fff',
-    timer: 2000,
-    showConfirmButton: false
-  });
 };
 
 // Step 2: Piloto
@@ -442,30 +438,40 @@ const openStep2Modal = (trip) => {
 
 const closeModalStep2 = () => { showModalStep2.value = false; };
 
-const submitStep2 = () => {
+const submitStep2 = async () => {
+  let lat = null;
+  let lng = null;
+
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      lat = position.coords.latitude;
+      lng = position.coords.longitude;
+    } catch (err) {
+      console.warn("No GPS data available");
+    }
+  }
+
+  try {
+    const res = await api.put(`/concrete/trips/${formStep2.value.tripId}/pilot`, {
+      hora_salida: formStep2.value.hora_salida,
+      hora_llegada: formStep2.value.hora_llegada,
+      lat_piloto: lat,
+      lng_piloto: lng
     });
-  }
 
-  const trip = trips.value.find(t => t.id === formStep2.value.tripId);
-  if (trip) {
-    trip.estado = 3;
-    trip.hora_salida = formStep2.value.hora_salida;
-    trip.hora_llegada = formStep2.value.hora_llegada;
+    if (res.data.status === 'success') {
+      Swal.fire({ icon: 'success', title: 'Guardado', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+      closeModalStep2();
+      fetchTrips();
+    } else {
+      Swal.fire({ icon: 'error', title: 'Error', text: res.data.message || 'Error al actualizar', background: '#0f172a', color: '#fff' });
+    }
+  } catch (error) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Error al comunicarse con el servidor', background: '#0f172a', color: '#fff' });
   }
-
-  closeModalStep2();
-  Swal.fire({
-    icon: 'success',
-    title: 'Guardado',
-    text: 'Datos de viaje guardados con coordenadas GPS.',
-    background: '#0f172a',
-    color: '#fff',
-    timer: 2000,
-    showConfirmButton: false
-  });
 };
 
 // Step 3: Colocación
@@ -478,6 +484,7 @@ const openStep3Modal = (trip) => {
     hora_salida: trip.hora_salida,
     proyecto_nombre: trip.proyecto_nombre,
     tipo_concreto: '',
+    tipo_concreto_otro: '',
     hora_llegada_obra: ''
   };
   showModalStep3.value = true;
@@ -485,30 +492,42 @@ const openStep3Modal = (trip) => {
 
 const closeModalStep3 = () => { showModalStep3.value = false; };
 
-const submitStep3 = () => {
+const submitStep3 = async () => {
+  let lat = null;
+  let lng = null;
+
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      console.log("GPS Coordinates:", position.coords.latitude, position.coords.longitude);
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      lat = position.coords.latitude;
+      lng = position.coords.longitude;
+    } catch (err) {
+      console.warn("No GPS data available");
+    }
+  }
+
+  let finalType = formStep3.value.tipo_concreto === 'Otro' ? formStep3.value.tipo_concreto_otro : formStep3.value.tipo_concreto;
+
+  try {
+    const res = await api.put(`/concrete/trips/${formStep3.value.tripId}/placement`, {
+      tipo_concreto: finalType,
+      hora_llegada_obra: formStep3.value.hora_llegada_obra,
+      lat_colocacion: lat,
+      lng_colocacion: lng
     });
-  }
 
-  const trip = trips.value.find(t => t.id === formStep3.value.tripId);
-  if (trip) {
-    trip.estado = 4;
-    trip.tipo_concreto = formStep3.value.tipo_concreto;
-    trip.hora_llegada_obra = formStep3.value.hora_llegada_obra;
+    if (res.data.status === 'success') {
+      Swal.fire({ icon: 'success', title: 'Viaje Completado', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+      closeModalStep3();
+      fetchTrips();
+    } else {
+      Swal.fire({ icon: 'error', title: 'Error', text: res.data.message || 'Error al finalizar', background: '#0f172a', color: '#fff' });
+    }
+  } catch (error) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Error al comunicarse con el servidor', background: '#0f172a', color: '#fff' });
   }
-
-  closeModalStep3();
-  Swal.fire({
-    icon: 'success',
-    title: 'Viaje Completado',
-    text: 'Colocación registrada con coordenadas GPS.',
-    background: '#0f172a',
-    color: '#fff',
-    timer: 2000,
-    showConfirmButton: false
-  });
 };
 
 </script>
