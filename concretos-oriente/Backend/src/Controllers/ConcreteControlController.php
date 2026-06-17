@@ -64,7 +64,7 @@ class ConcreteControlController extends Controller
         }
     }
 
-    #[Route('/concrete/trips/:id/pilot', 'PUT')]
+    #[Route('/concrete/trips/{id}/pilot', 'PUT')]
     public function updatePilot(string $id): void
     {
         $data = $this->getJsonInput();
@@ -81,7 +81,7 @@ class ConcreteControlController extends Controller
         }
     }
 
-    #[Route('/concrete/trips/:id/placement', 'PUT')]
+    #[Route('/concrete/trips/{id}/placement', 'PUT')]
     public function updatePlacement(string $id): void
     {
         $data = $this->getJsonInput();
