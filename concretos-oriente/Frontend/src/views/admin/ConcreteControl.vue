@@ -317,18 +317,19 @@ const fetchProjects = async () => {
 const fetchVehicles = async () => {
   try {
     const res = await api.get('/vehicles');
-    if (res.data.status === 'success') vehicles.value = res.data.data;
+    if (res.data.success === true || res.data.status === 'success') {
+      vehicles.value = res.data.data;
+    }
   } catch (e) { console.error(e); }
 };
 
 const fetchTechnicians = async () => {
   try {
     const res = await api.get('/payrolls/active-personnel');
-    if (res.data.status === 'success') {
+    if (res.data.success === true || res.data.status === 'success') {
       technicians.value = res.data.data.filter(p => {
-        if (!p.tipo_empleado) return false;
-        const tipo = p.tipo_empleado.toLowerCase();
-        return tipo.includes('piloto') || tipo.includes('técnico') || tipo.includes('tecnico') || tipo.includes('operador');
+        const title = (p.puesto || '').toLowerCase();
+        return title.includes('piloto') || title.includes('técnico') || title.includes('tecnico') || title.includes('operador');
       });
     }
   } catch (e) { console.error(e); }
