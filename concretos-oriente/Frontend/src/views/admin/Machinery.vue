@@ -722,6 +722,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../stores/auth';
+import api from '../../services/api';
 
 const authStore = useAuthStore();
 
@@ -871,6 +872,7 @@ onMounted(() => {
   fetchLogs();
   fetchPersonnel();
   fetchProjects();
+  fetchMaintenanceLogs();
 });
 
 const fetchMachinery = async () => {
@@ -903,9 +905,8 @@ const fetchPersonnel = async () => {
 
 const fetchMaintenanceLogs = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/maintenance/logs`);
-    const data = await res.json();
-    if (data.status === 'success') maintenanceLogs.value = data.data;
+    const res = await api.get('/maintenance/logs');
+    if (res.data.status === 'success') maintenanceLogs.value = res.data.data;
   } catch (err) { console.error(err); }
 };
 
