@@ -586,6 +586,45 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Historial de Mantenimientos -->
+              <div v-if="selectedMachineMaintenanceLogs.length > 0" class="border-t border-white/5 pt-6 mt-6">
+                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
+                  <div class="w-8 h-[1px] bg-white/10"></div> Bitácoras de Mantenimiento
+                </h5>
+                <div class="space-y-4">
+                  <div v-for="item in selectedMachineMaintenanceLogs" :key="item.id" class="bg-black/20 p-5 rounded-3xl border border-white/5">
+                    <div class="flex justify-between items-start mb-2">
+                      <div class="flex items-center gap-2">
+                        <span :class="[
+                          'text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border',
+                          item.tipo_mantenimiento === 'Preventivo' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                        ]">{{ item.tipo_mantenimiento }}</span>
+                        <span class="text-[10px] font-black text-white/60 bg-white/5 px-2 py-1 rounded-md">{{ item.fecha_mantenimiento }}</span>
+                      </div>
+                      <span class="text-xs font-black text-emerald-400">Q{{ Number(item.costo_total).toLocaleString('es-GT', {minimumFractionDigits:2}) }}</span>
+                    </div>
+                    
+                    <p class="text-xs text-white/90 font-bold leading-relaxed mb-1">{{ item.descripcion }}</p>
+                    <p v-if="item.observaciones" class="text-[10px] text-white/40 italic mb-3 leading-relaxed pl-2 border-l-2 border-white/10">{{ item.observaciones }}</p>
+                    
+                    <!-- Repuestos -->
+                    <div v-if="item.repuestos && item.repuestos.length > 0" class="mt-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                      <p class="text-[9px] font-black uppercase text-white/30 mb-2">Repuestos Utilizados</p>
+                      <ul class="space-y-1">
+                        <li v-for="r in item.repuestos" :key="r.id" class="text-[10px] font-bold text-white/70 flex justify-between">
+                          <span>{{ r.cantidad }}x {{ r.nombre_repuesto }}</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <!-- Fotos -->
+                    <div v-if="item.fotos && item.fotos.length > 0" class="grid grid-cols-4 gap-2 mt-4">
+                      <img v-for="(imgUrl, iIdx) in item.fotos" :key="iIdx" :src="getPhotoUrl(imgUrl)" class="w-full h-16 object-cover rounded-xl border border-white/10 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all" @click="fullscreenImage = getPhotoUrl(imgUrl)" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -661,6 +700,15 @@
         </div>
       </div>
     </transition>
+
+    <!-- Fullscreen Image Viewer -->
+    <div v-if="fullscreenImage" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm" @click="fullscreenImage = ''">
+      <button class="absolute top-6 right-6 p-2 bg-white/10 hover:bg-rose-500 rounded-full text-white transition-all z-50">
+        <XMarkIcon class="w-6 h-6" />
+      </button>
+      <img :src="fullscreenImage" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl" @click.stop />
+    </div>
+
   </div>
 </template>
 
@@ -688,10 +736,13 @@ const tabs = [
 
 const machinery = ref([]);
 const logs = ref([]);
+const maintenanceLogs = ref([]);
 const personnel = ref([]);
 const projects = ref([]);
 const loading = ref(true);
 const loadingLogs = ref(true);
+
+const fullscreenImage = ref('');
 
 
 const searchMachine = ref("");
@@ -744,6 +795,12 @@ const selectedMachine = ref(null);
 
 
 const selectedLog = ref(null);
+
+const selectedMachineMaintenanceLogs = computed(() => {
+  if (!selectedMachine.value) return [];
+  // Maintenance logs use `machinery_id` as the foreign key in the backend
+  return maintenanceLogs.value.filter(l => l.machinery_id === selectedMachine.value.id);
+});
 
 const openViewLog = (log) => {
   selectedLog.value = log;
@@ -838,10 +895,18 @@ const fetchLogs = async () => {
 
 const fetchPersonnel = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/personnel`);
+    const res = await fetch(`${BASE_URL}/payrolls/active-personnel`);
     const data = await res.json();
     if (data.status === 'success') personnel.value = data.data;
-  } catch (err) {}
+  } catch (err) { console.error(err); }
+};
+
+const fetchMaintenanceLogs = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/maintenance/logs`);
+    const data = await res.json();
+    if (data.status === 'success') maintenanceLogs.value = data.data;
+  } catch (err) { console.error(err); }
 };
 
 const fetchProjects = async () => {
