@@ -20,7 +20,10 @@ class InventoryItemRepository
 
     public function findAll(): array
     {
-        $sql = "SELECT * FROM inventory_items ORDER BY nombre ASC";
+        $sql = "SELECT i.*, p.nombre as proyecto_nombre 
+                FROM inventory_items i 
+                LEFT JOIN projects p ON i.proyecto_id = p.id 
+                ORDER BY i.nombre ASC";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -44,19 +47,19 @@ class InventoryItemRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO inventory_items
-                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, costo_unitario, stock_minimo, stock_actual)
+                    (tipo_item, codigo_sku, nombre, descripcion, unidad_medida, stock_minimo, stock_actual, proyecto_id)
                 VALUES
-                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :costo_unitario, :stock_minimo, 0.00)";
+                    (:tipo_item, :codigo_sku, :nombre, :descripcion, :unidad_medida, :stock_minimo, 0.00, :proyecto_id)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'tipo_item'      => $data['tipo_item'],
-            'codigo_sku'     => $data['codigo_sku'],
+            'codigo_sku'     => $data['codigo_sku'] ?? null,
             'nombre'         => $data['nombre'],
             'descripcion'    => $data['descripcion'] ?? null,
             'unidad_medida'  => $data['unidad_medida'],
-            'costo_unitario' => $data['costo_unitario'] ?? 0.00,
             'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
+            'proyecto_id'    => $data['proyecto_id'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -70,19 +73,19 @@ class InventoryItemRepository
                     nombre         = :nombre,
                     descripcion    = :descripcion,
                     unidad_medida  = :unidad_medida,
-                    costo_unitario = :costo_unitario,
-                    stock_minimo   = :stock_minimo
+                    stock_minimo   = :stock_minimo,
+                    proyecto_id    = :proyecto_id
                 WHERE id = :id";
 
         $filteredData = [
             'id'             => $id,
             'tipo_item'      => $data['tipo_item'],
-            'codigo_sku'     => $data['codigo_sku'],
+            'codigo_sku'     => $data['codigo_sku'] ?? null,
             'nombre'         => $data['nombre'],
             'descripcion'    => $data['descripcion'] ?? null,
             'unidad_medida'  => $data['unidad_medida'],
-            'costo_unitario' => $data['costo_unitario'] ?? 0.00,
             'stock_minimo'   => $data['stock_minimo'] ?? 0.00,
+            'proyecto_id'    => $data['proyecto_id'] ?? null,
         ];
         $this->pdo->prepare($sql)->execute($filteredData);
     }
@@ -97,11 +100,5 @@ class InventoryItemRepository
         // $operacion debe ser '+' o '-'
         $sql = "UPDATE inventory_items SET stock_actual = stock_actual {$operacion} :qty WHERE id = :id";
         $this->pdo->prepare($sql)->execute(['qty' => $cantidad, 'id' => $id]);
-    }
-
-    public function updateCostoUnitario(int $id, float $costo): void
-    {
-        $this->pdo->prepare("UPDATE inventory_items SET costo_unitario = :costo WHERE id = :id")
-             ->execute(['costo' => $costo, 'id' => $id]);
     }
 }

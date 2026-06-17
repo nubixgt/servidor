@@ -56,6 +56,10 @@
           />
         </div>
         <div class="flex items-center gap-4">
+          <select v-model="filterProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+            <option value="">Todos los Proyectos</option>
+            <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+          </select>
           <select v-model="filterType" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
             <option value="">Todos los Tipos</option>
             <option value="Material">Material</option>
@@ -73,7 +77,7 @@
               <th class="px-12 py-8">Recurso / Código</th>
               <th class="px-12 py-8">Categoría</th>
               <th class="px-12 py-8">Disponibilidad</th>
-              <th class="px-12 py-8 text-right">Costo y Valor</th>
+              <th class="px-12 py-8 text-right">Proyecto</th>
               <th class="px-12 py-8 text-right">Acciones</th>
             </tr>
           </thead>
@@ -96,7 +100,7 @@
                   </div>
                   <div>
                     <p class="font-black text-lg text-white italic tracking-tighter uppercase">{{ item.nombre }}</p>
-                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">SKU: {{ item.codigo_sku }}</p>
+                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Cód: {{ item.codigo_sku || 'N/A' }}</p>
                   </div>
                 </div>
               </td>
@@ -120,8 +124,7 @@
                 </div>
               </td>
               <td class="px-12 py-10 text-right" @click="openItemDetails(item)">
-                <p class="font-black text-white italic text-lg">Q {{ (item.costo_unitario * item.stock_actual).toLocaleString('en-US', {minimumFractionDigits: 2}) }}</p>
-                <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mt-1">C/U: Q {{ Number(item.costo_unitario).toFixed(2) }}</p>
+                <p class="font-bold text-white text-sm">{{ item.proyecto_nombre || 'General/Todos' }}</p>
               </td>
               <td class="px-12 py-10 text-right">
                 <div class="flex justify-end gap-2">
@@ -165,7 +168,7 @@
                 <div>
                   <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-3 block">Detalle de Ítem</span>
                   <h2 class="text-5xl font-black text-white italic uppercase tracking-tighter">{{ selectedItemDetails.nombre }}</h2>
-                  <p class="text-white/40 font-bold uppercase tracking-widest mt-2">{{ selectedItemDetails.codigo_sku }} • {{ selectedItemDetails.tipo_item }}</p>
+                  <p class="text-white/40 font-bold uppercase tracking-widest mt-2">{{ selectedItemDetails.codigo_sku || 'Sin Código' }} • {{ selectedItemDetails.tipo_item }}</p>
                 </div>
                 <button @click="selectedItemDetails = null" class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white">
                   <XMarkIcon class="w-8 h-8" />
@@ -223,8 +226,8 @@
                   <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Información General</h5>
                   <div class="space-y-6">
                     <div class="space-y-2">
-                      <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Costo Promedio (GTQ)</p>
-                      <p class="text-sm font-black text-white uppercase italic">Q {{ Number(selectedItemDetails.costo_unitario).toFixed(2) }}</p>
+                      <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Proyecto Asignado</p>
+                      <p class="text-sm font-black text-white uppercase italic">{{ selectedItemDetails.proyecto_nombre || 'General / Todos' }}</p>
                     </div>
                     <div class="space-y-2">
                       <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Stock Mínimo</p>
@@ -275,8 +278,8 @@
               </select>
             </div>
             <div class="space-y-2 lg:col-span-1">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código SKU *</label>
-              <input v-model="formItem.codigo_sku" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código</label>
+              <input v-model="formItem.codigo_sku" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
             <div class="space-y-2 lg:col-span-1">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Unidad de Medida *</label>
@@ -294,8 +297,11 @@
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Costo Unitario (Q)</label>
-              <input v-model="formItem.costo_unitario" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Asignado (Opcional)</label>
+              <select v-model="formItem.proyecto_id" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
+                <option value="">Ninguno / General</option>
+                <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+              </select>
             </div>
             <div class="space-y-2 lg:col-span-1">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Stock Mínimo (Alerta)</label>
@@ -410,6 +416,7 @@ const isSubmitting = ref(false);
 
 const searchQuery = ref('');
 const filterType = ref('');
+const filterProject = ref('');
 
 const currentPage = ref(1);
 const itemsPerPage = 10;
@@ -453,9 +460,10 @@ onMounted(() => {
 const filteredItems = computed(() => {
   return items.value.filter(item => {
     const s = searchQuery.value.toLowerCase();
-    const matchSearch = item.nombre.toLowerCase().includes(s) || item.codigo_sku.toLowerCase().includes(s) || item.tipo_item.toLowerCase().includes(s);
+    const matchSearch = item.nombre.toLowerCase().includes(s) || (item.codigo_sku && item.codigo_sku.toLowerCase().includes(s)) || item.tipo_item.toLowerCase().includes(s);
     const matchType = filterType.value === '' || item.tipo_item === filterType.value;
-    return matchSearch && matchType;
+    const matchProject = filterProject.value === '' || item.proyecto_id === filterProject.value;
+    return matchSearch && matchType && matchProject;
   });
 });
 
@@ -466,23 +474,21 @@ const paginatedItems = computed(() => {
   return filteredItems.value.slice(start, start + itemsPerPage);
 });
 
-watch([searchQuery, filterType], () => {
+watch([searchQuery, filterType, filterProject], () => {
   currentPage.value = 1;
 });
 
 // Metrics Computed
 const metrics = computed(() => {
-  let totalValue = 0;
   let criticals = 0;
   items.value.forEach(i => {
-    totalValue += (parseFloat(i.costo_unitario) * parseFloat(i.stock_actual));
     if (parseFloat(i.stock_actual) <= parseFloat(i.stock_minimo)) criticals++;
   });
   
   return [
-    { label: "Valor Total Stock", value: `Q ${totalValue.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`, change: "Actual", icon: Square3Stack3DIcon, color: "primary" },
     { label: "Artículos Críticos", value: criticals.toString(), change: "Atención Requerida", icon: ExclamationTriangleIcon, color: "tertiary" },
     { label: "Total Catálogo", value: items.value.length.toString(), change: "Ítems Registrados", icon: CubeIcon, color: "primary" },
+    { label: "Proyectos Activos", value: projects.value.length.toString(), change: "En curso", icon: ChartBarIcon, color: "primary" },
   ];
 });
 
@@ -546,12 +552,12 @@ const isEditing = ref(false);
 const editItemId = ref(null);
 const formItem = ref({
   tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', 
-  unidad_medida: '', costo_unitario: '', stock_minimo: ''
+  unidad_medida: '', stock_minimo: '', proyecto_id: ''
 });
 
 const openItemModal = () => {
   isEditing.value = false;
-  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', costo_unitario: '', stock_minimo: ''};
+  formItem.value = {tipo_item: 'Material', codigo_sku: '', nombre: '', descripcion: '', unidad_medida: '', stock_minimo: '', proyecto_id: ''};
   showItemModal.value = true;
 };
 

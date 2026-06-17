@@ -25,7 +25,7 @@ class InventoryService
     {
         $this->validateItemData($data);
 
-        if ($this->itemRepository->findBySku($data['codigo_sku'])) {
+        if (!empty($data['codigo_sku']) && $this->itemRepository->findBySku($data['codigo_sku'])) {
             throw new Exception('El código SKU ya existe en el catálogo.', 400);
         }
 
@@ -37,7 +37,7 @@ class InventoryService
     {
         $this->validateItemData($data);
 
-        if ($this->itemRepository->findBySku($data['codigo_sku'], $id)) {
+        if (!empty($data['codigo_sku']) && $this->itemRepository->findBySku($data['codigo_sku'], $id)) {
             throw new Exception('El código SKU ya está en uso por otro ítem.', 400);
         }
 
@@ -75,10 +75,6 @@ class InventoryService
 
             $this->itemRepository->updateStock($data['item_id'], $data['cantidad'], $operacion);
 
-            if ($data['tipo_movimiento'] === 'Entrada' && $data['costo_unitario'] > 0) {
-                $this->itemRepository->updateCostoUnitario($data['item_id'], $data['costo_unitario']);
-            }
-
             $pdo->commit();
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -88,8 +84,8 @@ class InventoryService
 
     private function validateItemData(array $data): void
     {
-        if (empty($data['tipo_item']) || empty($data['codigo_sku']) || empty($data['nombre']) || empty($data['unidad_medida'])) {
-            throw new Exception('Tipo, SKU, Nombre y Unidad de medida son requeridos.', 400);
+        if (empty($data['tipo_item']) || empty($data['nombre']) || empty($data['unidad_medida'])) {
+            throw new Exception('Tipo, Nombre y Unidad de medida son requeridos.', 400);
         }
     }
 
