@@ -60,6 +60,12 @@ class UserService
         $data['rol'] = $data['rol'] ?? $user['rol'];
         $data['estado'] = $data['estado'] ?? $user['estado'];
         
+        if (array_key_exists('permisos', $data)) {
+            // Keep it as is (can be null or string)
+        } else {
+            $data['permisos'] = $user['permisos'] ?? null;
+        }
+        
         if ($data['usuario'] !== $user['usuario']) {
             if ($this->userRepository->findByUsuario($data['usuario'])) {
                 throw new Exception('El nombre de usuario ya está en uso', 400);

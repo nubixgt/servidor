@@ -63,6 +63,29 @@ router.beforeEach((to, from, next) => {
         } else {
             next('/dashboard');
         }
+    } else if (to.meta.requiresAuth && authStore.userRole !== 'admin') {
+        // Validación de permisos
+        const pathName = to.path.substring(1); // ej. 'personnel'
+        
+        // Excepciones que siempre pueden ver todos si están logueados
+        if (pathName === 'dashboard' || pathName === '') {
+            next();
+            return;
+        }
+
+        const permisos = authStore.userPermisos || [];
+        
+        // Si la ruta no está en sus permisos, redirigir al dashboard
+        if (!permisos.includes(pathName)) {
+            // Verificar si es la ruta base del rol
+            if (authStore.userRole === 'tecnico' && pathName === 'tech-machinery') {
+                 next();
+            } else {
+                 next('/dashboard');
+            }
+        } else {
+            next();
+        }
     } else {
         next();
     }

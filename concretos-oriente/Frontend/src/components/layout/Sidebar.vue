@@ -98,7 +98,14 @@ const allNavItemsArr = [
 ];
 
 const filteredItems = computed(() => {
-  return allNavItemsArr.filter(item => item.roles.includes(role.value || ""));
+  if (role.value === 'admin') {
+    // Admin ve todo excepto las vistas exclusivas de técnico si no están configuradas para admin
+    return allNavItemsArr.filter(item => item.roles.includes('admin'));
+  }
+  
+  // Para supervisor y tecnico, filtramos por los permisos que tienen asignados
+  const permisos = authStore.userPermisos || [];
+  return allNavItemsArr.filter(item => permisos.includes(item.id));
 });
 
 const handleLogout = () => {

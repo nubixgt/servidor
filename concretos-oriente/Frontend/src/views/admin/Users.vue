@@ -159,6 +159,38 @@
                 </div>
               </div>
 
+              <!-- Permisos section (solo para roles que no sean admin) -->
+              <div v-if="formData.rol !== 'admin'" class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h3 class="text-sm font-black text-white uppercase tracking-widest">Permisos de Acceso</h3>
+                    <p class="text-[10px] text-white/40 mt-1 uppercase">Selecciona los módulos a los que este usuario tendrá acceso</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    @click="toggleAllPermissions"
+                    class="px-3 py-1.5 bg-primary/20 hover:bg-primary/40 text-primary border border-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                  >
+                    {{ formData.permisos.length === availableModules.length ? 'Desmarcar Todos' : 'Acceso Completo' }}
+                  </button>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                  <label v-for="mod in availableModules" :key="mod.id" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all group">
+                    <div class="relative flex items-center justify-center w-5 h-5">
+                      <input 
+                        type="checkbox" 
+                        :value="mod.id" 
+                        v-model="formData.permisos"
+                        class="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                      />
+                      <CheckIcon class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                    </div>
+                    <span class="text-xs font-bold text-white/70 group-hover:text-white transition-colors">{{ mod.label }}</span>
+                  </label>
+                </div>
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Estado de la Cuenta</label>
@@ -244,8 +276,40 @@ const formData = ref({
   password: '',
   rol: 'admin',
   estado: 'Activo',
-  foto: null
+  foto: null,
+  permisos: []
 });
+
+const availableModules = [
+  { id: "personnel", label: "Personal" },
+  { id: "vehicles", label: "Vehículos" },
+  { id: "machinery", label: "Maquinaria" },
+  { id: "tech-machinery", label: "Estado Maquinaria (Técnico)" },
+  { id: "projects", label: "Proyectos" },
+  { id: "clients", label: "Clientes" },
+  { id: "tech-projects", label: "Mis Proyectos (Técnico)" },
+  { id: "inventory", label: "Inventario" },
+  { id: "suppliers", label: "Proveedores" },
+  { id: "project-incomes", label: "Ingresos por Proyectos" },
+  { id: "finance", label: "Ingresos y Egresos" },
+  { id: "recurrents", label: "Recurrentes" },
+  { id: "users", label: "Usuarios" },
+  { id: "bank-conciliation", label: "Bancos" },
+  { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento" },
+  { id: "budgets-estimations", label: "Presupuestos y Estimaciones" },
+  { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar" },
+  { id: "digital-documents", label: "Documentos Digitales" },
+  { id: "notifications-alerts", label: "Notificaciones y Alertas" },
+  { id: "payroll-expenses", label: "Planilla y Gastos" },
+];
+
+const toggleAllPermissions = () => {
+  if (formData.value.permisos.length === availableModules.length) {
+    formData.value.permisos = [];
+  } else {
+    formData.value.permisos = availableModules.map(m => m.id);
+  }
+};
 
 onMounted(() => {
   fetchUsers();
@@ -286,13 +350,20 @@ const openModal = (user = null) => {
   if (user) {
     isEditing.value = true;
     editingId.value = user.id;
+    
+    let parsedPermisos = [];
+    if (user.permisos) {
+       parsedPermisos = typeof user.permisos === 'string' ? JSON.parse(user.permisos) : user.permisos;
+    }
+
     formData.value = {
       nombre: user.nombre,
       usuario: user.usuario,
       password: '', // No mostrar contraseña anterior
       rol: user.rol,
       estado: user.estado,
-      foto: null
+      foto: null,
+      permisos: parsedPermisos || []
     };
   } else {
     isEditing.value = false;
@@ -303,7 +374,8 @@ const openModal = (user = null) => {
       password: '',
       rol: 'admin',
       estado: 'Activo',
-      foto: null
+      foto: null,
+      permisos: []
     };
   }
   showModal.value = true;
@@ -336,6 +408,13 @@ const submitForm = async () => {
   }
   data.append('rol', formData.value.rol);
   data.append('estado', formData.value.estado);
+  
+  if (formData.value.rol !== 'admin') {
+    data.append('permisos', JSON.stringify(formData.value.permisos));
+  } else {
+    // Si es admin, puede tener acceso a todo y la DB puede estar nula
+    data.append('permisos', JSON.stringify([])); 
+  }
   
   if (formData.value.foto) {
     data.append('foto', formData.value.foto);
