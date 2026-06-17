@@ -144,7 +144,7 @@
               <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
                 <button type="button" @click="closeModalStep1" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
                 <button type="submit" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all">
-                  Crear Despacho (con GPS)
+                  Crear Despacho
                 </button>
               </div>
             </form>
@@ -200,7 +200,7 @@
               <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
                 <button type="button" @click="closeModalStep2" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
                 <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-black py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-amber-500/20 transition-all">
-                  Guardar y Enviar (con GPS)
+                  Guardar y Enviar
                 </button>
               </div>
             </form>
@@ -261,7 +261,7 @@
               <div class="pt-6 flex justify-end gap-4 border-t border-white/5">
                 <button type="button" @click="closeModalStep3" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
                 <button type="submit" class="bg-sky-500 hover:bg-sky-400 text-black py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-sky-500/20 transition-all">
-                  Finalizar Viaje (con GPS)
+                  Finalizar Viaje
                 </button>
               </div>
             </form>
