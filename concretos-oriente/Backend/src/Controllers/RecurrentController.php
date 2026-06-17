@@ -15,18 +15,12 @@ class RecurrentController extends Controller
         $this->recurrentService = new RecurrentService();
     }
 
-    private function getUsername(): string
-    {
-        // We use X-User-Name header to simulate the logged in user
-        return $_SERVER['HTTP_X_USER_NAME'] ?? '';
-    }
-
     #[Route('/recurrents', 'GET')]
     public function index()
     {
         try {
-            $username = $this->getUsername();
-            $data = $this->recurrentService->getAllByUser($username);
+            $user = $this->getUser();
+            $data = $this->recurrentService->getAllByUser($user['id']);
             $this->json(['status' => 'success', 'data' => $data]);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);
@@ -37,7 +31,7 @@ class RecurrentController extends Controller
     public function store()
     {
         try {
-            $username = $this->getUsername();
+            $user = $this->getUser();
             
             $input = json_decode(file_get_contents('php://input'), true);
             $data = [
@@ -47,7 +41,7 @@ class RecurrentController extends Controller
                 'dia_pago'    => isset($input['dia_pago']) && $input['dia_pago'] !== '' ? (int)$input['dia_pago'] : null,
             ];
 
-            $this->recurrentService->create($data, $username);
+            $this->recurrentService->create($data, $user['id']);
             $this->json(['status' => 'success', 'message' => 'Recurrente creado exitosamente']);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);
@@ -58,7 +52,7 @@ class RecurrentController extends Controller
     public function update(int $id)
     {
         try {
-            $username = $this->getUsername();
+            $user = $this->getUser();
             
             $input = json_decode(file_get_contents('php://input'), true);
             $data = [
@@ -68,7 +62,7 @@ class RecurrentController extends Controller
                 'dia_pago'    => isset($input['dia_pago']) && $input['dia_pago'] !== '' ? (int)$input['dia_pago'] : null,
             ];
 
-            $this->recurrentService->update($id, $data, $username);
+            $this->recurrentService->update($id, $data, $user['id']);
             $this->json(['status' => 'success', 'message' => 'Recurrente actualizado exitosamente']);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);
@@ -79,8 +73,8 @@ class RecurrentController extends Controller
     public function destroy(int $id)
     {
         try {
-            $username = $this->getUsername();
-            $this->recurrentService->delete($id, $username);
+            $user = $this->getUser();
+            $this->recurrentService->delete($id, $user['id']);
             $this->json(['status' => 'success', 'message' => 'Recurrente eliminado exitosamente']);
         } catch (Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);

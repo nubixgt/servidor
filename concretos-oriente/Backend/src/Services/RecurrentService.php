@@ -13,35 +13,31 @@ class RecurrentService
         $this->repository = new RecurrentRepository();
     }
 
-    public function getAllByUser(string $username): array
+    public function getAllByUser(int $userId): array
     {
-        if (empty($username)) {
-            // Fallback for simulated environments or missing headers
-            return $this->repository->findAll();
-        }
-        return $this->repository->findAllByUser($username);
+        return $this->repository->findAllByUser($userId);
     }
 
-    public function create(array $data, string $username): int
+    public function create(array $data, int $userId): int
     {
         if (empty($data['concepto'])) {
             throw new Exception("El concepto es obligatorio");
         }
-        $data['creado_por'] = $username;
+        $data['created_by'] = $userId;
         return $this->repository->create($data);
     }
 
-    public function update(int $id, array $data, string $username): void
+    public function update(int $id, array $data, int $userId): void
     {
         if (empty($data['concepto'])) {
             throw new Exception("El concepto es obligatorio");
         }
-        $data['creado_por'] = $username;
+        $data['created_by'] = $userId;
         $this->repository->update($id, $data);
     }
 
-    public function delete(int $id, string $username): void
+    public function delete(int $id, int $userId): void
     {
-        $this->repository->delete($id, $username);
+        $this->repository->delete($id, $userId);
     }
 }
