@@ -63,13 +63,17 @@
           <CheckCircleIcon class="w-6 h-6 text-emerald-400" /> Completados
         </h2>
         <div class="space-y-4">
-           <div v-for="trip in completedTrips" :key="trip.id" class="bg-black/40 p-5 rounded-2xl border border-white/5 opacity-70 hover:opacity-100 transition-opacity">
+           <div v-for="trip in completedTrips" :key="trip.id"
+             class="bg-black/40 p-5 rounded-2xl border border-white/5 opacity-70 hover:opacity-100 transition-all"
+             :class="authStore.userRole === 'admin' ? 'cursor-pointer hover:border-emerald-400/40 hover:shadow-[0_0_20px_rgba(52,211,153,0.08)]' : ''"
+             @click="authStore.userRole === 'admin' && openDetailModal(trip)">
              <div class="flex justify-between items-start mb-3">
                <span class="text-[10px] font-black uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md text-white/40">{{ trip.placa }}</span>
                <span class="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">Llegada: {{ trip.hora_llegada_obra }}</span>
              </div>
              <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
              <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.tipo_concreto || trip.producto }}</p>
+             <p v-if="authStore.userRole === 'admin'" class="text-[9px] text-emerald-400/40 uppercase font-bold mt-2 tracking-widest">Ver detalle completo →</p>
            </div>
            <p v-if="completedTrips.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes completados hoy</p>
         </div>
@@ -270,6 +274,124 @@
       </div>
     </transition>
 
+    <!-- Modal Detalle Completo (solo Admin) -->
+    <transition name="fade">
+      <div v-if="showModalDetail" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+        <div @click="closeDetailModal" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl border-emerald-500/20 max-h-[90vh] flex flex-col">
+          <div class="p-8 md:p-10 overflow-y-auto">
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-2 flex items-center gap-3">
+              <CheckCircleIcon class="w-7 h-7 text-emerald-400" /> Detalle del Viaje
+            </h3>
+            <p class="text-[10px] font-black text-white/30 uppercase tracking-widest mb-8">Registro completo · ID #{{ tripDetail?.id }}</p>
+
+            <!-- Bloque 1: Planta -->
+            <div class="mb-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-[10px] font-black">1</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-primary">Planta Concreto</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Proyecto</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.proyecto_nombre }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Vehículo</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.placa }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Piloto</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.piloto_nombre }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Producto / M³</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.producto }} · {{ tripDetail?.m3 }} M³</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Planta</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.hora_planta }}</p>
+                </div>
+                <a v-if="tripDetail?.lat_planta && tripDetail?.lng_planta"
+                  :href="`https://www.google.com/maps?q=${tripDetail.lat_planta},${tripDetail.lng_planta}`"
+                  target="_blank"
+                  class="bg-primary/10 rounded-2xl p-4 border border-primary/20 hover:border-primary/50 transition-all group">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-primary/60 mb-1">GPS Planta</p>
+                  <p class="text-sm font-bold text-primary group-hover:underline">Ver en mapa →</p>
+                </a>
+                <div v-else class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">GPS Planta</p>
+                  <p class="text-sm font-bold text-white/30">No disponible</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 2: Piloto -->
+            <div class="mb-6">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 text-[10px] font-black">2</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-amber-400">Formulario Piloto</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Salida</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.hora_salida }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Llegada</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.hora_llegada }}</p>
+                </div>
+                <a v-if="tripDetail?.lat_piloto && tripDetail?.lng_piloto"
+                  :href="`https://www.google.com/maps?q=${tripDetail.lat_piloto},${tripDetail.lng_piloto}`"
+                  target="_blank"
+                  class="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20 hover:border-amber-400/50 transition-all group">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-amber-400/60 mb-1">GPS Piloto</p>
+                  <p class="text-sm font-bold text-amber-400 group-hover:underline">Ver en mapa →</p>
+                </a>
+                <div v-else class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">GPS Piloto</p>
+                  <p class="text-sm font-bold text-white/30">No disponible</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 3: Colocación -->
+            <div class="mb-8">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-lg bg-sky-500/20 flex items-center justify-center text-sky-400 text-[10px] font-black">3</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-sky-400">Encargado Colocación</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Tipo de Concreto</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.tipo_concreto }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Llegada Obra</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.hora_llegada_obra }}</p>
+                </div>
+                <a v-if="tripDetail?.lat_colocacion && tripDetail?.lng_colocacion"
+                  :href="`https://www.google.com/maps?q=${tripDetail.lat_colocacion},${tripDetail.lng_colocacion}`"
+                  target="_blank"
+                  class="bg-sky-500/10 rounded-2xl p-4 border border-sky-500/20 hover:border-sky-400/50 transition-all group">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-sky-400/60 mb-1">GPS Colocación</p>
+                  <p class="text-sm font-bold text-sky-400 group-hover:underline">Ver en mapa →</p>
+                </a>
+                <div v-else class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">GPS Colocación</p>
+                  <p class="text-sm font-bold text-white/30">No disponible</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button @click="closeDetailModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
   </div>
 </template>
 
@@ -427,6 +549,17 @@ const submitStep1 = async () => {
     });
   }
 };
+
+// Detail Modal (admin only)
+const showModalDetail = ref(false);
+const tripDetail = ref(null);
+
+const openDetailModal = (trip) => {
+  tripDetail.value = trip;
+  showModalDetail.value = true;
+};
+
+const closeDetailModal = () => { showModalDetail.value = false; };
 
 // Step 2: Piloto
 const openStep2Modal = (trip) => {
