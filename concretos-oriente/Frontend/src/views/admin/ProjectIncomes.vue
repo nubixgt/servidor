@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
     <!-- Header y Selección de Proyecto -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
       <div>
@@ -62,7 +62,7 @@
           <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Historial cronológico de ingresos del contrato</p>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full min-w-[640px] text-left">
             <thead>
               <tr class="bg-black/20 text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">
                 <th class="px-8 py-6"># / Tipo</th>
@@ -133,7 +133,7 @@
           <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Consolidado general del proyecto</p>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full min-w-[640px] text-left">
             <thead>
               <tr class="bg-black/20 text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">
                 <th class="px-8 py-6">Fuente</th>
@@ -168,7 +168,7 @@
     <!-- MODAL PRINCIPAL (Anticipo, Estimacion, Pago Final) -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="closeModal"></div>
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="600">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-4 md:p-10 relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] custom-scrollbar" data-aos="zoom-in-up" data-aos-duration="600">
         <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
           <div>
             <h3 class="text-3xl font-black text-white italic tracking-tighter uppercase">{{ modalTitle }}</h3>
@@ -270,7 +270,7 @@
     <!-- MODAL ACTUALIZAR FUENTE A RECIBIDO -->
     <div v-if="showSourceModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="closeSourceModal"></div>
-      <div class="glass-card w-full max-w-lg rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]" data-aos="zoom-in" data-aos-duration="400">
+      <div class="glass-card w-full max-w-lg rounded-[40px] p-4 md:p-10 relative z-10 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]" data-aos="zoom-in" data-aos-duration="400">
         <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
           <div>
             <h3 class="text-2xl font-black text-white italic tracking-tighter uppercase">Actualizar Cobro</h3>

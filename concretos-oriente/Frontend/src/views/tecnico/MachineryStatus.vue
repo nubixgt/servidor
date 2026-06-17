@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-10">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-10">
     <div class="space-y-3">
       <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">Control de Estatus</h2>
       <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">Monitoreo operativo de flota y herramientas</p>

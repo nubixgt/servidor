@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
 
     <!-- Toast Alert -->
     <div

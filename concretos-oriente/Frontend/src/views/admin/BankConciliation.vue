@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
 
     <!-- Search & Intro -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -102,7 +102,7 @@
         <p class="text-white/40 font-bold uppercase tracking-widest text-[10px] mb-8">Transacciones de la cuenta: {{ selectedAccount?.nombre_banco }} - {{ selectedAccount?.numero_cuenta }}</p>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full min-w-[640px] text-left">
             <thead>
               <tr class="text-[11px] font-bold text-white/20 uppercase tracking-[0.3em] border-b border-white/5">
                 <th class="px-6 py-4">Fecha</th>

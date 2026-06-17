@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
     <!-- KPIs Section -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div
@@ -25,7 +25,7 @@
 
     <!-- Charts Row -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-      <div class="lg:col-span-2 glass-card p-12 rounded-[56px] relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="lg:col-span-2 glass-card p-5 md:p-12 rounded-[56px] relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
         <div class="flex justify-between items-center mb-12 relative z-10">
           <div>
@@ -70,7 +70,7 @@
         </div>
       </div>
 
-      <div class="glass-card p-12 rounded-[56px] flex flex-col border border-white/5 transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card p-5 md:p-12 rounded-[56px] flex flex-col border border-white/5 transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-3xl font-black text-white uppercase italic tracking-tighter">Vector de Presupuesto</h3>
         <p class="text-[10px] font-bold text-white/30 mt-2 mb-12 uppercase tracking-[0.2em]">Perfil de distribución de recursos</p>
         <div class="relative w-60 h-60 mx-auto mb-12 flex items-center justify-center">
@@ -99,9 +99,9 @@
 
     <!-- Transactions Section -->
     <section class="glass-card rounded-[56px] overflow-hidden border border-white/5 shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000">
-      <div class="p-12 flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 bg-white/5 backdrop-blur-3xl">
+      <div class="p-5 md:p-12 flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 bg-white/5 backdrop-blur-3xl">
         <div>
-          <h3 class="text-4xl font-black text-white italic uppercase tracking-tighter">Protocolo de Transacciones</h3>
+          <h3 class="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter">Protocolo de Transacciones</h3>
           <p class="text-[10px] font-bold text-white/30 mt-3 uppercase tracking-[0.3em]">Libro mayor financiero en tiempo real</p>
         </div>
         <div class="flex flex-col md:flex-row items-center gap-4">
@@ -115,25 +115,25 @@
       </div>
 
       <div class="overflow-x-auto px-6">
-        <table class="w-full text-left">
+        <table class="w-full min-w-[640px] text-left">
           <thead>
             <tr class="text-[11px] font-bold text-white/20 uppercase tracking-[0.3em]">
-              <th class="px-10 py-10">Descripción / Fecha</th>
-              <th class="px-10 py-10">Tipo / Entidad</th>
-              <th class="px-10 py-10">Proyecto Vinculado</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">Descripción / Fecha</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">Tipo / Entidad</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">Proyecto Vinculado</th>
               <th class="px-10 py-10 text-right">Valor Neto</th>
-              <th class="px-10 py-10">Comprobante</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">Comprobante</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5">
             <tr v-if="loading">
-              <td colspan="5" class="px-10 py-10 text-center text-white/40">Sincronizando libro mayor...</td>
+              <td colspan="5" class="px-4 md:px-8 py-4 md:py-8 text-center text-white/40">Sincronizando libro mayor...</td>
             </tr>
             <tr v-else-if="paginatedTransactions.length === 0">
-              <td colspan="5" class="px-10 py-10 text-center text-white/40">No hay transacciones registradas.</td>
+              <td colspan="5" class="px-4 md:px-8 py-4 md:py-8 text-center text-white/40">No hay transacciones registradas.</td>
             </tr>
             <tr v-for="tx in paginatedTransactions" :key="tx.id + tx.transaction_type" class="hover:bg-white/5 group transition-all duration-500 cursor-pointer">
-              <td class="px-10 py-10">
+              <td class="px-4 md:px-8 py-4 md:py-8">
                 <div class="flex items-center gap-6">
                   <div :class="`w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-500 shadow-xl ${tx.transaction_type === 'Ingreso' ? 'text-primary group-hover:bg-primary group-hover:shadow-primary/30' : 'text-tertiary group-hover:bg-tertiary group-hover:shadow-tertiary/30'} group-hover:text-white`">
                     <component :is="tx.transaction_type === 'Ingreso' ? ArrowTrendingUpIcon : ArrowTrendingDownIcon" class="w-8 h-8" />
@@ -144,17 +144,17 @@
                   </div>
                 </div>
               </td>
-              <td class="px-10 py-10">
+              <td class="px-4 md:px-8 py-4 md:py-8">
                 <p class="font-black text-sm text-white uppercase">{{ tx.tipo_ingreso || tx.tipo_egreso }}</p>
                 <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1 block">{{ tx.pagador || tx.beneficiario || 'N/A' }}</span>
               </td>
-              <td class="px-10 py-10">
+              <td class="px-4 md:px-8 py-4 md:py-8">
                 <span class="text-sm font-bold text-white/40 uppercase tracking-widest">{{ tx.proyecto_nombre || 'Múltiples / General' }}</span>
               </td>
               <td :class="`px-10 py-10 text-right font-black italic text-2xl ${tx.transaction_type === 'Ingreso' ? 'text-primary shadow-[0_0_15px_#6366f130]' : 'text-tertiary shadow-[0_0_15px_#f43f5e30]'}`">
                 {{ tx.transaction_type === 'Ingreso' ? '+' : '-' }}Q{{ Number(tx.monto).toLocaleString('en-US', {minimumFractionDigits: 2}) }}
               </td>
-              <td class="px-10 py-10 text-center">
+              <td class="px-4 md:px-8 py-4 md:py-8 text-center">
                 <a v-if="tx.comprobante_path" :href="getFileUrl(tx.comprobante_path)" target="_blank" class="inline-flex p-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all shadow-xl" title="Ver Comprobante">
                   <DocumentTextIcon class="w-6 h-6" />
                 </a>
@@ -165,7 +165,7 @@
         </table>
       </div>
 
-      <div v-if="totalPages > 1" class="p-10 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-black/20">
+      <div v-if="totalPages > 1" class="p-5 md:p-10 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 bg-black/20">
         <p class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Página {{ currentPage }} de {{ totalPages }}</p>
         <div class="flex items-center gap-4">
           <button @click="currentPage--" :disabled="currentPage === 1" class="w-12 h-12 flex items-center justify-center rounded-2xl border border-white/10 text-white/40 hover:bg-white/5 disabled:opacity-30 transition-all">
@@ -179,14 +179,14 @@
     </section>
 
     <!-- FAB -->
-    <button @click="openFinanceModal" class="fixed bottom-12 right-12 w-20 h-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+    <button @click="openFinanceModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 w-14 h-14 md:w-20 md:h-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
       <PlusIcon class="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 shadow-[0_0_20px_rgba(99,102,241,0.5)]" />
     </button>
 
     <!-- NEW TRANSACTION MODAL -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registro Financiero</h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"><XMarkIcon class="w-6 h-6" /></button>

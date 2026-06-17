@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
     <!-- Header and top actionable items -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-3">
@@ -133,7 +133,7 @@
     <!-- Primary Table layout or listing -->
     <div class="glass-card rounded-[40px] overflow-hidden border border-white/5 shadow-2xl">
       <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <table class="w-full min-w-[640px] text-left">
           <thead>
             <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
               <th class="px-8 py-5">Empresa / Cliente</th>
@@ -285,7 +285,7 @@
         ></div>
 
         <!-- Inner drawer panel content -->
-        <div class="relative w-full max-w-lg bg-slate-950 border-l border-white/10 p-10 flex flex-col justify-between shadow-2xl h-full overflow-y-auto transform transition-transform duration-300">
+        <div class="relative w-full max-w-lg bg-slate-950 border-l border-white/10 p-5 md:p-10 flex flex-col justify-between shadow-2xl h-full overflow-y-auto transform transition-transform duration-300">
           <!-- Drawer Top Header info -->
           <div class="space-y-6">
             <div class="flex items-center justify-between border-b border-white/5 pb-5">

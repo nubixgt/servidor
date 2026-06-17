@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-10 relative">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-10 relative">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -55,7 +55,7 @@
           </div>
 
           <!-- Tipo -->
-          <select v-model="filterTipo" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[160px]">
+          <select v-model="filterTipo" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none w-full md:w-auto md:min-w-[160px]">
             <option value="">Todos los tipos</option>
             <option value="Administrativo">Administrativo</option>
             <option value="Operador">Operador</option>
@@ -64,14 +64,14 @@
           </select>
 
           <!-- Estado -->
-          <select v-model="filterEstado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[140px]">
+          <select v-model="filterEstado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none w-full md:w-auto md:min-w-[140px]">
             <option value="">Todos los estados</option>
             <option value="Activo">Activo</option>
             <option value="Baja">Baja</option>
           </select>
 
           <!-- Proyecto -->
-          <select v-model="filterProyecto" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none min-w-[180px]">
+          <select v-model="filterProyecto" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none w-full md:w-auto md:min-w-[180px]">
             <option value="">Todos los proyectos</option>
             <option value="__sin__">Sin asignar</option>
             <option v-for="proj in projects" :key="proj.id" :value="String(proj.id)">
@@ -96,7 +96,7 @@
       </div>
 
       <div class="overflow-x-auto px-4">
-        <table class="w-full text-left">
+        <table class="w-full min-w-[640px] text-left">
           <thead>
             <tr class="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">
               <th class="px-8 py-8">Nombre del Empleado</th>
@@ -231,7 +231,7 @@
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
 
-      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Empleado' : 'Añadir Nuevo Personal' }}</h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -417,7 +417,7 @@
     <div v-if="showViewModal && selectedEmp" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewModal"></div>
 
-      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Detalles del Empleado</h3>
           <button @click="closeViewModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">

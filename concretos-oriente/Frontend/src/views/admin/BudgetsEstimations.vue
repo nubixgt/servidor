@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -93,7 +93,7 @@
           </div>
 
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full min-w-[640px] text-left border-collapse">
               <thead>
                 <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5">
                   <th class="px-10 py-6">Proyecto</th>

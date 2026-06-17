@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-8 relative">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-8 relative">
     <!-- Header Principal -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-secondary/30 p-8 rounded-3xl border border-white/5 backdrop-blur-sm">
       <div class="flex items-center gap-6">
@@ -28,7 +28,7 @@
       </div>
       
       <div class="flex flex-col md:flex-row gap-4 shrink-0">
-        <div class="relative min-w-[200px]">
+        <div class="relative w-full md:w-auto md:min-w-[200px]">
           <FunnelIcon class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40 z-10" />
           <select v-model="filterRole" class="w-full bg-black/40 border border-white/10 rounded-2xl pl-10 pr-5 py-3 text-white focus:border-primary transition-all font-bold text-sm appearance-none relative">
             <option value="all">Todos los roles</option>
@@ -38,7 +38,7 @@
           </select>
         </div>
         
-        <div class="relative min-w-[200px]">
+        <div class="relative w-full md:w-auto md:min-w-[200px]">
           <select v-model="filterStatus" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3 text-white focus:border-primary transition-all font-bold text-sm appearance-none">
             <option value="all">Todos los estados</option>
             <option value="Activo">Activos</option>

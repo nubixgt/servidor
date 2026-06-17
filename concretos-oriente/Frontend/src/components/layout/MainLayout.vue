@@ -1,10 +1,19 @@
 <template>
   <div class="min-h-screen bg-app-scenic relative selection:bg-primary/30 selection:text-white">
     <Sidebar />
-    
+
+    <!-- Mobile overlay -->
+    <Transition name="fade">
+      <div
+        v-if="sidebarOpen"
+        @click="sidebarOpen = false"
+        class="fixed inset-0 bg-black/60 z-40 md:hidden"
+      ></div>
+    </Transition>
+
     <div class="flex flex-col min-h-screen relative z-10">
       <TopBar />
-      
+
       <main class="flex-grow md:ml-[280px]">
         <router-view v-slot="{ Component }">
           <transition name="fade-slide" mode="out-in">
@@ -12,8 +21,8 @@
           </transition>
         </router-view>
       </main>
-      
-      <footer class="md:ml-[280px] p-10 text-center text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
+
+      <footer class="md:ml-[280px] py-6 px-4 text-center text-xs font-bold text-white/40 uppercase tracking-[0.2em]">
         Concretos del Oriente © 2026
       </footer>
     </div>
@@ -26,8 +35,12 @@
 </template>
 
 <script setup>
+import { ref, provide } from 'vue';
 import Sidebar from './Sidebar.vue';
 import TopBar from './TopBar.vue';
+
+const sidebarOpen = ref(false);
+provide('sidebarOpen', sidebarOpen);
 </script>
 
 <style>

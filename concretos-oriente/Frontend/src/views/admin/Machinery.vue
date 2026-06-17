@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
@@ -88,8 +88,8 @@
       </div>
       
       <!-- Filters Machinery -->
-      <div v-if="activeTab === 'machinery'" class="flex gap-4">
-        <select v-model="filterCategory" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+      <div v-if="activeTab === 'machinery'" class="flex flex-wrap gap-3">
+        <select v-model="filterCategory" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
           <option value="">Todas las Categorías</option>
           <option value="Maquinaria Pesada">Maquinaria Pesada</option>
           <option value="Maquinaria Especial">Maquinaria Especial</option>
@@ -97,7 +97,7 @@
           <option value="Transporte Pesado">Transporte Pesado</option>
           <option value="Equipo Menor">Equipo Menor</option>
         </select>
-        <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+        <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
           <option value="">Todos los Estados</option>
           <option value="Activo">Activo</option>
           <option value="En Mantenimiento">En Mantenimiento</option>
@@ -107,8 +107,8 @@
       </div>
 
       <!-- Filters Log -->
-      <div v-if="activeTab === 'log'" class="flex gap-4">
-        <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+      <div v-if="activeTab === 'log'" class="flex flex-wrap gap-3">
+        <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
           <option value="">Todos los Proyectos</option>
           <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
         </select>
@@ -195,7 +195,7 @@
       <!-- TAB: BITÁCORA -->
       <section v-else-if="activeTab === 'log'" key="log" class="glass-card rounded-[40px] overflow-hidden border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="overflow-x-auto px-4">
-          <table class="w-full text-left">
+          <table class="w-full min-w-[640px] text-left">
             <thead>
               <tr class="border-b border-white/5">
                 <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Fecha</th>
@@ -272,7 +272,7 @@
     <div v-if="showMachineModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeMachineModal"></div>
       
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditingMachine ? 'Editar Maquinaria' : 'Registrar Nueva Maquinaria' }}</h3>
           <button @click="closeMachineModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -427,7 +427,7 @@
     <div v-if="showLogModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeLogModal"></div>
       
-      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registrar Bitácora Diaria</h3>
           <button @click="closeLogModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -502,7 +502,7 @@
     <transition name="fade">
       <div v-if="selectedMachine" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedMachine = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[85vh]" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[90vh]" data-aos="zoom-in-up" data-aos-duration="1000">
           
           <button @click="selectedMachine = null" class="absolute top-8 right-8 z-10 w-12 h-12 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
             <XMarkIcon class="w-6 h-6" />

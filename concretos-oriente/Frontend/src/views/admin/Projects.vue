@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 min-h-screen text-white relative">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 min-h-screen text-white relative">
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-10 bg-white/5 p-10 rounded-[48px] border border-white/10 backdrop-blur-xl">
       <div class="space-y-3">
         <h1 class="text-5xl font-black tracking-tighter uppercase italic">Portafolio de Proyectos</h1>
@@ -43,7 +43,7 @@
             <!-- Filtros rápidos -->
             <div class="flex gap-3 flex-wrap md:flex-nowrap">
               <!-- Estado -->
-              <select v-model="filterEstado" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[140px]">
+              <select v-model="filterEstado" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer w-full md:w-auto md:min-w-[140px]">
                 <option value="">Todos los estados</option>
                 <option value="Borrador">Borrador</option>
                 <option value="Activo">Activo</option>
@@ -53,13 +53,13 @@
               </select>
 
               <!-- Cliente -->
-              <select v-model="filterCliente" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[160px]">
+              <select v-model="filterCliente" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer w-full md:w-auto md:min-w-[160px]">
                 <option value="">Todos los clientes</option>
                 <option v-for="c in CLIENTES" :key="c.id" :value="c.id">{{ c.company_name }}</option>
               </select>
 
               <!-- Ordenar -->
-              <select v-model="sortBy" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer min-w-[160px]">
+              <select v-model="sortBy" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer w-full md:w-auto md:min-w-[160px]">
                 <option value="fecha_inicio_desc">Fecha inicio ↓</option>
                 <option value="fecha_inicio_asc">Fecha inicio ↑</option>
                 <option value="presupuesto_desc">Presupuesto ↓</option>
@@ -361,7 +361,7 @@
     </transition>
 
     <!-- Botón Añadir Proyecto -->
-    <button @click="openModal" class="fixed bottom-12 right-12 h-20 w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
+    <button @click="openModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 h-14 w-14 md:h-20 md:w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
       <PlusIcon class="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 shadow-[0_0_20px_rgba(99,102,241,0.5)]" />
     </button>
 
@@ -370,7 +370,7 @@
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
 
-        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[40px] p-4 md:p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]" data-aos="zoom-in-up" data-aos-duration="1000">
           <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
             <h3 class="text-3xl font-black text-white italic uppercase tracking-tight">{{ isEditing ? 'Editar Proyecto' : 'Registrar Nuevo Proyecto' }}</h3>
             <button @click="closeModal" class="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white">

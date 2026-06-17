@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
 
     <!-- Toast Notification -->
     <div
@@ -176,7 +176,7 @@
       <!-- List View -->
       <div v-else class="glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full min-w-[640px] text-left">
             <thead>
               <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
                 <th class="px-10 py-5">Nombre del archivo</th>
@@ -335,7 +335,7 @@
     <!-- Document Details Modal -->
     <div v-if="showDetailsModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/85 backdrop-blur-md">
       <div class="absolute inset-0 cursor-pointer" @click="showDetailsModal = false"></div>
-      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="relative w-full max-w-lg glass-card rounded-[40px] p-5 md:p-10 border border-white/10 bg-slate-950 shadow-[0_0_120px_rgba(99,102,241,0.25)] text-white" data-aos="zoom-in-up" data-aos-duration="1000">
         <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter mb-6">Detalles del Documento</h3>
         
         <div v-if="selectedDocument" class="space-y-4">

@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-10">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-10">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-3">
@@ -56,11 +56,11 @@
           />
         </div>
         <div class="flex items-center gap-4">
-          <select v-model="filterProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+          <select v-model="filterProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
             <option value="">Todos los Proyectos</option>
             <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
           </select>
-          <select v-model="filterType" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[200px]">
+          <select v-model="filterType" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
             <option value="">Todos los Tipos</option>
             <option value="Material">Material</option>
             <option value="Repuesto">Repuesto</option>
@@ -71,7 +71,7 @@
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <table class="w-full min-w-[640px] text-left">
           <thead>
             <tr class="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">
               <th class="px-12 py-8">Recurso / Código</th>
@@ -250,7 +250,7 @@
     <!-- CREATE/EDIT ITEM MODAL -->
     <div v-if="showItemModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeItemModal"></div>
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Ítem del Catálogo' : 'Nuevo Ítem del Catálogo' }}</h3>
           <button @click="closeItemModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -307,7 +307,7 @@
     <!-- KARDEX MOVEMENT MODAL -->
     <div v-if="showKardexModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeKardexModal"></div>
-      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registrar Movimiento (Kardex)</h3>
           <button @click="closeKardexModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">

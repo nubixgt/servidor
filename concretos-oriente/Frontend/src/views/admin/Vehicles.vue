@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-20 pb-20 px-10 max-w-7xl mx-auto space-y-12 text-white">
+    <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12 text-white">
         <!-- Toast Notice alerts -->
         <Transition name="toast">
             <div
@@ -298,7 +298,7 @@
                 <!-- List/Table of Vehicles Log Entries -->
                 <div class="glass-card rounded-[32px] overflow-hidden border border-white/5 shadow-2xl">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                        <table class="w-full min-w-[640px] text-left">
                             <thead>
                                 <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
                                     <th class="px-8 py-5">Vehículo / ID Placa</th>

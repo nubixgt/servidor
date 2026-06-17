@@ -1,8 +1,24 @@
 <template>
-  <aside class="w-[280px] h-screen fixed left-0 top-0 glass-sidebar flex-col py-8 z-50 hidden md:flex">
+  <!-- Sidebar drawer (mobile: slide-in, desktop: always visible) -->
+  <aside
+    :class="[
+      'w-[280px] h-screen fixed left-0 top-0 glass-sidebar flex flex-col py-8 z-50',
+      'transition-transform duration-300 ease-in-out',
+      'md:translate-x-0',
+      sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+    ]"
+  >
+    <!-- Close button (mobile only) -->
+    <button
+      @click="sidebarOpen = false"
+      class="absolute top-4 right-4 md:hidden p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+    >
+      <XMarkIcon class="w-5 h-5" />
+    </button>
+
     <div class="px-10 mb-12">
       <h1 class="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">Concretos del Oriente</h1>
-      
+
       <div v-if="role" class="mt-6 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-2">
         <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#6366f1]"></div>
         <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] italic">{{ role }}</p>
@@ -18,7 +34,7 @@
             v-slot="{ isActive, navigate }"
           >
             <button
-              @click="navigate"
+              @click="() => { navigate(); sidebarOpen = false; }"
               :class="[
                 'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group',
                 isActive
@@ -39,8 +55,7 @@
     </nav>
 
     <div class="pt-4 px-6 space-y-1 border-t border-white/5 mt-auto">
-
-      <button 
+      <button
         @click="handleLogout"
         class="w-full flex items-center px-6 py-3 rounded-xl text-white/60 hover:text-tertiary transition-all text-sm font-medium"
       >
@@ -52,20 +67,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import {
   Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon,
-  BanknotesIcon, ArrowRightOnRectangleIcon, PlusIcon,
-  CubeIcon, BuildingOfficeIcon, ShoppingBagIcon, ShieldCheckIcon,
+  BanknotesIcon, ArrowRightOnRectangleIcon,
+  CubeIcon, BuildingOfficeIcon, ShieldCheckIcon,
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
-  ArrowPathIcon
+  ArrowPathIcon, XMarkIcon
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const sidebarOpen = inject('sidebarOpen');
 
 const role = computed(() => authStore.userRole);
 
@@ -81,7 +97,6 @@ const allNavItemsArr = [
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "concrete-control", label: "Control Concreto", icon: TruckIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
-
   { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "finance", label: "Ingresos y Egresos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "recurrents", label: "Recurrentes", icon: ArrowPathIcon, roles: ["admin"] },
@@ -97,11 +112,8 @@ const allNavItemsArr = [
 
 const filteredItems = computed(() => {
   if (role.value === 'admin') {
-    // Admin ve todo excepto las vistas exclusivas de técnico si no están configuradas para admin
     return allNavItemsArr.filter(item => item.roles.includes('admin'));
   }
-  
-  // Para supervisor y tecnico, filtramos por los permisos que tienen asignados
   const permisos = authStore.userPermisos || [];
   return allNavItemsArr.filter(item => permisos.includes(item.id));
 });
