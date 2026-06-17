@@ -294,7 +294,7 @@ const pendingPilot = computed(() => trips.value.filter(t => parseInt(t.estado) =
 const pendingPlacement = computed(() => trips.value.filter(t => parseInt(t.estado) === 3));
 const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado) === 4));
 
-const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'Operativo'));
+const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'active' || v.estatus === 'Operativo'));
 
 const productUnit = computed(() => {
   return formStep1.value.producto === 'Cemento' ? 'Cantidad (Unidades)' : 'M3';
@@ -323,10 +323,13 @@ const fetchVehicles = async () => {
 
 const fetchTechnicians = async () => {
   try {
-    // Ideally filtered to only pilots/technicians. We'll use active-personnel.
     const res = await api.get('/payrolls/active-personnel');
     if (res.data.status === 'success') {
-      technicians.value = res.data.data.filter(p => p.puesto.toLowerCase().includes('piloto') || p.puesto.toLowerCase().includes('técnico') || p.puesto.toLowerCase().includes('tecnico'));
+      technicians.value = res.data.data.filter(p => {
+        if (!p.tipo_empleado) return false;
+        const tipo = p.tipo_empleado.toLowerCase();
+        return tipo.includes('piloto') || tipo.includes('técnico') || tipo.includes('tecnico') || tipo.includes('operador');
+      });
     }
   } catch (e) { console.error(e); }
 };
