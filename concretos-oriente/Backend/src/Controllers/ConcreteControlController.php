@@ -52,9 +52,9 @@ class ConcreteControlController extends Controller
         try {
             $this->inventoryRepo->updateStock($item['id'], $data['m3'], '-');
             
-            // Assume user ID is available from auth middleware, if not we will let it be null.
-            session_start();
-            $data['created_by'] = $_SESSION['user_id'] ?? null;
+            // Get user ID from JWT token
+            $user = $this->getUser();
+            $data['created_by'] = $user ? $user['id'] : null;
 
             $tripId = $this->tripRepo->create($data);
             
