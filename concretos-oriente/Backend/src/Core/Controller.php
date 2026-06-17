@@ -11,4 +11,19 @@ abstract class Controller
         echo json_encode($data);
         exit;
     }
+
+    // Helper method to get the current authenticated user's payload
+    protected function getUser()
+    {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+
+        if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $token = $matches[1];
+            // Need to require JwtUtils if not imported, but we can use fully qualified name
+            return \App\Utils\JwtUtils::validate($token);
+        }
+
+        return null;
+    }
 }

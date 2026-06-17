@@ -203,6 +203,7 @@
                 <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Proyecto</th>
                 <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Horómetro</th>
                 <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Operador</th>
+                <th v-if="authStore.userRole === 'admin'" class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Creador</th>
                 <th class="px-8 py-8 text-right">Acciones</th>
               </tr>
             </thead>
@@ -222,6 +223,7 @@
                   <p class="text-xs text-white/40">Final: <span class="text-white">{{ log.horometro_final }}</span></p>
                 </td>
                 <td class="px-8 py-6 text-sm text-white/80">{{ log.operador_nombre || 'N/A' }}</td>
+                <td v-if="authStore.userRole === 'admin'" class="px-8 py-6 text-sm text-white/80">{{ log.creado_por_nombre || 'N/A' }}</td>
                 <td class="px-8 py-6 text-right">
                   <div class="flex justify-end gap-2">
                     <button @click="openViewLog(log)" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Visualizar">
@@ -578,6 +580,10 @@
                     <div class="w-12 h-12 rounded-2xl bg-sky-500/20 flex items-center justify-center text-sky-400"><MapPinIcon class="w-6 h-6" /></div>
                     <div><p class="text-[10px] text-white/20 uppercase tracking-widest">Proyecto</p><p class="text-base font-bold text-white">{{ selectedMachine.proyecto_nombre || 'Sin asignar' }}</p></div>
                   </div>
+                  <div v-if="authStore.userRole === 'admin'" class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-tertiary/20 flex items-center justify-center text-tertiary"><UserIcon class="w-6 h-6" /></div>
+                    <div><p class="text-[10px] text-white/20 uppercase tracking-widest">Creado Por</p><p class="text-base font-bold text-white">{{ selectedMachine.creado_por_nombre || 'Sistema' }}</p></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -639,9 +645,9 @@
                 <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Combustible (Gal/Lts)</p>
                 <p class="text-base font-bold text-white">{{ selectedLog.combustible_consumido || 'N/A' }}</p>
               </div>
-              <div>
-                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Registrado el</p>
-                <p class="text-base font-bold text-white">{{ new Date(selectedLog.created_at).toLocaleString('es-GT') }}</p>
+              <div v-if="authStore.userRole === 'admin'">
+                <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Creador</p>
+                <p class="text-base font-bold text-white">{{ selectedLog.creado_por_nombre || 'Sistema' }}</p>
               </div>
             </div>
             
@@ -667,6 +673,9 @@ import {
   XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
+import { useAuthStore } from '../../stores/auth';
+
+const authStore = useAuthStore();
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 

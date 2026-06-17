@@ -16,9 +16,9 @@ class MachineryService
         $this->machineryLogRepository = new MachineryLogRepository();
     }
 
-    public function getAllMachinery(): array
+    public function getAllMachinery(?array $user = null): array
     {
-        return $this->machineryRepository->findAllWithDetails();
+        return $this->machineryRepository->findAllWithDetails($user);
     }
 
     public function createMachinery(array $data, ?array $fileData): array
@@ -110,9 +110,9 @@ class MachineryService
         }
     }
 
-    public function getAllLogs(): array
+    public function getAllLogs(?array $user = null): array
     {
-        return $this->machineryLogRepository->findAllWithDetails();
+        return $this->machineryLogRepository->findAllWithDetails($user);
     }
 
     public function createLog(array $data): array

@@ -22,7 +22,8 @@ class MachineryController extends Controller
     public function index()
     {
         try {
-            $data = $this->machineryService->getAllMachinery();
+            $user = $this->getUser();
+            $data = $this->machineryService->getAllMachinery($user);
 
             $this->json(['status' => 'success', 'data' => $data]);
         } catch (Exception $e) {
@@ -61,6 +62,7 @@ class MachineryController extends Controller
                                             ? $_POST['costo_adquisicion'] : null,
                 'fecha_adquisicion'     => (isset($_POST['fecha_adquisicion']) && $_POST['fecha_adquisicion'] !== '')
                                             ? $_POST['fecha_adquisicion'] : null,
+                'created_by'            => $this->getUser()['id'] ?? null,
             ];
 
             $fileData = $_FILES['foto'] ?? null;
@@ -156,7 +158,8 @@ class MachineryController extends Controller
     public function logIndex()
     {
         try {
-            $data = $this->machineryService->getAllLogs();
+            $user = $this->getUser();
+            $data = $this->machineryService->getAllLogs($user);
 
             $this->json(['status' => 'success', 'data' => $data]);
         } catch (Exception $e) {
@@ -183,6 +186,7 @@ class MachineryController extends Controller
                 'combustible_consumido'=> (isset($_POST['combustible_consumido']) && $_POST['combustible_consumido'] !== '')
                                             ? $_POST['combustible_consumido'] : null,
                 'observaciones'        => trim($_POST['observaciones'] ?? '') ?: null,
+                'created_by'           => $this->getUser()['id'] ?? null,
             ];
 
             $result = $this->machineryService->createLog($data);

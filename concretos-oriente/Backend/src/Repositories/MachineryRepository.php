@@ -19,18 +19,35 @@ class MachineryRepository
         return $this->pdo;
     }
 
-    public function findAllWithDetails(): array
+    public function findAllWithDetails(?array $user = null): array
     {
+        $whereClause = "";
+        $params = [];
+
+        if ($user && $user['role'] !== 'admin') {
+            $proyectos = $user['proyectos'] ?? [];
+            if (empty($proyectos)) {
+                return []; // Si no tiene proyectos asignados, no ve nada
+            }
+            $inQuery = implode(',', array_fill(0, count($proyectos), '?'));
+            $whereClause = "WHERE m.proyecto_id IN ($inQuery)";
+            $params = $proyectos;
+        }
+
         $sql = "SELECT
                     m.*,
                     CONCAT(p.nombres, ' ', p.apellidos) AS operador_nombre,
-                    pr.nombre AS proyecto_nombre
+                    pr.nombre AS proyecto_nombre,
+                    u.nombre AS creado_por_nombre
                 FROM machinery m
                 LEFT JOIN personnel p  ON p.id  = m.operador_id
                 LEFT JOIN projects  pr ON pr.id = m.proyecto_id
+                LEFT JOIN users u ON u.id = m.created_by
+                $whereClause
                 ORDER BY m.id DESC";
 
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -49,12 +66,12 @@ class MachineryRepository
                     (categoria, codigo_interno, marca, modelo, numero_serie, anio_fabricacion,
                      placa, horometro_actual, kilometraje_actual, intervalo_servicio,
                      fecha_ultimo_servicio, operador_id, proyecto_id, estado,
-                     costo_adquisicion, fecha_adquisicion)
+                     costo_adquisicion, fecha_adquisicion, created_by)
                 VALUES
                     (:categoria, :codigo_interno, :marca, :modelo, :numero_serie, :anio_fabricacion,
                      :placa, :horometro_actual, :kilometraje_actual, :intervalo_servicio,
                      :fecha_ultimo_servicio, :operador_id, :proyecto_id, :estado,
-                     :costo_adquisicion, :fecha_adquisicion)";
+                     :costo_adquisicion, :fecha_adquisicion, :created_by)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -74,6 +91,7 @@ class MachineryRepository
             'estado'             => $data['estado'],
             'costo_adquisicion'  => $data['costo_adquisicion'] ?? null,
             'fecha_adquisicion'  => $data['fecha_adquisicion'] ?? null,
+            'created_by'         => $data['created_by'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
