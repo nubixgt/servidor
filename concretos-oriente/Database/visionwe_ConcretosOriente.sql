@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 05-06-2026 a las 00:22:37
+-- Tiempo de generación: 17-06-2026 a las 16:32:12
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -418,7 +418,8 @@ CREATE TABLE `inventory_items` (
 INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `costo_unitario`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
 (3, 'Repuesto', '64564', 'Cemento', 'Cemento de buena calidad', 'm2', 10.00, 100.00, 170.00, '2026-05-20 21:03:34', '2026-05-26 14:12:31'),
 (4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 20.00, 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09'),
-(5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 10.00, 200.00, 100.00, '2026-05-26 14:13:37', '2026-05-26 14:17:46');
+(5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 10.00, 200.00, 100.00, '2026-05-26 14:13:37', '2026-05-26 14:17:46'),
+(6, 'Herramienta', '0000', 'palas', NULL, 'unidad', 100.00, 0.00, 20.00, '2026-06-17 16:20:53', '2026-06-17 16:21:23');
 
 -- --------------------------------------------------------
 
@@ -447,7 +448,8 @@ CREATE TABLE `inventory_kardex` (
 INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_origen_id`, `proyecto_destino_id`, `cantidad`, `costo_unitario`, `referencia_documento`, `notas`, `fecha_movimiento`, `created_at`) VALUES
 (3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', '2026-05-20 21:03:00', '2026-05-20 21:04:15'),
 (4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', '2026-05-22 22:46:00', '2026-05-22 22:47:09'),
-(6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', '2026-05-26 14:17:00', '2026-05-26 14:17:46');
+(6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', '2026-05-26 14:17:00', '2026-05-26 14:17:46'),
+(7, 'Entrada', 6, NULL, 2, 20.00, 100.00, NULL, NULL, '2026-06-17 16:21:00', '2026-06-17 16:21:23');
 
 -- --------------------------------------------------------
 
@@ -1295,13 +1297,13 @@ ALTER TABLE `income_records`
 -- AUTO_INCREMENT de la tabla `inventory_items`
 --
 ALTER TABLE `inventory_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `inventory_kardex`
 --
 ALTER TABLE `inventory_kardex`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery`
