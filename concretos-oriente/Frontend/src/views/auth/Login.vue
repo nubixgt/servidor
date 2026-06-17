@@ -25,6 +25,7 @@
                   v-model="username"
                   placeholder="admin, supervisor o tecnico"
                   class="w-full glass-input rounded-2xl py-5 pl-14 pr-6 focus:ring-2 focus:ring-primary/40 transition-all outline-none placeholder:text-white/10 font-medium"
+                  required
                 />
               </div>
             </div>
@@ -38,20 +39,27 @@
                   v-model="password"
                   placeholder="••••••••"
                   class="w-full glass-input rounded-2xl py-5 pl-14 pr-12 focus:ring-2 focus:ring-primary/40 transition-all outline-none placeholder:text-white/10 font-medium"
+                  required
                 />
                 <button type="button" class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">
                   <EyeIcon class="w-5 h-5" />
                 </button>
               </div>
             </div>
+            
+            <p v-if="errorMessage" class="text-red-400 text-sm font-bold text-center mt-2">{{ errorMessage }}</p>
           </div>
 
           <button 
             type="submit"
-            class="w-full glass-button-primary text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] active:translate-y-0 transition-all uppercase tracking-widest"
+            :disabled="isLoading"
+            class="w-full glass-button-primary text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-[0_20px_40px_-5px_rgba(99,102,241,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(99,102,241,0.5)] hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] active:translate-y-0 transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sincronizar Acceso
-            <ArrowRightIcon class="w-6 h-6" />
+            <span v-if="isLoading">Verificando...</span>
+            <template v-else>
+              Sincronizar Acceso
+              <ArrowRightIcon class="w-6 h-6" />
+            </template>
           </button>
         </form>
 
@@ -130,32 +138,34 @@ import {
 
 const username = ref("");
 const password = ref("");
+const errorMessage = ref("");
+const isLoading = ref(false);
 const router = useRouter();
 const authStore = useAuthStore();
 
 const autofill = (u, p) => {
   username.value = u;
   password.value = p;
+  errorMessage.value = "";
 };
 
-const handleSubmit = () => {
-  let role = "admin";
-  const userLower = username.value.toLowerCase();
+const handleSubmit = async () => {
+  errorMessage.value = "";
+  isLoading.value = true;
   
-  if (userLower.includes("admin")) {
-    role = "admin";
-  } else if (userLower.includes("supervisor")) {
-    role = "supervisor";
-  } else if (userLower.includes("tecnico")) {
-    role = "tecnico";
-  }
-
-  authStore.login(role, username.value);
-  
-  if (role === "tecnico") {
-    router.push("/tech-machinery");
-  } else {
-    router.push("/dashboard");
+  try {
+    const data = await authStore.login(username.value, password.value);
+    
+    // Redirect based on role
+    if (data.user.rol === "tecnico") {
+      router.push("/tech-machinery");
+    } else {
+      router.push("/dashboard");
+    }
+  } catch (error) {
+    errorMessage.value = error.message;
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>

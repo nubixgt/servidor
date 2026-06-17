@@ -38,6 +38,15 @@ class UserRepository
         return $result ?: null;
     }
 
+    public function findByUsuarioForAuth(string $usuario): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE usuario = :usuario AND estado = 'Activo'");
+        $stmt->execute(['usuario' => $usuario]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $result ?: null;
+    }
+
     public function create(array $data): int
     {
         $sql = "INSERT INTO users (nombre, usuario, password, rol, estado) VALUES (:nombre, :usuario, :password, :rol, :estado)";
