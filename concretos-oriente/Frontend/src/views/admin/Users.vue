@@ -336,6 +336,7 @@ const availableModules = [
   { id: "digital-documents", label: "Documentos Digitales" },
   { id: "notifications-alerts", label: "Notificaciones y Alertas" },
   { id: "payroll-expenses", label: "Planilla y Gastos" },
+  { id: "concrete-control", label: "Control Concreto" },
 ];
 
 const toggleAllPermissions = () => {
