@@ -59,8 +59,8 @@ class ConcreteControlController extends Controller
             $tripId = $this->tripRepo->create($data);
             
             $this->json(['status' => 'success', 'message' => 'Viaje creado exitosamente', 'data' => ['id' => $tripId]]);
-        } catch (Exception $e) {
-            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage() . ' en la linea ' . $e->getLine()], 500);
         }
     }
 

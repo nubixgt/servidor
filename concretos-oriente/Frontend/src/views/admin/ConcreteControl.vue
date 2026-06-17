@@ -413,10 +413,11 @@ const submitStep1 = async () => {
       Swal.fire({ icon: 'error', title: 'Error', text: res.data.message || 'Error al crear el despacho', background: '#0f172a', color: '#fff' });
     }
   } catch (error) {
+    const msg = error.response?.data?.message || 'Revisa el inventario disponible.';
     Swal.fire({
       icon: 'error',
       title: 'Inventario Insuficiente o Error',
-      text: error.response?.data?.message || 'Revisa el inventario disponible.',
+      text: msg,
       background: '#0f172a',
       color: '#fff'
     });
