@@ -13,6 +13,9 @@ import CheckinRegister from '../views/portal/checkin/CheckinRegister.vue';
 import CheckinList from '../views/portal/checkin/CheckinList.vue';
 import SacrificioRegister from '../views/portal/sacrificio/SacrificioRegister.vue';
 import SacrificioList from '../views/portal/sacrificio/SacrificioList.vue';
+import DesviacionRegister from '../views/portal/desviaciones/DesviacionRegister.vue';
+import DesviacionList from '../views/portal/desviaciones/DesviacionList.vue';
+import DesviacionDetails from '../views/portal/desviaciones/DesviacionDetails.vue';
 
 const routes = [
     {
@@ -56,6 +59,24 @@ const routes = [
                 name: 'SacrificioList',
                 component: SacrificioList,
                 meta: { roles: ['administrador'] }
+            },
+            {
+                path: 'desviaciones/nuevo',
+                name: 'DesviacionRegister',
+                component: DesviacionRegister,
+                meta: { roles: ['inspector'] }
+            },
+            {
+                path: 'desviaciones',
+                name: 'DesviacionList',
+                component: DesviacionList,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'desviaciones/:id',
+                name: 'DesviacionDetails',
+                component: DesviacionDetails,
+                meta: { roles: ['inspector', 'administrador'] }
             }
         ]
     },
