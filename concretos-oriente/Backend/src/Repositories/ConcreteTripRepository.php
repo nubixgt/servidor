@@ -40,11 +40,11 @@ class ConcreteTripRepository
     {
         $sql = "INSERT INTO concrete_trips (
                     proyecto_id, vehiculo_id, piloto_id, created_by,
-                    m3_arena, m3_piedrin, m3_cemento,
+                    m3_arena, m3_piedrin, m3_cemento, m3,
                     hora_planta, lat_planta, lng_planta, estado
                 ) VALUES (
                     :proyecto_id, :vehiculo_id, :piloto_id, :created_by,
-                    :m3_arena, :m3_piedrin, :m3_cemento,
+                    :m3_arena, :m3_piedrin, :m3_cemento, :m3,
                     :hora_planta, :lat_planta, :lng_planta, 2
                 )";
         $stmt = $this->pdo->prepare($sql);
@@ -56,6 +56,7 @@ class ConcreteTripRepository
             'm3_arena'    => !empty($data['m3_arena'])   ? (float)$data['m3_arena']   : null,
             'm3_piedrin'  => !empty($data['m3_piedrin']) ? (float)$data['m3_piedrin'] : null,
             'm3_cemento'  => !empty($data['m3_cemento']) ? (float)$data['m3_cemento'] : null,
+            'm3'          => !empty($data['m3'])         ? (float)$data['m3']         : null,
             'hora_planta' => date('H:i:s'),
             'lat_planta'  => $data['lat_planta'] ?? null,
             'lng_planta'  => $data['lng_planta'] ?? null

@@ -144,6 +144,12 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- M3 del camión -->
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">M3 (Capacidad del camión)</label>
+                  <input type="number" step="0.01" min="0" v-model="formStep1.m3" required placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                </div>
               </div>
 
               <!-- Action Buttons -->
@@ -316,6 +322,10 @@
                   </div>
                 </div>
                 <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">M3 del Camión</p>
+                  <p class="text-sm font-bold text-white">{{ tripDetail?.m3 ? tripDetail.m3 + ' M3' : '—' }}</p>
+                </div>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
                   <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Planta</p>
                   <p class="text-sm font-bold text-white">{{ tripDetail?.hora_planta }}</p>
                 </div>
@@ -479,7 +489,8 @@ const formStep1 = ref({
   piloto_id: '',
   m3_arena: '',
   m3_piedrin: '',
-  m3_cemento: ''
+  m3_cemento: '',
+  m3: ''
 });
 
 const formStep2 = ref({
@@ -512,7 +523,7 @@ const formStep3 = ref({
 
 // Step 1: Planta
 const openStep1Modal = () => {
-  formStep1.value = { proyecto_id: '', vehiculo_id: '', piloto_id: '', m3_arena: '', m3_piedrin: '', m3_cemento: '' };
+  formStep1.value = { proyecto_id: '', vehiculo_id: '', piloto_id: '', m3_arena: '', m3_piedrin: '', m3_cemento: '', m3: '' };
   showModalStep1.value = true;
 };
 
