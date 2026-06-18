@@ -29,7 +29,6 @@
           m.isCritical && filterCritical ? 'border-tertiary/50' : 'border-white/5',
           m.isCritical ? 'cursor-pointer' : ''
         ]"
-        data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div :class="`absolute top-0 right-0 w-32 h-32 bg-${m.color}/10 blur-[60px] rounded-full translate-x-10 -translate-y-10 group-hover:bg-${m.color}/20 transition-all`"></div>
         <div class="relative z-10 flex items-start justify-between">
