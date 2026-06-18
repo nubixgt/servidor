@@ -116,7 +116,8 @@ const filteredItems = computed(() => {
     return allNavItemsArr.filter(item => item.roles.includes('admin'));
   }
   const permisos = authStore.userPermisos || [];
-  return allNavItemsArr.filter(item => permisos.includes(item.id));
+  const efectivos = permisos.includes('recurrents') ? [...permisos, 'calendar'] : permisos;
+  return allNavItemsArr.filter(item => efectivos.includes(item.id));
 });
 
 const handleLogout = () => {

@@ -76,7 +76,13 @@ router.beforeEach((to, from, next) => {
         }
 
         const permisos = authStore.userPermisos || [];
-        
+
+        // Rutas que se heredan automáticamente de otro permiso
+        if (pathName === 'calendar' && permisos.includes('recurrents')) {
+            next();
+            return;
+        }
+
         // Si la ruta no está en sus permisos, redirigir al dashboard
         if (!permisos.includes(pathName)) {
             // Verificar si es la ruta base del rol
