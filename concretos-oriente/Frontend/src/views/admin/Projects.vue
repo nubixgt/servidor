@@ -399,7 +399,7 @@
             <!-- Monto -->
             <div>
               <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Monto (Q) *</label>
-              <input type="number" step="0.01" min="0" v-model="extensionForm.monto" required placeholder="0.00"
+              <input type="text" :value="getDisplayValue(extensionForm.monto)" @input="e => updateCurrencyField(extensionForm, 'monto', e)" required placeholder="Q 0.00"
                 class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all" />
             </div>
             <!-- Tipo -->
@@ -491,7 +491,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Presupuesto Contractual (GTQ) *</label>
-                <input v-model="formData.presupuesto" type="number" step="0.01" min="0" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="0.00" />
+                <input type="text" :value="getDisplayValue(formData.presupuesto)" @input="e => updateCurrencyField(formData, 'presupuesto', e)" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Q 0.00" />
               </div>
               <div>
                 <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Número de Contrato</label>
@@ -728,6 +728,22 @@ watch(selectedProject, (project) => {
   if (project) fetchBudgetExtensions(project.id);
   else budgetExtensions.value = [];
 });
+
+const getDisplayValue = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const str = String(val);
+  const parts = str.split('.');
+  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.length > 1 ? `Q ${numPart}.${parts[1]}` : `Q ${numPart}`;
+};
+
+const updateCurrencyField = (obj, key, event) => {
+  let raw = event.target.value.replace(/[^0-9.]/g, '');
+  const parts = raw.split('.');
+  if (parts.length > 2) raw = parts[0] + '.' + parts.slice(1).join('');
+  obj[key] = raw === '' ? 0 : raw;
+  event.target.value = getDisplayValue(raw);
+};
 
 const openExtensionModal = () => {
   extensionForm.value = { monto: '', tipo_ampliacion: '', documentos: [] };
