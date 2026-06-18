@@ -40,22 +40,25 @@ class ConcreteTripRepository
     {
         $sql = "INSERT INTO concrete_trips (
                     proyecto_id, vehiculo_id, piloto_id, created_by,
-                    producto, m3, hora_planta, lat_planta, lng_planta, estado
+                    m3_arena, m3_piedrin, m3_cemento,
+                    hora_planta, lat_planta, lng_planta, estado
                 ) VALUES (
                     :proyecto_id, :vehiculo_id, :piloto_id, :created_by,
-                    :producto, :m3, :hora_planta, :lat_planta, :lng_planta, 2
+                    :m3_arena, :m3_piedrin, :m3_cemento,
+                    :hora_planta, :lat_planta, :lng_planta, 2
                 )";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'proyecto_id' => $data['proyecto_id'],
             'vehiculo_id' => $data['vehiculo_id'],
-            'piloto_id' => $data['piloto_id'],
-            'created_by' => $data['created_by'],
-            'producto' => $data['producto'],
-            'm3' => $data['m3'],
-            'hora_planta' => date('H:i:s'), // Current time server-side
-            'lat_planta' => $data['lat_planta'] ?? null,
-            'lng_planta' => $data['lng_planta'] ?? null
+            'piloto_id'   => $data['piloto_id'],
+            'created_by'  => $data['created_by'],
+            'm3_arena'    => !empty($data['m3_arena'])   ? (float)$data['m3_arena']   : null,
+            'm3_piedrin'  => !empty($data['m3_piedrin']) ? (float)$data['m3_piedrin'] : null,
+            'm3_cemento'  => !empty($data['m3_cemento']) ? (float)$data['m3_cemento'] : null,
+            'hora_planta' => date('H:i:s'),
+            'lat_planta'  => $data['lat_planta'] ?? null,
+            'lng_planta'  => $data['lng_planta'] ?? null
         ]);
 
         return (int) $this->pdo->lastInsertId();

@@ -30,7 +30,7 @@
                <span class="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-md">{{ trip.hora_planta }}</span>
              </div>
              <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
-             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.producto }} - {{ trip.m3 }} M³</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ productSummary(trip) }}</p>
              <p class="text-[10px] text-white/20 uppercase mt-2">Piloto: {{ trip.piloto_nombre }}</p>
            </div>
            <p v-if="pendingPilot.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes pendientes</p>
@@ -50,7 +50,7 @@
                <span class="text-xs font-black text-sky-400 bg-sky-400/10 px-2 py-1 rounded-md">Salió: {{ trip.hora_salida }}</span>
              </div>
              <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
-             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.producto }} - {{ trip.m3 }} M³</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ productSummary(trip) }}</p>
            </div>
            <p v-if="pendingPlacement.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes en tránsito</p>
         </div>
@@ -72,7 +72,7 @@
                <span class="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">Llegada: {{ trip.hora_llegada_obra }}</span>
              </div>
              <p class="text-base font-bold text-white mb-1">{{ trip.proyecto_nombre }}</p>
-             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.tipo_concreto || trip.producto }}</p>
+             <p class="text-[11px] text-white/40 uppercase font-bold">{{ trip.tipo_concreto || productSummary(trip) }}</p>
              <p v-if="authStore.userRole === 'admin'" class="text-[9px] text-emerald-400/40 uppercase font-bold mt-2 tracking-widest">Ver detalle completo →</p>
            </div>
            <p v-if="completedTrips.length === 0" class="text-center text-white/30 text-xs font-bold uppercase tracking-widest py-8">No hay viajes completados hoy</p>
@@ -126,21 +126,23 @@
                   </select>
                 </div>
 
-                <!-- Producto -->
-                <div>
-                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Producto</label>
-                  <select v-model="formStep1.producto" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
-                    <option value="" disabled>Seleccione...</option>
-                    <option value="Arena">Arena</option>
-                    <option value="Piedrin">Piedrín</option>
-                    <option value="Cemento">Cemento</option>
-                  </select>
-                </div>
-
-                <!-- M3 / Unidades -->
-                <div>
-                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">{{ productUnit }}</label>
-                  <input type="number" step="0.01" v-model="formStep1.m3" required placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                <!-- Productos -->
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-3 pl-2">Producto</label>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 pl-2">Arena (M3)</label>
+                      <input type="number" step="0.01" min="0" v-model="formStep1.m3_arena" placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 pl-2">Piedrín (M3)</label>
+                      <input type="number" step="0.01" min="0" v-model="formStep1.m3_piedrin" placeholder="0.00" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-black uppercase tracking-widest text-white/30 mb-2 pl-2">Cemento (Unidades)</label>
+                      <input type="number" step="1" min="0" v-model="formStep1.m3_cemento" placeholder="0" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -180,10 +182,10 @@
                   <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Proyecto</label>
                   <input type="text" :value="formStep2.proyecto_nombre" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold truncate" />
                 </div>
-                <!-- M3 (Readonly) -->
+                <!-- Productos (Readonly) -->
                 <div>
-                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Cantidad M3</label>
-                  <input type="text" :value="formStep2.m3 + ' M³ - ' + formStep2.producto" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold" />
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Producto / Cantidad</label>
+                  <input type="text" :value="productSummary(formStep2)" disabled class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-white/60 font-bold" />
                 </div>
                 <div class="hidden md:block"></div> <!-- Spacer -->
 
@@ -304,9 +306,14 @@
                   <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Piloto</p>
                   <p class="text-sm font-bold text-white">{{ tripDetail?.piloto_nombre }}</p>
                 </div>
-                <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
-                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Producto / M³</p>
-                  <p class="text-sm font-bold text-white">{{ tripDetail?.producto }} · {{ tripDetail?.m3 }} M³</p>
+                <div class="bg-black/30 rounded-2xl p-4 border border-white/5 md:col-span-2">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-2">Producto</p>
+                  <div class="flex flex-wrap gap-3">
+                    <span v-if="tripDetail?.m3_arena" class="text-sm font-bold text-white">Arena: <span class="text-primary">{{ tripDetail.m3_arena }} M3</span></span>
+                    <span v-if="tripDetail?.m3_piedrin" class="text-sm font-bold text-white">Piedrín: <span class="text-primary">{{ tripDetail.m3_piedrin }} M3</span></span>
+                    <span v-if="tripDetail?.m3_cemento" class="text-sm font-bold text-white">Cemento: <span class="text-primary">{{ tripDetail.m3_cemento }} Uds</span></span>
+                    <span v-if="!tripDetail?.m3_arena && !tripDetail?.m3_piedrin && !tripDetail?.m3_cemento" class="text-sm font-bold text-white/30">—</span>
+                  </div>
                 </div>
                 <div class="bg-black/30 rounded-2xl p-4 border border-white/5">
                   <p class="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">Hora Planta</p>
@@ -418,9 +425,6 @@ const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado)
 
 const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'active' || v.estatus === 'Operativo'));
 
-const productUnit = computed(() => {
-  return formStep1.value.producto === 'Cemento' ? 'Cantidad (Unidades)' : 'M3';
-});
 
 onMounted(() => {
   fetchProjects();
@@ -473,19 +477,29 @@ const formStep1 = ref({
   proyecto_id: '',
   vehiculo_id: '',
   piloto_id: '',
-  producto: '',
-  m3: ''
+  m3_arena: '',
+  m3_piedrin: '',
+  m3_cemento: ''
 });
 
 const formStep2 = ref({
   tripId: null,
   placa: '',
   proyecto_nombre: '',
-  producto: '',
-  m3: '',
+  m3_arena: null,
+  m3_piedrin: null,
+  m3_cemento: null,
   hora_salida: '',
   hora_llegada: ''
 });
+
+const productSummary = (obj) => {
+  const parts = [];
+  if (obj.m3_arena)   parts.push(`Arena ${obj.m3_arena} M3`);
+  if (obj.m3_piedrin) parts.push(`Piedrín ${obj.m3_piedrin} M3`);
+  if (obj.m3_cemento) parts.push(`Cemento ${obj.m3_cemento} Uds`);
+  return parts.join(' · ') || '—';
+};
 
 const formStep3 = ref({
   tripId: null,
@@ -498,13 +512,22 @@ const formStep3 = ref({
 
 // Step 1: Planta
 const openStep1Modal = () => {
-  formStep1.value = { proyecto_id: '', vehiculo_id: '', piloto_id: '', producto: '', m3: '' };
+  formStep1.value = { proyecto_id: '', vehiculo_id: '', piloto_id: '', m3_arena: '', m3_piedrin: '', m3_cemento: '' };
   showModalStep1.value = true;
 };
 
 const closeModalStep1 = () => { showModalStep1.value = false; };
 
 const submitStep1 = async () => {
+  const arena   = parseFloat(formStep1.value.m3_arena)   || 0;
+  const piedrin = parseFloat(formStep1.value.m3_piedrin) || 0;
+  const cemento = parseFloat(formStep1.value.m3_cemento) || 0;
+
+  if (arena <= 0 && piedrin <= 0 && cemento <= 0) {
+    Swal.fire({ icon: 'warning', title: 'Ingresa al menos un producto', text: 'Debes ingresar una cantidad mayor a 0 en Arena, Piedrín o Cemento.', background: '#0f172a', color: '#fff' });
+    return;
+  }
+
   let lat = null;
   let lng = null;
 
@@ -570,8 +593,9 @@ const openStep2Modal = (trip) => {
     tripId: trip.id,
     placa: trip.placa,
     proyecto_nombre: trip.proyecto_nombre,
-    producto: trip.producto,
-    m3: trip.m3,
+    m3_arena: trip.m3_arena,
+    m3_piedrin: trip.m3_piedrin,
+    m3_cemento: trip.m3_cemento,
     hora_salida: '',
     hora_llegada: ''
   };
