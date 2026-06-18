@@ -35,6 +35,18 @@
                         label="Registrar Sacrificio"
                         to="/sacrificio/nuevo"
                     />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="add_circle"
+                        label="Registrar Desviación"
+                        to="/desviaciones/nuevo"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="science"
+                        label="Desviaciones Lab"
+                        to="/desviaciones"
+                    />
                     <!-- Administradores only -->
                     <SidebarItem
                         v-if="auth.role === 'administrador'"
@@ -47,6 +59,12 @@
                         icon="assignment_turned_in"
                         label="Control de Sacrificios"
                         to="/sacrificios"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="science"
+                        label="Desviaciones Lab"
+                        to="/desviaciones"
                     />
                 </div>
             </nav>
