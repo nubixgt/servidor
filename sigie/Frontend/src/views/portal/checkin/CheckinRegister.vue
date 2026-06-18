@@ -123,62 +123,51 @@
                 </div>
 
                 <!-- GPS Location Card -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">3. Geolocalización GPS</h3>
-                    
-                    <div class="flex flex-col md:flex-row md:items-center gap-6">
-                        <!-- Radar / Satellite Ring Animation -->
-                        <div class="w-24 h-24 rounded-full flex-shrink-0 bg-slate-900 border border-slate-800 flex items-center justify-center relative overflow-hidden">
-                            <!-- Scanner line -->
-                            <div v-if="gpsLoading" class="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent origin-center animate-spin duration-1000"></div>
-                            
-                            <!-- Static Radar lines -->
-                            <div class="absolute w-16 h-16 border border-slate-800 rounded-full"></div>
-                            <div class="absolute w-8 h-8 border border-slate-800 rounded-full"></div>
-                            <div class="absolute w-[1px] h-full bg-slate-800"></div>
-                            <div class="absolute h-[1px] w-full bg-slate-800"></div>
-                            
-                            <!-- Target Pin -->
-                            <span :class="['material-symbols-outlined text-2xl z-10', latitud && longitud ? 'text-emerald-500 animate-pulse' : 'text-slate-500']">
-                                {{ latitud && longitud ? 'location_searching' : 'gps_not_fixed' }}
-                            </span>
-                        </div>
-
-                        <!-- Coordinates details -->
-                        <div class="flex-1 space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Latitud</span>
-                                    <span class="font-mono text-xs font-bold text-on-surface">{{ latitud || '---' }}</span>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Longitud</span>
-                                    <span class="font-mono text-xs font-bold text-on-surface">{{ longitud || '---' }}</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-2">
-                                <button 
-                                    type="button" 
-                                    @click="obtenerUbicacion" 
-                                    :disabled="gpsLoading"
-                                    class="px-4 py-2 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-2 shadow"
-                                >
-                                    <span class="material-symbols-outlined text-sm animate-spin" v-if="gpsLoading">sync</span>
-                                    <span class="material-symbols-outlined text-sm" v-else>my_location</span>
-                                    {{ latitud ? 'Actualizar GPS' : 'Obtener Ubicación GPS' }}
-                                </button>
-                                <span v-if="gpsError" class="text-xs text-red-500 font-semibold flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">error</span>
-                                    {{ gpsError }}
-                                </span>
-                                <span v-else-if="latitud" class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">task_alt</span>
-                                    GPS Listo (Precisión: {{ precisionGPS }}m)
-                                </span>
-                            </div>
-                        </div>
+                <div class="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-ambient overflow-hidden flex flex-col">
+                    <!-- Blue Header -->
+                    <div class="bg-[#1a739e] text-white px-5 py-3.5 flex items-center justify-between shadow-sm">
+                        <span class="font-extrabold text-xs tracking-wider flex items-center gap-1.5 uppercase">
+                            <span class="material-symbols-outlined text-sm">my_location</span>
+                            GPS <span class="text-red-400 font-black">*</span>
+                        </span>
                     </div>
+
+                    <!-- Map Body -->
+                    <div class="relative w-full aspect-[4/3] bg-slate-100 border-b border-slate-200 overflow-hidden">
+                        <!-- Loading Overlay -->
+                        <div v-if="gpsLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 z-10">
+                            <span class="material-symbols-outlined text-3xl animate-spin text-primary">sync</span>
+                            <span class="text-xs font-bold text-on-surface-variant mt-2">Obteniendo coordenadas GPS...</span>
+                        </div>
+
+                        <!-- Leaflet Map Container -->
+                        <div id="map-container" class="w-full h-full z-0"></div>
+                    </div>
+
+                    <!-- Coordinates Panel -->
+                    <div v-if="latitud && longitud" class="px-5 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[10px] text-on-surface-variant font-mono">
+                        <span class="flex items-center gap-1">
+                            <strong class="text-slate-400 font-extrabold">LAT:</strong> {{ latitud.toFixed(6) }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <strong class="text-slate-400 font-extrabold">LONG:</strong> {{ longitud.toFixed(6) }}
+                        </span>
+                        <span class="text-emerald-600 font-extrabold uppercase bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                            ±{{ precisionGPS }}m
+                        </span>
+                    </div>
+
+                    <!-- Orange Action Button -->
+                    <button 
+                        type="button" 
+                        @click="obtenerUbicacion" 
+                        :disabled="gpsLoading"
+                        class="w-full py-4 bg-[#ea580c] hover:bg-[#d94e0b] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span class="material-symbols-outlined text-sm animate-spin" v-if="gpsLoading">sync</span>
+                        <span class="material-symbols-outlined text-sm" v-else>my_location</span>
+                        {{ latitud ? 'Substituir' : 'Obtener Ubicación' }}
+                    </button>
                 </div>
 
                 <!-- Evidencia Fotográfica Card -->
@@ -313,6 +302,9 @@ const gpsLoading = ref(false);
 const gpsError = ref(null);
 const submitting = ref(false);
 
+let mapInstance = null;
+let markerInstance = null;
+
 // Canvas signature pad refs and states
 const canvasRef = ref(null);
 const isDrawing = ref(false);
@@ -335,6 +327,7 @@ const removerFoto = () => {
 const obtenerUbicacion = () => {
     if (!navigator.geolocation) {
         gpsError.value = 'Geolocalización no soportada por el navegador.';
+        initLeafletMap();
         return;
     }
 
@@ -347,6 +340,7 @@ const obtenerUbicacion = () => {
             longitud.value = position.coords.longitude;
             precisionGPS.value = Math.round(position.coords.accuracy);
             gpsLoading.value = false;
+            initLeafletMap();
         },
         (error) => {
             console.error('Error GPS', error);
@@ -360,6 +354,7 @@ const obtenerUbicacion = () => {
             precisionGPS.value = 15;
             
             gpsError.value = 'Simulado (Falta permiso GPS real)';
+            initLeafletMap();
         },
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
     );
@@ -450,6 +445,74 @@ const fetchVisitasAsignadas = async () => {
     } catch (error) {
         console.error('Error al cargar visitas', error);
     }
+};
+
+const loadLeaflet = () => {
+    return new Promise((resolve) => {
+        if (window.L) {
+            resolve(window.L);
+            return;
+        }
+
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.onload = () => resolve(window.L);
+        document.head.appendChild(script);
+    });
+};
+
+const initLeafletMap = async () => {
+    const L = await loadLeaflet();
+    
+    const lat = latitud.value || 14.6349;
+    const lng = longitud.value || -90.5069;
+
+    setTimeout(() => {
+        const container = document.getElementById('map-container');
+        if (!container) return;
+
+        if (!mapInstance) {
+            mapInstance = L.map('map-container').setView([lat, lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+
+            const defaultIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+
+            markerInstance = L.marker([lat, lng], { draggable: true, icon: defaultIcon }).addTo(mapInstance);
+
+            markerInstance.on('dragend', () => {
+                const position = markerInstance.getLatLng();
+                latitud.value = parseFloat(position.lat.toFixed(6));
+                longitud.value = parseFloat(position.lng.toFixed(6));
+                precisionGPS.value = 0;
+            });
+
+            mapInstance.on('click', (e) => {
+                const position = e.latlng;
+                markerInstance.setLatLng(position);
+                latitud.value = parseFloat(position.lat.toFixed(6));
+                longitud.value = parseFloat(position.lng.toFixed(6));
+                precisionGPS.value = 0;
+            });
+        } else {
+            mapInstance.setView([lat, lng], 15);
+            markerInstance.setLatLng([lat, lng]);
+            mapInstance.invalidateSize();
+        }
+    }, 100);
 };
 
 const getLocalDateTimeString = (date = new Date()) => {
