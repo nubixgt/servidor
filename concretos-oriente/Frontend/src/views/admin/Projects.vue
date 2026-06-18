@@ -735,8 +735,10 @@ const openExtensionModal = () => {
 };
 
 const handleExtensionFiles = (e) => {
-  const files = Array.from(e.target.files).slice(0, 3);
-  extensionForm.value.documentos = files;
+  const nuevos = Array.from(e.target.files);
+  const combinados = [...extensionForm.value.documentos, ...nuevos];
+  extensionForm.value.documentos = combinados.slice(0, 3);
+  e.target.value = '';
 };
 
 const submitExtension = async () => {
