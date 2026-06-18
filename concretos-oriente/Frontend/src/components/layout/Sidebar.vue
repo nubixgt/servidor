@@ -17,7 +17,10 @@
     </button>
 
     <div class="px-10 mb-12">
-      <h1 class="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">Concretos del Oriente</h1>
+      <div class="flex items-center gap-3 mb-4">
+        <img :src="Logo" alt="Logo" class="h-9 w-auto flex-shrink-0" />
+        <h1 class="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">Concretos del Oriente</h1>
+      </div>
 
       <div v-if="role" class="mt-6 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-2">
         <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#6366f1]"></div>
@@ -78,6 +81,7 @@ import {
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon
 } from '@heroicons/vue/24/outline';
+import Logo from '../../assets/images/Logo.png';
 
 const router = useRouter();
 const authStore = useAuthStore();

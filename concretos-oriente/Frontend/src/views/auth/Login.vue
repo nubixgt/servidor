@@ -7,8 +7,8 @@
     <transition name="scale-fade" appear>
       <div class="w-full max-w-[520px] glass-card rounded-[48px] p-12 relative z-10 border border-white/20 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] bg-slate-950/40 backdrop-blur-3xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="text-center mb-12">
-          <div class="w-20 h-20 bg-primary/20 rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-xl border border-white/20">
-            <WrenchScrewdriverIcon class="w-10 h-10 text-primary shadow-[0_0_15px_rgba(99,102,241,0.4)]" />
+          <div class="flex items-center justify-center mx-auto mb-6">
+            <img :src="Logo" alt="Concretos del Oriente" class="h-20 w-auto" />
           </div>
           <h1 class="text-4xl font-black text-white tracking-tighter mb-1 uppercase italic">CONSTRUCTPRO</h1>
           <p class="text-white/40 text-[10px] font-bold tracking-[0.4em] uppercase">Gestión Empresarial</p>
@@ -82,7 +82,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import Swal from 'sweetalert2';
-import { 
+import Logo from '../../assets/images/Logo.png';
+import {
   WrenchScrewdriverIcon, UserIcon, LockClosedIcon, EyeIcon, ArrowRightIcon, 
   ShieldCheckIcon, UserGroupIcon, WrenchIcon, PlusIcon 
 } from '@heroicons/vue/24/outline';
