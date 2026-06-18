@@ -22,8 +22,14 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div
         v-for="(m, i) in metrics"
-        :key="i"
-        class="glass-card p-10 rounded-[40px] border border-white/5 group relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]" data-aos="zoom-in-up" data-aos-duration="1000"
+        :key="m.label"
+        @click="m.isCritical && (filterCritical = !filterCritical)"
+        :class="[
+          'glass-card p-10 rounded-[40px] border group relative overflow-hidden transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)]',
+          m.isCritical && filterCritical ? 'border-tertiary/50' : 'border-white/5',
+          m.isCritical ? 'cursor-pointer' : ''
+        ]"
+        data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div :class="`absolute top-0 right-0 w-32 h-32 bg-${m.color}/10 blur-[60px] rounded-full translate-x-10 -translate-y-10 group-hover:bg-${m.color}/20 transition-all`"></div>
         <div class="relative z-10 flex items-start justify-between">
@@ -32,7 +38,7 @@
             <h3 class="text-4xl font-black text-white italic tracking-tighter">{{ m.value }}</h3>
             <div class="flex items-center gap-2 mt-4">
               <span :class="`text-[10px] font-black px-2 py-1 rounded-lg ${m.color === 'primary' ? 'bg-primary/20 text-primary' : 'bg-tertiary/20 text-tertiary'}`">
-                {{ m.change }}
+                {{ m.isCritical && filterCritical ? 'Filtrando en alerta' : m.change }}
               </span>
             </div>
           </div>
@@ -197,19 +203,36 @@
                   <div class="space-y-4">
                     <div v-if="loadingKardex" class="text-white/40 text-sm">Cargando movimientos...</div>
                     <div v-else-if="itemKardex.length === 0" class="text-white/40 text-sm">Sin movimientos registrados.</div>
-                    <div v-for="log in itemKardex" :key="log.id" class="flex items-center justify-between py-5 border-b border-white/5 group">
-                      <div class="flex items-center gap-5">
-                        <div :class="`w-10 h-10 rounded-xl flex items-center justify-center ${getKardexIconBg(log.tipo_movimiento)}`">
-                          <component :is="getKardexIcon(log.tipo_movimiento)" class="w-5 h-5" />
+                    <div v-for="log in itemKardex" :key="log.id" class="py-5 border-b border-white/5 group space-y-3">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-5">
+                          <div :class="`w-10 h-10 rounded-xl flex items-center justify-center ${getKardexIconBg(log.tipo_movimiento)}`">
+                            <component :is="getKardexIcon(log.tipo_movimiento)" class="w-5 h-5" />
+                          </div>
+                          <div>
+                            <p class="text-sm font-bold text-white uppercase italic">{{ log.tipo_movimiento }} <span v-if="log.proyecto_destino">- a {{log.proyecto_destino}}</span></p>
+                            <p class="text-[10px] font-black text-white/20 uppercase tracking-widest">{{ new Date(log.fecha_movimiento).toLocaleDateString() }} • Ref: {{ log.referencia_documento || 'N/A' }}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p class="text-sm font-bold text-white uppercase italic">{{ log.tipo_movimiento }} <span v-if="log.proyecto_destino">- a {{log.proyecto_destino}}</span></p>
-                          <p class="text-[10px] font-black text-white/20 uppercase tracking-widest">{{ new Date(log.fecha_movimiento).toLocaleDateString() }} • Ref: {{ log.referencia_documento || 'N/A' }}</p>
-                        </div>
+                        <span :class="`text-lg font-black italic tracking-tighter ${getKardexQtyColor(log.tipo_movimiento)}`">
+                          {{ getKardexSign(log.tipo_movimiento) }}{{ Number(log.cantidad).toFixed(2) }} {{ selectedItemDetails.unidad_medida }}
+                        </span>
                       </div>
-                      <span :class="`text-lg font-black italic tracking-tighter ${getKardexQtyColor(log.tipo_movimiento)}`">
-                        {{ getKardexSign(log.tipo_movimiento) }}{{ Number(log.cantidad).toFixed(2) }} {{ selectedItemDetails.unidad_medida }}
-                      </span>
+                      <div v-if="parseFotos(log.fotos).length > 0" class="flex gap-2 pl-15 flex-wrap">
+                        <a
+                          v-for="(foto, fi) in parseFotos(log.fotos)"
+                          :key="fi"
+                          :href="`/concretos-oriente/Backend/${foto}`"
+                          target="_blank"
+                          class="block"
+                        >
+                          <img
+                            :src="`/concretos-oriente/Backend/${foto}`"
+                            class="w-16 h-16 rounded-xl object-cover border border-white/10 hover:border-primary/40 transition-all"
+                            :alt="`Foto ${fi + 1}`"
+                          />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -415,6 +438,7 @@ const isSubmitting = ref(false);
 const searchQuery = ref('');
 const filterType = ref('');
 const filterProject = ref('');
+const filterCritical = ref(false);
 
 const currentPage = ref(1);
 const itemsPerPage = 10;
@@ -460,13 +484,15 @@ const filteredItems = computed(() => {
     const s = searchQuery.value.toLowerCase();
     const matchSearch = item.nombre.toLowerCase().includes(s) || (item.codigo_sku && item.codigo_sku.toLowerCase().includes(s)) || item.tipo_item.toLowerCase().includes(s);
     const matchType = filterType.value === '' || item.tipo_item === filterType.value;
-    
+
     let matchProject = true;
     if (filterProject.value !== '') {
       matchProject = kardex.value.some(k => k.item_id === item.id && k.proyecto_destino_id === filterProject.value);
     }
-    
-    return matchSearch && matchType && matchProject;
+
+    const matchCritical = !filterCritical.value || parseFloat(item.stock_actual) <= parseFloat(item.stock_minimo);
+
+    return matchSearch && matchType && matchProject && matchCritical;
   });
 });
 
@@ -477,7 +503,7 @@ const paginatedItems = computed(() => {
   return filteredItems.value.slice(start, start + itemsPerPage);
 });
 
-watch([searchQuery, filterType, filterProject], () => {
+watch([searchQuery, filterType, filterProject, filterCritical], () => {
   currentPage.value = 1;
 });
 
@@ -487,9 +513,9 @@ const metrics = computed(() => {
   items.value.forEach(i => {
     if (parseFloat(i.stock_actual) <= parseFloat(i.stock_minimo)) criticals++;
   });
-  
+
   return [
-    { label: "Artículos Críticos", value: criticals.toString(), change: "Atención Requerida", icon: ExclamationTriangleIcon, color: "tertiary" },
+    { label: "Artículos Críticos", value: criticals.toString(), change: "Atención Requerida", icon: ExclamationTriangleIcon, color: "tertiary", isCritical: true },
     { label: "Total Catálogo", value: items.value.length.toString(), change: "Ítems Registrados", icon: CubeIcon, color: "primary" },
     { label: "Proyectos Activos", value: projects.value.length.toString(), change: "En curso", icon: ChartBarIcon, color: "primary" },
   ];
@@ -524,6 +550,14 @@ const getStockPercentage = (item) => {
 const selectedItemDetails = ref(null);
 const loadingKardex = ref(false);
 const itemKardex = computed(() => kardex.value.filter(k => k.item_id === selectedItemDetails.value?.id));
+
+const criticalItems = computed(() =>
+  items.value.filter(i => parseFloat(i.stock_actual) <= parseFloat(i.stock_minimo))
+);
+
+const parseFotos = (fotos) => {
+  try { return fotos ? JSON.parse(fotos) : []; } catch { return []; }
+};
 
 const openItemDetails = (item) => {
   selectedItemDetails.value = item;
