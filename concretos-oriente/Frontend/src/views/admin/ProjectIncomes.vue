@@ -200,7 +200,7 @@
 
               <div class="space-y-2">
                 <label class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{ formMode === 'Estimacion' ? 'Valor de Estimacion (Q) *' : 'Monto de este Cobro (Q) *' }}</label>
-                <input type="text" :value="getDisplayValue(formData.monto_total)" @input="e => updateCurrencyField(formData, 'monto_total', e)" :disabled="formMode !== 'Estimacion'" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary/50 disabled:bg-black/40 disabled:text-white/60 disabled:border-white/5" />
+                <input type="text" :value="getDisplayValue(formData.monto_total)" @input="e => updateCurrencyField(formData, 'monto_total', e)" :disabled="formMode === 'Pago Final'" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary/50 disabled:bg-black/40 disabled:text-white/60 disabled:border-white/5" />
               </div>
 
               <div class="space-y-2">
