@@ -76,7 +76,7 @@ import {
   CubeIcon, BuildingOfficeIcon, ShieldCheckIcon,
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
-  ArrowPathIcon, XMarkIcon
+  ArrowPathIcon, XMarkIcon, CalendarDaysIcon
 } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -100,6 +100,7 @@ const allNavItemsArr = [
   { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "finance", label: "Ingresos y Egresos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "recurrents", label: "Recurrentes", icon: ArrowPathIcon, roles: ["admin"] },
+  { id: "calendar", label: "Calendario", icon: CalendarDaysIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
   { id: "bank-conciliation", label: "Bancos", icon: BuildingLibraryIcon, roles: ["admin"] },
   { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },

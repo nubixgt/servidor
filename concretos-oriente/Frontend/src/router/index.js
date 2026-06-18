@@ -26,6 +26,7 @@ const routes = [
             { path: 'clients', name: 'Clients', component: () => import('../views/admin/Clients.vue') },
             { path: 'finance', name: 'Finance', component: () => import('../views/admin/Finance.vue') },
             { path: 'recurrents', name: 'Recurrents', component: () => import('../views/admin/Recurrents.vue') },
+            { path: 'calendar', name: 'Calendar', component: () => import('../views/admin/Calendar.vue') },
             { path: 'inventory', name: 'Inventory', component: () => import('../views/admin/Inventory.vue') },
             { path: 'suppliers', name: 'Suppliers', component: () => import('../views/admin/Suppliers.vue') },
             { path: 'concrete-control', name: 'ConcreteControl', component: () => import('../views/admin/ConcreteControl.vue') },
