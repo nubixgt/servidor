@@ -353,9 +353,83 @@
                   </div>
                 </div>
 
+                <!-- Ampliaciones de Presupuesto -->
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                      <CurrencyDollarIcon class="w-4 h-4" /> Ampliaciones de Presupuesto
+                    </p>
+                    <button @click="openExtensionModal" class="px-4 py-2 rounded-xl bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/30 transition-all">
+                      + Ampliación
+                    </button>
+                  </div>
+                  <div v-if="budgetExtensions.length > 0" class="space-y-2">
+                    <div v-for="ext in budgetExtensions" :key="ext.id" class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-black text-primary">Q {{ Number(ext.monto).toLocaleString('en-US', {minimumFractionDigits:2}) }}</span>
+                        <span class="text-[10px] font-bold text-white/40 bg-white/5 px-2 py-1 rounded-lg">{{ ext.tipo_ampliacion }}</span>
+                      </div>
+                      <p class="text-[10px] text-white/30 mt-1">{{ new Date(ext.created_at).toLocaleDateString('es-GT') }}</p>
+                      <div v-if="ext.documentos && ext.documentos.length > 0" class="flex flex-wrap gap-2 mt-2">
+                        <a v-for="(doc, i) in ext.documentos" :key="i"
+                          :href="`/concretos-oriente/Backend/${doc}`" target="_blank"
+                          class="flex items-center gap-1 text-[10px] font-bold text-primary/80 hover:text-primary bg-primary/10 px-2 py-1 rounded-lg transition-all">
+                          <DocumentIcon class="w-3 h-3" /> Doc {{ i + 1 }}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <p v-else class="text-sm font-medium text-white/30">Sin ampliaciones registradas</p>
+                </div>
+
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Modal: Ampliación de Presupuesto -->
+    <transition name="fade">
+      <div v-if="showExtensionModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div @click="showExtensionModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-lg glass-card rounded-[32px] p-8 border border-white/10 shadow-2xl z-10" data-aos="zoom-in-up" data-aos-duration="600">
+          <h3 class="text-xl font-black text-white italic uppercase tracking-tighter mb-6">Ampliación de Presupuesto</h3>
+          <form @submit.prevent="submitExtension" class="space-y-5">
+            <!-- Monto -->
+            <div>
+              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Monto (Q) *</label>
+              <input type="number" step="0.01" min="0" v-model="extensionForm.monto" required placeholder="0.00"
+                class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all" />
+            </div>
+            <!-- Tipo -->
+            <div>
+              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Tipo de Ampliación *</label>
+              <select v-model="extensionForm.tipo_ampliacion" required
+                class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all">
+                <option value="" disabled>Seleccione...</option>
+                <option value="Trabajo Extra">Trabajo Extra</option>
+                <option value="Orden de Cambio">Orden de Cambio</option>
+                <option value="Trabajo Suplementario">Trabajo Suplementario</option>
+              </select>
+            </div>
+            <!-- Documentos -->
+            <div>
+              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Adjuntar Documentos (máx. 3, opcional)</label>
+              <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" @change="handleExtensionFiles"
+                class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
+              <div v-if="extensionForm.documentos.length > 0" class="flex flex-wrap gap-2 mt-2">
+                <span v-for="(f, i) in extensionForm.documentos" :key="i" class="text-[10px] font-bold bg-white/5 text-white/60 px-3 py-1 rounded-lg truncate max-w-[180px]">{{ f.name }}</span>
+              </div>
+            </div>
+            <!-- Botones -->
+            <div class="flex justify-end gap-3 pt-2 border-t border-white/5">
+              <button type="button" @click="showExtensionModal = false" class="px-6 py-3 rounded-xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+              <button type="submit" :disabled="isSubmittingExtension" class="glass-button-primary text-white py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-widest disabled:opacity-50 transition-all">
+                {{ isSubmittingExtension ? 'Guardando...' : 'Registrar' }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </transition>
@@ -597,7 +671,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import {
   BuildingOfficeIcon, ChevronRightIcon,
   PlusIcon, XMarkIcon, MapPinIcon,
@@ -634,6 +708,68 @@ const isSubmitting = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
 const mapFullscreen = ref(false);
+
+// Ampliaciones de Presupuesto
+const budgetExtensions = ref([]);
+const showExtensionModal = ref(false);
+const isSubmittingExtension = ref(false);
+const extensionForm = ref({ monto: '', tipo_ampliacion: '', documentos: [] });
+
+const fetchBudgetExtensions = async (projectId) => {
+  try {
+    const res = await fetch(`${BASE_URL}/projects/${projectId}/budget-extensions`);
+    const data = await res.json();
+    if (data.status === 'success') budgetExtensions.value = data.data;
+    else budgetExtensions.value = [];
+  } catch { budgetExtensions.value = []; }
+};
+
+watch(selectedProject, (project) => {
+  if (project) fetchBudgetExtensions(project.id);
+  else budgetExtensions.value = [];
+});
+
+const openExtensionModal = () => {
+  extensionForm.value = { monto: '', tipo_ampliacion: '', documentos: [] };
+  showExtensionModal.value = true;
+};
+
+const handleExtensionFiles = (e) => {
+  const files = Array.from(e.target.files).slice(0, 3);
+  extensionForm.value.documentos = files;
+};
+
+const submitExtension = async () => {
+  if (!extensionForm.value.monto || !extensionForm.value.tipo_ampliacion) {
+    Swal.fire({ icon: 'warning', title: 'Campos requeridos', text: 'Completa el monto y el tipo de ampliación.', background: '#0f172a', color: '#fff' });
+    return;
+  }
+  isSubmittingExtension.value = true;
+  try {
+    const fd = new FormData();
+    fd.append('monto', extensionForm.value.monto);
+    fd.append('tipo_ampliacion', extensionForm.value.tipo_ampliacion);
+    extensionForm.value.documentos.forEach(file => fd.append('documentos[]', file));
+
+    const res = await fetch(`${BASE_URL}/projects/${selectedProject.value.id}/budget-extensions`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      showExtensionModal.value = false;
+      await fetchBudgetExtensions(selectedProject.value.id);
+      Swal.fire({ icon: 'success', title: 'Ampliación registrada', background: '#0f172a', color: '#fff', timer: 2000, showConfirmButton: false });
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (e) {
+    Swal.fire({ icon: 'error', title: 'Error', text: e.message || 'Error al guardar la ampliación.', background: '#0f172a', color: '#fff' });
+  } finally {
+    isSubmittingExtension.value = false;
+  }
+};
 
 const emptyForm = () => ({
   codigo: '',

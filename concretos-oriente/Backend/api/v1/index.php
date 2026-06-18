@@ -23,6 +23,7 @@ use App\Controllers\VehicleController;
 use App\Controllers\VehicleLogController;
 use App\Controllers\RecurrentController;
 use App\Controllers\ConcreteControlController;
+use App\Controllers\BudgetExtensionController;
 
 // Backend/api/v1/index.php
 
@@ -74,6 +75,7 @@ $router->registerController(VehicleController::class);
 $router->registerController(VehicleLogController::class);
 $router->registerController(RecurrentController::class);
 $router->registerController(ConcreteControlController::class);
+$router->registerController(BudgetExtensionController::class);
 
 
 
