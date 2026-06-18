@@ -737,7 +737,12 @@ const openExtensionModal = () => {
 const handleExtensionFiles = (e) => {
   const nuevos = Array.from(e.target.files);
   const combinados = [...extensionForm.value.documentos, ...nuevos];
-  extensionForm.value.documentos = combinados.slice(0, 3);
+  if (combinados.length > 3) {
+    Swal.fire({ icon: 'warning', title: 'Máximo 3 documentos', text: 'Solo se permiten hasta 3 archivos por ampliación.', background: '#0f172a', color: '#fff', confirmButtonColor: '#6366f1' });
+    extensionForm.value.documentos = combinados.slice(0, 3);
+  } else {
+    extensionForm.value.documentos = combinados;
+  }
   e.target.value = '';
 };
 
