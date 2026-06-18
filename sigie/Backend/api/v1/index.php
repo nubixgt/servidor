@@ -13,6 +13,7 @@ use App\Controllers\AuthController;
 use App\Controllers\InspectoresController;
 use App\Controllers\CheckinController;
 use App\Controllers\AnimalesController;
+use App\Controllers\DesviacionesController;
 
 // Set Headers / CORS
 header("Access-Control-Allow-Origin: *");
@@ -35,6 +36,7 @@ $router->registerController(AuthController::class);
 $router->registerController(InspectoresController::class);
 $router->registerController(CheckinController::class);
 $router->registerController(AnimalesController::class);
+$router->registerController(DesviacionesController::class);
 
 
 // Dispatch
