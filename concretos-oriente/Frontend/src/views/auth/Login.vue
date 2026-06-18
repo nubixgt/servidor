@@ -8,7 +8,7 @@
       <div class="w-full max-w-[520px] glass-card rounded-[48px] p-12 relative z-10 border border-white/20 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] bg-slate-950/40 backdrop-blur-3xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="text-center mb-12">
           <div class="flex items-center justify-center mx-auto mb-6">
-            <img :src="Logo" alt="Concretos del Oriente" class="h-20 w-auto" />
+            <img :src="Logo" alt="Concretos del Oriente" class="h-20 w-auto" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 20px rgba(255,255,255,0.6)) drop-shadow(0 0 40px rgba(255,255,255,0.3));" />
           </div>
           <h1 class="text-4xl font-black text-white tracking-tighter mb-1 uppercase italic">CONSTRUCTPRO</h1>
           <p class="text-white/40 text-[10px] font-bold tracking-[0.4em] uppercase">Gestión Empresarial</p>

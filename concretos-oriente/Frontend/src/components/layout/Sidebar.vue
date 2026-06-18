@@ -16,10 +16,9 @@
       <XMarkIcon class="w-5 h-5" />
     </button>
 
-    <div class="px-10 mb-12">
-      <div class="flex items-center gap-3 mb-4">
-        <img :src="Logo" alt="Logo" class="h-9 w-auto flex-shrink-0" />
-        <h1 class="text-xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tight">Concretos del Oriente</h1>
+    <div class="px-6 mb-12">
+      <div class="mb-4">
+        <img :src="Logo" alt="Logo" class="w-full h-auto" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 20px rgba(255,255,255,0.6)) drop-shadow(0 0 40px rgba(255,255,255,0.3));" />
       </div>
 
       <div v-if="role" class="mt-6 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-xl inline-flex items-center gap-2">
