@@ -374,7 +374,7 @@
               </select>
             </div>
 
-            <div class="space-y-2">
+            <div v-if="formKardex.tipo_movimiento === 'Entrada'" class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Costo Unitario (Opcional Q)</label>
               <input v-model="formKardex.costo_unitario" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
