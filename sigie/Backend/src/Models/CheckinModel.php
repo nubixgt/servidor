@@ -16,8 +16,8 @@ class CheckinModel
     public function create($data)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO check_ins (visita_id, inspector_id, latitud, longitud, observaciones, firma_path, foto_path, estado) 
-            VALUES (:visita_id, :inspector_id, :latitud, :longitud, :observaciones, :firma_path, :foto_path, :estado)
+            INSERT INTO check_ins (visita_id, inspector_id, latitud, longitud, observaciones, firma_path, foto_path, estado, hora_ingreso, hora_salida) 
+            VALUES (:visita_id, :inspector_id, :latitud, :longitud, :observaciones, :firma_path, :foto_path, :estado, :hora_ingreso, :hora_salida)
         ");
         
         $params = [
@@ -28,7 +28,9 @@ class CheckinModel
             ':observaciones' => $data['observaciones'] ?? null,
             ':firma_path'    => $data['firma_path'] ?? null,
             ':foto_path'     => $data['foto_path'] ?? null,
-            ':estado'        => $data['estado'] ?? 'exitoso'
+            ':estado'        => $data['estado'] ?? 'exitoso',
+            ':hora_ingreso'  => $data['hora_ingreso'] ?? null,
+            ':hora_salida'   => $data['hora_salida'] ?? null
         ];
 
         return $stmt->execute($params);
@@ -38,6 +40,7 @@ class CheckinModel
     {
         $stmt = $this->db->prepare("
             SELECT c.id, c.fecha_hora, c.latitud, c.longitud, c.observaciones, c.firma_path, c.foto_path, c.estado,
+                   c.hora_ingreso, c.hora_salida,
                    i.nombre AS inspector_nombre, i.codigo AS inspector_codigo, i.area AS inspector_area,
                    v.establecimiento, v.direccion, v.tipo_inspeccion
             FROM check_ins c

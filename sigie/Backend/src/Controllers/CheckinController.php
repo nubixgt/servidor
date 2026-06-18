@@ -89,6 +89,9 @@ class CheckinController extends Controller
             }
         }
 
+        $horaIngreso = !empty($_POST['hora_ingreso']) ? $_POST['hora_ingreso'] : null;
+        $horaSalida = !empty($_POST['hora_salida']) ? $_POST['hora_salida'] : null;
+
         // 3. Save Check-in
         $checkinModel = new CheckinModel();
         $success = $checkinModel->create([
@@ -99,7 +102,9 @@ class CheckinController extends Controller
             'observaciones'=> $observaciones,
             'firma_path'   => $firmaPath,
             'foto_path'    => $fotoPath,
-            'estado'       => $estado
+            'estado'       => $estado,
+            'hora_ingreso' => $horaIngreso,
+            'hora_salida'  => $horaSalida
         ]);
 
         if ($success) {

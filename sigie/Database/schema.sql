@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS check_ins (
     visita_id INT UNSIGNED NULL,
     inspector_id INT UNSIGNED NOT NULL,
     fecha_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    hora_ingreso DATETIME NULL,
+    hora_salida DATETIME NULL,
     latitud DECIMAL(10, 8) NOT NULL,
     longitud DECIMAL(11, 8) NOT NULL,
     observaciones TEXT NULL,
@@ -86,5 +88,36 @@ CREATE TABLE IF NOT EXISTS animales_sacrificados (
     observaciones TEXT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 6. TABLA DE SEGUIMIENTO A DESVIACIONES DE LABORATORIO
+-- ==========================================
+CREATE TABLE IF NOT EXISTS desviaciones_laboratorio (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    inspector_id INT UNSIGNED NULL,
+    fecha_resultado DATE NOT NULL,
+    codigo_muestra VARCHAR(50) NOT NULL,
+    establecimiento VARCHAR(150) NOT NULL,
+    tipo_analisis VARCHAR(100) NOT NULL,
+    resultado_obtenido TEXT NOT NULL,
+    parametro_fuera_norma VARCHAR(150) NOT NULL,
+    accion_tomada TEXT NOT NULL,
+    estado_seguimiento ENUM('Abierto', 'En proceso', 'Cerrado') NOT NULL DEFAULT 'Abierto',
+    observaciones TEXT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 7. TABLA DE DOCUMENTOS DE SOPORTE DE DESVIACIONES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS desviaciones_documentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    desviacion_id INT UNSIGNED NOT NULL,
+    nombre_archivo VARCHAR(150) NOT NULL,
+    ruta_archivo VARCHAR(255) NOT NULL,
+    fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (desviacion_id) REFERENCES desviaciones_laboratorio(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
