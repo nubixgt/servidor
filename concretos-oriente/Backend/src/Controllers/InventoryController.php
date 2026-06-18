@@ -135,7 +135,8 @@ class InventoryController extends Controller
                 'notas'                => trim($_POST['notas'] ?? '') ?: null,
             ];
 
-            $this->inventoryService->createKardexMovement($data);
+            $filesData = $_FILES['fotos'] ?? null;
+            $this->inventoryService->createKardexMovement($data, $filesData);
 
             $this->json(['status' => 'success', 'message' => 'Movimiento registrado correctamente']);
 

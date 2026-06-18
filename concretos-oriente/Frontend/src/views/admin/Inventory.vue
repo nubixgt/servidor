@@ -321,9 +321,8 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Movimiento *</label>
               <select v-model="formKardex.tipo_movimiento" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                 <option value="Entrada">Entrada (Agrega a bodega)</option>
-                <option value="Salida">Salida (Resta de bodega)</option>
+                <option value="Dar de Baja">Dar de Baja (Resta de bodega)</option>
                 <option value="Traslado">Traslado a Proyecto (Resta de bodega)</option>
-                <option value="Ajuste">Ajuste de Inventario (+)</option>
               </select>
             </div>
             
@@ -345,9 +344,9 @@
               <input v-model="formKardex.fecha_movimiento" type="datetime-local" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
             </div>
 
-            <div class="space-y-2 md:col-span-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Destino / Vinculado</label>
-              <select v-model="formKardex.proyecto_destino_id" :required="formKardex.tipo_movimiento === 'Traslado'" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
+            <div v-if="formKardex.tipo_movimiento === 'Traslado'" class="space-y-2 md:col-span-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Destino *</label>
+              <select v-model="formKardex.proyecto_destino_id" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                 <option value="" disabled>Seleccione proyecto...</option>
                 <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
               </select>
@@ -366,6 +365,20 @@
             <div class="space-y-2 md:col-span-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Notas u Observaciones</label>
               <textarea v-model="formKardex.notas" rows="2" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50"></textarea>
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fotos (Máx. 2)</label>
+              <label class="flex items-center gap-3 cursor-pointer w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white/60 hover:border-primary/40 transition-all">
+                <span class="text-sm">{{ formKardex.fotos.length > 0 ? `${formKardex.fotos.length} foto(s) seleccionada(s)` : 'Seleccionar fotos...' }}</span>
+                <input type="file" accept="image/*" multiple class="hidden" @change="handleFotosChange" />
+              </label>
+              <div v-if="formKardex.fotos.length > 0" class="flex flex-wrap gap-2 mt-1">
+                <span v-for="(f, i) in formKardex.fotos" :key="i" class="text-[10px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-xl border border-primary/20 flex items-center gap-2">
+                  {{ f.name }}
+                  <button type="button" @click="formKardex.fotos.splice(i, 1)" class="text-white/40 hover:text-white">✕</button>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -517,21 +530,21 @@ const openItemDetails = (item) => {
 };
 
 const getKardexIcon = (tipo) => {
-  if(tipo === 'Entrada' || tipo === 'Ajuste') return ArrowTrendingUpIcon;
-  if(tipo === 'Salida') return ClockIcon;
-  if(tipo === 'Traslado') return TruckIcon;
+  if (tipo === 'Entrada') return ArrowTrendingUpIcon;
+  if (tipo === 'Dar de Baja' || tipo === 'Salida') return ClockIcon;
+  if (tipo === 'Traslado') return TruckIcon;
   return Square3Stack3DIcon;
 };
 const getKardexIconBg = (tipo) => {
-  if(tipo === 'Entrada' || tipo === 'Ajuste') return 'bg-primary/20 text-primary';
+  if (tipo === 'Entrada') return 'bg-primary/20 text-primary';
   return 'bg-tertiary/20 text-tertiary';
 };
 const getKardexSign = (tipo) => {
-  if(tipo === 'Entrada' || tipo === 'Ajuste') return '+';
+  if (tipo === 'Entrada') return '+';
   return '-';
 };
 const getKardexQtyColor = (tipo) => {
-  if(tipo === 'Entrada' || tipo === 'Ajuste') return 'text-primary';
+  if (tipo === 'Entrada') return 'text-primary';
   return 'text-tertiary';
 };
 
@@ -606,13 +619,13 @@ const deleteItem = async (id) => {
 const showKardexModal = ref(false);
 const formKardex = ref({
   tipo_movimiento: 'Entrada', item_id: '', cantidad: '', fecha_movimiento: new Date().toISOString().slice(0,16),
-  proyecto_destino_id: '', costo_unitario: '', referencia_documento: '', notas: ''
+  proyecto_destino_id: '', costo_unitario: '', referencia_documento: '', notas: '', fotos: []
 });
 
 const openKardexModal = () => {
   formKardex.value = {
     tipo_movimiento: 'Entrada', item_id: '', cantidad: '', fecha_movimiento: new Date().toISOString().slice(0,16),
-    proyecto_destino_id: '', costo_unitario: '', referencia_documento: '', notas: ''
+    proyecto_destino_id: '', costo_unitario: '', referencia_documento: '', notas: '', fotos: []
   };
   showKardexModal.value = true;
 };
@@ -625,12 +638,26 @@ const openKardexModalForItem = (item) => {
 
 const closeKardexModal = () => showKardexModal.value = false;
 
+const handleFotosChange = (e) => {
+  const nuevas = Array.from(e.target.files);
+  const combinadas = [...formKardex.value.fotos, ...nuevas];
+  if (combinadas.length > 2) {
+    Swal.fire({ background: '#0f172a', color: '#fff', icon: 'warning', title: 'Máximo 2 fotos', text: 'Solo se permiten 2 fotos por movimiento.' });
+    formKardex.value.fotos = combinadas.slice(0, 2);
+  } else {
+    formKardex.value.fotos = combinadas;
+  }
+  e.target.value = '';
+};
+
 const submitKardex = async () => {
   isSubmitting.value = true;
   const fd = new FormData();
   Object.keys(formKardex.value).forEach(k => {
+    if (k === 'fotos') return;
     if(formKardex.value[k] !== null && formKardex.value[k] !== '') fd.append(k, formKardex.value[k]);
   });
+  formKardex.value.fotos.forEach(foto => fd.append('fotos[]', foto));
 
   try {
     const res = await fetch(`${BASE_URL}/inventory/kardex`, { method: 'POST', body: fd });

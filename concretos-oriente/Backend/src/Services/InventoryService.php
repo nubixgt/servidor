@@ -58,18 +58,18 @@ class InventoryService
         return $this->kardexRepository->findAllWithDetails();
     }
 
-    public function createKardexMovement(array $data): void
+    public function createKardexMovement(array $data, ?array $filesData = null): void
     {
         $this->validateKardexData($data);
 
-        $pdo = $this->itemRepository->getPDO(); // Use the same PDO connection
+        $pdo = $this->itemRepository->getPDO();
         $pdo->beginTransaction();
 
         try {
-            $this->kardexRepository->create($data);
+            $kardexId = $this->kardexRepository->create($data);
 
             $operacion = '+';
-            if ($data['tipo_movimiento'] === 'Salida' || $data['tipo_movimiento'] === 'Traslado') {
+            if (in_array($data['tipo_movimiento'], ['Salida', 'Dar de Baja', 'Traslado'])) {
                 $operacion = '-';
             }
 
@@ -79,6 +79,30 @@ class InventoryService
         } catch (Exception $e) {
             $pdo->rollBack();
             throw $e;
+        }
+
+        if ($filesData && !empty($filesData['name']) && is_array($filesData['name'])) {
+            $baseDir = __DIR__ . '/../../Uploads/Inventory/' . $kardexId;
+            if (!is_dir($baseDir)) {
+                mkdir($baseDir, 0777, true);
+            }
+
+            $uploadedFotos = [];
+            $count = min(count($filesData['name']), 2);
+            for ($i = 0; $i < $count; $i++) {
+                if ($filesData['error'][$i] === UPLOAD_ERR_OK && !empty($filesData['name'][$i])) {
+                    $ext      = pathinfo($filesData['name'][$i], PATHINFO_EXTENSION);
+                    $fileName = 'foto_' . ($i + 1) . '_' . time() . '.' . $ext;
+                    $destPath = $baseDir . '/' . $fileName;
+                    if (move_uploaded_file($filesData['tmp_name'][$i], $destPath)) {
+                        $uploadedFotos[] = 'Uploads/Inventory/' . $kardexId . '/' . $fileName;
+                    }
+                }
+            }
+
+            if (!empty($uploadedFotos)) {
+                $this->kardexRepository->updateFotos($kardexId, json_encode($uploadedFotos));
+            }
         }
     }
 

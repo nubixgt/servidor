@@ -30,11 +30,11 @@ class InventoryKardexRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO inventory_kardex 
+        $sql = "INSERT INTO inventory_kardex
                     (tipo_movimiento, item_id, proyecto_origen_id, proyecto_destino_id, cantidad, costo_unitario, referencia_documento, notas, fecha_movimiento)
-                VALUES 
+                VALUES
                     (:tipo_movimiento, :item_id, :proyecto_origen_id, :proyecto_destino_id, :cantidad, :costo_unitario, :referencia_documento, :notas, :fecha_movimiento)";
-        
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'tipo_movimiento'      => $data['tipo_movimiento'],
@@ -49,5 +49,11 @@ class InventoryKardexRepository
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function updateFotos(int $id, string $json): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE inventory_kardex SET fotos = :fotos WHERE id = :id");
+        $stmt->execute(['fotos' => $json, 'id' => $id]);
     }
 }
