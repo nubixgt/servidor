@@ -248,6 +248,10 @@ const verDetalles = (c) => {
                 <p><strong>Fecha y Hora:</strong> ${c.fecha_hora}</p>
                 <p><strong>GPS:</strong> Latitud ${c.latitud}, Longitud ${c.longitud}</p>
                 <p><strong>Estado:</strong> ${c.estado === 'exitoso' ? '<span class="text-emerald-600 font-bold">Sin novedades</span>' : '<span class="text-red-600 font-bold">Con novedades</span>'}</p>
+                <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
+                    <p><strong>Hora Ingreso:</strong> <span class="font-mono text-primary font-bold">${c.hora_ingreso || 'N/A'}</span></p>
+                    <p><strong>Hora Salida:</strong> <span class="font-mono text-amber-600 font-bold">${c.hora_salida || 'N/A'}</span></p>
+                </div>
             </div>
             <div>
                 <h4 class="font-extrabold text-on-surface mb-2 uppercase tracking-wide text-[10px]">Observaciones del Inspector:</h4>
@@ -293,6 +297,8 @@ const exportToExcel = () => {
         'Dirección': c.direccion || 'N/A',
         'Tipo Inspección': c.tipo_inspeccion || 'N/A',
         'Fecha y Hora Check-in': c.fecha_hora,
+        'Hora de Ingreso': c.hora_ingreso || 'N/A',
+        'Hora de Salida': c.hora_salida || 'N/A',
         'Latitud': c.latitud,
         'Longitud': c.longitud,
         'Estado': c.estado === 'exitoso' ? 'Exitoso' : 'Con Novedades',

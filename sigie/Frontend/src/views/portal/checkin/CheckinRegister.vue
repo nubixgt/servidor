@@ -83,9 +83,48 @@
                     </div>
                 </div>
 
+                <!-- Registro de Tiempos Card -->
+                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
+                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">2. Registro de Tiempos</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Hora de Ingreso -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-primary">login</span>
+                            <div>
+                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Hora de Ingreso</span>
+                                <span class="font-mono text-sm font-bold text-on-surface">{{ formatTime(horaIngreso) }}</span>
+                                <span class="text-[9px] text-on-surface-variant block mt-0.5">{{ formatDate(horaIngreso) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Hora de Salida -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-2xl text-amber-600">logout</span>
+                                <div>
+                                    <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Hora de Salida</span>
+                                    <span class="font-mono text-sm font-bold text-on-surface" v-if="horaSalida">{{ formatTime(horaSalida) }}</span>
+                                    <span class="text-xs font-semibold text-slate-400" v-else>No registrada</span>
+                                    <span class="text-[9px] text-on-surface-variant block mt-0.5" v-if="horaSalida">{{ formatDate(horaSalida) }}</span>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                type="button" 
+                                @click="registrarSalida"
+                                class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-lg hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center gap-2 shadow"
+                            >
+                                <span class="material-symbols-outlined text-sm">alarm_on</span>
+                                {{ horaSalida ? 'Actualizar Salida' : 'Registrar Salida' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- GPS Location Card -->
                 <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">2. Geolocalización GPS</h3>
+                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">3. Geolocalización GPS</h3>
                     
                     <div class="flex flex-col md:flex-row md:items-center gap-6">
                         <!-- Radar / Satellite Ring Animation -->
@@ -144,7 +183,7 @@
 
                 <!-- Evidencia Fotográfica Card -->
                 <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">3. Evidencia Fotográfica</h3>
+                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">4. Evidencia Fotográfica</h3>
                     
                     <div class="space-y-4">
                         <!-- Preview area -->
@@ -176,7 +215,7 @@
 
                 <!-- Observaciones Card -->
                 <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">4. Observaciones</h3>
+                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">5. Observaciones</h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="4"
@@ -189,7 +228,7 @@
             <!-- Right Area (Signature Canvas) -->
             <div class="space-y-6">
                 <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient flex flex-col h-full">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">5. Firma Digital</h3>
+                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">6. Firma Digital</h3>
                     <p class="text-xs text-on-surface-variant mb-4">El inspector y/o encargado debe firmar en el recuadro inferior:</p>
                     
                     <!-- Canvas container -->
@@ -258,6 +297,8 @@ const longitud = ref(null);
 const precisionGPS = ref(0);
 const observaciones = ref('');
 const estadoCheckin = ref('exitoso');
+const horaIngreso = ref(null);
+const horaSalida = ref(null);
 
 // Files
 const fotoFile = ref(null);
@@ -411,7 +452,47 @@ const fetchVisitasAsignadas = async () => {
     }
 };
 
+const getLocalDateTimeString = (date = new Date()) => {
+    const pad = (num) => String(num).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const mm = pad(date.getMonth() + 1);
+    const dd = pad(date.getDate());
+    const hh = pad(date.getHours());
+    const min = pad(date.getMinutes());
+    const ss = pad(date.getSeconds());
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+};
+
+const formatTime = (dateTimeStr) => {
+    if (!dateTimeStr) return '';
+    const parts = dateTimeStr.split(' ');
+    if (parts.length < 2) return dateTimeStr;
+    return parts[1];
+};
+
+const formatDate = (dateTimeStr) => {
+    if (!dateTimeStr) return '';
+    const parts = dateTimeStr.split(' ');
+    if (parts.length < 2) return dateTimeStr;
+    const dateParts = parts[0].split('-');
+    if (dateParts.length < 3) return parts[0];
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const day = dateParts[2];
+    const month = months[parseInt(dateParts[1]) - 1];
+    const year = dateParts[0];
+    return `${day} ${month} ${year}`;
+};
+
+const registrarSalida = () => {
+    horaSalida.value = getLocalDateTimeString();
+};
+
 const handleSubmit = async () => {
+    if (!horaSalida.value) {
+        Swal.fire('Error', 'Por favor, registre la hora de salida de su visita antes de enviar.', 'error');
+        return;
+    }
+
     if (!latitud.value || !longitud.value) {
         Swal.fire('Error', 'Faltan coordenadas GPS.', 'error');
         return;
@@ -432,6 +513,8 @@ const handleSubmit = async () => {
         formData.append('observaciones', observaciones.value);
         formData.append('estado', estadoCheckin.value);
         formData.append('firma', signatureData);
+        formData.append('hora_ingreso', horaIngreso.value || '');
+        formData.append('hora_salida', horaSalida.value || '');
 
         if (fotoFile.value) {
             formData.append('foto', fotoFile.value);
@@ -463,6 +546,7 @@ const handleSubmit = async () => {
 };
 
 onMounted(() => {
+    horaIngreso.value = getLocalDateTimeString();
     fetchVisitasAsignadas();
     setTimeout(initCanvas, 500); // Give layout time to render and set canvas dims
     obtenerUbicacion(); // Try to fetch GPS coordinates automatically at start
