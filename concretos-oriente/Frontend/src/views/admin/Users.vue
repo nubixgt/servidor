@@ -316,7 +316,7 @@ const formData = ref({
 });
 
 const availableModules = [
-  { id: "personnel", label: "Personal" },
+  { id: "personnel", label: "RRHH" },
   { id: "vehicles", label: "Vehículos" },
   { id: "machinery", label: "Maquinaria" },
   { id: "tech-machinery", label: "Estado Maquinaria (Técnico)" },
