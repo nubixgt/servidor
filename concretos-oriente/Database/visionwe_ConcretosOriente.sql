@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 17-06-2026 a las 21:42:26
+-- Tiempo de generación: 19-06-2026 a las 15:13:25
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -108,6 +108,30 @@ INSERT INTO `bank_accounts` (`id`, `nombre_banco`, `numero_cuenta`, `tipo_cuenta
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `budget_extensions`
+--
+
+CREATE TABLE `budget_extensions` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `monto` decimal(15,2) NOT NULL,
+  `tipo_ampliacion` varchar(50) NOT NULL,
+  `documentos` text DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `budget_extensions`
+--
+
+INSERT INTO `budget_extensions` (`id`, `project_id`, `monto`, `tipo_ampliacion`, `documentos`, `created_by`, `created_at`) VALUES
+(1, 1, 100.00, 'Trabajo Suplementario', '[\"Uploads\\/AmpliacionPresupuesto\\/1\\/doc_1_1781811136.pdf\"]', 2, '2026-06-18 19:32:16'),
+(2, 1, 200.00, 'Orden de Cambio', '[\"Uploads\\/AmpliacionPresupuesto\\/2\\/doc_1_1781811924.pdf\",\"Uploads\\/AmpliacionPresupuesto\\/2\\/doc_2_1781811924.jpg\",\"Uploads\\/AmpliacionPresupuesto\\/2\\/doc_3_1781811924.jpg\"]', 2, '2026-06-18 19:45:24');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `budget_items`
 --
 
@@ -155,7 +179,8 @@ CREATE TABLE `clients` (
 --
 
 INSERT INTO `clients` (`id`, `company_name`, `ruc`, `status`, `contact_name`, `email`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 'empresa1', '789461532', 'active', 'Ing. Mario', 'mario@gmail.com', '45289012', 'Parque las Americas', '2026-05-26 14:43:13', '2026-05-26 14:43:13');
+(1, 'empresa', '789461532', 'active', 'Ing. Mario', 'mario@gmail.com', '45289012', 'Parque las Americas', '2026-05-26 14:43:13', '2026-06-17 22:24:17'),
+(2, 'municipalidad de salamá, baja verapaz', NULL, 'active', 'VICTOR DE LA CRUZ', NULL, NULL, NULL, '2026-06-18 18:10:29', '2026-06-18 18:10:29');
 
 -- --------------------------------------------------------
 
@@ -171,6 +196,7 @@ CREATE TABLE `concrete_trips` (
   `m3_arena` decimal(10,2) DEFAULT NULL,
   `m3_piedrin` decimal(10,2) DEFAULT NULL,
   `m3_cemento` decimal(10,2) DEFAULT NULL,
+  `m3` decimal(10,2) DEFAULT NULL,
   `hora_planta` time NOT NULL,
   `lat_planta` decimal(10,8) DEFAULT NULL,
   `lng_planta` decimal(11,8) DEFAULT NULL,
@@ -445,12 +471,13 @@ CREATE TABLE `inventory_items` (
 --
 
 INSERT INTO `inventory_items` (`id`, `tipo_item`, `codigo_sku`, `nombre`, `descripcion`, `unidad_medida`, `stock_minimo`, `stock_actual`, `created_at`, `updated_at`) VALUES
-(3, 'Material', '64564', 'Cemento', 'Cemento de buena calidad', 'Unidades', 100.00, 270.00, '2026-05-20 21:03:34', '2026-06-17 20:50:15'),
-(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 100.00, 500.00, '2026-05-22 22:46:40', '2026-05-22 22:47:09'),
+(3, 'Material', '64564', 'Cemento', 'Cemento de buena calidad', 'Unidades', 100.00, 250.00, '2026-05-20 21:03:34', '2026-06-18 19:09:57'),
+(4, 'Consumible', '97841', 'Prueba 2', 'Prueba 2 para saber si carga todo bien', 'litros', 100.00, 510.00, '2026-05-22 22:46:40', '2026-06-18 21:11:47'),
 (5, 'Herramienta', '9874615320', 'Prueba 3', 'Prueba 3 para saber si todo carga correctamente', 'm2', 50.00, 100.00, '2026-05-26 14:13:37', '2026-06-17 17:52:10'),
 (6, 'Herramienta', '0000', 'palas', NULL, 'unidad', 0.00, 15.00, '2026-06-17 16:20:53', '2026-06-17 20:53:08'),
-(7, 'Material', '984615', 'Arena', NULL, 'm3', 1.00, 100.00, '2026-06-17 20:47:09', '2026-06-17 20:47:50'),
-(8, 'Material', '987461502', 'Piedrin', NULL, 'm3', 1.00, 100.00, '2026-06-17 20:48:23', '2026-06-17 20:48:46');
+(7, 'Material', '984615', 'Arena', NULL, 'm3', 1.00, 60.00, '2026-06-17 20:47:09', '2026-06-18 19:09:57'),
+(8, 'Material', '987461502', 'Piedrin', NULL, 'm3', 1.00, 70.00, '2026-06-17 20:48:23', '2026-06-18 19:09:57'),
+(9, 'Material', '', 'Sillas de Metal', 'Sillas de Metal', 'Unidad', 5.00, 3.00, '2026-06-18 17:31:28', '2026-06-18 17:40:50');
 
 -- --------------------------------------------------------
 
@@ -468,6 +495,7 @@ CREATE TABLE `inventory_kardex` (
   `costo_unitario` decimal(12,2) NOT NULL DEFAULT 0.00,
   `referencia_documento` varchar(255) DEFAULT NULL,
   `notas` text DEFAULT NULL,
+  `fotos` text DEFAULT NULL,
   `fecha_movimiento` datetime NOT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -476,15 +504,19 @@ CREATE TABLE `inventory_kardex` (
 -- Volcado de datos para la tabla `inventory_kardex`
 --
 
-INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_origen_id`, `proyecto_destino_id`, `cantidad`, `costo_unitario`, `referencia_documento`, `notas`, `fecha_movimiento`, `created_at`) VALUES
-(3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', '2026-05-20 21:03:00', '2026-05-20 21:04:15'),
-(4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', '2026-05-22 22:46:00', '2026-05-22 22:47:09'),
-(6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', '2026-05-26 14:17:00', '2026-05-26 14:17:46'),
-(7, 'Entrada', 6, NULL, 2, 20.00, 100.00, NULL, NULL, '2026-06-17 16:21:00', '2026-06-17 16:21:23'),
-(8, 'Entrada', 7, NULL, 2, 100.00, 80.00, '841520', NULL, '2026-06-17 20:47:00', '2026-06-17 20:47:50'),
-(9, 'Entrada', 8, NULL, 2, 100.00, 80.00, '8974120', NULL, '2026-06-17 20:48:00', '2026-06-17 20:48:46'),
-(10, 'Entrada', 3, NULL, 2, 100.00, 80.00, '98746150', NULL, '2026-06-17 20:50:00', '2026-06-17 20:50:15'),
-(11, 'Salida', 6, NULL, 2, 5.00, 0.00, '8974160', NULL, '2026-06-17 20:51:00', '2026-06-17 20:53:08');
+INSERT INTO `inventory_kardex` (`id`, `tipo_movimiento`, `item_id`, `proyecto_origen_id`, `proyecto_destino_id`, `cantidad`, `costo_unitario`, `referencia_documento`, `notas`, `fotos`, `fecha_movimiento`, `created_at`) VALUES
+(3, 'Entrada', 3, NULL, NULL, 150.00, 100.00, '9845102', 'Ingresando 100 unidades m2 de cemento a la bodega', NULL, '2026-05-20 21:03:00', '2026-05-20 21:04:15'),
+(4, 'Entrada', 4, NULL, NULL, 500.00, 20.00, '654651', 'Prueba 2 para saber si todo carga bien', NULL, '2026-05-22 22:46:00', '2026-05-22 22:47:09'),
+(6, 'Entrada', 5, NULL, 1, 100.00, 10.00, '894615320', 'Prueba 4', NULL, '2026-05-26 14:17:00', '2026-05-26 14:17:46'),
+(7, 'Entrada', 6, NULL, 2, 20.00, 100.00, NULL, NULL, NULL, '2026-06-17 16:21:00', '2026-06-17 16:21:23'),
+(8, 'Entrada', 7, NULL, 2, 100.00, 80.00, '841520', NULL, NULL, '2026-06-17 20:47:00', '2026-06-17 20:47:50'),
+(9, 'Entrada', 8, NULL, 2, 100.00, 80.00, '8974120', NULL, NULL, '2026-06-17 20:48:00', '2026-06-17 20:48:46'),
+(10, 'Entrada', 3, NULL, 2, 100.00, 80.00, '98746150', NULL, NULL, '2026-06-17 20:50:00', '2026-06-17 20:50:15'),
+(11, 'Salida', 6, NULL, 2, 5.00, 0.00, '8974160', NULL, NULL, '2026-06-17 20:51:00', '2026-06-17 20:53:08'),
+(12, 'Entrada', 9, NULL, 2, 20.00, 150.00, '23456789', NULL, NULL, '2026-06-18 17:31:00', '2026-06-18 17:32:33'),
+(13, 'Traslado', 9, NULL, 1, 5.00, 0.00, NULL, NULL, NULL, '2026-06-18 17:32:00', '2026-06-18 17:33:01'),
+(14, 'Traslado', 9, NULL, 1, 12.00, 0.00, NULL, NULL, NULL, '2026-06-18 17:35:00', '2026-06-18 17:40:50'),
+(15, 'Entrada', 4, NULL, NULL, 10.00, 10.00, '984651320', 'Prueba para ver si cargan las fotos', '[\"Uploads\\/Inventory\\/15\\/foto_1_1781817107.jpg\",\"Uploads\\/Inventory\\/15\\/foto_2_1781817107.jpg\"]', '2026-06-18 21:10:00', '2026-06-18 21:11:47');
 
 -- --------------------------------------------------------
 
@@ -520,9 +552,9 @@ CREATE TABLE `machinery` (
 --
 
 INSERT INTO `machinery` (`id`, `categoria`, `codigo_interno`, `marca`, `modelo`, `numero_serie`, `anio_fabricacion`, `placa`, `horometro_actual`, `kilometraje_actual`, `intervalo_servicio`, `fecha_ultimo_servicio`, `operador_id`, `proyecto_id`, `estado`, `costo_adquisicion`, `fecha_adquisicion`, `foto_path`, `created_at`, `created_by`) VALUES
-(1, 'Maquinaria Especial', '001-2026', 'CAT', 'MOTONIVELADORA', '234DFSDF234', 2001, '567sfd', 1950, 15000, 360, '2026-05-03', 1, 1, 'Activo', 700000.00, '2026-05-22', 'Uploads/Machinery/1/foto.jpg', '2026-05-20 19:45:11', NULL),
-(2, 'Maquinaria Pesada', 'EX-042', 'CATERPILAR', '2026', 'SDFDF23423', 2002, 'MD234M', 1600, 30000, 500, '2026-05-16', 3, 2, 'Activo', 500.00, '2026-05-20', 'Uploads/Machinery/2/foto.jpg', '2026-05-22 22:31:16', NULL),
-(3, 'Transporte Pesado', 'EXC-8451', 'PJD', 'SDFC202', 'SDFSF', 2026, 'SDCSEEF', 1000, 10000, 500, '2026-06-11', 3, 2, 'Activo', 20000.00, '2026-06-21', 'Uploads/Machinery/3/foto.jpg', '2026-06-17 18:04:23', 2);
+(1, 'Maquinaria Especial', '001-2026', 'CAT', 'MOTONIVELADORA', '234DFSDF234', 2001, '567sfd', 1950, 15000, 360, '2026-05-03', NULL, 1, 'Activo', 700000.00, '2026-05-22', 'Uploads/Machinery/1/foto.jpg', '2026-05-20 19:45:11', NULL),
+(2, 'Maquinaria Pesada', 'EX-042', 'CATERPILAR', '2026', 'SDFDF23423', 2002, 'MD234M', 1600, 30000, 500, '2026-05-16', NULL, 2, 'Activo', 500.00, '2026-05-20', 'Uploads/Machinery/2/foto.jpg', '2026-05-22 22:31:16', NULL),
+(3, 'Transporte Pesado', 'EXC-8451', 'PJD', 'SDFC202', 'SDFSF', 2026, 'SDCSEEF', 1000, 10000, 500, '2026-06-11', NULL, 2, 'Activo', 20000.00, '2026-06-21', 'Uploads/Machinery/3/foto.jpg', '2026-06-17 18:04:23', 2);
 
 -- --------------------------------------------------------
 
@@ -549,8 +581,8 @@ CREATE TABLE `machinery_log` (
 --
 
 INSERT INTO `machinery_log` (`id`, `maquina_id`, `proyecto_id`, `fecha`, `horometro_inicial`, `horometro_final`, `combustible_consumido`, `observaciones`, `operador_id`, `created_at`, `created_by`) VALUES
-(1, 1, 1, '2026-05-20', 15000, 30000, 95641.00, 'Prueba para saber si todo funciona correctamente', 1, '2026-05-20 19:46:39', NULL),
-(3, 2, 1, '2026-05-22', 600, 1500, 3600.00, 'Prueba para saber si todo carga bien', 3, '2026-05-22 22:32:14', NULL);
+(1, 1, 1, '2026-05-20', 15000, 30000, 95641.00, 'Prueba para saber si todo funciona correctamente', NULL, '2026-05-20 19:46:39', NULL),
+(3, 2, 1, '2026-05-22', 600, 1500, 3600.00, 'Prueba para saber si todo carga bien', NULL, '2026-05-22 22:32:14', NULL);
 
 -- --------------------------------------------------------
 
@@ -580,8 +612,8 @@ CREATE TABLE `maintenance_logs` (
 --
 
 INSERT INTO `maintenance_logs` (`id`, `machinery_id`, `tipo_mantenimiento`, `fecha_mantenimiento`, `descripcion`, `costo_total`, `responsable_id`, `proximo_mantenimiento`, `horometro_servicio`, `observaciones`, `created_at`, `latitud`, `longitud`, `path_fotos`) VALUES
-(6, 1, 'Correctivo', '2026-05-21', 'Prueba en el campo de trabajo realizado', 240.00, 1, '2026-06-21', 1950, 'Prueba en el campo de observaciones', '2026-05-21 19:21:50', '14.553938', '-90.546741', '[\"Uploads\\/Maintenance\\/6\\/foto_1_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_2_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_3_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_4_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_5_1779391310.jpg\"]'),
-(7, 2, 'Preventivo', '2026-05-22', 'Prueba para saber si todo carga bien', 50.00, 3, '2026-05-31', 1600, 'Prueba de observaciones para saber si todo carga bien', '2026-05-22 23:19:02', '14.497033', '-90.557728', '[\"Uploads\\/Maintenance\\/7\\/foto_1_1779491942.jpg\",\"Uploads\\/Maintenance\\/7\\/foto_2_1779491942.jpg\",\"Uploads\\/Maintenance\\/7\\/foto_3_1779491942.jpg\"]');
+(6, 1, 'Correctivo', '2026-05-21', 'Prueba en el campo de trabajo realizado', 240.00, NULL, '2026-06-21', 1950, 'Prueba en el campo de observaciones', '2026-05-21 19:21:50', '14.553938', '-90.546741', '[\"Uploads\\/Maintenance\\/6\\/foto_1_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_2_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_3_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_4_1779391310.jpg\",\"Uploads\\/Maintenance\\/6\\/foto_5_1779391310.jpg\"]'),
+(7, 2, 'Preventivo', '2026-05-22', 'Prueba para saber si todo carga bien', 50.00, NULL, '2026-05-31', 1600, 'Prueba de observaciones para saber si todo carga bien', '2026-05-22 23:19:02', '14.497033', '-90.557728', '[\"Uploads\\/Maintenance\\/7\\/foto_1_1779491942.jpg\",\"Uploads\\/Maintenance\\/7\\/foto_2_1779491942.jpg\",\"Uploads\\/Maintenance\\/7\\/foto_3_1779491942.jpg\"]');
 
 -- --------------------------------------------------------
 
@@ -652,16 +684,6 @@ CREATE TABLE `payroll_details` (
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `payroll_details`
---
-
-INSERT INTO `payroll_details` (`id`, `payroll_id`, `personnel_id`, `salario_base_aplicado`, `horas_trabajadas`, `horas_extras`, `monto_horas_extras`, `bonificaciones`, `deducciones`, `total_neto`, `observaciones`, `created_at`) VALUES
-(1, 1, 1, 5000.00, 160, 0, 0.00, 0.00, 0.00, 5000.00, NULL, '2026-05-21 18:02:13'),
-(2, 2, 1, 5000.00, 160, 50, 2343.75, 100.00, 30.00, 7413.75, 'Prueba1', '2026-05-21 18:03:02'),
-(3, 2, 2, 15000.00, 160, 0, 0.00, 0.00, 0.00, 15000.00, NULL, '2026-05-21 18:03:02'),
-(4, 3, 3, 6000.00, 60, 10, 562.50, 20.00, 150.00, 2682.50, 'Prueba para saber si funciona todo correctamente y si tambien carga todo correctamente', '2026-05-22 23:45:05');
-
 -- --------------------------------------------------------
 
 --
@@ -696,9 +718,11 @@ CREATE TABLE `personnel` (
 --
 
 INSERT INTO `personnel` (`id`, `tipo_empleado`, `nombres`, `apellidos`, `dpi`, `nit`, `telefono`, `direccion`, `puesto`, `tipo_planilla`, `salario_base`, `tarifa_hora_extra`, `fecha_contratacion`, `fecha_baja`, `numero_cuenta`, `nombre_banco`, `foto_path`, `proyecto_id`, `created_at`, `updated_at`) VALUES
-(1, 'Operador', 'Juan', 'Perez', '6546516510650', '9874', '9878-4651', 'Prueba de direccion', 'Programador', 'Mensual', 5000.00, 25.00, '2026-05-01', NULL, '987415', 'sdfsdf', 'Uploads/Personal/1/foto.jpg', 1, '2026-05-20 18:43:35', '2026-05-21 17:57:18'),
-(2, 'Contratista', 'Karla', 'Archila', '8746135030356', '6845102', '6841-6515', 'Prueba', 'Contratista', 'Quincenal', 15000.00, 100.00, '2026-05-02', NULL, '68415302', 'asdf', 'Uploads/Personal/2/foto.jpg', 1, '2026-05-21 16:24:43', '2026-05-21 17:57:01'),
-(3, 'Piloto', 'Santiago', 'Hernandez', '5481560332023', '984150', '9841-0320', 'Prueba para saber si carga bien', 'Programador', 'Semanal', 6000.00, 25.00, '2026-05-24', '2026-06-07', '5120', 'Prueba', 'Uploads/Personal/3/foto.jpg', 1, '2026-05-22 22:24:30', '2026-05-29 16:33:07');
+(4, 'Administrativo', 'Sabrina', 'Galvez', '2990569960101', '102117500', '3035-7162', 'Salamá, barrio alcantarilla', 'Gerencia Financiera', 'Mensual', 6500.00, NULL, '2023-12-05', NULL, '3151041696', 'BANRURAL', 'Uploads/Personal/4/foto.png', NULL, '2026-06-18 22:12:01', '2026-06-18 22:14:14'),
+(5, 'Administrativo', 'MARIA LUISA', 'CASTAÑEDA RAMIREZ', '2574591540101', NULL, '2574-5915', NULL, 'ENLACE INSTITUCIONAL', 'Mensual', 4500.00, NULL, '2025-01-01', NULL, '3180022507', 'BANRURAL', 'Uploads/Personal/5/foto.png', NULL, '2026-06-18 22:18:33', '2026-06-18 22:19:26'),
+(6, 'Administrativo', 'JOSSELINE MARIELY', 'GARCIA ALVARADO', '3054010250207', NULL, '5987-5845', 'SANARATE', 'GERENCIA DE OPERACIONES', 'Mensual', 5000.00, NULL, '2024-11-18', NULL, '4489030602', 'BANRURAL', NULL, NULL, '2026-06-18 22:23:30', '2026-06-18 22:23:30'),
+(7, 'Administrativo', 'CESAR DAVID', 'RODAS MORAN', '3054346240207', NULL, '4216-6118', 'SANARATE', 'LOGISTICA', 'Mensual', 3000.00, NULL, '2026-06-01', NULL, '905431888', 'BAC', NULL, NULL, '2026-06-18 22:25:50', '2026-06-18 22:26:14'),
+(8, 'Operador', 'ALEJANDRO ENRIQUE', 'DEL CID CALDERON', '2224084050207', NULL, '4030-7215', 'SANARATE, COLONIA GRACIAS A DIOS', 'OPERADOR DE MAQUINARIA', 'Semanal', 1750.00, 36.46, '2026-06-01', NULL, '3180064315', 'BANRURAL', NULL, NULL, '2026-06-18 22:30:53', '2026-06-18 22:30:53');
 
 -- --------------------------------------------------------
 
@@ -734,7 +758,9 @@ CREATE TABLE `projects` (
 
 INSERT INTO `projects` (`id`, `codigo`, `nombre`, `cliente_id`, `ubicacion`, `coordenadas`, `presupuesto`, `fecha_inicio`, `fecha_fin_estimada`, `fecha_fin_real`, `estado`, `numero_contrato`, `contratos_archivos`, `foto`, `descripcion`, `contactos`, `gerente_id`, `created_at`, `updated_at`) VALUES
 (1, '2026-001', 'Puente', 1, 'Zona 14', '14.600518, -90.509191', 20000.00, '2026-05-01', '2026-05-14', '2026-05-20', 'Activo', '0000', '[\"Uploads\\/Projects\\/1\\/docs\\/FODA_de_trabajo_de_graduaci__n.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Propuesta_te__rica_y_dise__o_de_la_propuesta_te__rica.pdf\",\"Uploads\\/Projects\\/1\\/docs\\/Evaluaci__n_Final_____Pregunta_1.pdf\"]', 'Uploads/Projects/1/foto_1779738193.webp', 'Prueba para saber si todo funciona correctamente y sin problema', '[{\"tipo\":\"Proveedor\",\"nombre\":\"Prueba 1\",\"telefono\":\"98754132\",\"email\":\"prueba1@gmail.com\"}]', 2, '2026-05-20 18:18:29', '2026-05-26 14:44:05'),
-(2, 'PRY-001-2026', 'ASFALTO', 1, 'Zona 16', '14.628476, -90.510521', 250000.00, '2026-05-01', '2026-05-10', '2026-05-23', 'Activo', '89415615', '[\"Uploads\\/Projects\\/2\\/docs\\/PROYECTO_FINAL.pdf\",\"Uploads\\/Projects\\/2\\/docs\\/Evaluaci__n_Final_____Pregunta_4.pdf\"]', 'Uploads/Projects/2/foto_1779738092.png', 'Prueba 2 para saber si funciona todo correctamente', '[{\"tipo\":\"Supervisor\",\"nombre\":\"Rodrigo\",\"telefono\":\"8798-9874\",\"email\":\"prueba@gmail.com\"}]', 2, '2026-05-22 22:40:16', '2026-05-26 14:43:48');
+(2, 'PRY-001-2026', 'ASFALTO', 1, 'Zona 16', '14.628476, -90.510521', 250000.00, '2026-05-01', '2026-05-10', '2026-05-23', 'Activo', '894156', '[\"Uploads\\/Projects\\/2\\/docs\\/PROYECTO_FINAL.pdf\",\"Uploads\\/Projects\\/2\\/docs\\/Evaluaci__n_Final_____Pregunta_4.pdf\"]', 'Uploads/Projects/2/foto_1779738092.png', 'Prueba 2 para saber si funciona todo correctamente', '[{\"tipo\":\"Supervisor\",\"nombre\":\"Rodrigo\",\"telefono\":\"8798-9874\",\"email\":\"prueba@gmail.com\"}]', 2, '2026-05-22 22:40:16', '2026-06-18 13:54:47'),
+(3, '26-001', 'CENTRO DE SALUD, SALAMÁ', 2, 'BARRIO AGUA CALIENTE, BAJA VERAPAZ', '15.102513, -90.327197', 5023500.00, '2024-08-19', '2026-05-25', '2026-05-25', 'Completado', '', NULL, 'Uploads/Projects/3/foto_1781806507.JPG', 'Construcción de edificio continuo a edificio central del centro de Salud. ', '[]', 2, '2026-06-18 18:15:07', '2026-06-18 18:15:07'),
+(4, 'SDFSDF', 'Proyecto Prueba', 1, 'Prueba Proyecto', '14.632581, -90.512637', 1000000.00, '2026-06-19', '2026-06-28', '2026-07-12', 'Activo', '9846150', NULL, 'Uploads/Projects/4/foto_1781808659.jpg', 'Prueba Proyecto', '[{\"tipo\":\"Proveedor\",\"nombre\":\"Prueba\",\"telefono\":\"984615230\",\"email\":\"Prueba@gmail.com\"}]', 2, '2026-06-18 18:50:59', '2026-06-18 18:50:59');
 
 -- --------------------------------------------------------
 
@@ -765,7 +791,13 @@ INSERT INTO `project_incomes` (`id`, `project_id`, `tipo_cobro`, `numero_estimac
 (3, 2, 'Estimacion', 2, 25000.00, 10.00, '2026-05-27', 'Prueba 2', '2026-05-27 22:13:42', '2026-05-27 22:13:42'),
 (4, 1, 'Anticipo', NULL, 4000.00, 20.00, '2026-05-28', 'Prueba 2 de Anticipo', '2026-05-28 14:14:53', '2026-05-28 14:14:53'),
 (5, 1, 'Estimacion', 1, 15000.00, 75.00, '2026-05-28', 'Prueba 1 de estimacion proyecto 1', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
-(6, 1, 'Estimacion', 2, 1000.00, 5.00, '2026-05-28', 'Prueba 3', '2026-05-28 14:37:00', '2026-05-28 14:37:00');
+(6, 1, 'Estimacion', 2, 1000.00, 5.00, '2026-05-28', 'Prueba 3', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
+(7, 2, 'Estimacion', 3, 5000.00, 2.00, '2026-06-18', 'Prueba', '2026-06-18 17:16:39', '2026-06-18 17:16:39'),
+(8, 3, 'Anticipo', NULL, 1004700.00, 20.00, '2026-06-18', NULL, '2026-06-18 18:24:05', '2026-06-18 18:24:05'),
+(9, 3, 'Estimacion', 1, 1054935.00, 21.00, '2025-03-01', NULL, '2026-06-18 18:26:53', '2026-06-18 18:26:53'),
+(10, 3, 'Estimacion', 2, 1681699.69, 33.48, '2025-06-05', NULL, '2026-06-18 18:28:51', '2026-06-18 18:28:51'),
+(11, 3, 'Estimacion', 3, 321504.58, 6.40, '2025-07-24', NULL, '2026-06-18 18:30:09', '2026-06-18 18:30:09'),
+(12, 3, 'Estimacion', 4, 588570.23, 11.72, '2025-12-22', NULL, '2026-06-18 18:32:30', '2026-06-18 18:32:30');
 
 -- --------------------------------------------------------
 
@@ -810,7 +842,25 @@ INSERT INTO `project_income_sources` (`id`, `project_income_id`, `fuente`, `porc
 (15, 5, 'COCODE', 13.33, 2000.00, '2026-06-05', '897746150', 2, 'Uploads/ProjectIncomes/Proyecto_1/comprobante_1779978062_2.png', 'Recibido', '2026-05-28 14:21:02', '2026-05-28 14:21:02'),
 (16, 6, 'Consejo de Desarrollo', 100.00, 1000.00, '2026-06-07', '987150', 1, 'Uploads/ProjectIncomes/Proyecto_1/Estimaciones/comprobante_1779979020_0.png', 'Recibido', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
 (17, 6, 'Municipalidad', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
-(18, 6, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-05-28 14:37:00', '2026-05-28 14:37:00');
+(18, 6, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-05-28 14:37:00', '2026-05-28 14:37:00'),
+(19, 7, 'Consejo de Desarrollo', 50.00, 2500.00, '2026-06-18', '4321513', 3, NULL, 'Recibido', '2026-06-18 17:16:39', '2026-06-18 17:16:39'),
+(20, 7, 'Municipalidad', 50.00, 2500.00, '2026-06-05', '1351434', 1, NULL, 'Recibido', '2026-06-18 17:16:39', '2026-06-18 17:16:39'),
+(21, 7, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-06-18 17:16:39', '2026-06-18 17:16:39'),
+(22, 8, 'Consejo de Desarrollo', 49.77, 500000.00, '2024-10-10', '234567890', 4, NULL, 'Recibido', '2026-06-18 18:24:05', '2026-06-18 18:24:05'),
+(23, 8, 'Municipalidad', 49.77, 500000.00, '2024-10-10', '234567890', 3, NULL, 'Recibido', '2026-06-18 18:24:05', '2026-06-18 18:24:05'),
+(24, 8, 'COCODE', 0.47, 4700.00, '2024-10-10', '123456789', 2, NULL, 'Recibido', '2026-06-18 18:24:05', '2026-06-18 18:24:05'),
+(25, 9, 'Consejo de Desarrollo', 52.52, 554035.00, '2025-03-01', '567890', 4, 'Uploads/ProjectIncomes/Proyecto_3/Estimaciones/comprobante_1781807213_0.jpg', 'Recibido', '2026-06-18 18:26:53', '2026-06-18 18:26:53'),
+(26, 9, 'Municipalidad', 47.48, 500900.00, '2025-03-01', '8765', 1, NULL, 'Recibido', '2026-06-18 18:26:53', '2026-06-18 18:26:53'),
+(27, 9, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-06-18 18:26:53', '2026-06-18 18:26:53'),
+(28, 10, 'Consejo de Desarrollo', 47.57, 800000.00, '2025-06-05', '789876', 2, NULL, 'Recibido', '2026-06-18 18:28:51', '2026-06-18 18:28:51'),
+(29, 10, 'Municipalidad', 52.43, 881699.69, '2025-06-05', '9876', 1, NULL, 'Recibido', '2026-06-18 18:28:51', '2026-06-18 18:28:51'),
+(30, 10, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-06-18 18:28:51', '2026-06-18 18:28:51'),
+(31, 11, 'Consejo de Desarrollo', 93.31, 300000.00, '2025-07-24', '98765', 3, NULL, 'Recibido', '2026-06-18 18:30:09', '2026-06-18 18:30:09'),
+(32, 11, 'Municipalidad', 6.69, 21504.58, '2025-07-18', '9876', 1, NULL, 'Recibido', '2026-06-18 18:30:09', '2026-06-18 18:30:09'),
+(33, 11, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-06-18 18:30:09', '2026-06-18 18:30:09'),
+(34, 12, 'Consejo de Desarrollo', 50.97, 300000.00, '2025-12-22', '765', 3, NULL, 'Recibido', '2026-06-18 18:32:30', '2026-06-18 18:32:30'),
+(35, 12, 'Municipalidad', 49.03, 288570.23, '2025-12-22', '987', 2, NULL, 'Recibido', '2026-06-18 18:32:30', '2026-06-18 18:32:30'),
+(36, 12, 'COCODE', 0.00, 0.00, NULL, NULL, NULL, NULL, 'Pendiente', '2026-06-18 18:32:30', '2026-06-18 18:32:30');
 
 -- --------------------------------------------------------
 
@@ -885,7 +935,9 @@ CREATE TABLE `recurrents` (
 --
 
 INSERT INTO `recurrents` (`id`, `concepto`, `descripcion`, `monto`, `dia_pago`, `created_by`, `created_at`, `updated_at`) VALUES
-(4, 'Pago de luz', 'prueba para saber si todo carga correctamente', 200.00, 16, 2, '2026-06-17 18:01:08', '2026-06-17 18:01:08');
+(4, 'Pago de luz', 'prueba para saber si todo carga correctamente', 200.00, 16, 2, '2026-06-17 18:01:08', '2026-06-17 18:01:08'),
+(5, 'Pago de agua', 'prueba', 100.00, 17, 2, '2026-06-18 18:24:11', '2026-06-18 18:24:11'),
+(6, 'pago de agua', 'prueba tecnico', 200.00, 18, 3, '2026-06-18 20:47:43', '2026-06-18 20:47:43');
 
 -- --------------------------------------------------------
 
@@ -941,7 +993,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `nombre`, `usuario`, `password`, `rol`, `estado`, `foto`, `created_at`, `updated_at`, `permisos`, `proyectos`) VALUES
 (2, 'Admin', 'admin', '$2y$10$bU4xCoXE5sAwb6y7yS1Wl.N9xVsyq7SwY5nVWVVquWVL.5Ehc2Qly', 'admin', 'Activo', 'Uploads/Users/2/foto_1779295276.jpg', '2026-05-20 16:41:16', '2026-05-20 16:41:51', NULL, NULL),
-(3, 'Maria Gomez', 'mgomez', '$2y$10$0W9yy2AQRFF4IMO5sU3Z/OFzIdZoIq4IhYY7MkqqHufVTLUhduwPS', 'tecnico', 'Activo', 'Uploads/Users/3/foto_1779491227.jpg', '2026-05-22 23:07:07', '2026-06-17 20:55:13', '[\"machinery\",\"projects\"]', '[\"2\",\"1\"]');
+(3, 'Maria Gomez', 'mgomez', '$2y$10$0W9yy2AQRFF4IMO5sU3Z/OFzIdZoIq4IhYY7MkqqHufVTLUhduwPS', 'tecnico', 'Activo', 'Uploads/Users/3/foto_1779491227.jpg', '2026-05-22 23:07:07', '2026-06-18 20:47:16', '[\"machinery\",\"projects\",\"concrete-control\",\"recurrents\"]', '[\"2\",\"1\"]');
 
 -- --------------------------------------------------------
 
@@ -965,14 +1017,6 @@ CREATE TABLE `vehicles` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `vehicles`
---
-
-INSERT INTO `vehicles` (`id`, `placa`, `kilometraje`, `marca`, `modelo`, `piloto_id`, `observaciones`, `foto_frontal`, `foto_trasera`, `frecuencia_prioridad`, `estatus`, `created_at`, `updated_at`) VALUES
-(1, 'SAD-123', 1600.00, 'Toyota', '2026', 3, 'Prueba 1 para saber si todo carga bien incluyendo las fotos', 'Uploads/Vehicles/1/foto_frontal.jpg', 'Uploads/Vehicles/1/foto_trasera.jpg', 'Normal', 'active', '2026-05-29 16:50:17', '2026-05-29 17:01:41'),
-(2, 'WERF-123', 20.00, 'Mitsubishi', '2025', 3, 'Prueba 2', 'Uploads/Vehicles/2/foto_frontal.jpg', 'Uploads/Vehicles/2/foto_trasera.jpg', 'Crítica', 'inactive', '2026-05-29 17:04:34', '2026-05-29 17:45:43');
-
 -- --------------------------------------------------------
 
 --
@@ -989,14 +1033,6 @@ CREATE TABLE `vehicle_logs` (
   `observaciones` text DEFAULT NULL,
   `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `vehicle_logs`
---
-
-INSERT INTO `vehicle_logs` (`id`, `vehiculo_id`, `piloto_id`, `estatus_vehiculo`, `envio_servicio`, `reportar_averia`, `observaciones`, `fecha_registro`) VALUES
-(1, 2, 3, 'maintenance', 'Prueba 1 para saber si cambio todo correctamente a taller', 'Prueba 1 para saber si cambio todo correctamente a taller', 'Prueba 1 para saber si cambio todo correctamente a taller', '2026-05-29 17:43:18'),
-(2, 2, 3, 'inactive', 'Prueba 2 para ver si cambia de estado', 'Prueba 2 para ver si cambia de estado', 'Prueba 2 para ver si cambia de estado', '2026-05-29 17:45:43');
 
 --
 -- Índices para tablas volcadas
@@ -1019,6 +1055,14 @@ ALTER TABLE `alerts_history`
 --
 ALTER TABLE `bank_accounts`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `budget_extensions`
+--
+ALTER TABLE `budget_extensions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `project_id` (`project_id`),
+  ADD KEY `fk_be_created_by` (`created_by`);
 
 --
 -- Indices de la tabla `budget_items`
@@ -1280,6 +1324,12 @@ ALTER TABLE `bank_accounts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de la tabla `budget_extensions`
+--
+ALTER TABLE `budget_extensions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `budget_items`
 --
 ALTER TABLE `budget_items`
@@ -1289,13 +1339,13 @@ ALTER TABLE `budget_items`
 -- AUTO_INCREMENT de la tabla `clients`
 --
 ALTER TABLE `clients`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `concrete_trips`
 --
 ALTER TABLE `concrete_trips`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `credits`
@@ -1355,13 +1405,13 @@ ALTER TABLE `income_records`
 -- AUTO_INCREMENT de la tabla `inventory_items`
 --
 ALTER TABLE `inventory_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `inventory_kardex`
 --
 ALTER TABLE `inventory_kardex`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `machinery`
@@ -1403,25 +1453,25 @@ ALTER TABLE `payroll_details`
 -- AUTO_INCREMENT de la tabla `personnel`
 --
 ALTER TABLE `personnel`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `project_incomes`
 --
 ALTER TABLE `project_incomes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `project_income_sources`
 --
 ALTER TABLE `project_income_sources`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `purchase_orders`
@@ -1439,7 +1489,7 @@ ALTER TABLE `purchase_order_items`
 -- AUTO_INCREMENT de la tabla `recurrents`
 --
 ALTER TABLE `recurrents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `suppliers`
@@ -1468,6 +1518,13 @@ ALTER TABLE `vehicle_logs`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `budget_extensions`
+--
+ALTER TABLE `budget_extensions`
+  ADD CONSTRAINT `fk_be_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_be_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `budget_items`
