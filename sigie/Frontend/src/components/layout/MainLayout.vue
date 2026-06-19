@@ -47,6 +47,32 @@
                         label="Desviaciones Lab"
                         to="/desviaciones"
                     />
+                    <!-- Supervisiones & No Conformidades (Inspector) -->
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="playlist_add_check"
+                        label="Registrar Supervisión"
+                        to="/supervisiones/nuevo"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="store"
+                        label="Supervisiones Estab."
+                        to="/supervisiones"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="report"
+                        label="Registrar No Conformidad"
+                        to="/noconformidades/nuevo"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="assignment_late"
+                        label="No Conformidades Rastro"
+                        to="/noconformidades"
+                    />
+
                     <!-- Administradores only -->
                     <SidebarItem
                         v-if="auth.role === 'administrador'"
@@ -65,6 +91,19 @@
                         icon="science"
                         label="Desviaciones Lab"
                         to="/desviaciones"
+                    />
+                    <!-- Supervisiones & No Conformidades (Administrador) -->
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="store"
+                        label="Supervisiones Estab."
+                        to="/supervisiones"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="assignment_late"
+                        label="No Conformidades Rastro"
+                        to="/noconformidades"
                     />
                 </div>
             </nav>
