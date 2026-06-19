@@ -29,29 +29,80 @@
 
     <nav class="flex-grow px-4 overflow-y-auto custom-scrollbar">
       <ul class="space-y-1.5">
-        <li v-for="item in filteredItems" :key="item.id" class="relative px-2">
-          <router-link
-            :to="'/' + item.id"
-            custom
-            v-slot="{ isActive, navigate }"
-          >
+        <li v-for="item in filteredItems" :key="item.type === 'group' ? 'group-' + item.id : item.id" class="relative px-2">
+
+          <!-- GROUP item -->
+          <template v-if="item.type === 'group'">
             <button
-              @click="() => { navigate(); sidebarOpen = false; }"
+              @click="toggleGroup(item.id)"
               :class="[
                 'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group',
-                isActive
+                isGroupActive(item)
                   ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               ]"
             >
-              <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isActive ? 'text-primary' : 'text-white/40']" />
-              <span class="text-xs font-black uppercase tracking-widest italic">{{ item.label }}</span>
-              <div
-                v-if="isActive"
-                class="absolute right-6 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"
-              ></div>
+              <component
+                :is="item.icon"
+                :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isGroupActive(item) ? 'text-primary' : 'text-white/40']"
+              />
+              <span class="text-xs font-black uppercase tracking-widest italic flex-1 text-left">{{ item.label }}</span>
+              <ChevronDownIcon
+                :class="['w-4 h-4 text-white/30 transition-transform duration-300', openSubmenu === item.id ? 'rotate-180 text-primary' : '']"
+              />
             </button>
-          </router-link>
+
+            <!-- Children list -->
+            <ul v-if="openSubmenu === item.id" class="mt-1 ml-3 space-y-0.5 border-l border-white/10 pl-3">
+              <li v-for="child in item.children" :key="child.id" class="relative">
+                <router-link :to="'/' + child.id" custom v-slot="{ isActive, navigate }">
+                  <button
+                    @click="() => { navigate(); sidebarOpen = false; }"
+                    :class="[
+                      'w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 group',
+                      isActive
+                        ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                        : 'text-white/60 hover:text-white hover:bg-white/5'
+                    ]"
+                  >
+                    <component
+                      :is="child.icon"
+                      :class="['w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110', isActive ? 'text-primary' : 'text-white/40']"
+                    />
+                    <span class="text-xs font-black uppercase tracking-widest italic">{{ child.label }}</span>
+                    <div v-if="isActive" class="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"></div>
+                  </button>
+                </router-link>
+              </li>
+            </ul>
+          </template>
+
+          <!-- REGULAR item -->
+          <template v-else>
+            <router-link
+              :to="'/' + item.id"
+              custom
+              v-slot="{ isActive, navigate }"
+            >
+              <button
+                @click="() => { navigate(); sidebarOpen = false; }"
+                :class="[
+                  'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group',
+                  isActive
+                    ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                ]"
+              >
+                <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isActive ? 'text-primary' : 'text-white/40']" />
+                <span class="text-xs font-black uppercase tracking-widest italic">{{ item.label }}</span>
+                <div
+                  v-if="isActive"
+                  class="absolute right-6 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"
+                ></div>
+              </button>
+            </router-link>
+          </template>
+
         </li>
       </ul>
     </nav>
@@ -69,8 +120,8 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, inject, ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import {
   Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon,
@@ -78,21 +129,33 @@ import {
   CubeIcon, BuildingOfficeIcon, ShieldCheckIcon,
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
-  ArrowPathIcon, XMarkIcon, CalendarDaysIcon
+  ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
+  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 const sidebarOpen = inject('sidebarOpen');
 
 const role = computed(() => authStore.userRole);
+const openSubmenu = ref(null);
 
 const allNavItemsArr = [
   { id: "dashboard", label: "Panel Principal", icon: Squares2X2Icon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "personnel", label: "RRHH", icon: UsersIcon, roles: ["admin"] },
-  { id: "vehicles", label: "Vehículos", icon: TruckIcon, roles: ["admin"] },
-  { id: "machinery", label: "Maquinaria", icon: WrenchScrewdriverIcon, roles: ["admin", "supervisor"] },
+  {
+    type: 'group', id: 'transporte', label: 'Transporte', icon: TruckIcon, roles: ['admin', 'supervisor'],
+    children: [
+      { id: "vehicles", label: "Vehículos", icon: TruckIcon, roles: ["admin"] },
+      { id: "machinery", label: "Maquinaria", icon: WrenchScrewdriverIcon, roles: ["admin", "supervisor"] },
+      { id: "transporte-pesado", label: "Transporte Pesado", icon: TruckIcon, roles: ["admin"] },
+      { id: "maquinaria-especial", label: "Maquinaria Especial", icon: Cog6ToothIcon, roles: ["admin"] },
+      { id: "combustible", label: "Combustible", icon: FireIcon, roles: ["admin"] },
+      { id: "mecanica", label: "Mecánica", icon: WrenchIcon, roles: ["admin"] },
+    ]
+  },
   { id: "tech-machinery", label: "Estado Maquinaria", icon: WrenchScrewdriverIcon, roles: ["tecnico"] },
   { id: "projects", label: "Proyectos", icon: BriefcaseIcon, roles: ["admin", "supervisor"] },
   { id: "clients", label: "Clientes", icon: UsersIcon, roles: ["admin"] },
@@ -114,13 +177,40 @@ const allNavItemsArr = [
   { id: "payroll-expenses", label: "Planilla y Gastos", icon: CurrencyDollarIcon, roles: ["admin"] },
 ];
 
+const isGroupActive = (group) => group.children.some(c => route.path === '/' + c.id);
+
+const toggleGroup = (id) => {
+  openSubmenu.value = openSubmenu.value === id ? null : id;
+};
+
+// Auto-open group when a child route is active
+watch(() => route.path, (path) => {
+  const group = allNavItemsArr.find(
+    item => item.type === 'group' && item.children.some(c => '/' + c.id === path)
+  );
+  if (group) openSubmenu.value = group.id;
+}, { immediate: true });
+
 const filteredItems = computed(() => {
   if (role.value === 'admin') {
     return allNavItemsArr.filter(item => item.roles.includes('admin'));
   }
   const permisos = authStore.userPermisos || [];
   const efectivos = permisos.includes('recurrents') ? [...permisos, 'calendar'] : permisos;
-  return allNavItemsArr.filter(item => efectivos.includes(item.id));
+
+  return allNavItemsArr
+    .filter(item => {
+      if (item.type === 'group') {
+        return item.children.some(c => efectivos.includes(c.id));
+      }
+      return efectivos.includes(item.id);
+    })
+    .map(item => {
+      if (item.type === 'group') {
+        return { ...item, children: item.children.filter(c => efectivos.includes(c.id)) };
+      }
+      return item;
+    });
 });
 
 const handleLogout = () => {
