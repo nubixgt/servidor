@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
-        <h2 class="text-4xl font-bold tracking-tight text-white mb-2">Gestión de Personal</h2>
+        <h2 class="text-4xl font-bold tracking-tight text-white mb-2">Gestión de RRHH</h2>
         <p class="text-white/60">Gestiona tu fuerza laboral y registra nuevos empleados.</p>
       </div>
       <button
@@ -12,7 +12,7 @@
         class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
       >
         <PlusIcon class="w-5 h-5" />
-        Añadir Personal
+        Nuevo Empleado
       </button>
     </div>
 
@@ -54,13 +54,10 @@
             />
           </div>
 
-          <!-- Tipo -->
+          <!-- Tipo de Puesto -->
           <select v-model="filterTipo" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-primary/50 transition-all appearance-none w-full md:w-auto md:min-w-[160px]">
             <option value="">Todos los tipos</option>
-            <option value="Administrativo">Administrativo</option>
-            <option value="Operador">Operador</option>
-            <option value="Piloto">Piloto</option>
-            <option value="Contratista">Contratista</option>
+            <option v-for="p in puestos" :key="p.id" :value="p.nombre">{{ p.nombre }}</option>
           </select>
 
           <!-- Estado -->
@@ -110,7 +107,7 @@
           </thead>
           <tbody class="divide-y divide-white/5">
             <tr v-if="loading">
-              <td colspan="7" class="px-8 py-8 text-center text-white/50">Cargando personal...</td>
+              <td colspan="7" class="px-8 py-8 text-center text-white/50">Cargando RRHH...</td>
             </tr>
             <tr v-else-if="filteredPersonnel.length === 0">
               <td colspan="7" class="px-8 py-12 text-center">
@@ -233,7 +230,7 @@
 
       <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
-          <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Empleado' : 'Añadir Nuevo Personal' }}</h3>
+          <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Empleado' : 'Nuevo Empleado' }}</h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
             <XMarkIcon class="w-6 h-6" />
           </button>
@@ -246,15 +243,23 @@
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Información Personal</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-              <!-- Tipo de empleado -->
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Empleado <span class="text-tertiary">*</span></label>
+              <!-- Tipo de Puesto -->
+              <div class="space-y-2 md:col-span-2">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Puesto <span class="text-tertiary">*</span></label>
+                  <button
+                    type="button"
+                    @click="addNuevoPuesto"
+                    class="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                    title="Agregar nuevo tipo de puesto"
+                  >
+                    <PlusIcon class="w-4 h-4" />
+                    Nuevo puesto
+                  </button>
+                </div>
                 <select v-model="formData.tipo_empleado" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
                   <option value="" disabled>Seleccionar...</option>
-                  <option value="Administrativo">Administrativo</option>
-                  <option value="Operador">Operador</option>
-                  <option value="Piloto">Piloto</option>
-                  <option value="Contratista">Contratista</option>
+                  <option v-for="p in puestos" :key="p.id" :value="p.nombre">{{ p.nombre }}</option>
                 </select>
               </div>
 
@@ -291,6 +296,31 @@
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
                 <input v-model="formData.telefono" @input="formatPhone" type="text" placeholder="0000-0000" maxlength="9"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Fecha de Nacimiento -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha de Nacimiento</label>
+                <input v-model="formData.fecha_nacimiento" type="date"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Cantidad de Hijos -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Cantidad de Hijos</label>
+                <input v-model="formData.cantidad_hijos" type="number" min="0" placeholder="0"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Nivel Académico -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nivel Académico</label>
+                <select v-model="formData.nivel_academico" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
+                  <option value="">Seleccionar...</option>
+                  <option value="Basicos">Básicos</option>
+                  <option value="Diversificado">Diversificado</option>
+                  <option value="Universidad">Universidad</option>
+                </select>
               </div>
 
               <!-- Dirección -->
@@ -340,6 +370,30 @@
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
+              <!-- Diario Viáticos -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Diario Viáticos (GTQ)</label>
+                <input v-model="formData.diario_viaticos" type="number" step="0.01" min="0" placeholder="0.00"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- IGSS -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">IGSS</label>
+                <div class="flex gap-4 pt-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="formData.igss" :value="1" class="accent-primary w-4 h-4" />
+                    <span class="text-sm text-white/80 font-semibold">Sí</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-400 border border-emerald-400/20 font-bold uppercase tracking-wider">Activo</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="formData.igss" :value="0" class="accent-primary w-4 h-4" />
+                    <span class="text-sm text-white/80 font-semibold">No</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 border border-white/10 font-bold uppercase tracking-wider">Inactivo</span>
+                  </label>
+                </div>
+              </div>
+
               <!-- Fecha de contratación -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha de Contratación <span class="text-tertiary">*</span></label>
@@ -367,7 +421,24 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 3: Datos Bancarios -->
+          <!-- SECCIÓN 3: Dato de Contacto -->
+          <div>
+            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Dato de Contacto</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nombres del Contacto</label>
+                <input v-model="formData.contacto_nombres" type="text" placeholder="Nombre completo"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Número del Contacto</label>
+                <input v-model="formData.contacto_numero" @input="formatContactoNumero" type="text" placeholder="0000-0000" maxlength="9"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN 4: Datos Bancarios -->
           <div>
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Datos Bancarios</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -384,7 +455,7 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 4: Fotografía -->
+          <!-- SECCIÓN 5: Fotografía -->
           <div>
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Fotografía</p>
             <div class="space-y-2">
@@ -436,7 +507,7 @@
               <span v-else class="font-bold text-primary text-5xl">{{ getInitials(selectedEmp.nombres, selectedEmp.apellidos) }}</span>
             </div>
 
-            <!-- Badge tipo empleado -->
+            <!-- Badge tipo puesto -->
             <span :class="`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${getTipoEmpleadoBadge(selectedEmp.tipo_empleado).color}`">
               {{ selectedEmp.tipo_empleado }}
             </span>
@@ -444,6 +515,11 @@
             <!-- Badge estado -->
             <span :class="`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${getEstadoBadge(selectedEmp).color}`">
               {{ getEstadoBadge(selectedEmp).label }}
+            </span>
+
+            <!-- Badge IGSS -->
+            <span v-if="selectedEmp.igss !== null && selectedEmp.igss !== undefined" :class="`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${selectedEmp.igss == 1 ? 'bg-emerald-400/15 text-emerald-400 border-emerald-400/20' : 'bg-white/10 text-white/50 border-white/10'}`">
+              IGSS: {{ selectedEmp.igss == 1 ? 'Activo' : 'Inactivo' }}
             </span>
           </div>
 
@@ -466,6 +542,22 @@
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.nit || 'No registrado' }}</p>
             </div>
             <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Fecha de Nacimiento</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.fecha_nacimiento ? formatDate(selectedEmp.fecha_nacimiento) : 'No registrada' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Cantidad de Hijos</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.cantidad_hijos !== null && selectedEmp.cantidad_hijos !== undefined ? selectedEmp.cantidad_hijos : 'No registrado' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Nivel Académico</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.nivel_academico || 'No registrado' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Teléfono</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.telefono || 'No registrado' }}</p>
+            </div>
+            <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Puesto de Trabajo</p>
               <p class="text-base font-semibold text-primary">{{ selectedEmp.puesto }}</p>
             </div>
@@ -474,12 +566,12 @@
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.tipo_planilla }}</p>
             </div>
             <div>
-              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Teléfono</p>
-              <p class="text-base font-semibold text-white/90">{{ selectedEmp.telefono || 'No registrado' }}</p>
-            </div>
-            <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Proyecto Asignado</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.proyecto_nombre || 'Sin asignar' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Diario Viáticos</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedEmp.diario_viaticos) : 'No aplica' }}</p>
             </div>
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Salario Base</p>
@@ -501,6 +593,23 @@
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Dirección</p>
               <p class="text-sm font-semibold text-white/80">{{ selectedEmp.direccion }}</p>
             </div>
+
+            <!-- Dato de Contacto -->
+            <template v-if="selectedEmp.contacto_nombres || selectedEmp.contacto_numero">
+              <div class="sm:col-span-2 border-t border-white/5 pt-4">
+                <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em] mb-3">Dato de Contacto</p>
+                <div class="grid grid-cols-2 gap-4">
+                  <div v-if="selectedEmp.contacto_nombres">
+                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Nombres</p>
+                    <p class="text-base font-semibold text-white/90">{{ selectedEmp.contacto_nombres }}</p>
+                  </div>
+                  <div v-if="selectedEmp.contacto_numero">
+                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Número</p>
+                    <p class="text-base font-semibold text-white/90">{{ selectedEmp.contacto_numero }}</p>
+                  </div>
+                </div>
+              </div>
+            </template>
 
             <!-- Datos bancarios (solo si existen) -->
             <template v-if="selectedEmp.numero_cuenta || selectedEmp.nombre_banco">
@@ -559,6 +668,7 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 // ----------------------------------------------------------------
 const personnel  = ref([]);
 const projects   = ref([]);
+const puestos    = ref([]);
 const loading    = ref(true);
 
 const showModal      = ref(false);
@@ -579,7 +689,6 @@ const filterProyecto = ref('');
 const currentPage    = ref(1);
 const PAGE_SIZE      = 10;
 
-// Reset page when any filter changes
 watch([searchQuery, filterTipo, filterEstado, filterProyecto], () => {
   currentPage.value = 1;
 });
@@ -589,22 +698,18 @@ const filteredPersonnel = computed(() => {
   const q = searchQuery.value.toLowerCase().trim();
 
   return personnel.value.filter(emp => {
-    // Text search: nombre, apellidos, puesto, DPI
     if (q) {
       const fullName = `${emp.nombres} ${emp.apellidos}`.toLowerCase();
       const puesto   = (emp.puesto || '').toLowerCase();
       const dpi      = (emp.dpi   || '').replace(/\s/g, '');
       if (!fullName.includes(q) && !puesto.includes(q) && !dpi.includes(q)) return false;
     }
-    // Tipo empleado
     if (filterTipo.value && emp.tipo_empleado !== filterTipo.value) return false;
-    // Estado
     if (filterEstado.value) {
       const isActivo = !emp.fecha_baja || emp.fecha_baja > today;
       if (filterEstado.value === 'Activo' && !isActivo)  return false;
       if (filterEstado.value === 'Baja'   &&  isActivo)  return false;
     }
-    // Proyecto
     if (filterProyecto.value) {
       if (filterProyecto.value === '__sin__' && emp.proyecto_id) return false;
       if (filterProyecto.value !== '__sin__' && String(emp.proyecto_id) !== filterProyecto.value) return false;
@@ -644,6 +749,13 @@ const formData = ref({
   tipo_planilla:      '',
   salario_base:       '',
   tarifa_hora_extra:  '',
+  diario_viaticos:    '',
+  contacto_nombres:   '',
+  contacto_numero:    '',
+  cantidad_hijos:     '',
+  nivel_academico:    '',
+  fecha_nacimiento:   '',
+  igss:               null,
   fecha_contratacion: '',
   fecha_baja:         '',
   numero_cuenta:      '',
@@ -678,6 +790,7 @@ const stats = computed(() => {
 onMounted(() => {
   fetchPersonnel();
   fetchProjects();
+  fetchPuestos();
 });
 
 // ----------------------------------------------------------------
@@ -711,6 +824,59 @@ const fetchProjects = async () => {
   }
 };
 
+const fetchPuestos = async () => {
+  try {
+    const res    = await fetch(`${BASE_URL}/puestos`);
+    const result = await res.json();
+    if (result.status === 'success') {
+      puestos.value = result.data;
+    }
+  } catch (err) {
+    console.error('Error fetching puestos:', err);
+  }
+};
+
+// ----------------------------------------------------------------
+// Agregar nuevo tipo de puesto
+// ----------------------------------------------------------------
+const addNuevoPuesto = async () => {
+  const { value: nombre, isConfirmed } = await Swal.fire({
+    ...swalBase,
+    title: 'Nuevo Tipo de Puesto',
+    input: 'text',
+    inputLabel: 'Nombre del puesto',
+    inputPlaceholder: 'Ej. Jefe de Bodega',
+    inputAttributes: { maxlength: 100, autocomplete: 'off' },
+    showCancelButton: true,
+    confirmButtonText: 'Agregar',
+    cancelButtonText: 'Cancelar',
+    inputValidator: (value) => {
+      if (!value || !value.trim()) return 'El nombre del puesto es obligatorio.';
+    }
+  });
+
+  if (!isConfirmed || !nombre?.trim()) return;
+
+  try {
+    const fd = new FormData();
+    fd.append('nombre', nombre.trim());
+
+    const res    = await fetch(`${BASE_URL}/puestos`, { method: 'POST', body: fd });
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      await fetchPuestos();
+      formData.value.tipo_empleado = result.nombre;
+      Swal.fire({ ...swalBase, title: '¡Listo!', text: `Puesto "${result.nombre}" agregado correctamente.`, icon: 'success', timer: 1800, showConfirmButton: false });
+    } else {
+      Swal.fire({ ...swalBase, title: 'Error', text: result.message || 'No se pudo agregar el puesto.', icon: 'error' });
+    }
+  } catch (err) {
+    console.error('Error adding puesto:', err);
+    Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
+  }
+};
+
 // ----------------------------------------------------------------
 // Modal helpers
 // ----------------------------------------------------------------
@@ -734,6 +900,13 @@ const openEditModal = (emp) => {
     tipo_planilla:      emp.tipo_planilla      || '',
     salario_base:       emp.salario_base       || '',
     tarifa_hora_extra:  emp.tarifa_hora_extra  || '',
+    diario_viaticos:    emp.diario_viaticos    || '',
+    contacto_nombres:   emp.contacto_nombres   || '',
+    contacto_numero:    emp.contacto_numero    || '',
+    cantidad_hijos:     emp.cantidad_hijos     !== null && emp.cantidad_hijos !== undefined ? emp.cantidad_hijos : '',
+    nivel_academico:    emp.nivel_academico    || '',
+    fecha_nacimiento:   emp.fecha_nacimiento   || '',
+    igss:               emp.igss !== null && emp.igss !== undefined ? parseInt(emp.igss) : null,
     fecha_contratacion: emp.fecha_contratacion || '',
     fecha_baja:         emp.fecha_baja         || '',
     numero_cuenta:      emp.numero_cuenta      || '',
@@ -764,6 +937,13 @@ const resetForm = () => {
     tipo_planilla:      '',
     salario_base:       '',
     tarifa_hora_extra:  '',
+    diario_viaticos:    '',
+    contacto_nombres:   '',
+    contacto_numero:    '',
+    cantidad_hijos:     '',
+    nivel_academico:    '',
+    fecha_nacimiento:   '',
+    igss:               null,
     fecha_contratacion: '',
     fecha_baja:         '',
     numero_cuenta:      '',
@@ -798,8 +978,6 @@ const handleFileChange = (e) => {
 // ----------------------------------------------------------------
 // Formatters
 // ----------------------------------------------------------------
-
-/** Formatea un string de dígitos como DPI: 0000 00000 0000 */
 const formatDpiValue = (raw) => {
   const digits = raw.replace(/\D/g, '').slice(0, 13);
   let out = '';
@@ -819,6 +997,14 @@ const formatPhone = (e) => {
   if (digits.length > 0) out += digits.substring(0, 4);
   if (digits.length > 4) out += '-' + digits.substring(4, 8);
   formData.value.telefono = out;
+};
+
+const formatContactoNumero = (e) => {
+  const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+  let out = '';
+  if (digits.length > 0) out += digits.substring(0, 4);
+  if (digits.length > 4) out += '-' + digits.substring(4, 8);
+  formData.value.contacto_numero = out;
 };
 
 const formatCurrency = (value) => {
@@ -855,14 +1041,15 @@ const getEstadoBadge = (emp) => {
   return { label: 'Baja', color: 'bg-white/10 text-white/50 border-white/10' };
 };
 
+const PUESTO_COLORS = {
+  'Administrativo': 'bg-primary/20 text-primary border-primary/20',
+  'Operador':       'bg-amber-400/15 text-amber-400 border-amber-400/20',
+  'Piloto':         'bg-sky-400/15 text-sky-400 border-sky-400/20',
+  'Contratista':    'bg-rose-400/15 text-rose-400 border-rose-400/20',
+};
+
 const getTipoEmpleadoBadge = (tipo) => {
-  const map = {
-    'Administrativo': 'bg-primary/20 text-primary border-primary/20',
-    'Operador':        'bg-amber-400/15 text-amber-400 border-amber-400/20',
-    'Piloto':          'bg-sky-400/15 text-sky-400 border-sky-400/20',
-    'Contratista':     'bg-rose-400/15 text-rose-400 border-rose-400/20',
-  };
-  return { color: map[tipo] || 'bg-white/10 text-white/50 border-white/10' };
+  return { color: PUESTO_COLORS[tipo] || 'bg-violet-400/15 text-violet-400 border-violet-400/20' };
 };
 
 // ----------------------------------------------------------------
@@ -928,6 +1115,13 @@ const submitForm = async () => {
   data.append('tipo_planilla',      formData.value.tipo_planilla);
   data.append('salario_base',       formData.value.salario_base);
   data.append('tarifa_hora_extra',  formData.value.tarifa_hora_extra  || '');
+  data.append('diario_viaticos',    formData.value.diario_viaticos    || '');
+  data.append('contacto_nombres',   formData.value.contacto_nombres   || '');
+  data.append('contacto_numero',    formData.value.contacto_numero    || '');
+  data.append('cantidad_hijos',     formData.value.cantidad_hijos !== '' ? formData.value.cantidad_hijos : '');
+  data.append('nivel_academico',    formData.value.nivel_academico    || '');
+  data.append('fecha_nacimiento',   formData.value.fecha_nacimiento   || '');
+  data.append('igss',               formData.value.igss !== null ? formData.value.igss : '');
   data.append('fecha_contratacion', formData.value.fecha_contratacion);
   data.append('fecha_baja',         formData.value.fecha_baja         || '');
   data.append('numero_cuenta',      formData.value.numero_cuenta      || '');

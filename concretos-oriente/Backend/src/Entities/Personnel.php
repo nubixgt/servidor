@@ -15,6 +15,13 @@ class Personnel
     public string $tipo_planilla;
     public float $salario_base;
     public ?float $tarifa_hora_extra = null;
+    public ?float $diario_viaticos = null;
+    public ?string $contacto_nombres = null;
+    public ?string $contacto_numero = null;
+    public ?int $cantidad_hijos = null;
+    public ?string $nivel_academico = null;
+    public ?string $fecha_nacimiento = null;
+    public ?int $igss = null;
     public string $fecha_contratacion;
     public ?string $fecha_baja = null;
     public ?string $numero_cuenta = null;

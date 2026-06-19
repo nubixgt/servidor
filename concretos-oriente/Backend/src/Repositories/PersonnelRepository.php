@@ -46,11 +46,15 @@ class PersonnelRepository
         $sql = "INSERT INTO personnel
                     (tipo_empleado, nombres, apellidos, dpi, nit, telefono, direccion,
                      puesto, tipo_planilla, salario_base, tarifa_hora_extra,
+                     diario_viaticos, contacto_nombres, contacto_numero,
+                     cantidad_hijos, nivel_academico, fecha_nacimiento, igss,
                      fecha_contratacion, fecha_baja,
                      numero_cuenta, nombre_banco, proyecto_id)
                 VALUES
                     (:tipo_empleado, :nombres, :apellidos, :dpi, :nit, :telefono, :direccion,
                      :puesto, :tipo_planilla, :salario_base, :tarifa_hora_extra,
+                     :diario_viaticos, :contacto_nombres, :contacto_numero,
+                     :cantidad_hijos, :nivel_academico, :fecha_nacimiento, :igss,
                      :fecha_contratacion, :fecha_baja,
                      :numero_cuenta, :nombre_banco, :proyecto_id)";
 
@@ -67,6 +71,13 @@ class PersonnelRepository
             'tipo_planilla'      => $data['tipo_planilla'],
             'salario_base'       => $data['salario_base'],
             'tarifa_hora_extra'  => $data['tarifa_hora_extra'] ?? null,
+            'diario_viaticos'    => $data['diario_viaticos'] ?? null,
+            'contacto_nombres'   => $data['contacto_nombres'] ?? null,
+            'contacto_numero'    => $data['contacto_numero'] ?? null,
+            'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
+            'nivel_academico'    => $data['nivel_academico'] ?? null,
+            'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
+            'igss'               => $data['igss'] ?? null,
             'fecha_contratacion' => $data['fecha_contratacion'],
             'fecha_baja'         => $data['fecha_baja'] ?? null,
             'numero_cuenta'      => $data['numero_cuenta'] ?? null,
@@ -91,6 +102,13 @@ class PersonnelRepository
                     tipo_planilla      = :tipo_planilla,
                     salario_base       = :salario_base,
                     tarifa_hora_extra  = :tarifa_hora_extra,
+                    diario_viaticos    = :diario_viaticos,
+                    contacto_nombres   = :contacto_nombres,
+                    contacto_numero    = :contacto_numero,
+                    cantidad_hijos     = :cantidad_hijos,
+                    nivel_academico    = :nivel_academico,
+                    fecha_nacimiento   = :fecha_nacimiento,
+                    igss               = :igss,
                     fecha_contratacion = :fecha_contratacion,
                     fecha_baja         = :fecha_baja,
                     numero_cuenta      = :numero_cuenta,
@@ -98,8 +116,33 @@ class PersonnelRepository
                     proyecto_id        = :proyecto_id
                 WHERE id = :id";
 
-        $data['id'] = $id;
-        $this->pdo->prepare($sql)->execute($data);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'tipo_empleado'      => $data['tipo_empleado'],
+            'nombres'            => $data['nombres'],
+            'apellidos'          => $data['apellidos'],
+            'dpi'                => $data['dpi'],
+            'nit'                => $data['nit'] ?? null,
+            'telefono'           => $data['telefono'] ?? null,
+            'direccion'          => $data['direccion'] ?? null,
+            'puesto'             => $data['puesto'],
+            'tipo_planilla'      => $data['tipo_planilla'],
+            'salario_base'       => $data['salario_base'],
+            'tarifa_hora_extra'  => $data['tarifa_hora_extra'] ?? null,
+            'diario_viaticos'    => $data['diario_viaticos'] ?? null,
+            'contacto_nombres'   => $data['contacto_nombres'] ?? null,
+            'contacto_numero'    => $data['contacto_numero'] ?? null,
+            'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
+            'nivel_academico'    => $data['nivel_academico'] ?? null,
+            'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
+            'igss'               => $data['igss'] ?? null,
+            'fecha_contratacion' => $data['fecha_contratacion'],
+            'fecha_baja'         => $data['fecha_baja'] ?? null,
+            'numero_cuenta'      => $data['numero_cuenta'] ?? null,
+            'nombre_banco'       => $data['nombre_banco'] ?? null,
+            'proyecto_id'        => $data['proyecto_id'] ?? null,
+            'id'                 => $id,
+        ]);
     }
 
     public function updatePhotoPath(int $id, ?string $fotoPath): void

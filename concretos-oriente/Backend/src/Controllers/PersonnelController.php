@@ -56,6 +56,17 @@ class PersonnelController extends Controller
                 'nombre_banco'       => trim($_POST['nombre_banco']     ?? '') ?: null,
                 'tarifa_hora_extra'  => (isset($_POST['tarifa_hora_extra']) && $_POST['tarifa_hora_extra'] !== '')
                                         ? $_POST['tarifa_hora_extra'] : null,
+                'diario_viaticos'    => (isset($_POST['diario_viaticos']) && $_POST['diario_viaticos'] !== '')
+                                        ? $_POST['diario_viaticos'] : null,
+                'contacto_nombres'   => trim($_POST['contacto_nombres'] ?? '') ?: null,
+                'contacto_numero'    => trim($_POST['contacto_numero']  ?? '') ?: null,
+                'cantidad_hijos'     => (isset($_POST['cantidad_hijos']) && $_POST['cantidad_hijos'] !== '')
+                                        ? (int)$_POST['cantidad_hijos'] : null,
+                'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
+                'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
+                                        ? $_POST['fecha_nacimiento'] : null,
+                'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
+                                        ? (int)$_POST['igss'] : null,
                 'fecha_baja'         => (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
@@ -104,6 +115,17 @@ class PersonnelController extends Controller
                 'nombre_banco'       => trim($_POST['nombre_banco']     ?? '') ?: null,
                 'tarifa_hora_extra'  => (isset($_POST['tarifa_hora_extra']) && $_POST['tarifa_hora_extra'] !== '')
                                         ? $_POST['tarifa_hora_extra'] : null,
+                'diario_viaticos'    => (isset($_POST['diario_viaticos']) && $_POST['diario_viaticos'] !== '')
+                                        ? $_POST['diario_viaticos'] : null,
+                'contacto_nombres'   => trim($_POST['contacto_nombres'] ?? '') ?: null,
+                'contacto_numero'    => trim($_POST['contacto_numero']  ?? '') ?: null,
+                'cantidad_hijos'     => (isset($_POST['cantidad_hijos']) && $_POST['cantidad_hijos'] !== '')
+                                        ? (int)$_POST['cantidad_hijos'] : null,
+                'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
+                'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
+                                        ? $_POST['fecha_nacimiento'] : null,
+                'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
+                                        ? (int)$_POST['igss'] : null,
                 'fecha_baja'         => (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
