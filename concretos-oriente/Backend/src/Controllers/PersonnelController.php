@@ -67,6 +67,7 @@ class PersonnelController extends Controller
                                         ? $_POST['fecha_nacimiento'] : null,
                 'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
                                         ? (int)$_POST['igss'] : null,
+                'igss_numero'        => trim($_POST['igss_numero'] ?? '') ?: null,
                 'fecha_baja'         => (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
@@ -126,6 +127,7 @@ class PersonnelController extends Controller
                                         ? $_POST['fecha_nacimiento'] : null,
                 'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
                                         ? (int)$_POST['igss'] : null,
+                'igss_numero'        => trim($_POST['igss_numero'] ?? '') ?: null,
                 'fecha_baja'         => (isset($_POST['fecha_baja']) && $_POST['fecha_baja'] !== '')
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')

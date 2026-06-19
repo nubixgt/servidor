@@ -22,6 +22,7 @@ class Personnel
     public ?string $nivel_academico = null;
     public ?string $fecha_nacimiento = null;
     public ?int $igss = null;
+    public ?string $igss_numero = null;
     public string $fecha_contratacion;
     public ?string $fecha_baja = null;
     public ?string $numero_cuenta = null;

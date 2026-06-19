@@ -317,6 +317,7 @@
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nivel Académico</label>
                 <select v-model="formData.nivel_academico" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
                   <option value="">Seleccionar...</option>
+                  <option value="Primaria">Primaria</option>
                   <option value="Basicos">Básicos</option>
                   <option value="Diversificado">Diversificado</option>
                   <option value="Universidad">Universidad</option>
@@ -378,9 +379,9 @@
               </div>
 
               <!-- IGSS -->
-              <div class="space-y-2">
+              <div class="space-y-2" :class="formData.igss === 1 ? 'md:col-span-2' : ''">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">IGSS</label>
-                <div class="flex gap-4 pt-2">
+                <div class="flex flex-wrap items-center gap-4 pt-2">
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input type="radio" v-model="formData.igss" :value="1" class="accent-primary w-4 h-4" />
                     <span class="text-sm text-white/80 font-semibold">Sí</span>
@@ -391,6 +392,13 @@
                     <span class="text-sm text-white/80 font-semibold">No</span>
                     <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 border border-white/10 font-bold uppercase tracking-wider">Inactivo</span>
                   </label>
+                  <input
+                    v-if="formData.igss === 1"
+                    v-model="formData.igss_numero"
+                    type="text"
+                    placeholder="Número de afiliación IGSS"
+                    class="flex-1 min-w-[200px] bg-black/20 border border-emerald-400/30 rounded-2xl px-5 py-3 text-white placeholder-white/20 focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all"
+                  />
                 </div>
               </div>
 
@@ -518,9 +526,14 @@
             </span>
 
             <!-- Badge IGSS -->
-            <span v-if="selectedEmp.igss !== null && selectedEmp.igss !== undefined" :class="`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${selectedEmp.igss == 1 ? 'bg-emerald-400/15 text-emerald-400 border-emerald-400/20' : 'bg-white/10 text-white/50 border-white/10'}`">
-              IGSS: {{ selectedEmp.igss == 1 ? 'Activo' : 'Inactivo' }}
-            </span>
+            <template v-if="selectedEmp.igss !== null && selectedEmp.igss !== undefined">
+              <span :class="`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${selectedEmp.igss == 1 ? 'bg-emerald-400/15 text-emerald-400 border-emerald-400/20' : 'bg-white/10 text-white/50 border-white/10'}`">
+                IGSS: {{ selectedEmp.igss == 1 ? 'Activo' : 'Inactivo' }}
+              </span>
+              <span v-if="selectedEmp.igss == 1 && selectedEmp.igss_numero" class="text-xs font-bold text-emerald-400/80">
+                No. {{ selectedEmp.igss_numero }}
+              </span>
+            </template>
           </div>
 
           <!-- Datos derecha en grid 2 cols -->
@@ -756,6 +769,7 @@ const formData = ref({
   nivel_academico:    '',
   fecha_nacimiento:   '',
   igss:               null,
+  igss_numero:        '',
   fecha_contratacion: '',
   fecha_baja:         '',
   numero_cuenta:      '',
@@ -907,6 +921,7 @@ const openEditModal = (emp) => {
     nivel_academico:    emp.nivel_academico    || '',
     fecha_nacimiento:   emp.fecha_nacimiento   || '',
     igss:               emp.igss !== null && emp.igss !== undefined ? parseInt(emp.igss) : null,
+    igss_numero:        emp.igss_numero        || '',
     fecha_contratacion: emp.fecha_contratacion || '',
     fecha_baja:         emp.fecha_baja         || '',
     numero_cuenta:      emp.numero_cuenta      || '',
@@ -944,6 +959,7 @@ const resetForm = () => {
     nivel_academico:    '',
     fecha_nacimiento:   '',
     igss:               null,
+    igss_numero:        '',
     fecha_contratacion: '',
     fecha_baja:         '',
     numero_cuenta:      '',
@@ -1122,6 +1138,7 @@ const submitForm = async () => {
   data.append('nivel_academico',    formData.value.nivel_academico    || '');
   data.append('fecha_nacimiento',   formData.value.fecha_nacimiento   || '');
   data.append('igss',               formData.value.igss !== null ? formData.value.igss : '');
+  data.append('igss_numero',        formData.value.igss === 1 ? (formData.value.igss_numero || '') : '');
   data.append('fecha_contratacion', formData.value.fecha_contratacion);
   data.append('fecha_baja',         formData.value.fecha_baja         || '');
   data.append('numero_cuenta',      formData.value.numero_cuenta      || '');

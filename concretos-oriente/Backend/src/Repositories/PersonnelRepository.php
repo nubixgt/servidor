@@ -47,14 +47,14 @@ class PersonnelRepository
                     (tipo_empleado, nombres, apellidos, dpi, nit, telefono, direccion,
                      puesto, tipo_planilla, salario_base, tarifa_hora_extra,
                      diario_viaticos, contacto_nombres, contacto_numero,
-                     cantidad_hijos, nivel_academico, fecha_nacimiento, igss,
+                     cantidad_hijos, nivel_academico, fecha_nacimiento, igss, igss_numero,
                      fecha_contratacion, fecha_baja,
                      numero_cuenta, nombre_banco, proyecto_id)
                 VALUES
                     (:tipo_empleado, :nombres, :apellidos, :dpi, :nit, :telefono, :direccion,
                      :puesto, :tipo_planilla, :salario_base, :tarifa_hora_extra,
                      :diario_viaticos, :contacto_nombres, :contacto_numero,
-                     :cantidad_hijos, :nivel_academico, :fecha_nacimiento, :igss,
+                     :cantidad_hijos, :nivel_academico, :fecha_nacimiento, :igss, :igss_numero,
                      :fecha_contratacion, :fecha_baja,
                      :numero_cuenta, :nombre_banco, :proyecto_id)";
 
@@ -78,6 +78,7 @@ class PersonnelRepository
             'nivel_academico'    => $data['nivel_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
             'igss'               => $data['igss'] ?? null,
+            'igss_numero'        => $data['igss_numero'] ?? null,
             'fecha_contratacion' => $data['fecha_contratacion'],
             'fecha_baja'         => $data['fecha_baja'] ?? null,
             'numero_cuenta'      => $data['numero_cuenta'] ?? null,
@@ -109,6 +110,7 @@ class PersonnelRepository
                     nivel_academico    = :nivel_academico,
                     fecha_nacimiento   = :fecha_nacimiento,
                     igss               = :igss,
+                    igss_numero        = :igss_numero,
                     fecha_contratacion = :fecha_contratacion,
                     fecha_baja         = :fecha_baja,
                     numero_cuenta      = :numero_cuenta,
@@ -136,6 +138,7 @@ class PersonnelRepository
             'nivel_academico'    => $data['nivel_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
             'igss'               => $data['igss'] ?? null,
+            'igss_numero'        => $data['igss_numero'] ?? null,
             'fecha_contratacion' => $data['fecha_contratacion'],
             'fecha_baja'         => $data['fecha_baja'] ?? null,
             'numero_cuenta'      => $data['numero_cuenta'] ?? null,
