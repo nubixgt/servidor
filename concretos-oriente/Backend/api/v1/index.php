@@ -26,6 +26,7 @@ use App\Controllers\ConcreteControlController;
 use App\Controllers\BudgetExtensionController;
 use App\Controllers\PuestosController;
 use App\Controllers\IncidentController;
+use App\Controllers\HeavyTransportController;
 
 // Backend/api/v1/index.php
 
@@ -80,6 +81,7 @@ $router->registerController(ConcreteControlController::class);
 $router->registerController(BudgetExtensionController::class);
 $router->registerController(PuestosController::class);
 $router->registerController(IncidentController::class);
+$router->registerController(HeavyTransportController::class);
 
 
 
