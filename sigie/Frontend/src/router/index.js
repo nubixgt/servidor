@@ -17,6 +17,18 @@ import DesviacionRegister from '../views/portal/desviaciones/DesviacionRegister.
 import DesviacionList from '../views/portal/desviaciones/DesviacionList.vue';
 import DesviacionDetails from '../views/portal/desviaciones/DesviacionDetails.vue';
 
+// Supervisiones
+import SupervisionRegister from '../views/portal/supervisiones/SupervisionRegister.vue';
+import SupervisionList from '../views/portal/supervisiones/SupervisionList.vue';
+import SupervisionDetails from '../views/portal/supervisiones/SupervisionDetails.vue';
+import SupervisionPrint from '../views/portal/supervisiones/SupervisionPrint.vue';
+
+// No Conformidades
+import NoConformidadRegister from '../views/portal/noconformidades/NoConformidadRegister.vue';
+import NoConformidadList from '../views/portal/noconformidades/NoConformidadList.vue';
+import NoConformidadDetails from '../views/portal/noconformidades/NoConformidadDetails.vue';
+import NoConformidadPrint from '../views/portal/noconformidades/NoConformidadPrint.vue';
+
 const routes = [
     {
         path: '/login',
@@ -76,6 +88,56 @@ const routes = [
                 path: 'desviaciones/:id',
                 name: 'DesviacionDetails',
                 component: DesviacionDetails,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            // Supervisiones
+            {
+                path: 'supervisiones/nuevo',
+                name: 'SupervisionRegister',
+                component: SupervisionRegister,
+                meta: { roles: ['inspector'] }
+            },
+            {
+                path: 'supervisiones',
+                name: 'SupervisionList',
+                component: SupervisionList,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'supervisiones/:id',
+                name: 'SupervisionDetails',
+                component: SupervisionDetails,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'supervisiones/:id/imprimir',
+                name: 'SupervisionPrint',
+                component: SupervisionPrint,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            // No Conformidades
+            {
+                path: 'noconformidades/nuevo',
+                name: 'NoConformidadRegister',
+                component: NoConformidadRegister,
+                meta: { roles: ['inspector'] }
+            },
+            {
+                path: 'noconformidades',
+                name: 'NoConformidadList',
+                component: NoConformidadList,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'noconformidades/:id',
+                name: 'NoConformidadDetails',
+                component: NoConformidadDetails,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'noconformidades/:id/imprimir',
+                name: 'NoConformidadPrint',
+                component: NoConformidadPrint,
                 meta: { roles: ['inspector', 'administrador'] }
             }
         ]

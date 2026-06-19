@@ -58,3 +58,20 @@ body {
   background-color: rgba(248, 250, 252, 0.85);
   backdrop-filter: blur(20px);
 }
+
+@media print {
+  aside, header, button, a.router-link-active, .no-print {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .lg\:ml-72 {
+    margin-left: 0 !important;
+  }
+  body, .bg-surface {
+    background-color: white !important;
+    color: black !important;
+  }
+}

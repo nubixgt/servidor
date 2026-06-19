@@ -14,6 +14,8 @@ use App\Controllers\InspectoresController;
 use App\Controllers\CheckinController;
 use App\Controllers\AnimalesController;
 use App\Controllers\DesviacionesController;
+use App\Controllers\SupervisionesController;
+use App\Controllers\NoConformidadesController;
 
 // Set Headers / CORS
 header("Access-Control-Allow-Origin: *");
@@ -37,6 +39,8 @@ $router->registerController(InspectoresController::class);
 $router->registerController(CheckinController::class);
 $router->registerController(AnimalesController::class);
 $router->registerController(DesviacionesController::class);
+$router->registerController(SupervisionesController::class);
+$router->registerController(NoConformidadesController::class);
 
 
 // Dispatch
