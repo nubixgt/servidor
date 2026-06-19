@@ -64,34 +64,29 @@ class MachineryRepository
     {
         $sql = "INSERT INTO machinery
                     (categoria, codigo_interno, marca, modelo, numero_serie, anio_fabricacion,
-                     placa, horometro_actual, kilometraje_actual, intervalo_servicio,
-                     fecha_ultimo_servicio, operador_id, proyecto_id, estado,
+                     placa, horometro_actual, operador_id, proyecto_id, estado,
                      costo_adquisicion, fecha_adquisicion, created_by)
                 VALUES
                     (:categoria, :codigo_interno, :marca, :modelo, :numero_serie, :anio_fabricacion,
-                     :placa, :horometro_actual, :kilometraje_actual, :intervalo_servicio,
-                     :fecha_ultimo_servicio, :operador_id, :proyecto_id, :estado,
+                     :placa, :horometro_actual, :operador_id, :proyecto_id, :estado,
                      :costo_adquisicion, :fecha_adquisicion, :created_by)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'categoria'          => $data['categoria'],
-            'codigo_interno'     => $data['codigo_interno'],
-            'marca'              => $data['marca'],
-            'modelo'             => $data['modelo'],
-            'numero_serie'       => $data['numero_serie'] ?? null,
-            'anio_fabricacion'   => $data['anio_fabricacion'] ?? null,
-            'placa'              => $data['placa'] ?? null,
-            'horometro_actual'   => $data['horometro_actual'],
-            'kilometraje_actual' => $data['kilometraje_actual'],
-            'intervalo_servicio' => $data['intervalo_servicio'] ?? null,
-            'fecha_ultimo_servicio' => $data['fecha_ultimo_servicio'] ?? null,
-            'operador_id'        => $data['operador_id'] ?? null,
-            'proyecto_id'        => $data['proyecto_id'] ?? null,
-            'estado'             => $data['estado'],
-            'costo_adquisicion'  => $data['costo_adquisicion'] ?? null,
-            'fecha_adquisicion'  => $data['fecha_adquisicion'] ?? null,
-            'created_by'         => $data['created_by'] ?? null,
+            'categoria'        => $data['categoria'],
+            'codigo_interno'   => $data['codigo_interno'],
+            'marca'            => $data['marca'],
+            'modelo'           => $data['modelo'],
+            'numero_serie'     => $data['numero_serie'] ?? null,
+            'anio_fabricacion' => $data['anio_fabricacion'] ?? null,
+            'placa'            => $data['placa'] ?? null,
+            'horometro_actual' => $data['horometro_actual'],
+            'operador_id'      => $data['operador_id'] ?? null,
+            'proyecto_id'      => $data['proyecto_id'] ?? null,
+            'estado'           => $data['estado'],
+            'costo_adquisicion'=> $data['costo_adquisicion'] ?? null,
+            'fecha_adquisicion'=> $data['fecha_adquisicion'] ?? null,
+            'created_by'       => $data['created_by'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -100,22 +95,19 @@ class MachineryRepository
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE machinery SET
-                    categoria             = :categoria,
-                    codigo_interno        = :codigo_interno,
-                    marca                 = :marca,
-                    modelo                = :modelo,
-                    numero_serie          = :numero_serie,
-                    anio_fabricacion      = :anio_fabricacion,
-                    placa                 = :placa,
-                    horometro_actual      = :horometro_actual,
-                    kilometraje_actual    = :kilometraje_actual,
-                    intervalo_servicio    = :intervalo_servicio,
-                    fecha_ultimo_servicio = :fecha_ultimo_servicio,
-                    operador_id           = :operador_id,
-                    proyecto_id           = :proyecto_id,
-                    estado                = :estado,
-                    costo_adquisicion     = :costo_adquisicion,
-                    fecha_adquisicion     = :fecha_adquisicion
+                    categoria         = :categoria,
+                    codigo_interno    = :codigo_interno,
+                    marca             = :marca,
+                    modelo            = :modelo,
+                    numero_serie      = :numero_serie,
+                    anio_fabricacion  = :anio_fabricacion,
+                    placa             = :placa,
+                    horometro_actual  = :horometro_actual,
+                    operador_id       = :operador_id,
+                    proyecto_id       = :proyecto_id,
+                    estado            = :estado,
+                    costo_adquisicion = :costo_adquisicion,
+                    fecha_adquisicion = :fecha_adquisicion
                 WHERE id = :id";
 
         $data['id'] = $id;

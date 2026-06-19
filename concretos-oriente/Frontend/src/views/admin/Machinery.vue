@@ -343,26 +343,10 @@
           <!-- Uso y Mantenimiento -->
           <div>
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Uso y Mantenimiento</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro (hrs) <span class="text-tertiary">*</span></label>
                 <input v-model="formMachine.horometro_actual" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
-              </div>
-
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Kilometraje (km) <span class="text-tertiary">*</span></label>
-                <input v-model="formMachine.kilometraje_actual" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
-              </div>
-
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Int. Servicio (hrs)</label>
-                <input v-model="formMachine.intervalo_servicio" type="number" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
-              </div>
-
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Último Servicio</label>
-                <input v-model="formMachine.fecha_ultimo_servicio" type="date" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
               </div>
             </div>
           </div>
@@ -552,7 +536,6 @@
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Año</p><p class="text-sm font-bold text-white">{{ selectedMachine.anio_fabricacion || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Serie</p><p class="text-sm font-bold text-white">{{ selectedMachine.numero_serie || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Placa</p><p class="text-sm font-bold text-white">{{ selectedMachine.placa || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Kilometraje</p><p class="text-sm font-bold text-white">{{ selectedMachine.kilometraje_actual }} km</p></div>
                 </div>
               </div>
 
@@ -562,8 +545,6 @@
                   <div class="w-8 h-[1px] bg-white/10"></div> Mantenimiento y Compra
                 </h5>
                 <div class="grid grid-cols-2 gap-4">
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Int. Servicio</p><p class="text-sm font-bold text-white">{{ selectedMachine.intervalo_servicio ? selectedMachine.intervalo_servicio + ' h' : 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Último Servicio</p><p class="text-sm font-bold text-white">{{ formatDate(selectedMachine.fecha_ultimo_servicio) || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Adquisición</p><p class="text-sm font-bold text-white">{{ formatDate(selectedMachine.fecha_adquisicion) || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Costo</p><p class="text-sm font-bold text-white">{{ selectedMachine.costo_adquisicion ? 'Q ' + selectedMachine.costo_adquisicion : 'N/A' }}</p></div>
                 </div>
@@ -826,9 +807,6 @@ const formMachine = ref({
   anio_fabricacion: '',
   placa: '',
   horometro_actual: 0,
-  kilometraje_actual: 0,
-  intervalo_servicio: '',
-  fecha_ultimo_servicio: '',
   operador_id: null,
   proyecto_id: null,
   estado: 'Activo',
@@ -943,8 +921,8 @@ const closeMachineModal = () => {
 const resetMachineForm = () => {
   formMachine.value = {
     categoria: '', codigo_interno: '', marca: '', modelo: '', numero_serie: '',
-    anio_fabricacion: '', placa: '', horometro_actual: 0, kilometraje_actual: 0,
-    intervalo_servicio: '', fecha_ultimo_servicio: '', operador_id: null,
+    anio_fabricacion: '', placa: '', horometro_actual: 0,
+    operador_id: null,
     proyecto_id: null, estado: 'Activo', costo_adquisicion: '', fecha_adquisicion: '', foto: null
   };
 };

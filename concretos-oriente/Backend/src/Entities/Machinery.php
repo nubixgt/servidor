@@ -12,9 +12,6 @@ class Machinery
     public ?int $anio_fabricacion = null;
     public ?string $placa = null;
     public int $horometro_actual;
-    public int $kilometraje_actual;
-    public ?int $intervalo_servicio = null;
-    public ?string $fecha_ultimo_servicio = null;
     public ?int $operador_id = null;
     public ?int $proyecto_id = null;
     public string $estado;

@@ -43,17 +43,12 @@ class MachineryController extends Controller
                 'codigo_interno'        => trim($_POST['codigo_interno']    ?? ''),
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
-                'horometro_actual'      => $_POST['horometro_actual']  ?? null,
-                'kilometraje_actual'    => $_POST['kilometraje_actual'] ?? null,
-                'estado'                => trim($_POST['estado']            ?? 'Activo'),
-                'numero_serie'          => trim($_POST['numero_serie']          ?? '') ?: null,
+                'horometro_actual'      => $_POST['horometro_actual'] ?? null,
+                'estado'                => trim($_POST['estado']       ?? 'Activo'),
+                'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
                                             ? (int)$_POST['anio_fabricacion'] : null,
-                'placa'                 => trim($_POST['placa']                 ?? '') ?: null,
-                'intervalo_servicio'    => (isset($_POST['intervalo_servicio']) && $_POST['intervalo_servicio'] !== '')
-                                            ? (int)$_POST['intervalo_servicio'] : null,
-                'fecha_ultimo_servicio' => (isset($_POST['fecha_ultimo_servicio']) && $_POST['fecha_ultimo_servicio'] !== '')
-                                            ? $_POST['fecha_ultimo_servicio'] : null,
+                'placa'                 => trim($_POST['placa'] ?? '') ?: null,
                 'operador_id'           => (isset($_POST['operador_id']) && $_POST['operador_id'] !== '')
                                             ? (int)$_POST['operador_id'] : null,
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
@@ -95,17 +90,12 @@ class MachineryController extends Controller
                 'codigo_interno'        => trim($_POST['codigo_interno']    ?? ''),
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
-                'horometro_actual'      => $_POST['horometro_actual']  ?? null,
-                'kilometraje_actual'    => $_POST['kilometraje_actual'] ?? null,
-                'estado'                => trim($_POST['estado']            ?? 'Activo'),
-                'numero_serie'          => trim($_POST['numero_serie']          ?? '') ?: null,
+                'horometro_actual'      => $_POST['horometro_actual'] ?? null,
+                'estado'                => trim($_POST['estado']       ?? 'Activo'),
+                'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
                                             ? (int)$_POST['anio_fabricacion'] : null,
-                'placa'                 => trim($_POST['placa']                 ?? '') ?: null,
-                'intervalo_servicio'    => (isset($_POST['intervalo_servicio']) && $_POST['intervalo_servicio'] !== '')
-                                            ? (int)$_POST['intervalo_servicio'] : null,
-                'fecha_ultimo_servicio' => (isset($_POST['fecha_ultimo_servicio']) && $_POST['fecha_ultimo_servicio'] !== '')
-                                            ? $_POST['fecha_ultimo_servicio'] : null,
+                'placa'                 => trim($_POST['placa'] ?? '') ?: null,
                 'operador_id'           => (isset($_POST['operador_id']) && $_POST['operador_id'] !== '')
                                             ? (int)$_POST['operador_id'] : null,
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
