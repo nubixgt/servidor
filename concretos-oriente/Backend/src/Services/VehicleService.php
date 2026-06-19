@@ -30,9 +30,7 @@ class VehicleService
 
         try {
             $vehicleId = $this->vehicleRepo->create($data);
-
             $this->handlePhotoUploads($vehicleId, $files);
-
             $this->vehicleRepo->getPDO()->commit();
             return ['success' => true, 'id' => $vehicleId, 'message' => 'Vehículo registrado correctamente.'];
         } catch (Exception $e) {
@@ -47,9 +45,7 @@ class VehicleService
 
         try {
             $this->vehicleRepo->update($id, $data);
-
             $this->handlePhotoUploads($id, $files);
-
             $this->vehicleRepo->getPDO()->commit();
             return ['success' => true, 'message' => 'Vehículo actualizado correctamente.'];
         } catch (Exception $e) {
@@ -66,21 +62,19 @@ class VehicleService
 
     private function handlePhotoUploads(int $vehicleId, array $files): void
     {
-        $frontalPath = null;
-        $traseraPath = null;
-        
         $uploader = new Uploader('Uploads/Vehicles/' . $vehicleId);
+        $photos   = [];
 
-        if (isset($files['foto_frontal']) && $files['foto_frontal']['error'] === UPLOAD_ERR_OK) {
-            $frontalPath = $uploader->upload($files['foto_frontal'], 'foto_frontal');
+        $fields = ['foto_delantera', 'foto_trasera', 'foto_lateral1', 'foto_lateral2'];
+
+        foreach ($fields as $field) {
+            if (isset($files[$field]) && $files[$field]['error'] === UPLOAD_ERR_OK) {
+                $photos[$field] = $uploader->upload($files[$field], $field);
+            }
         }
 
-        if (isset($files['foto_trasera']) && $files['foto_trasera']['error'] === UPLOAD_ERR_OK) {
-            $traseraPath = $uploader->upload($files['foto_trasera'], 'foto_trasera');
-        }
-
-        if ($frontalPath || $traseraPath) {
-            $this->vehicleRepo->updatePhotos($vehicleId, $frontalPath, $traseraPath);
+        if (!empty($photos)) {
+            $this->vehicleRepo->updatePhotos($vehicleId, $photos);
         }
     }
 }
