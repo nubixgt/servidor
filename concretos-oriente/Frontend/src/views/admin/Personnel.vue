@@ -7,13 +7,22 @@
         <h2 class="text-4xl font-bold tracking-tight text-white mb-2">Gestión de RRHH</h2>
         <p class="text-white/60">Gestiona tu fuerza laboral y registra nuevos empleados.</p>
       </div>
-      <button
-        @click="openModal()"
-        class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
-      >
-        <PlusIcon class="w-5 h-5" />
-        Nuevo Empleado
-      </button>
+      <div class="flex flex-wrap gap-3">
+        <button
+          @click="openIncidentModal()"
+          class="glass-button text-white py-4 px-8 rounded-2xl font-bold flex items-center justify-center gap-2 border border-amber-400/30 text-amber-400 hover:bg-amber-400/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+        >
+          <ExclamationTriangleIcon class="w-5 h-5" />
+          Incidencia Empleado
+        </button>
+        <button
+          @click="openModal()"
+          class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+        >
+          <PlusIcon class="w-5 h-5" />
+          Nuevo Empleado
+        </button>
+      </div>
     </div>
 
     <!-- Stats Cards (4) -->
@@ -650,6 +659,130 @@
       </div>
     </div>
 
+    <!-- ============================================================
+         SECCIÓN INCIDENCIAS
+         ============================================================ -->
+    <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="p-8 border-b border-white/5 flex items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-bold text-white">Incidencias de Empleados</h3>
+          <p class="text-white/40 text-sm mt-1">{{ incidents.length }} registro{{ incidents.length !== 1 ? 's' : '' }}</p>
+        </div>
+        <button
+          @click="openIncidentModal()"
+          class="flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 px-5 py-3 rounded-2xl hover:bg-amber-400/10 border border-amber-400/20 transition-all"
+        >
+          <PlusIcon class="w-4 h-4" />
+          Nueva Incidencia
+        </button>
+      </div>
+
+      <div class="overflow-x-auto px-4">
+        <table class="w-full min-w-[600px] text-left">
+          <thead>
+            <tr class="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">
+              <th class="px-8 py-6">Empleado</th>
+              <th class="px-8 py-6">Texto</th>
+              <th class="px-8 py-6">Fecha</th>
+              <th class="px-8 py-6">Motivo</th>
+              <th class="px-8 py-6 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr v-if="loadingIncidents">
+              <td colspan="5" class="px-8 py-8 text-center text-white/50">Cargando incidencias...</td>
+            </tr>
+            <tr v-else-if="incidents.length === 0">
+              <td colspan="5" class="px-8 py-12 text-center">
+                <p class="text-white/40 font-semibold">Sin incidencias registradas</p>
+              </td>
+            </tr>
+            <tr v-for="inc in incidents" :key="inc.id" class="hover:bg-white/5 group transition-colors duration-300">
+              <td class="px-8 py-5">
+                <p class="text-sm font-bold text-white">{{ inc.empleado_nombre }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <p class="text-sm text-white/80">{{ inc.texto }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm font-semibold text-amber-400">{{ formatDate(inc.fecha) }}</span>
+              </td>
+              <td class="px-8 py-5 max-w-xs">
+                <p class="text-sm text-white/60 line-clamp-2">{{ inc.motivo }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <div class="flex justify-end opacity-0 group-hover:opacity-100 transition-all">
+                  <button @click="deleteIncident(inc.id)" class="p-3 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
+                    <TrashIcon class="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL INCIDENCIA
+         ============================================================ -->
+    <div v-if="showIncidentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeIncidentModal"></div>
+
+      <div class="glass-card w-full max-w-lg rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="flex items-center justify-between mb-8">
+          <h3 class="text-2xl font-bold text-white">Registrar Incidencia</h3>
+          <button @click="closeIncidentModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+
+        <form @submit.prevent="submitIncident" class="space-y-5">
+          <!-- Empleado -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Empleado <span class="text-tertiary">*</span></label>
+            <select v-model="incidentForm.personnel_id" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all appearance-none">
+              <option value="" disabled>Seleccionar empleado...</option>
+              <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
+                {{ emp.nombres }} {{ emp.apellidos }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Texto -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Texto <span class="text-tertiary">*</span></label>
+            <input v-model="incidentForm.texto" type="text" required placeholder="Descripción breve de la incidencia"
+              class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all" />
+          </div>
+
+          <!-- Fecha -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha <span class="text-tertiary">*</span></label>
+            <input v-model="incidentForm.fecha" type="date" required
+              class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all" />
+          </div>
+
+          <!-- Motivo -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Motivo <span class="text-tertiary">*</span></label>
+            <textarea v-model="incidentForm.motivo" rows="3" required placeholder="Describa el motivo de la incidencia..."
+              class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all resize-none"></textarea>
+          </div>
+
+          <div class="pt-2 flex justify-end gap-4 border-t border-white/5">
+            <button type="button" @click="closeIncidentModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">
+              Cancelar
+            </button>
+            <button type="submit" :disabled="isSubmittingIncident" class="text-white py-4 px-10 rounded-2xl font-bold flex items-center gap-2 bg-amber-400/20 border border-amber-400/30 hover:bg-amber-400/30 text-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+              <span v-if="isSubmittingIncident">Guardando...</span>
+              <span v-else>Guardar Incidencia</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Fullscreen Image Viewer -->
     <div
       v-if="fullscreenImage"
@@ -670,7 +803,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import {
   UsersIcon, CheckCircleIcon, BriefcaseIcon, BuildingOfficeIcon,
   PlusIcon, XMarkIcon, EyeIcon, PencilIcon, TrashIcon,
-  ChevronLeftIcon, ChevronRightIcon
+  ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -682,11 +815,15 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 const personnel  = ref([]);
 const projects   = ref([]);
 const puestos    = ref([]);
+const incidents  = ref([]);
 const loading    = ref(true);
+const loadingIncidents = ref(false);
 
-const showModal      = ref(false);
-const showViewModal  = ref(false);
-const isSubmitting   = ref(false);
+const showModal          = ref(false);
+const showViewModal      = ref(false);
+const showIncidentModal  = ref(false);
+const isSubmitting       = ref(false);
+const isSubmittingIncident = ref(false);
 const isEditing      = ref(false);
 const editingId      = ref(null);
 const selectedEmp    = ref(null);
@@ -801,10 +938,13 @@ const stats = computed(() => {
 // ----------------------------------------------------------------
 // Lifecycle
 // ----------------------------------------------------------------
+const incidentForm = ref({ personnel_id: '', texto: '', fecha: '', motivo: '' });
+
 onMounted(() => {
   fetchPersonnel();
   fetchProjects();
   fetchPuestos();
+  fetchIncidents();
 });
 
 // ----------------------------------------------------------------
@@ -847,6 +987,86 @@ const fetchPuestos = async () => {
     }
   } catch (err) {
     console.error('Error fetching puestos:', err);
+  }
+};
+
+const fetchIncidents = async () => {
+  loadingIncidents.value = true;
+  try {
+    const res    = await fetch(`${BASE_URL}/incidents`);
+    const result = await res.json();
+    if (result.status === 'success') incidents.value = result.data;
+  } catch (err) {
+    console.error('Error fetching incidents:', err);
+  } finally {
+    loadingIncidents.value = false;
+  }
+};
+
+const openIncidentModal = () => {
+  incidentForm.value = { personnel_id: '', texto: '', fecha: '', motivo: '' };
+  showIncidentModal.value = true;
+};
+
+const closeIncidentModal = () => {
+  showIncidentModal.value = false;
+};
+
+const submitIncident = async () => {
+  isSubmittingIncident.value = true;
+  try {
+    const fd = new FormData();
+    fd.append('personnel_id', incidentForm.value.personnel_id);
+    fd.append('texto',        incidentForm.value.texto);
+    fd.append('fecha',        incidentForm.value.fecha);
+    fd.append('motivo',       incidentForm.value.motivo);
+
+    const res    = await fetch(`${BASE_URL}/incidents`, { method: 'POST', body: fd });
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      await fetchIncidents();
+      closeIncidentModal();
+      Swal.fire({ ...swalBase, title: '¡Guardado!', text: 'Incidencia registrada correctamente.', icon: 'success' });
+    } else {
+      Swal.fire({ ...swalBase, title: 'Error', text: result.message || 'Error al guardar', icon: 'error' });
+    }
+  } catch (err) {
+    console.error('Error submitting incident:', err);
+    Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
+  } finally {
+    isSubmittingIncident.value = false;
+  }
+};
+
+const deleteIncident = async (id) => {
+  const result = await Swal.fire({
+    ...swalBase,
+    title: '¿Eliminar incidencia?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor:  '#475569',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText:  'Cancelar',
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res  = await fetch(`${BASE_URL}/incidents/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      await fetchIncidents();
+      Swal.fire({ ...swalBase, title: '¡Eliminado!', text: 'Incidencia eliminada correctamente.', icon: 'success' });
+    } else {
+      Swal.fire({ ...swalBase, title: 'Error', text: data.message || 'Error al eliminar', icon: 'error' });
+    }
+  } catch (err) {
+    console.error('Error deleting incident:', err);
+    Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
   }
 };
 
