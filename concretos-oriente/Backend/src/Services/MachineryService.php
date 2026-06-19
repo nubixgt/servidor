@@ -155,10 +155,9 @@ class MachineryService
         if (
             empty($data['categoria']) || empty($data['codigo_interno']) ||
             empty($data['marca'])     || empty($data['modelo'])          ||
-            $data['horometro_actual'] === null || $data['horometro_actual'] === '' ||
-            $data['kilometraje_actual'] === null || $data['kilometraje_actual'] === ''
+            $data['horometro_actual'] === null || $data['horometro_actual'] === ''
         ) {
-            throw new Exception('Los campos categoría, código interno, marca, modelo, horómetro y kilometraje son obligatorios.', 400);
+            throw new Exception('Los campos categoría, código interno, marca, modelo y horómetro son obligatorios.', 400);
         }
     }
 
