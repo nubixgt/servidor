@@ -10,31 +10,31 @@
                 <button 
                     @click="exportToExcel" 
                     :disabled="desviaciones.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
                 >
-                    <span class="material-symbols-outlined text-lg">download</span>
+                    <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
                 </button>
                 <router-link 
                     v-if="auth.role === 'inspector'"
                     to="/desviaciones/nuevo" 
-                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 border border-primary-dim"
                 >
-                    <span class="material-symbols-outlined text-lg">add_circle</span>
+                    <span class="material-symbols-outlined text-sm">add_circle</span>
                     Nueva Desviación
                 </router-link>
             </div>
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Búsqueda Global</label>
                 <input 
                     v-model="searchTerm" 
                     type="text" 
                     placeholder="Muestra, Inspector..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
             <div>
@@ -43,14 +43,14 @@
                     v-model="filterEstablecimiento" 
                     type="text" 
                     placeholder="Establecimiento..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
             <div>
                 <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado de Seguimiento</label>
                 <select 
                     v-model="filterEstado"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 >
                     <option value="todos">Todos los Estados</option>
                     <option value="Abierto">Abierto</option>
@@ -63,13 +63,13 @@
                 <input 
                     v-model="filterFecha" 
                     type="date" 
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
         </div>
 
         <!-- Deviations Table -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-ambient overflow-hidden">
+        <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
             <div v-if="loading" class="py-16 text-center text-sm text-on-surface-variant">
                 <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
                 <p class="mt-2 font-bold">Cargando registros...</p>
@@ -84,7 +84,7 @@
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-extrabold uppercase text-on-surface-variant tracking-wider">
+                        <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
                             <th class="px-6 py-4">Muestra</th>
                             <th class="px-6 py-4">Inspector Responsable</th>
                             <th class="px-6 py-4">Establecimiento</th>
@@ -95,8 +95,8 @@
                             <th class="px-6 py-4">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 text-xs">
-                        <tr v-for="d in filteredDesviaciones" :key="d.id" class="hover:bg-slate-50/50 transition-colors">
+                    <tbody class="divide-y divide-slate-200 text-xs">
+                        <tr v-for="d in filteredDesviaciones" :key="d.id" class="hover:bg-slate-50 transition-colors">
                             <!-- Sample Code -->
                             <td class="px-6 py-4 font-mono font-bold text-primary">
                                 {{ d.codigo_muestra }}
@@ -138,7 +138,7 @@
 
                             <!-- Attachments count -->
                             <td class="px-6 py-4 text-center font-bold text-slate-500 font-mono">
-                                <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-full text-[10px]">
+                                <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[10px] border border-slate-200">
                                     <span class="material-symbols-outlined text-xs">attach_file</span>
                                     {{ d.total_adjuntos }}
                                 </span>
@@ -188,7 +188,12 @@ const fetchDesviaciones = async () => {
         }
     } catch (error) {
         console.error('Error al cargar desviaciones', error);
-        Swal.fire('Error', 'No se pudieron recuperar los registros del servidor.', 'error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron recuperar los registros del servidor.',
+            confirmButtonColor: '#005a9c'
+        });
     } finally {
         loading.value = false;
     }

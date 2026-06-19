@@ -9,7 +9,7 @@
             <button 
                 @click="exportToExcel" 
                 :disabled="checkins.length === 0"
-                class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2 self-start sm:self-center disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded transition-colors flex items-center justify-center gap-2 self-start sm:self-center disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
             >
                 <span class="material-symbols-outlined text-lg">download</span>
                 Exportar a Excel
@@ -17,14 +17,14 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Inspector</label>
                 <input 
                     v-model="filterInspector" 
                     type="text" 
                     placeholder="Nombre o código..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
             <div>
@@ -33,14 +33,14 @@
                     v-model="filterEstablecimiento" 
                     type="text" 
                     placeholder="Establecimiento..."
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
             <div>
                 <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado</label>
                 <select 
                     v-model="filterEstado"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 >
                     <option value="todos">Todos los Estados</option>
                     <option value="exitoso">Sin Novedades (Exitoso)</option>
@@ -52,13 +52,13 @@
                 <input 
                     v-model="filterFecha" 
                     type="date" 
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                 />
             </div>
         </div>
 
         <!-- Check-ins Table -->
-        <div class="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-ambient overflow-hidden">
+        <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
             <div v-if="loading" class="py-16 text-center text-sm text-on-surface-variant">
                 <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
                 <p class="mt-2 font-bold">Cargando historial de registros...</p>
@@ -111,9 +111,9 @@
                                 <a 
                                     :href="`https://www.google.com/maps/search/?api=1&query=${c.latitud},${c.longitud}`" 
                                     target="_blank"
-                                    class="inline-flex items-center gap-1 text-primary hover:underline font-mono text-[11px] font-bold bg-primary/5 px-2.5 py-1 rounded-lg"
+                                    class="inline-flex items-center gap-1 text-primary hover:underline font-mono text-[10px] font-bold bg-slate-50 border border-slate-200 px-2 py-0.5 rounded"
                                 >
-                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                    <span class="material-symbols-outlined text-xs">open_in_new</span>
                                     {{ parseFloat(c.latitud).toFixed(5) }}, {{ parseFloat(c.longitud).toFixed(5) }}
                                 </a>
                             </td>
@@ -135,7 +135,7 @@
                                 <button 
                                     v-if="c.foto_path" 
                                     @click="verImagen(resolverRuta(c.foto_path), 'Evidencia Fotográfica')"
-                                    class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 hover:border-primary hover:scale-105 transition-all inline-flex items-center justify-center bg-slate-100"
+                                    class="w-8 h-8 rounded overflow-hidden border border-slate-200 hover:border-primary transition-colors inline-flex items-center justify-center bg-slate-100"
                                 >
                                     <img :src="resolverRuta(c.foto_path)" class="w-full h-full object-cover" />
                                 </button>
@@ -230,7 +230,7 @@ const verImagen = (url, titulo) => {
         title: titulo,
         imageUrl: url,
         imageAlt: titulo,
-        confirmButtonColor: '#0284c7',
+        confirmButtonColor: '#005a9c',
         confirmButtonText: 'Cerrar Vista'
     });
 };
@@ -239,7 +239,7 @@ const verImagen = (url, titulo) => {
 const verDetalles = (c) => {
     let htmlContent = `
         <div class="text-left text-xs space-y-4">
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+            <div class="bg-slate-50 p-4 rounded border border-slate-200 space-y-2">
                 <p><strong>Inspector:</strong> ${c.inspector_nombre} (${c.inspector_codigo})</p>
                 <p><strong>Área:</strong> ${c.inspector_area}</p>
                 <p><strong>Establecimiento:</strong> ${c.establecimiento || 'N/A'}</p>
@@ -247,15 +247,15 @@ const verDetalles = (c) => {
                 <p><strong>Tipo Inspección:</strong> ${c.tipo_inspeccion || 'N/A'}</p>
                 <p><strong>Fecha y Hora:</strong> ${c.fecha_hora}</p>
                 <p><strong>GPS:</strong> Latitud ${c.latitud}, Longitud ${c.longitud}</p>
-                <p><strong>Estado:</strong> ${c.estado === 'exitoso' ? '<span class="text-emerald-600 font-bold">Sin novedades</span>' : '<span class="text-red-600 font-bold">Con novedades</span>'}</p>
+                <p><strong>Estado:</strong> ${c.estado === 'exitoso' ? '<span class="text-emerald-700 font-bold">Sin novedades</span>' : '<span class="text-red-700 font-bold">Con novedades</span>'}</p>
                 <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
                     <p><strong>Hora Ingreso:</strong> <span class="font-mono text-primary font-bold">${c.hora_ingreso || 'N/A'}</span></p>
                     <p><strong>Hora Salida:</strong> <span class="font-mono text-amber-600 font-bold">${c.hora_salida || 'N/A'}</span></p>
                 </div>
             </div>
             <div>
-                <h4 class="font-extrabold text-on-surface mb-2 uppercase tracking-wide text-[10px]">Observaciones del Inspector:</h4>
-                <div class="p-3 rounded-xl border border-slate-200 bg-white font-serif max-h-40 overflow-y-auto italic">
+                <h4 class="font-bold text-on-surface mb-2 uppercase tracking-wide text-[9px]">Observaciones del Inspector:</h4>
+                <div class="p-3 rounded border border-slate-200 bg-white font-serif max-h-40 overflow-y-auto italic">
                     ${c.observaciones ? c.observaciones : 'Ninguna observación registrada.'}
                 </div>
             </div>
@@ -263,13 +263,13 @@ const verDetalles = (c) => {
                 ${c.foto_path ? `
                 <div class="text-center">
                     <span class="block text-[9px] font-bold text-outline-variant uppercase mb-1">Evidencia Foto</span>
-                    <img src="${resolverRuta(c.foto_path)}" class="w-full aspect-[4/3] object-cover rounded-xl border border-slate-200" />
+                    <img src="${resolverRuta(c.foto_path)}" class="w-full aspect-[4/3] object-cover rounded border border-slate-200" />
                 </div>
                 ` : ''}
                 ${c.firma_path ? `
                 <div class="text-center">
                     <span class="block text-[9px] font-bold text-outline-variant uppercase mb-1">Firma Inspector</span>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2 h-full flex items-center justify-center">
+                    <div class="bg-slate-50 border border-slate-200 rounded p-2 h-full flex items-center justify-center">
                         <img src="${resolverRuta(c.firma_path)}" class="max-h-24 max-w-full object-contain" />
                     </div>
                 </div>
@@ -282,7 +282,7 @@ const verDetalles = (c) => {
         title: 'Detalles del Check-in',
         html: htmlContent,
         width: '600px',
-        confirmButtonColor: '#0284c7',
+        confirmButtonColor: '#005a9c',
         confirmButtonText: 'Cerrar'
     });
 };

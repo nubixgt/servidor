@@ -13,8 +13,8 @@
             <!-- Institutional Header -->
             <div class="border-b-4 border-slate-900 pb-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded border border-slate-300">
-                        <span class="material-symbols-outlined text-3xl text-slate-800">analytics</span>
+                    <div class="w-12 h-12 flex items-center justify-center bg-white rounded border border-slate-300 p-1">
+                        <img :src="logoUrl" alt="SIGIE Logo" class="max-w-full max-h-full object-contain" />
                     </div>
                     <div>
                         <h1 class="text-2xl font-black tracking-tight font-sans text-slate-900 uppercase">SIGIE</h1>
@@ -29,7 +29,7 @@
             </div>
 
             <!-- General Metadata Block -->
-            <div class="grid grid-cols-2 gap-6 bg-slate-50 p-4 border border-slate-200 rounded-xl font-sans text-xs">
+            <div class="grid grid-cols-2 gap-6 bg-slate-50 p-4 border border-slate-200 rounded-md font-sans text-xs">
                 <div>
                     <h3 class="font-extrabold text-[10px] uppercase text-slate-500 tracking-wider mb-2">1. Datos del Establecimiento</h3>
                     <p class="text-sm font-bold text-slate-900">{{ supervision.establecimiento }}</p>
@@ -55,7 +55,7 @@
                 <!-- Normativa -->
                 <div v-if="supervision.norma_especifica">
                     <h3 class="font-sans font-extrabold text-xs uppercase text-slate-800 tracking-wider border-b border-slate-300 pb-1 mb-2">4. Normativa Específica Infraccionada / Asociada</h3>
-                    <p class="text-xs font-bold text-slate-900 bg-slate-100 p-3 rounded-lg border border-slate-200 inline-block font-sans">
+                    <p class="text-xs font-bold text-slate-900 bg-slate-100 p-3 rounded-md border border-slate-200 inline-block font-sans">
                         {{ supervision.norma_especifica }}
                     </p>
                 </div>
@@ -83,7 +83,7 @@
                     <!-- Verificación oficial -->
                     <div class="mt-4" v-if="supervision.verificacion_oficial">
                         <span class="text-[10px] text-slate-500 block uppercase font-bold font-sans">Detalle de la Verificación Realizada</span>
-                        <div class="text-xs whitespace-pre-line leading-relaxed text-justify mt-1 p-3 border border-slate-200 rounded-lg bg-slate-50">
+                        <div class="text-xs whitespace-pre-line leading-relaxed text-justify mt-1 p-3 border border-slate-200 rounded-md bg-slate-50">
                             {{ supervision.verificacion_oficial }}
                         </div>
                     </div>
@@ -117,7 +117,7 @@
             </div>
 
             <!-- Print Prompt Hint (Visible only on screen, hidden on print) -->
-            <div class="mt-12 bg-sky-50 border border-sky-100 p-4 rounded-xl text-center text-xs text-sky-800 no-print flex items-center justify-center gap-2">
+            <div class="mt-12 bg-sky-50 border border-sky-100 p-4 rounded-md text-center text-xs text-sky-800 no-print flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">info</span>
                 <span>Si el diálogo de impresión no se abre automáticamente, presione <strong>CTRL + P</strong> o haga clic en el botón de su navegador para guardar como PDF o imprimir físicamente.</span>
             </div>
@@ -129,6 +129,24 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../../../services/api.js';
+
+const getLogoUrl = () => {
+    const path = window.location.pathname.toLowerCase();
+    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
+    if (isViteDev) {
+        return '/sigie/logo.png';
+    }
+    const distIndex = path.indexOf('/frontend/dist');
+    if (distIndex !== -1) {
+        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/logo.png';
+    }
+    const sigieIndex = path.indexOf('/sigie');
+    if (sigieIndex !== -1) {
+        return window.location.pathname.substring(0, sigieIndex) + '/sigie/logo.png';
+    }
+    return '/logo.png';
+};
+const logoUrl = getLogoUrl();
 
 const route = useRoute();
 const supervision = ref(null);

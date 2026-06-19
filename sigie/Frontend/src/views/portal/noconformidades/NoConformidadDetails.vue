@@ -5,7 +5,7 @@
             <p class="text-xs font-bold text-on-surface-variant mt-2">Cargando detalles de la no conformidad...</p>
         </div>
 
-        <div v-else-if="!noConformidad" class="py-20 text-center bg-white border border-surface-container rounded-2xl">
+        <div v-else-if="!noConformidad" class="py-20 text-center bg-white border border-surface-container rounded-md">
             <span class="material-symbols-outlined text-5xl text-red-500">warning</span>
             <p class="text-sm font-semibold text-on-surface mt-4">No se pudo cargar la no conformidad</p>
             <p class="text-xs text-on-surface-variant mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
@@ -19,11 +19,11 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
                 <div>
                     <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-extrabold uppercase bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full border border-amber-200">
+                        <span class="text-[10px] font-extrabold uppercase bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded border border-amber-200">
                             No Conformidad (Rastros)
                         </span>
                         <span 
-                            :class="['px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border', 
+                            :class="['px-2.5 py-0.5 rounded text-[10px] font-extrabold uppercase border', 
                                      noConformidad.estado_hallazgo === 'Abierto' ? 'bg-red-50 border-red-200 text-red-700' :
                                      noConformidad.estado_hallazgo === 'En proceso' ? 'bg-amber-50 border-amber-200 text-amber-700' :
                                      'bg-emerald-50 border-emerald-200 text-emerald-700']"
@@ -39,7 +39,7 @@
                     <router-link 
                         :to="`/noconformidades/${noConformidad.id}/imprimir`" 
                         target="_blank"
-                        class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow flex items-center gap-1.5 transition-all"
+                        class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow flex items-center gap-1.5 transition-colors"
                     >
                         <span class="material-symbols-outlined text-sm">print</span>
                         Imprimir Hallazgos
@@ -55,26 +55,26 @@
                 <!-- Left Details (General information) -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- 1. Ficha de la No Conformidad -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                        <h3 class="text-xs font-extrabold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-lg">description</span>
+                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">description</span>
                             Detalles de la No Conformidad
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Establecimiento / Personal de Rastro</span>
                                 <span class="font-bold text-on-surface text-sm">{{ noConformidad.establecimiento }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Fecha de Inspección</span>
                                 <span class="font-mono font-bold text-on-surface text-sm">{{ noConformidad.fecha_inspeccion }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Norma Específica Asociada</span>
                                 <span class="font-bold text-on-surface text-sm">{{ noConformidad.norma_especifica || 'Ninguna registrada' }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100" v-if="noConformidad.fecha_cumplimiento">
+                            <div class="p-3 bg-slate-50 rounded border border-slate-200" v-if="noConformidad.fecha_cumplimiento">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Fecha de Cumplimiento / Cierre</span>
                                 <span class="font-mono font-bold text-emerald-600 text-sm">{{ noConformidad.fecha_cumplimiento }}</span>
                             </div>
@@ -84,19 +84,19 @@
                         <div class="mt-6 space-y-4 text-xs">
                             <div>
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Hallazgos / Desviaciones Detectadas</span>
-                                <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl text-on-surface whitespace-pre-line leading-relaxed">
+                                <div class="p-4 bg-slate-50 border border-slate-200 rounded text-on-surface whitespace-pre-line leading-relaxed">
                                     {{ noConformidad.hallazgos_detectados }}
                                 </div>
                             </div>
                             <div v-if="noConformidad.verificacion_oficial">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Verificación del Inspector Oficial</span>
-                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded-xl text-on-surface whitespace-pre-line leading-relaxed">
+                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-on-surface whitespace-pre-line leading-relaxed">
                                     {{ noConformidad.verificacion_oficial }}
                                 </div>
                             </div>
                             <div v-if="noConformidad.observaciones">
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Observaciones Generales</span>
-                                <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl italic text-on-surface-variant whitespace-pre-line">
+                                <div class="p-4 bg-slate-50 border border-slate-200 rounded italic text-on-surface-variant whitespace-pre-line">
                                     {{ noConformidad.observaciones }}
                                 </div>
                             </div>
@@ -104,9 +104,9 @@
                     </div>
 
                     <!-- 2. Inspector responsable -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                        <h3 class="text-xs font-extrabold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-lg">badge</span>
+                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">badge</span>
                             Inspector Oficial Responsable
                         </h3>
                         <div class="flex items-center gap-4 text-xs">
@@ -124,9 +124,9 @@
                 <!-- Right Details (Attachments & Tracking Action) -->
                 <div class="space-y-6">
                     <!-- Adjuntos Bitácora -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                        <h3 class="text-xs font-extrabold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-lg">attachment</span>
+                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">attachment</span>
                             Documentos de Soporte ({{ noConformidad.documentos?.length || 0 }})
                         </h3>
 
@@ -139,7 +139,7 @@
                             <div 
                                 v-for="doc in noConformidad.documentos" 
                                 :key="doc.id" 
-                                class="p-3 bg-slate-50 border border-slate-100 hover:border-primary/30 rounded-xl flex items-center gap-3 cursor-pointer group transition-all"
+                                class="p-3 bg-slate-50 border border-slate-200 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer group transition-all"
                                 @click="abrirDocumento(doc)"
                             >
                                 <span class="material-symbols-outlined text-2xl text-red-500" v-if="doc.nombre_archivo.toLowerCase().endsWith('.pdf')">picture_as_pdf</span>
@@ -157,10 +157,10 @@
                     <!-- Inspector Bitacora Tracking Options (Inspectors only) -->
                     <div 
                         v-if="auth.role === 'inspector'" 
-                        class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient space-y-4"
+                        class="bg-white p-6 rounded-md border border-surface-container shadow-sm space-y-4"
                     >
-                        <h3 class="text-xs font-extrabold text-on-surface uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-lg">edit_note</span>
+                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-sm">edit_note</span>
                             Bitácora y Seguimiento
                         </h3>
 
@@ -170,7 +170,7 @@
                                 <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado del Hallazgo</label>
                                 <select 
                                     v-model="trackingEstado" 
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 >
                                     <option value="Abierto">Abierto</option>
                                     <option value="En proceso">En proceso</option>
@@ -183,7 +183,7 @@
                                 <input 
                                     v-model="trackingFechaCumplimiento" 
                                     type="date"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 />
                             </div>
 
@@ -193,14 +193,14 @@
                                     v-model="trackingVerificacion" 
                                     rows="3"
                                     placeholder="Describe la verificación sanitaria realizada..."
-                                    class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 ></textarea>
                             </div>
 
                             <button 
                                 @click="updateSeguimiento" 
                                 :disabled="updatingSeguimiento"
-                                class="w-full py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-1 disabled:opacity-50"
+                                class="w-full py-2.5 bg-slate-900 text-white font-bold text-xs rounded hover:bg-slate-800 transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
                             >
                                 <span class="material-symbols-outlined text-xs animate-spin" v-if="updatingSeguimiento">sync</span>
                                 <span>Guardar Seguimiento</span>
@@ -212,7 +212,7 @@
                             <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Agregar Soporte a la Bitácora</label>
                             
                             <!-- File selector -->
-                            <div class="w-full py-6 rounded-xl border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                            <div class="w-full py-6 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                                 <input 
                                     type="file" 
                                     multiple
@@ -226,7 +226,7 @@
 
                             <!-- Previews list -->
                             <div v-if="trackingFilesPreviews.length > 0" class="space-y-2 mb-4 max-h-40 overflow-y-auto pr-1">
-                                <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between gap-2">
+                                <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-slate-50 border border-slate-200 rounded flex items-center justify-between gap-2">
                                     <p class="text-[10px] font-bold text-on-surface truncate flex-1">{{ preview.name }}</p>
                                     <button 
                                         type="button" 
@@ -242,7 +242,7 @@
                                 v-if="trackingFiles.length > 0"
                                 @click="uploadAdditionalFiles" 
                                 :disabled="uploadingFiles"
-                                class="w-full py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-1.5"
+                                class="w-full py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-1.5"
                             >
                                 <span class="material-symbols-outlined text-sm animate-spin" v-if="uploadingFiles">sync</span>
                                 <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
@@ -338,12 +338,17 @@ const updateSeguimiento = async () => {
                 icon: 'success',
                 title: 'Seguimiento Guardado',
                 text: 'El seguimiento de la no conformidad se actualizó con éxito.',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#005a9c'
             });
         }
     } catch (error) {
         console.error('Error al actualizar seguimiento', error);
-        Swal.fire('Error', 'No se pudo guardar el seguimiento.', 'error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo guardar el seguimiento.',
+            confirmButtonColor: '#005a9c'
+        });
     } finally {
         updatingSeguimiento.value = false;
     }
@@ -368,12 +373,17 @@ const uploadAdditionalFiles = async () => {
                 icon: 'success',
                 title: 'Bitácora Actualizada',
                 text: 'Los nuevos documentos de soporte se subieron con éxito.',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#005a9c'
             });
         }
     } catch (error) {
         console.error('Error al subir archivos', error);
-        Swal.fire('Error', 'No se pudieron adjuntar los archivos a la bitácora.', 'error');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudieron adjuntar los archivos a la bitácora.',
+            confirmButtonColor: '#005a9c'
+        });
     } finally {
         uploadingFiles.value = false;
     }

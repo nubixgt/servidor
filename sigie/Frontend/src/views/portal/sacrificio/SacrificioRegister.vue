@@ -15,64 +15,64 @@
             <!-- Left & Middle Areas (Form inputs) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- 1. Datos Generales -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">feed</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">feed</span>
                         1. Información General
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha de Sacrificio *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha de Sacrificio *</label>
                             <input 
                                 v-model="fechaSacrificio" 
                                 type="date" 
                                 required
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Propietario del Lote *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Propietario del Lote *</label>
                             <input 
                                 v-model="propietario" 
                                 type="text" 
                                 required
                                 placeholder="Nombre completo del dueño..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. Procedencia -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">distance</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">distance</span>
                         2. Procedencia del Ganado
                     </h3>
                     
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Departamento *</label>
+                                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Departamento *</label>
                                 <select 
                                     v-model="departamento" 
                                     required
                                     @change="onDepartamentoChange"
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 >
                                     <option value="" disabled>Seleccione un departamento...</option>
                                     <option v-for="dept in deptoKeys" :key="dept" :value="dept">{{ dept }}</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Municipio *</label>
+                                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Municipio *</label>
                                 <input 
                                     v-model="municipio" 
                                     list="municipios-list"
                                     required
                                     placeholder="Seleccione o escriba..."
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 />
                                 <datalist id="municipios-list">
                                     <option v-for="muni in municipiosFiltrados" :key="muni" :value="muni">{{ muni }}</option>
@@ -81,33 +81,33 @@
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Finca de Procedencia *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Finca de Procedencia *</label>
                             <input 
                                 v-model="finca" 
                                 type="text" 
                                 required
                                 placeholder="Nombre de la finca de origen..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. Clasificación e Impacto -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">pets</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">pets</span>
                         3. Clasificación del Animal
                     </h3>
                     
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Clasificación *</label>
+                                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Clasificación *</label>
                                 <select 
                                     v-model="clasificacion" 
                                     required
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 >
                                     <option value="" disabled>Seleccione...</option>
                                     <option value="Vaca">Vaca</option>
@@ -120,35 +120,35 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Lote Asignado *</label>
+                                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Lote Asignado *</label>
                                 <input 
                                     v-model="lote" 
                                     type="text" 
                                     required
                                     placeholder="Código de lote..."
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Cantidad de Animales *</label>
+                                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Cantidad de Animales *</label>
                                 <input 
                                     v-model="cantidad" 
                                     type="number" 
                                     min="1"
                                     required
                                     placeholder="Ej: 5"
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Decomisos Realizados</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Decomisos Realizados</label>
                             <input 
                                 v-model="decomisos" 
                                 type="text" 
                                 placeholder="Especificar órganos o canales decomisados si aplica..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                     </div>
@@ -158,13 +158,13 @@
             <!-- Right Area (Sampling, Upload Document & Submit) -->
             <div class="space-y-6">
                 <!-- Trazabilidad / Muestreo -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">verified_user</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">verified_user</span>
                         4. Trazabilidad
                     </h3>
                     
-                    <div class="flex items-start gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
+                    <div class="flex items-start gap-3 p-3 bg-primary/5 rounded border border-primary/10">
                         <input 
                             id="muestreo" 
                             type="checkbox" 
@@ -178,14 +178,14 @@
                 </div>
 
                 <!-- Adjuntar Documentación -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">upload_file</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">upload_file</span>
                         5. Documentación
                     </h3>
                     
                     <div class="space-y-4">
-                        <div v-if="documentoPreview" class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-surface-container bg-slate-50 flex items-center justify-center p-4">
+                        <div v-if="documentoPreview" class="relative w-full aspect-[4/3] rounded border border-surface-container bg-slate-50 flex items-center justify-center p-4">
                             <template v-if="isPdf">
                                 <div class="text-center">
                                     <span class="material-symbols-outlined text-red-500 text-5xl">picture_as_pdf</span>
@@ -193,19 +193,19 @@
                                 </div>
                             </template>
                             <template v-else>
-                                <img :src="documentoPreview" class="w-full h-full object-cover rounded-xl" />
+                                <img :src="documentoPreview" class="w-full h-full object-cover rounded" />
                             </template>
                             
                             <button 
                                 type="button" 
                                 @click="removerDocumento"
-                                class="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95"
+                                class="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow transition-colors"
                             >
                                 <span class="material-symbols-outlined text-base">delete</span>
                             </button>
                         </div>
 
-                        <div v-else class="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
+                        <div v-else class="w-full aspect-[4/3] rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 accept="application/pdf,image/*" 
@@ -220,25 +220,25 @@
                 </div>
 
                 <!-- Observaciones y Enviar -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">chat</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">chat</span>
                         Observaciones
                     </h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="3"
                         placeholder="Observaciones o notas sobre el lote..."
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface mb-4"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface mb-4"
                     ></textarea>
 
                     <button 
                         type="submit" 
                         :disabled="submitting"
-                        class="w-full py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        class="w-full py-3.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2 border border-primary-dim disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <span class="material-symbols-outlined text-lg" v-if="!submitting">cloud_upload</span>
-                        <span class="material-symbols-outlined text-lg animate-spin" v-else>sync</span>
+                        <span class="material-symbols-outlined text-sm animate-spin" v-if="submitting">sync</span>
+                        <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
                         {{ submitting ? 'Registrando...' : 'Registrar Sacrificio' }}
                     </button>
                 </div>
@@ -359,7 +359,7 @@ const handleSubmit = async () => {
                 icon: 'success',
                 title: 'Registro Exitoso',
                 text: 'El reporte de animales sacrificados se guardó correctamente.',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#005a9c'
             }).then(() => {
                 if (auth.role === 'administrador') {
                     router.push('/sacrificios');
@@ -374,7 +374,7 @@ const handleSubmit = async () => {
             icon: 'error',
             title: 'Error de Envío',
             text: error.response?.data?.error || 'No se pudo conectar con el servidor.',
-            confirmButtonColor: '#0284c7'
+            confirmButtonColor: '#005a9c'
         });
     } finally {
         submitting.value = false;
