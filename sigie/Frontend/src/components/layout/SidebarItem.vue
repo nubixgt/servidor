@@ -8,10 +8,10 @@
             :href="href"
             @click="navigate"
             :class="[
-                'w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group',
+                'w-full flex items-center gap-4 px-4 py-2.5 rounded-md transition-all duration-200 group',
                 isActive
-                    ? 'bg-primary-container text-on-primary-container shadow-sm'
-                    : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                    ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
+                    : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             ]"
         >
             <span :class="['material-symbols-outlined text-xl transition-transform duration-300', isActive ? 'scale-110' : 'group-hover:scale-110']">

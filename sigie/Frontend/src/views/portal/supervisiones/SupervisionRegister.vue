@@ -15,70 +15,70 @@
             <!-- Left Area (Form inputs) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- 1. Datos Generales -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">domain</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">domain</span>
                         1. Datos Generales
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha de Supervisión *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha de Supervisión *</label>
                             <input 
                                 v-model="fechaSupervision" 
                                 type="date" 
                                 required
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Inspector Responsable</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Inspector Responsable</label>
                             <input 
                                 :value="auth.user?.nombre || 'Cargando...'"
                                 type="text" 
                                 readonly
                                 disabled
-                                class="w-full bg-slate-100 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm outline-none text-slate-500 font-semibold cursor-not-allowed"
+                                class="w-full bg-slate-100 border border-slate-300 rounded-md px-4 py-2.5 text-xs outline-none text-slate-500 font-semibold cursor-not-allowed"
                             />
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Establecimiento Supervisado *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Establecimiento Supervisado *</label>
                             <input 
                                 v-model="establecimiento" 
                                 type="text" 
                                 required
                                 placeholder="Nombre del establecimiento..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. Hallazgos y Normas -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">gavel</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">gavel</span>
                         2. Hallazgos Detectados y Normativa
                     </h3>
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Hallazgos Detectados *</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Hallazgos Detectados *</label>
                             <textarea 
                                 v-model="hallazgosDetectados" 
                                 rows="4"
                                 required
                                 placeholder="Describe detalladamente los hallazgos o desviaciones encontradas durante la supervisión..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             ></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Norma Específica Asociada (Opcional)</label>
+                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Norma Específica Asociada (Opcional)</label>
                             <input 
                                 v-model="normaEspecifica" 
                                 type="text" 
                                 placeholder="Ej: Artículo 12 del Reglamento de Inocuidad, Acuerdo Ministerial 345-2023..."
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                             />
                         </div>
                     </div>
@@ -88,17 +88,17 @@
             <!-- Right Area (Files & Status) -->
             <div class="space-y-6">
                 <!-- Estado y Seguimiento -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">track_changes</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">track_changes</span>
                         3. Seguimiento
                     </h3>
                     <div>
-                        <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado Inicial *</label>
+                        <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado Inicial *</label>
                         <select 
                             v-model="estadoHallazgo" 
                             required
-                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                         >
                             <option value="Abierto">Abierto</option>
                             <option value="En proceso">En proceso</option>
@@ -108,15 +108,15 @@
                 </div>
 
                 <!-- Adjuntar Documentación Múltiple -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">upload_file</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">upload_file</span>
                         4. Adjuntos de Soporte
                     </h3>
                     
                     <div class="space-y-4">
                         <!-- Upload Box -->
-                        <div class="w-full h-32 rounded-2xl border-2 border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
+                        <div class="w-full h-32 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 multiple
@@ -131,7 +131,7 @@
 
                         <!-- Previews List -->
                         <div v-if="documentosPreviews.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                            <div v-for="(preview, index) in documentosPreviews" :key="index" class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center gap-3 relative group">
+                            <div v-for="(preview, index) in documentosPreviews" :key="index" class="p-3 bg-slate-50 border border-slate-200 rounded flex items-center gap-3 relative group">
                                 <span class="material-symbols-outlined text-2xl text-red-500" v-if="preview.isPdf">picture_as_pdf</span>
                                 <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 border bg-white" v-else>
                                     <img :src="preview.url" class="w-full h-full object-cover" />
@@ -153,25 +153,25 @@
                 </div>
 
                 <!-- Observaciones y Enviar -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">chat</span>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-sm">chat</span>
                         Observaciones
                     </h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="3"
                         placeholder="Escribe aquí observaciones adicionales..."
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface mb-4"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface mb-4"
                     ></textarea>
 
                     <button 
                         type="submit" 
                         :disabled="submitting"
-                        class="w-full py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        class="w-full py-3.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2 border border-primary-dim disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <span class="material-symbols-outlined text-lg" v-if="!submitting">cloud_upload</span>
-                        <span class="material-symbols-outlined text-lg animate-spin" v-else>sync</span>
+                        <span class="material-symbols-outlined text-sm animate-spin" v-if="submitting">sync</span>
+                        <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
                         {{ submitting ? 'Registrando...' : 'Registrar Supervisión' }}
                     </button>
                 </div>
@@ -246,7 +246,7 @@ const handleSubmit = async () => {
                 icon: 'success',
                 title: 'Registro Exitoso',
                 text: 'La supervisión se guardó correctamente.',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#005a9c'
             }).then(() => {
                 router.push('/supervisiones');
             });
@@ -257,7 +257,7 @@ const handleSubmit = async () => {
             icon: 'error',
             title: 'Error de Envío',
             text: error.response?.data?.error || 'No se pudo conectar con el servidor.',
-            confirmButtonColor: '#0284c7'
+            confirmButtonColor: '#005a9c'
         });
     } finally {
         submitting.value = false;

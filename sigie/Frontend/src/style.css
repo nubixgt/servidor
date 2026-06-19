@@ -6,41 +6,41 @@
 @tailwind utilities;
 
 :root {
-  --color-surface: #f8fafc;
+  --color-surface: #f3f4f6;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f5f9;
-  --color-surface-container: #e2e8f0;
-  --color-surface-container-high: #cbd5e1;
-  --color-surface-container-highest: #94a3b8;
+  --color-surface-container-low: #f9fafb;
+  --color-surface-container: #e5e7eb;
+  --color-surface-container-high: #d1d5db;
+  --color-surface-container-highest: #9ca3af;
 
-  --color-on-surface: #0f172a;
-  --color-on-surface-variant: #475569;
+  --color-on-surface: #111827;
+  --color-on-surface-variant: #374151;
 
-  --color-primary: #0284c7;
-  --color-primary-dim: #0369a1;
+  --color-primary: #005a9c;
+  --color-primary-dim: #004b87;
   --color-on-primary: #ffffff;
 
-  --color-primary-container: #e0f2fe;
-  --color-on-primary-container: #0369a1;
+  --color-primary-container: #eff6ff;
+  --color-on-primary-container: #1e40af;
 
-  --color-secondary: #0f172a;
-  --color-secondary-container: #f1f5f9;
-  --color-on-secondary-container: #334155;
+  --color-secondary: #1f2937;
+  --color-secondary-container: #f3f4f6;
+  --color-on-secondary-container: #374151;
 
-  --color-tertiary: #4f46e5;
-  --color-tertiary-container: #e0e7ff;
-  --color-on-tertiary-container: #4338ca;
+  --color-tertiary: #2563eb;
+  --color-tertiary-container: #dbeafe;
+  --color-on-tertiary-container: #1e40af;
 
-  --color-error: #dc2626;
+  --color-error: #b91c1c;
   --color-error-container: #fee2e2;
-  --color-on-error-container: #991b1b;
+  --color-on-error-container: #7f1d1d;
 
-  --color-outline: #64748b;
+  --color-outline: #9ca3af;
   --color-outline-variant: #cbd5e1;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--color-surface);
   color: var(--color-on-surface);
 }
@@ -51,12 +51,12 @@ body {
 }
 
 .shadow-ambient {
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .glass-header {
-  background-color: rgba(248, 250, 252, 0.85);
-  backdrop-filter: blur(20px);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--color-surface-container);
 }
 
 @media print {

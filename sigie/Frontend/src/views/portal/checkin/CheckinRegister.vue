@@ -15,8 +15,8 @@
             <!-- Left Area (Visita selection, GPS, Photo, Observations) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Visita Card -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">1. Datos de la Visita</h3>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4">1. Datos de la Visita</h3>
                     
                     <div class="space-y-4">
                         <div>
@@ -24,18 +24,18 @@
                             
                             <!-- Dropdown if no query parameter, else static read-only text -->
                             <div v-if="visitaIdFromQuery">
-                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-start justify-between">
+                                <div class="p-4 rounded bg-slate-50 border border-slate-200 flex items-start justify-between">
                                     <div>
-                                        <h4 class="font-bold text-on-surface">{{ selectedVisitaDetails?.establecimiento }}</h4>
+                                        <h4 class="font-bold text-on-surface text-sm">{{ selectedVisitaDetails?.establecimiento }}</h4>
                                         <p class="text-xs text-on-surface-variant mt-1 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-sm text-primary">place</span>
                                             {{ selectedVisitaDetails?.direccion }}
                                         </p>
-                                        <span class="inline-block text-[9px] font-extrabold uppercase bg-primary-container text-on-primary-container px-2 py-0.5 rounded mt-2">
+                                        <span class="inline-block text-[9px] font-bold uppercase bg-primary-container text-on-primary-container px-2 py-0.5 rounded mt-2">
                                             {{ selectedVisitaDetails?.tipo_inspeccion }}
                                         </span>
                                     </div>
-                                    <span class="text-[10px] font-bold uppercase text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">
+                                    <span class="text-[10px] font-bold uppercase text-amber-700 bg-amber-50 px-2.5 py-1 rounded border border-amber-200">
                                         Asignada
                                     </span>
                                 </div>
@@ -45,7 +45,7 @@
                                 <select 
                                     v-model="visitaId" 
                                     required
-                                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                                 >
                                     <option value="" disabled>Seleccione un establecimiento programado...</option>
                                     <option v-for="v in visitas" :key="v.id" :value="v.id">
@@ -65,7 +65,7 @@
                                 <button 
                                     type="button" 
                                     @click="estadoCheckin = 'exitoso'"
-                                    :class="['p-3 rounded-xl border-2 text-xs font-bold flex items-center justify-center gap-2 transition-all', estadoCheckin === 'exitoso' ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-slate-50 border-slate-100 text-on-surface-variant hover:bg-slate-100']"
+                                    :class="['p-3 rounded border text-xs font-bold flex items-center justify-center gap-2 transition-all', estadoCheckin === 'exitoso' ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-slate-50 border-slate-200 text-on-surface-variant hover:bg-slate-100']"
                                 >
                                     <span class="material-symbols-outlined text-sm">check_circle</span>
                                     Sin Novedades
@@ -73,7 +73,7 @@
                                 <button 
                                     type="button" 
                                     @click="estadoCheckin = 'con_novedades'"
-                                    :class="['p-3 rounded-xl border-2 text-xs font-bold flex items-center justify-center gap-2 transition-all', estadoCheckin === 'con_novedades' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-slate-50 border-slate-100 text-on-surface-variant hover:bg-slate-100']"
+                                    :class="['p-3 rounded border text-xs font-bold flex items-center justify-center gap-2 transition-all', estadoCheckin === 'con_novedades' ? 'bg-red-50 border-red-500 text-red-700' : 'bg-slate-50 border-slate-200 text-on-surface-variant hover:bg-slate-100']"
                                 >
                                     <span class="material-symbols-outlined text-sm">warning</span>
                                     Con Novedades / Alertas
@@ -84,12 +84,12 @@
                 </div>
 
                 <!-- Registro de Tiempos Card -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">2. Registro de Tiempos</h3>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4">2. Registro de Tiempos</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Hora de Ingreso -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center gap-3">
+                        <div class="bg-slate-50 p-4 rounded border border-slate-200 flex items-center gap-3">
                             <span class="material-symbols-outlined text-2xl text-primary">login</span>
                             <div>
                                 <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Hora de Ingreso</span>
@@ -99,7 +99,7 @@
                         </div>
 
                         <!-- Hora de Salida -->
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col justify-between gap-4">
+                        <div class="bg-slate-50 p-4 rounded border border-slate-200 flex flex-col justify-between gap-4">
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-2xl text-amber-600">logout</span>
                                 <div>
@@ -113,7 +113,7 @@
                             <button 
                                 type="button" 
                                 @click="registrarSalida"
-                                class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-lg hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center gap-2 shadow"
+                                class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 border border-slate-950"
                             >
                                 <span class="material-symbols-outlined text-sm">alarm_on</span>
                                 {{ horaSalida ? 'Actualizar Salida' : 'Registrar Salida' }}
@@ -123,12 +123,12 @@
                 </div>
 
                 <!-- GPS Location Card -->
-                <div class="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-ambient overflow-hidden flex flex-col">
+                <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden flex flex-col">
                     <!-- Blue Header -->
-                    <div class="bg-[#1a739e] text-white px-5 py-3.5 flex items-center justify-between shadow-sm">
-                        <span class="font-extrabold text-xs tracking-wider flex items-center gap-1.5 uppercase">
+                    <div class="bg-primary text-white px-5 py-3 flex items-center justify-between">
+                        <span class="font-bold text-xs tracking-wider flex items-center gap-1.5 uppercase">
                             <span class="material-symbols-outlined text-sm">my_location</span>
-                            GPS <span class="text-red-400 font-black">*</span>
+                            GPS <span class="text-red-300 font-bold">*</span>
                         </span>
                     </div>
 
@@ -152,17 +152,17 @@
                         <span class="flex items-center gap-1">
                             <strong class="text-slate-400 font-extrabold">LONG:</strong> {{ longitud.toFixed(6) }}
                         </span>
-                        <span class="text-emerald-600 font-extrabold uppercase bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                        <span class="text-emerald-700 font-bold uppercase bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                             ±{{ precisionGPS }}m
                         </span>
                     </div>
 
-                    <!-- Orange Action Button -->
+                    <!-- Action Button -->
                     <button 
                         type="button" 
                         @click="obtenerUbicacion" 
                         :disabled="gpsLoading"
-                        class="w-full py-4 bg-[#ea580c] hover:bg-[#d94e0b] text-white font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <span class="material-symbols-outlined text-sm animate-spin" v-if="gpsLoading">sync</span>
                         <span class="material-symbols-outlined text-sm" v-else>my_location</span>
@@ -171,24 +171,24 @@
                 </div>
 
                 <!-- Evidencia Fotográfica Card -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">4. Evidencia Fotográfica</h3>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4">4. Evidencia Fotográfica</h3>
                     
                     <div class="space-y-4">
                         <!-- Preview area -->
-                        <div v-if="fotoPreview" class="relative w-full max-w-sm aspect-[4/3] rounded-2xl overflow-hidden border border-surface-container group">
+                        <div v-if="fotoPreview" class="relative w-full max-w-sm aspect-[4/3] rounded border border-surface-container group">
                             <img :src="fotoPreview" class="w-full h-full object-cover" />
                             <button 
                                 type="button" 
                                 @click="removerFoto"
-                                class="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95"
+                                class="absolute top-3 right-3 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow transition-colors"
                             >
                                 <span class="material-symbols-outlined text-base">delete</span>
                             </button>
                         </div>
 
                         <!-- Upload Button -->
-                        <div v-else class="w-full max-w-sm aspect-[4/3] rounded-2xl border-2 border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
+                        <div v-else class="w-full max-w-sm aspect-[4/3] rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 accept="image/*" 
@@ -197,31 +197,31 @@
                             />
                             <span class="material-symbols-outlined text-3xl text-outline-variant">add_a_photo</span>
                             <span class="text-xs font-bold text-on-surface mt-3 block">Subir foto de evidencia</span>
-                            <span class="text-[10px] text-on-surface-variant mt-1 block">JPG, PNG o selfie del local</span>
+                            <span class="text-[10px] text-on-surface-variant mt-1 block">JPG, PNG o evidencia visual</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Observaciones Card -->
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">5. Observaciones</h3>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4">5. Observaciones</h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="4"
                         placeholder="Escribe comentarios, novedades encontradas o detalles específicos de la inspección..."
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-3 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
                     ></textarea>
                 </div>
             </div>
 
             <!-- Right Area (Signature Canvas) -->
             <div class="space-y-6">
-                <div class="bg-surface-container-lowest p-6 rounded-2xl border border-surface-container shadow-ambient flex flex-col h-full">
-                    <h3 class="text-sm font-extrabold text-on-surface uppercase tracking-wider mb-4">6. Firma Digital</h3>
+                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm flex flex-col h-full">
+                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4">6. Firma Digital</h3>
                     <p class="text-xs text-on-surface-variant mb-4">El inspector y/o encargado debe firmar en el recuadro inferior:</p>
                     
                     <!-- Canvas container -->
-                    <div class="border-2 border-dashed border-outline-variant bg-slate-50 rounded-2xl overflow-hidden aspect-[4/3] relative">
+                    <div class="border border-outline bg-slate-50 rounded overflow-hidden aspect-[4/3] relative">
                         <canvas 
                             ref="canvasRef"
                             @mousedown="startDrawing"
@@ -239,7 +239,7 @@
                         <button 
                             type="button" 
                             @click="clearCanvas"
-                            class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-on-surface-variant font-bold text-xs rounded-xl transition-all"
+                            class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-on-surface-variant font-bold text-xs rounded transition-colors"
                         >
                             Limpiar Firma
                         </button>
@@ -251,13 +251,13 @@
                         <button 
                             type="submit" 
                             :disabled="submitting || !latitud"
-                            class="w-full py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-98 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            class="w-full py-3.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2 border border-primary-dim"
                         >
                             <span class="material-symbols-outlined text-lg" v-if="!submitting">cloud_upload</span>
                             <span class="material-symbols-outlined text-lg animate-spin" v-else>sync</span>
                             {{ submitting ? 'Registrando...' : 'Registrar Check-in' }}
                         </button>
-                        <p v-if="!latitud" class="text-[10px] text-amber-600 font-bold text-center mt-2.5 flex items-center justify-center gap-1 bg-amber-50 py-1.5 rounded-lg border border-amber-100">
+                        <p v-if="!latitud" class="text-[10px] text-amber-700 font-bold text-center mt-2.5 flex items-center justify-center gap-1 bg-amber-50 py-1.5 rounded border border-amber-200">
                             <span class="material-symbols-outlined text-sm">warning</span>
                             Es necesario obtener ubicación GPS antes de enviar.
                         </p>
