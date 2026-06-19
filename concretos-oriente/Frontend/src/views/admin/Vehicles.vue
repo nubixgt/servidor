@@ -150,7 +150,7 @@
 
           <!-- Foto delantera preview -->
           <div v-if="v.foto_delantera" class="rounded-2xl overflow-hidden aspect-video bg-black/20 border border-white/5">
-            <img :src="photoUrl(v.foto_delantera, v.updated_at)" class="w-full h-full object-cover" />
+            <img :src="photoUrl(v.foto_delantera)" class="w-full h-full object-cover" />
           </div>
 
           <!-- Acciones -->
@@ -537,7 +537,7 @@
                 <div v-for="photo in photoFields" :key="photo.key" class="space-y-1">
                   <span class="text-[8px] font-black text-white/30 uppercase tracking-widest block">{{ photo.label }}</span>
                   <div class="aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center">
-                    <img v-if="selectedVehicle[photo.key]" :src="photoUrl(selectedVehicle[photo.key], selectedVehicle.updated_at)" class="w-full h-full object-cover" />
+                    <img v-if="selectedVehicle[photo.key]" :src="photoUrl(selectedVehicle[photo.key])" class="w-full h-full object-cover" />
                     <div v-else class="text-center text-white/20 p-2">
                       <CameraIcon class="w-6 h-6 mx-auto mb-1 opacity-50" />
                       <span class="text-[8px] font-black uppercase tracking-widest">Sin foto</span>
@@ -646,11 +646,10 @@ const estatusBadge = (estatus) => {
   return 'bg-white/5 text-white/40 border-white/10';
 };
 
-const photoUrl = (path, ts = '') => {
+const photoUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
-  const base = `/concretos-oriente/Backend/${path}`;
-  return ts ? `${base}?v=${encodeURIComponent(ts)}` : base;
+  return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
 };
 
 const toast = (msg, icon = 'success') => Swal.fire({
@@ -700,10 +699,10 @@ const startEdit = (v) => {
   };
   photoFiles = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
   photoPreviews.value = {
-    foto_delantera: v.foto_delantera ? photoUrl(v.foto_delantera, v.updated_at) : null,
-    foto_trasera:   v.foto_trasera   ? photoUrl(v.foto_trasera,   v.updated_at) : null,
-    foto_lateral1:  v.foto_lateral1  ? photoUrl(v.foto_lateral1,  v.updated_at) : null,
-    foto_lateral2:  v.foto_lateral2  ? photoUrl(v.foto_lateral2,  v.updated_at) : null,
+    foto_delantera: v.foto_delantera ? photoUrl(v.foto_delantera) : null,
+    foto_trasera:   v.foto_trasera   ? photoUrl(v.foto_trasera)   : null,
+    foto_lateral1:  v.foto_lateral1  ? photoUrl(v.foto_lateral1)  : null,
+    foto_lateral2:  v.foto_lateral2  ? photoUrl(v.foto_lateral2)  : null,
   };
   activeTab.value = 'register';
 };
