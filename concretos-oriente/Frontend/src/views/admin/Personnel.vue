@@ -663,10 +663,11 @@
          SECCIÓN INCIDENCIAS
          ============================================================ -->
     <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
+      <!-- Header -->
       <div class="p-8 border-b border-white/5 flex items-center justify-between gap-4">
         <div>
           <h3 class="text-xl font-bold text-white">Incidencias de Empleados</h3>
-          <p class="text-white/40 text-sm mt-1">{{ incidents.length }} registro{{ incidents.length !== 1 ? 's' : '' }}</p>
+          <p class="text-white/40 text-sm mt-1">{{ filteredIncidents.length }} registro{{ filteredIncidents.length !== 1 ? 's' : '' }}</p>
         </div>
         <button
           @click="openIncidentModal()"
@@ -677,6 +678,48 @@
         </button>
       </div>
 
+      <!-- Filtros -->
+      <div class="px-8 pt-6 pb-4 border-b border-white/5">
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Buscador -->
+          <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 text-white/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input
+              v-model="incidentSearch"
+              type="text"
+              placeholder="Buscar en texto o motivo..."
+              class="bg-transparent flex-1 text-sm text-white placeholder-white/30 focus:outline-none"
+            />
+          </div>
+
+          <!-- Filtro empleado -->
+          <select v-model="filterIncidentEmpleado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/30 transition-all appearance-none w-full md:w-auto md:min-w-[200px]">
+            <option value="">Todos los empleados</option>
+            <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
+              {{ emp.nombres }} {{ emp.apellidos }}
+            </option>
+          </select>
+
+          <!-- Filtro fecha -->
+          <input
+            v-model="filterIncidentFecha"
+            type="date"
+            class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/30 transition-all w-full md:w-auto"
+          />
+
+          <!-- Limpiar -->
+          <button
+            v-if="activeIncidentFiltersCount > 0"
+            @click="resetIncidentFilters"
+            class="flex items-center gap-2 text-white/50 hover:text-white text-xs font-bold px-4 py-3 rounded-2xl hover:bg-white/5 border border-white/10 transition-all"
+          >
+            <XMarkIcon class="w-4 h-4" />
+            Limpiar ({{ activeIncidentFiltersCount }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla -->
       <div class="overflow-x-auto px-4">
         <table class="w-full min-w-[600px] text-left">
           <thead>
@@ -692,12 +735,13 @@
             <tr v-if="loadingIncidents">
               <td colspan="5" class="px-8 py-8 text-center text-white/50">Cargando incidencias...</td>
             </tr>
-            <tr v-else-if="incidents.length === 0">
+            <tr v-else-if="filteredIncidents.length === 0">
               <td colspan="5" class="px-8 py-12 text-center">
                 <p class="text-white/40 font-semibold">Sin incidencias registradas</p>
+                <p v-if="activeIncidentFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
               </td>
             </tr>
-            <tr v-for="inc in incidents" :key="inc.id" class="hover:bg-white/5 group transition-colors duration-300">
+            <tr v-for="inc in paginatedIncidents" :key="inc.id" class="hover:bg-white/5 group transition-colors duration-300">
               <td class="px-8 py-5">
                 <p class="text-sm font-bold text-white">{{ inc.empleado_nombre }}</p>
               </td>
@@ -720,6 +764,46 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Paginación incidencias -->
+      <div class="px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
+        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
+          Mostrando {{ Math.min((incidentCurrentPage - 1) * INCIDENT_PAGE_SIZE + 1, filteredIncidents.length) }}–{{ Math.min(incidentCurrentPage * INCIDENT_PAGE_SIZE, filteredIncidents.length) }}
+          de {{ filteredIncidents.length }} incidencia{{ filteredIncidents.length !== 1 ? 's' : '' }}
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            @click="incidentCurrentPage--"
+            :disabled="incidentCurrentPage === 1"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeftIcon class="w-5 h-5" />
+          </button>
+          <template v-for="page in totalIncidentPages" :key="page">
+            <button
+              v-if="totalIncidentPages <= 7 || Math.abs(page - incidentCurrentPage) <= 1 || page === 1 || page === totalIncidentPages"
+              @click="incidentCurrentPage = page"
+              :class="[
+                'min-w-[36px] h-9 px-2 rounded-xl text-sm font-bold transition-all',
+                page === incidentCurrentPage
+                  ? 'bg-amber-400/80 text-white shadow-lg shadow-amber-400/20'
+                  : 'text-white/40 hover:text-white hover:bg-white/10'
+              ]"
+            >{{ page }}</button>
+            <span
+              v-else-if="(page === incidentCurrentPage - 2 && page > 2) || (page === incidentCurrentPage + 2 && page < totalIncidentPages - 1)"
+              class="text-white/30 px-1"
+            >…</span>
+          </template>
+          <button
+            @click="incidentCurrentPage++"
+            :disabled="incidentCurrentPage === totalIncidentPages"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRightIcon class="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -819,6 +903,13 @@ const incidents  = ref([]);
 const loading    = ref(true);
 const loadingIncidents = ref(false);
 
+// Filtros y paginación de incidencias
+const incidentSearch          = ref('');
+const filterIncidentEmpleado  = ref('');
+const filterIncidentFecha     = ref('');
+const incidentCurrentPage     = ref(1);
+const INCIDENT_PAGE_SIZE      = 10;
+
 const showModal          = ref(false);
 const showViewModal      = ref(false);
 const showIncidentModal  = ref(false);
@@ -885,6 +976,48 @@ const resetFilters = () => {
   filterEstado.value   = '';
   filterProyecto.value = '';
   currentPage.value    = 1;
+};
+
+// ----------------------------------------------------------------
+// Filtros y paginación de incidencias
+// ----------------------------------------------------------------
+watch([incidentSearch, filterIncidentEmpleado, filterIncidentFecha], () => {
+  incidentCurrentPage.value = 1;
+});
+
+const filteredIncidents = computed(() => {
+  const q = incidentSearch.value.toLowerCase().trim();
+  return incidents.value.filter(inc => {
+    if (q) {
+      const texto  = (inc.texto  || '').toLowerCase();
+      const motivo = (inc.motivo || '').toLowerCase();
+      const nombre = (inc.empleado_nombre || '').toLowerCase();
+      if (!texto.includes(q) && !motivo.includes(q) && !nombre.includes(q)) return false;
+    }
+    if (filterIncidentEmpleado.value && inc.personnel_id != filterIncidentEmpleado.value) return false;
+    if (filterIncidentFecha.value && inc.fecha !== filterIncidentFecha.value) return false;
+    return true;
+  });
+});
+
+const totalIncidentPages = computed(() =>
+  Math.max(1, Math.ceil(filteredIncidents.value.length / INCIDENT_PAGE_SIZE))
+);
+
+const paginatedIncidents = computed(() => {
+  const start = (incidentCurrentPage.value - 1) * INCIDENT_PAGE_SIZE;
+  return filteredIncidents.value.slice(start, start + INCIDENT_PAGE_SIZE);
+});
+
+const activeIncidentFiltersCount = computed(() =>
+  [incidentSearch.value, filterIncidentEmpleado.value, filterIncidentFecha.value].filter(Boolean).length
+);
+
+const resetIncidentFilters = () => {
+  incidentSearch.value         = '';
+  filterIncidentEmpleado.value = '';
+  filterIncidentFecha.value    = '';
+  incidentCurrentPage.value    = 1;
 };
 
 const formData = ref({
