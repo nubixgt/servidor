@@ -162,7 +162,7 @@
         <div class="lg:col-span-8 space-y-6">
 
           <!-- Datos principales -->
-          <section class="glass-card p-8 rounded-3xl border border-white/5 relative">
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative z-10">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
               <InformationCircleIcon class="w-4 h-4" /> Datos del Servicio
             </h3>
