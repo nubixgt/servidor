@@ -172,8 +172,7 @@
         <div class="lg:col-span-8 space-y-6">
 
           <!-- Sección 1: Datos del registro -->
-          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
               <InformationCircleIcon class="w-4 h-4" /> Datos del Registro
             </h3>
