@@ -28,6 +28,7 @@ use App\Controllers\PuestosController;
 use App\Controllers\IncidentController;
 use App\Controllers\HeavyTransportController;
 use App\Controllers\SpecialMachineryController;
+use App\Controllers\FuelRecordController;
 
 // Backend/api/v1/index.php
 
@@ -84,6 +85,7 @@ $router->registerController(PuestosController::class);
 $router->registerController(IncidentController::class);
 $router->registerController(HeavyTransportController::class);
 $router->registerController(SpecialMachineryController::class);
+$router->registerController(FuelRecordController::class);
 
 
 
