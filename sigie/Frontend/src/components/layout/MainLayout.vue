@@ -72,6 +72,12 @@
                         label="No Conformidades Rastro"
                         to="/noconformidades"
                     />
+                    <SidebarItem
+                        v-if="auth.role === 'inspector'"
+                        icon="calendar_month"
+                        label="Mi Programación"
+                        to="/programacion"
+                    />
 
                     <!-- Administradores only -->
                     <SidebarItem
@@ -104,6 +110,18 @@
                         icon="assignment_late"
                         label="No Conformidades Rastro"
                         to="/noconformidades"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="calendar_month"
+                        label="Programación Mensual"
+                        to="/programacion"
+                    />
+                    <SidebarItem
+                        v-if="auth.role === 'administrador'"
+                        icon="analytics"
+                        label="Reportes de Actividades"
+                        to="/programacion/reportes"
                     />
                 </div>
             </nav>
