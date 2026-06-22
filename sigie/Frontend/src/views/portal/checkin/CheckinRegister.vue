@@ -42,19 +42,13 @@
                             </div>
 
                             <div v-else>
-                                <select 
+                                <input 
+                                    type="text" 
                                     v-model="visitaId" 
                                     required
+                                    placeholder="Nombre del establecimiento a inspeccionar"
                                     class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
-                                >
-                                    <option value="" disabled>Seleccione un establecimiento programado...</option>
-                                    <option v-for="v in visitas" :key="v.id" :value="v.id">
-                                        {{ v.establecimiento }} — {{ v.tipo_inspeccion }}
-                                    </option>
-                                </select>
-                                <p v-if="visitas.length === 0" class="text-xs text-red-500 mt-1 font-semibold">
-                                    No tienes visitas pendientes programadas para hoy.
-                                </p>
+                                />
                             </div>
                         </div>
 
@@ -429,8 +423,8 @@ const fetchVisitasAsignadas = async () => {
             
             // If visita_id is provided in URL, pre-select it
             if (visitaIdFromQuery.value) {
-                visitaId.value = parseInt(visitaIdFromQuery.value);
-                selectedVisitaDetails.value = visitas.value.find(v => v.id === visitaId.value);
+                const parsedId = parseInt(visitaIdFromQuery.value);
+                selectedVisitaDetails.value = visitas.value.find(v => v.id === parsedId);
                 
                 // If it isn't found in dynamic list, check if we need to mock it
                 if (!selectedVisitaDetails.value) {
@@ -440,6 +434,9 @@ const fetchVisitasAsignadas = async () => {
                         tipo_inspeccion: 'Inspección General'
                     };
                 }
+                
+                // Set the input field value to the establishment name so it is submitted
+                visitaId.value = selectedVisitaDetails.value.establecimiento;
             }
         }
     } catch (error) {
@@ -571,6 +568,9 @@ const handleSubmit = async () => {
         // Use FormData for file upload support
         const formData = new FormData();
         formData.append('visita_id', visitaId.value);
+        if (visitaIdFromQuery.value) {
+            formData.append('original_visita_id', visitaIdFromQuery.value);
+        }
         formData.append('latitud', latitud.value);
         formData.append('longitud', longitud.value);
         formData.append('observaciones', observaciones.value);

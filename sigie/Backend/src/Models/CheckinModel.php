@@ -42,10 +42,11 @@ class CheckinModel
             SELECT c.id, c.fecha_hora, c.latitud, c.longitud, c.observaciones, c.firma_path, c.foto_path, c.estado,
                    c.hora_ingreso, c.hora_salida,
                    i.nombre AS inspector_nombre, i.codigo AS inspector_codigo, i.area AS inspector_area,
-                   v.establecimiento, v.direccion, v.tipo_inspeccion
+                   c.visita_id AS establecimiento,
+                   NULL AS direccion,
+                   NULL AS tipo_inspeccion
             FROM check_ins c
             INNER JOIN inspectores i ON c.inspector_id = i.id
-            LEFT JOIN visitas v ON c.visita_id = v.id
             ORDER BY c.fecha_hora DESC
         ");
         $stmt->execute();

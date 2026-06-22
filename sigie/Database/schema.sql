@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS visitas (
 -- ==========================================
 CREATE TABLE IF NOT EXISTS check_ins (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    visita_id INT UNSIGNED NULL,
+    visita_id VARCHAR(150) NULL,
     inspector_id INT UNSIGNED NOT NULL,
     fecha_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     hora_ingreso DATETIME NULL,
@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS check_ins (
     foto_path VARCHAR(255) NULL COMMENT 'Ruta de la foto de la inspección',
     estado ENUM('exitoso', 'con_novedades') DEFAULT 'exitoso',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (visita_id) REFERENCES visitas(id) ON DELETE SET NULL,
     FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
