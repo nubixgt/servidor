@@ -91,54 +91,54 @@
                     <table class="w-full text-left border-collapse table-fixed text-[11px]">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
-                                <th v-if="auth.role === 'administrador'" class="px-4 py-4 w-[16%]">Inspector</th>
-                                <th class="px-4 py-4" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[12%]'">Fecha</th>
-                                <th class="px-4 py-4" :class="auth.role === 'administrador' ? 'w-[11%]' : 'w-[13%]'">Código</th>
-                                <th class="px-4 py-4" :class="auth.role === 'administrador' ? 'w-[20%]' : 'w-[23%]'">Tipo de Actividad</th>
-                                <th class="px-4 py-4" :class="auth.role === 'administrador' ? 'w-[16%]' : 'w-[19%]'">Establecimiento</th>
-                                <th class="px-4 py-4" :class="auth.role === 'administrador' ? 'w-[12%]' : 'w-[15%]'">Observaciones</th>
-                                <th class="px-4 py-4 text-center w-[7%]">Tipo</th>
-                                <th class="px-4 py-4 text-center w-[8%]">Estado</th>
-                                <th class="px-4 py-4 text-right w-[8%]">Acciones</th>
+                                <th v-if="auth.role === 'administrador'" class="px-5 py-4 w-[15%]">Inspector</th>
+                                <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[11%]'">Fecha</th>
+                                <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[12%]'">Código</th>
+                                <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[20%]' : 'w-[21%]'">Tipo de Actividad</th>
+                                <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[15%]' : 'w-[17%]'">Establecimiento</th>
+                                <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[12%]' : 'w-[13%]'">Observaciones</th>
+                                <th class="px-5 py-4 text-center" :class="auth.role === 'administrador' ? 'w-[7%]' : 'w-[8%]'">Tipo</th>
+                                <th class="px-5 py-4 text-center" :class="auth.role === 'administrador' ? 'w-[9%]' : 'w-[10%]'">Estado</th>
+                                <th class="px-5 py-4 text-right" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[16%]'">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs">
                             <tr v-for="act in filteredActividades" :key="act.id" class="hover:bg-slate-50 transition-colors">
                                 <!-- Inspector (Admin Only) -->
-                                <td v-if="auth.role === 'administrador'" class="px-4 py-3 truncate max-w-0" :title="act.inspector_nombre">
+                                <td v-if="auth.role === 'administrador'" class="px-5 py-4 truncate max-w-0" :title="act.inspector_nombre">
                                     <p class="font-bold text-on-surface truncate">{{ act.inspector_nombre }}</p>
                                     <p class="text-[9px] text-on-surface-variant font-mono truncate">Cod: {{ act.inspector_codigo }}</p>
                                 </td>
 
                                 <!-- Date -->
-                                <td class="px-4 py-3 font-semibold text-on-surface-variant font-mono truncate max-w-0" :title="act.fecha_programada">
+                                <td class="px-5 py-4 font-semibold text-on-surface-variant font-mono truncate max-w-0" :title="act.fecha_programada">
                                     {{ act.fecha_programada }}
                                 </td>
 
                                 <!-- Activity Code -->
-                                <td class="px-4 py-3 font-mono font-bold text-primary truncate max-w-0" :title="act.codigo_actividad">
+                                <td class="px-5 py-4 font-mono font-bold text-primary truncate max-w-0" :title="act.codigo_actividad">
                                     {{ act.codigo_actividad }}
                                 </td>
 
                                 <!-- Activity Type -->
-                                <td class="px-4 py-3 font-bold text-on-surface truncate max-w-0" :title="act.tipo_actividad">
+                                <td class="px-5 py-4 font-bold text-on-surface truncate max-w-0" :title="act.tipo_actividad">
                                     {{ act.tipo_actividad }}
                                 </td>
 
                                 <!-- Establishment -->
-                                <td class="px-4 py-3 truncate max-w-0" :title="act.establecimiento">
+                                <td class="px-5 py-4 truncate max-w-0" :title="act.establecimiento">
                                     <p class="font-bold text-on-surface truncate">{{ act.establecimiento }}</p>
                                 </td>
 
                                 <!-- Observations -->
-                                <td class="px-4 py-3 text-on-surface-variant truncate max-w-0" :title="act.observaciones || 'Sin observaciones'">
+                                <td class="px-5 py-4 text-on-surface-variant truncate max-w-0" :title="act.observaciones || 'Sin observaciones'">
                                     {{ act.observaciones || '-' }}
                                 </td>
 
                                 <!-- Spontaneous / Programmed Badge -->
-                                <td class="px-4 py-3 text-center">
+                                <td class="px-5 py-4 text-center">
                                     <span 
-                                        :class="['px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase tracking-wide border', 
+                                        :class="['px-2.5 py-1 rounded text-[9px] font-extrabold uppercase tracking-wide border', 
                                                  act.es_programada ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-purple-50 border-purple-100 text-purple-600']"
                                     >
                                         {{ act.es_programada ? 'Prog' : 'Espont' }}
@@ -146,10 +146,10 @@
                                 </td>
 
                                 <!-- Status Badge -->
-                                <td class="px-4 py-3 text-center">
-                                    <div class="flex flex-col items-center gap-0.5">
+                                <td class="px-5 py-4 text-center">
+                                    <div class="flex flex-col items-center gap-1.5">
                                         <span 
-                                            :class="['px-1.5 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wide', 
+                                            :class="['px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wide', 
                                                      act.estado === 'programada' ? 'bg-slate-100 border-slate-300 text-slate-600' :
                                                      act.estado === 'ejecutada' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
                                                      'bg-red-50 border-red-200 text-red-700']"
@@ -175,34 +175,34 @@
                                 </td>
 
                                 <!-- Actions -->
-                                <td class="px-4 py-3 text-right">
+                                <td class="px-5 py-4 text-right">
                                     <!-- Admin Actions -->
-                                    <div v-if="auth.role === 'administrador'" class="flex justify-end gap-2">
+                                    <div v-if="auth.role === 'administrador'" class="flex justify-end gap-3">
                                         <button 
                                             @click="openEditModal(act)"
-                                            class="text-blue-600 hover:text-blue-800 font-bold text-xs flex items-center gap-0.5"
+                                            class="text-blue-600 hover:text-blue-800 font-bold text-xs flex items-center gap-1"
                                         >
                                             <span class="material-symbols-outlined text-xs">edit</span> Editar
                                         </button>
                                         <button 
                                             @click="eliminarActividad(act.id)"
-                                            class="text-red-600 hover:text-red-800 font-bold text-xs flex items-center gap-0.5"
+                                            class="text-red-600 hover:text-red-800 font-bold text-xs flex items-center gap-1"
                                         >
                                             <span class="material-symbols-outlined text-xs">delete</span> Quitar
                                         </button>
                                     </div>
 
                                     <!-- Inspector Actions -->
-                                    <div v-if="auth.role === 'inspector' && act.estado === 'programada'" class="flex justify-end gap-1.5">
+                                    <div v-if="auth.role === 'inspector' && act.estado === 'programada'" class="flex justify-end gap-3">
                                         <button 
                                             @click="openExecuteModal(act, 'ejecutada')"
-                                            class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-0.5 border border-emerald-700 shadow-sm"
+                                            class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-emerald-700 shadow-sm"
                                         >
                                             <span class="material-symbols-outlined text-[10px]">done</span> Ejec
                                         </button>
                                         <button 
                                             @click="openExecuteModal(act, 'no_ejecutada')"
-                                            class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-0.5 border border-red-700 shadow-sm"
+                                            class="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-red-700 shadow-sm"
                                         >
                                             <span class="material-symbols-outlined text-[10px]">close</span> Incump
                                         </button>
