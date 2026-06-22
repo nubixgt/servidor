@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nombre_completo VARCHAR(150) NOT NULL,
     usuario VARCHAR(80) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    correo VARCHAR(150) NULL,
     rol ENUM('administrador', 'inspector') NOT NULL DEFAULT 'inspector',
     estado TINYINT(1) DEFAULT 1,
     ultimo_acceso DATETIME NULL,
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS inspectores (
     codigo VARCHAR(20) NOT NULL UNIQUE,
     nombre VARCHAR(150) NOT NULL,
     area VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) NULL,
     estado TINYINT(1) DEFAULT 1,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
@@ -197,5 +199,94 @@ CREATE TABLE IF NOT EXISTS actividades_programadas (
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 13. TABLA DE IMPORTADORES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS importadores (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    nit VARCHAR(20) NOT NULL UNIQUE,
+    tipo_productos TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 14. TABLA DE IMPORTACIONES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS importaciones (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE NOT NULL,
+    importador_id INT UNSIGNED NOT NULL,
+    tipo_producto VARCHAR(100) NOT NULL,
+    volumen_kilos DECIMAL(12, 2) NOT NULL,
+    establecimiento VARCHAR(150) NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (importador_id) REFERENCES importadores(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 15. TABLA DE CONFIGURACION DE METAS Y UMBRALES DE MUESTREO
+-- ==========================================
+CREATE TABLE IF NOT EXISTS configuracion_muestreo (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    anio INT UNSIGNED NOT NULL,
+    tipo_producto VARCHAR(100) NOT NULL,
+    meta_muestreo_anual INT UNSIGNED NOT NULL,
+    umbral_volumen DECIMAL(12, 2) NOT NULL DEFAULT 66000.00,
+    inspector_id INT UNSIGNED NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_anio_producto (anio, tipo_producto)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 16. TABLA DE MUESTREOS EN IMPORTACIONES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS muestreos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    importador_id INT UNSIGNED NOT NULL,
+    importacion_id INT UNSIGNED NULL,
+    inspector_id INT UNSIGNED NOT NULL,
+    fecha_programada DATE NOT NULL,
+    tipo_producto VARCHAR(100) NOT NULL,
+    volumen_kilos DECIMAL(12, 2) NULL,
+    es_dirigido TINYINT(1) NOT NULL DEFAULT 0,
+    origen ENUM('Algoritmo', 'Alarma', 'Dirigido') NOT NULL DEFAULT 'Algoritmo',
+    estado ENUM('Sugerido', 'Aprobado', 'Ejecutado', 'Rechazado') NOT NULL DEFAULT 'Sugerido',
+    motivo_rechazo TEXT NULL,
+    observaciones_ejecucion TEXT NULL,
+    fecha_ejecucion DATETIME NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (importador_id) REFERENCES importadores(id) ON DELETE CASCADE,
+    FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE,
+    FOREIGN KEY (importacion_id) REFERENCES importaciones(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 17. TABLA DE DOCUMENTOS Y FOTOS DE MUESTREO
+-- ==========================================
+CREATE TABLE IF NOT EXISTS muestreo_documentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    muestreo_id INT UNSIGNED NOT NULL,
+    nombre_archivo VARCHAR(150) NOT NULL,
+    ruta_archivo VARCHAR(255) NOT NULL,
+    fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (muestreo_id) REFERENCES muestreos(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- ==========================================
+-- 18. TABLA DE NOTIFICACIONES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS notificaciones (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT UNSIGNED NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    mensaje TEXT NOT NULL,
+    leido TINYINT(1) NOT NULL DEFAULT 0,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 

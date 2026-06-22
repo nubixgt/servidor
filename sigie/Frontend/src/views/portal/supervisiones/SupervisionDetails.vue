@@ -126,30 +126,39 @@
                     <!-- Adjuntos Bitácora -->
                     <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
                         <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">attachment</span>
-                            Documentos de Soporte ({{ supervision.documentos?.length || 0 }})
+                            <span class="material-symbols-outlined text-primary text-sm">timeline</span>
+                            Bitácora de Documentos ({{ supervision.documentos?.length || 0 }})
                         </h3>
 
                         <div v-if="!supervision.documentos || supervision.documentos.length === 0" class="py-8 text-center text-xs text-on-surface-variant">
                             <span class="material-symbols-outlined text-3xl text-slate-300">folder_open</span>
                             <p class="mt-2 font-semibold">Sin archivos soporte adjuntos.</p>
+                            <p class="text-[9px] text-slate-400 mt-1">Los documentos cargados se mostrarán en orden cronológico.</p>
                         </div>
 
-                        <div v-else class="space-y-2 overflow-y-auto max-h-[350px] pr-1">
+                        <!-- Vertical Timeline -->
+                        <div v-else class="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-200 max-h-[350px] overflow-y-auto pr-1">
                             <div 
                                 v-for="doc in supervision.documentos" 
                                 :key="doc.id" 
-                                class="p-3 bg-slate-50 border border-slate-200 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer group transition-colors"
-                                @click="abrirDocumento(doc)"
+                                class="relative group"
                             >
-                                <span class="material-symbols-outlined text-2xl text-red-500" v-if="doc.nombre_archivo.toLowerCase().endsWith('.pdf')">picture_as_pdf</span>
-                                <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
-                                
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-xs font-bold text-on-surface truncate group-hover:text-primary transition-colors">{{ doc.nombre_archivo }}</p>
-                                    <p class="text-[9px] text-on-surface-variant font-mono mt-0.5">{{ formatDateMini(doc.fecha_subida) }}</p>
+                                <!-- Timeline indicator -->
+                                <div class="absolute -left-[20px] top-1.5 w-3.5 h-3.5 bg-white border-2 border-primary rounded-full group-hover:scale-110 transition-transform"></div>
+
+                                <div 
+                                    class="p-3 bg-slate-50 border border-slate-200 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer transition-colors"
+                                    @click="abrirDocumento(doc)"
+                                >
+                                    <span class="material-symbols-outlined text-2xl text-red-500" v-if="doc.nombre_archivo.toLowerCase().endsWith('.pdf')">picture_as_pdf</span>
+                                    <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
+                                    
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-on-surface truncate group-hover:text-primary transition-colors text-left">{{ doc.nombre_archivo }}</p>
+                                        <p class="text-[9px] text-on-surface-variant font-mono mt-0.5 text-left">{{ formatDateMini(doc.fecha_subida) }}</p>
+                                    </div>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-sm">open_in_new</span>
                                 </div>
-                                <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-sm">open_in_new</span>
                             </div>
                         </div>
                     </div>

@@ -33,6 +33,12 @@ import NoConformidadPrint from '../views/portal/noconformidades/NoConformidadPri
 import ProgramacionList from '../views/portal/programacion/ProgramacionList.vue';
 import ProgramacionReportes from '../views/portal/programacion/ProgramacionReportes.vue';
 
+// Muestreos en Importaciones
+import ImportacionesManager from '../views/portal/muestreos/ImportacionesManager.vue';
+import MuestreosList from '../views/portal/muestreos/MuestreosList.vue';
+import MuestreoDetails from '../views/portal/muestreos/MuestreoDetails.vue';
+import MuestreosReportes from '../views/portal/muestreos/MuestreosReportes.vue';
+
 const routes = [
     {
         path: '/login',
@@ -155,6 +161,31 @@ const routes = [
                 path: 'programacion/reportes',
                 name: 'ProgramacionReportes',
                 component: ProgramacionReportes,
+                meta: { roles: ['administrador'] }
+            },
+            // Muestreos en Importaciones
+            {
+                path: 'importaciones',
+                name: 'ImportacionesManager',
+                component: ImportacionesManager,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'muestreos',
+                name: 'MuestreosList',
+                component: MuestreosList,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'muestreos/:id',
+                name: 'MuestreoDetails',
+                component: MuestreoDetails,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'muestreos/reportes',
+                name: 'MuestreosReportes',
+                component: MuestreosReportes,
                 meta: { roles: ['administrador'] }
             }
         ]
