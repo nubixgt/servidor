@@ -29,6 +29,10 @@ import NoConformidadList from '../views/portal/noconformidades/NoConformidadList
 import NoConformidadDetails from '../views/portal/noconformidades/NoConformidadDetails.vue';
 import NoConformidadPrint from '../views/portal/noconformidades/NoConformidadPrint.vue';
 
+// Programación Mensual de Actividades
+import ProgramacionList from '../views/portal/programacion/ProgramacionList.vue';
+import ProgramacionReportes from '../views/portal/programacion/ProgramacionReportes.vue';
+
 const routes = [
     {
         path: '/login',
@@ -139,6 +143,19 @@ const routes = [
                 name: 'NoConformidadPrint',
                 component: NoConformidadPrint,
                 meta: { roles: ['inspector', 'administrador'] }
+            },
+            // Programación de Actividades
+            {
+                path: 'programacion',
+                name: 'ProgramacionList',
+                component: ProgramacionList,
+                meta: { roles: ['inspector', 'administrador'] }
+            },
+            {
+                path: 'programacion/reportes',
+                name: 'ProgramacionReportes',
+                component: ProgramacionReportes,
+                meta: { roles: ['administrador'] }
             }
         ]
     },

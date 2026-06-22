@@ -180,4 +180,22 @@ CREATE TABLE IF NOT EXISTS no_conformidades_documentos (
     FOREIGN KEY (no_conformidad_id) REFERENCES no_conformidades(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- ==========================================
+-- 12. TABLA DE PROGRAMACION MENSUAL DE ACTIVIDADES
+-- ==========================================
+CREATE TABLE IF NOT EXISTS actividades_programadas (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    inspector_id INT UNSIGNED NOT NULL,
+    fecha_programada DATE NOT NULL,
+    tipo_actividad VARCHAR(150) NOT NULL,
+    establecimiento VARCHAR(150) NOT NULL,
+    codigo_actividad VARCHAR(50) NOT NULL,
+    observaciones TEXT NULL,
+    estado ENUM('programada', 'ejecutada', 'no_ejecutada') NOT NULL DEFAULT 'programada',
+    es_programada TINYINT(1) NOT NULL DEFAULT 1,
+    motivo_incumplimiento TEXT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inspector_id) REFERENCES inspectores(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
