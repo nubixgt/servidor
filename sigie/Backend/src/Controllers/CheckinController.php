@@ -43,7 +43,8 @@ class CheckinController extends Controller
         }
 
         // Support standard POST data (FormData)
-        $visitaId = !empty($_POST['visita_id']) ? (int)$_POST['visita_id'] : null;
+        $visitaId = !empty($_POST['visita_id']) ? trim($_POST['visita_id']) : null;
+        $originalVisitaId = !empty($_POST['original_visita_id']) ? (int)$_POST['original_visita_id'] : null;
         $latitud = $_POST['latitud'] ?? null;
         $longitud = $_POST['longitud'] ?? null;
         $observaciones = $_POST['observaciones'] ?? '';
@@ -109,9 +110,9 @@ class CheckinController extends Controller
 
         if ($success) {
             // Update visit status to 'completada'
-            if ($visitaId) {
+            if ($originalVisitaId) {
                 $inspectorModel = new InspectorModel();
-                $inspectorModel->updateVisitaEstado($visitaId, 'completada');
+                $inspectorModel->updateVisitaEstado($originalVisitaId, 'completada');
             }
 
             $this->json([
