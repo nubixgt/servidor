@@ -52,6 +52,20 @@ try {
     $db = new PDO("mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}", $config['username'], $config['password'], $config['options']);
     addLog("Conexión a la base de datos '{$config['dbname']}' establecida con éxito.", "success");
 
+    // Add correo column to existing databases if not already present
+    try {
+        $db->exec("ALTER TABLE usuarios ADD COLUMN correo VARCHAR(150) NULL AFTER password_hash");
+        addLog("Columna 'correo' agregada/verificada en tabla 'usuarios'.", "success");
+    } catch (PDOException $e) {
+        // Column probably already exists
+    }
+    try {
+        $db->exec("ALTER TABLE inspectores ADD COLUMN correo VARCHAR(150) NULL AFTER area");
+        addLog("Columna 'correo' agregada/verificada en tabla 'inspectores'.", "success");
+    } catch (PDOException $e) {
+        // Column probably already exists
+    }
+
     // Read schema.sql
     $schemaPath = __DIR__ . '/../Database/schema.sql';
     if (!file_exists($schemaPath)) {
@@ -71,24 +85,24 @@ try {
 
             // 1. Create Admin
             $adminPass = password_hash('admin123', PASSWORD_BCRYPT);
-            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, rol, estado) VALUES ('Administrador General', 'admin', '$adminPass', 'administrador', 1)");
+            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, correo, rol, estado) VALUES ('Administrador General', 'admin', '$adminPass', 'admin@sigie.gob.gt', 'administrador', 1)");
             addLog("Sembrado: Usuario Administrador ('admin' / 'admin123')", "success");
 
             // 2. Create Inspector 1
             $inspector1Pass = password_hash('inspector123', PASSWORD_BCRYPT);
-            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, rol, estado) VALUES ('Juan Pérez', 'inspector1', '$inspector1Pass', 'inspector', 1)");
+            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, correo, rol, estado) VALUES ('Juan Pérez', 'inspector1', '$inspector1Pass', 'inspector1@sigie.gob.gt', 'inspector', 1)");
             $inspector1UserId = $db->lastInsertId();
             
-            $db->exec("INSERT INTO inspectores (usuario_id, codigo, nombre, area, estado) VALUES ($inspector1UserId, 'INS-001', 'Juan Pérez', 'Sanidad Agroalimentaria', 1)");
+            $db->exec("INSERT INTO inspectores (usuario_id, codigo, nombre, area, correo, estado) VALUES ($inspector1UserId, 'INS-001', 'Juan Pérez', 'Sanidad Agroalimentaria', 'inspector1@sigie.gob.gt', 1)");
             $inspector1Id = $db->lastInsertId();
             addLog("Sembrado: Inspector Juan Pérez ('inspector1' / 'inspector123')", "success");
 
             // 3. Create Inspector 2
             $inspector2Pass = password_hash('inspector123', PASSWORD_BCRYPT);
-            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, rol, estado) VALUES ('María Gómez', 'inspector2', '$inspector2Pass', 'inspector', 1)");
+            $db->exec("INSERT INTO usuarios (nombre_completo, usuario, password_hash, correo, rol, estado) VALUES ('María Gómez', 'inspector2', '$inspector2Pass', 'inspector2@sigie.gob.gt', 'inspector', 1)");
             $inspector2UserId = $db->lastInsertId();
             
-            $db->exec("INSERT INTO inspectores (usuario_id, codigo, nombre, area, estado) VALUES ($inspector2UserId, 'INS-002', 'María Gómez', 'Inocuidad de Alimentos', 1)");
+            $db->exec("INSERT INTO inspectores (usuario_id, codigo, nombre, area, correo, estado) VALUES ($inspector2UserId, 'INS-002', 'María Gómez', 'Inocuidad de Alimentos', 'inspector2@sigie.gob.gt', 1)");
             $inspector2Id = $db->lastInsertId();
             addLog("Sembrado: Inspector María Gómez ('inspector2' / 'inspector123')", "success");
 
@@ -156,13 +170,98 @@ try {
 
     $seedUsersAndInspectors();
 
+    // Actualizar correos en base de datos existente si es necesario
+    $db->exec("UPDATE usuarios SET correo = CONCAT(usuario, '@sigie.gob.gt') WHERE correo IS NULL");
+    $db->exec("UPDATE inspectores SET correo = 'inspector1@sigie.gob.gt' WHERE codigo = 'INS-001' AND correo IS NULL");
+    $db->exec("UPDATE inspectores SET correo = 'inspector2@sigie.gob.gt' WHERE codigo = 'INS-002' AND correo IS NULL");
+
+    // Sembrar Importadores e Importaciones si no existen
+    $seedImportaciones = function() use ($db) {
+        $count = $db->query("SELECT COUNT(*) FROM importadores")->fetchColumn();
+        if ($count == 0) {
+            addLog("Sembrando datos de importadores e importaciones históricas...", "info");
+
+            // Insertar Importadores
+            $importadores = [
+                ['Avícola Meléndez', '1234567-8', 'Cárnico de ave, Huevos frescos'],
+                ['Carnes del Norte S.A.', '8765432-1', 'Cárnico bovino, Embutidos curados'],
+                ['Importadora del Pacífico', '9876543-2', 'Pescados, Mariscos congelados'],
+                ['Distribuidora El Corral', '4567890-1', 'Cárnico porcino, Lácteos, Quesos'],
+                ['Alimentos del Mundo G.T.', '2345678-9', 'Cárnico de ave, Vegetales pre-cocidos']
+            ];
+
+            $stmtImp = $db->prepare("INSERT INTO importadores (nombre, nit, tipo_productos) VALUES (?, ?, ?)");
+            foreach ($importadores as $imp) {
+                $stmtImp->execute($imp);
+            }
+
+            // Obtener ids
+            $idMelendez = $db->query("SELECT id FROM importadores WHERE nombre = 'Avícola Meléndez'")->fetchColumn();
+            $idDelNorte = $db->query("SELECT id FROM importadores WHERE nombre = 'Carnes del Norte S.A.'")->fetchColumn();
+            $idPacifico = $db->query("SELECT id FROM importadores WHERE nombre = 'Importadora del Pacífico'")->fetchColumn();
+            $idCorral = $db->query("SELECT id FROM importadores WHERE nombre = 'Distribuidora El Corral'")->fetchColumn();
+            $idMundo = $db->query("SELECT id FROM importadores WHERE nombre = 'Alimentos del Mundo G.T.'")->fetchColumn();
+
+            // Insertar Importaciones (Año anterior 2025 para el algoritmo de meta anual)
+            $importaciones2025 = [
+                // Avícola Meléndez (Cárnico de ave)
+                [date('Y-m-d', strtotime('2025-02-15')), $idMelendez, 'Cárnico de ave', 45000.00, 'Establecimiento A-1'],
+                [date('Y-m-d', strtotime('2025-05-20')), $idMelendez, 'Cárnico de ave', 35000.00, 'Establecimiento A-1'],
+                [date('Y-m-d', strtotime('2025-08-10')), $idMelendez, 'Cárnico de ave', 55000.00, 'Establecimiento A-2'],
+                [date('Y-m-d', strtotime('2025-11-05')), $idMelendez, 'Cárnico de ave', 40000.00, 'Establecimiento A-2'],
+
+                // Alimentos del Mundo G.T. (Cárnico de ave)
+                [date('Y-m-d', strtotime('2025-03-12')), $idMundo, 'Cárnico de ave', 25000.00, 'Mundo Sur'],
+                [date('Y-m-d', strtotime('2025-06-18')), $idMundo, 'Cárnico de ave', 30000.00, 'Mundo Sur'],
+                [date('Y-m-d', strtotime('2025-09-25')), $idMundo, 'Cárnico de ave', 35000.00, 'Mundo Norte'],
+                
+                // Carnes del Norte (Cárnico bovino)
+                [date('Y-m-d', strtotime('2025-01-22')), $idDelNorte, 'Cárnico bovino', 60000.00, 'Frigorífico Norte'],
+                [date('Y-m-d', strtotime('2025-06-15')), $idDelNorte, 'Cárnico bovino', 50000.00, 'Frigorífico Norte'],
+                [date('Y-m-d', strtotime('2025-10-05')), $idDelNorte, 'Cárnico bovino', 75000.00, 'Frigorífico Central'],
+
+                // Importadora del Pacífico (Pescados)
+                [date('Y-m-d', strtotime('2025-04-05')), $idPacifico, 'Pescados', 20000.00, 'Muelle Pacífico'],
+                [date('Y-m-d', strtotime('2025-08-20')), $idPacifico, 'Pescados', 22000.00, 'Muelle Pacífico'],
+
+                // Distribuidora El Corral (Cárnico porcino)
+                [date('Y-m-d', strtotime('2025-02-28')), $idCorral, 'Cárnico porcino', 40000.00, 'Bodega Corral'],
+                [date('Y-m-d', strtotime('2025-07-14')), $idCorral, 'Cárnico porcino', 35000.00, 'Bodega Corral']
+            ];
+
+            // Algunas del año 2026 para activar alarmas al sumar volumen
+            $importaciones2026 = [
+                // Avícola Meléndez
+                [date('Y-m-d', strtotime('2026-01-10')), $idMelendez, 'Cárnico de ave', 30000.00, 'Establecimiento A-1'],
+                [date('Y-m-d', strtotime('2026-03-15')), $idMelendez, 'Cárnico de ave', 20000.00, 'Establecimiento A-1'],
+                [date('Y-m-d', strtotime('2026-05-18')), $idMelendez, 'Cárnico de ave', 25000.00, 'Establecimiento A-1'] // Cruzará 66k y lanzará alarma
+            ];
+
+            $stmtImport = $db->prepare("INSERT INTO importaciones (fecha, importador_id, tipo_producto, volumen_kilos, establecimiento) VALUES (?, ?, ?, ?, ?)");
+            foreach (array_merge($importaciones2025, $importaciones2026) as $impRecord) {
+                $stmtImport->execute($impRecord);
+            }
+            addLog("Sembrado: 5 importadores y 17 importaciones de prueba creadas.", "success");
+        } else {
+            addLog("Tablas de importación ya contienen datos. Omitiendo siembra.", "info");
+        }
+    };
+
+    $seedImportaciones();
+
     // Ensure upload directories exist
     addLog("Verificando directorios de subida de archivos...", "info");
     $uploadsDir = __DIR__ . '/uploads';
     $checkinsDir = $uploadsDir . '/checkins';
     $firmasDir = $uploadsDir . '/firmas';
+    $desviacionesDir = $uploadsDir . '/desviaciones';
+    $supervisionesDir = $uploadsDir . '/supervisiones';
+    $noconformidadesDir = $uploadsDir . '/noconformidades';
+    $muestreosDir = $uploadsDir . '/muestreos';
 
-    foreach ([$uploadsDir, $checkinsDir, $firmasDir] as $dir) {
+    $dirsToCreate = [$uploadsDir, $checkinsDir, $firmasDir, $desviacionesDir, $supervisionesDir, $noconformidadesDir, $muestreosDir];
+
+    foreach ($dirsToCreate as $dir) {
         if (!file_exists($dir)) {
             if (@mkdir($dir, 0777, true)) {
                 addLog("Directorio creado: " . basename($dir), "success");

@@ -17,6 +17,9 @@ use App\Controllers\DesviacionesController;
 use App\Controllers\SupervisionesController;
 use App\Controllers\NoConformidadesController;
 use App\Controllers\ActividadController;
+use App\Controllers\ImportadorController;
+use App\Controllers\MuestreoController;
+use App\Controllers\NotificacionController;
 
 // Set Headers / CORS
 header("Access-Control-Allow-Origin: *");
@@ -43,6 +46,9 @@ $router->registerController(DesviacionesController::class);
 $router->registerController(SupervisionesController::class);
 $router->registerController(NoConformidadesController::class);
 $router->registerController(ActividadController::class);
+$router->registerController(ImportadorController::class);
+$router->registerController(MuestreoController::class);
+$router->registerController(NotificacionController::class);
 
 
 // Dispatch
