@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@theme {
+  --font-sans: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-maga-blue: #002855;
+  --color-maga-light-blue: #005696;
+  --color-maga-bg-gray: #f4f7f9;
+}
+
+body {
+  background-color: #f4f7f9;
+  font-family: var(--font-sans);
+}

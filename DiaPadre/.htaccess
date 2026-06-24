@@ -1,0 +1,16 @@
+Options -MultiViews
+RewriteEngine On
+
+# Página de inicio → Frontend dist
+DirectoryIndex Frontend/dist/index.html
+
+# Assets compilados del Frontend
+RewriteRule ^assets/(.*)$ Frontend/dist/assets/$1 [L]
+
+# El Backend tiene su propio .htaccess, no tocar
+RewriteRule ^Backend/ - [L]
+
+# SPA fallback: cualquier ruta que no sea archivo real → index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ Frontend/dist/index.html [L]

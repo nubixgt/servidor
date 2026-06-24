@@ -1,0 +1,8 @@
+{
+  "name": "Formulario Dia del Padre - MAGA",
+  "description": "Aplicación para el registro y participación en la celebración del Día del Padre del Ministerio de Agricultura, Ganadería y Alimentación (MAGA).",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
