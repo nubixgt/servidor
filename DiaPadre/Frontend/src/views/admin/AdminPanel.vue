@@ -561,9 +561,21 @@ const handleDeleteRegistration = async (id, name) => {
   try {
     await padreService.eliminar(id);
     await loadRegistrations();
-    showToast('Registro eliminado exitosamente.');
+    Swal.fire({
+      icon: 'success',
+      title: '¡Eliminado!',
+      text: 'El registro fue eliminado exitosamente.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   } catch {
-    showToast('Error al eliminar el registro.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo eliminar el registro.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   }
 };
 
@@ -586,9 +598,21 @@ const handleSaveEdit = async () => {
     await loadRegistrations();
     isEditingModalOpen.value = false;
     editingReg.value = null;
-    showToast('Registro actualizado correctamente.');
+    Swal.fire({
+      icon: 'success',
+      title: '¡Actualizado!',
+      text: 'El registro fue actualizado correctamente.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   } catch (e) {
-    showToast(e.response?.data?.message ?? 'Error al actualizar el registro.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al actualizar',
+      text: e.response?.data?.message ?? 'Ocurrió un error. Inténtalo de nuevo.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   } finally {
     isEditSaving.value = false;
   }
@@ -617,9 +641,21 @@ const handleCreateAdminRecord = async () => {
     isAddModalOpen.value = false;
     newAdminName.value = ''; newAdminPhone.value = ''; newAdminEmail.value = '';
     newAdminDir.value = ''; newAdminDept.value = ''; adminFormErrors.value = {};
-    showToast('Padre agregado manualmente de forma exitosa.');
+    Swal.fire({
+      icon: 'success',
+      title: '¡Registro creado!',
+      text: 'El padre fue agregado exitosamente.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   } catch (e) {
-    showToast(e.response?.data?.message ?? 'Error al crear el registro.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al crear',
+      text: e.response?.data?.message ?? 'Ocurrió un error. Inténtalo de nuevo.',
+      confirmButtonColor: '#002855',
+      confirmButtonText: 'Aceptar',
+    });
   } finally {
     isAddSaving.value = false;
   }
