@@ -183,4 +183,37 @@ class ReferidoService
 
         return $results;
     }
+
+    public function getHistorialPagos(int $referidoId)
+    {
+        $comisiones = $this->repository->getComisionesClientes($referidoId);
+        $pagos = $this->repository->getPagos($referidoId);
+
+        $totalComisiones = array_sum(array_column($comisiones, 'comision_total'));
+        $totalPagado = array_sum(array_column($pagos, 'monto'));
+        $saldoPendiente = $totalComisiones - $totalPagado;
+
+        return [
+            'comisiones' => $comisiones,
+            'pagos' => $pagos,
+            'resumen' => [
+                'total_comisiones' => $totalComisiones,
+                'total_pagado' => $totalPagado,
+                'saldo_pendiente' => $saldoPendiente
+            ]
+        ];
+    }
+
+    public function addPago(int $referidoId, array $data)
+    {
+        if (empty($data['monto']) || empty($data['fecha'])) {
+            throw new \Exception("Monto y Fecha son obligatorios");
+        }
+        return $this->repository->addPago($referidoId, (float)$data['monto'], $data['fecha'], $data['descripcion'] ?? null);
+    }
+
+    public function deletePago(int $id)
+    {
+        return $this->repository->deletePago($id);
+    }
 }

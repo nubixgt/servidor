@@ -1,1 +1,0 @@
-import{p as r}from"./index-SQHcA5Bc.js";const d={getReferidos(){return r.get("/referidos")},getReferido(e){return r.get(`/referidos/${e}`)},createReferido(e){return r.post("/referidos",e)},updateReferido(e,t){return r.post(`/referidos/${e}`,t)},deleteReferido(e){return r.delete(`/referidos/${e}`)}};export{d as r};

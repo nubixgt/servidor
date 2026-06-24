@@ -142,6 +142,95 @@
                         </div>
                     </div>
 
+                    <!-- Pagos y Comisiones -->
+                    <div class="bento-card bg-surface-container-high/30 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+                                Estado de Comisiones y Pagos
+                            </h3>
+                            <button @click="openPagoModal" class="bg-primary/20 text-primary font-label-sm px-4 py-1.5 rounded-full hover:bg-primary/30 transition-colors border border-primary/20 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Registrar Pago
+                            </button>
+                        </div>
+                        
+                        <!-- Resumen -->
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-surface-container-highest rounded-xl p-4 border border-white/5">
+                                <p class="text-xs text-on-surface-variant mb-1 uppercase tracking-wider">Total Comisiones</p>
+                                <p class="text-lg font-semibold text-primary">Q{{ Number(resumenPagos.total_comisiones).toLocaleString('en-US', {minimumFractionDigits:2}) }}</p>
+                            </div>
+                            <div class="bg-surface-container-highest rounded-xl p-4 border border-white/5">
+                                <p class="text-xs text-on-surface-variant mb-1 uppercase tracking-wider">Total Pagado</p>
+                                <p class="text-lg font-semibold text-[#4caf50]">Q{{ Number(resumenPagos.total_pagado).toLocaleString('en-US', {minimumFractionDigits:2}) }}</p>
+                            </div>
+                            <div class="bg-surface-container-highest rounded-xl p-4 border border-white/5">
+                                <p class="text-xs text-on-surface-variant mb-1 uppercase tracking-wider">Saldo Pendiente</p>
+                                <p class="text-lg font-semibold text-[#f44336]">Q{{ Number(resumenPagos.saldo_pendiente).toLocaleString('en-US', {minimumFractionDigits:2}) }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Comisiones de clientes -->
+                        <div class="mb-6">
+                            <h4 class="font-label-caps text-[12px] text-on-surface-variant uppercase tracking-widest mb-3">Comisiones por Clientes</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-white/10 text-on-surface-variant text-[10px] uppercase tracking-widest">
+                                            <th class="py-2">Cliente</th>
+                                            <th class="py-2 text-right">Capital</th>
+                                            <th class="py-2 text-center">% Comisión</th>
+                                            <th class="py-2 text-right">Comisión</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="comisiones.length === 0">
+                                            <td colspan="4" class="py-4 text-center text-on-surface-variant text-sm">No hay clientes referidos</td>
+                                        </tr>
+                                        <tr v-for="c in comisiones" :key="c.cliente_id" class="border-b border-white/5 hover:bg-white/5 text-sm text-on-surface">
+                                            <td class="py-2">{{ c.nombre_cliente }}</td>
+                                            <td class="py-2 text-right">Q{{ Number(c.capital).toLocaleString('en-US', {minimumFractionDigits:2}) }}</td>
+                                            <td class="py-2 text-center">{{ c.porcentaje_referido }}%</td>
+                                            <td class="py-2 text-right text-primary font-medium">Q{{ Number(c.comision_total).toLocaleString('en-US', {minimumFractionDigits:2}) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Historial de Pagos -->
+                        <div>
+                            <h4 class="font-label-caps text-[12px] text-on-surface-variant uppercase tracking-widest mb-3">Historial de Pagos Realizados</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-white/10 text-on-surface-variant text-[10px] uppercase tracking-widest">
+                                            <th class="py-2">Fecha</th>
+                                            <th class="py-2">Descripción</th>
+                                            <th class="py-2 text-right">Monto Pagado</th>
+                                            <th class="py-2 text-center">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="pagos.length === 0">
+                                            <td colspan="4" class="py-4 text-center text-on-surface-variant text-sm">No hay pagos registrados</td>
+                                        </tr>
+                                        <tr v-for="p in pagos" :key="p.id" class="border-b border-white/5 hover:bg-white/5 text-sm text-on-surface">
+                                            <td class="py-2">{{ p.fecha }}</td>
+                                            <td class="py-2">{{ p.descripcion || '-' }}</td>
+                                            <td class="py-2 text-right text-[#4caf50] font-medium">Q{{ Number(p.monto).toLocaleString('en-US', {minimumFractionDigits:2}) }}</td>
+                                            <td class="py-2 text-center">
+                                                <button @click="deletePago(p.id)" class="text-on-surface-variant hover:text-error transition-colors" title="Eliminar pago">
+                                                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- DPI Images Card -->
                     <div class="bento-card bg-surface-container-high/30 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                         <h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2 mb-6">
@@ -331,19 +420,62 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Pago -->
+        <div v-if="showPagoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closePagoModal"></div>
+            
+            <div class="relative w-full max-w-md max-h-[90vh] bg-surface-container border border-white/10 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-surface-container-high">
+                    <h2 class="font-title-lg text-title-lg text-on-surface">Registrar Pago de Comisión</h2>
+                    <button @click="closePagoModal" class="text-on-surface-variant hover:text-error transition-colors rounded-full p-1 hover:bg-error/10">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                    <form @submit.prevent="savePago" class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Monto a Pagar <span class="text-error">*</span></label>
+                            <input v-model="pagoForm.monto" @input="formatInputCurrencyPago" required type="text" placeholder="Q0.00" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Fecha del Pago <span class="text-error">*</span></label>
+                            <input v-model="pagoForm.fecha" required type="date" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Descripción</label>
+                            <textarea v-model="pagoForm.descripcion" rows="2" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors"></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="px-6 py-4 border-t border-white/10 bg-surface-container-high flex justify-end gap-3">
+                    <button @click="closePagoModal" class="px-4 py-2 font-body-sm text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
+                    <button @click="savePago" class="bg-primary text-on-primary font-label-lg px-6 py-2 rounded-full hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(233,193,118,0.3)]">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { referidoService } from '../../services/referidoService';
 import Swal from 'sweetalert2';
 
 const referidos = ref([]);
 const searchQuery = ref('');
 const showModal = ref(false);
+const showPagoModal = ref(false);
 const isEditing = ref(false);
 const selectedReferido = ref(null);
+
+const comisiones = ref([]);
+const pagos = ref([]);
+const resumenPagos = ref({ total_comisiones: 0, total_pagado: 0, saldo_pendiente: 0 });
 
 const filteredReferidos = computed(() => {
     if (!searchQuery.value) return referidos.value;
@@ -352,6 +484,16 @@ const filteredReferidos = computed(() => {
         ref.nombre.toLowerCase().includes(query) || 
         (ref.dpi && ref.dpi.includes(query))
     );
+});
+
+watch(selectedReferido, async (newVal) => {
+    if (newVal) {
+        await loadPagos(newVal.id);
+    } else {
+        comisiones.value = [];
+        pagos.value = [];
+        resumenPagos.value = { total_comisiones: 0, total_pagado: 0, saldo_pendiente: 0 };
+    }
 });
 
 const form = ref({
@@ -559,6 +701,122 @@ const deleteReferido = async () => {
             });
         } catch (e) {
             console.error(e);
+        }
+    }
+};
+
+// Pagos
+const pagoForm = ref({ monto: '', fecha: '', descripcion: '' });
+
+const loadPagos = async (id) => {
+    try {
+        const response = await referidoService.getPagos(id);
+        comisiones.value = response.data.data.comisiones;
+        pagos.value = response.data.data.pagos;
+        resumenPagos.value = response.data.data.resumen;
+    } catch (e) {
+        console.error('Error loading pagos', e);
+    }
+};
+
+const openPagoModal = () => {
+    pagoForm.value = {
+        monto: '',
+        fecha: new Date().toISOString().split('T')[0],
+        descripcion: ''
+    };
+    showPagoModal.value = true;
+};
+
+const closePagoModal = () => {
+    showPagoModal.value = false;
+};
+
+const formatInputCurrencyPago = () => {
+    let val = pagoForm.value.monto?.toString().replace(/[^0-9]/g, '');
+    if (!val) {
+        pagoForm.value.monto = '';
+        return;
+    }
+    let num = parseInt(val, 10) / 100;
+    pagoForm.value.monto = 'Q' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const savePago = async () => {
+    if (!selectedReferido.value) return;
+    try {
+        const payload = {
+            monto: parseFormatted(pagoForm.value.monto),
+            fecha: pagoForm.value.fecha,
+            descripcion: pagoForm.value.descripcion
+        };
+        await referidoService.addPago(selectedReferido.value.id, payload);
+        closePagoModal();
+        await loadPagos(selectedReferido.value.id);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Pago Registrado',
+            text: 'El pago se ha registrado con éxito.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(233,193,118,0.2)]',
+            }
+        });
+    } catch (e) {
+        console.error(e);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo registrar el pago.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176'
+        });
+    }
+};
+
+const deletePago = async (id) => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se eliminará este pago del historial.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
+        cancelButtonColor: '#303030',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        background: '#131313',
+        color: '#ffffff',
+        customClass: {
+            popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(255,0,0,0.2)]',
+        }
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await referidoService.deletePago(id);
+            await loadPagos(selectedReferido.value.id);
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El pago fue eliminado.',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176',
+            });
+        } catch (e) {
+            console.error(e);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo eliminar el pago',
+                icon: 'error',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176'
+            });
         }
     }
 };

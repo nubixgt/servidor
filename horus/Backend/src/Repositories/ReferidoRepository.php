@@ -131,4 +131,37 @@ class ReferidoRepository
             $row['cantidad_clientes'] !== null ? (int)$row['cantidad_clientes'] : null
         );
     }
+
+    public function getComisionesClientes(int $referidoId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT id as cliente_id, cliente as nombre_cliente, capital, porcentaje_referido, (capital * porcentaje_referido / 100) as comision_total FROM clientes WHERE refiere = :id");
+        $stmt->execute(['id' => $referidoId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getPagos(int $referidoId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM referido_pagos WHERE referido_id = :id ORDER BY fecha DESC, created_at DESC");
+        $stmt->execute(['id' => $referidoId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function addPago(int $referidoId, float $monto, string $fecha, ?string $descripcion): int
+    {
+        $sql = "INSERT INTO referido_pagos (referido_id, monto, fecha, descripcion) VALUES (:id, :monto, :fecha, :descripcion)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id' => $referidoId,
+            'monto' => $monto,
+            'fecha' => $fecha,
+            'descripcion' => $descripcion
+        ]);
+        return (int)$this->pdo->lastInsertId();
+    }
+
+    public function deletePago(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM referido_pagos WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

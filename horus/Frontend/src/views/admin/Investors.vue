@@ -106,6 +106,55 @@
                         </div>
                     </div>
 
+                    <!-- Movimientos -->
+                    <div class="bento-card bg-surface-container-high/30 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-[20px]">swap_horiz</span>
+                                Movimientos de Capital
+                            </h3>
+                            <button @click="openMovimientoModal" class="bg-primary/20 text-primary font-label-sm px-4 py-1.5 rounded-full hover:bg-primary/30 transition-colors border border-primary/20 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Registrar
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-on-surface-variant font-label-caps text-[10px] uppercase tracking-widest">
+                                        <th class="py-2 font-medium">Fecha</th>
+                                        <th class="py-2 font-medium">Tipo</th>
+                                        <th class="py-2 font-medium">Descripción</th>
+                                        <th class="py-2 text-right font-medium">Monto</th>
+                                        <th class="py-2 text-center font-medium">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="movimientos.length === 0">
+                                        <td colspan="5" class="py-4 text-center text-on-surface-variant text-sm">No hay movimientos registrados</td>
+                                    </tr>
+                                    <tr v-for="mov in movimientos" :key="mov.id" class="border-b border-white/5 hover:bg-white/5 transition-colors text-sm text-on-surface">
+                                        <td class="py-2">{{ mov.fecha }}</td>
+                                        <td class="py-2">
+                                            <span :class="['px-2 py-0.5 rounded text-xs', mov.tipo === 'INGRESO' ? 'bg-[#4caf50]/20 text-[#4caf50]' : 'bg-[#f44336]/20 text-[#f44336]']">
+                                                {{ mov.tipo === 'INGRESO' ? 'INGRESO' : 'DESCUENTO (PRÉSTAMO)' }}
+                                            </span>
+                                        </td>
+                                        <td class="py-2">{{ mov.descripcion || '-' }}</td>
+                                        <td :class="['py-2 text-right font-semibold', mov.tipo === 'INGRESO' ? 'text-[#4caf50]' : 'text-[#f44336]']">
+                                            {{ mov.tipo === 'INGRESO' ? '+' : '-' }} Q{{ Number(mov.monto).toLocaleString('en-US', {minimumFractionDigits:2}) }}
+                                        </td>
+                                        <td class="py-2 text-center">
+                                            <button @click="deleteMovimiento(mov.id)" class="text-on-surface-variant hover:text-error transition-colors" title="Eliminar movimiento">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- Documents -->
                     <div v-if="selectedInvestor.documentos && selectedInvestor.documentos.length > 0" class="bento-card bg-surface-container-high/30 backdrop-blur-xl rounded-2xl p-6 border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                         <h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2 mb-4">
@@ -216,24 +265,79 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Movimiento -->
+        <div v-if="showMovimientoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeMovimientoModal"></div>
+            
+            <div class="relative w-full max-w-md max-h-[90vh] bg-surface-container border border-white/10 rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-surface-container-high">
+                    <h2 class="font-title-lg text-title-lg text-on-surface">Registrar Movimiento</h2>
+                    <button @click="closeMovimientoModal" class="text-on-surface-variant hover:text-error transition-colors rounded-full p-1 hover:bg-error/10">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                    <form @submit.prevent="saveMovimiento" class="flex flex-col gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Tipo <span class="text-error">*</span></label>
+                            <select v-model="movimientoForm.tipo" required class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors">
+                                <option value="INGRESO">Ingreso a Capital</option>
+                                <option value="DESCUENTO">Descuento (Préstamo otorgado)</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Monto <span class="text-error">*</span></label>
+                            <input v-model="movimientoForm.monto" @input="formatInputCurrencyMovimiento" required type="text" placeholder="Q0.00" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Fecha <span class="text-error">*</span></label>
+                            <input v-model="movimientoForm.fecha" required type="date" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="font-label-caps text-on-surface-variant text-[10px] uppercase tracking-widest">Descripción</label>
+                            <textarea v-model="movimientoForm.descripcion" rows="2" class="bg-surface-container-high/30 backdrop-blur-xl text-on-surface font-body-sm py-2 px-3 rounded-xl border border-white/5 focus:border-primary focus:ring-0 transition-colors"></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="px-6 py-4 border-t border-white/10 bg-surface-container-high flex justify-end gap-3">
+                    <button @click="closeMovimientoModal" class="px-4 py-2 font-body-sm text-on-surface-variant hover:text-on-surface transition-colors">Cancelar</button>
+                    <button @click="saveMovimiento" class="bg-primary text-on-primary font-label-lg px-6 py-2 rounded-full hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(233,193,118,0.3)]">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { investorService } from '../../services/investorService';
 import Swal from 'sweetalert2';
 
 const investors = ref([]);
 const searchQuery = ref('');
 const showModal = ref(false);
+const showMovimientoModal = ref(false);
 const isEditing = ref(false);
 const selectedInvestor = ref(null);
+const movimientos = ref([]);
 
 const filteredInvestors = computed(() => {
     if (!searchQuery.value) return investors.value;
     const query = searchQuery.value.toLowerCase();
     return investors.value.filter(inv => inv.nombre.toLowerCase().includes(query));
+});
+
+watch(selectedInvestor, async (newVal) => {
+    if (newVal) {
+        await loadMovimientos(newVal.id);
+    } else {
+        movimientos.value = [];
+    }
 });
 
 const form = ref({
@@ -465,6 +569,131 @@ const saveInvestor = async () => {
                 popup: 'border border-white/10 rounded-2xl',
             }
         });
+    }
+};
+
+// Movimientos
+const movimientoForm = ref({ tipo: 'INGRESO', monto: '', fecha: '', descripcion: '' });
+
+const loadMovimientos = async (id) => {
+    try {
+        const response = await investorService.getMovimientos(id);
+        movimientos.value = response.data.data;
+    } catch (e) {
+        console.error('Error loading movimientos', e);
+    }
+};
+
+const openMovimientoModal = () => {
+    movimientoForm.value = {
+        tipo: 'INGRESO',
+        monto: '',
+        fecha: new Date().toISOString().split('T')[0],
+        descripcion: ''
+    };
+    showMovimientoModal.value = true;
+};
+
+const closeMovimientoModal = () => {
+    showMovimientoModal.value = false;
+};
+
+const formatInputCurrencyMovimiento = () => {
+    let val = movimientoForm.value.monto?.toString().replace(/[^0-9]/g, '');
+    if (!val) {
+        movimientoForm.value.monto = '';
+        return;
+    }
+    let num = parseInt(val, 10) / 100;
+    movimientoForm.value.monto = 'Q' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+const saveMovimiento = async () => {
+    if (!selectedInvestor.value) return;
+    try {
+        const payload = {
+            tipo: movimientoForm.value.tipo,
+            monto: parseFormatted(movimientoForm.value.monto),
+            fecha: movimientoForm.value.fecha,
+            descripcion: movimientoForm.value.descripcion
+        };
+        await investorService.addMovimiento(selectedInvestor.value.id, payload);
+        closeMovimientoModal();
+        await loadMovimientos(selectedInvestor.value.id);
+        
+        // Recargar el inversionista para actualizar su capital
+        await loadInvestors();
+        selectedInvestor.value = investors.value.find(i => i.id === selectedInvestor.value.id) || null;
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Movimiento Registrado',
+            text: 'El movimiento se ha registrado con éxito.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176',
+            customClass: {
+                popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(233,193,118,0.2)]',
+            }
+        });
+    } catch (e) {
+        console.error(e);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo registrar el movimiento.',
+            background: '#131313',
+            color: '#ffffff',
+            confirmButtonColor: '#e9c176'
+        });
+    }
+};
+
+const deleteMovimiento = async (id) => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se eliminará el movimiento y se revertirá el capital.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d32f2f',
+        cancelButtonColor: '#303030',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        background: '#131313',
+        color: '#ffffff',
+        customClass: {
+            popup: 'border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(255,0,0,0.2)]',
+        }
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await investorService.deleteMovimiento(id);
+            await loadMovimientos(selectedInvestor.value.id);
+            
+            // Recargar el inversionista
+            await loadInvestors();
+            selectedInvestor.value = investors.value.find(i => i.id === selectedInvestor.value.id) || null;
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El movimiento fue eliminado.',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176',
+            });
+        } catch (e) {
+            console.error(e);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo eliminar el movimiento',
+                icon: 'error',
+                background: '#131313',
+                color: '#ffffff',
+                confirmButtonColor: '#e9c176'
+            });
+        }
     }
 };
 </script>

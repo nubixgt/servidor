@@ -140,4 +140,28 @@ class InversionistaService
 
         return null;
     }
+
+    public function getMovimientos(int $inversionistaId)
+    {
+        return $this->repository->getMovimientos($inversionistaId);
+    }
+
+    public function addMovimiento(int $inversionistaId, array $data)
+    {
+        if (empty($data['tipo']) || empty($data['monto']) || empty($data['fecha'])) {
+            throw new \Exception("Tipo, Monto y Fecha son obligatorios");
+        }
+        return $this->repository->addMovimiento(
+            $inversionistaId, 
+            $data['tipo'], 
+            (float)$data['monto'], 
+            $data['fecha'], 
+            $data['descripcion'] ?? null
+        );
+    }
+
+    public function deleteMovimiento(int $id)
+    {
+        return $this->repository->deleteMovimiento($id);
+    }
 }

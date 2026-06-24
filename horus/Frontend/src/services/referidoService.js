@@ -16,5 +16,14 @@ export const referidoService = {
     },
     deleteReferido(id) {
         return api.delete(`/referidos/${id}`);
+    },
+    getPagos(id) {
+        return api.get(`/referidos/${id}/pagos`);
+    },
+    addPago(id, data) {
+        return api.post(`/referidos/${id}/pagos`, data);
+    },
+    deletePago(id) {
+        return api.delete(`/referidos/pagos/${id}`);
     }
 };

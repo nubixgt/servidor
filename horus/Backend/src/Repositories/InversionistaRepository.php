@@ -98,4 +98,56 @@ class InversionistaRepository
             $row['created_at'] ?? null
         );
     }
+
+    public function getMovimientos(int $inversionistaId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM inversionista_movimientos WHERE inversionista_id = :id ORDER BY fecha DESC, created_at DESC");
+        $stmt->execute(['id' => $inversionistaId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function addMovimiento(int $inversionistaId, string $tipo, float $monto, string $fecha, ?string $descripcion): int
+    {
+        $sql = "INSERT INTO inversionista_movimientos (inversionista_id, tipo, monto, fecha, descripcion) VALUES (:id, :tipo, :monto, :fecha, :descripcion)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id' => $inversionistaId,
+            'tipo' => $tipo,
+            'monto' => $monto,
+            'fecha' => $fecha,
+            'descripcion' => $descripcion
+        ]);
+        
+        // Opcionalmente actualizar el capital del inversionista
+        if ($tipo === 'INGRESO') {
+            $this->pdo->prepare("UPDATE inversionistas SET capital = capital + :monto WHERE id = :id")
+                      ->execute(['monto' => $monto, 'id' => $inversionistaId]);
+        } elseif ($tipo === 'DESCUENTO') {
+            $this->pdo->prepare("UPDATE inversionistas SET capital = capital - :monto WHERE id = :id")
+                      ->execute(['monto' => $monto, 'id' => $inversionistaId]);
+        }
+
+        return (int)$this->pdo->lastInsertId();
+    }
+
+    public function deleteMovimiento(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("SELECT inversionista_id, tipo, monto FROM inversionista_movimientos WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $mov = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($mov) {
+            // Revertir el capital
+            if ($mov['tipo'] === 'INGRESO') {
+                $this->pdo->prepare("UPDATE inversionistas SET capital = capital - :monto WHERE id = :id")
+                          ->execute(['monto' => $mov['monto'], 'id' => $mov['inversionista_id']]);
+            } elseif ($mov['tipo'] === 'DESCUENTO') {
+                $this->pdo->prepare("UPDATE inversionistas SET capital = capital + :monto WHERE id = :id")
+                          ->execute(['monto' => $mov['monto'], 'id' => $mov['inversionista_id']]);
+            }
+        }
+        
+        $stmt = $this->pdo->prepare("DELETE FROM inversionista_movimientos WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

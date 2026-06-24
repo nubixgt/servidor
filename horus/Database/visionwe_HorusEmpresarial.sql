@@ -405,6 +405,59 @@ ALTER TABLE `pagos`
 --
 ALTER TABLE `prestamos`
   ADD CONSTRAINT `prestamos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inversionista_movimientos`
+--
+
+CREATE TABLE `inversionista_movimientos` (
+  `id` int(11) NOT NULL,
+  `inversionista_id` int(11) NOT NULL,
+  `tipo` enum('INGRESO','DESCUENTO') NOT NULL,
+  `monto` decimal(12,2) NOT NULL,
+  `fecha` date NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+ALTER TABLE `inversionista_movimientos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_mov_inversionista` (`inversionista_id`);
+
+ALTER TABLE `inversionista_movimientos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `inversionista_movimientos`
+  ADD CONSTRAINT `fk_mov_inversionista_fk` FOREIGN KEY (`inversionista_id`) REFERENCES `inversionistas` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `referido_pagos`
+--
+
+CREATE TABLE `referido_pagos` (
+  `id` int(11) NOT NULL,
+  `referido_id` int(11) NOT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
+  `monto` decimal(12,2) NOT NULL,
+  `fecha` date NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+ALTER TABLE `referido_pagos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_pago_referido_2` (`referido_id`);
+
+ALTER TABLE `referido_pagos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `referido_pagos`
+  ADD CONSTRAINT `fk_pago_referido_fk` FOREIGN KEY (`referido_id`) REFERENCES `referidos` (`id`) ON DELETE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

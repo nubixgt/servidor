@@ -101,4 +101,47 @@ class ReferidoController extends Controller
             ], 400);
         }
     }
+
+    #[Route('/referidos/([0-9]+)/pagos', 'GET')]
+    public function getPagos($id)
+    {
+        $service = new ReferidoService();
+        try {
+            $data = $service->getHistorialPagos($id);
+            $this->json(['status' => 'success', 'data' => $data]);
+        } catch (\Exception $e) {
+            $this->json(['status' => 'error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/referidos/([0-9]+)/pagos', 'POST')]
+    public function addPago($id)
+    {
+        $service = new ReferidoService();
+        try {
+            $isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+            $data = $isJson ? json_decode(file_get_contents('php://input'), true) : $_POST;
+
+            $pagoId = $service->addPago($id, $data);
+            $this->json(['status' => 'success', 'data' => ['id' => $pagoId]], 201);
+        } catch (\Exception $e) {
+            $this->json(['status' => 'error', 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/referidos/pagos/([0-9]+)', 'DELETE')]
+    public function deletePago($id)
+    {
+        $service = new ReferidoService();
+        try {
+            $success = $service->deletePago($id);
+            if ($success) {
+                $this->json(['status' => 'success', 'message' => 'Pago eliminado']);
+            } else {
+                $this->json(['status' => 'error', 'message' => 'No se pudo eliminar'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['status' => 'error', 'error' => $e->getMessage()], 500);
+        }
+    }
 }

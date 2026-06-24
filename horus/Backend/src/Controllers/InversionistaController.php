@@ -98,4 +98,44 @@ class InversionistaController extends Controller
             $this->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
+
+    #[Route('/inversionistas/([0-9]+)/movimientos', 'GET')]
+    public function getMovimientos($id)
+    {
+        try {
+            $movimientos = $this->service->getMovimientos($id);
+            $this->json(['success' => true, 'data' => $movimientos]);
+        } catch (\Exception $e) {
+            $this->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/inversionistas/([0-9]+)/movimientos', 'POST')]
+    public function addMovimiento($id)
+    {
+        try {
+            $isJson = strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
+            $data = $isJson ? json_decode(file_get_contents('php://input'), true) : $_POST;
+
+            $movId = $this->service->addMovimiento($id, $data);
+            $this->json(['success' => true, 'data' => ['id' => $movId]], 201);
+        } catch (\Exception $e) {
+            $this->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    #[Route('/inversionistas/movimientos/([0-9]+)', 'DELETE')]
+    public function deleteMovimiento($id)
+    {
+        try {
+            $success = $this->service->deleteMovimiento($id);
+            if ($success) {
+                $this->json(['success' => true, 'message' => 'Movimiento eliminado']);
+            } else {
+                $this->json(['success' => false, 'error' => 'No se pudo eliminar'], 400);
+            }
+        } catch (\Exception $e) {
+            $this->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
 }
