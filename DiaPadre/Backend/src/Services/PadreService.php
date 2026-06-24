@@ -26,6 +26,61 @@ class PadreService
 
     public function register(PadreDTO $dto): int
     {
+        $this->validate($dto);
+
+        if ($this->repository->findByCorreo($dto->correo) !== null) {
+            throw new \RuntimeException('Ya existe un registro con ese correo electrónico.');
+        }
+
+        $entity = new PadreEntity(
+            null,
+            $dto->nombreCompleto,
+            $dto->telefono,
+            $dto->correo,
+            $dto->direccion,
+            $dto->departamento
+        );
+
+        return $this->repository->create($entity);
+    }
+
+    public function update(int $id, PadreDTO $dto): void
+    {
+        $existing = $this->repository->findById($id);
+        if ($existing === null) {
+            throw new \RuntimeException('Registro no encontrado.');
+        }
+
+        $this->validate($dto);
+
+        $duplicate = $this->repository->findByCorreo($dto->correo);
+        if ($duplicate !== null && $duplicate->id !== $id) {
+            throw new \RuntimeException('Ya existe otro registro con ese correo electrónico.');
+        }
+
+        $entity = new PadreEntity(
+            $id,
+            $dto->nombreCompleto,
+            $dto->telefono,
+            $dto->correo,
+            $dto->direccion,
+            $dto->departamento
+        );
+
+        $this->repository->update($entity);
+    }
+
+    public function delete(int $id): void
+    {
+        if ($this->repository->findById($id) === null) {
+            throw new \RuntimeException('Registro no encontrado.');
+        }
+
+        $this->repository->delete($id);
+    }
+
+    private function validate(PadreDTO $dto): void
+    {
         if (strlen($dto->nombreCompleto) < 4) {
             throw new \InvalidArgumentException('El nombre debe tener al menos 4 caracteres.');
         }
@@ -46,20 +101,5 @@ class PadreService
         if (empty($dto->departamento)) {
             throw new \InvalidArgumentException('El departamento es obligatorio.');
         }
-
-        if ($this->repository->findByCorreo($dto->correo) !== null) {
-            throw new \RuntimeException('Ya existe un registro con ese correo electrónico.');
-        }
-
-        $entity = new PadreEntity(
-            null,
-            $dto->nombreCompleto,
-            $dto->telefono,
-            $dto->correo,
-            $dto->direccion,
-            $dto->departamento
-        );
-
-        return $this->repository->create($entity);
     }
 }

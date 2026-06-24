@@ -50,6 +50,14 @@
 
         <div class="flex flex-wrap items-center gap-2">
           <button
+            @click="loadRegistrations"
+            :disabled="isLoading"
+            class="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-maga-blue font-bold py-2 px-4 rounded-xl text-sm transition-all shadow-sm border border-gray-200 cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isLoading }" />
+            Actualizar
+          </button>
+          <button
             @click="handleExportCSV"
             class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-sm transition-all shadow-md cursor-pointer"
           >
@@ -144,13 +152,37 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-              <template v-if="filteredRegistrations.length > 0">
+
+              <!-- Skeleton loading -->
+              <template v-if="isLoading">
+                <tr v-for="i in PER_PAGE" :key="'sk-' + i" class="border-b border-gray-50">
+                  <td class="py-4 px-5">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gray-100 animate-pulse flex-shrink-0"></div>
+                      <div class="space-y-2">
+                        <div class="w-36 h-3 bg-gray-100 rounded animate-pulse"></div>
+                        <div class="w-24 h-2 bg-gray-100 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-5">
+                    <div class="w-28 h-3 bg-gray-100 rounded animate-pulse mb-2"></div>
+                    <div class="w-36 h-2 bg-gray-100 rounded animate-pulse"></div>
+                  </td>
+                  <td class="py-4 px-5"><div class="w-28 h-6 bg-gray-100 rounded-lg animate-pulse"></div></td>
+                  <td class="py-4 px-5"><div class="w-20 h-3 bg-gray-100 rounded animate-pulse"></div></td>
+                  <td class="py-4 px-5"><div class="w-28 h-3 bg-gray-100 rounded animate-pulse"></div></td>
+                  <td class="py-4 px-5"><div class="w-16 h-8 bg-gray-100 rounded-lg animate-pulse mx-auto"></div></td>
+                </tr>
+              </template>
+
+              <!-- Data rows -->
+              <template v-else-if="paginatedRegistrations.length > 0">
                 <tr
-                  v-for="reg in filteredRegistrations"
+                  v-for="reg in paginatedRegistrations"
                   :key="reg.id"
                   class="hover:bg-blue-50/40 transition-colors group"
                 >
-                  <!-- Name + avatar -->
                   <td class="py-4 px-5">
                     <div class="flex items-center gap-3">
                       <div class="w-9 h-9 rounded-xl bg-maga-blue/10 flex items-center justify-center flex-shrink-0 text-maga-blue font-black text-sm">
@@ -163,7 +195,6 @@
                     </div>
                   </td>
 
-                  <!-- Contact -->
                   <td class="py-4 px-5">
                     <div class="flex items-center gap-1.5 text-gray-700 text-sm font-medium">
                       <Phone class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
@@ -175,14 +206,12 @@
                     </div>
                   </td>
 
-                  <!-- Direction badge -->
                   <td class="py-4 px-5">
                     <span class="inline-flex items-center bg-maga-blue/8 text-maga-blue text-[11px] font-bold px-2.5 py-1 rounded-lg border border-maga-blue/10">
                       {{ reg.direction }}
                     </span>
                   </td>
 
-                  <!-- Department -->
                   <td class="py-4 px-5">
                     <div class="flex items-center gap-1.5 text-gray-600 text-sm">
                       <MapIcon class="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
@@ -190,12 +219,10 @@
                     </div>
                   </td>
 
-                  <!-- Date -->
                   <td class="py-4 px-5 text-xs text-gray-400 font-medium whitespace-nowrap">
                     {{ reg.dateCreated }}
                   </td>
 
-                  <!-- Actions -->
                   <td class="py-4 px-5">
                     <div class="flex items-center justify-center gap-1">
                       <button
@@ -217,6 +244,7 @@
                 </tr>
               </template>
 
+              <!-- Empty state -->
               <template v-else>
                 <tr>
                   <td colspan="6" class="py-16 text-center">
@@ -228,17 +256,57 @@
                   </td>
                 </tr>
               </template>
+
             </tbody>
           </table>
         </div>
 
-        <div class="px-5 py-3 border-t border-gray-50 flex justify-between items-center">
+        <!-- Pagination footer -->
+        <div class="px-5 py-3.5 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
           <span class="text-xs text-gray-400 font-medium">
-            <span class="font-bold text-gray-600">{{ filteredRegistrations.length }}</span> de {{ registrations.length }} registros
+            <template v-if="filteredRegistrations.length > 0">
+              Mostrando
+              <span class="font-bold text-gray-700">{{ (currentPage - 1) * PER_PAGE + 1 }}</span>–<span class="font-bold text-gray-700">{{ Math.min(currentPage * PER_PAGE, filteredRegistrations.length) }}</span>
+              de <span class="font-bold text-gray-700">{{ filteredRegistrations.length }}</span> registros
+            </template>
+            <template v-else>
+              <span class="font-bold text-gray-700">0</span> registros
+            </template>
           </span>
-          <span v-if="adminDirFilter || adminDeptFilter || searchTerm" class="inline-flex items-center gap-1 text-[11px] font-bold text-maga-blue bg-maga-blue/8 px-2.5 py-1 rounded-full">
-            Filtro activo
-          </span>
+
+          <div v-if="totalPages > 1" class="flex items-center gap-1">
+            <button
+              @click="currentPage--"
+              :disabled="currentPage === 1"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-maga-blue transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <ChevronLeft class="w-4 h-4" />
+            </button>
+
+            <template v-for="page in visiblePages" :key="page">
+              <span v-if="page === '...'" class="w-8 h-8 flex items-center justify-center text-gray-400 text-xs">…</span>
+              <button
+                v-else
+                @click="currentPage = page"
+                :class="[
+                  'w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer',
+                  currentPage === page
+                    ? 'bg-maga-blue text-white shadow-sm'
+                    : 'border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-maga-blue'
+                ]"
+              >
+                {{ page }}
+              </button>
+            </template>
+
+            <button
+              @click="currentPage++"
+              :disabled="currentPage === totalPages"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-maga-blue transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <ChevronRight class="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -288,7 +356,9 @@
             </div>
             <div class="flex gap-3 pt-2">
               <button type="button" @click="isEditingModalOpen = false" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold transition-all cursor-pointer">Cancelar</button>
-              <button type="submit" class="flex-1 bg-maga-blue hover:bg-maga-light-blue text-white py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer">Guardar cambios</button>
+              <button type="submit" :disabled="isEditSaving" class="flex-1 bg-maga-blue hover:bg-maga-light-blue disabled:opacity-60 text-white py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer">
+                {{ isEditSaving ? 'Guardando...' : 'Guardar cambios' }}
+              </button>
             </div>
           </form>
         </div>
@@ -342,7 +412,9 @@
             </div>
             <div class="flex gap-3 pt-2">
               <button type="button" @click="isAddModalOpen = false" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-xl font-bold transition-all cursor-pointer">Cancelar</button>
-              <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer">Guardar registro</button>
+              <button type="submit" :disabled="isAddSaving" class="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer">
+                {{ isAddSaving ? 'Guardando...' : 'Guardar registro' }}
+              </button>
             </div>
           </form>
         </div>
@@ -353,50 +425,46 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { 
-  User, 
-  Phone, 
-  Mail, 
+import { ref, computed, onMounted, watch } from 'vue';
+import {
+  User,
+  Phone,
+  Mail,
   Map as MapIcon,
-  Trash2, 
-  Edit, 
-  Search, 
-  FileSpreadsheet, 
-  Plus, 
-  X, 
+  Trash2,
+  Edit,
+  Search,
+  FileSpreadsheet,
+  Plus,
+  X,
   Sparkles,
   Database,
   Grid,
-  AlertCircle
+  AlertCircle,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-vue-next';
+import Swal from 'sweetalert2';
+import { padreService } from '@/services/padreService';
 
-const MOCK_REGISTRATIONS = [
-  { id: 'mock-1', fullName: 'Carlos Enrique Fuentes Rivera', phone: '58412039', email: 'carlos.fuentes@maga.gob.gt', direction: 'SANIDAD ANIMAL', department: 'Guatemala', dateCreated: '24/06/2026 10:15', code: 'MAGA-PADRE-2026-9481' },
-  { id: 'mock-2', fullName: 'José Mario Alvarez Castillo', phone: '41203948', email: 'jose.alvarez@gmail.com', direction: 'VICEDESPACHO', department: 'Sacatepéquez', dateCreated: '24/06/2026 11:30', code: 'MAGA-PADRE-2026-1029' },
-  { id: 'mock-3', fullName: 'Ramiro Antonio Morales Arriola', phone: '30291827', email: 'ramiro_morales@gmail.com', direction: 'SANIDAD VEGETAL', department: 'Chimaltenango', dateCreated: '24/06/2026 12:05', code: 'MAGA-PADRE-2026-4739' },
-  { id: 'mock-4', fullName: 'Luis Francisco Ortiz Estrada', phone: '55443322', email: 'lortiz@maga.gob.gt', direction: 'INOCUIDAD', department: 'Escuintla', dateCreated: '24/06/2026 13:40', code: 'MAGA-PADRE-2026-8821' },
-  { id: 'mock-5', fullName: 'Manuel de Jesús Galdámez', phone: '47881122', email: 'manuel.galdamez@outlook.com', direction: 'RRHH', department: 'Alta Verapaz', dateCreated: '24/06/2026 14:02', code: 'MAGA-PADRE-2026-2938' }
-];
+const PER_PAGE = 10;
 
 const DIRECTIONS = [
-  'SANIDAD ANIMAL',
-  'SANIDAD VEGETAL',
-  'INOCUIDAD',
-  'FITOZOOGENÉTICA',
-  'DIPESCA',
-  'UDAFA',
-  'RRHH',
-  'VICEDESPACHO'
+  'SANIDAD ANIMAL', 'SANIDAD VEGETAL', 'INOCUIDAD', 'FITOZOOGENÉTICA',
+  'DIPESCA', 'UDAFA', 'RRHH', 'VICEDESPACHO',
 ];
 
 const registrations = ref([]);
+const isLoading = ref(false);
 const searchTerm = ref('');
 const adminDirFilter = ref('');
 const adminDeptFilter = ref('');
+const currentPage = ref(1);
 
 const isEditingModalOpen = ref(false);
 const editingReg = ref(null);
+const isEditSaving = ref(false);
 
 const isAddModalOpen = ref(false);
 const newAdminName = ref('');
@@ -405,72 +473,66 @@ const newAdminEmail = ref('');
 const newAdminDir = ref('');
 const newAdminDept = ref('');
 const adminFormErrors = ref({});
+const isAddSaving = ref(false);
 
 const toastMessage = ref(null);
 
-onMounted(() => {
-  const stored = localStorage.getItem('maga_padre_registrations');
-  if (stored) {
-    try { registrations.value = JSON.parse(stored); } catch (e) {}
-  } else {
-    registrations.value = [...MOCK_REGISTRATIONS];
-    localStorage.setItem('maga_padre_registrations', JSON.stringify(registrations.value));
-  }
+watch([searchTerm, adminDirFilter, adminDeptFilter], () => {
+  currentPage.value = 1;
 });
 
-const showToast = (message) => {
-  toastMessage.value = message;
-  setTimeout(() => toastMessage.value = null, 3500);
-};
-
-const updateLocalStorage = (updated) => {
-  registrations.value = updated;
-  localStorage.setItem('maga_padre_registrations', JSON.stringify(updated));
-};
-
-const getFormattedNow = () => {
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const year = now.getFullYear();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const [datePart, timePart] = dateStr.split(' ');
+  if (!datePart || !timePart) return dateStr;
+  const [year, month, day] = datePart.split('-');
+  const [hours, minutes] = timePart.split(':');
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
-const generateUniqueCode = () => {
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `MAGA-PADRE-2026-${rand}`;
+const mapToView = (r) => ({
+  id: r.id,
+  fullName: r.nombre_completo,
+  phone: r.telefono,
+  email: r.correo,
+  direction: r.direccion,
+  department: r.departamento,
+  dateCreated: formatDate(r.fecha_registro),
+  code: `MAGA-PADRE-2026-${String(r.id).padStart(4, '0')}`,
+});
+
+const loadRegistrations = async () => {
+  isLoading.value = true;
+  try {
+    const res = await padreService.obtenerTodos();
+    registrations.value = res.data.data.map(mapToView);
+  } catch {
+    showToast('Error al cargar los registros. Verifica la conexión.');
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-const validateForm = (nameVal, phoneVal, emailVal, dirVal, deptVal) => {
-  const errors = {};
-  if (!nameVal.trim()) errors.fullName = 'El nombre completo es obligatorio';
-  else if (nameVal.trim().length < 4) errors.fullName = 'Mínimo 4 caracteres';
-  const cleanPhone = phoneVal.replace(/\D/g, '');
-  if (!phoneVal.trim()) errors.phone = 'El teléfono es obligatorio';
-  else if (cleanPhone.length < 8) errors.phone = 'Mínimo 8 dígitos';
-  if (!emailVal.trim()) errors.email = 'El correo es obligatorio';
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal.trim())) errors.email = 'Formato inválido';
-  if (!dirVal) errors.direction = 'Seleccione una dirección';
-  if (!deptVal.trim()) errors.department = 'El departamento es obligatorio';
-  return errors;
-};
+onMounted(loadRegistrations);
 
+const showToast = (message) => {
+  toastMessage.value = message;
+  setTimeout(() => { toastMessage.value = null; }, 3500);
+};
 
 const handleExportCSV = () => {
   if (registrations.value.length === 0) {
     showToast('No hay registros para exportar.');
     return;
   }
-  let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-  csvContent += "Codigo,Nombre Completo,Telefono,Correo,Direccion,Departamento,Fecha Registro\n";
+  let csv = "data:text/csv;charset=utf-8,﻿";
+  csv += "Codigo,Nombre Completo,Telefono,Correo,Direccion,Departamento,Fecha Registro\n";
   registrations.value.forEach(r => {
-    csvContent += `"${r.code}","${r.fullName}","${r.phone}","${r.email}","${r.direction}","${r.department}","${r.dateCreated}"\n`;
+    csv += `"${r.code}","${r.fullName}","${r.phone}","${r.email}","${r.direction}","${r.department}","${r.dateCreated}"\n`;
   });
   const link = document.createElement('a');
-  link.href = encodeURI(csvContent);
-  link.download = `Participantes_MAGA_${new Date().toISOString().slice(0,10)}.csv`;
+  link.href = encodeURI(csv);
+  link.download = `Participantes_MAGA_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -483,10 +545,25 @@ const clearFilters = () => {
   adminDeptFilter.value = '';
 };
 
-const handleDeleteRegistration = (id, name) => {
-  if (window.confirm(`¿Está seguro de que desea eliminar a ${name}?`)) {
-    updateLocalStorage(registrations.value.filter(r => r.id !== id));
+const handleDeleteRegistration = async (id, name) => {
+  const result = await Swal.fire({
+    title: '¿Eliminar registro?',
+    text: `Se eliminará a "${name}" del sistema.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e11d48',
+    cancelButtonColor: '#002855',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  });
+  if (!result.isConfirmed) return;
+
+  try {
+    await padreService.eliminar(id);
+    await loadRegistrations();
     showToast('Registro eliminado exitosamente.');
+  } catch {
+    showToast('Error al eliminar el registro.');
   }
 };
 
@@ -495,54 +572,106 @@ const handleOpenEdit = (reg) => {
   isEditingModalOpen.value = true;
 };
 
-const handleSaveEdit = () => {
+const handleSaveEdit = async () => {
   if (!editingReg.value) return;
-  const errors = validateForm(editingReg.value.fullName, editingReg.value.phone, editingReg.value.email, editingReg.value.direction, editingReg.value.department);
-  if (Object.keys(errors).length > 0) {
-    showToast('Complete correctamente todos los campos.');
-    return;
+  isEditSaving.value = true;
+  try {
+    await padreService.actualizar(editingReg.value.id, {
+      nombreCompleto: editingReg.value.fullName,
+      telefono:       editingReg.value.phone,
+      correo:         editingReg.value.email,
+      direccion:      editingReg.value.direction,
+      departamento:   editingReg.value.department,
+    });
+    await loadRegistrations();
+    isEditingModalOpen.value = false;
+    editingReg.value = null;
+    showToast('Registro actualizado correctamente.');
+  } catch (e) {
+    showToast(e.response?.data?.message ?? 'Error al actualizar el registro.');
+  } finally {
+    isEditSaving.value = false;
   }
-  const updated = registrations.value.map(r => r.id === editingReg.value.id ? editingReg.value : r);
-  updateLocalStorage(updated);
-  isEditingModalOpen.value = false;
-  editingReg.value = null;
-  showToast('Registro actualizado correctamente.');
 };
 
-const handleCreateAdminRecord = () => {
-  const errors = validateForm(newAdminName.value, newAdminPhone.value, newAdminEmail.value, newAdminDir.value, newAdminDept.value);
+const handleCreateAdminRecord = async () => {
+  const errors = {};
+  if (!newAdminName.value.trim() || newAdminName.value.trim().length < 4) errors.fullName = 'Mínimo 4 caracteres';
+  if (newAdminPhone.value.replace(/\D/g, '').length < 8) errors.phone = 'Mínimo 8 dígitos';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newAdminEmail.value.trim())) errors.email = 'Formato inválido';
+  if (!newAdminDir.value) errors.direction = 'Seleccione una dirección';
+  if (!newAdminDept.value.trim()) errors.department = 'El departamento es obligatorio';
   adminFormErrors.value = errors;
-  if (Object.keys(errors).length > 0) return showToast('Verifique los campos con errores.');
-  const newReg = {
-    id: 'reg-' + Date.now(),
-    fullName: newAdminName.value.trim(),
-    phone: newAdminPhone.value.trim(),
-    email: newAdminEmail.value.trim().toLowerCase(),
-    direction: newAdminDir.value,
-    department: newAdminDept.value,
-    dateCreated: getFormattedNow(),
-    code: generateUniqueCode()
-  };
-  updateLocalStorage([newReg, ...registrations.value]);
-  isAddModalOpen.value = false;
-  newAdminName.value = ''; newAdminPhone.value = ''; newAdminEmail.value = ''; newAdminDir.value = ''; newAdminDept.value = '';
-  adminFormErrors.value = {};
-  showToast('Padre agregado manualmente de forma exitosa.');
+  if (Object.keys(errors).length > 0) return;
+
+  isAddSaving.value = true;
+  try {
+    await padreService.registrar({
+      nombreCompleto: newAdminName.value.trim(),
+      telefono:       newAdminPhone.value.trim(),
+      correo:         newAdminEmail.value.trim().toLowerCase(),
+      direccion:      newAdminDir.value,
+      departamento:   newAdminDept.value.trim(),
+    });
+    await loadRegistrations();
+    isAddModalOpen.value = false;
+    newAdminName.value = ''; newAdminPhone.value = ''; newAdminEmail.value = '';
+    newAdminDir.value = ''; newAdminDept.value = ''; adminFormErrors.value = {};
+    showToast('Padre agregado manualmente de forma exitosa.');
+  } catch (e) {
+    showToast(e.response?.data?.message ?? 'Error al crear el registro.');
+  } finally {
+    isAddSaving.value = false;
+  }
 };
 
-const uniqueDepartments = computed(() => [...new Set(registrations.value.map(r => r.department).filter(Boolean))].sort());
+const uniqueDepartments = computed(() =>
+  [...new Set(registrations.value.map(r => r.department).filter(Boolean))].sort()
+);
 
 const filteredRegistrations = computed(() => {
+  const s = searchTerm.value.toLowerCase();
   return registrations.value.filter(r => {
-    const s = searchTerm.value.toLowerCase();
-    const matchSearch = r.fullName.toLowerCase().includes(s) || r.email.toLowerCase().includes(s) || r.phone.includes(s) || r.code.toLowerCase().includes(s);
-    const matchDir = adminDirFilter.value ? r.direction === adminDirFilter.value : true;
-    const matchDept = adminDeptFilter.value ? r.department === adminDeptFilter.value : true;
+    const matchSearch = !s
+      || r.fullName.toLowerCase().includes(s)
+      || r.email.toLowerCase().includes(s)
+      || r.phone.includes(s)
+      || r.code.toLowerCase().includes(s);
+    const matchDir  = !adminDirFilter.value  || r.direction  === adminDirFilter.value;
+    const matchDept = !adminDeptFilter.value || r.department === adminDeptFilter.value;
     return matchSearch && matchDir && matchDept;
   });
 });
 
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredRegistrations.value.length / PER_PAGE)));
+
+const paginatedRegistrations = computed(() => {
+  const start = (currentPage.value - 1) * PER_PAGE;
+  return filteredRegistrations.value.slice(start, start + PER_PAGE);
+});
+
+const visiblePages = computed(() => {
+  const total = totalPages.value;
+  const current = currentPage.value;
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = [1];
+  if (current > 3) pages.push('...');
+  for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+    pages.push(i);
+  }
+  if (current < total - 2) pages.push('...');
+  pages.push(total);
+  return pages;
+});
+
 const statsTotal = computed(() => registrations.value.length);
-const directionCounts = computed(() => registrations.value.reduce((acc, curr) => { acc[curr.direction] = (acc[curr.direction] || 0) + 1; return acc; }, {}));
-const topDirection = computed(() => Object.entries(directionCounts.value).sort((a,b) => b[1] - a[1])[0]?.[0] || 'Ninguna');
+const directionCounts = computed(() =>
+  registrations.value.reduce((acc, r) => {
+    acc[r.direction] = (acc[r.direction] || 0) + 1;
+    return acc;
+  }, {})
+);
+const topDirection = computed(() =>
+  Object.entries(directionCounts.value).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Ninguna'
+);
 </script>

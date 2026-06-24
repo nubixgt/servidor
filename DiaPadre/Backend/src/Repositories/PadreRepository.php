@@ -34,6 +34,27 @@ class PadreRepository
         ), $rows);
     }
 
+    public function findById(int $id): ?PadreEntity
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT id, nombre_completo, telefono, correo, direccion, departamento, fecha_registro
+             FROM registros_padres WHERE id = :id LIMIT 1"
+        );
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+
+        return new PadreEntity(
+            (int) $row['id'],
+            $row['nombre_completo'],
+            $row['telefono'],
+            $row['correo'],
+            $row['direccion'],
+            $row['departamento'],
+            $row['fecha_registro']
+        );
+    }
+
     public function findByCorreo(string $correo): ?PadreEntity
     {
         $stmt = $this->pdo->prepare(
@@ -74,5 +95,33 @@ class PadreRepository
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function update(PadreEntity $entity): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE registros_padres
+             SET nombre_completo = :nombre_completo,
+                 telefono        = :telefono,
+                 correo          = :correo,
+                 direccion       = :direccion,
+                 departamento    = :departamento
+             WHERE id = :id"
+        );
+
+        return $stmt->execute([
+            'id'              => $entity->id,
+            'nombre_completo' => $entity->nombreCompleto,
+            'telefono'        => $entity->telefono,
+            'correo'          => $entity->correo,
+            'direccion'       => $entity->direccion,
+            'departamento'    => $entity->departamento,
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM registros_padres WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
     }
 }
