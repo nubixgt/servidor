@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 16-06-2026 a las 13:55:08
+-- Tiempo de generación: 24-06-2026 a las 14:51:57
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.21
 
@@ -39,16 +39,60 @@ CREATE TABLE `clientes` (
   `interes_pagar` decimal(12,2) DEFAULT NULL,
   `observaciones` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `documentacion` text DEFAULT NULL
+  `documentacion` text DEFAULT NULL,
+  `inversionista_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Volcado de datos para la tabla `clientes`
 --
 
-INSERT INTO `clientes` (`id`, `fecha`, `cliente`, `refiere`, `capital`, `plazo`, `porcentaje`, `porcentaje_referido`, `interes_pagar`, `observaciones`, `created_at`, `documentacion`) VALUES
-(1, '2026-06-11', 'Prueba 1', 1, 5000.00, '3', 8.00, 10.00, 1200.00, 'REF. 655146315', '2026-06-10 17:00:59', '[\"uploads\\/Clientes\\/1\\/carro3.jpg\"]'),
-(2, '2026-06-10', 'Prueba 2', 1, 10000.00, '24', 10.00, 0.00, 24000.00, '', '2026-06-10 23:03:54', NULL);
+INSERT INTO `clientes` (`id`, `fecha`, `cliente`, `refiere`, `capital`, `plazo`, `porcentaje`, `porcentaje_referido`, `interes_pagar`, `observaciones`, `created_at`, `documentacion`, `inversionista_id`) VALUES
+(3, '2026-05-10', 'JORGE OLIVA', 2, 50000.00, '24', 5.00, 0.00, 60000.00, '', '2026-06-19 22:51:20', NULL, 2),
+(4, '2026-03-20', 'FEERNANDO MARIN', 3, 4000.00, '3', 8.00, 3.00, 960.00, 'PIDIO AMPLIACION CON FECHA 19 DE JUNIO PARA PAGAR EN SEPTIEMBRE CAPITAL E INTERESES ', '2026-06-19 23:18:32', NULL, 2),
+(13, '2026-06-19', 'THELMA BARCARCEL', 2, 100000.00, '12', 5.00, 0.00, 60000.00, '', '2026-06-19 23:48:06', NULL, 2),
+(14, '2026-06-15', 'ADAN DE LA PEÑA', 2, 30000.00, '1', 3.33, 0.00, 999.00, '', '2026-06-19 23:52:22', NULL, 1),
+(15, '2026-02-06', 'EDGAR CHAMALE ABR', 2, 50000.00, '12', 5.00, 0.00, 30000.00, '', '2026-06-19 23:55:41', NULL, 1),
+(16, '2026-02-06', 'EDGAR CHAMALE HORUS', 2, 5000.00, '12', 5.00, 0.00, 3000.00, '', '2026-06-19 23:57:51', NULL, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `egresos`
+--
+
+CREATE TABLE `egresos` (
+  `id` int(11) NOT NULL,
+  `recurrente_id` int(11) DEFAULT NULL,
+  `tipo_egreso` varchar(255) NOT NULL,
+  `fecha` date NOT NULL,
+  `referencia` varchar(255) DEFAULT NULL,
+  `pagador` varchar(255) DEFAULT NULL,
+  `comprobante` text DEFAULT NULL,
+  `descripcion_concepto` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `egresos`
+--
+
+INSERT INTO `egresos` (`id`, `recurrente_id`, `tipo_egreso`, `fecha`, `referencia`, `pagador`, `comprobante`, `descripcion_concepto`, `created_at`) VALUES
+(1, NULL, 'GASTOS ADMINISTRATIVOS', '2026-06-30', '00000000', 'DIANA RUANO', 'uploads/Egresos/1/6a31bf727e52f_carro1.jpg', 'ESTE PAGO DEBE SALIR DEL 5% DE LAS GANANCIAS ', '2026-06-16 14:40:37');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `egreso_registros`
+--
+
+CREATE TABLE `egreso_registros` (
+  `id` int(11) NOT NULL,
+  `egreso_id` int(11) NOT NULL,
+  `descripcion` text NOT NULL,
+  `monto` decimal(12,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -65,13 +109,6 @@ CREATE TABLE `gastos_recurrentes` (
   `estado` varchar(20) DEFAULT 'ACTIVO',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Volcado de datos para la tabla `gastos_recurrentes`
---
-
-INSERT INTO `gastos_recurrentes` (`id`, `concepto`, `descripcion`, `monto`, `dia_pago`, `estado`, `created_at`) VALUES
-(1, 'Prueba ', 'Prueba 1 para saber si todo funciona correctamente', 300.00, 16, 'ACTIVO', '2026-06-15 19:54:41');
 
 -- --------------------------------------------------------
 
@@ -95,7 +132,10 @@ CREATE TABLE `inversionistas` (
 --
 
 INSERT INTO `inversionistas` (`id`, `nombre`, `capital`, `banco`, `numero_cuenta`, `porcentaje`, `documentos`, `created_at`) VALUES
-(1, 'Prueba 1 Inversionista', 5000.00, 'GYT', '879415', 5.00, '[\"uploads\\/Inversionistas\\/1\\/6a3008bb06547_carro3.jpg\",\"uploads\\/Inversionistas\\/1\\/6a3008bb0666b_Herramientas_para_an__lisis_del_entorno_interno_y_externo.pdf\",\"uploads\\/Inversionistas\\/1\\/6a3008bb067d2_carro2.jpg\"]', '2026-06-15 14:07:56');
+(1, 'ABR', 661697.95, 'BANRURAL', '03913602860308', 2.50, '[\"uploads\\/Inversionistas\\/1\\/6a31bbc57952e_carro4.jpg\"]', '2026-06-15 14:07:56'),
+(2, 'HORUS', 815000.00, 'BANRURAL', '4151162143', 5.00, NULL, '2026-06-17 00:39:29'),
+(3, 'DEL VALLE', 150000.00, '', '', 2.50, NULL, '2026-06-19 23:02:48'),
+(4, 'ORLANDO DONIS', 150000.00, 'BANRURAL', '4151159685', 2.50, NULL, '2026-06-19 23:03:49');
 
 -- --------------------------------------------------------
 
@@ -124,7 +164,9 @@ CREATE TABLE `pagos` (
 --
 
 INSERT INTO `pagos` (`id`, `fecha`, `cliente_id`, `referencia`, `monto_pagado`, `foto`, `interes`, `comprobante_interes`, `fecha_interes`, `capital`, `comprobante_capital`, `fecha_capital`, `created_at`) VALUES
-(1, '2026-06-12', 1, '7984651', 5000.00, 'uploads/pagos/foto/1/6a2add99e09ea_paisaje1.jpg', 500.00, 'uploads/pagos/intereses/1/6a2add99e0b2a_paisaje2.jpg', '2026-06-12', 500.00, 'uploads/pagos/capital/1/6a2add99e0c2c_paisaje2.jpg', '2026-06-12', '2026-06-11 15:53:18');
+(1, '2026-06-12', NULL, '7984651', 5000.00, 'uploads/pagos/foto/1/6a31bee061b5f_carro4.jpg', 500.00, 'uploads/pagos/intereses/1/6a31bed10bbf9_carro3.jpg', '2026-06-12', 500.00, 'uploads/pagos/capital/1/6a31bed10c045_carro2.jpg', '2026-06-12', '2026-06-11 15:53:18'),
+(2, '2026-06-15', 3, '4587555855', 5000.00, NULL, 2500.00, NULL, '2026-06-15', 2500.00, NULL, '2026-06-15', '2026-06-19 23:27:54'),
+(3, '2026-06-17', 3, '25448987', 5000.00, NULL, 2375.00, NULL, '2026-06-19', 2625.00, NULL, '2026-06-19', '2026-06-19 23:36:46');
 
 -- --------------------------------------------------------
 
@@ -140,19 +182,13 @@ CREATE TABLE `prestamos` (
   `tipo_interes` varchar(50) NOT NULL,
   `plazo` int(11) NOT NULL,
   `fecha_desembolso` date NOT NULL,
+  `cuota_seguro` decimal(12,2) NOT NULL DEFAULT 0.00,
   `total_intereses` decimal(12,2) NOT NULL,
   `total_seguro` decimal(12,2) NOT NULL,
   `costo_total` decimal(12,2) NOT NULL,
   `estado` varchar(20) DEFAULT 'ACTIVO',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
---
--- Volcado de datos para la tabla `prestamos`
---
-
-INSERT INTO `prestamos` (`id`, `cliente_id`, `monto_principal`, `tasa`, `tipo_interes`, `plazo`, `fecha_desembolso`, `total_intereses`, `total_seguro`, `costo_total`, `estado`, `created_at`) VALUES
-(1, 1, 5000.00, 8.00, 'Decreciente', 3, '2026-06-15', 66.67, 300.00, 5366.67, 'ACTIVO', '2026-06-15 15:10:12');
 
 -- --------------------------------------------------------
 
@@ -184,7 +220,10 @@ CREATE TABLE `referidos` (
 --
 
 INSERT INTO `referidos` (`id`, `nombre`, `dpi`, `telefono`, `direccion`, `numero_cuenta`, `banco`, `tipo_cuenta`, `foto_perfil`, `dpi_anverso`, `dpi_reverso`, `created_at`, `historial_pagos_mensual`, `historial_pagos_anual`, `tipo_clientes_refiere`, `cantidad_clientes`) VALUES
-(1, 'Zoe Villalobos', '7894 61532 0689', '8794-1532', 'Prueba 1 Referidos', '7984615', 'Banco Industrial', 'monetaria', 'uploads/Referidos/1/foto_perfil/6a29ec24be842_Logo_Horus_Empresarial.jpeg', 'uploads/Referidos/1/dpi/6a29b9838b2b5_paisaje1.jpg', 'uploads/Referidos/1/dpi/6a29b9838b37e_paisaje2.jpg', '2026-06-10 19:13:43', 5000.00, 60000.00, 'Buenos', 15);
+(2, 'OSCAR DONIS', '2272 79328 1602', '5555-3199', 'ALDEA SAN JUAN', '4151125225', 'BANRURAL S A ', 'ahorro', NULL, NULL, NULL, '2026-06-19 22:47:51', 0.00, 0.00, '', 0),
+(3, 'RICARDO  GIRON', '', '5516-3058', 'BARRIO AGUA CALIENTE, SALAMÁ', '4204180258', 'BANRURAL', 'ahorro', NULL, NULL, NULL, '2026-06-19 23:08:26', 0.00, 0.00, '', 0),
+(4, 'ADAN DE LA PEÑA', '', '3361-6177', 'PASEO LAS LOMAS, SALAMÁ', '7173986733', 'INDUSTRIAL', 'monetaria', NULL, NULL, NULL, '2026-06-19 23:09:41', 0.00, 0.00, '', 0),
+(5, 'MARICELA ERICASTILLA', '', '3186-2907', 'BARRIO LAS PIEDRECITAS', '4010114778', 'BANRURAL', 'ahorro', NULL, NULL, NULL, '2026-06-19 23:10:58', 0.00, 0.00, '', 0);
 
 -- --------------------------------------------------------
 
@@ -218,7 +257,22 @@ INSERT INTO `usuarios` (`id`, `username`, `password`, `rol`, `activo`, `created_
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_cliente_referido` (`refiere`);
+  ADD KEY `fk_cliente_referido` (`refiere`),
+  ADD KEY `fk_cliente_inversionista` (`inversionista_id`);
+
+--
+-- Indices de la tabla `egresos`
+--
+ALTER TABLE `egresos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_egreso_recurrente` (`recurrente_id`);
+
+--
+-- Indices de la tabla `egreso_registros`
+--
+ALTER TABLE `egreso_registros`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_registro_egreso` (`egreso_id`);
 
 --
 -- Indices de la tabla `gastos_recurrentes`
@@ -267,37 +321,49 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `egresos`
+--
+ALTER TABLE `egresos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `egreso_registros`
+--
+ALTER TABLE `egreso_registros`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `gastos_recurrentes`
 --
 ALTER TABLE `gastos_recurrentes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `inversionistas`
 --
 ALTER TABLE `inversionistas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `prestamos`
 --
 ALTER TABLE `prestamos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `referidos`
 --
 ALTER TABLE `referidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -313,7 +379,20 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `clientes`
 --
 ALTER TABLE `clientes`
+  ADD CONSTRAINT `fk_cliente_inversionista` FOREIGN KEY (`inversionista_id`) REFERENCES `inversionistas` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_cliente_referido` FOREIGN KEY (`refiere`) REFERENCES `referidos` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `egresos`
+--
+ALTER TABLE `egresos`
+  ADD CONSTRAINT `fk_egreso_recurrente` FOREIGN KEY (`recurrente_id`) REFERENCES `gastos_recurrentes` (`id`) ON DELETE SET NULL;
+
+--
+-- Filtros para la tabla `egreso_registros`
+--
+ALTER TABLE `egreso_registros`
+  ADD CONSTRAINT `fk_registro_egreso` FOREIGN KEY (`egreso_id`) REFERENCES `egresos` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `pagos`
