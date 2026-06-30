@@ -1,10 +1,10 @@
 <template>
-    <div class="min-h-screen font-body flex bg-app-fondo">
+    <div class="h-screen w-full font-body flex bg-app-fondo overflow-hidden">
         <!-- Mobile Sidebar Overlay -->
         <div v-if="isMobileMenuOpen" @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"></div>
         
         <!-- Sidebar -->
-        <aside :class="['w-64 fixed left-0 top-0 h-full bg-gradient-to-b from-[#0a192f] to-[#0d1f3c] flex flex-col px-4 py-5 z-50 transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
+        <aside :class="['w-64 fixed lg:static left-0 top-0 h-full bg-gradient-to-b from-[#0a192f] to-[#0d1f3c] flex flex-col px-4 py-5 z-50 transition-transform duration-300 lg:translate-x-0 flex-shrink-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <!-- Brand Logo Header -->
             <div class="mb-6 px-2 flex items-center gap-3">
                 <div class="w-10 h-10 overflow-hidden rounded-full flex items-center justify-center flex-shrink-0 bg-white/10 backdrop-blur-sm">
@@ -172,9 +172,9 @@
         </aside>
 
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-64 w-full transition-all duration-300">
+        <div class="flex-1 flex flex-col h-screen overflow-y-auto w-full transition-all duration-300">
             <!-- Top Navbar - Navy Solid -->
-            <header class="header-navy sticky top-0 z-30 px-4 lg:px-8 py-3 flex justify-between items-center">
+            <header class="header-navy sticky top-0 z-30 px-4 lg:px-8 py-3 flex justify-between items-center w-full flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <!-- Mobile Menu Button -->
                     <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="w-10 h-10 flex lg:hidden items-center justify-center rounded-xl hover:bg-white/10 transition-colors text-white">
@@ -242,7 +242,7 @@
             </header>
 
             <!-- View Container -->
-            <main class="p-4 lg:p-8 flex-1">
+            <main class="w-full max-w-7xl mx-auto p-4 lg:p-8 flex-1 flex flex-col">
                 <router-view></router-view>
             </main>
         </div>
