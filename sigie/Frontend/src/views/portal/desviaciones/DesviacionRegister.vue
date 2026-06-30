@@ -3,10 +3,10 @@
         <!-- Header -->
         <div class="mb-8 flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">Registrar Desviación de Laboratorio</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Registra los resultados fuera de norma obtenidos en los análisis de laboratorio.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Registrar Desviación de Laboratorio</h1>
+                <p class="text-xs text-white/60 mt-1">Registra los resultados fuera de norma obtenidos en los análisis de laboratorio.</p>
             </div>
-            <router-link to="/desviaciones" class="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-dim transition-colors">
+            <router-link to="/desviaciones" class="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver al Historial
             </router-link>
         </div>
@@ -15,91 +15,91 @@
             <!-- Left Area (Form inputs) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- 1. Datos del Análisis -->
-                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">biotech</span>
+                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-800 text-sm">biotech</span>
                         1. Datos del Análisis
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha del Resultado *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha del Resultado *</label>
                             <input 
                                 v-model="fechaResultado" 
                                 type="date" 
                                 required
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             />
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Código/Número de Muestra *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Código/Número de Muestra *</label>
                             <input 
                                 v-model="codigoMuestra" 
                                 type="text" 
                                 required
                                 placeholder="Ej: MUE-2026-0043"
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             />
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Establecimiento Relacionado *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Establecimiento Relacionado *</label>
                             <input 
                                 v-model="establecimiento" 
                                 type="text" 
                                 required
                                 placeholder="Nombre del establecimiento o rastro..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             />
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Tipo de Análisis *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tipo de Análisis *</label>
                             <input 
                                 v-model="tipoAnalisis" 
                                 type="text" 
                                 required
                                 placeholder="Ej: Microbiológico, Físico-químico..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             />
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Parámetro Fuera de Norma *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Parámetro Fuera de Norma *</label>
                             <input 
                                 v-model="parametroFueraNorma" 
                                 type="text" 
                                 required
                                 placeholder="Ej: E. Coli, Salmonella, Plomo..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. Resultados y Acciones -->
-                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">report_problem</span>
+                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-800 text-sm">report_problem</span>
                         2. Hallazgos y Acciones
                     </h3>
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Resultado Obtenido *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Resultado Obtenido *</label>
                             <textarea 
                                 v-model="resultadoObtenido" 
                                 rows="3"
                                 required
                                 placeholder="Detalla el resultado obtenido en el reporte de laboratorio..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             ></textarea>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Acción Tomada *</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Acción Tomada *</label>
                             <textarea 
                                 v-model="accionTomada" 
                                 rows="3"
                                 required
                                 placeholder="Describe las medidas sanitarias o correctivas inmediatas aplicadas..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                             ></textarea>
                         </div>
                     </div>
@@ -109,17 +109,17 @@
             <!-- Right Area (Files & Status) -->
             <div class="space-y-6">
                 <!-- Estado y Seguimiento -->
-                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">track_changes</span>
+                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-800 text-sm">track_changes</span>
                         3. Seguimiento
                     </h3>
                     <div>
-                        <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado Inicial *</label>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado Inicial *</label>
                         <select 
                             v-model="estadoSeguimiento" 
                             required
-                            class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="Abierto">Abierto</option>
                             <option value="En proceso">En proceso</option>
@@ -129,15 +129,15 @@
                 </div>
 
                 <!-- Adjuntar Documentación Múltiple -->
-                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">upload_file</span>
+                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-800 text-sm">upload_file</span>
                         4. Adjuntos de Soporte
                     </h3>
                     
                     <div class="space-y-4">
                         <!-- Upload Box -->
-                        <div class="w-full h-32 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
+                        <div class="w-full h-32 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 multiple
@@ -145,9 +145,9 @@
                                 @change="onDocumentosSelected" 
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
-                            <span class="material-symbols-outlined text-2xl text-outline-variant">add_to_photos</span>
-                            <span class="text-xs font-bold text-on-surface mt-2 block">Agregar Documentos</span>
-                            <span class="text-[9px] text-on-surface-variant mt-0.5 block">Soporta PDF o Imágenes (Múltiples)</span>
+                            <span class="material-symbols-outlined text-2xl text-slate-400">add_to_photos</span>
+                            <span class="text-xs font-bold text-slate-800 mt-2 block">Agregar Documentos</span>
+                            <span class="text-[9px] text-slate-400 mt-0.5 block">Soporta PDF o Imágenes (Múltiples)</span>
                         </div>
 
                         <!-- Previews List -->
@@ -158,8 +158,8 @@
                                     <img :src="preview.url" class="w-full h-full object-cover" />
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs font-bold text-on-surface truncate pr-6">{{ preview.name }}</p>
-                                    <p class="text-[9px] text-on-surface-variant font-mono">{{ preview.isPdf ? 'Archivo PDF' : 'Imagen' }}</p>
+                                    <p class="text-xs font-bold text-slate-800 truncate pr-6">{{ preview.name }}</p>
+                                    <p class="text-[9px] text-slate-400 font-mono">{{ preview.isPdf ? 'Archivo PDF' : 'Imagen' }}</p>
                                 </div>
                                 <button 
                                     type="button" 
@@ -174,22 +174,22 @@
                 </div>
 
                 <!-- Observaciones y Enviar -->
-                <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                    <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-sm">chat</span>
+                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-800 text-sm">chat</span>
                         Observaciones
                     </h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="3"
                         placeholder="Escribe aquí observaciones adicionales..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface mb-4"
+                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 mb-4"
                     ></textarea>
 
                     <button 
                         type="submit" 
                         :disabled="submitting"
-                        class="w-full py-3.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2 border border-primary-dim disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full py-3.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2 border border-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <span class="material-symbols-outlined text-sm animate-spin" v-if="submitting">sync</span>
                         <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
@@ -270,7 +270,7 @@ const handleSubmit = async () => {
                 icon: 'success',
                 title: 'Registro Exitoso',
                 text: 'La desviación de laboratorio se guardó correctamente.',
-                confirmButtonColor: '#005a9c'
+                confirmButtonColor: '#0a192f'
             }).then(() => {
                 router.push('/desviaciones');
             });
@@ -281,7 +281,7 @@ const handleSubmit = async () => {
             icon: 'error',
             title: 'Error de Envío',
             text: error.response?.data?.error || 'No se pudo conectar con el servidor.',
-            confirmButtonColor: '#005a9c'
+            confirmButtonColor: '#0a192f'
         });
     } finally {
         submitting.value = false;

@@ -3,14 +3,14 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">Gestión de Importaciones</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Catálogo de empresas importadoras registradas e historial de cargamentos ingresados al país.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Gestión de Importaciones</h1>
+                <p class="text-xs text-white/60 mt-1">Catálogo de empresas importadoras registradas e historial de cargamentos ingresados al país.</p>
             </div>
             <div class="flex items-center gap-3">
                 <button 
                     v-if="activeTab === 'importadores' && auth.role === 'administrador'"
                     @click="openImporterModal()"
-                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-primary-dim font-headline"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">add_business</span>
                     Registrar Importador
@@ -18,7 +18,7 @@
                 <button 
                     v-if="activeTab === 'importaciones'"
                     @click="openImportModal"
-                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-primary-dim font-headline"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Registrar Importación
@@ -27,11 +27,11 @@
         </div>
 
         <!-- Tab Controls -->
-        <div class="border-b border-surface-container flex gap-2">
+        <div class="border-b border-slate-200 flex gap-2">
             <button 
                 @click="activeTab = 'importadores'"
                 :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                         activeTab === 'importadores' ? 'border-primary text-primary bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                         activeTab === 'importadores' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
             >
                 <span class="material-symbols-outlined text-sm">business</span>
                 Catálogo de Importadores
@@ -39,7 +39,7 @@
             <button 
                 @click="activeTab = 'importaciones'"
                 :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                         activeTab === 'importaciones' ? 'border-primary text-primary bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                         activeTab === 'importaciones' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
             >
                 <span class="material-symbols-outlined text-sm">inventory</span>
                 Historial de Importaciones
@@ -48,15 +48,15 @@
 
         <!-- TAB 1: CATALOGO DE IMPORTADORES -->
         <div v-if="activeTab === 'importadores'" class="space-y-6">
-            <div v-if="loadingImporters" class="py-16 text-center text-sm text-on-surface-variant bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+            <div v-if="loadingImporters" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Cargando catálogo de importadores...</p>
             </div>
 
-            <div v-else-if="importers.length === 0" class="py-20 text-center bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">business_disabled</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No hay importadores registrados</p>
-                <p class="text-xs text-on-surface-variant mt-1" v-if="auth.role === 'administrador'">Presione el botón superior para dar de alta una nueva empresa.</p>
+            <div v-else-if="importers.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-5xl text-slate-400">business_disabled</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importadores registrados</p>
+                <p class="text-xs text-slate-400 mt-1" v-if="auth.role === 'administrador'">Presione el botón superior para dar de alta una nueva empresa.</p>
             </div>
 
             <!-- Importers Grid (Responsive) -->
@@ -64,7 +64,7 @@
                 <div 
                     v-for="imp in importers" 
                     :key="imp.id" 
-                    class="bg-white p-6 rounded-lg border border-surface-container hover:border-primary/20 hover:shadow-md transition-all flex flex-col justify-between"
+                    class="bg-white p-6 rounded-lg border border-slate-200 hover:border-primary/20 hover:shadow-md transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div class="flex items-start justify-between gap-2">
@@ -99,24 +99,24 @@
         <!-- TAB 2: HISTORIAL DE IMPORTACIONES -->
         <div v-if="activeTab === 'importaciones'" class="space-y-6">
             <!-- Filter Bar -->
-            <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm flex flex-wrap gap-4 items-end">
+            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap gap-4 items-end">
                 <div class="flex-1 min-w-[200px]">
-                    <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Filtrar por Importador</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Filtrar por Importador</label>
                     <select 
                         v-model="filterImporter" 
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                     >
                         <option value="">Todos los importadores</option>
                         <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
                     </select>
                 </div>
                 <div class="w-64 min-w-[150px]">
-                    <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Tipo de Producto</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tipo de Producto</label>
                     <input 
                         v-model="filterProductType" 
                         type="text" 
                         placeholder="Ej. cárnico ave, lácteos"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                     />
                 </div>
                 <button 
@@ -127,24 +127,24 @@
                 </button>
             </div>
 
-            <div v-if="loadingImports" class="py-16 text-center text-sm text-on-surface-variant bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+            <div v-if="loadingImports" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Cargando historial de importaciones...</p>
             </div>
 
-            <div v-else-if="imports.length === 0" class="py-20 text-center bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">inventory_2</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No hay importaciones registradas para el filtro seleccionado</p>
-                <p class="text-xs text-on-surface-variant mt-1">Comience agregando una nueva importación con el botón superior.</p>
+            <div v-else-if="imports.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-5xl text-slate-400">inventory_2</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importaciones registradas para el filtro seleccionado</p>
+                <p class="text-xs text-slate-400 mt-1">Comience agregando una nueva importación con el botón superior.</p>
             </div>
 
             <!-- Imports Table (Desktop) & Cards (Mobile) -->
-            <div v-else class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
+            <div v-else class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
                 <!-- Desktop View -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
+                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 <th class="px-6 py-4">Fecha</th>
                                 <th class="px-6 py-4">Importador</th>
                                 <th class="px-6 py-4">Tipo de Producto</th>
@@ -161,7 +161,7 @@
                                 </td>
                                 <td class="px-6 py-4 font-semibold text-slate-600">{{ item.tipo_producto }}</td>
                                 <td class="px-6 py-4 text-slate-600 font-semibold">{{ item.establecimiento || 'N/A' }}</td>
-                                <td class="px-6 py-4 text-right font-mono font-black text-primary text-sm bg-blue-50/10">
+                                <td class="px-6 py-4 text-right font-mono font-black text-slate-800 text-sm bg-blue-50/10">
                                     {{ formatVolume(item.volumen_kilos) }} kg
                                 </td>
                             </tr>
@@ -174,7 +174,7 @@
                     <div v-for="item in imports" :key="item.id" class="p-4 space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="font-mono text-[10px] font-bold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-600">{{ item.fecha }}</span>
-                            <span class="font-mono font-black text-primary text-xs">{{ formatVolume(item.volumen_kilos) }} kg</span>
+                            <span class="font-mono font-black text-slate-800 text-xs">{{ formatVolume(item.volumen_kilos) }} kg</span>
                         </div>
                         <div>
                             <p class="text-xs font-bold text-slate-800">{{ item.importador_nombre }}</p>
@@ -213,7 +213,7 @@
                             v-model="importerForm.nombre" 
                             type="text" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div class="text-xs">
@@ -223,7 +223,7 @@
                             type="text" 
                             required 
                             placeholder="Ej. 1234567-8"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div class="text-xs">
@@ -233,7 +233,7 @@
                             required 
                             rows="3" 
                             placeholder="Especifique los productos autorizados (ej. Cárnico de ave, Lácteos, Quesos)"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         ></textarea>
                     </div>
 
@@ -248,7 +248,7 @@
                         <button 
                             type="submit" 
                             :disabled="savingImporter"
-                            class="px-5 py-2 bg-primary hover:bg-primary-dim text-on-primary font-bold rounded border border-primary-dim flex items-center gap-1.5"
+                            class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 flex items-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="savingImporter">sync</span>
                             <span>Guardar</span>
@@ -274,7 +274,7 @@
                             v-model="importForm.fecha" 
                             type="date" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div class="text-xs">
@@ -282,7 +282,7 @@
                         <select 
                             v-model="importForm.importador_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="">Seleccione el importador</option>
                             <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
@@ -295,7 +295,7 @@
                             type="text" 
                             required 
                             placeholder="Ej. Cárnico de ave, Lácteos, Quesos"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div class="text-xs">
@@ -306,7 +306,7 @@
                             step="0.01" 
                             required 
                             placeholder="Ej. 12000.50"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface font-mono"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
                         />
                     </div>
                     <div class="text-xs">
@@ -315,7 +315,7 @@
                             v-model="importForm.establecimiento" 
                             type="text" 
                             placeholder="Ej. Aduana Express, Puerto Quetzal"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
 
@@ -330,7 +330,7 @@
                         <button 
                             type="submit" 
                             :disabled="savingImport"
-                            class="px-5 py-2 bg-primary hover:bg-primary-dim text-on-primary font-bold rounded border border-primary-dim flex items-center gap-1.5"
+                            class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 flex items-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="savingImport">sync</span>
                             <span>Guardar</span>

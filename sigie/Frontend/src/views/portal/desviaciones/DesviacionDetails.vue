@@ -1,15 +1,15 @@
 <template>
     <div class="max-w-5xl mx-auto">
         <div v-if="loading" class="py-20 text-center">
-            <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
-            <p class="text-xs font-bold text-on-surface-variant mt-2">Cargando detalles de la desviación...</p>
+            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <p class="text-xs font-bold text-slate-400 mt-2">Cargando detalles de la desviación...</p>
         </div>
 
-        <div v-else-if="!desviacion" class="py-20 text-center bg-white border border-surface-container rounded-md shadow-sm">
+        <div v-else-if="!desviacion" class="py-20 text-center bg-white border border-slate-200 rounded-md shadow-sm">
             <span class="material-symbols-outlined text-5xl text-red-500">warning</span>
-            <p class="text-sm font-semibold text-on-surface mt-4">No se pudo cargar la desviación</p>
-            <p class="text-xs text-on-surface-variant mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
-            <router-link to="/desviaciones" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline">
+            <p class="text-sm font-semibold text-slate-800 mt-4">No se pudo cargar la desviación</p>
+            <p class="text-xs text-slate-400 mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
+            <router-link to="/desviaciones" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:underline">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
             </router-link>
         </div>
@@ -31,10 +31,10 @@
                             {{ desviacion.estado_seguimiento }}
                         </span>
                     </div>
-                    <h1 class="text-3xl font-black tracking-tight text-on-surface mt-2">Muestra {{ desviacion.codigo_muestra }}</h1>
-                    <p class="text-xs text-on-surface-variant mt-1">Registrado el {{ formatDateFull(desviacion.fecha_creacion) }}</p>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline mt-2">Muestra {{ desviacion.codigo_muestra }}</h1>
+                    <p class="text-xs text-slate-400 mt-1">Registrado el {{ formatDateFull(desviacion.fecha_creacion) }}</p>
                 </div>
-                <router-link to="/desviaciones" class="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-dim transition-colors self-start">
+                <router-link to="/desviaciones" class="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors self-start">
                     <span class="material-symbols-outlined text-sm">arrow_back</span> Volver al Historial
                 </router-link>
             </div>
@@ -43,27 +43,27 @@
                 <!-- Left Details (General information) -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- 1. Ficha del Análisis -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">science</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">science</span>
                             Detalles del Análisis y Hallazgos
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Establecimiento</span>
-                                <span class="font-bold text-on-surface text-sm">{{ desviacion.establecimiento }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Establecimiento</span>
+                                <span class="font-bold text-slate-800 text-sm">{{ desviacion.establecimiento }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Fecha de Resultado</span>
-                                <span class="font-mono font-bold text-on-surface text-sm">{{ desviacion.fecha_resultado }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fecha de Resultado</span>
+                                <span class="font-mono font-bold text-slate-800 text-sm">{{ desviacion.fecha_resultado }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Tipo de Análisis</span>
-                                <span class="font-bold text-on-surface text-sm">{{ desviacion.tipo_analisis }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Tipo de Análisis</span>
+                                <span class="font-bold text-slate-800 text-sm">{{ desviacion.tipo_analisis }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Parámetro Fuera de Norma</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Parámetro Fuera de Norma</span>
                                 <span class="font-bold text-red-600 text-sm">{{ desviacion.parametro_fuera_norma }}</span>
                             </div>
                         </div>
@@ -71,20 +71,20 @@
                         <!-- Text areas -->
                         <div class="mt-6 space-y-4 text-xs">
                             <div>
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Resultado Obtenido</span>
-                                <div class="p-4 bg-red-50/30 border border-red-100 rounded font-mono text-on-surface whitespace-pre-line leading-relaxed">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Resultado Obtenido</span>
+                                <div class="p-4 bg-red-50/30 border border-red-100 rounded font-mono text-slate-800 whitespace-pre-line leading-relaxed">
                                     {{ desviacion.resultado_obtenido }}
                                 </div>
                             </div>
                             <div>
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Acción Tomada</span>
-                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-on-surface whitespace-pre-line leading-relaxed">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Acción Tomada</span>
+                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-slate-800 whitespace-pre-line leading-relaxed">
                                     {{ desviacion.accion_tomada }}
                                 </div>
                             </div>
                             <div v-if="desviacion.observaciones">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block mb-1">Observaciones</span>
-                                <div class="p-4 bg-slate-50 border border-slate-200 rounded italic text-on-surface-variant whitespace-pre-line">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Observaciones</span>
+                                <div class="p-4 bg-slate-50 border border-slate-200 rounded italic text-slate-400 whitespace-pre-line">
                                     {{ desviacion.observaciones }}
                                 </div>
                             </div>
@@ -92,18 +92,18 @@
                     </div>
 
                     <!-- 2. Inspector responsable -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">badge</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">badge</span>
                             Inspector Responsable
                         </h3>
                         <div class="flex items-center gap-4 text-xs">
-                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-base uppercase">
+                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-slate-800 flex items-center justify-center font-bold text-base uppercase">
                                 {{ desviacion.inspector_nombre?.substring(0, 2) }}
                             </div>
                             <div>
-                                <p class="font-bold text-on-surface text-sm">{{ desviacion.inspector_nombre }}</p>
-                                <p class="text-[10px] text-on-surface-variant font-mono mt-0.5">Código: {{ desviacion.inspector_codigo }} | Área: {{ desviacion.inspector_area }}</p>
+                                <p class="font-bold text-slate-800 text-sm">{{ desviacion.inspector_nombre }}</p>
+                                <p class="text-[10px] text-slate-400 font-mono mt-0.5">Código: {{ desviacion.inspector_codigo }} | Área: {{ desviacion.inspector_area }}</p>
                             </div>
                         </div>
                     </div>
@@ -112,13 +112,13 @@
                 <!-- Right Details (Attachments & Tracking Action) -->
                 <div class="space-y-6">
                     <!-- Adjuntos Bitácora -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">timeline</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">timeline</span>
                             Bitácora de Documentos ({{ desviacion.documentos?.length || 0 }})
                         </h3>
 
-                        <div v-if="!desviacion.documentos || desviacion.documentos.length === 0" class="py-8 text-center text-xs text-on-surface-variant">
+                        <div v-if="!desviacion.documentos || desviacion.documentos.length === 0" class="py-8 text-center text-xs text-slate-400">
                             <span class="material-symbols-outlined text-3xl text-slate-300">folder_open</span>
                             <p class="mt-2 font-semibold">Sin archivos soporte adjuntos.</p>
                             <p class="text-[9px] text-slate-400 mt-1">Los documentos cargados se mostrarán en orden cronológico.</p>
@@ -142,10 +142,10 @@
                                     <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
                                     
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-bold text-on-surface truncate group-hover:text-primary transition-colors text-left">{{ doc.nombre_archivo }}</p>
-                                        <p class="text-[9px] text-on-surface-variant font-mono mt-0.5 text-left">{{ formatDateMini(doc.fecha_subida) }}</p>
+                                        <p class="text-xs font-bold text-slate-800 truncate group-hover:text-slate-800 transition-colors text-left">{{ doc.nombre_archivo }}</p>
+                                        <p class="text-[9px] text-slate-400 font-mono mt-0.5 text-left">{{ formatDateMini(doc.fecha_subida) }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-sm">open_in_new</span>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-slate-800 transition-colors text-sm">open_in_new</span>
                                 </div>
                             </div>
                         </div>
@@ -154,20 +154,20 @@
                     <!-- Inspector Bitacora Tracking Options (Inspectors only) -->
                     <div 
                         v-if="auth.role === 'inspector'" 
-                        class="bg-white p-6 rounded-md border border-surface-container shadow-sm space-y-4"
+                        class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
                     >
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">edit_note</span>
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">edit_note</span>
                             Bitácora y Seguimiento
                         </h3>
 
                         <!-- Change status -->
                         <div>
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Actualizar Estado</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Actualizar Estado</label>
                             <div class="flex gap-2">
                                 <select 
                                     v-model="trackingEstado" 
-                                    class="flex-1 bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                                    class="flex-1 bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                                 >
                                     <option value="Abierto">Abierto</option>
                                     <option value="En proceso">En proceso</option>
@@ -186,10 +186,10 @@
 
                         <!-- Add files over time -->
                         <div class="pt-4 border-t border-slate-200">
-                            <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Agregar Soporte a la Bitácora</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Agregar Soporte a la Bitácora</label>
                             
                             <!-- File selector -->
-                            <div class="w-full py-6 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                            <div class="w-full py-6 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                                 <input 
                                     type="file" 
                                     multiple
@@ -197,14 +197,14 @@
                                     @change="onTrackingFilesSelected" 
                                     class="absolute inset-0 opacity-0 cursor-pointer"
                                 />
-                                <span class="material-symbols-outlined text-xl text-outline-variant">upload_file</span>
-                                <span class="text-[10px] font-bold text-on-surface mt-1">Seleccionar Archivos</span>
+                                <span class="material-symbols-outlined text-xl text-slate-400">upload_file</span>
+                                <span class="text-[10px] font-bold text-slate-800 mt-1">Seleccionar Archivos</span>
                             </div>
 
                             <!-- Previews list -->
                             <div v-if="trackingFilesPreviews.length > 0" class="space-y-2 mb-4 max-h-40 overflow-y-auto pr-1">
                                 <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-slate-50 border border-slate-200 rounded flex items-center justify-between gap-2">
-                                    <p class="text-[10px] font-bold text-on-surface truncate flex-1">{{ preview.name }}</p>
+                                    <p class="text-[10px] font-bold text-slate-800 truncate flex-1">{{ preview.name }}</p>
                                     <button 
                                         type="button" 
                                         @click="removerTrackingFile(index)"
@@ -219,7 +219,7 @@
                                 v-if="trackingFiles.length > 0"
                                 @click="uploadAdditionalFiles" 
                                 :disabled="uploadingFiles"
-                                class="w-full py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded border border-primary-dim shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                                class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                             >
                                 <span class="material-symbols-outlined text-sm animate-spin" v-if="uploadingFiles">sync</span>
                                 <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
@@ -305,7 +305,7 @@ const updateEstado = async () => {
                 icon: 'success',
                 title: 'Estado Actualizado',
                 text: 'El estado de seguimiento se actualizó con éxito.',
-                confirmButtonColor: '#005a9c'
+                confirmButtonColor: '#0a192f'
             });
         }
     } catch (error) {
@@ -314,7 +314,7 @@ const updateEstado = async () => {
             icon: 'error',
             title: 'Error',
             text: 'No se pudo actualizar el estado de seguimiento.',
-            confirmButtonColor: '#005a9c'
+            confirmButtonColor: '#0a192f'
         });
     } finally {
         updatingEstado.value = false;
@@ -340,7 +340,7 @@ const uploadAdditionalFiles = async () => {
                 icon: 'success',
                 title: 'Bitácora Actualizada',
                 text: 'Los nuevos documentos de soporte se subieron con éxito.',
-                confirmButtonColor: '#005a9c'
+                confirmButtonColor: '#0a192f'
             });
         }
     } catch (error) {
@@ -349,7 +349,7 @@ const uploadAdditionalFiles = async () => {
             icon: 'error',
             title: 'Error',
             text: 'No se pudieron adjuntar los archivos a la bitácora.',
-            confirmButtonColor: '#005a9c'
+            confirmButtonColor: '#0a192f'
         });
     } finally {
         uploadingFiles.value = false;

@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 font-headline">Historial de Check-ins</h1>
-                <p class="text-xs text-slate-500 mt-1">Consulta y descarga los registros de geolocalización de inspectores en campo.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Historial de Check-ins</h1>
+                <p class="text-xs text-white/60 mt-1">Consulta y descarga los registros de geolocalización de inspectores en campo.</p>
             </div>
             
             <div class="flex items-center gap-3">
@@ -22,7 +22,7 @@
         <!-- KPI Cards Grid with line charts -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Card 1: Check-ins Hoy -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Check-ins Hoy</span>
@@ -47,7 +47,7 @@
             </div>
 
             <!-- Card 2: Sin Novedades -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Sin Novedades</span>
@@ -72,7 +72,7 @@
             </div>
 
             <!-- Card 3: Alertas Críticas -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Alertas Críticas</span>
@@ -97,7 +97,7 @@
             </div>
 
             <!-- Card 4: Tiempo Promedio -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Tiempo Promedio</span>
@@ -122,7 +122,7 @@
         </div>
 
         <!-- Filters and Actions Container -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-premium mb-8">
+        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
                 <!-- Search inputs aligned in references -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
