@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
 @tailwind base;
@@ -6,61 +6,186 @@
 @tailwind utilities;
 
 :root {
-  --color-surface: #f3f4f6;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f9fafb;
-  --color-surface-container: #e5e7eb;
-  --color-surface-container-high: #d1d5db;
-  --color-surface-container-highest: #9ca3af;
+  /* Fondo y Superficies Sutiles */
+  --color-surface: #f8fafc; /* slate-50 */
+  --color-surface-container-lowest: #ffffff; /* Blanco Puro para Tarjetas */
+  --color-surface-container-low: #f1f5f9; /* slate-100 */
+  --color-surface-container: #e2e8f0; /* slate-200 */
+  --color-surface-container-high: #cbd5e1; /* slate-300 */
+  --color-surface-container-highest: #94a3b8; /* slate-400 */
 
-  --color-on-surface: #111827;
-  --color-on-surface-variant: #374151;
+  /* Textos */
+  --color-on-surface: #0f172a; /* slate-900 */
+  --color-on-surface-variant: #475569; /* slate-600 */
 
-  --color-primary: #005a9c;
-  --color-primary-dim: #004b87;
+  /* Paleta Primaria - Azul Marino Premium Bancario */
+  --color-primary: #0a192f; /* Midnight Navy */
+  --color-primary-dim: #0f224b;
   --color-on-primary: #ffffff;
 
-  --color-primary-container: #eff6ff;
-  --color-on-primary-container: #1e40af;
+  /* Contenedores de Acento Sky/Blue */
+  --color-primary-container: #e0f2fe; /* sky-100 */
+  --color-on-primary-container: #0369a1; /* sky-700 */
 
-  --color-secondary: #1f2937;
-  --color-secondary-container: #f3f4f6;
-  --color-on-secondary-container: #374151;
+  /* Paleta Secundaria */
+  --color-secondary: #1e293b;
+  --color-secondary-container: #f8fafc;
+  --color-on-secondary-container: #334155;
 
-  --color-tertiary: #2563eb;
-  --color-tertiary-container: #dbeafe;
-  --color-on-tertiary-container: #1e40af;
+  /* Acentos y Botones Principales - Azul Royal Moderno */
+  --color-tertiary: #2563eb; /* blue-600 */
+  --color-tertiary-container: #eff6ff; /* blue-50 */
+  --color-on-tertiary-container: #1d4ed8; /* blue-700 */
 
-  --color-error: #b91c1c;
-  --color-error-container: #fee2e2;
-  --color-on-error-container: #7f1d1d;
+  /* Estados de Error y Alertas */
+  --color-error: #ef4444; /* red-500 */
+  --color-error-container: #fee2e2; /* red-50 */
+  --color-on-error-container: #991b1b; /* red-800 */
 
-  --color-outline: #9ca3af;
-  --color-outline-variant: #cbd5e1;
+  /* Líneas de Contorno */
+  --color-outline: #e2e8f0; /* slate-200 */
+  --color-outline-variant: #cbd5e1; /* slate-300 */
 }
 
+/* ═══ ESTILOS BASE ═══ */
 body {
-  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--color-surface);
   color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Iconos de Google Material Symbols */
 .material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;
 }
 
-.shadow-ambient {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+/* ═══ SOMBRAS PREMIUM Y EFECTOS BANCARIOS ═══ */
+.shadow-premium {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.02);
 }
 
+.shadow-premium-lg {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.03);
+}
+
+.shadow-glow-blue {
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+}
+
+/* Efecto Glassmorphism */
 .glass-header {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid var(--color-surface-container);
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
+/* Patrón de Fondo de Puntos (Login) */
+.bg-grid-dots {
+  background-color: #f8fafc;
+  background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
+
+/* ═══ TRANSICIONES Y MICRO-ANIMACIONES ═══ */
+.transition-premium {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scrollbar Personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ═══ AUTOMÁTICOS DE UPGRADE PREMIUM EN ELEMENTOS ═══ */
+
+/* Tarjetas y Contenedores */
+.bg-white.shadow-sm, .bg-white.border.shadow-sm {
+  border-radius: 1.25rem !important; /* Esquinas de 20px redondeadas */
+  border-color: rgba(226, 232, 240, 0.6) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Campos de Formulario */
+input[type="text"], 
+input[type="date"], 
+input[type="number"], 
+input[type="password"], 
+select, 
+textarea {
+  border-radius: 0.75rem !important; /* Esquinas de 12px rounded-xl */
+  border-color: #e2e8f0 !important;
+  font-weight: 500 !important;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  transition: all 0.2s ease !important;
+}
+
+input[type="text"]:focus, 
+input[type="date"]:focus, 
+input[type="number"]:focus, 
+input[type="password"]:focus, 
+select:focus, 
+textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  background-color: #ffffff !important;
+  outline: none !important;
+}
+
+/* Botones Rectangulares estándar (Excluye redondos y paginadores) */
+button:not(.rounded-full):not(.w-8):not(.w-10), 
+input[type="submit"]:not(.rounded-full), 
+a.px-4.py-2.bg-primary, 
+a.px-5.py-2\.5.bg-primary {
+  border-radius: 0.75rem !important; /* rounded-xl */
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Estilos de Tabla Globales Modernos */
+table thead tr {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+table tbody tr {
+  transition: background-color 0.2s ease !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+table tbody tr:hover {
+  background-color: rgba(241, 245, 249, 0.4) !important;
+}
+table th, table td {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+/* Estilo para impresión */
 @media print {
-  aside, header, button, a.router-link-active, .no-print {
+  aside, header, button, a.router-link-active, .no-print, .actions-column, th:last-child, td:last-child {
     display: none !important;
   }
   main {
@@ -72,6 +197,22 @@ body {
   }
   body, .bg-surface {
     background-color: white !important;
+    color: black !important;
+  }
+  /* Estilo sobrio y limpio para PDFs */
+  .bg-white, .p-6, .rounded-md, .border {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  th, td {
+    border-bottom: 1px solid #ddd !important;
+    padding: 8px !important;
     color: black !important;
   }
 }

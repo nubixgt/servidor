@@ -1,99 +1,122 @@
 <template>
-    <div class="login-root">
-        <!-- Centered Login Card -->
-        <div class="lr-card">
-            <!-- Brand Logo Header -->
-            <div class="lr-brand">
-                <div class="w-24 h-24 flex items-center justify-center bg-white rounded border border-slate-200 p-2 shadow-sm">
-                    <img :src="logoUrl" alt="SIGIE Logo" class="max-w-full max-h-full object-contain" />
-                </div>
-            </div>
-
-            <!-- Header -->
-            <div class="lr-header">
-                <h2 class="lr-title">Ingresar al Sistema</h2>
-                <p class="lr-sub">Introduce tus credenciales para acceder</p>
-            </div>
-
-            <!-- Form -->
-            <form class="lr-form" @submit.prevent="handleLogin">
-                <div class="lr-field">
-                    <label class="lr-label" for="username">Usuario</label>
-                    <div class="lr-input-wrap">
-                        <span class="material-symbols-outlined lr-input-icon">person</span>
-                        <input
-                            id="username"
-                            v-model="username"
-                            type="text"
-                            required
-                            placeholder="nombre.usuario"
-                            class="lr-input"
-                        />
-                    </div>
+    <div class="login-root bg-grid-dots flex items-center justify-center min-h-screen px-4 py-8 select-none">
+        <div class="w-full max-w-[440px] flex flex-col items-center">
+            <!-- Centered Login Card -->
+            <div class="bg-white rounded-[28px] border border-slate-100 p-8 md:p-10 w-full shadow-premium-lg animate-fade-in flex flex-col items-center">
+                <!-- Animated Lottie Logo -->
+                <div class="w-24 h-24 flex items-center justify-center mb-4">
+                    <lottie-player
+                        ref="lottiePlayer"
+                        background="transparent"
+                        speed="1"
+                        style="width: 96px; height: 96px;"
+                        loop
+                        autoplay
+                    ></lottie-player>
                 </div>
 
-                <div class="lr-field">
-                    <div class="lr-label-row">
-                        <label class="lr-label" for="password">Contraseña</label>
-                        <a href="#" class="lr-forgot">¿Olvidó su clave?</a>
-                    </div>
-                    <div class="lr-input-wrap">
-                        <span class="material-symbols-outlined lr-input-icon">lock</span>
-                        <input
-                            id="password"
-                            v-model="password"
-                            :type="showPwd ? 'text' : 'password'"
-                            required
-                            placeholder="••••••••••••"
-                            class="lr-input"
-                        />
-                        <button type="button" @click="showPwd = !showPwd" class="lr-eye-btn">
-                            <span class="material-symbols-outlined">{{ showPwd ? 'visibility_off' : 'visibility' }}</span>
-                        </button>
-                    </div>
+                <!-- Brand Header -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-extrabold tracking-wider text-slate-800 font-headline">SIGIE</h1>
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-1">Sistema de Gestión de Inspecciones</p>
                 </div>
 
-                <button type="submit" :disabled="loading" class="lr-submit">
-                    <span v-if="!loading">Ingresar al Sistema</span>
-                    <span v-else>Autenticando...</span>
-                </button>
-            </form>
+                <!-- Welcome Text -->
+                <div class="mb-6 text-center w-full">
+                    <h2 class="text-lg font-extrabold text-slate-900 tracking-tight leading-tight">Bienvenido a SIGIE</h2>
+                    <p class="text-[11px] text-slate-500 mt-1.5 leading-relaxed">Ingresa tus credenciales para acceder al sistema institucional.</p>
+                </div>
 
-            <!-- Footer -->
-            <div class="lr-footer">
-                <a href="#">Soporte Técnico</a>
-                <span class="lr-dot"></span>
-                <a href="#">Seguridad</a>
-                <span class="lr-dot"></span>
-                <a href="#">Privacidad</a>
+                <!-- Form -->
+                <form class="flex flex-col gap-4 w-full mb-6" @submit.prevent="handleLogin">
+                    <!-- Username Field -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider text-left" for="username">Usuario</label>
+                        <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100 transition-all duration-200">
+                            <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg">person</span>
+                            <input
+                                id="username"
+                                v-model="username"
+                                type="text"
+                                required
+                                placeholder="nombre.usuario"
+                                class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-4 text-xs font-semibold text-slate-800 placeholder-slate-400"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-wider text-left" for="password">Contraseña</label>
+                            <a href="#" class="text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors">¿Olvidó su clave?</a>
+                        </div>
+                        <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100 transition-all duration-200">
+                            <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg">lock</span>
+                            <input
+                                id="password"
+                                v-model="password"
+                                :type="showPwd ? 'text' : 'password'"
+                                required
+                                placeholder="••••••••••••"
+                                class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-12 text-xs font-semibold text-slate-800 placeholder-slate-400"
+                            />
+                            <button type="button" @click="showPwd = !showPwd" class="absolute right-3.5 text-slate-400 hover:text-slate-600 transition-colors flex">
+                                <span class="material-symbols-outlined text-lg">{{ showPwd ? 'visibility_off' : 'visibility' }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" :disabled="loading" class="flex items-center justify-center gap-2 w-full py-3.5 bg-[#0a192f] hover:bg-[#0f224b] text-white rounded-xl text-xs font-extrabold tracking-wide transition-all duration-250 shadow-md shadow-slate-900/10 hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed mt-4">
+                        <span v-if="!loading" class="flex items-center justify-center gap-1.5">
+                            Ingresar al Sistema
+                            <span class="material-symbols-outlined text-base">arrow_right_alt</span>
+                        </span>
+                        <span v-else class="flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined animate-spin text-base">sync</span>
+                            Autenticando...
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Footer Quick Links -->
+                <div class="flex items-center justify-center gap-3 pt-5 border-t border-slate-100 text-[10px] font-bold text-slate-500 w-full">
+                    <a href="#" class="hover:text-blue-600 transition-colors">Soporte Técnico</a>
+                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                    <a href="#" class="hover:text-blue-600 transition-colors">Seguridad</a>
+                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                    <a href="#" class="hover:text-blue-600 transition-colors">Privacidad</a>
+                </div>
             </div>
+            
+            <!-- External Copyright -->
+            <p class="text-[9px] font-bold text-slate-400 tracking-wider text-center mt-6 uppercase leading-relaxed max-w-[320px]">
+                © 2026 Ministerio de Agricultura, Ganadería y Alimentación (MAGA).<br />Todos los derechos reservados.
+            </p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
+import '@lottiefiles/lottie-player';
+import loginAnimation from '../../assets/login-animation.json';
 
-const getLogoUrl = () => {
-    const path = window.location.pathname.toLowerCase();
-    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
-    if (isViteDev) {
-        return '/sigie/logo.png';
+const lottiePlayer = ref(null);
+
+onMounted(() => {
+    if (lottiePlayer.value) {
+        try {
+            lottiePlayer.value.load(loginAnimation);
+        } catch (e) {
+            console.error('Error loading Lottie animation:', e);
+        }
     }
-    const distIndex = path.indexOf('/frontend/dist');
-    if (distIndex !== -1) {
-        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/logo.png';
-    }
-    const sigieIndex = path.indexOf('/sigie');
-    if (sigieIndex !== -1) {
-        return window.location.pathname.substring(0, sigieIndex) + '/sigie/logo.png';
-    }
-    return '/logo.png';
-};
-const logoUrl = getLogoUrl();
+});
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -113,7 +136,7 @@ const handleLogin = async () => {
             icon: 'error',
             title: 'Acceso Denegado',
             text: err.message || 'Error de conexión con el servidor.',
-            confirmButtonColor: '#005a9c',
+            confirmButtonColor: '#0a192f',
         });
     } finally {
         loading.value = false;
@@ -122,113 +145,5 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* ═══ ROOT ═══ */
-.login-root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #0b192c; /* Azul marino institucional oscuro */
-    padding: 24px;
-}
-
-/* Login Card Container */
-.lr-card {
-    width: 100%;
-    max-width: 420px;
-    background: white;
-    border-radius: 4px; /* Esquinas cuadradas SAP/Microsoft */
-    border: 1px solid #d1d5db;
-    padding: 40px 36px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Logo Brand Header */
-.lr-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #e5e7eb;
-}
-.lr-mobile-sub { 
-    font-size: 10px; 
-    color: #4b5563; 
-    font-weight: 700; 
-    letter-spacing: 0.1em; 
-    text-transform: uppercase; 
-    margin-top: 4px;
-}
-
-/* Header text */
-.lr-header { margin-bottom: 24px; text-align: center; }
-.lr-title { font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 6px; }
-.lr-sub   { font-size: 12px; color: #4b5563; margin: 0; }
-
-/* Form inputs */
-.lr-form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-
-.lr-field { display: flex; flex-direction: column; gap: 6px; }
-.lr-label { font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; }
-.lr-label-row { display: flex; justify-content: space-between; align-items: center; }
-.lr-forgot { font-size: 11px; font-weight: 600; color: #005a9c; text-decoration: none; }
-.lr-forgot:hover { text-decoration: underline; }
-
-.lr-input-wrap {
-    position: relative; display: flex; align-items: center;
-    background: #ffffff; border: 1px solid #9ca3af;
-    border-radius: 4px; /* Esquinas cuadradas Fluent/Microsoft */
-}
-.lr-input-wrap:focus-within {
-    border-color: #005a9c;
-    box-shadow: 0 0 0 2px rgba(0, 90, 156, 0.2);
-}
-.lr-input-icon {
-    position: absolute; left: 12px;
-    font-size: 18px !important; color: #4b5563; pointer-events: none;
-}
-.lr-input {
-    width: 100%; padding: 10px 12px 10px 38px;
-    border: none; background: none; outline: none;
-    font-size: 13px; color: #111827;
-}
-.lr-input::placeholder { color: #9ca3af; }
-.lr-eye-btn {
-    position: absolute; right: 12px;
-    border: none; background: none; cursor: pointer;
-    color: #4b5563; display: flex;
-}
-.lr-eye-btn:hover { color: #005a9c; }
-.lr-eye-btn .material-symbols-outlined { font-size: 18px; }
-
-/* Submit button */
-.lr-submit {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; padding: 12px;
-    background-color: #005a9c; /* Azul primario sólido corporativo */
-    color: white; border: 1px solid #004b87;
-    border-radius: 4px;
-    font-size: 13px; font-weight: 700; cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 8px;
-}
-.lr-submit:hover:not(:disabled) { background-color: #004b87; }
-.lr-submit:active { background-color: #003a6c; }
-.lr-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* Footer links */
-.lr-footer {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    flex-wrap: wrap; border-top: 1px solid #e5e7eb; padding-top: 16px;
-}
-.lr-footer a { font-size: 11px; color: #4b5563; text-decoration: none; }
-.lr-footer a:hover { text-decoration: underline; color: #005a9c; }
-.lr-dot { width: 3px; height: 3px; border-radius: 50%; background: #9ca3af; }
-
-/* Responsive tweaks */
-@media (max-width: 480px) {
-    .lr-card { padding: 24px 20px; border-radius: 4px; }
-}
+/* Las clases de tailwind se complementan con los estilos base globales */
 </style>
