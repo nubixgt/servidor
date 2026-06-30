@@ -13,29 +13,29 @@
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
             <!-- Main Stacked Form Card -->
-            <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 p-6 md:p-8 shadow-premium space-y-8">
+            <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 p-6 md:p-8 shadow-premium space-y-8">
                 <!-- Title inside Card -->
-                <div class="border-b border-slate-100 pb-6">
-                    <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Nuevo Registro de Entrada</h2>
+                <div class="border-b border-white/10 pb-6">
+                    <h2 class="text-xl font-extrabold text-white tracking-tight">Nuevo Registro de Entrada</h2>
                     <p class="text-xs text-slate-400 mt-1">Complete los datos de inspección para iniciar el turno en el establecimiento.</p>
                 </div>
 
                 <!-- Sección 1: Datos Generales -->
                 <div class="space-y-4">
-                    <h3 class="section-header-navy">
+                    <h3 class="section-bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 shadow-lg">
                         Sección 1: Datos Generales
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Establecimiento -->
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">Nombre del Establecimiento</label>
+                            <label class="block text-[10px] font-black text-gray-300 uppercase tracking-wider mb-2">Nombre del Establecimiento</label>
                             
                             <div v-if="visitaIdFromQuery" class="relative">
-                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between">
+                                <div class="p-3.5 rounded-xl bg-black/20 border border-white/10 flex items-start justify-between">
                                     <div>
-                                        <h4 class="font-bold text-slate-800 text-xs">{{ selectedVisitaDetails?.establecimiento }}</h4>
-                                        <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                                        <h4 class="font-bold text-white text-xs">{{ selectedVisitaDetails?.establecimiento }}</h4>
+                                        <p class="text-[10px] text-gray-300 mt-1 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-xs text-blue-600">place</span>
                                             {{ selectedVisitaDetails?.direccion }}
                                         </p>
@@ -49,29 +49,29 @@
                                 </div>
                             </div>
 
-                            <div v-else class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-600 focus-within:bg-white transition-all">
+                            <div v-else class="relative flex items-center bg-black/20 border border-white/10 rounded-xl focus-within:border-blue-600 focus-within:glass-card transition-all">
                                 <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg">store</span>
                                 <input 
                                     type="text" 
                                     v-model="visitaId" 
                                     required
                                     placeholder="Escribe el nombre del establecimiento..."
-                                    class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-4 text-xs font-semibold text-slate-800 placeholder-slate-400"
+                                    class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-4 text-xs font-semibold text-white placeholder-slate-400"
                                 />
                             </div>
                         </div>
 
                         <!-- Estado de Operación (Check-in state) -->
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">Estado de Operación</label>
+                            <label class="block text-[10px] font-black text-gray-300 uppercase tracking-wider mb-2">Estado de Operación</label>
                             <div class="grid grid-cols-2 gap-4">
                                 <button 
                                     type="button" 
                                     @click="estadoCheckin = 'exitoso'"
                                     :class="['p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all duration-200', 
                                              estadoCheckin === 'exitoso' 
-                                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm' 
-                                                : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/70']"
+                                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-lg' 
+                                                : 'bg-black/20 border-white/10 text-gray-300 hover:bg-slate-100/70']"
                                 >
                                     <span class="material-symbols-outlined text-base">check_circle</span>
                                     Sin Novedades
@@ -81,8 +81,8 @@
                                     @click="estadoCheckin = 'con_novedades'"
                                     :class="['p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all duration-200', 
                                              estadoCheckin === 'con_novedades' 
-                                                ? 'bg-red-50 border-red-300 text-red-700 shadow-sm' 
-                                                : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/70']"
+                                                ? 'bg-red-50 border-red-300 text-red-700 shadow-lg' 
+                                                : 'bg-black/20 border-white/10 text-gray-300 hover:bg-slate-100/70']"
                                 >
                                     <span class="material-symbols-outlined text-base">warning</span>
                                     Alertas
@@ -95,7 +95,7 @@
                 <!-- Sección 2: Geoposicionamiento (GPS) -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="section-header-navy">
+                        <h3 class="section-bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 shadow-lg">
                             Sección 2: Geoposicionamiento (GPS)
                         </h3>
                         <button 
@@ -111,11 +111,11 @@
                     </div>
 
                     <!-- Map Body -->
-                    <div class="relative w-full aspect-[21/9] bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-inner">
+                    <div class="relative w-full aspect-[21/9] bg-black/20 border border-white/10 rounded-2xl overflow-hidden shadow-inner">
                         <!-- Loading Overlay -->
-                        <div v-if="gpsLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 z-10">
+                        <div v-if="gpsLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-black/20/90 z-10">
                             <span class="material-symbols-outlined text-3xl animate-spin text-blue-600">sync</span>
-                            <span class="text-xs font-bold text-slate-500 mt-2">Obteniendo coordenadas GPS...</span>
+                            <span class="text-xs font-bold text-gray-300 mt-2">Obteniendo coordenadas GPS...</span>
                         </div>
                         <!-- Leaflet Map Container -->
                         <div id="map-container" class="w-full h-full z-0"></div>
@@ -123,43 +123,43 @@
 
                     <!-- Coordinates twin panels -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                        <div class="p-3 bg-black/20 border border-white/10 rounded-xl flex items-center justify-between">
                             <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Latitud</span>
-                            <span class="font-mono text-xs font-extrabold text-slate-800">{{ latitud ? latitud.toFixed(6) + '° N' : 'No obtenida' }}</span>
+                            <span class="font-mono text-xs font-extrabold text-white">{{ latitud ? latitud.toFixed(6) + '° N' : 'No obtenida' }}</span>
                         </div>
-                        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                        <div class="p-3 bg-black/20 border border-white/10 rounded-xl flex items-center justify-between">
                             <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Longitud</span>
-                            <span class="font-mono text-xs font-extrabold text-slate-800">{{ longitud ? longitud.toFixed(6) + '° W' : 'No obtenida' }}</span>
+                            <span class="font-mono text-xs font-extrabold text-white">{{ longitud ? longitud.toFixed(6) + '° W' : 'No obtenida' }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sección 3: Control de Tiempos -->
                 <div class="space-y-4">
-                    <h3 class="section-header-navy">
+                    <h3 class="section-bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 shadow-lg">
                         Sección 3: Control de Tiempos
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Hora de Ingreso -->
-                        <div class="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                        <div class="p-3.5 bg-black/20 border border-white/10 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-2xl text-blue-600">login</span>
                                 <div>
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Hora de Ingreso</span>
-                                    <span class="font-mono text-xs font-extrabold text-slate-800">{{ formatTime(horaIngreso) }}</span>
+                                    <span class="font-mono text-xs font-extrabold text-white">{{ formatTime(horaIngreso) }}</span>
                                 </div>
                             </div>
-                            <span class="text-[9px] text-slate-400 font-bold bg-white border border-slate-100 px-2 py-0.5 rounded">{{ formatDate(horaIngreso) }}</span>
+                            <span class="text-[9px] text-slate-400 font-bold glass-card border border-white/10 px-2 py-0.5 rounded">{{ formatDate(horaIngreso) }}</span>
                         </div>
 
                         <!-- Hora de Salida -->
-                        <div class="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                        <div class="p-3.5 bg-black/20 border border-white/10 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <span class="material-symbols-outlined text-2xl text-amber-600">logout</span>
                                 <div>
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Hora de Salida</span>
-                                    <span class="font-mono text-xs font-extrabold text-slate-800" v-if="horaSalida">{{ formatTime(horaSalida) }}</span>
+                                    <span class="font-mono text-xs font-extrabold text-white" v-if="horaSalida">{{ formatTime(horaSalida) }}</span>
                                     <span class="text-xs font-semibold text-slate-400" v-else>No registrada</span>
                                 </div>
                             </div>
@@ -167,7 +167,7 @@
                             <button 
                                 type="button" 
                                 @click="registrarSalida"
-                                class="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-[10px] uppercase rounded-lg border border-slate-200 transition-colors"
+                                class="px-3.5 py-1.5 glass-card hover:bg-slate-100 text-gray-300 font-bold text-[10px] uppercase rounded-lg border border-white/10 transition-colors"
                             >
                                 {{ horaSalida ? 'Actualizar Salida' : 'Registrar Salida' }}
                             </button>
@@ -177,16 +177,16 @@
 
                 <!-- Sección 4: Evidencia Fotográfica y Observaciones -->
                 <div class="space-y-4">
-                    <h3 class="section-header-navy">
+                    <h3 class="section-bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 shadow-lg">
                         Sección 4: Evidencia Fotográfica y Notas
                     </h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Photo Upload -->
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">Evidencia Visual (Foto)</label>
+                            <label class="block text-[10px] font-black text-gray-300 uppercase tracking-wider mb-2">Evidencia Visual (Foto)</label>
                             
-                            <div v-if="fotoPreview" class="relative w-full aspect-[4/3] rounded-2xl border border-slate-200 overflow-hidden group shadow-sm bg-slate-50 flex items-center justify-center p-2">
+                            <div v-if="fotoPreview" class="relative w-full aspect-[4/3] rounded-2xl border border-white/10 overflow-hidden group shadow-lg bg-black/20 flex items-center justify-center p-2">
                                 <img :src="fotoPreview" class="max-w-full max-h-full object-contain rounded-xl" />
                                 <button 
                                     type="button" 
@@ -197,7 +197,7 @@
                                 </button>
                             </div>
 
-                            <div v-else class="w-full aspect-[4/3] rounded-2xl border border-dashed border-slate-300 hover:border-blue-600 bg-slate-50 hover:bg-blue-50/10 transition-colors flex flex-col items-center justify-center p-6 text-center cursor-pointer relative shadow-inner">
+                            <div v-else class="w-full aspect-[4/3] rounded-2xl border border-dashed border-slate-300 hover:border-blue-600 bg-black/20 hover:bg-blue-50/10 transition-colors flex flex-col items-center justify-center p-6 text-center cursor-pointer relative shadow-inner">
                                 <input 
                                     type="file" 
                                     accept="image/*" 
@@ -205,19 +205,19 @@
                                     class="absolute inset-0 opacity-0 cursor-pointer"
                                 />
                                 <span class="material-symbols-outlined text-3xl text-slate-400">add_a_photo</span>
-                                <span class="text-xs font-bold text-slate-700 mt-3 block">Subir foto de evidencia</span>
+                                <span class="text-xs font-bold text-gray-300 mt-3 block">Subir foto de evidencia</span>
                                 <span class="text-[9px] text-slate-400 mt-1 block">JPG, PNG o evidencia visual</span>
                             </div>
                         </div>
 
                         <!-- Observaciones -->
                         <div class="flex flex-col">
-                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">Observaciones Generales</label>
+                            <label class="block text-[10px] font-black text-gray-300 uppercase tracking-wider mb-2">Observaciones Generales</label>
                             <textarea 
                                 v-model="observaciones" 
                                 rows="6"
                                 placeholder="Escribe comentarios, novedades encontradas o detalles específicos de la inspección..."
-                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 placeholder-slate-400 flex-1 shadow-inner resize-none"
+                                class="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:border-blue-600 focus:glass-card outline-none transition-all text-white placeholder-slate-400 flex-1 shadow-inner resize-none"
                             ></textarea>
                         </div>
                     </div>
@@ -226,22 +226,22 @@
                 <!-- Sección 5: Validación y Firma -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="section-header-navy">
+                        <h3 class="section-bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 shadow-lg">
                             Sección 5: Validación y Firma Digital
                         </h3>
                         <button 
                             type="button" 
                             @click="clearCanvas"
-                            class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold text-[10px] uppercase rounded-lg transition-colors flex items-center gap-1.5 border border-slate-200"
+                            class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-gray-300 font-extrabold text-[10px] uppercase rounded-lg transition-colors flex items-center gap-1.5 border border-white/10"
                         >
                             <span class="material-symbols-outlined text-xs">ink_eraser</span>
                             Limpiar
                         </button>
                     </div>
 
-                    <p class="text-xs text-slate-500">El inspector y/o encargado debe dibujar su firma manuscrita sobre el panel táctil inferior:</p>
+                    <p class="text-xs text-gray-300">El inspector y/o encargado debe dibujar su firma manuscrita sobre el panel táctil inferior:</p>
                     
-                    <div class="border border-slate-200 bg-slate-50/50 rounded-2xl overflow-hidden aspect-[21/9] relative shadow-inner">
+                    <div class="border border-white/10 bg-black/20/50 rounded-2xl overflow-hidden aspect-[21/9] relative shadow-inner">
                         <canvas 
                             ref="canvasRef"
                             @mousedown="startDrawing"
@@ -258,7 +258,7 @@
                 </div>
 
                 <!-- Submission Actions Inside Card -->
-                <div class="pt-6 border-t border-slate-100">
+                <div class="pt-6 border-t border-white/10">
                     <button 
                         type="submit" 
                         :disabled="submitting || !latitud"

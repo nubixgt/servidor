@@ -9,7 +9,7 @@
             <div class="flex items-center gap-3">
                 <router-link 
                     to="/sacrificio/nuevo" 
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 border border-slate-800"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add</span>
                     Nuevo Registro
@@ -17,7 +17,7 @@
                 <button 
                     @click="exportToExcel" 
                     :disabled="sacrificios.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
                 >
                     <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
@@ -26,7 +26,7 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Propietario</label>
@@ -34,7 +34,7 @@
                         v-model="filterPropietario" 
                         type="text" 
                         placeholder="Nombre del propietario..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
                 <div>
@@ -43,7 +43,7 @@
                         v-model="filterLote" 
                         type="text" 
                         placeholder="Código de lote..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
                 <div>
@@ -52,7 +52,7 @@
                         v-model="filterProcedencia" 
                         type="text" 
                         placeholder="Lugar de procedencia..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
                 <div>
@@ -60,18 +60,18 @@
                     <input 
                         v-model="filterFecha" 
                         type="date" 
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
             </div>
 
             <!-- Toggles / Checkboxes -->
-            <div class="mt-4 pt-4 border-t border-slate-200 flex flex-wrap items-center gap-6">
-                <label class="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer select-none">
+            <div class="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-6">
+                <label class="flex items-center gap-2 text-xs font-bold text-white cursor-pointer select-none">
                     <input 
                         type="checkbox" 
                         v-model="filterMuestreoOficial"
-                        class="w-4 h-4 text-slate-800 focus:ring-primary border-slate-300 rounded cursor-pointer"
+                        class="w-4 h-4 text-white focus:ring-primary border-slate-300 rounded cursor-pointer"
                     />
                     Ver solo lotes con muestreo oficial
                 </label>
@@ -79,22 +79,22 @@
         </div>
 
         <!-- Table -->
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+        <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
             <div v-if="loading" class="py-16 text-center text-sm text-slate-400">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando registros de sacrificio...</p>
             </div>
 
             <div v-else-if="filteredSacrificios.length === 0" class="py-20 text-center">
                 <span class="material-symbols-outlined text-5xl text-slate-400">assignment</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No se encontraron registros de animales sacrificados</p>
+                <p class="text-sm font-semibold text-white mt-4">No se encontraron registros de animales sacrificados</p>
                 <p class="text-xs text-slate-400 mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
             </div>
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                        <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                             <th class="px-6 py-4">Fecha</th>
                             <th class="px-6 py-4">Lote</th>
                             <th class="px-6 py-4">Propietario / Reportado por</th>
@@ -107,26 +107,26 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">
-                        <tr v-for="s in filteredSacrificios" :key="s.id" class="hover:bg-slate-50 transition-colors">
+                        <tr v-for="s in filteredSacrificios" :key="s.id" class="hover:bg-black/20 transition-colors">
                             <!-- Fecha -->
                             <td class="px-6 py-4 font-semibold text-slate-400">
                                 {{ s.fecha_sacrificio }}
                             </td>
 
                             <!-- Lote -->
-                            <td class="px-6 py-4 font-bold text-slate-800 font-mono">
+                            <td class="px-6 py-4 font-bold text-white font-mono">
                                 {{ s.lote }}
                             </td>
 
                             <!-- Propietario & Inspector details -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-slate-800">{{ s.propietario }}</p>
+                                <p class="font-bold text-white">{{ s.propietario }}</p>
                                 <p class="text-[10px] text-slate-400 mt-0.5">Reportado por: {{ s.inspector_nombre }} ({{ s.inspector_codigo }})</p>
                             </td>
 
                             <!-- Procedencia -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-slate-800">{{ s.procedencia_finca }}</p>
+                                <p class="font-bold text-white">{{ s.procedencia_finca }}</p>
                                 <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs text-outline">place</span>
                                     {{ s.procedencia_municipio }}, {{ s.procedencia_departamento }}
@@ -141,7 +141,7 @@
                             </td>
 
                             <!-- Cantidad -->
-                            <td class="px-6 py-4 text-center font-bold text-slate-800">
+                            <td class="px-6 py-4 text-center font-bold text-white">
                                 {{ s.cantidad }}
                             </td>
 
@@ -151,7 +151,7 @@
                                     :class="['px-2.5 py-1 rounded-full text-[10px] font-bold border', 
                                              s.muestreo_oficial == 1 
                                                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' 
-                                                : 'bg-slate-50 border-slate-200 text-slate-500']"
+                                                : 'bg-black/20 border-white/10 text-gray-300']"
                                 >
                                     {{ s.muestreo_oficial == 1 ? 'Sí' : 'No' }}
                                 </span>
@@ -163,7 +163,7 @@
                                     v-if="s.documento_path" 
                                     :href="resolverRuta(s.documento_path)" 
                                     target="_blank"
-                                    class="inline-flex items-center justify-center w-8 h-8 rounded border border-slate-200 hover:border-primary bg-slate-50 hover:bg-[#0a192f]/5 transition-all text-slate-800"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded border border-white/10 hover:border-primary bg-black/20 hover:bg-[#0a192f]/5 transition-all text-white"
                                 >
                                     <span class="material-symbols-outlined text-lg">
                                         {{ s.documento_path.endsWith('.pdf') ? 'picture_as_pdf' : 'image' }}
@@ -251,7 +251,7 @@ const filteredSacrificios = computed(() => {
 const verDetalles = (s) => {
     let htmlContent = `
         <div class="text-left text-xs space-y-4">
-            <div class="bg-slate-50 p-4 rounded border border-slate-200 space-y-2">
+            <div class="bg-black/20 p-4 rounded border border-white/10 space-y-2">
                 <p><strong>Fecha de Sacrificio:</strong> ${s.fecha_sacrificio}</p>
                 <p><strong>Propietario del Lote:</strong> ${s.propietario}</p>
                 <p><strong>Lote Asignado:</strong> ${s.lote}</p>
@@ -263,31 +263,31 @@ const verDetalles = (s) => {
             </div>
             
             <div>
-                <h4 class="font-extrabold text-slate-800 mb-1 uppercase tracking-wide text-[10px]">Decomisos Realizados:</h4>
-                <div class="p-3 rounded border border-slate-200 bg-white min-h-[50px]">
+                <h4 class="font-extrabold text-white mb-1 uppercase tracking-wide text-[10px]">Decomisos Realizados:</h4>
+                <div class="p-3 rounded border border-white/10 glass-card min-h-[50px]">
                     ${s.decomisos ? s.decomisos : '<span class="text-slate-400 italic">Ningún decomiso reportado.</span>'}
                 </div>
             </div>
 
             <div>
-                <h4 class="font-extrabold text-slate-800 mb-1 uppercase tracking-wide text-[10px]">Observaciones:</h4>
-                <div class="p-3 rounded border border-slate-200 bg-white max-h-40 overflow-y-auto italic">
+                <h4 class="font-extrabold text-white mb-1 uppercase tracking-wide text-[10px]">Observaciones:</h4>
+                <div class="p-3 rounded border border-white/10 glass-card max-h-40 overflow-y-auto italic">
                     ${s.observaciones ? s.observaciones : 'Ninguna observación registrada.'}
                 </div>
             </div>
 
             ${s.documento_path ? `
-            <div class="pt-2 border-t border-slate-200">
-                <h4 class="font-extrabold text-slate-800 mb-2 uppercase tracking-wide text-[10px]">Documentación Adjunta:</h4>
+            <div class="pt-2 border-t border-white/10">
+                <h4 class="font-extrabold text-white mb-2 uppercase tracking-wide text-[10px]">Documentación Adjunta:</h4>
                 ${s.documento_path.endsWith('.pdf') ? `
                     <a href="${resolverRuta(s.documento_path)}" target="_blank" class="flex items-center gap-2 p-3 rounded border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 font-bold transition-all">
                         <span class="material-symbols-outlined">picture_as_pdf</span>
                         Ver Guía Sanitaria / Documento PDF
                     </a>
                 ` : `
-                    <div class="text-center bg-slate-50 border border-slate-200 rounded p-2">
+                    <div class="text-center bg-black/20 border border-white/10 rounded p-2">
                         <a href="${resolverRuta(s.documento_path)}" target="_blank" title="Haga clic para ampliar">
-                            <img src="${resolverRuta(s.documento_path)}" class="max-h-48 mx-auto object-contain rounded border shadow-sm hover:scale-[1.01] transition-transform" />
+                            <img src="${resolverRuta(s.documento_path)}" class="max-h-48 mx-auto object-contain rounded border shadow-lg hover:scale-[1.01] transition-transform" />
                         </a>
                     </div>
                 `}

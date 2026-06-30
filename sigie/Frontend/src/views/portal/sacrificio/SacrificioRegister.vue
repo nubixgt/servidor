@@ -15,9 +15,9 @@
             <!-- Left & Middle Areas (Form inputs) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- 1. Datos Generales -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">feed</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">feed</span>
                         1. Información General
                     </h3>
                     
@@ -28,7 +28,7 @@
                                 v-model="fechaSacrificio" 
                                 type="date" 
                                 required
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                         <div>
@@ -38,16 +38,16 @@
                                 type="text" 
                                 required
                                 placeholder="Nombre completo del dueño..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. Procedencia -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">distance</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">distance</span>
                         2. Procedencia del Ganado
                     </h3>
                     
@@ -59,7 +59,7 @@
                                     v-model="departamento" 
                                     required
                                     @change="onDepartamentoChange"
-                                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 >
                                     <option value="" disabled>Seleccione un departamento...</option>
                                     <option v-for="dept in deptoKeys" :key="dept" :value="dept">{{ dept }}</option>
@@ -72,7 +72,7 @@
                                     list="municipios-list"
                                     required
                                     placeholder="Seleccione o escriba..."
-                                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 />
                                 <datalist id="municipios-list">
                                     <option v-for="muni in municipiosFiltrados" :key="muni" :value="muni">{{ muni }}</option>
@@ -87,16 +87,16 @@
                                 type="text" 
                                 required
                                 placeholder="Nombre de la finca de origen..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. Clasificación e Impacto -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">pets</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">pets</span>
                         3. Clasificación del Animal
                     </h3>
                     
@@ -107,7 +107,7 @@
                                 <select 
                                     v-model="clasificacion" 
                                     required
-                                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 >
                                     <option value="" disabled>Seleccione...</option>
                                     <option value="Vaca">Vaca</option>
@@ -126,7 +126,7 @@
                                     type="text" 
                                     required
                                     placeholder="Código de lote..."
-                                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 />
                             </div>
                             <div>
@@ -137,7 +137,7 @@
                                     min="1"
                                     required
                                     placeholder="Ej: 5"
-                                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 />
                             </div>
                         </div>
@@ -148,7 +148,7 @@
                                 v-model="decomisos" 
                                 type="text" 
                                 placeholder="Especificar órganos o canales decomisados si aplica..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                     </div>
@@ -158,9 +158,9 @@
             <!-- Right Area (Sampling, Upload Document & Submit) -->
             <div class="space-y-6">
                 <!-- Trazabilidad / Muestreo -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">verified_user</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">verified_user</span>
                         4. Trazabilidad
                     </h3>
                     
@@ -169,27 +169,27 @@
                             id="muestreo" 
                             type="checkbox" 
                             v-model="muestreoOficial"
-                            class="w-4 h-4 text-slate-800 focus:ring-primary border-slate-300 rounded mt-0.5 cursor-pointer"
+                            class="w-4 h-4 text-white focus:ring-primary border-slate-300 rounded mt-0.5 cursor-pointer"
                         />
-                        <label for="muestreo" class="text-xs font-bold text-slate-800 select-none cursor-pointer leading-relaxed">
+                        <label for="muestreo" class="text-xs font-bold text-white select-none cursor-pointer leading-relaxed">
                             Lote sometido a muestreo oficial (Trazabilidad)
                         </label>
                     </div>
                 </div>
 
                 <!-- Adjuntar Documentación -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">upload_file</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">upload_file</span>
                         5. Documentación
                     </h3>
                     
                     <div class="space-y-4">
-                        <div v-if="documentoPreview" class="relative w-full aspect-[4/3] rounded border border-slate-200 bg-slate-50 flex items-center justify-center p-4">
+                        <div v-if="documentoPreview" class="relative w-full aspect-[4/3] rounded border border-white/10 bg-black/20 flex items-center justify-center p-4">
                             <template v-if="isPdf">
                                 <div class="text-center">
                                     <span class="material-symbols-outlined text-red-500 text-5xl">picture_as_pdf</span>
-                                    <p class="text-xs font-bold text-slate-800 mt-2 truncate max-w-[200px]">{{ documentoFile?.name }}</p>
+                                    <p class="text-xs font-bold text-white mt-2 truncate max-w-[200px]">{{ documentoFile?.name }}</p>
                                 </div>
                             </template>
                             <template v-else>
@@ -205,7 +205,7 @@
                             </button>
                         </div>
 
-                        <div v-else class="w-full aspect-[4/3] rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
+                        <div v-else class="w-full aspect-[4/3] rounded border border-dashed border-white/10-variant hover:border-primary/50 bg-black/20 hover:bg-[#0a192f]/5 transition-all flex flex-col items-center justify-center p-6 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 accept="application/pdf,image/*" 
@@ -213,23 +213,23 @@
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
                             <span class="material-symbols-outlined text-3xl text-slate-400">file_upload</span>
-                            <span class="text-xs font-bold text-slate-800 mt-3 block">Adjuntar Documento</span>
+                            <span class="text-xs font-bold text-white mt-3 block">Adjuntar Documento</span>
                             <span class="text-[10px] text-slate-400 mt-1 block">PDF o imágenes de guías sanitarias</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Observaciones y Enviar -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">chat</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">chat</span>
                         Observaciones
                     </h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="3"
                         placeholder="Observaciones o notas sobre el lote..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 mb-4"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white mb-4"
                     ></textarea>
 
                     <button 

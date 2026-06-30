@@ -1,22 +1,22 @@
 <template>
     <div class="max-w-5xl mx-auto">
         <div v-if="loading" class="py-20 text-center">
-            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
             <p class="text-xs font-bold text-slate-400 mt-2">Cargando detalles del muestreo...</p>
         </div>
 
-        <div v-else-if="!sampling" class="py-20 text-center bg-white border border-slate-200 rounded-md shadow-sm">
+        <div v-else-if="!sampling" class="py-20 text-center glass-card border border-white/10 rounded-md shadow-lg">
             <span class="material-symbols-outlined text-5xl text-red-500">warning</span>
-            <p class="text-sm font-semibold text-slate-800 mt-4">No se pudo cargar el muestreo</p>
+            <p class="text-sm font-semibold text-white mt-4">No se pudo cargar el muestreo</p>
             <p class="text-xs text-slate-400 mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
-            <router-link to="/muestreos" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:underline">
+            <router-link to="/muestreos" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-white hover:underline">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
             </router-link>
         </div>
 
         <div v-else class="space-y-8 animate-fade-in">
             <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
                 <div>
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="text-[10px] font-extrabold uppercase bg-sky-100 text-sky-700 px-2.5 py-0.5 rounded-full border border-sky-200">
@@ -31,7 +31,7 @@
                         >
                             {{ sampling.estado }}
                         </span>
-                        <span class="text-[10px] font-bold uppercase bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full border border-slate-200">
+                        <span class="text-[10px] font-bold uppercase bg-slate-100 text-gray-300 px-2.5 py-0.5 rounded-full border border-white/10">
                             Origen: {{ sampling.origen }}
                         </span>
                     </div>
@@ -47,29 +47,29 @@
                 <!-- Left Details (General information) -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- 1. Detalle del Muestreo -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">biotech</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">biotech</span>
                             Ficha del Muestreo
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200 col-span-2">
+                            <div class="p-3 bg-black/20 rounded border border-white/10 col-span-2">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Empresa Importadora</span>
-                                <span class="font-bold text-slate-800 text-sm">{{ sampling.importador_nombre }}</span>
+                                <span class="font-bold text-white text-sm">{{ sampling.importador_nombre }}</span>
                                 <span class="font-mono text-[9px] text-slate-400 block mt-0.5">NIT: {{ sampling.importador_nit }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div class="p-3 bg-black/20 rounded border border-white/10">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Tipo de Producto</span>
-                                <span class="font-bold text-slate-800 text-sm">{{ sampling.tipo_producto }}</span>
+                                <span class="font-bold text-white text-sm">{{ sampling.tipo_producto }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div class="p-3 bg-black/20 rounded border border-white/10">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fecha Programada</span>
-                                <span class="font-mono font-bold text-slate-800 text-sm">{{ sampling.fecha_programada }}</span>
+                                <span class="font-mono font-bold text-white text-sm">{{ sampling.fecha_programada }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200" v-if="sampling.volumen_kilos">
+                            <div class="p-3 bg-black/20 rounded border border-white/10" v-if="sampling.volumen_kilos">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Volumen Acumulado en Alarma</span>
-                                <span class="font-bold text-slate-800 text-sm">{{ formatVolume(sampling.volumen_kilos) }} kg</span>
+                                <span class="font-bold text-white text-sm">{{ formatVolume(sampling.volumen_kilos) }} kg</span>
                             </div>
                         </div>
 
@@ -83,7 +83,7 @@
                             </div>
                             <div v-if="sampling.estado === 'Ejecutado' && sampling.observaciones_ejecucion">
                                 <span class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block mb-1">Observaciones de Ejecución (Inspector)</span>
-                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-slate-700 whitespace-pre-line leading-relaxed">
+                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-gray-300 whitespace-pre-line leading-relaxed">
                                     {{ sampling.observaciones_ejecucion }}
                                 </div>
                                 <span class="text-[9px] text-slate-400 font-mono mt-1 block">Ejecutado el: {{ formatDateFull(sampling.fecha_ejecucion) }}</span>
@@ -92,17 +92,17 @@
                     </div>
 
                     <!-- 2. Personal Asignado -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">badge</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">badge</span>
                             Inspector Asignado
                         </h3>
                         <div class="flex items-center gap-4 text-xs">
-                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-slate-800 flex items-center justify-center font-bold text-base uppercase">
+                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-white flex items-center justify-center font-bold text-base uppercase">
                                 {{ sampling.inspector_nombre?.substring(0, 2) }}
                             </div>
                             <div>
-                                <p class="font-bold text-slate-800 text-sm">{{ sampling.inspector_nombre }}</p>
+                                <p class="font-bold text-white text-sm">{{ sampling.inspector_nombre }}</p>
                                 <p class="text-[10px] text-slate-400 font-mono mt-0.5">Código: {{ sampling.inspector_codigo }} | Área: {{ sampling.inspector_area }}</p>
                             </div>
                         </div>
@@ -112,9 +112,9 @@
                 <!-- Right Side: Chronological Timeline Log -->
                 <div class="space-y-6">
                     <!-- Chronological Timeline Bitacora -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-col">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">timeline</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-col">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">timeline</span>
                             Bitácora de Documentos
                         </h3>
 
@@ -132,20 +132,20 @@
                                 class="relative group"
                             >
                                 <!-- Timeline indicator -->
-                                <div class="absolute -left-[20px] top-1.5 w-3.5 h-3.5 bg-white border-2 border-primary rounded-full group-hover:scale-110 transition-transform"></div>
+                                <div class="absolute -left-[20px] top-1.5 w-3.5 h-3.5 glass-card border-2 border-primary rounded-full group-hover:scale-110 transition-transform"></div>
                                 
                                 <div 
-                                    class="p-3 bg-slate-50 border border-slate-200 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer transition-colors"
+                                    class="p-3 bg-black/20 border border-white/10 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer transition-colors"
                                     @click="abrirDocumento(doc)"
                                 >
                                     <span class="material-symbols-outlined text-2xl text-red-500" v-if="doc.nombre_archivo.toLowerCase().endsWith('.pdf')">picture_as_pdf</span>
                                     <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
                                     
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-[11px] font-bold text-slate-800 truncate group-hover:text-slate-800 transition-colors">{{ doc.nombre_archivo }}</p>
+                                        <p class="text-[11px] font-bold text-white truncate group-hover:text-white transition-colors">{{ doc.nombre_archivo }}</p>
                                         <p class="text-[9px] text-slate-400 font-mono mt-0.5">{{ formatDateMini(doc.fecha_subida) }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-slate-800 transition-colors text-xs">open_in_new</span>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors text-xs">open_in_new</span>
                                 </div>
                             </div>
                         </div>
@@ -154,15 +154,15 @@
                     <!-- Add documents over time (Visible if Approved/Ejecutado and user is the assigned inspector or admin) -->
                     <div 
                         v-if="(auth.role === 'inspector' && parseInt(sampling.inspector_id) === parseInt(auth.inspectorId)) || auth.role === 'administrador'" 
-                        class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
+                        class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
                     >
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">cloud_upload</span>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">cloud_upload</span>
                             Añadir a la Bitácora
                         </h3>
                         
                         <!-- File selector -->
-                        <div class="w-full py-6 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                        <div class="w-full py-6 rounded border border-dashed border-white/10-variant hover:border-primary/50 bg-black/20 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                             <input 
                                 type="file" 
                                 multiple
@@ -171,13 +171,13 @@
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
                             <span class="material-symbols-outlined text-xl text-slate-400">upload_file</span>
-                            <span class="text-[10px] font-bold text-slate-600 mt-1">Seleccionar Archivos</span>
+                            <span class="text-[10px] font-bold text-gray-300 mt-1">Seleccionar Archivos</span>
                         </div>
 
                         <!-- Previews -->
                         <div v-if="trackingFilesPreviews.length > 0" class="space-y-2 max-h-32 overflow-y-auto pr-1">
-                            <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-slate-50 border border-slate-200 rounded flex items-center justify-between gap-2">
-                                <p class="text-[10px] font-bold text-slate-600 truncate flex-1 font-mono">{{ preview.name }}</p>
+                            <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-black/20 border border-white/10 rounded flex items-center justify-between gap-2">
+                                <p class="text-[10px] font-bold text-gray-300 truncate flex-1 font-mono">{{ preview.name }}</p>
                                 <button 
                                     type="button" 
                                     @click="removerFile(index)"
@@ -192,7 +192,7 @@
                             v-if="trackingFiles.length > 0"
                             @click="uploadAdditionalFiles" 
                             :disabled="uploading"
-                            class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                            class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-lg transition-colors flex items-center justify-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="uploading">sync</span>
                             <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>

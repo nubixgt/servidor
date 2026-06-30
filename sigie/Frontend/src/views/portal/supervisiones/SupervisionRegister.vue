@@ -15,9 +15,9 @@
             <!-- Left Area (Form inputs) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- 1. Datos Generales -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">domain</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">domain</span>
                         1. Datos Generales
                     </h3>
                     
@@ -28,7 +28,7 @@
                                 v-model="fechaSupervision" 
                                 type="date" 
                                 required
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                         <div>
@@ -38,7 +38,7 @@
                                 type="text" 
                                 readonly
                                 disabled
-                                class="w-full bg-slate-100 border border-slate-300 rounded-xl px-4 py-2.5 text-xs outline-none text-slate-500 font-semibold cursor-not-allowed"
+                                class="w-full bg-slate-100 border border-slate-300 rounded-xl px-4 py-2.5 text-xs outline-none text-gray-300 font-semibold cursor-not-allowed"
                             />
                         </div>
                         <div class="md:col-span-2">
@@ -48,16 +48,16 @@
                                 type="text" 
                                 required
                                 placeholder="Nombre del establecimiento..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. Hallazgos y Normas -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">gavel</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">gavel</span>
                         2. Hallazgos Detectados y Normativa
                     </h3>
                     
@@ -69,7 +69,7 @@
                                 rows="4"
                                 required
                                 placeholder="Describe detalladamente los hallazgos o desviaciones encontradas durante la supervisión..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             ></textarea>
                         </div>
                         <div>
@@ -78,7 +78,7 @@
                                 v-model="normaEspecifica" 
                                 type="text" 
                                 placeholder="Ej: Artículo 12 del Reglamento de Inocuidad, Acuerdo Ministerial 345-2023..."
-                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                             />
                         </div>
                     </div>
@@ -88,9 +88,9 @@
             <!-- Right Area (Files & Status) -->
             <div class="space-y-6">
                 <!-- Estado y Seguimiento -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">track_changes</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">track_changes</span>
                         3. Seguimiento
                     </h3>
                     <div>
@@ -98,7 +98,7 @@
                         <select 
                             v-model="estadoHallazgo" 
                             required
-                            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         >
                             <option value="Abierto">Abierto</option>
                             <option value="En proceso">En proceso</option>
@@ -108,15 +108,15 @@
                 </div>
 
                 <!-- Adjuntar Documentación Múltiple -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">upload_file</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">upload_file</span>
                         4. Adjuntos de Soporte
                     </h3>
                     
                     <div class="space-y-4">
                         <!-- Upload Box -->
-                        <div class="w-full h-32 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
+                        <div class="w-full h-32 rounded border border-dashed border-white/10-variant hover:border-primary/50 bg-black/20 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center p-4 text-center cursor-pointer relative">
                             <input 
                                 type="file" 
                                 multiple
@@ -125,19 +125,19 @@
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
                             <span class="material-symbols-outlined text-2xl text-slate-400">add_to_photos</span>
-                            <span class="text-xs font-bold text-slate-800 mt-2 block">Agregar Documentos</span>
+                            <span class="text-xs font-bold text-white mt-2 block">Agregar Documentos</span>
                             <span class="text-[9px] text-slate-400 mt-0.5 block">Fotografías, listas de verificación, etc.</span>
                         </div>
 
                         <!-- Previews List -->
                         <div v-if="documentosPreviews.length > 0" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                            <div v-for="(preview, index) in documentosPreviews" :key="index" class="p-3 bg-slate-50 border border-slate-200 rounded flex items-center gap-3 relative group">
+                            <div v-for="(preview, index) in documentosPreviews" :key="index" class="p-3 bg-black/20 border border-white/10 rounded flex items-center gap-3 relative group">
                                 <span class="material-symbols-outlined text-2xl text-red-500" v-if="preview.isPdf">picture_as_pdf</span>
-                                <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 border bg-white" v-else>
+                                <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 border glass-card" v-else>
                                     <img :src="preview.url" class="w-full h-full object-cover" />
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs font-bold text-slate-800 truncate pr-6">{{ preview.name }}</p>
+                                    <p class="text-xs font-bold text-white truncate pr-6">{{ preview.name }}</p>
                                     <p class="text-[9px] text-slate-400 font-mono">{{ preview.isPdf ? 'Archivo PDF' : 'Imagen' }}</p>
                                 </div>
                                 <button 
@@ -153,16 +153,16 @@
                 </div>
 
                 <!-- Observaciones y Enviar -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800 text-sm">chat</span>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white text-sm">chat</span>
                         Observaciones
                     </h3>
                     <textarea 
                         v-model="observaciones" 
                         rows="3"
                         placeholder="Escribe aquí observaciones adicionales..."
-                        class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 mb-4"
+                        class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white mb-4"
                     ></textarea>
 
                     <button 

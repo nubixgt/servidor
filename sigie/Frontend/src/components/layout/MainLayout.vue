@@ -4,10 +4,10 @@
         <div v-if="isMobileMenuOpen" @click="isMobileMenuOpen = false" class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity"></div>
         
         <!-- Sidebar -->
-        <aside :class="['w-64 fixed lg:static left-0 top-0 h-full bg-gradient-to-b from-[#0a192f] to-[#0d1f3c] flex flex-col px-4 py-5 z-50 transition-transform duration-300 lg:translate-x-0 flex-shrink-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
+        <aside :class="['w-64 fixed lg:static left-0 top-0 h-full bg-[#0f172a]/40 backdrop-blur-xl border-r border-white/10 flex flex-col px-4 py-5 z-50 transition-transform duration-300 lg:translate-x-0 flex-shrink-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <!-- Brand Logo Header -->
             <div class="mb-6 px-2 flex items-center gap-3">
-                <div class="w-10 h-10 overflow-hidden rounded-full flex items-center justify-center flex-shrink-0 bg-white/10 backdrop-blur-sm">
+                <div class="w-10 h-10 overflow-hidden rounded-full flex items-center justify-center flex-shrink-0 glass-card backdrop-blur-sm">
                     <lottie-player
                         :src="lottieUrl"
                         background="transparent"
@@ -173,12 +173,12 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col h-screen overflow-y-auto w-full transition-all duration-300">
-            <!-- Top Navbar - Navy Solid -->
-            <header class="header-navy sticky top-0 z-30 px-4 lg:px-8 py-3 flex justify-between items-center w-full flex-shrink-0">
+            <!-- Header Bar -->
+            <header class="bg-[#0f172a]/40 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-lg">
                 <div class="flex items-center gap-4">
                     <!-- Mobile Menu Button -->
-                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="w-10 h-10 flex lg:hidden items-center justify-center rounded-xl hover:bg-white/10 transition-colors text-white">
-                        <span class="material-symbols-outlined text-2xl">menu</span>
+                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="w-10 h-10 flex lg:hidden items-center justify-center rounded-xl hover:glass-card transition-colors text-white">
+                        <span class="material-symbols-outlined text-white">menu</span>
                     </button>
                     <div class="flex items-center gap-2.5">
                         <lottie-player
@@ -197,7 +197,7 @@
                 <div class="flex items-center gap-3">
                     <!-- Notifications Dropdown Button -->
                     <div class="relative notification-container">
-                        <button @click="toggleNotifications" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/80 relative">
+                        <button @click="toggleNotifications" class="w-9 h-9 flex items-center justify-center rounded-full hover:glass-card transition-colors text-white/80 relative">
                             <span class="material-symbols-outlined text-xl">notifications</span>
                             <span v-if="unreadCount > 0" class="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center border-2 border-[#0a192f]">
                                 {{ unreadCount }}
@@ -205,9 +205,9 @@
                         </button>
                         
                         <!-- Notifications Popover -->
-                        <div v-if="showNotifications" class="absolute right-0 top-12 w-80 bg-white border border-slate-200 rounded-2xl shadow-premium-lg py-2.5 z-50 animate-fade-in text-xs max-h-[400px] flex flex-col">
-                            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between font-headline bg-slate-50/50">
-                                <span class="font-extrabold text-slate-800">Notificaciones</span>
+                        <div v-if="showNotifications" class="absolute right-0 top-12 w-80 glass-card border border-white/10 rounded-2xl shadow-premium-lg py-2.5 z-50 animate-fade-in text-xs max-h-[400px] flex flex-col">
+                            <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between font-headline bg-black/20/50">
+                                <span class="font-extrabold text-white">Notificaciones</span>
                                 <button v-if="unreadCount > 0" @click="markAllNotificationsAsRead" class="text-[10px] font-bold text-blue-600 hover:underline">
                                     Marcar leídas
                                 </button>
@@ -221,10 +221,10 @@
                                     v-else 
                                     v-for="notif in notifications" 
                                     :key="notif.id" 
-                                    :class="['px-4 py-3 hover:bg-slate-50/50 transition-colors text-left', {'bg-blue-50/30 border-l-2 border-blue-600': !notif.leido}]"
+                                    :class="['px-4 py-3 hover:bg-black/20/50 transition-colors text-left', {'bg-blue-50/30 border-l-2 border-blue-600': !notif.leido}]"
                                 >
-                                    <p class="text-slate-800 font-bold text-[11px]">{{ notif.titulo }}</p>
-                                    <p class="text-slate-500 text-[10px] mt-0.5 leading-relaxed">{{ notif.mensaje }}</p>
+                                    <p class="text-white font-bold text-[11px]">{{ notif.titulo }}</p>
+                                    <p class="text-gray-300 text-[10px] mt-0.5 leading-relaxed">{{ notif.mensaje }}</p>
                                     <p class="text-[9px] text-slate-400 font-semibold mt-1.5">{{ formatDateMini(notif.fecha_creacion) }}</p>
                                 </div>
                             </div>
@@ -234,7 +234,7 @@
                     <!-- Profile Header Badge -->
                     <div class="flex items-center gap-2.5 select-none">
                         <span class="text-xs font-semibold text-white/70 hidden md:block">Mi Perfil</span>
-                        <div class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 transition-colors text-white flex items-center justify-center font-bold text-xs uppercase border border-white/10">
+                        <div class="w-9 h-9 rounded-full glass-card hover:glass-card transition-colors text-white flex items-center justify-center font-bold text-xs uppercase border border-white/10">
                             {{ auth.user?.nombre?.substring(0, 2) || 'US' }}
                         </div>
                     </div>

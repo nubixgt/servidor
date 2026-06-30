@@ -22,11 +22,11 @@
         <!-- KPI Cards Grid with line charts -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Card 1: Check-ins Hoy -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Check-ins Hoy</span>
-                        <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">{{ totalCheckinsCount }}</h3>
+                        <h3 class="text-3xl font-extrabold text-white tracking-tight mt-1">{{ totalCheckinsCount }}</h3>
                     </div>
                     <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
                         <span class="material-symbols-outlined text-lg">calendar_month</span>
@@ -47,11 +47,11 @@
             </div>
 
             <!-- Card 2: Sin Novedades -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Sin Novedades</span>
-                        <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">{{ sinNovedadesCount }}</h3>
+                        <h3 class="text-3xl font-extrabold text-white tracking-tight mt-1">{{ sinNovedadesCount }}</h3>
                     </div>
                     <div class="w-9 h-9 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
                         <span class="material-symbols-outlined text-lg">check_circle</span>
@@ -72,11 +72,11 @@
             </div>
 
             <!-- Card 3: Alertas Críticas -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Alertas Críticas</span>
-                        <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">{{ conNovedadesCount }}</h3>
+                        <h3 class="text-3xl font-extrabold text-white tracking-tight mt-1">{{ conNovedadesCount }}</h3>
                     </div>
                     <div class="w-9 h-9 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-600">
                         <span class="material-symbols-outlined text-lg">error</span>
@@ -97,11 +97,11 @@
             </div>
 
             <!-- Card 4: Tiempo Promedio -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between group hover:scale-[1.01] transition-premium">
                 <div class="flex items-start justify-between">
                     <div>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Tiempo Promedio</span>
-                        <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">8.4m</h3>
+                        <h3 class="text-3xl font-extrabold text-white tracking-tight mt-1">8.4m</h3>
                     </div>
                     <div class="w-9 h-9 bg-sky-50 border border-sky-100 rounded-xl flex items-center justify-center text-sky-600">
                         <span class="material-symbols-outlined text-lg">schedule</span>
@@ -122,7 +122,7 @@
         </div>
 
         <!-- Filters and Actions Container -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
                 <!-- Search inputs aligned in references -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
@@ -132,12 +132,12 @@
                             v-model="filterInspector" 
                             type="text" 
                             placeholder="Buscar por Inspector o Lote..."
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <button 
                         @click="toggleAdvancedFilters = !toggleAdvancedFilters"
-                        class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold text-xs rounded-xl border border-slate-200 flex items-center justify-center gap-2"
+                        class="px-4 py-2.5 bg-black/20 hover:bg-slate-100 text-gray-300 font-bold text-xs rounded-xl border border-white/10 flex items-center justify-center gap-2"
                     >
                         <span class="material-symbols-outlined text-base">tune</span>
                         Filtros Avanzados
@@ -149,7 +149,7 @@
                     <button 
                         @click="exportToExcel" 
                         :disabled="checkins.length === 0"
-                        class="px-4 py-2.5 bg-white hover:bg-slate-50 text-emerald-600 hover:text-emerald-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                        class="px-4 py-2.5 glass-card hover:bg-black/20 text-emerald-600 hover:text-emerald-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border border-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                     >
                         <span class="material-symbols-outlined text-base">download_for_offline</span>
                         Exportar a Excel
@@ -158,21 +158,21 @@
             </div>
 
             <!-- Expandable Advanced Filters -->
-            <div v-if="toggleAdvancedFilters" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 pt-5 border-t border-slate-100">
+            <div v-if="toggleAdvancedFilters" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 pt-5 border-t border-white/10">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Establecimiento</label>
                     <input 
                         v-model="filterEstablecimiento" 
                         type="text" 
                         placeholder="Establecimiento..."
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Estado</label>
                     <select 
                         v-model="filterEstado"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     >
                         <option value="todos">Todos los Estados</option>
                         <option value="exitoso">Sin Novedades (Exitoso)</option>
@@ -184,14 +184,14 @@
                     <input 
                         v-model="filterFecha" 
                         type="date" 
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-semibold focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
             </div>
         </div>
 
         <!-- Check-ins Table Container -->
-        <div class="bg-white rounded-2xl border border-slate-100 shadow-premium overflow-hidden">
+        <div class="glass-card rounded-2xl border border-white/10 shadow-premium overflow-hidden">
             <div v-if="loading" class="py-16 text-center text-xs text-slate-400">
                 <span class="material-symbols-outlined text-3xl animate-spin text-blue-600 mb-1 block">sync</span>
                 <p class="font-bold">Cargando historial de registros...</p>
@@ -199,7 +199,7 @@
 
             <div v-else-if="filteredCheckins.length === 0" class="py-20 text-center">
                 <span class="material-symbols-outlined text-5xl text-slate-300">assignment_turned_in</span>
-                <p class="text-sm font-bold text-slate-800 mt-4">No se encontraron registros de check-in</p>
+                <p class="text-sm font-bold text-white mt-4">No se encontraron registros de check-in</p>
                 <p class="text-xs text-slate-400 mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
             </div>
 
@@ -207,7 +207,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50/50 border-b border-slate-100 text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                            <tr class="bg-black/20/50 border-b border-white/10 text-[10px] font-black uppercase text-slate-400 tracking-wider">
                                 <th class="px-6 py-4">Fecha / Hora</th>
                                 <th class="px-6 py-4">Inspector</th>
                                 <th class="px-6 py-4">Lote No.</th>
@@ -217,10 +217,10 @@
                                 <th class="px-6 py-4 text-center no-print">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-50 text-xs font-semibold text-slate-700">
-                            <tr v-for="c in paginatedCheckins" :key="c.id" class="hover:bg-slate-50/40 transition-colors">
+                        <tbody class="divide-y divide-slate-50 text-xs font-semibold text-gray-300">
+                            <tr v-for="c in paginatedCheckins" :key="c.id" class="hover:bg-black/20/40 transition-colors">
                                 <!-- Date Time -->
-                                <td class="px-6 py-4 text-slate-900 font-extrabold whitespace-nowrap">
+                                <td class="px-6 py-4 text-white font-extrabold whitespace-nowrap">
                                     {{ formatDateTimeCustom(c.fecha_hora) }}
                                 </td>
 
@@ -231,20 +231,20 @@
                                             {{ getInitials(c.inspector_nombre) }}
                                         </div>
                                         <div>
-                                            <p class="font-extrabold text-slate-800 leading-tight">{{ c.inspector_nombre }}</p>
+                                            <p class="font-extrabold text-white leading-tight">{{ c.inspector_nombre }}</p>
                                             <p class="text-[9px] text-slate-400 mt-0.5">ID: {{ c.inspector_codigo }}</p>
                                         </div>
                                     </div>
                                 </td>
 
                                 <!-- Lote No -->
-                                <td class="px-6 py-4 font-mono text-slate-500 font-bold whitespace-nowrap">
+                                <td class="px-6 py-4 font-mono text-gray-300 font-bold whitespace-nowrap">
                                     LT-2026-X{{ c.id }}
                                 </td>
 
                                 <!-- Visit details -->
                                 <td class="px-6 py-4">
-                                    <p class="font-extrabold text-slate-900 leading-tight">{{ c.establecimiento || 'Visita Libre' }}</p>
+                                    <p class="font-extrabold text-white leading-tight">{{ c.establecimiento || 'Visita Libre' }}</p>
                                     <p class="text-[9px] text-slate-400 mt-0.5 flex items-center gap-1 font-medium">
                                         <span class="material-symbols-outlined text-[10px] text-slate-400">place</span>
                                         {{ c.direccion || 'Ubicación registrada en mapa' }}
@@ -271,7 +271,7 @@
                                         <button 
                                             v-if="c.foto_path" 
                                             @click="verImagen(resolverRuta(c.foto_path), 'Evidencia Fotográfica')"
-                                            class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 hover:border-blue-600 transition-colors inline-flex items-center justify-center bg-slate-50 shadow-sm"
+                                            class="w-8 h-8 rounded-lg overflow-hidden border border-white/10 hover:border-blue-600 transition-colors inline-flex items-center justify-center bg-black/20 shadow-lg"
                                             title="Ver Foto"
                                         >
                                             <img :src="resolverRuta(c.foto_path)" class="w-full h-full object-cover" />
@@ -281,7 +281,7 @@
                                         <button 
                                             v-if="c.firma_path" 
                                             @click="verImagen(resolverRuta(c.firma_path), 'Firma del Inspector')"
-                                            class="w-9 h-7 rounded-lg border border-slate-200 hover:border-blue-600 hover:scale-105 transition-all inline-flex items-center justify-center bg-slate-50 p-0.5 shadow-sm"
+                                            class="w-9 h-7 rounded-lg border border-white/10 hover:border-blue-600 hover:scale-105 transition-all inline-flex items-center justify-center bg-black/20 p-0.5 shadow-lg"
                                             title="Ver Firma"
                                         >
                                             <img :src="resolverRuta(c.firma_path)" class="max-h-full max-w-full object-contain" />
@@ -305,10 +305,10 @@
                 </div>
 
                 <!-- Table Footer Pagination and Online Badge -->
-                <div class="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 font-headline">
+                <div class="px-6 py-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 font-headline">
                     <!-- Text info -->
-                    <span class="text-xs font-bold text-slate-500">
-                        Mostrando <span class="text-slate-800">{{ rangeStart }} - {{ rangeEnd }}</span> de <span class="text-slate-800">{{ filteredCheckins.length }}</span> check-ins
+                    <span class="text-xs font-bold text-gray-300">
+                        Mostrando <span class="text-white">{{ rangeStart }} - {{ rangeEnd }}</span> de <span class="text-white">{{ filteredCheckins.length }}</span> check-ins
                     </span>
 
                     <!-- Pagination buttons -->
@@ -316,7 +316,7 @@
                         <button 
                             @click="prevPage" 
                             :disabled="currentPage === 1"
-                            class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-slate-600"
+                            class="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center hover:bg-black/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-gray-300"
                         >
                             <span class="material-symbols-outlined text-lg font-black">chevron_left</span>
                         </button>
@@ -327,8 +327,8 @@
                             @click="setPage(p)"
                             :class="['w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all', 
                                      currentPage === p 
-                                        ? 'bg-[#0a192f] text-white shadow-sm' 
-                                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50']"
+                                        ? 'bg-[#0a192f] text-white shadow-lg' 
+                                        : 'border border-white/10 text-gray-300 hover:bg-black/20']"
                         >
                             {{ p }}
                         </button>
@@ -336,7 +336,7 @@
                         <button 
                             @click="nextPage" 
                             :disabled="currentPage === totalPages"
-                            class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-slate-600"
+                            class="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center hover:bg-black/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-gray-300"
                         >
                             <span class="material-symbols-outlined text-lg font-black">chevron_right</span>
                         </button>
@@ -347,7 +347,7 @@
 
         <!-- Network status footer banner -->
         <div class="mt-6 flex justify-end">
-            <div class="inline-flex items-center gap-4 bg-white px-5 py-2.5 rounded-full border border-slate-100 shadow-premium">
+            <div class="inline-flex items-center gap-4 glass-card px-5 py-2.5 rounded-full border border-white/10 shadow-premium">
                 <span class="inline-flex items-center gap-1.5 text-[10px] font-black text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 uppercase">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
                     Sistema en Línea
@@ -512,7 +512,7 @@ const verImagen = (url, titulo) => {
 const verDetalles = (c) => {
     let htmlContent = `
         <div class="text-left text-xs space-y-4">
-            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 font-headline">
+            <div class="bg-black/20 p-4 rounded-xl border border-white/10 space-y-2 font-headline">
                 <p><strong>Inspector:</strong> ${c.inspector_nombre} (${c.inspector_codigo})</p>
                 <p><strong>Área:</strong> ${c.inspector_area}</p>
                 <p><strong>Establecimiento:</strong> ${c.establecimiento || 'N/A'}</p>
@@ -521,14 +521,14 @@ const verDetalles = (c) => {
                 <p><strong>Fecha y Hora:</strong> ${formatDateTimeCustom(c.fecha_hora)}</p>
                 <p><strong>GPS Coordenadas:</strong> Latitud ${c.latitud}, Longitud ${c.longitud}</p>
                 <p><strong>Estado:</strong> ${c.estado === 'exitoso' ? '<span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Sin novedades</span>' : '<span class="text-red-700 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-100">Con novedades</span>'}</p>
-                <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200 font-mono text-[11px]">
+                <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/10 font-mono text-[11px]">
                     <p><strong>Hora Ingreso:</strong> <span class="font-bold text-blue-600">${c.hora_ingreso || 'N/A'}</span></p>
                     <p><strong>Hora Salida:</strong> <span class="font-bold text-amber-600">${c.hora_salida || 'N/A'}</span></p>
                 </div>
             </div>
             <div>
-                <h4 class="font-black text-slate-800 mb-2 uppercase tracking-widest text-[9px]">Observaciones del Inspector:</h4>
-                <div class="p-3.5 rounded-xl border border-slate-200 bg-white font-sans text-slate-600 text-[11px] leading-relaxed max-h-40 overflow-y-auto italic">
+                <h4 class="font-black text-white mb-2 uppercase tracking-widest text-[9px]">Observaciones del Inspector:</h4>
+                <div class="p-3.5 rounded-xl border border-white/10 glass-card font-sans text-gray-300 text-[11px] leading-relaxed max-h-40 overflow-y-auto italic">
                     ${c.observaciones ? c.observaciones : 'Ninguna observación registrada.'}
                 </div>
             </div>
@@ -536,13 +536,13 @@ const verDetalles = (c) => {
                 ${c.foto_path ? `
                 <div class="text-center">
                     <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Evidencia Foto</span>
-                    <img src="${resolverRuta(c.foto_path)}" class="w-full aspect-[4/3] object-cover rounded-xl border border-slate-200 shadow-sm" />
+                    <img src="${resolverRuta(c.foto_path)}" class="w-full aspect-[4/3] object-cover rounded-xl border border-white/10 shadow-lg" />
                 </div>
                 ` : ''}
                 ${c.firma_path ? `
                 <div class="text-center">
                     <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Firma Inspector</span>
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-2 h-full flex items-center justify-center shadow-sm">
+                    <div class="bg-black/20 border border-white/10 rounded-xl p-2 h-full flex items-center justify-center shadow-lg">
                         <img src="${resolverRuta(c.firma_path)}" class="max-h-24 max-w-full object-contain" />
                     </div>
                 </div>

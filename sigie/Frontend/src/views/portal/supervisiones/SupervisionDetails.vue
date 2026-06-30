@@ -1,22 +1,22 @@
 <template>
     <div class="max-w-5xl mx-auto">
         <div v-if="loading" class="py-20 text-center">
-            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
             <p class="text-xs font-bold text-slate-400 mt-2">Cargando detalles de la supervisión...</p>
         </div>
 
-        <div v-else-if="!supervision" class="py-20 text-center bg-white border border-slate-200 rounded-md shadow-sm">
+        <div v-else-if="!supervision" class="py-20 text-center glass-card border border-white/10 rounded-md shadow-lg">
             <span class="material-symbols-outlined text-5xl text-red-500">warning</span>
-            <p class="text-sm font-semibold text-slate-800 mt-4">No se pudo cargar la supervisión</p>
+            <p class="text-sm font-semibold text-white mt-4">No se pudo cargar la supervisión</p>
             <p class="text-xs text-slate-400 mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
-            <router-link to="/supervisiones" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:underline">
+            <router-link to="/supervisiones" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-white hover:underline">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
             </router-link>
         </div>
 
         <div v-else class="space-y-8">
             <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
                 <div>
                     <div class="flex items-center gap-3">
                         <span class="text-[10px] font-extrabold uppercase bg-sky-100 text-sky-700 px-2.5 py-0.5 rounded-full border border-sky-200">
@@ -39,7 +39,7 @@
                     <router-link 
                         :to="`/supervisiones/${supervision.id}/imprimir`" 
                         target="_blank"
-                        class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow-sm flex items-center gap-1.5 transition-colors border border-slate-950"
+                        class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded shadow-lg flex items-center gap-1.5 transition-colors border border-slate-950"
                     >
                         <span class="material-symbols-outlined text-sm">print</span>
                         Imprimir Hallazgos
@@ -55,26 +55,26 @@
                 <!-- Left Details (General information) -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- 1. Ficha de la Supervisión -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">description</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">description</span>
                             Detalles de la Supervisión y Hallazgos
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div class="p-3 bg-black/20 rounded border border-white/10">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Establecimiento</span>
-                                <span class="font-bold text-slate-800 text-sm">{{ supervision.establecimiento }}</span>
+                                <span class="font-bold text-white text-sm">{{ supervision.establecimiento }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div class="p-3 bg-black/20 rounded border border-white/10">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fecha de Supervisión</span>
-                                <span class="font-mono font-bold text-slate-800 text-sm">{{ supervision.fecha_supervision }}</span>
+                                <span class="font-mono font-bold text-white text-sm">{{ supervision.fecha_supervision }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div class="p-3 bg-black/20 rounded border border-white/10">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Norma Específica Asociada</span>
-                                <span class="font-bold text-slate-800 text-sm">{{ supervision.norma_especifica || 'Ninguna registrada' }}</span>
+                                <span class="font-bold text-white text-sm">{{ supervision.norma_especifica || 'Ninguna registrada' }}</span>
                             </div>
-                            <div class="p-3 bg-slate-50 rounded border border-slate-200" v-if="supervision.fecha_cumplimiento">
+                            <div class="p-3 bg-black/20 rounded border border-white/10" v-if="supervision.fecha_cumplimiento">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fecha de Cumplimiento / Cierre</span>
                                 <span class="font-mono font-bold text-emerald-600 text-sm">{{ supervision.fecha_cumplimiento }}</span>
                             </div>
@@ -84,19 +84,19 @@
                         <div class="mt-6 space-y-4 text-xs">
                             <div>
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Hallazgos Detectados</span>
-                                <div class="p-4 bg-slate-50 border border-slate-200 rounded text-slate-800 whitespace-pre-line leading-relaxed">
+                                <div class="p-4 bg-black/20 border border-white/10 rounded text-white whitespace-pre-line leading-relaxed">
                                     {{ supervision.hallazgos_detectados }}
                                 </div>
                             </div>
                             <div v-if="supervision.verificacion_oficial">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Verificación del Oficial Asignado</span>
-                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-slate-800 whitespace-pre-line leading-relaxed">
+                                <div class="p-4 bg-emerald-50/20 border border-emerald-100 rounded text-white whitespace-pre-line leading-relaxed">
                                     {{ supervision.verificacion_oficial }}
                                 </div>
                             </div>
                             <div v-if="supervision.observaciones">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Observaciones Generales</span>
-                                <div class="p-4 bg-slate-50 border border-slate-200 rounded italic text-slate-400 whitespace-pre-line">
+                                <div class="p-4 bg-black/20 border border-white/10 rounded italic text-slate-400 whitespace-pre-line">
                                     {{ supervision.observaciones }}
                                 </div>
                             </div>
@@ -104,17 +104,17 @@
                     </div>
 
                     <!-- 2. Inspector responsable -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">badge</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">badge</span>
                             Inspector Responsable
                         </h3>
                         <div class="flex items-center gap-4 text-xs">
-                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-slate-800 flex items-center justify-center font-bold text-base uppercase">
+                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-white flex items-center justify-center font-bold text-base uppercase">
                                 {{ supervision.inspector_nombre?.substring(0, 2) }}
                             </div>
                             <div>
-                                <p class="font-bold text-slate-800 text-sm">{{ supervision.inspector_nombre }}</p>
+                                <p class="font-bold text-white text-sm">{{ supervision.inspector_nombre }}</p>
                                 <p class="text-[10px] text-slate-400 font-mono mt-0.5">Código: {{ supervision.inspector_codigo }} | Área: {{ supervision.inspector_area }}</p>
                             </div>
                         </div>
@@ -124,9 +124,9 @@
                 <!-- Right Details (Attachments & Tracking Action) -->
                 <div class="space-y-6">
                     <!-- Adjuntos Bitácora -->
-                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">timeline</span>
+                    <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">timeline</span>
                             Bitácora de Documentos ({{ supervision.documentos?.length || 0 }})
                         </h3>
 
@@ -144,20 +144,20 @@
                                 class="relative group"
                             >
                                 <!-- Timeline indicator -->
-                                <div class="absolute -left-[20px] top-1.5 w-3.5 h-3.5 bg-white border-2 border-primary rounded-full group-hover:scale-110 transition-transform"></div>
+                                <div class="absolute -left-[20px] top-1.5 w-3.5 h-3.5 glass-card border-2 border-primary rounded-full group-hover:scale-110 transition-transform"></div>
 
                                 <div 
-                                    class="p-3 bg-slate-50 border border-slate-200 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer transition-colors"
+                                    class="p-3 bg-black/20 border border-white/10 hover:border-primary/30 rounded flex items-center gap-3 cursor-pointer transition-colors"
                                     @click="abrirDocumento(doc)"
                                 >
                                     <span class="material-symbols-outlined text-2xl text-red-500" v-if="doc.nombre_archivo.toLowerCase().endsWith('.pdf')">picture_as_pdf</span>
                                     <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
                                     
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-bold text-slate-800 truncate group-hover:text-slate-800 transition-colors text-left">{{ doc.nombre_archivo }}</p>
+                                        <p class="text-xs font-bold text-white truncate group-hover:text-white transition-colors text-left">{{ doc.nombre_archivo }}</p>
                                         <p class="text-[9px] text-slate-400 font-mono mt-0.5 text-left">{{ formatDateMini(doc.fecha_subida) }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-slate-800 transition-colors text-sm">open_in_new</span>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-white transition-colors text-sm">open_in_new</span>
                                 </div>
                             </div>
                         </div>
@@ -166,10 +166,10 @@
                     <!-- Inspector Bitacora Tracking Options (Inspectors only) -->
                     <div 
                         v-if="auth.role === 'inspector'" 
-                        class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
+                        class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
                     >
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-slate-800 text-sm">edit_note</span>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-white text-sm">edit_note</span>
                             Bitácora y Seguimiento
                         </h3>
 
@@ -179,7 +179,7 @@
                                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado del Hallazgo</label>
                                 <select 
                                     v-model="trackingEstado" 
-                                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 >
                                     <option value="Abierto">Abierto</option>
                                     <option value="En proceso">En proceso</option>
@@ -192,7 +192,7 @@
                                 <input 
                                     v-model="trackingFechaCumplimiento" 
                                     type="date"
-                                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 />
                             </div>
 
@@ -202,7 +202,7 @@
                                     v-model="trackingVerificacion" 
                                     rows="3"
                                     placeholder="Describe la verificación sanitaria realizada..."
-                                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                                    class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                                 ></textarea>
                             </div>
 
@@ -217,11 +217,11 @@
                         </div>
 
                         <!-- Add files over time -->
-                        <div class="pt-4 border-t border-slate-200">
+                        <div class="pt-4 border-t border-white/10">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Agregar Soporte a la Bitácora</label>
                             
                             <!-- File selector -->
-                            <div class="w-full py-6 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                            <div class="w-full py-6 rounded border border-dashed border-white/10-variant hover:border-primary/50 bg-black/20 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                                 <input 
                                     type="file" 
                                     multiple
@@ -230,13 +230,13 @@
                                     class="absolute inset-0 opacity-0 cursor-pointer"
                                 />
                                 <span class="material-symbols-outlined text-xl text-slate-400">upload_file</span>
-                                <span class="text-[10px] font-bold text-slate-800 mt-1">Seleccionar Archivos</span>
+                                <span class="text-[10px] font-bold text-white mt-1">Seleccionar Archivos</span>
                             </div>
 
                             <!-- Previews list -->
                             <div v-if="trackingFilesPreviews.length > 0" class="space-y-2 mb-4 max-h-40 overflow-y-auto pr-1">
-                                <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-slate-50 border border-slate-200 rounded flex items-center justify-between gap-2">
-                                    <p class="text-[10px] font-bold text-slate-800 truncate flex-1">{{ preview.name }}</p>
+                                <div v-for="(preview, index) in trackingFilesPreviews" :key="index" class="p-2 bg-black/20 border border-white/10 rounded flex items-center justify-between gap-2">
+                                    <p class="text-[10px] font-bold text-white truncate flex-1">{{ preview.name }}</p>
                                     <button 
                                         type="button" 
                                         @click="removerTrackingFile(index)"
@@ -251,7 +251,7 @@
                                 v-if="trackingFiles.length > 0"
                                 @click="uploadAdditionalFiles" 
                                 :disabled="uploadingFiles"
-                                class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                                class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-lg transition-colors flex items-center justify-center gap-1.5"
                             >
                                 <span class="material-symbols-outlined text-sm animate-spin" v-if="uploadingFiles">sync</span>
                                 <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>

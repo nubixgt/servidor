@@ -10,7 +10,7 @@
                 <button 
                     v-if="activeTab === 'importadores' && auth.role === 'administrador'"
                     @click="openImporterModal()"
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">add_business</span>
                     Registrar Importador
@@ -18,7 +18,7 @@
                 <button 
                     v-if="activeTab === 'importaciones'"
                     @click="openImportModal"
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Registrar Importación
@@ -27,11 +27,11 @@
         </div>
 
         <!-- Tab Controls -->
-        <div class="border-b border-slate-200 flex gap-2">
+        <div class="border-b border-white/10 flex gap-2">
             <button 
                 @click="activeTab = 'importadores'"
                 :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                         activeTab === 'importadores' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                         activeTab === 'importadores' ? 'border-primary text-white glass-card' : 'border-transparent text-gray-300 hover:text-gray-300']"
             >
                 <span class="material-symbols-outlined text-sm">business</span>
                 Catálogo de Importadores
@@ -39,7 +39,7 @@
             <button 
                 @click="activeTab = 'importaciones'"
                 :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                         activeTab === 'importaciones' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                         activeTab === 'importaciones' ? 'border-primary text-white glass-card' : 'border-transparent text-gray-300 hover:text-gray-300']"
             >
                 <span class="material-symbols-outlined text-sm">inventory</span>
                 Historial de Importaciones
@@ -48,14 +48,14 @@
 
         <!-- TAB 1: CATALOGO DE IMPORTADORES -->
         <div v-if="activeTab === 'importadores'" class="space-y-6">
-            <div v-if="loadingImporters" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <div v-if="loadingImporters" class="py-16 text-center text-sm text-slate-400 glass-card rounded border border-white/10 shadow-lg">
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando catálogo de importadores...</p>
             </div>
 
-            <div v-else-if="importers.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+            <div v-else-if="importers.length === 0" class="py-20 text-center glass-card rounded border border-white/10 shadow-lg">
                 <span class="material-symbols-outlined text-5xl text-slate-400">business_disabled</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importadores registrados</p>
+                <p class="text-sm font-semibold text-white mt-4">No hay importadores registrados</p>
                 <p class="text-xs text-slate-400 mt-1" v-if="auth.role === 'administrador'">Presione el botón superior para dar de alta una nueva empresa.</p>
             </div>
 
@@ -64,24 +64,24 @@
                 <div 
                     v-for="imp in importers" 
                     :key="imp.id" 
-                    class="bg-white p-6 rounded-lg border border-slate-200 hover:border-primary/20 hover:shadow-md transition-all flex flex-col justify-between"
+                    class="glass-card p-6 rounded-lg border border-white/10 hover:border-primary/20 hover:shadow-md transition-all flex flex-col justify-between"
                 >
                     <div>
                         <div class="flex items-start justify-between gap-2">
-                            <h3 class="font-bold text-slate-800 text-sm tracking-tight">{{ imp.nombre }}</h3>
-                            <span class="text-[9px] font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 uppercase flex-shrink-0">NIT: {{ imp.nit }}</span>
+                            <h3 class="font-bold text-white text-sm tracking-tight">{{ imp.nombre }}</h3>
+                            <span class="text-[9px] font-mono bg-slate-100 text-gray-300 px-2 py-0.5 rounded border border-white/10 uppercase flex-shrink-0">NIT: {{ imp.nit }}</span>
                         </div>
                         <div class="mt-4 space-y-2 text-xs">
                             <div>
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Productos Autorizados</span>
-                                <p class="text-slate-600 font-semibold mt-0.5">{{ imp.tipo_productos }}</p>
+                                <p class="text-gray-300 font-semibold mt-0.5">{{ imp.tipo_productos }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-2" v-if="auth.role === 'administrador'">
+                    <div class="mt-6 pt-4 border-t border-white/10 flex justify-end gap-2" v-if="auth.role === 'administrador'">
                         <button 
                             @click="openImporterModal(imp)"
-                            class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded font-bold text-[10px] uppercase flex items-center gap-1 transition-colors"
+                            class="px-3 py-1.5 bg-black/20 hover:bg-slate-100 text-gray-300 border border-white/10 rounded font-bold text-[10px] uppercase flex items-center gap-1 transition-colors"
                         >
                             <span class="material-symbols-outlined text-xs">edit</span> Editar
                         </button>
@@ -99,12 +99,12 @@
         <!-- TAB 2: HISTORIAL DE IMPORTACIONES -->
         <div v-if="activeTab === 'importaciones'" class="space-y-6">
             <!-- Filter Bar -->
-            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap gap-4 items-end">
+            <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap gap-4 items-end">
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Filtrar por Importador</label>
                     <select 
                         v-model="filterImporter" 
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     >
                         <option value="">Todos los importadores</option>
                         <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
@@ -116,7 +116,7 @@
                         v-model="filterProductType" 
                         type="text" 
                         placeholder="Ej. cárnico ave, lácteos"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     />
                 </div>
                 <button 
@@ -127,24 +127,24 @@
                 </button>
             </div>
 
-            <div v-if="loadingImports" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <div v-if="loadingImports" class="py-16 text-center text-sm text-slate-400 glass-card rounded border border-white/10 shadow-lg">
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando historial de importaciones...</p>
             </div>
 
-            <div v-else-if="imports.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+            <div v-else-if="imports.length === 0" class="py-20 text-center glass-card rounded border border-white/10 shadow-lg">
                 <span class="material-symbols-outlined text-5xl text-slate-400">inventory_2</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importaciones registradas para el filtro seleccionado</p>
+                <p class="text-sm font-semibold text-white mt-4">No hay importaciones registradas para el filtro seleccionado</p>
                 <p class="text-xs text-slate-400 mt-1">Comience agregando una nueva importación con el botón superior.</p>
             </div>
 
             <!-- Imports Table (Desktop) & Cards (Mobile) -->
-            <div v-else class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+            <div v-else class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
                 <!-- Desktop View -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                            <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 <th class="px-6 py-4">Fecha</th>
                                 <th class="px-6 py-4">Importador</th>
                                 <th class="px-6 py-4">Tipo de Producto</th>
@@ -153,15 +153,15 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs">
-                            <tr v-for="item in imports" :key="item.id" class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 font-mono font-bold text-slate-600">{{ item.fecha }}</td>
+                            <tr v-for="item in imports" :key="item.id" class="hover:bg-black/20 transition-colors">
+                                <td class="px-6 py-4 font-mono font-bold text-gray-300">{{ item.fecha }}</td>
                                 <td class="px-6 py-4">
-                                    <p class="font-bold text-slate-800">{{ item.importador_nombre }}</p>
+                                    <p class="font-bold text-white">{{ item.importador_nombre }}</p>
                                     <p class="text-[9px] text-slate-400 font-mono">NIT: {{ item.importador_nit }}</p>
                                 </td>
-                                <td class="px-6 py-4 font-semibold text-slate-600">{{ item.tipo_producto }}</td>
-                                <td class="px-6 py-4 text-slate-600 font-semibold">{{ item.establecimiento || 'N/A' }}</td>
-                                <td class="px-6 py-4 text-right font-mono font-black text-slate-800 text-sm bg-blue-50/10">
+                                <td class="px-6 py-4 font-semibold text-gray-300">{{ item.tipo_producto }}</td>
+                                <td class="px-6 py-4 text-gray-300 font-semibold">{{ item.establecimiento || 'N/A' }}</td>
+                                <td class="px-6 py-4 text-right font-mono font-black text-white text-sm bg-blue-50/10">
                                     {{ formatVolume(item.volumen_kilos) }} kg
                                 </td>
                             </tr>
@@ -173,14 +173,14 @@
                 <div class="block md:hidden divide-y divide-slate-100">
                     <div v-for="item in imports" :key="item.id" class="p-4 space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="font-mono text-[10px] font-bold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-600">{{ item.fecha }}</span>
-                            <span class="font-mono font-black text-slate-800 text-xs">{{ formatVolume(item.volumen_kilos) }} kg</span>
+                            <span class="font-mono text-[10px] font-bold bg-slate-100 border border-white/10 px-2 py-0.5 rounded text-gray-300">{{ item.fecha }}</span>
+                            <span class="font-mono font-black text-white text-xs">{{ formatVolume(item.volumen_kilos) }} kg</span>
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-slate-800">{{ item.importador_nombre }}</p>
+                            <p class="text-xs font-bold text-white">{{ item.importador_nombre }}</p>
                             <p class="text-[9px] text-slate-400 font-mono">NIT: {{ item.importador_nit }}</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-[10px] pt-1 text-slate-500 font-semibold">
+                        <div class="grid grid-cols-2 gap-2 text-[10px] pt-1 text-gray-300 font-semibold">
                             <div>
                                 <span class="block text-[8px] text-slate-400 font-bold uppercase tracking-wider">Producto</span>
                                 <span>{{ item.tipo_producto }}</span>
@@ -197,7 +197,7 @@
 
         <!-- MODAL: REGISTRAR/EDITAR IMPORTADOR -->
         <div v-if="showImporterModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg border border-slate-200 shadow-xl max-w-md w-full overflow-hidden animate-fade-in">
+            <div class="glass-card rounded-lg border border-white/10 shadow-xl max-w-md w-full overflow-hidden animate-fade-in">
                 <div class="px-6 py-4 bg-slate-900 text-white flex justify-between items-center">
                     <h3 class="font-headline font-bold text-sm uppercase tracking-wider">
                         {{ editingImporterId ? 'Editar Importador' : 'Registrar Nuevo Importador' }}
@@ -208,32 +208,32 @@
                 </div>
                 <form @submit.prevent="saveImporter" class="p-6 space-y-4">
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Nombre de la Empresa *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Nombre de la Empresa *</label>
                         <input 
                             v-model="importerForm.nombre" 
                             type="text" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">NIT de la Empresa *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">NIT de la Empresa *</label>
                         <input 
                             v-model="importerForm.nit" 
                             type="text" 
                             required 
                             placeholder="Ej. 1234567-8"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tipos de Productos Autorizados *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Tipos de Productos Autorizados *</label>
                         <textarea 
                             v-model="importerForm.tipo_productos" 
                             required 
                             rows="3" 
                             placeholder="Especifique los productos autorizados (ej. Cárnico de ave, Lácteos, Quesos)"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         ></textarea>
                     </div>
 
@@ -241,7 +241,7 @@
                         <button 
                             type="button" 
                             @click="showImporterModal = false" 
-                            class="px-4 py-2 border border-slate-200 text-slate-700 font-bold rounded hover:bg-slate-50 transition-colors"
+                            class="px-4 py-2 border border-white/10 text-gray-300 font-bold rounded hover:bg-black/20 transition-colors"
                         >
                             Cancelar
                         </button>
@@ -260,7 +260,7 @@
 
         <!-- MODAL: REGISTRAR IMPORTACION -->
         <div v-if="showImportModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white rounded-lg border border-slate-200 shadow-xl max-w-md w-full overflow-hidden animate-fade-in">
+            <div class="glass-card rounded-lg border border-white/10 shadow-xl max-w-md w-full overflow-hidden animate-fade-in">
                 <div class="px-6 py-4 bg-slate-900 text-white flex justify-between items-center">
                     <h3 class="font-headline font-bold text-sm uppercase tracking-wider">Registrar Importación</h3>
                     <button @click="showImportModal = false" class="text-white hover:text-slate-300">
@@ -269,53 +269,53 @@
                 </div>
                 <form @submit.prevent="saveImport" class="p-6 space-y-4">
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Fecha del Cargamento *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Fecha del Cargamento *</label>
                         <input 
                             v-model="importForm.fecha" 
                             type="date" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Empresa Importadora *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Empresa Importadora *</label>
                         <select 
                             v-model="importForm.importador_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         >
                             <option value="">Seleccione el importador</option>
                             <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
                         </select>
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tipo de Producto *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Tipo de Producto *</label>
                         <input 
                             v-model="importForm.tipo_producto" 
                             type="text" 
                             required 
                             placeholder="Ej. Cárnico de ave, Lácteos, Quesos"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Volumen en Kilos *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Volumen en Kilos *</label>
                         <input 
                             v-model.number="importForm.volumen_kilos" 
                             type="number" 
                             step="0.01" 
                             required 
                             placeholder="Ej. 12000.50"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-mono"
                         />
                     </div>
                     <div class="text-xs">
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Establecimiento / Lugar de Ingreso</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Establecimiento / Lugar de Ingreso</label>
                         <input 
                             v-model="importForm.establecimiento" 
                             type="text" 
                             placeholder="Ej. Aduana Express, Puerto Quetzal"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
@@ -323,7 +323,7 @@
                         <button 
                             type="button" 
                             @click="showImportModal = false" 
-                            class="px-4 py-2 border border-slate-200 text-slate-700 font-bold rounded hover:bg-slate-50 transition-colors"
+                            class="px-4 py-2 border border-white/10 text-gray-300 font-bold rounded hover:bg-black/20 transition-colors"
                         >
                             Cancelar
                         </button>

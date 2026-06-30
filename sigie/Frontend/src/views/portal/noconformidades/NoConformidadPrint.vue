@@ -1,6 +1,6 @@
 <template>
-    <div class="max-w-4xl mx-auto p-8 bg-white text-black font-serif leading-relaxed">
-        <div v-if="loading" class="py-20 text-center text-sm font-sans text-slate-500 no-print">
+    <div class="max-w-4xl mx-auto p-8 glass-card text-black font-serif leading-relaxed">
+        <div v-if="loading" class="py-20 text-center text-sm font-sans text-gray-300 no-print">
             <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
             <p class="mt-2">Cargando reporte para impresión...</p>
         </div>
@@ -13,32 +13,32 @@
             <!-- Institutional Header -->
             <div class="border-b-4 border-slate-900 pb-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 flex items-center justify-center bg-white rounded border border-slate-300 p-1">
+                    <div class="w-12 h-12 flex items-center justify-center glass-card rounded border border-slate-300 p-1">
                         <img :src="logoUrl" alt="SIGIE Logo" class="max-w-full max-h-full object-contain" />
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black tracking-tight font-sans text-slate-900 uppercase">SIGIE</h1>
-                        <p class="text-[9px] font-sans font-bold uppercase tracking-widest text-slate-500">Sistema de Gestión de Inspecciones</p>
+                        <h1 class="text-2xl font-black tracking-tight font-sans text-white uppercase">SIGIE</h1>
+                        <p class="text-[9px] font-sans font-bold uppercase tracking-widest text-gray-300">Sistema de Gestión de Inspecciones</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <h2 class="text-sm font-sans font-extrabold uppercase text-slate-800">Acta de No Conformidad</h2>
-                    <p class="font-mono text-xs font-bold text-slate-900">Nº ACTA-NC-{{ noConformidad.id.toString().padStart(5, '0') }}</p>
-                    <p class="text-[10px] text-slate-500 font-sans mt-0.5">Fecha Emisión: {{ new Date().toLocaleDateString('es-ES') }}</p>
+                    <h2 class="text-sm font-sans font-extrabold uppercase text-white">Acta de No Conformidad</h2>
+                    <p class="font-mono text-xs font-bold text-white">Nº ACTA-NC-{{ noConformidad.id.toString().padStart(5, '0') }}</p>
+                    <p class="text-[10px] text-gray-300 font-sans mt-0.5">Fecha Emisión: {{ new Date().toLocaleDateString('es-ES') }}</p>
                 </div>
             </div>
 
             <!-- General Metadata Block -->
-            <div class="grid grid-cols-2 gap-6 bg-slate-50 p-4 border border-slate-200 rounded-md font-sans text-xs">
+            <div class="grid grid-cols-2 gap-6 bg-black/20 p-4 border border-white/10 rounded-md font-sans text-xs">
                 <div>
-                    <h3 class="font-extrabold text-[10px] uppercase text-slate-500 tracking-wider mb-2">1. Origen: Inspección Oficial Permanente</h3>
-                    <p class="text-sm font-bold text-slate-900">{{ noConformidad.establecimiento }}</p>
-                    <p class="text-slate-600 mt-1">Fecha de Inspección: <span class="font-bold text-slate-900">{{ noConformidad.fecha_inspeccion }}</span></p>
+                    <h3 class="font-extrabold text-[10px] uppercase text-gray-300 tracking-wider mb-2">1. Origen: Inspección Oficial Permanente</h3>
+                    <p class="text-sm font-bold text-white">{{ noConformidad.establecimiento }}</p>
+                    <p class="text-gray-300 mt-1">Fecha de Inspección: <span class="font-bold text-white">{{ noConformidad.fecha_inspeccion }}</span></p>
                 </div>
-                <div class="border-l border-slate-200 pl-6">
-                    <h3 class="font-extrabold text-[10px] uppercase text-slate-500 tracking-wider mb-2">2. Inspector Oficial Asignado</h3>
-                    <p class="text-sm font-bold text-slate-900">{{ noConformidad.inspector_nombre }}</p>
-                    <p class="text-slate-600 mt-1">Código: <span class="font-mono font-bold">{{ noConformidad.inspector_codigo }}</span> | Área: <span class="font-bold">{{ noConformidad.inspector_area }}</span></p>
+                <div class="border-l border-white/10 pl-6">
+                    <h3 class="font-extrabold text-[10px] uppercase text-gray-300 tracking-wider mb-2">2. Inspector Oficial Asignado</h3>
+                    <p class="text-sm font-bold text-white">{{ noConformidad.inspector_nombre }}</p>
+                    <p class="text-gray-300 mt-1">Código: <span class="font-mono font-bold">{{ noConformidad.inspector_codigo }}</span> | Área: <span class="font-bold">{{ noConformidad.inspector_area }}</span></p>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@
             <div class="space-y-6">
                 <!-- Hallazgos -->
                 <div>
-                    <h3 class="font-sans font-extrabold text-xs uppercase text-slate-800 tracking-wider border-b border-slate-300 pb-1 mb-2">3. Desviaciones / No Conformidades Detectadas</h3>
+                    <h3 class="font-sans font-extrabold text-xs uppercase text-white tracking-wider border-b border-slate-300 pb-1 mb-2">3. Desviaciones / No Conformidades Detectadas</h3>
                     <div class="text-xs whitespace-pre-line leading-relaxed text-justify px-2">
                         {{ noConformidad.hallazgos_detectados }}
                     </div>
@@ -54,18 +54,18 @@
 
                 <!-- Normativa -->
                 <div v-if="noConformidad.norma_especifica">
-                    <h3 class="font-sans font-extrabold text-xs uppercase text-slate-800 tracking-wider border-b border-slate-300 pb-1 mb-2">4. Normativa Específica Infraccionada / Asociada</h3>
-                    <p class="text-xs font-bold text-slate-900 bg-slate-100 p-3 rounded-md border border-slate-200 inline-block font-sans">
+                    <h3 class="font-sans font-extrabold text-xs uppercase text-white tracking-wider border-b border-slate-300 pb-1 mb-2">4. Normativa Específica Infraccionada / Asociada</h3>
+                    <p class="text-xs font-bold text-white bg-slate-100 p-3 rounded-md border border-white/10 inline-block font-sans">
                         {{ noConformidad.norma_especifica }}
                     </p>
                 </div>
 
                 <!-- Seguimiento y Cierre -->
                 <div>
-                    <h3 class="font-sans font-extrabold text-xs uppercase text-slate-800 tracking-wider border-b border-slate-300 pb-1 mb-2">5. Estado de Seguimiento y Acciones Correctivas</h3>
+                    <h3 class="font-sans font-extrabold text-xs uppercase text-white tracking-wider border-b border-slate-300 pb-1 mb-2">5. Estado de Seguimiento y Acciones Correctivas</h3>
                     <div class="grid grid-cols-2 gap-4 text-xs font-sans mt-2">
                         <div>
-                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Estado del Hallazgo</span>
+                            <span class="text-[10px] text-gray-300 block uppercase font-bold">Estado del Hallazgo</span>
                             <span class="text-xs font-extrabold uppercase border px-2 py-0.5 rounded inline-block mt-1"
                                 :class="[noConformidad.estado_hallazgo === 'Abierto' ? 'border-red-300 text-red-700 bg-red-50' : 
                                          noConformidad.estado_hallazgo === 'En proceso' ? 'border-amber-300 text-amber-700 bg-amber-50' : 
@@ -75,15 +75,15 @@
                             </span>
                         </div>
                         <div v-if="noConformidad.fecha_cumplimiento">
-                            <span class="text-[10px] text-slate-500 block uppercase font-bold">Fecha Cumplimiento / Cierre</span>
-                            <span class="text-xs font-bold text-slate-900 mt-1 block">{{ noConformidad.fecha_cumplimiento }}</span>
+                            <span class="text-[10px] text-gray-300 block uppercase font-bold">Fecha Cumplimiento / Cierre</span>
+                            <span class="text-xs font-bold text-white mt-1 block">{{ noConformidad.fecha_cumplimiento }}</span>
                         </div>
                     </div>
 
                     <!-- Verificación oficial -->
                     <div class="mt-4" v-if="noConformidad.verificacion_oficial">
-                        <span class="text-[10px] text-slate-500 block uppercase font-bold font-sans">Detalle de la Verificación Realizada</span>
-                        <div class="text-xs whitespace-pre-line leading-relaxed text-justify mt-1 p-3 border border-slate-200 rounded-md bg-slate-50">
+                        <span class="text-[10px] text-gray-300 block uppercase font-bold font-sans">Detalle de la Verificación Realizada</span>
+                        <div class="text-xs whitespace-pre-line leading-relaxed text-justify mt-1 p-3 border border-white/10 rounded-md bg-black/20">
                             {{ noConformidad.verificacion_oficial }}
                         </div>
                     </div>
@@ -91,8 +91,8 @@
 
                 <!-- Observaciones -->
                 <div v-if="noConformidad.observaciones">
-                    <h3 class="font-sans font-extrabold text-xs uppercase text-slate-800 tracking-wider border-b border-slate-300 pb-1 mb-2">6. Observaciones Generales</h3>
-                    <div class="text-xs italic text-slate-700 px-2">
+                    <h3 class="font-sans font-extrabold text-xs uppercase text-white tracking-wider border-b border-slate-300 pb-1 mb-2">6. Observaciones Generales</h3>
+                    <div class="text-xs italic text-gray-300 px-2">
                         {{ noConformidad.observaciones }}
                     </div>
                 </div>
@@ -103,14 +103,14 @@
                 <div class="grid grid-cols-2 gap-12 font-sans text-xs">
                     <div class="text-center">
                         <div class="border-t border-slate-400 mx-auto w-48 mb-2"></div>
-                        <p class="font-bold text-slate-900">{{ noConformidad.inspector_nombre }}</p>
-                        <p class="text-[10px] text-slate-500">Inspector Oficial Asignado (Firma)</p>
+                        <p class="font-bold text-white">{{ noConformidad.inspector_nombre }}</p>
+                        <p class="text-[10px] text-gray-300">Inspector Oficial Asignado (Firma)</p>
                         <p class="text-[9px] text-slate-400 font-mono mt-0.5">Código: {{ noConformidad.inspector_codigo }}</p>
                     </div>
                     <div class="text-center">
                         <div class="border-t border-slate-400 mx-auto w-48 mb-2"></div>
-                        <p class="font-bold text-slate-900">Personal de Rastro / Responsable</p>
-                        <p class="text-[10px] text-slate-500">Firma de Recepción / Enterado</p>
+                        <p class="font-bold text-white">Personal de Rastro / Responsable</p>
+                        <p class="text-[10px] text-gray-300">Firma de Recepción / Enterado</p>
                         <p class="text-[9px] text-slate-400 mt-0.5">Fecha: ____/____/________</p>
                     </div>
                 </div>

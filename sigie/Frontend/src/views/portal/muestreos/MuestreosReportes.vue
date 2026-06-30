@@ -10,7 +10,7 @@
                 <button 
                     @click="exportToExcel" 
                     :disabled="coverageData.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-emerald-700 font-headline"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 border border-emerald-700 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
@@ -19,7 +19,7 @@
         </div>
 
         <!-- Year Selector and Tab Controls -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap items-end justify-between gap-4">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap items-end justify-between gap-4">
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Seleccionar Año de Planificación</label>
                 <input 
@@ -27,26 +27,26 @@
                     type="number" 
                     min="2020" 
                     max="2035"
-                    class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-semibold"
+                    class="bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-semibold"
                 />
             </div>
             
-            <div class="flex gap-2 border-b border-slate-100 pb-1">
+            <div class="flex gap-2 border-b border-white/10 pb-1">
                 <button 
                     @click="activeTab = 'cobertura'"
-                    :class="['px-4 py-2 font-bold rounded', activeTab === 'cobertura' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100']"
+                    :class="['px-4 py-2 font-bold rounded', activeTab === 'cobertura' ? 'bg-slate-900 text-white' : 'text-gray-300 hover:bg-slate-100']"
                 >
                     Indicadores de Cobertura
                 </button>
                 <button 
                     @click="activeTab = 'algoritmo'"
-                    :class="['px-4 py-2 font-bold rounded', activeTab === 'algoritmo' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100']"
+                    :class="['px-4 py-2 font-bold rounded', activeTab === 'algoritmo' ? 'bg-slate-900 text-white' : 'text-gray-300 hover:bg-slate-100']"
                 >
                     Algoritmo Proporcional
                 </button>
                 <button 
                     @click="activeTab = 'config'"
-                    :class="['px-4 py-2 font-bold rounded', activeTab === 'config' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100']"
+                    :class="['px-4 py-2 font-bold rounded', activeTab === 'config' ? 'bg-slate-900 text-white' : 'text-gray-300 hover:bg-slate-100']"
                 >
                     Configurar Metas y Umbrales
                 </button>
@@ -55,41 +55,41 @@
 
         <!-- TAB 1: INDICADORES DE COBERTURA -->
         <div v-if="activeTab === 'cobertura'" class="space-y-8">
-            <div v-if="loadingCoverage" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <div v-if="loadingCoverage" class="py-16 text-center text-sm text-slate-400 glass-card rounded border border-white/10 shadow-lg">
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando indicadores de cobertura...</p>
             </div>
 
-            <div v-else-if="coverageData.length === 0" class="py-16 text-center bg-white rounded border border-slate-200 shadow-sm">
+            <div v-else-if="coverageData.length === 0" class="py-16 text-center glass-card rounded border border-white/10 shadow-lg">
                 <span class="material-symbols-outlined text-5xl text-slate-400">analytics</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No hay metas configuradas para el año {{ selectedYear }}</p>
+                <p class="text-sm font-semibold text-white mt-4">No hay metas configuradas para el año {{ selectedYear }}</p>
                 <p class="text-xs text-slate-400 mt-1">Por favor configure metas anuales en la pestaña respectiva para comenzar.</p>
             </div>
 
             <div v-else class="space-y-6">
                 <!-- KPI Dashboard Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                    <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                         <div>
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Meta de Muestreos Planificada</p>
-                            <h3 class="text-3xl font-black text-slate-800 mt-1">{{ totalMeta }}</h3>
+                            <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Meta de Muestreos Planificada</p>
+                            <h3 class="text-3xl font-black text-white mt-1">{{ totalMeta }}</h3>
                         </div>
                         <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border border-blue-200">
                             <span class="material-symbols-outlined text-xl">flag</span>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                    <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                         <div>
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Muestreos Asignados</p>
+                            <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Muestreos Asignados</p>
                             <h3 class="text-3xl font-black text-amber-600 mt-1">{{ totalAsignados }}</h3>
                         </div>
                         <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center border border-amber-200">
                             <span class="material-symbols-outlined text-xl">assignment</span>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                    <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                         <div>
-                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Muestreos Ejecutados</p>
+                            <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Muestreos Ejecutados</p>
                             <h3 class="text-3xl font-black text-emerald-600 mt-1">{{ totalEjecutados }}</h3>
                         </div>
                         <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center border border-emerald-200">
@@ -99,11 +99,11 @@
                 </div>
 
                 <!-- Coverage Table -->
-                <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+                <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                                <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                     <th class="px-6 py-4">Tipo de Producto</th>
                                     <th class="px-4 py-4 text-center">Meta Anual</th>
                                     <th class="px-4 py-4 text-center">Sugeridos (Borrador)</th>
@@ -114,16 +114,16 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 text-xs">
-                                <tr v-for="item in coverageData" :key="item.id" class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-bold text-slate-800">{{ item.tipo_producto }}</td>
-                                    <td class="px-4 py-4 text-center font-mono font-bold text-slate-700">{{ item.meta_muestreo_anual }}</td>
+                                <tr v-for="item in coverageData" :key="item.id" class="hover:bg-black/20 transition-colors">
+                                    <td class="px-6 py-4 font-bold text-white">{{ item.tipo_producto }}</td>
+                                    <td class="px-4 py-4 text-center font-mono font-bold text-gray-300">{{ item.meta_muestreo_anual }}</td>
                                     <td class="px-4 py-4 text-center font-mono font-semibold text-amber-600">{{ item.total_sugeridos }}</td>
                                     <td class="px-4 py-4 text-center font-mono font-semibold text-blue-600">{{ item.total_asignados }}</td>
                                     <td class="px-4 py-4 text-center font-mono font-semibold text-red-600">{{ item.total_rechazados }}</td>
                                     <td class="px-4 py-4 text-center font-mono font-black text-emerald-600 bg-emerald-50/10">{{ item.total_ejecutados }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                                            <div class="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden border border-white/10">
                                                 <div 
                                                     class="h-full rounded-full transition-all duration-500 bg-emerald-500"
                                                     :style="{ width: `${getCoberturaPercentage(item)}%` }"
@@ -144,13 +144,13 @@
 
         <!-- TAB 2: ALGORITMO PROPORCIONAL -->
         <div v-if="activeTab === 'algoritmo'" class="space-y-6">
-            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Producto a Sugerir</label>
                     <select 
                         v-model="algoForm.tipo_producto" 
                         @change="onAlgoProductChange"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     >
                         <option value="">Seleccione el tipo de producto</option>
                         <option v-for="cfg in configs" :key="cfg.id" :value="cfg.tipo_producto">{{ cfg.tipo_producto }}</option>
@@ -163,40 +163,40 @@
                         type="number"
                         readonly
                         placeholder="Configure una meta primero"
-                        class="w-full bg-slate-100 border border-slate-300 rounded px-3 py-2 text-xs outline-none text-slate-500 font-bold"
+                        class="w-full bg-slate-100 border border-slate-300 rounded px-3 py-2 text-xs outline-none text-gray-300 font-bold"
                     />
                 </div>
                 <button 
                     @click="previewSuggestions"
                     :disabled="!algoForm.tipo_producto || !algoForm.meta_muestreo_anual"
-                    class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded shadow-lg transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <span class="material-symbols-outlined text-sm">rotate_left</span> Calcular Muestreo Proporcional
                 </button>
             </div>
 
             <!-- Suggestion draft preview -->
-            <div v-if="loadingAlgo" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <div v-if="loadingAlgo" class="py-16 text-center text-sm text-slate-400 glass-card rounded border border-white/10 shadow-lg">
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Analizando importaciones del año anterior ({{ selectedYear - 1 }})...</p>
             </div>
 
-            <div v-else-if="showPreview && suggestions.length === 0" class="py-16 text-center bg-white rounded border border-slate-200 shadow-sm">
+            <div v-else-if="showPreview && suggestions.length === 0" class="py-16 text-center glass-card rounded border border-white/10 shadow-lg">
                 <span class="material-symbols-outlined text-5xl text-slate-400">warning</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importaciones registradas en el año {{ selectedYear - 1 }} para este producto</p>
+                <p class="text-sm font-semibold text-white mt-4">No hay importaciones registradas en el año {{ selectedYear - 1 }} para este producto</p>
                 <p class="text-xs text-slate-400 mt-1">El algoritmo requiere historial del año anterior para distribuir proporcionalmente.</p>
             </div>
 
             <div v-else-if="showPreview" class="space-y-6">
-                <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
-                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="font-bold text-slate-800 text-xs">Propuesta de Distribución Proporcional de Muestras</h4>
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Año de referencia del volumen: {{ selectedYear - 1 }}</span>
+                <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
+                    <div class="p-4 bg-black/20 border-b border-white/10 flex justify-between items-center">
+                        <h4 class="font-bold text-white text-xs">Propuesta de Distribución Proporcional de Muestras</h4>
+                        <span class="text-[10px] font-bold text-gray-300 uppercase">Año de referencia del volumen: {{ selectedYear - 1 }}</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-100/50 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
+                                <tr class="bg-slate-100/50 border-b border-white/10 text-[10px] font-extrabold uppercase text-gray-300 tracking-wider">
                                     <th class="px-6 py-4">Importador</th>
                                     <th class="px-6 py-4 text-right">Volumen Importado ({{ selectedYear - 1 }})</th>
                                     <th class="px-6 py-4 text-center">% del Volumen Total (Top 10)</th>
@@ -204,19 +204,19 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 text-xs">
-                                <tr v-for="sug in suggestions" :key="sug.importador_id" class="hover:bg-slate-50 transition-colors">
+                                <tr v-for="sug in suggestions" :key="sug.importador_id" class="hover:bg-black/20 transition-colors">
                                     <td class="px-6 py-4">
-                                        <p class="font-bold text-slate-800">{{ sug.importador_nombre }}</p>
+                                        <p class="font-bold text-white">{{ sug.importador_nombre }}</p>
                                         <p class="text-[9px] text-slate-400 font-mono">NIT: {{ sug.importador_nit }}</p>
                                     </td>
-                                    <td class="px-6 py-4 text-right font-mono font-bold text-slate-700">{{ formatVolume(sug.volumen_total) }} kg</td>
-                                    <td class="px-6 py-4 text-center font-mono font-semibold text-slate-600">{{ sug.volumen_porcentaje }}%</td>
+                                    <td class="px-6 py-4 text-right font-mono font-bold text-gray-300">{{ formatVolume(sug.volumen_total) }} kg</td>
+                                    <td class="px-6 py-4 text-center font-mono font-semibold text-gray-300">{{ sug.volumen_porcentaje }}%</td>
                                     <td class="px-6 py-4 text-center bg-blue-50/10">
                                         <input 
                                             v-model.number="sug.muestras_sugeridas" 
                                             type="number" 
                                             min="0"
-                                            class="bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-center w-24 focus:border-blue-600 outline-none transition-all font-mono font-black"
+                                            class="glass-card border border-slate-300 rounded px-3 py-1.5 text-xs text-center w-24 focus:border-blue-600 outline-none transition-all font-mono font-black"
                                         />
                                     </td>
                                 </tr>
@@ -224,14 +224,14 @@
                         </table>
                     </div>
                     
-                    <div class="p-6 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
-                        <div class="text-xs font-semibold text-slate-600">
-                            Total Planificado Sugerido: <span class="font-black text-slate-800 text-sm">{{ totalSugerenciasCalculadas }}</span> de {{ algoForm.meta_muestreo_anual }} metas.
+                    <div class="p-6 bg-black/20 border-t border-white/10 flex justify-between items-center">
+                        <div class="text-xs font-semibold text-gray-300">
+                            Total Planificado Sugerido: <span class="font-black text-white text-sm">{{ totalSugerenciasCalculadas }}</span> de {{ algoForm.meta_muestreo_anual }} metas.
                         </div>
                         <button 
                             @click="saveSuggestions"
                             :disabled="savingAlgo"
-                            class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded shadow-sm flex items-center justify-center gap-1.5 border border-emerald-700"
+                            class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded shadow-lg flex items-center justify-center gap-1.5 border border-emerald-700"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="savingAlgo">sync</span>
                             <span>Guardar Sugerencias en Borrador</span>
@@ -244,50 +244,50 @@
         <!-- TAB 3: CONFIGURAR METAS Y UMBRALES -->
         <div v-if="activeTab === 'config'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Settings Form -->
-            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium h-fit">
-                <h3 class="font-bold text-slate-800 text-sm border-b pb-2 mb-4 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-slate-800 text-sm">settings</span>
+            <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium h-fit">
+                <h3 class="font-bold text-white text-sm border-b pb-2 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-white text-sm">settings</span>
                     Definir Metas y Alarmas
                 </h3>
                 <form @submit.prevent="saveConfiguration" class="space-y-4 text-xs">
                     <div>
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tipo de Producto *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Tipo de Producto *</label>
                         <input 
                             v-model="configForm.tipo_producto" 
                             type="text" 
                             required 
                             placeholder="Ej. Cárnico de ave, Lácteos"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Meta Anual de Muestras (Cantidad) *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Meta Anual de Muestras (Cantidad) *</label>
                         <input 
                             v-model.number="configForm.meta_muestreo_anual" 
                             type="number" 
                             min="1" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-mono"
                         />
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Umbral de Alarma por Volumen (Kilos) *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Umbral de Alarma por Volumen (Kilos) *</label>
                         <input 
                             v-model.number="configForm.umbral_volumen" 
                             type="number" 
                             step="0.01"
                             min="1" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-mono"
                         />
                         <span class="text-[9px] text-slate-400 block mt-1">Al acumular esta cantidad de kilos por importador, se generará una alerta de muestreo automática.</span>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-600 uppercase tracking-wider mb-1.5">Inspector por Defecto para Alertas *</label>
+                        <label class="block font-bold text-gray-300 uppercase tracking-wider mb-1.5">Inspector por Defecto para Alertas *</label>
                         <select 
                             v-model="configForm.inspector_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         >
                             <option value="">Seleccione el inspector</option>
                             <option v-for="ins in inspectors" :key="ins.id" :value="ins.id">{{ ins.nombre }}</option>
@@ -297,7 +297,7 @@
                     <button 
                         type="submit" 
                         :disabled="savingConfig"
-                        class="w-full py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 shadow-sm flex items-center justify-center gap-1.5"
+                        class="w-full py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 shadow-lg flex items-center justify-center gap-1.5"
                     >
                         <span class="material-symbols-outlined text-sm animate-spin" v-if="savingConfig">sync</span>
                         <span>Guardar Planificación</span>
@@ -306,8 +306,8 @@
             </div>
 
             <!-- Config List -->
-            <div class="lg:col-span-2 bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                <h3 class="font-bold text-slate-800 text-sm border-b pb-2 mb-4">Planificaciones Configuradas ({{ selectedYear }})</h3>
+            <div class="lg:col-span-2 glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                <h3 class="font-bold text-white text-sm border-b pb-2 mb-4">Planificaciones Configuradas ({{ selectedYear }})</h3>
                 
                 <div v-if="configs.length === 0" class="py-12 text-center text-slate-400">
                     <span class="material-symbols-outlined text-3xl">info</span>
@@ -318,17 +318,17 @@
                     <div 
                         v-for="cfg in configs" 
                         :key="cfg.id" 
-                        class="p-4 border border-slate-200 rounded-md bg-slate-50/50 hover:bg-slate-50 transition-colors flex justify-between items-start"
+                        class="p-4 border border-white/10 rounded-md bg-black/20/50 hover:bg-black/20 transition-colors flex justify-between items-start"
                     >
                         <div class="space-y-1">
-                            <h4 class="font-bold text-slate-800 text-sm">{{ cfg.tipo_producto }}</h4>
-                            <p class="text-slate-500 text-[10px] font-semibold">Meta de muestreo: <span class="font-black text-slate-700 font-mono">{{ cfg.meta_muestreo_anual }} muestras</span></p>
-                            <p class="text-slate-500 text-[10px] font-semibold">Umbral de alarma: <span class="font-black text-slate-700 font-mono">{{ formatVolume(cfg.umbral_volumen) }} kg</span></p>
+                            <h4 class="font-bold text-white text-sm">{{ cfg.tipo_producto }}</h4>
+                            <p class="text-gray-300 text-[10px] font-semibold">Meta de muestreo: <span class="font-black text-gray-300 font-mono">{{ cfg.meta_muestreo_anual }} muestras</span></p>
+                            <p class="text-gray-300 text-[10px] font-semibold">Umbral de alarma: <span class="font-black text-gray-300 font-mono">{{ formatVolume(cfg.umbral_volumen) }} kg</span></p>
                             <p class="text-slate-400 text-[9px] font-mono">Inspector asignado a alarmas: {{ cfg.inspector_nombre }}</p>
                         </div>
                         <button 
                             @click="loadConfigToEdit(cfg)"
-                            class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded font-bold text-[9px] uppercase"
+                            class="px-2.5 py-1 glass-card hover:bg-slate-100 text-gray-300 border border-white/10 rounded font-bold text-[9px] uppercase"
                         >
                             Editar
                         </button>
