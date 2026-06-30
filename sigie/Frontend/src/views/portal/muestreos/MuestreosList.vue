@@ -3,14 +3,14 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">Muestreos en Importaciones</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Sugerencias algorítmicas, alarmas por volumen y asignaciones dirigidas manualmente.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Muestreos en Importaciones</h1>
+                <p class="text-xs text-white/60 mt-1">Sugerencias algorítmicas, alarmas por volumen y asignaciones dirigidas manualmente.</p>
             </div>
             <div class="flex items-center gap-3">
                 <button 
                     v-if="auth.role === 'administrador'"
                     @click="openManualModal"
-                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-primary-dim font-headline"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">assignment_add</span>
                     Muestreo Dirigido
@@ -19,12 +19,12 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado</label>
                 <select 
                     v-model="filters.estado" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 >
                     <option value="">Todos los estados</option>
                     <option value="Sugerido">Sugerido</option>
@@ -34,39 +34,39 @@
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Importador</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Importador</label>
                 <select 
                     v-model="filters.importador_id" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 >
                     <option value="">Todos los importadores</option>
                     <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
                 </select>
             </div>
             <div v-if="auth.role === 'administrador'">
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Inspector Asignado</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Inspector Asignado</label>
                 <select 
                     v-model="filters.inspector_id" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 >
                     <option value="">Todos los inspectores</option>
                     <option v-for="ins in inspectors" :key="ins.id" :value="ins.id">{{ ins.nombre }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha Desde</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha Desde</label>
                 <input 
                     v-model="filters.fecha_inicio" 
                     type="date"
-                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha Hasta</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha Hasta</label>
                 <input 
                     v-model="filters.fecha_fin" 
                     type="date"
-                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div class="sm:col-span-2 md:col-span-1 flex items-end">
@@ -80,24 +80,24 @@
         </div>
 
         <!-- Content Area -->
-        <div v-if="loading" class="py-16 text-center text-sm text-on-surface-variant bg-white rounded border border-surface-container shadow-sm">
-            <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+        <div v-if="loading" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
             <p class="mt-2 font-bold">Cargando listado de muestreos...</p>
         </div>
 
-        <div v-else-if="samplings.length === 0" class="py-20 text-center bg-white rounded border border-surface-container shadow-sm">
-            <span class="material-symbols-outlined text-5xl text-outline-variant">science</span>
-            <p class="text-sm font-semibold text-on-surface mt-4">No hay muestreos registrados</p>
-            <p class="text-xs text-on-surface-variant mt-1">Intente ajustar los filtros de búsqueda o consulte al administrador.</p>
+        <div v-else-if="samplings.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+            <span class="material-symbols-outlined text-5xl text-slate-400">science</span>
+            <p class="text-sm font-semibold text-slate-800 mt-4">No hay muestreos registrados</p>
+            <p class="text-xs text-slate-400 mt-1">Intente ajustar los filtros de búsqueda o consulte al administrador.</p>
         </div>
 
         <!-- Muestreos Table (Desktop) & Cards (Mobile) -->
-        <div v-else class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
+        <div v-else class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
             <!-- Desktop View -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
+                        <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                             <th class="px-6 py-4">ID</th>
                             <th class="px-4 py-4">Origen</th>
                             <th class="px-6 py-4">Importador</th>
@@ -297,7 +297,7 @@
                         <select 
                             v-model="manualForm.importador_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="">Seleccione el importador</option>
                             <option v-for="imp in importers" :key="imp.id" :value="imp.id">{{ imp.nombre }}</option>
@@ -310,7 +310,7 @@
                             type="text" 
                             required 
                             placeholder="Ej. Carne de ave deshuesada"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div class="text-xs">
@@ -318,7 +318,7 @@
                         <select 
                             v-model="manualForm.inspector_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="">Seleccione el inspector</option>
                             <option v-for="ins in inspectors" :key="ins.id" :value="ins.id">{{ ins.nombre }}</option>
@@ -330,7 +330,7 @@
                             v-model="manualForm.fecha_programada" 
                             type="date" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
 
@@ -345,7 +345,7 @@
                         <button 
                             type="submit" 
                             :disabled="savingManual"
-                            class="px-5 py-2 bg-primary hover:bg-primary-dim text-on-primary font-bold rounded border border-primary-dim flex items-center gap-1.5"
+                            class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 flex items-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="savingManual">sync</span>
                             <span>Asignar</span>
@@ -370,7 +370,7 @@
                         <select 
                             v-model="editForm.inspector_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="">Seleccione el inspector</option>
                             <option v-for="ins in inspectors" :key="ins.id" :value="ins.id">{{ ins.nombre }}</option>
@@ -382,7 +382,7 @@
                             v-model="editForm.fecha_programada" 
                             type="date" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
 
@@ -397,7 +397,7 @@
                         <button 
                             type="submit" 
                             :disabled="savingEdit"
-                            class="px-5 py-2 bg-primary hover:bg-primary-dim text-on-primary font-bold rounded border border-primary-dim flex items-center gap-1.5"
+                            class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 flex items-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="savingEdit">sync</span>
                             <span>Guardar Cambios</span>
@@ -424,14 +424,14 @@
                             required 
                             rows="4" 
                             placeholder="Escriba los detalles observados durante el muestreo..."
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         ></textarea>
                     </div>
 
                     <!-- Upload Support Documents -->
                     <div class="text-xs">
                         <label class="block font-bold text-slate-600 uppercase tracking-wider mb-2">Adjuntar Fotografías / PDF de Soporte</label>
-                        <div class="w-full py-6 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                        <div class="w-full py-6 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                             <input 
                                 type="file" 
                                 multiple
@@ -439,7 +439,7 @@
                                 @change="onFilesSelected" 
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
-                            <span class="material-symbols-outlined text-2xl text-outline-variant">upload_file</span>
+                            <span class="material-symbols-outlined text-2xl text-slate-400">upload_file</span>
                             <span class="font-bold text-slate-600 mt-1">Seleccionar Archivos</span>
                             <span class="text-[9px] text-slate-400 mt-0.5">PDF o imágenes JPG/PNG</span>
                         </div>

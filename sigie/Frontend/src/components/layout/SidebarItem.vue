@@ -8,16 +8,16 @@
             :href="href"
             @click="navigate"
             :class="[
-                'w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group font-body',
+                'w-full flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-200 group font-body',
                 isActive
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-glow-blue'
-                    : 'text-slate-400 hover:bg-slate-800/40 hover:text-white'
+                    ? 'bg-blue-500 text-white font-semibold shadow-md'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
             ]"
         >
-            <span :class="['material-symbols-outlined text-xl transition-transform duration-300', isActive ? 'scale-110' : 'group-hover:scale-110']">
+            <span :class="['material-symbols-outlined text-lg transition-transform duration-300', isActive ? '' : 'group-hover:scale-105']">
                 {{ icon }}
             </span>
-            <span :class="['text-xs font-semibold tracking-wide', isActive ? '' : 'opacity-85 group-hover:opacity-100']">
+            <span :class="['text-xs font-medium tracking-wide', isActive ? 'font-semibold' : 'opacity-90 group-hover:opacity-100']">
                 {{ label }}
             </span>
         </a>

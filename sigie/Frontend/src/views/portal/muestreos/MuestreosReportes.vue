@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">Planificación y Cobertura de Muestreos</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Configuración de metas anuales, ejecución del algoritmo proporcional y reportes de cobertura.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Planificación y Cobertura de Muestreos</h1>
+                <p class="text-xs text-white/60 mt-1">Configuración de metas anuales, ejecución del algoritmo proporcional y reportes de cobertura.</p>
             </div>
             <div class="flex items-center gap-3">
                 <button 
@@ -19,15 +19,15 @@
         </div>
 
         <!-- Year Selector and Tab Controls -->
-        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm flex flex-wrap items-end justify-between gap-4">
+        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-wrap items-end justify-between gap-4">
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Seleccionar Año de Planificación</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Seleccionar Año de Planificación</label>
                 <input 
                     v-model.number="selectedYear" 
                     type="number" 
                     min="2020" 
                     max="2035"
-                    class="bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface font-semibold"
+                    class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-semibold"
                 />
             </div>
             
@@ -55,21 +55,21 @@
 
         <!-- TAB 1: INDICADORES DE COBERTURA -->
         <div v-if="activeTab === 'cobertura'" class="space-y-8">
-            <div v-if="loadingCoverage" class="py-16 text-center text-sm text-on-surface-variant bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+            <div v-if="loadingCoverage" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Cargando indicadores de cobertura...</p>
             </div>
 
-            <div v-else-if="coverageData.length === 0" class="py-16 text-center bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">analytics</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No hay metas configuradas para el año {{ selectedYear }}</p>
-                <p class="text-xs text-on-surface-variant mt-1">Por favor configure metas anuales en la pestaña respectiva para comenzar.</p>
+            <div v-else-if="coverageData.length === 0" class="py-16 text-center bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-5xl text-slate-400">analytics</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No hay metas configuradas para el año {{ selectedYear }}</p>
+                <p class="text-xs text-slate-400 mt-1">Por favor configure metas anuales en la pestaña respectiva para comenzar.</p>
             </div>
 
             <div v-else class="space-y-6">
                 <!-- KPI Dashboard Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-ambient flex items-center justify-between">
+                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Meta de Muestreos Planificada</p>
                             <h3 class="text-3xl font-black text-slate-800 mt-1">{{ totalMeta }}</h3>
@@ -78,7 +78,7 @@
                             <span class="material-symbols-outlined text-xl">flag</span>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-ambient flex items-center justify-between">
+                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Muestreos Asignados</p>
                             <h3 class="text-3xl font-black text-amber-600 mt-1">{{ totalAsignados }}</h3>
@@ -87,7 +87,7 @@
                             <span class="material-symbols-outlined text-xl">assignment</span>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-ambient flex items-center justify-between">
+                    <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Muestreos Ejecutados</p>
                             <h3 class="text-3xl font-black text-emerald-600 mt-1">{{ totalEjecutados }}</h3>
@@ -99,11 +99,11 @@
                 </div>
 
                 <!-- Coverage Table -->
-                <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
+                <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
+                                <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                     <th class="px-6 py-4">Tipo de Producto</th>
                                     <th class="px-4 py-4 text-center">Meta Anual</th>
                                     <th class="px-4 py-4 text-center">Sugeridos (Borrador)</th>
@@ -144,20 +144,20 @@
 
         <!-- TAB 2: ALGORITMO PROPORCIONAL -->
         <div v-if="activeTab === 'algoritmo'" class="space-y-6">
-            <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                 <div>
-                    <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Producto a Sugerir</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Producto a Sugerir</label>
                     <select 
                         v-model="algoForm.tipo_producto" 
                         @change="onAlgoProductChange"
-                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                        class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                     >
                         <option value="">Seleccione el tipo de producto</option>
                         <option v-for="cfg in configs" :key="cfg.id" :value="cfg.tipo_producto">{{ cfg.tipo_producto }}</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Meta Anual Definida</label>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Meta Anual Definida</label>
                     <input 
                         v-model.number="algoForm.meta_muestreo_anual" 
                         type="number"
@@ -169,26 +169,26 @@
                 <button 
                     @click="previewSuggestions"
                     :disabled="!algoForm.tipo_producto || !algoForm.meta_muestreo_anual"
-                    class="w-full py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <span class="material-symbols-outlined text-sm">rotate_left</span> Calcular Muestreo Proporcional
                 </button>
             </div>
 
             <!-- Suggestion draft preview -->
-            <div v-if="loadingAlgo" class="py-16 text-center text-sm text-on-surface-variant bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+            <div v-if="loadingAlgo" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Analizando importaciones del año anterior ({{ selectedYear - 1 }})...</p>
             </div>
 
-            <div v-else-if="showPreview && suggestions.length === 0" class="py-16 text-center bg-white rounded border border-surface-container shadow-sm">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">warning</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No hay importaciones registradas en el año {{ selectedYear - 1 }} para este producto</p>
-                <p class="text-xs text-on-surface-variant mt-1">El algoritmo requiere historial del año anterior para distribuir proporcionalmente.</p>
+            <div v-else-if="showPreview && suggestions.length === 0" class="py-16 text-center bg-white rounded border border-slate-200 shadow-sm">
+                <span class="material-symbols-outlined text-5xl text-slate-400">warning</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No hay importaciones registradas en el año {{ selectedYear - 1 }} para este producto</p>
+                <p class="text-xs text-slate-400 mt-1">El algoritmo requiere historial del año anterior para distribuir proporcionalmente.</p>
             </div>
 
             <div v-else-if="showPreview" class="space-y-6">
-                <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden animate-fade-in">
+                <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
                     <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
                         <h4 class="font-bold text-slate-800 text-xs">Propuesta de Distribución Proporcional de Muestras</h4>
                         <span class="text-[10px] font-bold text-slate-500 uppercase">Año de referencia del volumen: {{ selectedYear - 1 }}</span>
@@ -216,7 +216,7 @@
                                             v-model.number="sug.muestras_sugeridas" 
                                             type="number" 
                                             min="0"
-                                            class="bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-center w-24 focus:border-primary outline-none transition-all font-mono font-black"
+                                            class="bg-white border border-slate-300 rounded px-3 py-1.5 text-xs text-center w-24 focus:border-blue-600 outline-none transition-all font-mono font-black"
                                         />
                                     </td>
                                 </tr>
@@ -226,7 +226,7 @@
                     
                     <div class="p-6 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
                         <div class="text-xs font-semibold text-slate-600">
-                            Total Planificado Sugerido: <span class="font-black text-primary text-sm">{{ totalSugerenciasCalculadas }}</span> de {{ algoForm.meta_muestreo_anual }} metas.
+                            Total Planificado Sugerido: <span class="font-black text-slate-800 text-sm">{{ totalSugerenciasCalculadas }}</span> de {{ algoForm.meta_muestreo_anual }} metas.
                         </div>
                         <button 
                             @click="saveSuggestions"
@@ -244,9 +244,9 @@
         <!-- TAB 3: CONFIGURAR METAS Y UMBRALES -->
         <div v-if="activeTab === 'config'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Settings Form -->
-            <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm h-fit">
+            <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium h-fit">
                 <h3 class="font-bold text-slate-800 text-sm border-b pb-2 mb-4 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-sm">settings</span>
+                    <span class="material-symbols-outlined text-slate-800 text-sm">settings</span>
                     Definir Metas y Alarmas
                 </h3>
                 <form @submit.prevent="saveConfiguration" class="space-y-4 text-xs">
@@ -257,7 +257,7 @@
                             type="text" 
                             required 
                             placeholder="Ej. Cárnico de ave, Lácteos"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         />
                     </div>
                     <div>
@@ -267,7 +267,7 @@
                             type="number" 
                             min="1" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-primary focus:bg-white outline-none transition-all text-on-surface font-mono"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
                         />
                     </div>
                     <div>
@@ -278,7 +278,7 @@
                             step="0.01"
                             min="1" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-primary focus:bg-white outline-none transition-all text-on-surface font-mono"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
                         />
                         <span class="text-[9px] text-slate-400 block mt-1">Al acumular esta cantidad de kilos por importador, se generará una alerta de muestreo automática.</span>
                     </div>
@@ -287,7 +287,7 @@
                         <select 
                             v-model="configForm.inspector_id" 
                             required 
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2.5 focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                         >
                             <option value="">Seleccione el inspector</option>
                             <option v-for="ins in inspectors" :key="ins.id" :value="ins.id">{{ ins.nombre }}</option>
@@ -297,7 +297,7 @@
                     <button 
                         type="submit" 
                         :disabled="savingConfig"
-                        class="w-full py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold rounded border border-primary-dim shadow-sm flex items-center justify-center gap-1.5"
+                        class="w-full py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold rounded border border-slate-800 shadow-sm flex items-center justify-center gap-1.5"
                     >
                         <span class="material-symbols-outlined text-sm animate-spin" v-if="savingConfig">sync</span>
                         <span>Guardar Planificación</span>
@@ -306,7 +306,7 @@
             </div>
 
             <!-- Config List -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-md border border-surface-container shadow-sm">
+            <div class="lg:col-span-2 bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
                 <h3 class="font-bold text-slate-800 text-sm border-b pb-2 mb-4">Planificaciones Configuradas ({{ selectedYear }})</h3>
                 
                 <div v-if="configs.length === 0" class="py-12 text-center text-slate-400">

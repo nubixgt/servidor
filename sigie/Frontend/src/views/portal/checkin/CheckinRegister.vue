@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="mb-8 flex items-center justify-between">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 font-headline">Registrar Check-in</h1>
-                <p class="text-xs text-slate-500 mt-1">Completa la información requerida del establecimiento visitado.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Registrar Check-in</h1>
+                <p class="text-xs text-white/60 mt-1">Completa la información requerida del establecimiento visitado.</p>
             </div>
             <router-link to="/dashboard" class="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
@@ -13,7 +13,7 @@
 
         <form @submit.prevent="handleSubmit" class="space-y-8">
             <!-- Main Stacked Form Card -->
-            <div class="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-premium space-y-8">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 p-6 md:p-8 shadow-premium space-y-8">
                 <!-- Title inside Card -->
                 <div class="border-b border-slate-100 pb-6">
                     <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Nuevo Registro de Entrada</h2>
@@ -22,7 +22,7 @@
 
                 <!-- Sección 1: Datos Generales -->
                 <div class="space-y-4">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-l-4 border-blue-600 pl-3 py-0.5">
+                    <h3 class="section-header-navy">
                         Sección 1: Datos Generales
                     </h3>
                     
@@ -95,7 +95,7 @@
                 <!-- Sección 2: Geoposicionamiento (GPS) -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-l-4 border-blue-600 pl-3 py-0.5">
+                        <h3 class="section-header-navy">
                             Sección 2: Geoposicionamiento (GPS)
                         </h3>
                         <button 
@@ -136,7 +136,7 @@
 
                 <!-- Sección 3: Control de Tiempos -->
                 <div class="space-y-4">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-l-4 border-blue-600 pl-3 py-0.5">
+                    <h3 class="section-header-navy">
                         Sección 3: Control de Tiempos
                     </h3>
                     
@@ -177,7 +177,7 @@
 
                 <!-- Sección 4: Evidencia Fotográfica y Observaciones -->
                 <div class="space-y-4">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-l-4 border-blue-600 pl-3 py-0.5">
+                    <h3 class="section-header-navy">
                         Sección 4: Evidencia Fotográfica y Notas
                     </h3>
 
@@ -226,7 +226,7 @@
                 <!-- Sección 5: Validación y Firma -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 border-l-4 border-blue-600 pl-3 py-0.5">
+                        <h3 class="section-header-navy">
                             Sección 5: Validación y Firma Digital
                         </h3>
                         <button 

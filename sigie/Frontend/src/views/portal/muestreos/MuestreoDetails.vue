@@ -1,15 +1,15 @@
 <template>
     <div class="max-w-5xl mx-auto">
         <div v-if="loading" class="py-20 text-center">
-            <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
-            <p class="text-xs font-bold text-on-surface-variant mt-2">Cargando detalles del muestreo...</p>
+            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+            <p class="text-xs font-bold text-slate-400 mt-2">Cargando detalles del muestreo...</p>
         </div>
 
-        <div v-else-if="!sampling" class="py-20 text-center bg-white border border-surface-container rounded-md shadow-sm">
+        <div v-else-if="!sampling" class="py-20 text-center bg-white border border-slate-200 rounded-md shadow-sm">
             <span class="material-symbols-outlined text-5xl text-red-500">warning</span>
-            <p class="text-sm font-semibold text-on-surface mt-4">No se pudo cargar el muestreo</p>
-            <p class="text-xs text-on-surface-variant mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
-            <router-link to="/muestreos" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline">
+            <p class="text-sm font-semibold text-slate-800 mt-4">No se pudo cargar el muestreo</p>
+            <p class="text-xs text-slate-400 mt-1">El registro solicitado no existe o no tiene permisos de acceso.</p>
+            <router-link to="/muestreos" class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-slate-800 hover:underline">
                 <span class="material-symbols-outlined text-sm">arrow_back</span> Volver
             </router-link>
         </div>
@@ -35,10 +35,10 @@
                             Origen: {{ sampling.origen }}
                         </span>
                     </div>
-                    <h1 class="text-3xl font-black tracking-tight text-on-surface mt-2">Muestreo #{{ sampling.id }}</h1>
-                    <p class="text-xs text-on-surface-variant mt-1">Registrado el {{ formatDateFull(sampling.fecha_creacion) }}</p>
+                    <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline mt-2">Muestreo #{{ sampling.id }}</h1>
+                    <p class="text-xs text-slate-400 mt-1">Registrado el {{ formatDateFull(sampling.fecha_creacion) }}</p>
                 </div>
-                <router-link to="/muestreos" class="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-dim transition-colors self-start">
+                <router-link to="/muestreos" class="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors self-start">
                     <span class="material-symbols-outlined text-sm">arrow_back</span> Volver al Historial
                 </router-link>
             </div>
@@ -47,29 +47,29 @@
                 <!-- Left Details (General information) -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- 1. Detalle del Muestreo -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">biotech</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">biotech</span>
                             Ficha del Muestreo
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                             <div class="p-3 bg-slate-50 rounded border border-slate-200 col-span-2">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Empresa Importadora</span>
-                                <span class="font-bold text-on-surface text-sm">{{ sampling.importador_nombre }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Empresa Importadora</span>
+                                <span class="font-bold text-slate-800 text-sm">{{ sampling.importador_nombre }}</span>
                                 <span class="font-mono text-[9px] text-slate-400 block mt-0.5">NIT: {{ sampling.importador_nit }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Tipo de Producto</span>
-                                <span class="font-bold text-on-surface text-sm">{{ sampling.tipo_producto }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Tipo de Producto</span>
+                                <span class="font-bold text-slate-800 text-sm">{{ sampling.tipo_producto }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Fecha Programada</span>
-                                <span class="font-mono font-bold text-on-surface text-sm">{{ sampling.fecha_programada }}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fecha Programada</span>
+                                <span class="font-mono font-bold text-slate-800 text-sm">{{ sampling.fecha_programada }}</span>
                             </div>
                             <div class="p-3 bg-slate-50 rounded border border-slate-200" v-if="sampling.volumen_kilos">
-                                <span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider block">Volumen Acumulado en Alarma</span>
-                                <span class="font-bold text-on-surface text-sm">{{ formatVolume(sampling.volumen_kilos) }} kg</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Volumen Acumulado en Alarma</span>
+                                <span class="font-bold text-slate-800 text-sm">{{ formatVolume(sampling.volumen_kilos) }} kg</span>
                             </div>
                         </div>
 
@@ -92,18 +92,18 @@
                     </div>
 
                     <!-- 2. Personal Asignado -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">badge</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">badge</span>
                             Inspector Asignado
                         </h3>
                         <div class="flex items-center gap-4 text-xs">
-                            <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-base uppercase">
+                            <div class="w-10 h-10 rounded-full bg-[#0a192f]/10 text-slate-800 flex items-center justify-center font-bold text-base uppercase">
                                 {{ sampling.inspector_nombre?.substring(0, 2) }}
                             </div>
                             <div>
-                                <p class="font-bold text-on-surface text-sm">{{ sampling.inspector_nombre }}</p>
-                                <p class="text-[10px] text-on-surface-variant font-mono mt-0.5">Código: {{ sampling.inspector_codigo }} | Área: {{ sampling.inspector_area }}</p>
+                                <p class="font-bold text-slate-800 text-sm">{{ sampling.inspector_nombre }}</p>
+                                <p class="text-[10px] text-slate-400 font-mono mt-0.5">Código: {{ sampling.inspector_codigo }} | Área: {{ sampling.inspector_area }}</p>
                             </div>
                         </div>
                     </div>
@@ -112,13 +112,13 @@
                 <!-- Right Side: Chronological Timeline Log -->
                 <div class="space-y-6">
                     <!-- Chronological Timeline Bitacora -->
-                    <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm flex flex-col">
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">timeline</span>
+                    <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium flex flex-col">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">timeline</span>
                             Bitácora de Documentos
                         </h3>
 
-                        <div v-if="!sampling.documentos || sampling.documentos.length === 0" class="py-12 text-center text-xs text-on-surface-variant">
+                        <div v-if="!sampling.documentos || sampling.documentos.length === 0" class="py-12 text-center text-xs text-slate-400">
                             <span class="material-symbols-outlined text-4xl text-slate-300">folder_open</span>
                             <p class="mt-2 font-semibold">Sin archivos soporte adjuntos.</p>
                             <p class="text-[9px] text-slate-400 mt-1">Los documentos de la bitácora se listarán aquí en orden cronológico.</p>
@@ -142,10 +142,10 @@
                                     <span class="material-symbols-outlined text-2xl text-blue-500" v-else>image</span>
                                     
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-[11px] font-bold text-on-surface truncate group-hover:text-primary transition-colors">{{ doc.nombre_archivo }}</p>
-                                        <p class="text-[9px] text-on-surface-variant font-mono mt-0.5">{{ formatDateMini(doc.fecha_subida) }}</p>
+                                        <p class="text-[11px] font-bold text-slate-800 truncate group-hover:text-slate-800 transition-colors">{{ doc.nombre_archivo }}</p>
+                                        <p class="text-[9px] text-slate-400 font-mono mt-0.5">{{ formatDateMini(doc.fecha_subida) }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-xs">open_in_new</span>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-slate-800 transition-colors text-xs">open_in_new</span>
                                 </div>
                             </div>
                         </div>
@@ -154,15 +154,15 @@
                     <!-- Add documents over time (Visible if Approved/Ejecutado and user is the assigned inspector or admin) -->
                     <div 
                         v-if="(auth.role === 'inspector' && parseInt(sampling.inspector_id) === parseInt(auth.inspectorId)) || auth.role === 'administrador'" 
-                        class="bg-white p-6 rounded-md border border-surface-container shadow-sm space-y-4"
+                        class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium space-y-4"
                     >
-                        <h3 class="text-xs font-bold text-on-surface uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-sm">cloud_upload</span>
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-slate-800 text-sm">cloud_upload</span>
                             Añadir a la Bitácora
                         </h3>
                         
                         <!-- File selector -->
-                        <div class="w-full py-6 rounded border border-dashed border-outline-variant hover:border-primary/50 bg-slate-50 hover:bg-primary/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
+                        <div class="w-full py-6 rounded border border-dashed border-slate-200-variant hover:border-primary/50 bg-slate-50 hover:bg-[#0a192f]/5 transition-colors flex flex-col items-center justify-center text-center cursor-pointer relative mb-3">
                             <input 
                                 type="file" 
                                 multiple
@@ -170,7 +170,7 @@
                                 @change="onFilesSelected" 
                                 class="absolute inset-0 opacity-0 cursor-pointer"
                             />
-                            <span class="material-symbols-outlined text-xl text-outline-variant">upload_file</span>
+                            <span class="material-symbols-outlined text-xl text-slate-400">upload_file</span>
                             <span class="text-[10px] font-bold text-slate-600 mt-1">Seleccionar Archivos</span>
                         </div>
 
@@ -192,7 +192,7 @@
                             v-if="trackingFiles.length > 0"
                             @click="uploadAdditionalFiles" 
                             :disabled="uploading"
-                            class="w-full py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded border border-primary-dim shadow-sm transition-colors flex items-center justify-center gap-1.5"
+                            class="w-full py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded border border-slate-800 shadow-sm transition-colors flex items-center justify-center gap-1.5"
                         >
                             <span class="material-symbols-outlined text-sm animate-spin" v-if="uploading">sync</span>
                             <span class="material-symbols-outlined text-sm" v-else>cloud_upload</span>
@@ -279,7 +279,7 @@ const uploadAdditionalFiles = async () => {
                 icon: 'success',
                 title: 'Bitácora Actualizada',
                 text: 'Los nuevos documentos de soporte se subieron con éxito.',
-                confirmButtonColor: '#005a9c'
+                confirmButtonColor: '#0a192f'
             });
         }
     } catch (error) {

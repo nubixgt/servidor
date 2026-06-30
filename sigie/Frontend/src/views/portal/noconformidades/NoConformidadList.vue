@@ -3,8 +3,8 @@
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">No Conformidades (Inspección Permanente)</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Historial y seguimiento de no conformidades del personal de rastros.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">No Conformidades (Inspección Permanente)</h1>
+                <p class="text-xs text-white/60 mt-1">Historial y seguimiento de no conformidades del personal de rastros.</p>
             </div>
             <div class="flex items-center gap-3 self-start sm:self-center">
                 <button 
@@ -19,7 +19,7 @@
                 <router-link 
                     v-if="auth.role === 'inspector'"
                     to="/noconformidades/nuevo" 
-                    class="px-4 py-2.5 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2"
+                    class="px-4 py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded shadow transition-colors flex items-center justify-center gap-2"
                 >
                     <span class="material-symbols-outlined text-lg">report</span>
                     Nueva No Conformidad
@@ -28,30 +28,30 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Búsqueda Global</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Búsqueda Global</label>
                 <input 
                     v-model="searchTerm" 
                     type="text" 
                     placeholder="Personal, Rastro, Inspector..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Rastro / Personal</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Rastro / Personal</label>
                 <input 
                     v-model="filterEstablecimiento" 
                     type="text" 
                     placeholder="Rastro..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado del Hallazgo</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado del Hallazgo</label>
                 <select 
                     v-model="filterEstado"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 >
                     <option value="todos">Todos los Estados</option>
                     <option value="Abierto">Abierto</option>
@@ -60,32 +60,32 @@
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha de Inspección</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha de Inspección</label>
                 <input 
                     v-model="filterFecha" 
                     type="date" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
         </div>
 
         <!-- No Conformidades Table -->
-        <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
-            <div v-if="loading" class="py-16 text-center text-sm text-on-surface-variant">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+            <div v-if="loading" class="py-16 text-center text-sm text-slate-400">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Cargando registros...</p>
             </div>
 
             <div v-else-if="filteredNoConformidades.length === 0" class="py-20 text-center">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">assignment_late</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No se encontraron no conformidades registradas</p>
-                <p class="text-xs text-on-surface-variant mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
+                <span class="material-symbols-outlined text-5xl text-slate-400">assignment_late</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No se encontraron no conformidades registradas</p>
+                <p class="text-xs text-slate-400 mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
             </div>
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-on-surface-variant tracking-wider">
+                        <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
                             <th class="px-6 py-4">ID / Rastro / Personal</th>
                             <th class="px-6 py-4">Inspector Oficial</th>
                             <th class="px-6 py-4">Fecha Inspección</th>
@@ -99,23 +99,23 @@
                         <tr v-for="nc in filteredNoConformidades" :key="nc.id" class="hover:bg-slate-50/50 transition-colors">
                             <!-- Establishment -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-on-surface text-sm">{{ nc.establecimiento }}</p>
-                                <p class="text-[9px] text-on-surface-variant font-mono">ID: {{ nc.id }}</p>
+                                <p class="font-bold text-slate-800 text-sm">{{ nc.establecimiento }}</p>
+                                <p class="text-[9px] text-slate-400 font-mono">ID: {{ nc.id }}</p>
                             </td>
 
                             <!-- Inspector -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-on-surface">{{ nc.inspector_nombre }}</p>
-                                <p class="text-[9px] text-on-surface-variant font-mono">Código: {{ nc.inspector_codigo }}</p>
+                                <p class="font-bold text-slate-800">{{ nc.inspector_nombre }}</p>
+                                <p class="text-[9px] text-slate-400 font-mono">Código: {{ nc.inspector_codigo }}</p>
                             </td>
 
                             <!-- Date -->
-                            <td class="px-6 py-4 text-on-surface-variant font-semibold">
+                            <td class="px-6 py-4 text-slate-400 font-semibold">
                                 {{ nc.fecha_inspeccion }}
                             </td>
 
                             <!-- Norm -->
-                            <td class="px-6 py-4 text-on-surface-variant">
+                            <td class="px-6 py-4 text-slate-400">
                                 <span v-if="nc.norma_especifica" class="font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded">
                                     {{ nc.norma_especifica }}
                                 </span>
@@ -146,7 +146,7 @@
                             <td class="px-6 py-4">
                                 <router-link 
                                     :to="`/noconformidades/${nc.id}`"
-                                    class="text-primary hover:text-primary-dim font-bold text-xs transition-colors flex items-center gap-1"
+                                    class="text-blue-600 hover:text-blue-700 font-bold text-xs transition-colors flex items-center gap-1"
                                 >
                                     <span class="material-symbols-outlined text-sm">visibility</span>
                                     Ver Detalle
@@ -190,7 +190,7 @@ const fetchNoConformidades = async () => {
             icon: 'error',
             title: 'Error',
             text: 'No se pudieron recuperar los registros del servidor.',
-            confirmButtonColor: '#005a9c'
+            confirmButtonColor: '#0a192f'
         });
     } finally {
         loading.value = false;

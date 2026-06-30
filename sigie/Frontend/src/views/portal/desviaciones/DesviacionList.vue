@@ -3,14 +3,14 @@
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-on-surface">Desviaciones de Laboratorio</h1>
-                <p class="text-sm text-on-surface-variant mt-1">Historial y seguimiento de desviaciones de laboratorio registradas.</p>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white font-headline">Desviaciones de Laboratorio</h1>
+                <p class="text-xs text-white/60 mt-1">Historial y seguimiento de desviaciones de laboratorio registradas.</p>
             </div>
             <div class="flex items-center gap-3 self-start sm:self-center">
                 <button 
                     @click="exportToExcel" 
                     :disabled="desviaciones.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
                 >
                     <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
@@ -18,7 +18,7 @@
                 <router-link 
                     v-if="auth.role === 'inspector'"
                     to="/desviaciones/nuevo" 
-                    class="px-5 py-3 bg-primary hover:bg-primary-dim text-on-primary font-bold text-xs rounded-md shadow-sm transition-colors flex items-center justify-center gap-2 border border-primary-dim"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Nueva Desviación
@@ -27,30 +27,30 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-white p-6 rounded-md border border-surface-container shadow-sm mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Búsqueda Global</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Búsqueda Global</label>
                 <input 
                     v-model="searchTerm" 
                     type="text" 
                     placeholder="Muestra, Inspector..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Establecimiento</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Establecimiento</label>
                 <input 
                     v-model="filterEstablecimiento" 
                     type="text" 
                     placeholder="Establecimiento..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Estado de Seguimiento</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado de Seguimiento</label>
                 <select 
                     v-model="filterEstado"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 >
                     <option value="todos">Todos los Estados</option>
                     <option value="Abierto">Abierto</option>
@@ -59,32 +59,32 @@
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-2">Fecha del Resultado</label>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha del Resultado</label>
                 <input 
                     v-model="filterFecha" 
                     type="date" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded-md px-4 py-2.5 text-xs focus:border-primary focus:bg-white outline-none transition-all text-on-surface"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
                 />
             </div>
         </div>
 
         <!-- Deviations Table -->
-        <div class="bg-white rounded-md border border-surface-container shadow-sm overflow-hidden">
-            <div v-if="loading" class="py-16 text-center text-sm text-on-surface-variant">
-                <span class="material-symbols-outlined text-4xl animate-spin text-primary">sync</span>
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+            <div v-if="loading" class="py-16 text-center text-sm text-slate-400">
+                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
                 <p class="mt-2 font-bold">Cargando registros...</p>
             </div>
 
             <div v-else-if="filteredDesviaciones.length === 0" class="py-20 text-center">
-                <span class="material-symbols-outlined text-5xl text-outline-variant">science</span>
-                <p class="text-sm font-semibold text-on-surface mt-4">No se encontraron desviaciones de laboratorio</p>
-                <p class="text-xs text-on-surface-variant mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
+                <span class="material-symbols-outlined text-5xl text-slate-400">science</span>
+                <p class="text-sm font-semibold text-slate-800 mt-4">No se encontraron desviaciones de laboratorio</p>
+                <p class="text-xs text-slate-400 mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
             </div>
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-extrabold uppercase text-slate-700 tracking-wider">
+                        <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                             <th class="px-6 py-4">Muestra</th>
                             <th class="px-6 py-4">Inspector Responsable</th>
                             <th class="px-6 py-4">Establecimiento</th>
@@ -98,29 +98,29 @@
                     <tbody class="divide-y divide-slate-200 text-xs">
                         <tr v-for="d in filteredDesviaciones" :key="d.id" class="hover:bg-slate-50 transition-colors">
                             <!-- Sample Code -->
-                            <td class="px-6 py-4 font-mono font-bold text-primary">
+                            <td class="px-6 py-4 font-mono font-bold text-slate-800">
                                 {{ d.codigo_muestra }}
                             </td>
 
                             <!-- Inspector -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-on-surface">{{ d.inspector_nombre }}</p>
-                                <p class="text-[9px] text-on-surface-variant font-mono">Código: {{ d.inspector_codigo }}</p>
+                                <p class="font-bold text-slate-800">{{ d.inspector_nombre }}</p>
+                                <p class="text-[9px] text-slate-400 font-mono">Código: {{ d.inspector_codigo }}</p>
                             </td>
 
                             <!-- Establishment -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-on-surface">{{ d.establecimiento }}</p>
+                                <p class="font-bold text-slate-800">{{ d.establecimiento }}</p>
                             </td>
 
                             <!-- Date -->
-                            <td class="px-6 py-4 text-on-surface-variant font-semibold">
+                            <td class="px-6 py-4 text-slate-400 font-semibold">
                                 {{ d.fecha_resultado }}
                             </td>
 
                             <!-- Type & Parameter -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-on-surface">{{ d.tipo_analisis }}</p>
+                                <p class="font-bold text-slate-800">{{ d.tipo_analisis }}</p>
                                 <p class="text-[10px] text-red-500 font-semibold mt-0.5">{{ d.parametro_fuera_norma }}</p>
                             </td>
 
@@ -148,7 +148,7 @@
                             <td class="px-6 py-4">
                                 <router-link 
                                     :to="`/desviaciones/${d.id}`"
-                                    class="text-primary hover:text-primary-dim font-bold text-xs transition-colors flex items-center gap-1"
+                                    class="text-blue-600 hover:text-blue-700 font-bold text-xs transition-colors flex items-center gap-1"
                                 >
                                     <span class="material-symbols-outlined text-sm">visibility</span>
                                     Ver Detalle
@@ -192,7 +192,7 @@ const fetchDesviaciones = async () => {
             icon: 'error',
             title: 'Error',
             text: 'No se pudieron recuperar los registros del servidor.',
-            confirmButtonColor: '#005a9c'
+            confirmButtonColor: '#0a192f'
         });
     } finally {
         loading.value = false;

@@ -6,45 +6,45 @@
 @tailwind utilities;
 
 :root {
-  /* Fondo y Superficies Sutiles */
-  --color-surface: #f8fafc; /* slate-50 */
-  --color-surface-container-lowest: #ffffff; /* Blanco Puro para Tarjetas */
-  --color-surface-container-low: #f1f5f9; /* slate-100 */
-  --color-surface-container: #e2e8f0; /* slate-200 */
-  --color-surface-container-high: #cbd5e1; /* slate-300 */
-  --color-surface-container-highest: #94a3b8; /* slate-400 */
+  /* Fondo y Superficies */
+  --color-surface: #f8fafc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f1f5f9;
+  --color-surface-container: #e2e8f0;
+  --color-surface-container-high: #cbd5e1;
+  --color-surface-container-highest: #94a3b8;
 
   /* Textos */
-  --color-on-surface: #0f172a; /* slate-900 */
-  --color-on-surface-variant: #475569; /* slate-600 */
+  --color-on-surface: #0f172a;
+  --color-on-surface-variant: #475569;
 
-  /* Paleta Primaria - Azul Marino Premium Bancario */
-  --color-primary: #0a192f; /* Midnight Navy */
+  /* Paleta Primaria - Navy Institucional */
+  --color-primary: #0a192f;
   --color-primary-dim: #0f224b;
   --color-on-primary: #ffffff;
 
-  /* Contenedores de Acento Sky/Blue */
-  --color-primary-container: #e0f2fe; /* sky-100 */
-  --color-on-primary-container: #0369a1; /* sky-700 */
+  /* Contenedores de Acento */
+  --color-primary-container: #e0f2fe;
+  --color-on-primary-container: #0369a1;
 
   /* Paleta Secundaria */
   --color-secondary: #1e293b;
   --color-secondary-container: #f8fafc;
   --color-on-secondary-container: #334155;
 
-  /* Acentos y Botones Principales - Azul Royal Moderno */
-  --color-tertiary: #2563eb; /* blue-600 */
-  --color-tertiary-container: #eff6ff; /* blue-50 */
-  --color-on-tertiary-container: #1d4ed8; /* blue-700 */
+  /* Acentos - Azul Royal */
+  --color-tertiary: #2563eb;
+  --color-tertiary-container: #eff6ff;
+  --color-on-tertiary-container: #1d4ed8;
 
-  /* Estados de Error y Alertas */
-  --color-error: #ef4444; /* red-500 */
-  --color-error-container: #fee2e2; /* red-50 */
-  --color-on-error-container: #991b1b; /* red-800 */
+  /* Error */
+  --color-error: #ef4444;
+  --color-error-container: #fee2e2;
+  --color-on-error-container: #991b1b;
 
-  /* Líneas de Contorno */
-  --color-outline: #e2e8f0; /* slate-200 */
-  --color-outline-variant: #cbd5e1; /* slate-300 */
+  /* Contornos */
+  --color-outline: #e2e8f0;
+  --color-outline-variant: #cbd5e1;
 }
 
 /* ═══ ESTILOS BASE ═══ */
@@ -62,38 +62,69 @@ body {
   vertical-align: middle;
 }
 
-/* ═══ SOMBRAS PREMIUM Y EFECTOS BANCARIOS ═══ */
+/* ═══ FONDO CON IMAGEN INSTITUCIONAL ═══ */
+
+/* Fondo con imagen + overlay navy para área de contenido */
+.bg-app-fondo {
+  position: relative;
+  background-image: url('/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+.bg-app-fondo::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 47, 0.75);
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-app-fondo > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fondo para login — imagen sin overlay pesado */
+.bg-login-fondo {
+  background-image: url('/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ═══ SOMBRAS Y EFECTOS ═══ */
 .shadow-premium {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -1px rgba(0, 0, 0, 0.03);
 }
 
 .shadow-premium-lg {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
 }
 
 .shadow-glow-blue {
-  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
 }
 
-/* Efecto Glassmorphism */
-.glass-header {
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-/* Patrón de Fondo de Puntos (Login) */
-.bg-grid-dots {
-  background-color: #f8fafc;
-  background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-  background-size: 20px 20px;
-}
-
-.bg-grid-dots-dark {
+/* Header navy sólido */
+.header-navy {
   background-color: #0a192f;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
-  background-size: 20px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Barra de sección navy para formularios */
+.section-header-navy {
+  background-color: #0a192f;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.025em;
 }
 
 /* ═══ TRANSICIONES Y MICRO-ANIMACIONES ═══ */
@@ -119,20 +150,20 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* ═══ AUTOMÁTICOS DE UPGRADE PREMIUM EN ELEMENTOS ═══ */
+/* ═══ UPGRADE PREMIUM EN ELEMENTOS ═══ */
 
 /* Tarjetas y Contenedores */
 .bg-white.shadow-sm, .bg-white.border.shadow-sm {
-  border-radius: 1.25rem !important; /* Esquinas de 20px redondeadas */
+  border-radius: 1.25rem !important;
   border-color: rgba(226, 232, 240, 0.6) !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 8px -1px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -1px rgba(0, 0, 0, 0.03) !important;
 }
 
 /* Campos de Formulario */
@@ -140,9 +171,10 @@ input[type="text"],
 input[type="date"], 
 input[type="number"], 
 input[type="password"], 
+input[type="time"],
 select, 
 textarea {
-  border-radius: 0.75rem !important; /* Esquinas de 12px rounded-xl */
+  border-radius: 0.75rem !important;
   border-color: #e2e8f0 !important;
   font-weight: 500 !important;
   background-color: #f8fafc !important;
@@ -154,25 +186,26 @@ input[type="text"]:focus,
 input[type="date"]:focus, 
 input[type="number"]:focus, 
 input[type="password"]:focus, 
+input[type="time"]:focus,
 select:focus, 
 textarea:focus {
   border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
   background-color: #ffffff !important;
   outline: none !important;
 }
 
-/* Botones Rectangulares estándar (Excluye redondos y paginadores) */
+/* Botones */
 button:not(.rounded-full):not(.w-8):not(.w-10), 
 input[type="submit"]:not(.rounded-full), 
 a.px-4.py-2.bg-primary, 
 a.px-5.py-2\.5.bg-primary {
-  border-radius: 0.75rem !important; /* rounded-xl */
+  border-radius: 0.75rem !important;
   font-weight: 700 !important;
   transition: all 0.2s ease !important;
 }
 
-/* Estilos de Tabla Globales Modernos */
+/* Estilos de Tabla Globales */
 table thead tr {
   background-color: rgba(241, 245, 249, 0.6) !important;
   border-bottom: 1px solid #e2e8f0 !important;
@@ -189,8 +222,9 @@ table th, table td {
   padding-bottom: 1rem !important;
 }
 
-/* Estilo para impresión */
+/* ═══ ESTILO PARA IMPRESIÓN ═══ */
 @media print {
+  /* Ocultar navegación y controles */
   aside, header, button, a.router-link-active, .no-print, .actions-column, th:last-child, td:last-child {
     display: none !important;
   }
@@ -201,11 +235,15 @@ table th, table td {
   .lg\:ml-72 {
     margin-left: 0 !important;
   }
-  body, .bg-surface {
+  /* Fondo limpio para impresión */
+  body, .bg-surface, .bg-app-fondo {
     background-color: white !important;
+    background-image: none !important;
     color: black !important;
   }
-  /* Estilo sobrio y limpio para PDFs */
+  .bg-app-fondo::before {
+    display: none !important;
+  }
   .bg-white, .p-6, .rounded-md, .border {
     border: none !important;
     box-shadow: none !important;
