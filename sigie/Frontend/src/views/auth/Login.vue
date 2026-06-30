@@ -7,6 +7,7 @@
                 <div class="w-24 h-24 flex items-center justify-center mb-4">
                     <lottie-player
                         ref="lottiePlayer"
+                        :src="lottieUrl"
                         background="transparent"
                         speed="1"
                         style="width: 96px; height: 96px;"
@@ -99,24 +100,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import '@lottiefiles/lottie-player';
-import loginAnimation from '../../assets/login-animation.json';
 
-const lottiePlayer = ref(null);
-
-onMounted(() => {
-    if (lottiePlayer.value) {
-        try {
-            lottiePlayer.value.load(loginAnimation);
-        } catch (e) {
-            console.error('Error loading Lottie animation:', e);
-        }
+const getLottieUrl = () => {
+    const path = window.location.pathname.toLowerCase();
+    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
+    if (isViteDev) {
+        return '/login-animation.json';
     }
-});
+    const distIndex = path.indexOf('/frontend/dist');
+    if (distIndex !== -1) {
+        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/login-animation.json';
+    }
+    const sigieIndex = path.indexOf('/sigie');
+    if (sigieIndex !== -1) {
+        return window.location.pathname.substring(0, sigieIndex) + '/sigie/login-animation.json';
+    }
+    return '/login-animation.json';
+};
+const lottieUrl = getLottieUrl();
 
 const auth = useAuthStore();
 const router = useRouter();
