@@ -15,7 +15,7 @@
                 <button 
                     v-if="auth.role === 'inspector'"
                     @click="openEspontaneaModal"
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Registrar Actividad Espontánea
@@ -24,7 +24,7 @@
                 <button 
                     v-if="auth.role === 'administrador'"
                     @click="openExtraModal"
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 border border-slate-800"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     + Nueva Actividad
@@ -33,21 +33,21 @@
         </div>
 
         <!-- Toolbar: Month Selector & Inspector Filter -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="flex flex-wrap gap-4 items-start sm:items-center">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Seleccionar Mes</label>
                     <input 
                         v-model="mesSeleccionado" 
                         type="month" 
-                        class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-semibold"
+                        class="bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-semibold"
                     />
                 </div>
                 <div v-if="auth.role === 'administrador'">
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Filtrar por Inspector</label>
                     <select 
                         v-model="filtroInspector"
-                        class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                        class="bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                     >
                         <option value="todos">Todos los Inspectores</option>
                         <option v-for="ins in inspectores" :key="ins.id" :value="ins.id">
@@ -59,17 +59,17 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+        <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
             <!-- Loading -->
             <div v-if="loading" class="py-16 text-center text-sm text-slate-400">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando actividades...</p>
             </div>
 
             <!-- Empty State (No Programmed Activities) -->
             <div v-else-if="actividades.length === 0" class="py-20 text-center">
                 <span class="material-symbols-outlined text-5xl text-slate-400">calendar_today</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No hay actividades programadas para este mes</p>
+                <p class="text-sm font-semibold text-white mt-4">No hay actividades programadas para este mes</p>
                 <p class="text-xs text-slate-400 mt-1">
                     {{ auth.role === 'administrador' ? 'Utilice el botón "+ Nueva Actividad" para programar una inspección o visita.' : 'El administrador aún no ha cargado las actividades de este mes.' }}
                 </p>
@@ -77,7 +77,7 @@
                 <button 
                     v-if="auth.role === 'administrador'"
                     @click="openExtraModal"
-                    class="mt-4 px-5 py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-sm transition-all inline-flex items-center gap-1.5 border border-slate-800"
+                    class="mt-4 px-5 py-2.5 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-md shadow-lg transition-all inline-flex items-center gap-1.5 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Asignar Actividad
@@ -90,7 +90,7 @@
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-left border-collapse table-fixed text-[11px]">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                            <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 <th v-if="auth.role === 'administrador'" class="px-5 py-4 w-[15%]">Inspector</th>
                                 <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[11%]'">Fecha</th>
                                 <th class="px-5 py-4" :class="auth.role === 'administrador' ? 'w-[10%]' : 'w-[12%]'">Código</th>
@@ -103,10 +103,10 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs">
-                            <tr v-for="act in filteredActividades" :key="act.id" class="hover:bg-slate-50 transition-colors">
+                            <tr v-for="act in filteredActividades" :key="act.id" class="hover:bg-black/20 transition-colors">
                                 <!-- Inspector (Admin Only) -->
                                 <td v-if="auth.role === 'administrador'" class="px-5 py-4 truncate max-w-0" :title="act.inspector_nombre">
-                                    <p class="font-bold text-slate-800 truncate">{{ act.inspector_nombre }}</p>
+                                    <p class="font-bold text-white truncate">{{ act.inspector_nombre }}</p>
                                     <p class="text-[9px] text-slate-400 font-mono truncate">Cod: {{ act.inspector_codigo }}</p>
                                 </td>
 
@@ -116,18 +116,18 @@
                                 </td>
 
                                 <!-- Activity Code -->
-                                <td class="px-5 py-4 font-mono font-bold text-slate-800 truncate max-w-0" :title="act.codigo_actividad">
+                                <td class="px-5 py-4 font-mono font-bold text-white truncate max-w-0" :title="act.codigo_actividad">
                                     {{ act.codigo_actividad }}
                                 </td>
 
                                 <!-- Activity Type -->
-                                <td class="px-5 py-4 font-bold text-slate-800 truncate max-w-0" :title="act.tipo_actividad">
+                                <td class="px-5 py-4 font-bold text-white truncate max-w-0" :title="act.tipo_actividad">
                                     {{ act.tipo_actividad }}
                                 </td>
 
                                 <!-- Establishment -->
                                 <td class="px-5 py-4 truncate max-w-0" :title="act.establecimiento">
-                                    <p class="font-bold text-slate-800 truncate">{{ act.establecimiento }}</p>
+                                    <p class="font-bold text-white truncate">{{ act.establecimiento }}</p>
                                 </td>
 
                                 <!-- Observations -->
@@ -150,7 +150,7 @@
                                     <div class="flex flex-col items-center gap-1.5">
                                         <span 
                                             :class="['px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wide', 
-                                                     act.estado === 'programada' ? 'bg-slate-100 border-slate-300 text-slate-600' :
+                                                     act.estado === 'programada' ? 'bg-slate-100 border-slate-300 text-gray-300' :
                                                      act.estado === 'ejecutada' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
                                                      'bg-red-50 border-red-200 text-red-700']"
                                         >
@@ -196,13 +196,13 @@
                                     <div v-if="auth.role === 'inspector' && act.estado === 'programada'" class="flex justify-end gap-3">
                                         <button 
                                             @click="openExecuteModal(act, 'ejecutada')"
-                                            class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-emerald-700 shadow-sm"
+                                            class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-emerald-700 shadow-lg"
                                         >
                                             <span class="material-symbols-outlined text-[10px]">done</span> Ejec
                                         </button>
                                         <button 
                                             @click="openExecuteModal(act, 'no_ejecutada')"
-                                            class="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-red-700 shadow-sm"
+                                            class="px-2.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] font-bold transition-colors flex items-center gap-1 border border-red-700 shadow-lg"
                                         >
                                             <span class="material-symbols-outlined text-[10px]">close</span> Incump
                                         </button>
@@ -219,12 +219,12 @@
                     <div 
                         v-for="act in filteredActividades" 
                         :key="act.id" 
-                        class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm hover:shadow transition-shadow flex flex-col justify-between"
+                        class="glass-card rounded-lg border border-white/10 p-4 shadow-lg hover:shadow transition-shadow flex flex-col justify-between"
                     >
                         <div>
                             <!-- Card Header: Code & Date + Status Badges -->
                             <div class="flex items-start justify-between gap-2 mb-2">
-                                <span class="font-mono font-bold text-slate-800 text-xs">{{ act.codigo_actividad }}</span>
+                                <span class="font-mono font-bold text-white text-xs">{{ act.codigo_actividad }}</span>
                                 <div class="flex items-center gap-1.5">
                                     <span 
                                         :class="['px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase tracking-wide border', 
@@ -234,7 +234,7 @@
                                     </span>
                                     <span 
                                         :class="['px-1.5 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wide', 
-                                                 act.estado === 'programada' ? 'bg-slate-100 border-slate-300 text-slate-600' :
+                                                 act.estado === 'programada' ? 'bg-slate-100 border-slate-300 text-gray-300' :
                                                  act.estado === 'ejecutada' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
                                                  'bg-red-50 border-red-200 text-red-700']"
                                     >
@@ -244,7 +244,7 @@
                             </div>
                             
                             <!-- Card Body: Date, Type, Place -->
-                            <h4 class="text-xs font-black text-slate-800 mb-2 tracking-tight">{{ act.tipo_actividad }}</h4>
+                            <h4 class="text-xs font-black text-white mb-2 tracking-tight">{{ act.tipo_actividad }}</h4>
                             
                             <div class="space-y-1.5 text-[11px] text-slate-400">
                                 <div class="flex items-center gap-1">
@@ -262,7 +262,7 @@
                             </div>
 
                             <!-- Observations/Incumplimiento text boxes -->
-                            <div v-if="act.observaciones" class="mt-2.5 bg-slate-50 p-2 rounded border border-slate-200 text-[10px] text-slate-400 italic">
+                            <div v-if="act.observaciones" class="mt-2.5 bg-black/20 p-2 rounded border border-white/10 text-[10px] text-slate-400 italic">
                                 <strong>Obs:</strong> {{ act.observaciones }}
                             </div>
                             <div v-if="act.estado === 'no_ejecutada'" class="mt-2 bg-red-50 p-2 rounded border border-red-100 text-[10px] text-red-700 font-semibold">
@@ -271,7 +271,7 @@
                         </div>
 
                         <!-- Card Footer: Actions -->
-                        <div class="border-t border-slate-100 pt-3 mt-3 flex justify-end items-center gap-2">
+                        <div class="border-t border-white/10 pt-3 mt-3 flex justify-end items-center gap-2">
                             <!-- Admin Actions -->
                             <div v-if="auth.role === 'administrador'" class="flex gap-2">
                                 <button 
@@ -292,13 +292,13 @@
                             <div v-if="auth.role === 'inspector' && act.estado === 'programada'" class="flex gap-2 w-full sm:w-auto">
                                 <button 
                                     @click="openExecuteModal(act, 'ejecutada')"
-                                    class="flex-1 sm:flex-initial px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-colors flex items-center justify-center gap-0.5 border border-emerald-700 shadow-sm"
+                                    class="flex-1 sm:flex-initial px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-colors flex items-center justify-center gap-0.5 border border-emerald-700 shadow-lg"
                                 >
                                     <span class="material-symbols-outlined text-xs">done</span> Ejecutada
                                 </button>
                                 <button 
                                     @click="openExecuteModal(act, 'no_ejecutada')"
-                                    class="flex-1 sm:flex-initial px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-bold transition-colors flex items-center justify-center gap-0.5 border border-red-700 shadow-sm"
+                                    class="flex-1 sm:flex-initial px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-bold transition-colors flex items-center justify-center gap-0.5 border border-red-700 shadow-lg"
                                 >
                                     <span class="material-symbols-outlined text-xs">close</span> Incumplida
                                 </button>
@@ -314,14 +314,14 @@
 
         <!-- MODAL: Assign Activity (Admin Only) or Edit Activity (Admin Only) -->
         <div v-if="showAdminFormModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-            <div class="bg-white rounded-lg shadow-xl border border-slate-200 max-w-lg w-full overflow-hidden animate-slide-up">
+            <div class="glass-card rounded-lg shadow-xl border border-white/10 max-w-lg w-full overflow-hidden animate-slide-up">
                 <!-- Modal Title -->
-                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-slate-800">{{ modalEditId ? 'edit_document' : 'assignment' }}</span>
+                <div class="px-6 py-4 bg-black/20 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-white">{{ modalEditId ? 'edit_document' : 'assignment' }}</span>
                         {{ modalEditId ? 'Editar Actividad Programada' : 'Asignar Actividad' }}
                     </h3>
-                    <button @click="showAdminFormModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <button @click="showAdminFormModal = false" class="text-slate-400 hover:text-gray-300 transition-colors">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -330,10 +330,10 @@
                 <div class="p-6 space-y-4">
                     <!-- Inspector Selection -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Inspector Asignado *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Inspector Asignado *</label>
                         <select 
                             v-model="formModel.inspector_id"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         >
                             <option value="">Seleccione un inspector...</option>
                             <option v-for="ins in inspectores" :key="ins.id" :value="ins.id">
@@ -344,72 +344,72 @@
 
                     <!-- Date -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha Programada *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Fecha Programada *</label>
                         <input 
                             v-model="formModel.fecha_programada"
                             type="date"
                             :min="`${mesSeleccionado}-01`"
                             :max="maxDateForMonth"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
                     <!-- Activity Code -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Código de Actividad * (SOIC)</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Código de Actividad * (SOIC)</label>
                         <input 
                             v-model="formModel.codigo_actividad"
                             type="text"
                             placeholder="Ej. FORMA SOIC 0"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-mono"
                         />
                     </div>
 
                     <!-- Activity Type -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tipo de Actividad *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Tipo de Actividad *</label>
                         <input 
                             v-model="formModel.tipo_actividad"
                             type="text"
                             placeholder="Texto libre de la actividad"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
                     <!-- Establishment / Location -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Establecimiento / Lugar *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Establecimiento / Lugar *</label>
                         <input 
                             v-model="formModel.establecimiento"
                             type="text"
                             placeholder="Ej. Rastro Municipal Central"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
                     <!-- Observations -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Observaciones (Opcional)</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Observaciones (Opcional)</label>
                         <textarea 
                             v-model="formModel.observaciones"
                             placeholder="Instrucciones o detalles de la visita..."
                             rows="3"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 resize-none"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white resize-none"
                         ></textarea>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+                <div class="px-6 py-4 bg-black/20 border-t border-white/10 flex items-center justify-end gap-3">
                     <button 
                         @click="showAdminFormModal = false"
-                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-slate-600 transition-colors"
+                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-gray-300 transition-colors"
                     >
                         Cancelar
                     </button>
                     <button 
                         @click="guardarActividadForm"
-                        class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white rounded text-xs font-bold transition-all shadow-sm flex items-center gap-1"
+                        class="px-5 py-2 bg-[#0a192f] hover:bg-[#122347] text-white rounded text-xs font-bold transition-all shadow-lg flex items-center gap-1"
                     >
                         <span class="material-symbols-outlined text-sm">check</span>
                         Confirmar
@@ -421,10 +421,10 @@
 
         <!-- MODAL: Register Execution / Non-compliance (Inspector Only) -->
         <div v-if="showExecutionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-            <div class="bg-white rounded-lg shadow-xl border border-slate-200 max-w-md w-full overflow-hidden animate-slide-up">
+            <div class="glass-card rounded-lg shadow-xl border border-white/10 max-w-md w-full overflow-hidden animate-slide-up">
                 <!-- Modal Title -->
-                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <div class="px-6 py-4 bg-black/20 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <span 
                             :class="['material-symbols-outlined', 
                                      executionForm.estado === 'ejecutada' ? 'text-emerald-600' : 'text-red-600']"
@@ -433,27 +433,27 @@
                         </span>
                         {{ executionForm.estado === 'ejecutada' ? 'Registrar Actividad Ejecutada' : 'Reportar Actividad Incumplida' }}
                     </h3>
-                    <button @click="showExecutionModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <button @click="showExecutionModal = false" class="text-slate-400 hover:text-gray-300 transition-colors">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
 
                 <!-- Modal Body -->
                 <div class="p-6 space-y-4">
-                    <div class="bg-slate-50 p-3.5 rounded border border-slate-200 text-xs">
-                        <p class="font-bold text-slate-800">Actividad: <span class="font-medium text-slate-600">{{ executionForm.tipo_actividad }}</span></p>
-                        <p class="font-bold text-slate-800 mt-1">Establecimiento: <span class="font-medium text-slate-600">{{ executionForm.establecimiento }}</span></p>
-                        <p class="font-bold text-slate-800 mt-1">Fecha programada: <span class="font-medium text-slate-600 font-mono">{{ executionForm.fecha_programada }}</span></p>
+                    <div class="bg-black/20 p-3.5 rounded border border-white/10 text-xs">
+                        <p class="font-bold text-white">Actividad: <span class="font-medium text-gray-300">{{ executionForm.tipo_actividad }}</span></p>
+                        <p class="font-bold text-white mt-1">Establecimiento: <span class="font-medium text-gray-300">{{ executionForm.establecimiento }}</span></p>
+                        <p class="font-bold text-white mt-1">Fecha programada: <span class="font-medium text-gray-300 font-mono">{{ executionForm.fecha_programada }}</span></p>
                     </div>
 
                     <!-- Field based on action type -->
                     <div v-if="executionForm.estado === 'ejecutada'">
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Observaciones de la Ejecución</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Observaciones de la Ejecución</label>
                         <textarea 
                             v-model="executionForm.observaciones"
                             placeholder="Detalles sobre los resultados de la inspección, hallazgos, etc."
                             rows="4"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 resize-none"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white resize-none"
                         ></textarea>
                     </div>
 
@@ -463,23 +463,23 @@
                             v-model="executionForm.motivo_incumplimiento"
                             placeholder="Explique detalladamente por qué no se pudo ejecutar la actividad programada..."
                             rows="4"
-                            class="w-full bg-slate-50 border border-red-300 focus:border-red-500 rounded px-3 py-2 text-xs outline-none transition-all text-slate-800 resize-none"
+                            class="w-full bg-black/20 border border-red-300 focus:border-red-500 rounded px-3 py-2 text-xs outline-none transition-all text-white resize-none"
                         ></textarea>
                         <p class="text-[10px] text-red-500 mt-1 font-semibold">Este campo es obligatorio para documentar la omisión.</p>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+                <div class="px-6 py-4 bg-black/20 border-t border-white/10 flex items-center justify-end gap-3">
                     <button 
                         @click="showExecutionModal = false"
-                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-slate-600 transition-colors"
+                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-gray-300 transition-colors"
                     >
                         Cancelar
                     </button>
                     <button 
                         @click="guardarEjecucion"
-                        :class="['px-5 py-2 text-white rounded text-xs font-bold transition-all shadow-sm flex items-center gap-1', 
+                        :class="['px-5 py-2 text-white rounded text-xs font-bold transition-all shadow-lg flex items-center gap-1', 
                                  executionForm.estado === 'ejecutada' ? 'bg-emerald-600 hover:bg-emerald-700 border border-emerald-700' : 'bg-red-600 hover:bg-red-700 border border-red-700']"
                     >
                         <span class="material-symbols-outlined text-sm">done</span>
@@ -492,14 +492,14 @@
 
         <!-- MODAL: Register Spontaneous Activity (Inspector Only) -->
         <div v-if="showEspontaneaModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-            <div class="bg-white rounded-lg shadow-xl border border-slate-200 max-w-lg w-full overflow-hidden animate-slide-up">
+            <div class="glass-card rounded-lg shadow-xl border border-white/10 max-w-lg w-full overflow-hidden animate-slide-up">
                 <!-- Modal Title -->
-                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                <div class="px-6 py-4 bg-black/20 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <span class="material-symbols-outlined text-purple-600">bolt</span>
                         Registrar Actividad Espontánea (No Programada)
                     </h3>
-                    <button @click="showEspontaneaModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <button @click="showEspontaneaModal = false" class="text-slate-400 hover:text-gray-300 transition-colors">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -512,72 +512,72 @@
 
                     <!-- Date -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fecha de Ejecución *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Fecha de Ejecución *</label>
                         <input 
                             v-model="espontaneaForm.fecha_programada"
                             type="date"
                             :min="`${mesSeleccionado}-01`"
                             :max="maxDateForMonth"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-semibold"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-semibold"
                         />
                     </div>
 
                     <!-- Activity Code -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Código de Actividad * (SOIC)</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Código de Actividad * (SOIC)</label>
                         <input 
                             v-model="espontaneaForm.codigo_actividad"
                             type="text"
                             placeholder="Ej. FORMA SOIC 0"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-mono"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-mono"
                         />
                     </div>
 
                     <!-- Activity Type -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tipo de Actividad *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Tipo de Actividad *</label>
                         <input 
                             v-model="espontaneaForm.tipo_actividad"
                             type="text"
                             placeholder="Detalle de la inspección espontánea"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
                     <!-- Establishment -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Establecimiento / Lugar *</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Establecimiento / Lugar *</label>
                         <input 
                             v-model="espontaneaForm.establecimiento"
                             type="text"
                             placeholder="Ej. Expendio de Carnes La Nueva"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                         />
                     </div>
 
                     <!-- Observations -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Observaciones / Hallazgos</label>
+                        <label class="block text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-2">Observaciones / Hallazgos</label>
                         <textarea 
                             v-model="espontaneaForm.observaciones"
                             placeholder="Detalle de la inspección, hallazgos u observaciones encontradas..."
                             rows="3"
-                            class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 resize-none"
+                            class="w-full bg-black/20 border border-slate-300 rounded px-3 py-2 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white resize-none"
                         ></textarea>
                     </div>
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+                <div class="px-6 py-4 bg-black/20 border-t border-white/10 flex items-center justify-end gap-3">
                     <button 
                         @click="showEspontaneaModal = false"
-                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-slate-600 transition-colors"
+                        class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded text-xs font-bold text-gray-300 transition-colors"
                     >
                         Cancelar
                     </button>
                     <button 
                         @click="guardarEspontanea"
-                        class="px-5 py-2 bg-purple-600 hover:bg-purple-700 border border-purple-700 text-white rounded text-xs font-bold transition-all shadow-sm flex items-center gap-1"
+                        class="px-5 py-2 bg-purple-600 hover:bg-purple-700 border border-purple-700 text-white rounded text-xs font-bold transition-all shadow-lg flex items-center gap-1"
                     >
                         <span class="material-symbols-outlined text-sm">bolt</span>
                         Registrar Ejecución

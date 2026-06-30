@@ -10,7 +10,7 @@
                 <button 
                     @click="exportToExcel" 
                     :disabled="reportData.inspectores.length === 0 && reportData.establecimientos.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700 font-headline"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700 font-headline"
                 >
                     <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
@@ -19,25 +19,25 @@
         </div>
 
         <!-- Filter Month Selector -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 flex items-end">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 flex items-end">
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Seleccionar Mes del Reporte</label>
                 <input 
                     v-model="mesReporte" 
                     type="month" 
-                    class="bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800 font-semibold"
+                    class="bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white font-semibold"
                 />
             </div>
         </div>
 
-        <div v-if="loading" class="py-16 text-center text-sm text-slate-400 bg-white rounded border border-slate-200 shadow-sm">
-            <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+        <div v-if="loading" class="py-16 text-center text-sm text-slate-400 glass-card rounded border border-white/10 shadow-lg">
+            <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
             <p class="mt-2 font-bold">Cargando reporte consolidado...</p>
         </div>
 
-        <div v-else-if="reportData.inspectores.length === 0 && reportData.establecimientos.length === 0" class="py-20 text-center bg-white rounded border border-slate-200 shadow-sm">
+        <div v-else-if="reportData.inspectores.length === 0 && reportData.establecimientos.length === 0" class="py-20 text-center glass-card rounded border border-white/10 shadow-lg">
             <span class="material-symbols-outlined text-5xl text-slate-400">analytics</span>
-            <p class="text-sm font-semibold text-slate-800 mt-4">No hay datos de actividades registradas para este mes</p>
+            <p class="text-sm font-semibold text-white mt-4">No hay datos de actividades registradas para este mes</p>
             <p class="text-xs text-slate-400 mt-1">Por favor genere y guarde la programación de este mes para consultar métricas.</p>
         </div>
 
@@ -45,10 +45,10 @@
             <!-- KPI Dashboard Summary Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- KPI 1: Programmed -->
-                <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                     <div>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Actividades Programadas</p>
-                        <h3 class="text-3xl font-black text-slate-800 mt-1">{{ totalProgramadas }}</h3>
+                        <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Actividades Programadas</p>
+                        <h3 class="text-3xl font-black text-white mt-1">{{ totalProgramadas }}</h3>
                     </div>
                     <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border border-blue-200">
                         <span class="material-symbols-outlined text-xl">event_note</span>
@@ -56,9 +56,9 @@
                 </div>
 
                 <!-- KPI 2: Executed Programmed -->
-                <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                     <div>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ejecución Planificada</p>
+                        <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Ejecución Planificada</p>
                         <h3 class="text-3xl font-black text-emerald-600 mt-1">{{ totalEjecutadasProgramadas }}</h3>
                         <p class="text-[9px] text-slate-400 mt-0.5">De las actividades del cronograma</p>
                     </div>
@@ -68,9 +68,9 @@
                 </div>
 
                 <!-- KPI 3: Compliance Rate -->
-                <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                     <div>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Cumplimiento Programación</p>
+                        <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Cumplimiento Programación</p>
                         <h3 class="text-3xl font-black mt-1" :class="cumplimientoGeneral >= 80 ? 'text-emerald-600' : (cumplimientoGeneral >= 50 ? 'text-amber-600' : 'text-red-600')">
                             {{ cumplimientoGeneral }}%
                         </h3>
@@ -84,9 +84,9 @@
                 </div>
 
                 <!-- KPI 4: Spontaneous -->
-                <div class="bg-white p-6 rounded-md border border-slate-200 shadow-ambient flex items-center justify-between">
+                <div class="glass-card p-6 rounded-md border border-white/10 shadow-ambient flex items-center justify-between">
                     <div>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ejecución Espontánea</p>
+                        <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Ejecución Espontánea</p>
                         <h3 class="text-3xl font-black text-purple-600 mt-1">{{ totalEspontaneas }}</h3>
                         <p class="text-[9px] text-slate-400 mt-0.5">Actividades extras no programadas</p>
                     </div>
@@ -97,11 +97,11 @@
             </div>
 
             <!-- Tab Buttons -->
-            <div class="border-b border-slate-200 flex gap-2">
+            <div class="border-b border-white/10 flex gap-2">
                 <button 
                     @click="activeTab = 'inspectores'"
                     :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                             activeTab === 'inspectores' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                             activeTab === 'inspectores' ? 'border-primary text-white glass-card' : 'border-transparent text-gray-300 hover:text-gray-300']"
                 >
                     <span class="material-symbols-outlined text-sm">badge</span>
                     Desempeño y Cobertura por Inspector
@@ -109,7 +109,7 @@
                 <button 
                     @click="activeTab = 'establecimientos'"
                     :class="['px-5 py-3 font-bold text-xs border-b-2 transition-all flex items-center gap-1.5', 
-                             activeTab === 'establecimientos' ? 'border-primary text-slate-800 bg-white' : 'border-transparent text-slate-500 hover:text-slate-700']"
+                             activeTab === 'establecimientos' ? 'border-primary text-white glass-card' : 'border-transparent text-gray-300 hover:text-gray-300']"
                 >
                     <span class="material-symbols-outlined text-sm">store</span>
                     Cobertura por Establecimiento
@@ -117,31 +117,31 @@
             </div>
 
             <!-- Tab Content 1: Inspectors Desempeño -->
-            <div v-show="activeTab === 'inspectores'" class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
+            <div v-show="activeTab === 'inspectores'" class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                            <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 <th class="px-6 py-4">Inspector</th>
                                 <th class="px-4 py-4 text-center w-28">Programadas</th>
                                 <th class="px-4 py-4 text-center w-28">Ejecutadas (Prog)</th>
                                 <th class="px-4 py-4 text-center w-28">Incumplidas</th>
                                 <th class="px-4 py-4 text-center w-28">Pendientes</th>
                                 <th class="px-4 py-4 text-center w-28">Espontáneas</th>
-                                <th class="px-4 py-4 text-center w-28 font-extrabold text-slate-800">Total Realizadas</th>
+                                <th class="px-4 py-4 text-center w-28 font-extrabold text-white">Total Realizadas</th>
                                 <th class="px-6 py-4 w-56">% Cumplimiento</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs">
-                            <tr v-for="ins in reportData.inspectores" :key="ins.inspector_id" class="hover:bg-slate-50 transition-colors">
+                            <tr v-for="ins in reportData.inspectores" :key="ins.inspector_id" class="hover:bg-black/20 transition-colors">
                                 <!-- Inspector Details -->
                                 <td class="px-6 py-4">
-                                    <p class="font-bold text-slate-800">{{ ins.inspector_nombre }}</p>
+                                    <p class="font-bold text-white">{{ ins.inspector_nombre }}</p>
                                     <p class="text-[9px] text-slate-400 font-mono">Código: {{ ins.inspector_codigo }} | Área: {{ ins.inspector_area }}</p>
                                 </td>
 
                                 <!-- Programadas -->
-                                <td class="px-4 py-4 text-center font-mono font-bold text-slate-700">
+                                <td class="px-4 py-4 text-center font-mono font-bold text-gray-300">
                                     {{ ins.total_programadas }}
                                 </td>
 
@@ -156,7 +156,7 @@
                                 </td>
 
                                 <!-- Pendientes -->
-                                <td class="px-4 py-4 text-center font-mono font-bold text-slate-500">
+                                <td class="px-4 py-4 text-center font-mono font-bold text-gray-300">
                                     {{ ins.pendientes_programadas }}
                                 </td>
 
@@ -166,14 +166,14 @@
                                 </td>
 
                                 <!-- Total Realizadas -->
-                                <td class="px-4 py-4 text-center font-mono font-bold text-slate-800 bg-blue-50/20">
+                                <td class="px-4 py-4 text-center font-mono font-bold text-white bg-blue-50/20">
                                     {{ ins.total_ejecutadas }}
                                 </td>
 
                                 <!-- Compliance Percentage with Progress Bar -->
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="flex-1 w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                                        <div class="flex-1 w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-white/10">
                                             <div 
                                                 class="h-full rounded-full transition-all duration-500"
                                                 :class="getInspectorPercentage(ins) >= 80 ? 'bg-emerald-500' : (getInspectorPercentage(ins) >= 50 ? 'bg-amber-500' : 'bg-red-500')"
@@ -194,25 +194,25 @@
             </div>
 
             <!-- Tab Content 2: Establishments Cobertura -->
-            <div v-show="activeTab === 'establecimientos'" class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
+            <div v-show="activeTab === 'establecimientos'" class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden animate-fade-in">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                            <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 <th class="px-6 py-4">Establecimiento / Lugar</th>
                                 <th class="px-4 py-4 text-center w-36">Actividades Programadas</th>
                                 <th class="px-4 py-4 text-center w-36">Ejecutadas (Prog)</th>
                                 <th class="px-4 py-4 text-center w-36">Incumplidas</th>
                                 <th class="px-4 py-4 text-center w-36">Espontáneas</th>
-                                <th class="px-4 py-4 text-center w-36 font-extrabold text-slate-800">Total Realizadas</th>
+                                <th class="px-4 py-4 text-center w-36 font-extrabold text-white">Total Realizadas</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs">
-                            <tr v-for="est in reportData.establecimientos" :key="est.establecimiento" class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-slate-800">
+                            <tr v-for="est in reportData.establecimientos" :key="est.establecimiento" class="hover:bg-black/20 transition-colors">
+                                <td class="px-6 py-4 font-bold text-white">
                                     {{ est.establecimiento }}
                                 </td>
-                                <td class="px-4 py-4 text-center font-mono font-bold text-slate-700">
+                                <td class="px-4 py-4 text-center font-mono font-bold text-gray-300">
                                     {{ est.total_programadas }}
                                 </td>
                                 <td class="px-4 py-4 text-center font-mono font-bold text-emerald-600 bg-emerald-50/20">
@@ -224,7 +224,7 @@
                                 <td class="px-4 py-4 text-center font-mono font-bold text-purple-600">
                                     {{ est.espontaneas }}
                                 </td>
-                                <td class="px-4 py-4 text-center font-mono font-bold text-slate-800 bg-blue-50/20">
+                                <td class="px-4 py-4 text-center font-mono font-bold text-white bg-blue-50/20">
                                     {{ est.total_ejecutadas }}
                                 </td>
                             </tr>

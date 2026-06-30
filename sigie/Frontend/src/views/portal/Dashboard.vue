@@ -3,14 +3,14 @@
         <!-- KPI Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <!-- Stat 1: Inspecciones Hoy -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Inspecciones Hoy</span>
+                    <span class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Inspecciones Hoy</span>
                     <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
                         <span class="material-symbols-outlined text-base">assignment</span>
                     </div>
                 </div>
-                <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ stats.total_checkins }}</h3>
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">{{ stats.total_checkins }}</h3>
                 <span class="text-[10px] font-semibold text-emerald-600 flex items-center gap-0.5 mt-2">
                     <span class="material-symbols-outlined text-[10px]">trending_up</span>
                     +12% <span class="text-slate-400 ml-0.5">vs. ayer</span>
@@ -18,14 +18,14 @@
             </div>
 
             <!-- Stat 2: No Conformidades -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">No Conformidades</span>
+                    <span class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">No Conformidades</span>
                     <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-red-500">
                         <span class="material-symbols-outlined text-base">warning</span>
                     </div>
                 </div>
-                <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ stats.checkins_novedades }}</h3>
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">{{ stats.checkins_novedades }}</h3>
                 <span class="text-[10px] font-semibold text-red-500 flex items-center gap-0.5 mt-2">
                     <span class="material-symbols-outlined text-[10px]">error</span>
                     Acción requerida
@@ -33,26 +33,26 @@
             </div>
 
             <!-- Stat 3: Pendientes -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pendientes</span>
+                    <span class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Pendientes</span>
                     <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
                         <span class="material-symbols-outlined text-base">assignment_late</span>
                     </div>
                 </div>
-                <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ stats.visitas_pendientes }}</h3>
-                <span class="text-[10px] font-semibold text-slate-500 mt-2">Por validar</span>
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">{{ stats.visitas_pendientes }}</h3>
+                <span class="text-[10px] font-semibold text-gray-300 mt-2">Por validar</span>
             </div>
 
             <!-- Stat 4: Efectividad -->
-            <div class="bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
+            <div class="glass-card backdrop-blur-sm p-5 rounded-2xl border border-white/20 shadow-premium flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Efectividad</span>
+                    <span class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Efectividad</span>
                     <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
                         <span class="material-symbols-outlined text-base">verified</span>
                     </div>
                 </div>
-                <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">98.2%</h3>
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">98.2%</h3>
                 <span class="text-[10px] font-semibold text-emerald-600 mt-2">Óptimo</span>
             </div>
         </div>
@@ -61,9 +61,9 @@
             <!-- Left/Center: Latest Records Table -->
             <div class="lg:col-span-2">
                 <!-- Inspector Visitas Container -->
-                <div v-if="auth.role === 'inspector'" class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-6">
+                <div v-if="auth.role === 'inspector'" class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-6">
                     <div class="flex items-center justify-between mb-5">
-                        <h2 class="text-sm font-bold text-slate-800 font-headline">Mis Visitas Asignadas</h2>
+                        <h2 class="text-sm font-bold text-white font-headline">Mis Visitas Asignadas</h2>
                         <span class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-lg">Pendientes</span>
                     </div>
 
@@ -74,18 +74,18 @@
                     
                     <div v-else-if="visitas.length === 0" class="py-12 text-center">
                         <span class="material-symbols-outlined text-3xl text-emerald-500">task_alt</span>
-                        <p class="text-sm font-bold text-slate-800 mt-3">¡Sin visitas pendientes!</p>
+                        <p class="text-sm font-bold text-white mt-3">¡Sin visitas pendientes!</p>
                         <p class="text-xs text-white/60 mt-1">Todas las inspecciones han sido completadas.</p>
                     </div>
 
                     <div v-else class="space-y-3">
-                        <div v-for="visita in visitas" :key="visita.id" class="p-4 rounded-xl border border-slate-100 hover:border-blue-100 hover:bg-blue-50/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div v-for="visita in visitas" :key="visita.id" class="p-4 rounded-xl border border-white/10 hover:border-blue-100 hover:bg-blue-50/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <span class="text-[9px] font-bold uppercase text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
                                     {{ visita.tipo_inspeccion }}
                                 </span>
-                                <h4 class="font-bold text-slate-800 mt-1.5 text-sm">{{ visita.establecimiento }}</h4>
-                                <p class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
+                                <h4 class="font-bold text-white mt-1.5 text-sm">{{ visita.establecimiento }}</h4>
+                                <p class="text-[11px] text-gray-300 mt-0.5 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs">place</span>
                                     {{ visita.direccion }}
                                 </p>
@@ -99,10 +99,10 @@
                 </div>
 
                 <!-- Latest Records Table -->
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                         <div class="flex items-center gap-3">
-                            <h2 class="text-sm font-bold text-slate-800 font-headline">Últimos Registros de Inspección</h2>
+                            <h2 class="text-sm font-bold text-white font-headline">Últimos Registros de Inspección</h2>
                             <button class="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-lg hover:bg-blue-100 transition-colors">Ver todos</button>
                         </div>
                     </div>
@@ -120,18 +120,18 @@
                         <div class="inline-block min-w-full align-middle px-6">
                             <table class="min-w-full">
                                 <thead>
-                                    <tr class="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">
+                                    <tr class="border-b border-white/10 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">
                                         <th class="py-3 pr-4">Establecimiento</th>
                                         <th class="py-3 px-4">Categoría</th>
                                         <th class="py-3 px-4">Hora</th>
                                         <th class="py-3 px-4">Estado</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-50 text-xs text-slate-700">
-                                    <tr v-for="c in filteredCheckins" :key="c.id" class="hover:bg-slate-50/40 transition-colors">
-                                        <td class="py-3.5 pr-4 font-semibold text-slate-800">{{ c.establecimiento || 'Inspección General' }}</td>
-                                        <td class="py-3.5 px-4 text-slate-500">{{ c.inspector_nombre }}</td>
-                                        <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">{{ formatTime(c.fecha_hora) }}</td>
+                                <tbody class="divide-y divide-slate-50 text-xs text-gray-300">
+                                    <tr v-for="c in filteredCheckins" :key="c.id" class="hover:bg-black/20/40 transition-colors">
+                                        <td class="py-3.5 pr-4 font-semibold text-white">{{ c.establecimiento || 'Inspección General' }}</td>
+                                        <td class="py-3.5 px-4 text-gray-300">{{ c.inspector_nombre }}</td>
+                                        <td class="py-3.5 px-4 text-gray-300 font-mono text-[11px]">{{ formatTime(c.fecha_hora) }}</td>
                                         <td class="py-3.5 px-4">
                                             <span 
                                                 :class="['inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold', 
@@ -152,8 +152,8 @@
 
             <!-- Right Side: Activity Timeline -->
             <div class="lg:col-span-1">
-                <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
-                    <h2 class="text-sm font-bold text-slate-800 font-headline mb-5">Actividad Reciente</h2>
+                <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium">
+                    <h2 class="text-sm font-bold text-white font-headline mb-5">Actividad Reciente</h2>
 
                     <div v-if="loadingHistorial" class="py-8 text-center text-xs text-slate-400">
                         <span class="material-symbols-outlined animate-spin text-lg text-blue-600 mb-1 block">sync</span>
@@ -168,8 +168,8 @@
                         <div v-for="act in timelineActivities" :key="act.id" class="flex gap-3">
                             <div :class="['w-2 h-2 rounded-full mt-1.5 flex-shrink-0', act.type === 'danger' ? 'bg-red-500' : 'bg-emerald-500']"></div>
                             <div>
-                                <h4 class="font-bold text-xs text-slate-800 leading-snug">{{ act.title }}</h4>
-                                <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">{{ act.description }}</p>
+                                <h4 class="font-bold text-xs text-white leading-snug">{{ act.title }}</h4>
+                                <p class="text-[10px] text-gray-300 mt-0.5 leading-relaxed">{{ act.description }}</p>
                                 <span class="text-[9px] text-slate-400 font-semibold block mt-1 uppercase tracking-wider">{{ act.time }}</span>
                             </div>
                         </div>

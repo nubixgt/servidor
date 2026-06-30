@@ -6,45 +6,45 @@
 @tailwind utilities;
 
 :root {
-  /* Fondo y Superficies */
-  --color-surface: #f8fafc;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f5f9;
-  --color-surface-container: #e2e8f0;
-  --color-surface-container-high: #cbd5e1;
-  --color-surface-container-highest: #94a3b8;
+  /* Fondo y Superficies - Dark Theme */
+  --color-surface: #0a192f;
+  --color-surface-container-lowest: #020617;
+  --color-surface-container-low: #0f172a;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
 
-  /* Textos */
-  --color-on-surface: #0f172a;
-  --color-on-surface-variant: #475569;
+  /* Textos - Dark Theme */
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #cbd5e1;
 
-  /* Paleta Primaria - Navy Institucional */
-  --color-primary: #0a192f;
-  --color-primary-dim: #0f224b;
+  /* Paleta Primaria - Acentos Brillantes */
+  --color-primary: #3b82f6;
+  --color-primary-dim: #2563eb;
   --color-on-primary: #ffffff;
 
   /* Contenedores de Acento */
-  --color-primary-container: #e0f2fe;
-  --color-on-primary-container: #0369a1;
+  --color-primary-container: rgba(59, 130, 246, 0.2);
+  --color-on-primary-container: #60a5fa;
 
   /* Paleta Secundaria */
-  --color-secondary: #1e293b;
-  --color-secondary-container: #f8fafc;
-  --color-on-secondary-container: #334155;
+  --color-secondary: #10b981;
+  --color-secondary-container: rgba(16, 185, 129, 0.2);
+  --color-on-secondary-container: #34d399;
 
-  /* Acentos - Azul Royal */
-  --color-tertiary: #2563eb;
-  --color-tertiary-container: #eff6ff;
-  --color-on-tertiary-container: #1d4ed8;
+  /* Acentos */
+  --color-tertiary: #8b5cf6;
+  --color-tertiary-container: rgba(139, 92, 246, 0.2);
+  --color-on-tertiary-container: #a78bfa;
 
   /* Error */
   --color-error: #ef4444;
-  --color-error-container: #fee2e2;
-  --color-on-error-container: #991b1b;
+  --color-error-container: rgba(239, 68, 68, 0.2);
+  --color-on-error-container: #f87171;
 
   /* Contornos */
-  --color-outline: #e2e8f0;
-  --color-outline-variant: #cbd5e1;
+  --color-outline: rgba(255, 255, 255, 0.15);
+  --color-outline-variant: rgba(255, 255, 255, 0.05);
 }
 
 /* ═══ ESTILOS BASE ═══ */
@@ -64,7 +64,7 @@ body {
 
 /* ═══ FONDO CON IMAGEN INSTITUCIONAL ═══ */
 
-/* Fondo con imagen + overlay navy para área de contenido */
+/* Fondo con imagen + overlay oscuro para área de contenido */
 .bg-app-fondo {
   position: relative;
   background-image: url('/fondo.jpg');
@@ -77,7 +77,7 @@ body {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(10, 25, 47, 0.75);
+  background: rgba(10, 15, 30, 0.35); /* Overlay más claro para el dashboard/app */
   z-index: 0;
   pointer-events: none;
 }
@@ -86,62 +86,188 @@ body {
   z-index: 1;
 }
 
-/* Fondo para login — imagen sin overlay pesado */
+/* Fondo para login */
 .bg-login-fondo {
+  position: relative;
   background-image: url('/fondo.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
-
-/* ═══ SOMBRAS Y EFECTOS ═══ */
-.shadow-premium {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -1px rgba(0, 0, 0, 0.03);
+.bg-login-fondo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.35); /* Overlay sutil para login */
+  z-index: 0;
+}
+.bg-login-fondo > * {
+  position: relative;
+  z-index: 1;
 }
 
-.shadow-premium-lg {
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+/* ═══ GLASSMORPHISM (Clases Semánticas) ═══ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  color: white !important;
 }
 
-.shadow-glow-blue {
-  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
 }
 
-/* Header navy sólido */
-.header-navy {
-  background-color: #0a192f;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* ═══ UPGRADE PREMIUM EN ELEMENTOS ═══ */
+
+/* Reemplazar estilos de tarjetas viejas globalmente */
+.bg-white, .bg-white.shadow-sm, .bg-white.border.shadow-sm, .bg-surface, .bg-gray-50, .bg-slate-50 {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  border-radius: 1rem !important;
+  color: #f8fafc !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
 }
 
-/* Barra de sección navy para formularios */
-.section-header-navy {
-  background-color: #0a192f;
-  color: #ffffff;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  letter-spacing: 0.025em;
+/* Sobrescribir textos oscuros viejos */
+.text-gray-900, .text-gray-800, .text-slate-900, .text-slate-800, .text-black, .text-gray-700 {
+  color: #f8fafc !important;
+}
+.text-gray-600, .text-gray-500, .text-slate-700, .text-slate-600, .text-slate-500 {
+  color: #cbd5e1 !important;
 }
 
-/* ═══ TRANSICIONES Y MICRO-ANIMACIONES ═══ */
-.transition-premium {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+/* Bordes viejos */
+.border-gray-200, .border-gray-300, .border-slate-200, .border-slate-300 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Campos de Formulario (Glass Inputs) */
+input[type="text"], 
+input[type="date"], 
+input[type="number"], 
+input[type="password"], 
+input[type="time"],
+input[type="email"],
+select, 
+textarea {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 0.75rem !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(4px) !important;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+input[type="text"]:focus, 
+input[type="date"]:focus, 
+input[type="number"]:focus, 
+input[type="password"]:focus, 
+input[type="time"]:focus,
+input[type="email"]:focus,
+select:focus, 
+textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  outline: none !important;
 }
 
-/* Scrollbar Personalizada */
+/* Opciones de Select Nativos (Fallback para OS) */
+select option {
+  background-color: #0f172a !important; /* Tema oscuro para opciones */
+  color: #ffffff !important;
+}
+
+/* Botones */
+button:not(.rounded-full):not(.w-8):not(.w-10), 
+input[type="submit"]:not(.rounded-full), 
+a.px-4.py-2.bg-primary, 
+a.px-5.py-2\.5.bg-primary,
+.bg-primary, .bg-blue-600 {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4) !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+button:hover:not(:disabled), .bg-primary:hover, .bg-blue-600:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6) !important;
+}
+
+/* Botones secundarios / outline */
+button.bg-white, a.bg-white, button.bg-gray-100 {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+button.bg-white:hover, a.bg-white:hover, button.bg-gray-100:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Estilos de Tabla Globales (Dark Glass) */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table thead tr {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+table th {
+  color: #94a3b8 !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 1rem !important;
+}
+table tbody tr {
+  transition: background-color 0.2s ease !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+table td {
+  padding: 1rem !important;
+  color: #f8fafc !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Badges / Status */
+.bg-green-100, .bg-green-50, .text-green-800, .text-green-600 {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+.bg-red-100, .bg-red-50, .text-red-800, .text-red-600 {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+.bg-yellow-100, .bg-yellow-50, .bg-amber-100, .text-yellow-800, .text-amber-800 {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Scrollbar Personalizada Dark */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -154,72 +280,21 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* ═══ UPGRADE PREMIUM EN ELEMENTOS ═══ */
-
-/* Tarjetas y Contenedores */
-.bg-white.shadow-sm, .bg-white.border.shadow-sm {
-  border-radius: 1.25rem !important;
-  border-color: rgba(226, 232, 240, 0.6) !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 8px -1px rgba(0, 0, 0, 0.03) !important;
+/* ═══ TRANSICIONES Y MICRO-ANIMACIONES ═══ */
+.transition-premium {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Campos de Formulario */
-input[type="text"], 
-input[type="date"], 
-input[type="number"], 
-input[type="password"], 
-input[type="time"],
-select, 
-textarea {
-  border-radius: 0.75rem !important;
-  border-color: #e2e8f0 !important;
-  font-weight: 500 !important;
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-  transition: all 0.2s ease !important;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-input[type="text"]:focus, 
-input[type="date"]:focus, 
-input[type="number"]:focus, 
-input[type="password"]:focus, 
-input[type="time"]:focus,
-select:focus, 
-textarea:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
-  background-color: #ffffff !important;
-  outline: none !important;
-}
-
-/* Botones */
-button:not(.rounded-full):not(.w-8):not(.w-10), 
-input[type="submit"]:not(.rounded-full), 
-a.px-4.py-2.bg-primary, 
-a.px-5.py-2\.5.bg-primary {
-  border-radius: 0.75rem !important;
-  font-weight: 700 !important;
-  transition: all 0.2s ease !important;
-}
-
-/* Estilos de Tabla Globales */
-table thead tr {
-  background-color: rgba(241, 245, 249, 0.6) !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-}
-table tbody tr {
-  transition: background-color 0.2s ease !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-}
-table tbody tr:hover {
-  background-color: rgba(241, 245, 249, 0.4) !important;
-}
-table th, table td {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ═══ ESTILO PARA IMPRESIÓN ═══ */
@@ -244,15 +319,24 @@ table th, table td {
   .bg-app-fondo::before {
     display: none !important;
   }
-  .bg-white, .p-6, .rounded-md, .border {
+  /* Quitar glassmorphism en print */
+  .bg-white, .p-6, .rounded-md, .border, .glass-card, .glass-panel {
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
     background: transparent !important;
+    backdrop-filter: none !important;
+    color: black !important;
+  }
+  .text-white, .text-gray-300, .text-slate-300 {
+    color: black !important;
   }
   table {
     border-collapse: collapse !important;
     width: 100% !important;
+  }
+  table thead tr {
+    background-color: #f1f5f9 !important;
   }
   th, td {
     border-bottom: 1px solid #ddd !important;

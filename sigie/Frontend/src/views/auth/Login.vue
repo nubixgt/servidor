@@ -4,9 +4,9 @@
         <div class="flex-1 flex items-center justify-center px-4 py-8">
             <div class="w-full max-w-[420px] animate-fade-in">
                 <!-- Login Card -->
-                <div class="bg-white rounded-2xl shadow-premium-lg overflow-hidden">
+                <div class="glass-card rounded-2xl shadow-premium-lg overflow-hidden">
                     <!-- Navy Header with Logo -->
-                    <div class="bg-[#0a192f] px-8 py-6 flex flex-col items-center">
+                    <div class="bg-black/20 px-8 py-6 flex flex-col items-center border-b border-white/10">
                         <div class="w-16 h-16 flex items-center justify-center mb-3">
                             <lottie-player
                                 ref="lottiePlayer"
@@ -25,15 +25,15 @@
                     <!-- Form Section -->
                     <div class="px-8 py-8">
                         <div class="mb-6">
-                            <h2 class="text-lg font-extrabold text-slate-900 tracking-tight">Bienvenido a SIGIE</h2>
-                            <p class="text-[11px] text-slate-500 mt-1">Ingresa tus credenciales para acceder al sistema institucional.</p>
+                            <h2 class="text-lg font-extrabold text-white tracking-tight">Bienvenido a SIGIE</h2>
+                            <p class="text-[11px] text-gray-300 mt-1">Ingresa tus credenciales para acceder al sistema institucional.</p>
                         </div>
 
                         <form class="flex flex-col gap-5" @submit.prevent="handleLogin">
                             <!-- Username Field -->
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider" for="username">Usuario</label>
-                                <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-50 transition-all duration-200">
+                                <label class="text-[10px] font-bold text-gray-300 uppercase tracking-wider" for="username">Usuario</label>
+                                <div class="relative flex items-center bg-black/20 border border-white/10 rounded-xl focus-within:border-blue-600 focus-within:glass-card focus-within:ring-2 focus-within:ring-blue-50 transition-all duration-200">
                                     <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg">person</span>
                                     <input
                                         id="username"
@@ -41,7 +41,7 @@
                                         type="text"
                                         required
                                         placeholder="Ej. juan.perez"
-                                        class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-4 text-xs font-semibold text-slate-800 placeholder-slate-400"
+                                        class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-4 text-xs font-semibold text-white placeholder-slate-400"
                                     />
                                 </div>
                             </div>
@@ -49,10 +49,10 @@
                             <!-- Password Field -->
                             <div class="flex flex-col gap-1.5">
                                 <div class="flex justify-between items-center">
-                                    <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider" for="password">Contraseña</label>
+                                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-wider" for="password">Contraseña</label>
                                     <a href="#" class="text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors">¿Olvidó su contraseña?</a>
                                 </div>
-                                <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-50 transition-all duration-200">
+                                <div class="relative flex items-center bg-black/20 border border-white/10 rounded-xl focus-within:border-blue-600 focus-within:glass-card focus-within:ring-2 focus-within:ring-blue-50 transition-all duration-200">
                                     <span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg">lock</span>
                                     <input
                                         id="password"
@@ -60,16 +60,16 @@
                                         :type="showPwd ? 'text' : 'password'"
                                         required
                                         placeholder="••••••••"
-                                        class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-12 text-xs font-semibold text-slate-800 placeholder-slate-400"
+                                        class="w-full bg-transparent border-none outline-none py-3 pl-11 pr-12 text-xs font-semibold text-white placeholder-slate-400"
                                     />
-                                    <button type="button" @click="showPwd = !showPwd" class="absolute right-3.5 text-slate-400 hover:text-slate-600 transition-colors flex">
+                                    <button type="button" @click="showPwd = !showPwd" class="absolute right-3.5 text-slate-400 hover:text-gray-300 transition-colors flex">
                                         <span class="material-symbols-outlined text-lg">{{ showPwd ? 'visibility_off' : 'visibility' }}</span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" :disabled="loading" class="flex items-center justify-center gap-2 w-full py-3.5 bg-[#0a192f] hover:bg-[#122347] text-white rounded-xl text-xs font-bold tracking-wide transition-all duration-250 shadow-md hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed mt-2">
+                            <button type="submit" :disabled="loading" class="flex items-center justify-center gap-2 w-full py-3.5 bg-primary text-white rounded-xl text-xs font-bold tracking-wide transition-all duration-250 shadow-md hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed mt-2">
                                 <span v-if="!loading" class="flex items-center justify-center gap-1.5">
                                     Ingresar al Sistema
                                     <span class="material-symbols-outlined text-base">arrow_right_alt</span>
@@ -82,7 +82,7 @@
                         </form>
 
                         <!-- Footer Quick Links -->
-                        <div class="flex items-center justify-center gap-3 pt-5 mt-5 border-t border-slate-100 text-[10px] font-semibold text-slate-400">
+                        <div class="flex items-center justify-center gap-3 pt-5 mt-5 border-t border-white/10 text-[10px] font-semibold text-slate-400">
                             <a href="#" class="hover:text-blue-600 transition-colors">¿Problemas para acceder?</a>
                             <span class="text-blue-600 font-bold hover:underline cursor-pointer">Contactar con soporte técnico</span>
                         </div>

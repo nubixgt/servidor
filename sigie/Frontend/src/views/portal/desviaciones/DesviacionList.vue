@@ -10,7 +10,7 @@
                 <button 
                     @click="exportToExcel" 
                     :disabled="desviaciones.length === 0"
-                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
+                    class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-700"
                 >
                     <span class="material-symbols-outlined text-sm">download</span>
                     Exportar a Excel
@@ -18,7 +18,7 @@
                 <router-link 
                     v-if="auth.role === 'inspector'"
                     to="/desviaciones/nuevo" 
-                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 border border-slate-800"
+                    class="px-5 py-3 bg-[#0a192f] hover:bg-[#122347] text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 border border-slate-800"
                 >
                     <span class="material-symbols-outlined text-sm">add_circle</span>
                     Nueva Desviación
@@ -27,14 +27,14 @@
         </div>
 
         <!-- Filters Bar -->
-        <div class="bg-white/95 backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="glass-card backdrop-blur-sm p-6 rounded-2xl border border-white/20 shadow-premium mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Búsqueda Global</label>
                 <input 
                     v-model="searchTerm" 
                     type="text" 
                     placeholder="Muestra, Inspector..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                 />
             </div>
             <div>
@@ -43,14 +43,14 @@
                     v-model="filterEstablecimiento" 
                     type="text" 
                     placeholder="Establecimiento..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                 />
             </div>
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Estado de Seguimiento</label>
                 <select 
                     v-model="filterEstado"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                 >
                     <option value="todos">Todos los Estados</option>
                     <option value="Abierto">Abierto</option>
@@ -63,28 +63,28 @@
                 <input 
                     v-model="filterFecha" 
                     type="date" 
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:bg-white outline-none transition-all text-slate-800"
+                    class="w-full bg-black/20 border border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:border-blue-600 focus:glass-card outline-none transition-all text-white"
                 />
             </div>
         </div>
 
         <!-- Deviations Table -->
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
+        <div class="glass-card backdrop-blur-sm rounded-2xl border border-white/20 shadow-premium overflow-hidden">
             <div v-if="loading" class="py-16 text-center text-sm text-slate-400">
-                <span class="material-symbols-outlined text-4xl animate-spin text-slate-800">sync</span>
+                <span class="material-symbols-outlined text-4xl animate-spin text-white">sync</span>
                 <p class="mt-2 font-bold">Cargando registros...</p>
             </div>
 
             <div v-else-if="filteredDesviaciones.length === 0" class="py-20 text-center">
                 <span class="material-symbols-outlined text-5xl text-slate-400">science</span>
-                <p class="text-sm font-semibold text-slate-800 mt-4">No se encontraron desviaciones de laboratorio</p>
+                <p class="text-sm font-semibold text-white mt-4">No se encontraron desviaciones de laboratorio</p>
                 <p class="text-xs text-slate-400 mt-1">Intenta ajustando los criterios de filtrado anteriores.</p>
             </div>
 
             <div v-else class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
+                        <tr class="border-b border-white/10 text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                             <th class="px-6 py-4">Muestra</th>
                             <th class="px-6 py-4">Inspector Responsable</th>
                             <th class="px-6 py-4">Establecimiento</th>
@@ -96,21 +96,21 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-xs">
-                        <tr v-for="d in filteredDesviaciones" :key="d.id" class="hover:bg-slate-50 transition-colors">
+                        <tr v-for="d in filteredDesviaciones" :key="d.id" class="hover:bg-black/20 transition-colors">
                             <!-- Sample Code -->
-                            <td class="px-6 py-4 font-mono font-bold text-slate-800">
+                            <td class="px-6 py-4 font-mono font-bold text-white">
                                 {{ d.codigo_muestra }}
                             </td>
 
                             <!-- Inspector -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-slate-800">{{ d.inspector_nombre }}</p>
+                                <p class="font-bold text-white">{{ d.inspector_nombre }}</p>
                                 <p class="text-[9px] text-slate-400 font-mono">Código: {{ d.inspector_codigo }}</p>
                             </td>
 
                             <!-- Establishment -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-slate-800">{{ d.establecimiento }}</p>
+                                <p class="font-bold text-white">{{ d.establecimiento }}</p>
                             </td>
 
                             <!-- Date -->
@@ -120,7 +120,7 @@
 
                             <!-- Type & Parameter -->
                             <td class="px-6 py-4">
-                                <p class="font-bold text-slate-800">{{ d.tipo_analisis }}</p>
+                                <p class="font-bold text-white">{{ d.tipo_analisis }}</p>
                                 <p class="text-[10px] text-red-500 font-semibold mt-0.5">{{ d.parametro_fuera_norma }}</p>
                             </td>
 
@@ -137,8 +137,8 @@
                             </td>
 
                             <!-- Attachments count -->
-                            <td class="px-6 py-4 text-center font-bold text-slate-500 font-mono">
-                                <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[10px] border border-slate-200">
+                            <td class="px-6 py-4 text-center font-bold text-gray-300 font-mono">
+                                <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded text-[10px] border border-white/10">
                                     <span class="material-symbols-outlined text-xs">attach_file</span>
                                     {{ d.total_adjuntos }}
                                 </span>
