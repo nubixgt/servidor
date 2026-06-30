@@ -1,5 +1,5 @@
 <template>
-    <div class="login-root bg-grid-dots flex items-center justify-center min-h-screen px-4 py-8 select-none">
+    <div class="login-root bg-grid-dots-dark flex items-center justify-center min-h-screen px-4 py-8 select-none">
         <div class="w-full max-w-[440px] flex flex-col items-center">
             <!-- Centered Login Card -->
             <div class="bg-white rounded-[28px] border border-slate-100 p-8 md:p-10 w-full shadow-premium-lg animate-fade-in flex flex-col items-center">

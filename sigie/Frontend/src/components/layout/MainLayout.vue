@@ -7,8 +7,15 @@
         <aside :class="['w-72 fixed left-0 top-0 h-full bg-gradient-to-b from-[#0a192f] to-[#0f224b] flex flex-col p-6 z-50 border-r border-slate-900 transition-transform duration-300 lg:translate-x-0', {'translate-x-0': isMobileMenuOpen, '-translate-x-full': !isMobileMenuOpen}]">
             <!-- Brand Logo Header -->
             <div class="mb-8 px-2 flex items-center gap-3">
-                <div class="w-11 h-11 overflow-hidden rounded-xl border border-slate-700 flex items-center justify-center flex-shrink-0 bg-white p-1.5 shadow-md">
-                    <img :src="logoUrl" alt="SIGIE Logo" class="max-w-full max-h-full object-contain" />
+                <div class="w-11 h-11 overflow-hidden rounded-xl border border-slate-700 flex items-center justify-center flex-shrink-0 bg-white shadow-md">
+                    <lottie-player
+                        :src="lottieUrl"
+                        background="transparent"
+                        speed="1"
+                        style="width: 40px; height: 40px;"
+                        loop
+                        autoplay
+                    ></lottie-player>
                 </div>
                 <div>
                     <span class="text-lg font-extrabold tracking-wider text-white font-headline block">SIGIE</span>
@@ -185,7 +192,14 @@
                         <span class="material-symbols-outlined text-2xl">menu</span>
                     </button>
                     <div class="flex items-center gap-2">
-                        <img :src="logoUrl" alt="SIGIE Logo" class="w-7 h-7 object-contain" />
+                        <lottie-player
+                            :src="lottieUrl"
+                            background="transparent"
+                            speed="1"
+                            style="width: 28px; height: 28px;"
+                            loop
+                            autoplay
+                        ></lottie-player>
                         <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest font-headline hidden lg:block">Sistema de Gestión de Inspecciones (SIGIE)</span>
                     </div>
                 </div>
@@ -262,6 +276,7 @@ import { useAuthStore } from '../../stores/authStore.js';
 import { useRouter, useRoute } from 'vue-router';
 import SidebarItem from './SidebarItem.vue';
 import api from '../../services/api.js';
+import '@lottiefiles/lottie-player';
 
 const getLogoUrl = () => {
     const path = window.location.pathname.toLowerCase();
@@ -280,6 +295,24 @@ const getLogoUrl = () => {
     return '/logo.png';
 };
 const logoUrl = getLogoUrl();
+
+const getLottieUrl = () => {
+    const path = window.location.pathname.toLowerCase();
+    const isViteDev = window.location.port !== '' && window.location.port !== '80' && window.location.port !== '8080';
+    if (isViteDev) {
+        return '/login-animation.json';
+    }
+    const distIndex = path.indexOf('/frontend/dist');
+    if (distIndex !== -1) {
+        return window.location.pathname.substring(0, distIndex) + '/Frontend/dist/login-animation.json';
+    }
+    const sigieIndex = path.indexOf('/sigie');
+    if (sigieIndex !== -1) {
+        return window.location.pathname.substring(0, sigieIndex) + '/sigie/login-animation.json';
+    }
+    return '/login-animation.json';
+};
+const lottieUrl = getLottieUrl();
 
 const auth = useAuthStore();
 const router = useRouter();
