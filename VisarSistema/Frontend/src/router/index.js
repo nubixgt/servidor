@@ -76,8 +76,15 @@ const routes = [
     }
 ];
 
+const getRouterBase = () => {
+    if (window.location.hostname === 'maga.nubix.gt') {
+        return '/';
+    }
+    return '/VisarSistema/';
+};
+
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(getRouterBase()),
     routes
 });
 
