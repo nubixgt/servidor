@@ -25,3 +25,6 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Builds del Frontend (se compilan en producción)
+VisarSistema/Frontend/dist/

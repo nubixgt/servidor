@@ -2,10 +2,18 @@ import axios from 'axios';
 import router from '../router';
 
 const getBaseURL = () => {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return 'http://localhost/VisarSistema/Backend/api/v1';
+    const isLocal = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' ||
+                    window.location.hostname.startsWith('192.168.');
+    
+    if (isLocal) {
+        return '/VisarSistema/Backend/api/v1';
     }
-    return 'https://maga.nubix.gt/Backend/api/v1';
+    // En producción detecta dinámicamente si se accede por dominio o subcarpeta
+    if (window.location.hostname === 'maga.nubix.gt') {
+        return '/Backend/api/v1';
+    }
+    return '/VisarSistema/Backend/api/v1';
 };
 
 const api = axios.create({
