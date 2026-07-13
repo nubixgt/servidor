@@ -1886,14 +1886,20 @@ body.dark-theme ::-webkit-scrollbar-thumb {
         grid-template-columns: 1fr;
     }
     
-    /* Responsive Tables */
-    .glass-table {
-        display: block;
+    /* Responsive Tables - Fix Zoom Out Bug */
+    .table-container, .results-data-view, .results-body {
+        width: 100%;
+        max-width: calc(100vw - 40px); /* prevent pushing boundaries */
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .glass-table {
+        min-width: 600px; /* force scrolling */
         white-space: nowrap;
     }
     
-    .results-data-view > div {
+    .results-data-view > div:first-child {
         flex-direction: column;
     }
 }
