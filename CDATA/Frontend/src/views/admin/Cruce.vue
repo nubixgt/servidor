@@ -54,10 +54,10 @@
 
       <!-- Right: Results Panel -->
       <div class="glass-panel results-panel">
-          <div class="results-header">
+          <div class="results-header" style="display: flex; justify-content: space-between; align-items: center;">
               <h2><i class="fa-solid fa-square-poll-vertical text-purple"></i> Resultados del Cruce</h2>
-              <button class="btn-secondary" disabled>
-                  <i class="fa-solid fa-file-export"></i> Exportar a Excel
+              <button class="btn-secondary" @click="exportToExcel" :disabled="!results || results.length === 0" style="padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); color: var(--text-primary); cursor: pointer; transition: 0.3s; font-size: 13px;">
+                  <i class="fa-solid fa-file-excel" style="color: #10b981; margin-right: 5px;"></i> Exportar a Excel
               </button>
           </div>
           
@@ -197,4 +197,29 @@ const iniciarCruce = async () => {
 onMounted(() => {
     fetchMunicipios();
 });
+
+const exportToExcel = () => {
+    if (!results.value || results.value.length === 0) return;
+
+    const BOM = "\uFEFF";
+    let csvContent = BOM + "Aldea Buscada;Match Encontrado;Precisión;Población\n";
+
+    results.value.forEach(row => {
+        const aldea = `"${row.original}"`;
+        const match = `"${row.mapped}"`;
+        const precision = `"${row.match_score}%"`;
+        const poblacion = `"${row.count}"`;
+        
+        csvContent += `${aldea};${match};${precision};${poblacion}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Cruce_Aldeas_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 </script>
