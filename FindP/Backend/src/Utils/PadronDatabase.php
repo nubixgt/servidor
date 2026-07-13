@@ -12,7 +12,8 @@ class PadronDatabase
     private function __construct()
     {
         // Ruta absoluta hacia padron.db usando el directorio actual
-        $dbPath = __DIR__ . '/../../../Diseño/DATA_PADRON/padron.db';
+        // SE CAMBIA Diseño POR Diseno PARA EVITAR ERRORES CON LA Ñ EN LINUX
+        $dbPath = __DIR__ . '/../../../Diseno/DATA_PADRON/padron.db';
         
         if (!file_exists($dbPath)) {
             die(json_encode(['error' => 'No se encuentra el archivo padron.db en la ruta esperada: ' . $dbPath]));
