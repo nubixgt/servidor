@@ -31,7 +31,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory('/FindP/'),
+    history: createWebHistory(import.meta.env.MODE === 'production' ? '/FindP/' : '/'),
     routes
 });
 
