@@ -76,4 +76,67 @@ class MatchController extends Controller
             $this->json(['error' => 'Error al procesar el archivo Excel', 'details' => $e->getMessage()], 500);
         }
     }
+
+    #[Route('/match-dpi', 'POST')]
+    #[Authorize(['admin', 'user'])]
+    public function matchDpiText()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $dpis = $data['dpis'] ?? [];
+        
+        if (empty($dpis) || !is_array($dpis)) {
+            $this->json(['error' => 'Lista de DPIs vacía o inválida'], 400);
+        }
+
+        $service = new PadronService();
+        try {
+            $result = $service->matchDpis($dpis);
+            $this->json($result);
+        } catch (\Exception $e) {
+            $this->json(['error' => 'Error al procesar el texto de DPIs', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/match-dpi-file', 'POST')]
+    #[Authorize(['admin', 'user'])]
+    public function matchDpiFile()
+    {
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            $this->json(['error' => 'No se subió ningún archivo válido'], 400);
+        }
+
+        $tmpFile = $_FILES['file']['tmp_name'];
+        $dpis = [];
+
+        try {
+            require_once __DIR__ . '/../Utils/SimpleXLSX.php';
+            
+            if ($xlsx = SimpleXLSX::parse($tmpFile)) {
+                $rows = $xlsx->rows();
+                foreach ($rows as $index => $row) {
+                    if ($index === 0 && !is_numeric($row[0])) continue; // skip header if it's text
+                    if (!empty($row[0])) {
+                        // Limpiar cualquier letra o espacio del DPI
+                        $dpiVal = preg_replace('/[^0-9]/', '', (string)$row[0]);
+                        if (!empty($dpiVal)) {
+                            $dpis[] = $dpiVal;
+                        }
+                    }
+                }
+            } else {
+                $this->json(['error' => 'El archivo no es un Excel válido o está corrupto: ' . SimpleXLSX::parseError()], 400);
+            }
+            
+            if (empty($dpis)) {
+                $this->json(['error' => 'No se encontraron DPIs válidos en la primera columna.'], 400);
+            }
+
+            $service = new PadronService();
+            $result = $service->matchDpis($dpis);
+            $this->json($result);
+
+        } catch (\Exception $e) {
+            $this->json(['error' => 'Error al procesar el archivo Excel de DPIs', 'details' => $e->getMessage()], 500);
+        }
+    }
 }

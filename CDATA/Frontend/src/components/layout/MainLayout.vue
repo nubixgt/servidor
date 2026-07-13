@@ -34,6 +34,9 @@
                     <router-link to="/cruce" class="tab-btn" active-class="active">
                         <i class="fa-solid fa-code-compare"></i> Cruce de Aldeas
                     </router-link>
+                    <router-link to="/cruce-dpi" class="tab-btn" active-class="active">
+                        <i class="fa-solid fa-id-card"></i> Cruce de DPIs
+                    </router-link>
                     <router-link to="/consulta" class="tab-btn" active-class="active">
                         <i class="fa-solid fa-users-viewfinder"></i> Buscador Padrón
                     </router-link>

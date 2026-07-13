@@ -106,4 +106,49 @@ class PadronService
             'total_aldeas_analizadas' => count($inputList)
         ];
     }
+
+    public function matchDpis($inputList)
+    {
+        $db = \App\Utils\Database::getInstance()->getConnection();
+        
+        $sql = "SELECT dpi, nombre_ciudadano, municipio, aldea FROM padron_electoral WHERE dpi = :dpi";
+        $stmt = $db->prepare($sql);
+        
+        $results = [];
+        $encontrados = 0;
+        
+        foreach ($inputList as $dpi) {
+            $dpiStr = trim((string)$dpi);
+            if (empty($dpiStr)) continue;
+            
+            // Format DPI if it's stored in a specific way, otherwise use as is
+            $stmt->execute([':dpi' => $dpiStr]);
+            $record = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            if ($record) {
+                $results[] = [
+                    'dpi_buscado' => $dpiStr,
+                    'encontrado' => true,
+                    'nombre' => $record['nombre_ciudadano'],
+                    'municipio' => $record['municipio'],
+                    'aldea' => $record['aldea']
+                ];
+                $encontrados++;
+            } else {
+                $results[] = [
+                    'dpi_buscado' => $dpiStr,
+                    'encontrado' => false,
+                    'nombre' => 'NO REGISTRADO',
+                    'municipio' => '-',
+                    'aldea' => '-'
+                ];
+            }
+        }
+        
+        return [
+            'results' => $results,
+            'total_encontrados' => $encontrados,
+            'total_analizados' => count($inputList)
+        ];
+    }
 }

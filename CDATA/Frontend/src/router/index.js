@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/auth/Login.vue';
 import Dashboard from '../views/admin/Dashboard.vue';
 import Cruce from '../views/admin/Cruce.vue';
+import CruceDpi from '../views/admin/CruceDpi.vue';
 import Consulta from '../views/admin/Consulta.vue';
 
 // Layouts
@@ -29,6 +30,7 @@ const routes = [
         children: [
             { path: 'dashboard', name: 'Dashboard', component: Dashboard },
             { path: 'cruce', name: 'Cruce', component: Cruce },
+            { path: 'cruce-dpi', name: 'CruceDpi', component: CruceDpi },
             { path: 'consulta', name: 'Consulta', component: Consulta },
             { path: '', redirect: '/dashboard' }
         ]
