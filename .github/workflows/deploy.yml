@@ -29,6 +29,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (CDATA)
+        run: |
+          cd CDATA/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh

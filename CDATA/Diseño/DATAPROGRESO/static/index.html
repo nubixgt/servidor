@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Datos - El Progreso</title>
+    <!-- Google Fonts: Outfit and Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Animated Blobs -->
+    <div class="liquid-bg">
+        <div class="blob blob-purple"></div>
+        <div class="blob blob-blue"></div>
+        <div class="blob blob-cyan"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="glass-panel header-panel">
+            <div class="header-left">
+                <div class="header-logo">
+                    <div class="logo-icon">
+                        <!-- Hexagonal stacked database layers -->
+                        <div class="hexagon-layer shadow-blue">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                    </div>
+                    <div class="logo-text">
+                        <h1>CENTRO DE DATOS</h1>
+                        <p>Departamento de El Progreso</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs inside Header for premium feel -->
+                <nav class="navigation-tabs">
+                    <button class="tab-btn active" data-tab="tab-dashboard">
+                        <i class="fa-solid fa-chart-line"></i> Panel de Control
+                    </button>
+                    <button class="tab-btn" data-tab="tab-cruce">
+                        <i class="fa-solid fa-code-compare"></i> Cruce de Aldeas
+                    </button>
+                    <button class="tab-btn" data-tab="tab-consulta">
+                        <i class="fa-solid fa-users-viewfinder"></i> Buscador Padrón
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="header-right">
+                <!-- Theme Switcher -->
+                <button id="theme-toggle-btn" class="theme-toggle-btn" title="Cambiar tema">
+                    <i class="fa-solid fa-sun icon-sun"></i>
+                    <i class="fa-solid fa-moon icon-moon"></i>
+                </button>
+
+                <!-- Date Time Widget -->
+                <div class="header-time-widget">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <div class="time-text">
+                        <span id="header-date">18 Mayo 2026</span>
+                        <span id="header-time">09:42:30 AM</span>
+                    </div>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="status-indicator"></span>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name">Administrador</span>
+                        <span class="profile-status">Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- VIEW 1: Dashboard (Panel de Control - EXACT MATCH TO IMAGE) -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="dashboard-layout">
+                    
+                    <!-- Top stats row and Central holographic globe -->
+                    <div class="dashboard-top-section">
+                        
+                        <!-- Left Stats Columns -->
+                        <div class="stats-column-left">
+                            <!-- Card 1: Padrón Electoral -->
+                            <div class="glass-panel stat-card">
+                                <div class="stat-card-header">
+                                    <div class="stat-icon-wrapper bg-purple">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <div class="stat-card-title">
+                                        <span>PADRÓN ELECTORAL</span>
+                                        <h3 id="dash-total-records">136,005</h3>
+                                    </div>
+                                </div>
+                                <div class="stat-card-footer">
+                                    <span class="stat-footer-text">Ciudadanos registrados</span>
+                                    <!-- Sparkline SVG -->
+                                    <div class="sparkline-container">
+                                        <svg class="sparkline" viewBox="0 0 100 30">
+                                            <path d="M 0,25 Q 20,20 40,22 T 80,10 T 100,5" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Municipios Activos -->
+                            <div class="glass-panel stat-card">
+                                <div class="stat-card-header">
+                                    <div class="stat-icon-wrapper bg-blue">
+                                        <i class="fa-solid fa-building-columns"></i>
+                                    </div>
+                                    <div class="stat-card-title">
+                                        <span>MUNICIPIOS ACTIVOS</span>
+                                        <h3 id="dash-total-municipios">8</h3>
+                                    </div>
+                                </div>
+                                <div class="stat-card-footer">
+                                    <span class="stat-footer-text">Municipios activos</span>
+                                    <div class="sparkline-container">
+                                        <svg class="sparkline" viewBox="0 0 100 30">
+                                            <path d="M 0,25 Q 15,28 30,22 T 60,18 T 80,12 T 100,10" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Center: Holographic globe -->
+                        <div class="center-globe-container">
+                            <div class="globe-outer-ring animate-pulse-slow"></div>
+                            <div class="globe-orbit-1"></div>
+                            <div class="globe-orbit-2"></div>
+                            <div class="globe-hologram">
+                                <div class="globe-mesh">
+                                    <div class="globe-mesh-layer layers-1"></div>
+                                    <div class="globe-mesh-layer layers-2"></div>
+                                    <div class="globe-mesh-layer layers-3"></div>
+                                </div>
+                                <div class="hologram-stack">
+                                    <div class="hologram-layer-element element-1"></div>
+                                    <div class="hologram-layer-element element-2"></div>
+                                    <div class="hologram-layer-element element-3"></div>
+                                </div>
+                            </div>
+                            <div class="globe-data-label">
+                                <p>Datos que transforman</p>
+                                <strong>decisiones.</strong>
+                            </div>
+                        </div>
+
+                        <!-- Right Stats Columns -->
+                        <div class="stats-column-right">
+                            <!-- Card 3: Aldeas en Padrón -->
+                            <div class="glass-panel stat-card">
+                                <div class="stat-card-header">
+                                    <div class="stat-icon-wrapper bg-cyan">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </div>
+                                    <div class="stat-card-title">
+                                        <span>ALDEAS EN PADRÓN</span>
+                                        <h3 id="dash-total-villages">467</h3>
+                                    </div>
+                                </div>
+                                <div class="stat-card-footer">
+                                    <span class="stat-footer-text">Aldeas registradas</span>
+                                    <div class="sparkline-container">
+                                        <svg class="sparkline" viewBox="0 0 100 30">
+                                            <path d="M 0,25 Q 25,23 50,15 T 75,18 T 100,8" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Cobertura del Padrón -->
+                            <div class="glass-panel stat-card">
+                                <div class="stat-card-header">
+                                    <!-- Circle progress SVG -->
+                                    <div class="progress-circle-container">
+                                        <svg viewBox="0 0 36 36" class="circular-chart-blue">
+                                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                            <path class="circle" stroke-dasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                            <text x="18" y="20.35" class="percentage">98%</text>
+                                        </svg>
+                                    </div>
+                                    <div class="stat-card-title">
+                                        <span>COBERTURA DEL PADRÓN</span>
+                                        <h3>Excelente</h3>
+                                    </div>
+                                </div>
+                                <div class="stat-card-footer">
+                                    <span class="stat-footer-text">Estado del padrón</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom panel grid (Activity, Donut stats, Ranked list) -->
+                    <div class="dashboard-bottom-section">
+                        
+                        <!-- Panel Left: Actividad en Tiempo Real -->
+                        <div class="glass-panel activity-panel">
+                            <h2><i class="fa-solid fa-bolt text-cyan"></i> ACTIVIDAD EN TIEMPO REAL</h2>
+                            <div class="timeline" id="dashboard-activity-timeline">
+                                <div class="timeline-item">
+                                    <span class="timeline-time">10:23 AM</span>
+                                    <div class="timeline-badge bg-blue"><i class="fa-solid fa-map-location-dot"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Cruce de Aldeas ejecutado</h4>
+                                        <p>Se procesó el listado "GT_Padron EL PROGRESO"</p>
+                                    </div>
+                                    <span class="status-pill status-completed">Completado</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="timeline-time">10:15 AM</span>
+                                    <div class="timeline-badge bg-blue"><i class="fa-solid fa-file-excel"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Muestra Aldeas cargada</h4>
+                                        <p>Archivo "Muestra Aldeas_Antigravity.xlsx" importado</p>
+                                    </div>
+                                    <span class="status-pill status-completed">Completado</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="timeline-time">10:10 AM</span>
+                                    <div class="timeline-badge bg-purple"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Búsqueda en Padrón</h4>
+                                        <p>Consulta realizada para "AGUSTIN BURGOS"</p>
+                                    </div>
+                                    <span class="status-pill status-processing">Procesando</span>
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="timeline-time">10:05 AM</span>
+                                    <div class="timeline-badge bg-muted"><i class="fa-solid fa-server"></i></div>
+                                    <div class="timeline-content">
+                                        <h4>Servidor Inicializado</h4>
+                                        <p>Carga de base de datos del padrón electoral</p>
+                                    </div>
+                                    <span class="status-pill status-pending">Pendiente</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel Center: Estadísticas Generales (Donut Chart) -->
+                        <div class="glass-panel gender-stats-panel">
+                            <h2>ESTADÍSTICAS GENERALES</h2>
+                            <div class="gender-donut-container">
+                                <!-- Donut SVG -->
+                                <div class="donut-chart-wrapper">
+                                    <svg viewBox="0 0 200 200" class="donut-chart">
+                                        <!-- Circle background -->
+                                        <circle cx="100" cy="100" r="70" class="donut-track" fill="transparent" stroke-width="20"></circle>
+                                        <!-- Hombres (49.4% -> dasharray 217.2, 439.8) -->
+                                        <!-- Mujeres (50.6% -> dasharray 222.6, 439.8) -->
+                                        <circle cx="100" cy="100" r="70" class="donut-segment segment-women" fill="transparent" stroke-width="20" stroke-dasharray="222.6 439.8" stroke-dashoffset="0"></circle>
+                                        <circle cx="100" cy="100" r="70" class="donut-segment segment-men" fill="transparent" stroke-width="20" stroke-dasharray="217.2 439.8" stroke-dashoffset="-222.6"></circle>
+                                    </svg>
+                                    <div class="donut-center-text">
+                                        <span class="donut-val">136K</span>
+                                        <span class="donut-lbl">Total</span>
+                                    </div>
+                                </div>
+                                <div class="donut-legend">
+                                    <div class="legend-item">
+                                        <span class="dot bg-blue"></span>
+                                        <span class="legend-label">Hombres</span>
+                                        <strong class="legend-val">67,243 (49.4%)</strong>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="dot bg-purple"></span>
+                                        <span class="legend-label">Mujeres</span>
+                                        <strong class="legend-val">68,762 (50.6%)</strong>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="dot bg-cyan"></span>
+                                        <span class="legend-label">Otros</span>
+                                        <strong class="legend-val">0 (0.0%)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel Right: Top Municipios (Ranked List) -->
+                        <div class="glass-panel top-municipios-panel">
+                            <h2><i class="fa-solid fa-trophy text-purple"></i> TOP MUNICIPIOS</h2>
+                            <div class="ranked-list" id="dashboard-ranked-municipios">
+                                <!-- Loaded dynamically, showing mockup skeleton first -->
+                                <div class="ranked-item">
+                                    <span class="rank-num">1</span>
+                                    <div class="rank-details">
+                                        <div class="rank-name-row">
+                                            <span class="rank-name">Sanarate</span>
+                                            <span class="rank-val">29,774</span>
+                                        </div>
+                                        <div class="rank-progress-bar">
+                                            <div class="progress-fill" style="width: 100%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ranked-item">
+                                    <span class="rank-num">2</span>
+                                    <div class="rank-details">
+                                        <div class="rank-name-row">
+                                            <span class="rank-name">San Agustín Acasaguastlán</span>
+                                            <span class="rank-val">29,648</span>
+                                        </div>
+                                        <div class="rank-progress-bar">
+                                            <div class="progress-fill" style="width: 99.5%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ranked-item">
+                                    <span class="rank-num">3</span>
+                                    <div class="rank-details">
+                                        <div class="rank-name-row">
+                                            <span class="rank-name">Guastatoya</span>
+                                            <span class="rank-val">23,674</span>
+                                        </div>
+                                        <div class="rank-progress-bar">
+                                            <div class="progress-fill" style="width: 79.5%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ranked-item">
+                                    <span class="rank-num">4</span>
+                                    <div class="rank-details">
+                                        <div class="rank-name-row">
+                                            <span class="rank-name">San Antonio La Paz</span>
+                                            <span class="rank-val">14,700</span>
+                                        </div>
+                                        <div class="rank-progress-bar">
+                                            <div class="progress-fill" style="width: 49.3%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ranked-item">
+                                    <span class="rank-num">5</span>
+                                    <div class="rank-details">
+                                        <div class="rank-name-row">
+                                            <span class="rank-name">Sansare</span>
+                                            <span class="rank-val">11,036</span>
+                                        </div>
+                                        <div class="rank-progress-bar">
+                                            <div class="progress-fill" style="width: 37.1%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Row Widget -->
+                    <div class="dashboard-footer-row glass-panel">
+                        <div class="footer-quote">
+                            <i class="fa-solid fa-quote-left"></i>
+                            <p>La información correcta, en el momento correcto, cambia el futuro de nuestro municipio.</p>
+                        </div>
+                        <div class="footer-sync">
+                            <span class="sync-indicator"></span>
+                            <div class="sync-text">
+                                <strong>Sincronización en tiempo real</strong>
+                                <span id="sync-last-update">Última actualización: Hace unos instantes</span>
+                            </div>
+                            <div class="sync-wave">
+                                <svg viewBox="0 0 100 20" class="wave-svg">
+                                    <path d="M0,10 Q10,2 20,10 T40,10 T60,10 T80,10 T100,10" fill="none" stroke="#22d3ee" stroke-width="1.5"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="footer-actions">
+                            <button id="btn-quick-export" class="btn-quick-export">
+                                <div class="export-icon-btn">
+                                    <i class="fa-regular fa-file-lines"></i>
+                                </div>
+                                <div class="export-text-btn">
+                                    <strong>Exportar Reporte</strong>
+                                    <span>Excel &bull; PDF &bull; CSV</span>
+                                </div>
+                                <i class="fa-solid fa-arrow-right export-arrow"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 2: Cruce de Aldeas (The original tool) -->
+            <section id="tab-cruce" class="tab-content">
+                <div class="dashboard-grid">
+                    
+                    <!-- Left: Control Panel -->
+                    <div class="glass-panel control-panel">
+                        <h2><i class="fa-solid fa-sliders text-cyan"></i> Parámetros de Búsqueda</h2>
+                        <p class="panel-subtitle">Define el municipio y carga los listados de aldeas para realizar el conteo de personas.</p>
+                        
+                        <div class="form-group">
+                            <label for="municipio-select">Filtro por Municipio</label>
+                            <div class="select-wrapper">
+                                <select id="municipio-select">
+                                    <option value="">Todos los Municipios (Búsqueda Global)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <p class="input-helper">Si filtras por un municipio, las búsquedas y coincidencias se limitarán solo a ese territorio.</p>
+                        </div>
+
+                        <div class="input-method-tabs">
+                            <button class="method-btn active" data-method="method-text">Pega Texto</button>
+                            <button class="method-btn" data-method="method-file">Sube Excel</button>
+                        </div>
+
+                        <!-- Method: Textarea -->
+                        <div id="method-text" class="method-content active">
+                            <div class="form-group">
+                                <label for="aldeas-textarea">Escribe o pega el listado de aldeas</label>
+                                <textarea id="aldeas-textarea" placeholder="Escribe una aldea por línea, ejemplo:&#10;ALDEA EL FLORIDO SECTOR I&#10;COMUNIDAD SAN LORENZO&#10;ALDEA SAN JUAN"></textarea>
+                                <p class="input-helper">Coloca cada aldea en un renglón diferente.</p>
+                            </div>
+                        </div>
+
+                        <!-- Method: File Upload -->
+                        <div id="method-file" class="method-content">
+                            <div class="form-group">
+                                <label>Cargar Archivo de Aldeas (Excel)</label>
+                                <div class="file-upload-zone" id="drop-zone">
+                                    <input type="file" id="file-input" accept=".xlsx, .xls">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <p class="upload-title">Arrastra tu archivo Excel aquí</p>
+                                    <p class="upload-subtitle">O haz clic para explorar tus archivos (.xlsx, .xls)</p>
+                                    <div class="selected-file-info" id="file-info" style="display:none;">
+                                        <i class="fa-regular fa-file-excel"></i>
+                                        <span id="file-name">nombre_del_archivo.xlsx</span>
+                                    </div>
+                                </div>
+                                <p class="input-helper">El sistema buscará automáticamente la columna de aldeas.</p>
+                            </div>
+                        </div>
+
+                        <button id="btn-run-match" class="btn-primary btn-block">
+                            <span><i class="fa-solid fa-play"></i> Iniciar Cruce de Aldeas</span>
+                        </button>
+                    </div>
+
+                    <!-- Right: Results Panel -->
+                    <div class="glass-panel results-panel">
+                        <div class="results-header">
+                            <h2><i class="fa-solid fa-square-poll-vertical text-purple"></i> Resultados del Cruce</h2>
+                            <button id="btn-export-excel" class="btn-secondary" disabled>
+                                <i class="fa-solid fa-file-export"></i> Exportar a Excel
+                            </button>
+                        </div>
+                        
+                        <!-- Mini Summary Stats -->
+                        <div class="results-summary" id="results-summary" style="display: none;">
+                            <div class="summary-card">
+                                <span class="summary-val" id="sum-total">0</span>
+                                <span class="summary-lbl">Aldeas Solicitadas</span>
+                            </div>
+                            <div class="summary-card text-success">
+                                <span class="summary-val" id="sum-matched">0</span>
+                                <span class="summary-lbl">Coincidencias</span>
+                            </div>
+                            <div class="summary-card text-danger">
+                                <span class="summary-val" id="sum-unmatched">0</span>
+                                <span class="summary-lbl">Sin Coincidencia</span>
+                            </div>
+                            <div class="summary-card text-info">
+                                <span class="summary-val" id="sum-people">0</span>
+                                <span class="summary-lbl">Total Personas</span>
+                            </div>
+                        </div>
+
+                        <!-- Results Content -->
+                        <div class="results-body" id="results-body">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-diagram-predecessor"></i>
+                                <h3>Sin datos para mostrar</h3>
+                                <p>Carga un archivo Excel o pega un listado de aldeas a la izquierda y presiona "Iniciar Cruce".</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 3: Buscador Padrón (The original search) -->
+            <section id="tab-consulta" class="tab-content">
+                <div class="glass-panel query-panel">
+                    <h2><i class="fa-solid fa-users-viewfinder text-blue"></i> Consulta Directa al Padrón Electoral</h2>
+                    <p class="panel-subtitle">Busca ciudadanos registrados en el departamento de El Progreso por Nombre, DPI o Aldea de residencia.</p>
+
+                    <!-- Search Controls -->
+                    <div class="query-controls-grid">
+                        <div class="form-group search-box">
+                            <div class="search-input-wrapper">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="query-search-input" placeholder="Ingresa DPI (e.g. 3406...), Nombre (e.g. AGUSTIN...) o Aldea (e.g. EL FLORIDO)...">
+                                <button id="btn-clear-search" class="clear-btn" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="select-wrapper">
+                                <select id="query-municipio-select">
+                                    <option value="">Todos los Municipios</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <button id="btn-query-search" class="btn-primary">
+                            <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                        </button>
+                    </div>
+
+                    <!-- Search Results Info -->
+                    <div class="query-results-meta" style="display: none;" id="query-results-meta">
+                        <span id="query-results-count">Encontrados: 0 ciudadanos</span>
+                    </div>
+
+                    <!-- Results Table Container -->
+                    <div class="table-container">
+                        <table class="glass-table" id="query-results-table">
+                            <thead>
+                                <tr>
+                                    <th>DPI</th>
+                                    <th>Nombre del Ciudadano</th>
+                                    <th>Municipio</th>
+                                    <th>Aldea / Localidad</th>
+                                    <th>Edad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="table-empty">
+                                        <i class="fa-solid fa-search"></i>
+                                        <p>Realiza una búsqueda para ver los registros del padrón.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container" id="query-pagination" style="display: none;">
+                        <button id="btn-prev-page" class="btn-pagination" disabled><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                        <span id="page-indicator">Página 1</span>
+                        <button id="btn-next-page" class="btn-pagination">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Centro de Datos - Departamento de El Progreso. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Spinner Overlay -->
+    <div class="spinner-overlay" id="loading-spinner">
+        <div class="spinner-container">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+            <p id="spinner-text">Procesando información del padrón...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /CDATA/
+
+    # 1. API Routing
+    # Send requests starting with Backend/ to the API entry point
+    RewriteRule ^Backend/(.*)$ Backend/api/v1/index.php [QSA,L]
+
+    # 2. Static Files (Frontend)
+    # Check if the requested file exists in Frontend/dist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/CDATA/Frontend/dist/$1 -f
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+
+    # 3. SPA Fallback
+    # Route all other requests to Frontend/dist/index.html for Vue Router
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . Frontend/dist/index.html [L]
+    
+    # Handle the root path specifically
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>
