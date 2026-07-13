@@ -13,7 +13,7 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('../views/public/Home.vue'),
+        redirect: '/login',
         meta: { requiresAuth: false }
     },
     {
