@@ -13,7 +13,7 @@
                       </div>
                       <div class="stat-card-title">
                           <span>PADRÓN ELECTORAL</span>
-                          <h3>136,005</h3>
+                          <h3>{{ formatNumber(stats.total_registros) }}</h3>
                       </div>
                   </div>
                   <div class="stat-card-footer">
@@ -35,7 +35,7 @@
                       </div>
                       <div class="stat-card-title">
                           <span>MUNICIPIOS ACTIVOS</span>
-                          <h3>8</h3>
+                          <h3>{{ stats.total_municipios }}</h3>
                       </div>
                   </div>
                   <div class="stat-card-footer">
@@ -82,7 +82,7 @@
                       </div>
                       <div class="stat-card-title">
                           <span>ALDEAS EN PADRÓN</span>
-                          <h3>467</h3>
+                          <h3>{{ formatNumber(stats.total_aldeas) }}</h3>
                       </div>
                   </div>
                   <div class="stat-card-footer">
@@ -171,26 +171,26 @@
               <div class="gender-donut-container">
                   <!-- Donut SVG -->
                   <div class="donut-chart-wrapper">
-                      <svg viewBox="0 0 200 200" class="donut-chart">
+                      <svg viewBox="0 0 200 200" class="donut-chart" v-if="stats.genero">
                           <circle cx="100" cy="100" r="70" class="donut-track" fill="transparent" stroke-width="20"></circle>
-                          <circle cx="100" cy="100" r="70" class="donut-segment segment-women" fill="transparent" stroke-width="20" stroke-dasharray="222.6 439.8" stroke-dashoffset="0"></circle>
-                          <circle cx="100" cy="100" r="70" class="donut-segment segment-men" fill="transparent" stroke-width="20" stroke-dasharray="217.2 439.8" stroke-dashoffset="-222.6"></circle>
+                          <circle cx="100" cy="100" r="70" class="donut-segment segment-women" fill="transparent" stroke-width="20" :stroke-dasharray="`${(stats.genero.mujeres / (stats.genero.hombres + stats.genero.mujeres)) * 439.8} 439.8`" stroke-dashoffset="0"></circle>
+                          <circle cx="100" cy="100" r="70" class="donut-segment segment-men" fill="transparent" stroke-width="20" :stroke-dasharray="`${(stats.genero.hombres / (stats.genero.hombres + stats.genero.mujeres)) * 439.8} 439.8`" :stroke-dashoffset="`-${(stats.genero.mujeres / (stats.genero.hombres + stats.genero.mujeres)) * 439.8}`"></circle>
                       </svg>
                       <div class="donut-center-text">
-                          <span class="donut-val">136K</span>
+                          <span class="donut-val">{{ (stats.total_registros / 1000).toFixed(0) }}K</span>
                           <span class="donut-lbl">Total</span>
                       </div>
                   </div>
-                  <div class="donut-legend">
+                  <div class="donut-legend" v-if="stats.genero">
                       <div class="legend-item">
                           <span class="dot bg-blue"></span>
                           <span class="legend-label">Hombres</span>
-                          <strong class="legend-val">67,243 (49.4%)</strong>
+                          <strong class="legend-val">{{ formatNumber(stats.genero.hombres) }} ({{ ((stats.genero.hombres / (stats.genero.hombres + stats.genero.mujeres)) * 100).toFixed(1) }}%)</strong>
                       </div>
                       <div class="legend-item">
                           <span class="dot bg-purple"></span>
                           <span class="legend-label">Mujeres</span>
-                          <strong class="legend-val">68,762 (50.6%)</strong>
+                          <strong class="legend-val">{{ formatNumber(stats.genero.mujeres) }} ({{ ((stats.genero.mujeres / (stats.genero.hombres + stats.genero.mujeres)) * 100).toFixed(1) }}%)</strong>
                       </div>
                       <div class="legend-item">
                           <span class="dot bg-cyan"></span>
@@ -204,67 +204,22 @@
           <!-- Panel Right: Top Municipios (Ranked List) -->
           <div class="glass-panel top-municipios-panel">
               <h2><i class="fa-solid fa-trophy text-purple"></i> TOP MUNICIPIOS</h2>
-              <div class="ranked-list">
-                  <div class="ranked-item">
-                      <span class="rank-num">1</span>
+              <div class="ranked-list" v-if="stats.top_municipios.length">
+                  <div class="ranked-item" v-for="(muni, index) in stats.top_municipios" :key="index">
+                      <span class="rank-num">{{ index + 1 }}</span>
                       <div class="rank-details">
                           <div class="rank-name-row">
-                              <span class="rank-name">Sanarate</span>
-                              <span class="rank-val">29,774</span>
+                              <span class="rank-name">{{ muni.name }}</span>
+                              <span class="rank-val">{{ formatNumber(muni.count) }}</span>
                           </div>
                           <div class="rank-progress-bar">
-                              <div class="progress-fill" style="width: 100%;"></div>
+                              <div class="progress-fill" :style="{ width: calculateProgressWidth(muni.count, stats.top_municipios[0].count) + '%' }"></div>
                           </div>
                       </div>
                   </div>
-                  <div class="ranked-item">
-                      <span class="rank-num">2</span>
-                      <div class="rank-details">
-                          <div class="rank-name-row">
-                              <span class="rank-name">San Agustín Acasaguastlán</span>
-                              <span class="rank-val">29,648</span>
-                          </div>
-                          <div class="rank-progress-bar">
-                              <div class="progress-fill" style="width: 99.5%;"></div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="ranked-item">
-                      <span class="rank-num">3</span>
-                      <div class="rank-details">
-                          <div class="rank-name-row">
-                              <span class="rank-name">Guastatoya</span>
-                              <span class="rank-val">23,674</span>
-                          </div>
-                          <div class="rank-progress-bar">
-                              <div class="progress-fill" style="width: 79.5%;"></div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="ranked-item">
-                      <span class="rank-num">4</span>
-                      <div class="rank-details">
-                          <div class="rank-name-row">
-                              <span class="rank-name">San Antonio La Paz</span>
-                              <span class="rank-val">14,700</span>
-                          </div>
-                          <div class="rank-progress-bar">
-                              <div class="progress-fill" style="width: 49.3%;"></div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="ranked-item">
-                      <span class="rank-num">5</span>
-                      <div class="rank-details">
-                          <div class="rank-name-row">
-                              <span class="rank-name">Sansare</span>
-                              <span class="rank-val">11,036</span>
-                          </div>
-                          <div class="rank-progress-bar">
-                              <div class="progress-fill" style="width: 37.1%;"></div>
-                          </div>
-                      </div>
-                  </div>
+              </div>
+              <div v-else style="padding: 20px; text-align: center; color: var(--text-muted);">
+                  Cargando ranking...
               </div>
           </div>
 
@@ -306,4 +261,43 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+
+const stats = ref({
+    total_registros: 0,
+    total_aldeas: 0,
+    total_municipios: 0,
+    top_municipios: [],
+    genero: { hombres: 67243, mujeres: 68762, otros: 0 }
+});
+
+const formatNumber = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+const calculateProgressWidth = (count, maxCount) => {
+    if (!maxCount) return 0;
+    return (count / maxCount) * 100;
+};
+
+const fetchStats = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`${import.meta.env.BASE_URL}Backend/api/v1/stats`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            stats.value = data;
+        }
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+    }
+};
+
+onMounted(() => {
+    fetchStats();
+});
 </script>
