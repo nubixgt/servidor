@@ -36,9 +36,6 @@
                         </div>
                     </div>
                     
-                    <div v-if="errorMsg" style="color: #ef4444; font-size: 12px; text-align: center; margin-top: -10px;">
-                        {{ errorMsg }}
-                    </div>
 
                     <button type="submit" :disabled="loading" class="btn-primary btn-block" style="margin-top: 10px; width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #4f46e5, #06b6d4); color: white; font-weight: bold; cursor: pointer;">
                         <span v-if="!loading">Acceder al Sistema <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></span>
@@ -53,10 +50,10 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { onMounted, ref, reactive } from 'vue';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const loading = ref(false);
-const errorMsg = ref('');
 
 const form = reactive({
     usuario: '',
@@ -68,10 +65,19 @@ onMounted(() => {
 });
 
 const handleLogin = async () => {
-    if (!form.usuario || !form.password) return;
+    if (!form.usuario || !form.password) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos Vacíos',
+            text: 'Por favor, ingresa tu usuario y contraseña.',
+            background: '#0a0f1e',
+            color: '#f8fafc',
+            confirmButtonColor: '#4f46e5'
+        });
+        return;
+    }
     
     loading.value = true;
-    errorMsg.value = '';
     
     try {
         const response = await fetch(`${import.meta.env.BASE_URL}Backend/api/v1/login`, {
@@ -87,13 +93,38 @@ const handleLogin = async () => {
         if (response.ok && data.token) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            router.push('/dashboard');
+            
+            Swal.fire({
+                icon: 'success',
+                title: '¡Acceso Concedido!',
+                text: 'Iniciando sesión...',
+                background: '#0a0f1e',
+                color: '#f8fafc',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                router.push('/dashboard');
+            });
         } else {
-            errorMsg.value = data.error || 'Credenciales incorrectas';
+            Swal.fire({
+                icon: 'error',
+                title: 'Acceso Denegado',
+                text: data.error || 'Credenciales incorrectas',
+                background: '#0a0f1e',
+                color: '#f8fafc',
+                confirmButtonColor: '#4f46e5'
+            });
         }
     } catch (error) {
         console.error("Login error:", error);
-        errorMsg.value = 'Error de conexión con el servidor';
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de Conexión',
+            text: 'Ocurrió un problema de red. Intenta nuevamente.',
+            background: '#0a0f1e',
+            color: '#f8fafc',
+            confirmButtonColor: '#4f46e5'
+        });
     } finally {
         loading.value = false;
     }
