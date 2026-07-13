@@ -65,10 +65,16 @@ class PadronService
                 } else {
                     // Remove common prefixes for a fairer comparison
                     $prefixes = ['ALDEA ', 'CASERIO ', 'COMUNIDAD ', 'BARRIO ', 'CANTON ', 'COLONIA ', 'FINCA ', 'PARAJE ', 'SECTOR ', 'LOTIFICACION '];
-                    $cleanInput = str_replace($prefixes, '', $input);
-                    $cleanDb = str_replace($prefixes, '', $dbAldea);
+                    $cleanInput = trim(str_replace($prefixes, '', $input));
+                    $cleanDb = trim(str_replace($prefixes, '', $dbAldea));
                     
-                    similar_text($cleanInput, $cleanDb, $percent);
+                    // Reverse check: is the core database name contained inside the long user input?
+                    // (e.g. cleanDb "UPAYON" inside input "COLONIA SAN ANTONIO, ALDEA EL UPAYON")
+                    if (strlen($cleanDb) >= 4 && strpos($input, $cleanDb) !== false) {
+                        $percent = 85;
+                    } else {
+                        similar_text($cleanInput, $cleanDb, $percent);
+                    }
                 }
 
                 if ($percent > $bestScore) {
