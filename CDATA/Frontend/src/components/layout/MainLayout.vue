@@ -56,7 +56,7 @@
                     </div>
                 </div>
 
-                <!-- Profile Card -->
+                <!-- Profile Card and Logout -->
                 <div class="profile-card">
                     <div class="profile-avatar">
                         <i class="fa-solid fa-user"></i>
@@ -66,6 +66,9 @@
                         <span class="profile-name">Administrador</span>
                         <span class="profile-status">Online</span>
                     </div>
+                    <button @click="handleLogout" class="theme-toggle-btn" title="Cerrar sesión" style="margin-left: 10px; color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -89,6 +92,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const isDarkTheme = ref(true);
 const currentDate = ref('');
@@ -102,6 +108,12 @@ const toggleTheme = () => {
     } else {
         document.body.classList.remove('dark-theme');
     }
+};
+
+const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    router.push('/login');
 };
 
 const updateTime = () => {

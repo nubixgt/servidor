@@ -21,10 +21,10 @@
 
                 <form @submit.prevent="handleLogin" style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="form-group">
-                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary);">Correo Electrónico</label>
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary);">Usuario</label>
                         <div class="search-input-wrapper" style="width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; display: flex; align-items: center; padding: 0 16px;">
-                            <i class="fa-solid fa-envelope" style="color: var(--text-muted); margin-right: 10px;"></i>
-                            <input type="email" style="flex: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-primary); outline: none;" placeholder="ejemplo@correo.com" />
+                            <i class="fa-solid fa-user" style="color: var(--text-muted); margin-right: 10px;"></i>
+                            <input v-model="form.usuario" type="text" required style="flex: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-primary); outline: none;" placeholder="admin" />
                         </div>
                     </div>
                     
@@ -32,12 +32,17 @@
                         <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary);">Contraseña</label>
                         <div class="search-input-wrapper" style="width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 12px; display: flex; align-items: center; padding: 0 16px;">
                             <i class="fa-solid fa-lock" style="color: var(--text-muted); margin-right: 10px;"></i>
-                            <input type="password" style="flex: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-primary); outline: none;" placeholder="••••••••" />
+                            <input v-model="form.password" type="password" required style="flex: 1; background: transparent; border: none; padding: 12px 0; color: var(--text-primary); outline: none;" placeholder="••••••••" />
                         </div>
                     </div>
+                    
+                    <div v-if="errorMsg" style="color: #ef4444; font-size: 12px; text-align: center; margin-top: -10px;">
+                        {{ errorMsg }}
+                    </div>
 
-                    <button type="button" @click="handleLogin" class="btn-primary btn-block" style="margin-top: 10px;">
-                        <span>Acceder al Sistema <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></span>
+                    <button type="submit" :disabled="loading" class="btn-primary btn-block" style="margin-top: 10px; width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #4f46e5, #06b6d4); color: white; font-weight: bold; cursor: pointer;">
+                        <span v-if="!loading">Acceder al Sistema <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></span>
+                        <span v-else>Cargando...</span>
                     </button>
                 </form>
             </div>
@@ -47,18 +52,51 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { onMounted } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 
 const router = useRouter();
+const loading = ref(false);
+const errorMsg = ref('');
+
+const form = reactive({
+    usuario: '',
+    password: ''
+});
 
 onMounted(() => {
     document.body.classList.add('dark-theme');
 });
 
-const handleLogin = () => {
-    console.log("Login attempt");
-    // Redirect to dashboard for demo
-    router.push('/dashboard');
+const handleLogin = async () => {
+    if (!form.usuario || !form.password) return;
+    
+    loading.value = true;
+    errorMsg.value = '';
+    
+    try {
+        const response = await fetch(`${import.meta.env.BASE_URL}Backend/api/v1/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(form)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            router.push('/dashboard');
+        } else {
+            errorMsg.value = data.error || 'Credenciales incorrectas';
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        errorMsg.value = 'Error de conexión con el servidor';
+    } finally {
+        loading.value = false;
+    }
 };
 </script>
 
