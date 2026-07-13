@@ -1,0 +1,7 @@
+# Ignorar archivos pesados de diseño y datos
+Diseño/DATA_PADRON/*.csv
+Diseño/DATA_PADRON/*.pdf
+Diseño/DATA_PADRON/*.db
+
+# Ignorar archivos temporales de macOS
+Diseño/__MACOSX/

@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /FindP/
+
+  # Exclude Backend directory from routing
+  RewriteCond %{REQUEST_URI} ^/FindP/Backend/ [NC]
+  RewriteRule ^ - [L]
+
+  # Exclude Frontend directory to serve built assets directly
+  RewriteCond %{REQUEST_URI} ^/FindP/Frontend/ [NC]
+  RewriteRule ^ - [L]
+
+  # If the requested file exists, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Otherwise, route everything else to the Vue app
+  RewriteRule ^ Frontend/dist/index.html [L]
+</IfModule>
