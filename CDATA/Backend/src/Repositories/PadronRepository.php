@@ -59,8 +59,10 @@ class PadronRepository
         }
 
         if (!empty($query)) {
-            $whereConditions[] = "(dpi LIKE :query OR nombre_ciudadano LIKE :query OR aldea LIKE :query)";
-            $params[':query'] = "%{$query}%";
+            $whereConditions[] = "(dpi LIKE :query1 OR nombre_ciudadano LIKE :query2 OR aldea LIKE :query3)";
+            $params[':query1'] = "%{$query}%";
+            $params[':query2'] = "%{$query}%";
+            $params[':query3'] = "%{$query}%";
         }
 
         $whereSql = "";
