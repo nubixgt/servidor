@@ -1819,3 +1819,81 @@ body.dark-theme ::-webkit-scrollbar-thumb {
     border-top: 1px solid var(--input-border);
     margin-top: auto;
 }
+
+/* ==========================================
+   Mobile Responsiveness & Performance
+   ========================================== */
+@media (max-width: 950px) {
+    .header-panel {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .header-left, .header-right {
+        flex-direction: column;
+        width: 100%;
+        gap: 16px;
+    }
+
+    .header-logo {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .navigation-tabs {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        padding: 6px;
+    }
+
+    .tab-btn {
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
+
+    .header-right {
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Disable heavy animations and blend modes on mobile to fix login slowness */
+    .blob {
+        animation: none !important;
+        filter: blur(60px) !important;
+    }
+    
+    body.dark-theme .blob {
+        mix-blend-mode: normal !important;
+        opacity: 0.1 !important;
+    }
+    
+    .hologram-stack {
+        display: none !important; /* Hide 3D hologram on mobile for performance */
+    }
+    
+    .globe-outer-ring, .globe-orbit-1, .globe-orbit-2 {
+        animation: none !important;
+    }
+
+    /* Stack cards in Dashboard bottom section */
+    .dashboard-bottom-section {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Responsive Tables */
+    .glass-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .results-data-view > div {
+        flex-direction: column;
+    }
+}
