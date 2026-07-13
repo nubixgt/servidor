@@ -51,30 +51,27 @@ class PadronService
             foreach ($dbAldeas as $row) {
                 $dbAldea = trim(strtoupper($row['aldea']));
                 
-                // Exact match first
-                if ($dbAldea === $input) {
-                    $bestMatch = $dbAldea;
-                    $bestScore = 100;
-                    $bestTotal = $row['total'];
-                    break;
+                $prefixes = ['ALDEA ', 'CASERIO ', 'COMUNIDAD ', 'BARRIO ', 'CANTON ', 'COLONIA ', 'FINCA ', 'PARAJE ', 'SECTOR ', 'LOTIFICACION ', 'ZONA ', 'CASCO '];
+                $cleanInput = trim(str_replace($prefixes, '', $input));
+                $cleanDb = trim(str_replace($prefixes, '', $dbAldea));
+
+                // 1. Exact match
+                if ($dbAldea === $input || $cleanDb === $cleanInput) {
+                    $percent = 100;
+                } 
+                // 2. Input is fully contained in DB (e.g. cleanInput "SAN RAFAEL EL JUTE" in cleanDb "EL JUTE O SAN RAFAEL EL JUTE")
+                elseif (strlen($cleanInput) >= 4 && strpos($cleanDb, $cleanInput) !== false) {
+                    $percent = 95;
                 }
-                
-                // If input is exactly contained within dbAldea (e.g., input "SAN JUAN" in "ALDEA SAN JUAN")
-                if (strpos($dbAldea, $input) !== false) {
-                    $percent = 90; // High score for substring match
-                } else {
-                    // Remove common prefixes for a fairer comparison
-                    $prefixes = ['ALDEA ', 'CASERIO ', 'COMUNIDAD ', 'BARRIO ', 'CANTON ', 'COLONIA ', 'FINCA ', 'PARAJE ', 'SECTOR ', 'LOTIFICACION '];
-                    $cleanInput = trim(str_replace($prefixes, '', $input));
-                    $cleanDb = trim(str_replace($prefixes, '', $dbAldea));
-                    
-                    // Reverse check: is the core database name contained inside the long user input?
-                    // (e.g. cleanDb "UPAYON" inside input "COLONIA SAN ANTONIO, ALDEA EL UPAYON")
-                    if (strlen($cleanDb) >= 4 && strpos($input, $cleanDb) !== false) {
-                        $percent = 85;
-                    } else {
-                        similar_text($cleanInput, $cleanDb, $percent);
-                    }
+                // 3. DB is fully contained in input (e.g. cleanDb "UPAYON" in cleanInput "SAN ANTONIO, EL UPAYON")
+                elseif (strlen($cleanDb) >= 4 && strpos($cleanInput, $cleanDb) !== false) {
+                    // Score based on how much of the input is covered by the DB string
+                    $coverage = (strlen($cleanDb) / strlen($cleanInput)) * 100;
+                    $percent = 80 + ($coverage * 0.15); // Gives a score between 80 and 95
+                } 
+                // 4. Standard fuzzy match
+                else {
+                    similar_text($cleanInput, $cleanDb, $percent);
                 }
 
                 if ($percent > $bestScore) {
