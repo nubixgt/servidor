@@ -59,8 +59,18 @@ class PadronService
                     break;
                 }
                 
-                // Fuzzy match using similar_text
-                similar_text($input, $dbAldea, $percent);
+                // If input is exactly contained within dbAldea (e.g., input "SAN JUAN" in "ALDEA SAN JUAN")
+                if (strpos($dbAldea, $input) !== false) {
+                    $percent = 90; // High score for substring match
+                } else {
+                    // Remove common prefixes for a fairer comparison
+                    $prefixes = ['ALDEA ', 'CASERIO ', 'COMUNIDAD ', 'BARRIO ', 'CANTON ', 'COLONIA ', 'FINCA ', 'PARAJE ', 'SECTOR ', 'LOTIFICACION '];
+                    $cleanInput = str_replace($prefixes, '', $input);
+                    $cleanDb = str_replace($prefixes, '', $dbAldea);
+                    
+                    similar_text($cleanInput, $cleanDb, $percent);
+                }
+
                 if ($percent > $bestScore) {
                     $bestScore = $percent;
                     $bestMatch = $dbAldea;
