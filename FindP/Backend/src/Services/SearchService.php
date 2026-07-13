@@ -16,7 +16,18 @@ class SearchService
     {
         $query = trim($query);
         if (empty($query)) {
-            return ['results' => [], 'count' => 0, 'has_more' => false, 'is_dpi' => false];
+            try {
+                $stmt = $this->db->query("SELECT departamento, municipio, aldea, nombre, dpi, edad FROM padron LIMIT 100");
+                $default_results = $stmt->fetchAll();
+                return [
+                    'results' => $default_results,
+                    'count' => count($default_results),
+                    'has_more' => false,
+                    'is_dpi' => false
+                ];
+            } catch (\PDOException $e) {
+                return ['results' => [], 'count' => 0, 'has_more' => false, 'is_dpi' => false];
+            }
         }
 
         $clean_query = preg_replace('/\s+/', '', $query);

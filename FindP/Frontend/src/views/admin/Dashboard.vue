@@ -16,7 +16,7 @@
           type="text" 
           v-model="searchQuery" 
           @input="handleInput"
-          placeholder="pedro daniel lopez"
+          placeholder="Ingrese un nombre o DPI..."
           class="search-input"
           autofocus
         >
@@ -30,7 +30,7 @@
 
       <!-- Stats pill -->
       <div class="search-stats" v-if="appState === 'results'">
-        <div class="stat-pill">
+        <div class="stat-pill" v-if="searchQuery">
           <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           Búsqueda completada en <span class="highlight">0.38 segundos</span>
         </div>
@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const searchQuery = ref('');
 const appState = ref('empty'); // 'empty', 'loading', 'results', 'no-results'
@@ -127,6 +127,10 @@ const results = ref([]);
 const isDpiSearch = ref(false);
 const selectedCitizen = ref(null);
 let searchTimeout = null;
+
+onMounted(() => {
+  performSearch('');
+});
 
 // Paginación lógica simple para el UI (9 por página como en la imagen)
 const currentPage = ref(1);
@@ -148,9 +152,7 @@ const formatDPI = (dpi) => {
 
 const clearSearch = () => {
   searchQuery.value = '';
-  appState.value = 'empty';
-  results.value = [];
-  currentPage.value = 1;
+  performSearch('');
 };
 
 const handleInput = () => {
@@ -167,7 +169,7 @@ const handleInput = () => {
 };
 
 const performSearch = async (query) => {
-  if (!query) return;
+
   appState.value = 'loading';
   currentPage.value = 1;
   
