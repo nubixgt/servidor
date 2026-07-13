@@ -1897,3 +1897,10 @@ body.dark-theme ::-webkit-scrollbar-thumb {
         flex-direction: column;
     }
 }
+
+/* Fix for iOS Safari Auto-Zoom on inputs */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}

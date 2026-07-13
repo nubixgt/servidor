@@ -41,8 +41,11 @@
 
       <!-- Right: Results Panel -->
       <div class="glass-panel results-panel">
-          <div class="results-header">
+          <div class="results-header" style="display: flex; justify-content: space-between; align-items: center;">
               <h2><i class="fa-solid fa-square-poll-vertical text-purple"></i> Resultados del Empadronamiento</h2>
+              <button class="btn-secondary" @click="exportToExcel" :disabled="!results || results.length === 0" style="padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--panel-border); color: var(--text-primary); cursor: pointer; transition: 0.3s; font-size: 13px;">
+                  <i class="fa-solid fa-file-excel" style="color: #10b981; margin-right: 5px;"></i> Exportar a Excel
+              </button>
           </div>
           
           <!-- Results Content -->
@@ -183,4 +186,31 @@ const iniciarCruce = async () => {
 onMounted(() => {
     fetchMunicipios();
 });
+
+const exportToExcel = () => {
+    if (!results.value || results.value.length === 0) return;
+
+    // Crear el contenido del CSV con BOM (Byte Order Mark) para que Excel lo abra en UTF-8 y reconozca tildes.
+    const BOM = "\uFEFF";
+    let csvContent = BOM + "DPI Consultado;Estado;Nombre del Ciudadano;Municipio y Aldea\n";
+
+    results.value.forEach(row => {
+        const dpi = `"${row.dpi_buscado}"`;
+        const estado = `"${row.encontrado ? 'EMPADRONADO' : 'NO APARECE'}"`;
+        const nombre = `"${row.nombre}"`;
+        const ubi = `"${row.encontrado ? (row.municipio + ' / ' + row.aldea) : '-'}"`;
+        
+        csvContent += `${dpi};${estado};${nombre};${ubi}\n`;
+    });
+
+    // Crear y descargar el archivo
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Cruce_DPIs_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 </script>
