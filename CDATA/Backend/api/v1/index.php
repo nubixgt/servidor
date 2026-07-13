@@ -5,6 +5,7 @@ use App\Controllers\ExampleController;
 use App\Controllers\AuthController;
 use App\Controllers\StatsController;
 use App\Controllers\QueryController;
+use App\Controllers\MatchController;
 
 // Backend/api/v1/index.php
 
@@ -37,6 +38,7 @@ $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(StatsController::class);
 $router->registerController(QueryController::class);
+$router->registerController(MatchController::class);
 
 
 // 6. Dispatch
