@@ -31,8 +31,7 @@ $router = new Router();
 
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
-// $router->registerController(YourController::class);
-
+$router->registerController(\App\Controllers\SearchController::class);
 
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

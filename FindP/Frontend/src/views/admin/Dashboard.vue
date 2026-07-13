@@ -172,7 +172,7 @@ const performSearch = async (query) => {
   currentPage.value = 1;
   
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}api/search?q=${encodeURIComponent(query)}`);
+    const response = await fetch(`/FindP/Backend/api/v1/search?q=${encodeURIComponent(query)}`);
     if (!response.ok) throw new Error('Network error');
     
     const data = await response.json();
