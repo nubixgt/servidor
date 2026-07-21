@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { LockClosedIcon } from '@heroicons/vue/24/outline';
+import loginBg from '../../assets/images/LoginFondo.jpeg';
 
 const router = useRouter();
 
@@ -29,9 +30,9 @@ const handleSubmit = () => {
   <div class="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden font-sans select-none selection:bg-black selection:text-white">
     <!-- Background Wrapper -->
     <div class="absolute inset-0 w-full h-full z-0">
-      <div 
-        class="w-full h-full bg-cover bg-center brightness-90 scale-105"
-        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCDJeQAA-guOjP4reFjlb6XiXKFZxhzk6rU-8FB2X1PBiO7WqVil1cB07rqW0k_ybTgsNfvsg8q1kPvL6FhTt41XVGj0tqVjd8sI5fSrE91oBrLI2ePtoo-rgD2UWF18V_Nt6STP5WZwiymABkEA3jbOYUCGm9Z_wFW9L40P05_B62HlnPhx5Zm2cLRis-kbXCTF9t3afjAIKGoAi3Qkit4FqqC-aixGiXPDnusQ3uznkYzDx3MSua9')"
+      <div
+        class="w-full h-full bg-cover bg-center scale-105"
+        :style="{ backgroundImage: `url('${loginBg}')` }"
       ></div>
       <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
     </div>
