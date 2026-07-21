@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Squares2X2Icon, ScaleIcon, ChartBarIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { confirmLogout } from '../../utils/alerts';
 
 const router = useRouter();
 const route = useRoute();
@@ -14,8 +15,13 @@ const navigateTo = (routeName) => {
   router.push({ name: routeName });
 };
 
-const handleLogout = () => {
-  router.push('/login');
+const handleLogout = async () => {
+  const result = await confirmLogout();
+  if (result.isConfirmed) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    router.push('/login');
+  }
 };
 </script>
 

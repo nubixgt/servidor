@@ -2,18 +2,32 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { UserIcon, Bars3Icon } from '@heroicons/vue/24/outline';
+import { confirmLogout } from '../../utils/alerts';
 
 const router = useRouter();
 const route = useRoute();
 
 const currentScreen = computed(() => route.name);
 
+const usuarioNombre = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem('usuario'))?.nombre || 'Jurado Oficial';
+  } catch {
+    return 'Jurado Oficial';
+  }
+});
+
 const navigateTo = (routeName) => {
   router.push({ name: routeName });
 };
 
-const handleLogout = () => {
-  router.push('/login');
+const handleLogout = async () => {
+  const result = await confirmLogout();
+  if (result.isConfirmed) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    router.push('/login');
+  }
 };
 </script>
 
@@ -62,7 +76,7 @@ const handleLogout = () => {
       <!-- User Actions -->
       <div class="flex items-center gap-4">
         <div class="hidden sm:flex flex-col items-end text-right">
-          <span class="text-[10px] font-semibold tracking-wider text-white">Jurado Oficial</span>
+          <span class="text-[10px] font-semibold tracking-wider text-white">{{ usuarioNombre }}</span>
           <button
             @click="handleLogout"
             class="text-[9px] uppercase tracking-widest text-white/50 hover:text-white transition-colors cursor-pointer"

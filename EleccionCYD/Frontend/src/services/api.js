@@ -1,4 +1,5 @@
 import axios from 'axios';
+import router from '../router';
 
 export const getApiBaseUrl = () => {
     const isLocal = window.location.hostname === 'localhost' ||
@@ -45,6 +46,19 @@ api.interceptors.request.use(
         return config;
     },
     error => {
+        return Promise.reject(error);
+    }
+);
+
+// Si el token expiró o es inválido, cierra sesión y manda al login en vez de dejar la app en un estado roto.
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401 && router.currentRoute.value.name !== 'Login') {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            router.push({ name: 'Login' });
+        }
         return Promise.reject(error);
     }
 );

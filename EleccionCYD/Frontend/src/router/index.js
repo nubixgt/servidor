@@ -37,14 +37,14 @@ const router = createRouter({
     routes
 });
 
-// Basic Guard Placeholder
+// Guard de autenticación: exige token para las rutas del panel, y evita volver al login si ya hay sesión.
 router.beforeEach((to, from, next) => {
-    // Implement Auth Check logic here
-    const isAuthenticated = false; // Replace with store check
+    const isAuthenticated = !!localStorage.getItem('token');
 
     if (to.meta.requiresAuth && !isAuthenticated) {
-        // next('/login'); // Uncomment to enable auth guard
-        next(); // Temporary allow all for template
+        next('/login');
+    } else if (to.name === 'Login' && isAuthenticated) {
+        next({ name: 'ModelDirectory' });
     } else {
         next();
     }

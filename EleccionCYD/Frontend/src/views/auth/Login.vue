@@ -4,26 +4,40 @@ import { useRouter } from 'vue-router';
 import { LockClosedIcon } from '@heroicons/vue/24/outline';
 import loginBg from '../../assets/images/LoginFondo.jpeg';
 import logo from '../../assets/images/Logo.png';
+import api from '../../services/api';
+import { loginError } from '../../utils/alerts';
 
 const router = useRouter();
 
-const judgeId = ref('JUDGE-04');
-const accessCode = ref('PARIS2024');
+const usuario = ref('');
+const password = ref('');
 const isAuthenticating = ref(false);
 const error = ref('');
 
-const handleSubmit = () => {
-  if (!judgeId.value.trim() || !accessCode.value.trim()) {
+const handleSubmit = async () => {
+  if (!usuario.value.trim() || !password.value.trim()) {
     error.value = 'Por favor completa todos los campos.';
     return;
   }
   error.value = '';
   isAuthenticating.value = true;
 
-  setTimeout(() => {
-    isAuthenticating.value = false;
+  try {
+    const { data } = await api.post('/auth/login', {
+      usuario: usuario.value.trim(),
+      password: password.value,
+    });
+
+    localStorage.setItem('token', data.data.token);
+    localStorage.setItem('usuario', JSON.stringify(data.data.usuario));
+
     router.push({ name: 'ModelDirectory' });
-  }, 1200);
+  } catch (err) {
+    const message = err.response?.data?.message || 'No se pudo conectar con el servidor. Intenta de nuevo.';
+    await loginError(message);
+  } finally {
+    isAuthenticating.value = false;
+  }
 };
 </script>
 
@@ -56,38 +70,40 @@ const handleSubmit = () => {
           </header>
 
           <form @submit.prevent="handleSubmit" class="space-y-8">
-            <!-- Judge ID Field -->
+            <!-- Usuario Field -->
             <div class="relative group">
               <label
-                for="judge_id"
+                for="usuario"
                 class="text-[10px] text-white/60 font-semibold uppercase tracking-[0.15em] mb-1 block group-focus-within:text-white group-focus-within:tracking-[0.2em] transition-all duration-300"
               >
-                ID de Jurado
+                Usuario
               </label>
               <input
-                id="judge_id"
+                id="usuario"
                 type="text"
-                placeholder="Ingresa tu número de identificación"
-                v-model="judgeId"
+                placeholder="Ingresa tu usuario"
+                v-model="usuario"
                 required
+                autocomplete="username"
                 class="w-full bg-transparent border-t-0 border-x-0 border-b border-white/30 py-3 px-0 text-sm text-white focus:ring-0 focus:border-white transition-all duration-300 rounded-none placeholder:text-white/40"
               />
             </div>
 
-            <!-- Access Code Field -->
+            <!-- Password Field -->
             <div class="relative group">
               <label
-                for="access_code"
+                for="password"
                 class="text-[10px] text-white/60 font-semibold uppercase tracking-[0.15em] mb-1 block group-focus-within:text-white group-focus-within:tracking-[0.2em] transition-all duration-300"
               >
-                Código de Acceso
+                Contraseña
               </label>
               <input
-                id="access_code"
+                id="password"
                 type="password"
                 placeholder="••••••••"
-                v-model="accessCode"
+                v-model="password"
                 required
+                autocomplete="current-password"
                 class="w-full bg-transparent border-t-0 border-x-0 border-b border-white/30 py-3 px-0 text-sm text-white focus:ring-0 focus:border-white transition-all duration-300 rounded-none placeholder:text-white/40"
               />
             </div>
