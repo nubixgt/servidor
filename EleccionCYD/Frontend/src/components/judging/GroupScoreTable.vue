@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { useModelStore } from '../../stores/modelStore';
 import { getRubrics } from '../../utils/rubrics';
-import { showError } from '../../utils/alerts';
+import { showError, successToast } from '../../utils/alerts';
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -56,6 +56,7 @@ async function onChange(model) {
   savingIds.add(model.id);
   try {
     await store.submitScore(model.id, props.roundKey, rubricValues);
+    successToast(`Calificación de ${model.name} guardada`);
   } catch (err) {
     showError('No se pudo guardar', err.response?.data?.message || `Intenta de nuevo con ${model.name}.`);
   } finally {

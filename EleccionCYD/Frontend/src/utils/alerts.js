@@ -43,3 +43,18 @@ export function showError(title, message) {
     confirmButtonText: 'Entendido',
   });
 }
+
+// Notificación pequeña que no interrumpe (no hay que darle clic a nada), para confirmar
+// que se guardó sin frenar al jurado mientras sigue calificando al siguiente participante.
+export function successToast(message) {
+  return swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'success',
+    iconColor: '#fbbf24',
+    title: message,
+    showConfirmButton: false,
+    timer: 1800,
+    timerProgressBar: true,
+  });
+}

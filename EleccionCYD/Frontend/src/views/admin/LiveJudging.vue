@@ -4,7 +4,7 @@ import { useModelStore } from '../../stores/modelStore';
 import { ArrowRightIcon, CheckCircleIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { CATEGORY_LABELS } from '../../utils/labels';
 import { ROUNDS, getRubrics } from '../../utils/rubrics';
-import { showError } from '../../utils/alerts';
+import { showError, successToast } from '../../utils/alerts';
 import GroupScoreTable from '../../components/judging/GroupScoreTable.vue';
 
 const store = useModelStore();
@@ -57,6 +57,7 @@ const handleSubmit = async (e) => {
   try {
     await store.submitScore(activeModel.value.id, activeRound.value, rubricValues);
     submitSuccess.value = true;
+    successToast(`Calificación de ${activeModel.value.name} guardada`);
     setTimeout(() => {
       submitSuccess.value = false;
     }, 1500);
