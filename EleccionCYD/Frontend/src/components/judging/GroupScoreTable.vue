@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { useModelStore } from '../../stores/modelStore';
 import { getRubrics } from '../../utils/rubrics';
 
@@ -31,6 +33,10 @@ function updateScore(model, rubricKey, rawValue) {
 
   store.saveModels();
 }
+
+const zoomedModel = ref(null);
+const openZoom = (model) => { zoomedModel.value = model; };
+const closeZoom = () => { zoomedModel.value = null; };
 </script>
 
 <template>
@@ -49,7 +55,12 @@ function updateScore(model, rubricKey, rawValue) {
           <tr v-for="model in models" :key="model.id" class="border-b border-white/5 last:border-b-0">
             <td class="py-4 px-4">
               <div class="flex items-center gap-4">
-                <img :src="model.imageUrl" class="w-20 aspect-[3/4] rounded-xl object-cover shrink-0" alt="" />
+                <img
+                  :src="model.imageUrl"
+                  class="w-20 aspect-[3/4] rounded-xl object-cover shrink-0 cursor-zoom-in hover:opacity-80 hover:ring-2 hover:ring-amber-400 transition-all"
+                  alt=""
+                  @click="openZoom(model)"
+                />
                 <span class="text-[11px] font-bold tracking-widest text-white uppercase">{{ model.name }}</span>
               </div>
             </td>
@@ -72,5 +83,39 @@ function updateScore(model, rubricKey, rawValue) {
         </tbody>
       </table>
     </div>
+
+    <!-- Lightbox: foto ampliada al hacer clic -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="zoomedModel"
+          class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6 z-[200]"
+          @click.self="closeZoom"
+        >
+          <div class="relative max-w-md w-full">
+            <button
+              @click="closeZoom"
+              class="absolute -top-12 right-0 text-white/70 hover:text-white text-xs uppercase tracking-widest flex items-center gap-2 cursor-pointer"
+            >
+              Cerrar
+              <XMarkIcon class="w-5 h-5" />
+            </button>
+            <img :src="zoomedModel.imageUrl" :alt="zoomedModel.name" class="w-full rounded-2xl shadow-2xl border border-white/15" />
+            <p class="text-center text-white text-sm font-bold tracking-widest uppercase mt-4">{{ zoomedModel.name }}</p>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </section>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
