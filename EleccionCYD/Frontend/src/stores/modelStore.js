@@ -114,6 +114,20 @@ export const useModelStore = defineStore('model', {
     },
     saveModels() {
       localStorage.setItem('aura_models', JSON.stringify(this.models));
+    },
+    finalizeAllScores() {
+      this.models.forEach((m) => {
+        if (m.status !== 'JUDGED' && m.scores.total === 0) {
+          const walk = parseFloat((8.5 + Math.random() * 1.5).toFixed(1));
+          const presence = parseFloat((8.5 + Math.random() * 1.5).toFixed(1));
+          const garment = parseFloat((8.5 + Math.random() * 1.5).toFixed(1));
+          const originality = parseFloat((8.5 + Math.random() * 1.5).toFixed(1));
+          const total = parseFloat(((walk + presence + garment + originality) / 4).toFixed(2));
+          m.status = 'JUDGED';
+          m.scores = { walk, presence, garment, originality, total };
+        }
+      });
+      this.saveModels();
     }
   }
 });

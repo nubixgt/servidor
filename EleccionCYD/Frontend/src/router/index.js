@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Views
 import Login from '../views/auth/Login.vue';
-import Dashboard from '../views/admin/Dashboard.vue';
 import ModelDirectory from '../views/admin/ModelDirectory.vue';
 import LiveJudging from '../views/admin/LiveJudging.vue';
 import Leaderboard from '../views/admin/Leaderboard.vue';
@@ -26,7 +25,6 @@ const routes = [
         component: MainLayout,
         meta: { requiresAuth: true },
         children: [
-            { path: 'dashboard', name: 'Dashboard', component: Dashboard },
             { path: 'directory', name: 'ModelDirectory', component: ModelDirectory },
             { path: 'judging', name: 'LiveJudging', component: LiveJudging },
             { path: 'leaderboard', name: 'Leaderboard', component: Leaderboard },

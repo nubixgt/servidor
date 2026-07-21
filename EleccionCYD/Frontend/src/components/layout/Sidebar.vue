@@ -6,6 +6,8 @@ import { Squares2X2Icon, ScaleIcon, ChartBarIcon, Cog6ToothIcon, ArrowRightOnRec
 const router = useRouter();
 const route = useRoute();
 
+const emit = defineEmits(['submit-scores']);
+
 const currentScreen = computed(() => route.name);
 
 const navigateTo = (routeName) => {
@@ -86,6 +88,13 @@ const handleLogout = () => {
       >
         <ArrowRightOnRectangleIcon class="w-4 h-4 stroke-[1.5]" />
         <span class="text-[10px] uppercase tracking-widest font-semibold">Logout</span>
+      </button>
+
+      <button
+        @click="emit('submit-scores')"
+        class="mt-4 w-full bg-black text-white py-4 text-[10px] font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-all duration-200 rounded-none cursor-pointer"
+      >
+        Submit Final Scores
       </button>
     </div>
   </aside>

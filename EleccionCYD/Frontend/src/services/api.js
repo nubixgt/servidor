@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost/IEMCOOP/template/Backend/api/v1', // Adjust this to match your local setup
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost/EleccionCYD/Backend/api/v1',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
