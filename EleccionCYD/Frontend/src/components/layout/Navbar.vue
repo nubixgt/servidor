@@ -25,7 +25,7 @@ const handleLogout = () => {
         @click="navigateTo('ModelDirectory')" 
         class="font-serif text-lg md:text-xl tracking-[0.25em] text-black uppercase cursor-pointer text-left font-normal"
       >
-        AURA FASHION WEEK
+        EleccionCYD
       </button>
 
       <!-- Center Navigation Links -->
@@ -37,7 +37,7 @@ const handleLogout = () => {
             currentScreen === 'ModelDirectory' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
           ]"
         >
-          Directory
+          Directorio
         </button>
         <button
           @click="navigateTo('LiveJudging')"
@@ -46,7 +46,7 @@ const handleLogout = () => {
             currentScreen === 'LiveJudging' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
           ]"
         >
-          Live Judging
+          Evaluación en Vivo
         </button>
         <button
           @click="navigateTo('Leaderboard')"
@@ -55,25 +55,25 @@ const handleLogout = () => {
             currentScreen === 'Leaderboard' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
           ]"
         >
-          Leaderboard
+          Tabla de Posiciones
         </button>
       </nav>
 
       <!-- User Actions -->
       <div class="flex items-center gap-4">
         <div class="hidden sm:flex flex-col items-end text-right">
-          <span class="text-[10px] font-semibold tracking-wider text-black">Official Judge</span>
-          <button 
-            @click="handleLogout" 
+          <span class="text-[10px] font-semibold tracking-wider text-black">Jurado Oficial</span>
+          <button
+            @click="handleLogout"
             class="text-[9px] uppercase tracking-widest text-gray-400 hover:text-black transition-colors cursor-pointer"
           >
-            Sign out
+            Cerrar sesión
           </button>
         </div>
-        <button 
+        <button
           class="text-black hover:opacity-80 transition-opacity p-1 cursor-pointer"
           @click="navigateTo('Leaderboard')"
-          title="Profile / Results"
+          title="Perfil / Resultados"
         >
           <UserIcon class="w-[22px] h-[22px] stroke-[1.5]" />
         </button>

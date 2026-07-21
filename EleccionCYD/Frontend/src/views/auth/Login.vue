@@ -12,7 +12,7 @@ const error = ref('');
 
 const handleSubmit = () => {
   if (!judgeId.value.trim() || !accessCode.value.trim()) {
-    error.value = 'Please fill in all fields.';
+    error.value = 'Por favor completa todos los campos.';
     return;
   }
   error.value = '';
@@ -42,10 +42,10 @@ const handleSubmit = () => {
       <Transition appear name="fade-down" style="transition-delay: 0.1s">
         <div class="mb-12 text-center">
           <h1 class="font-serif text-3xl md:text-4xl tracking-[0.25em] text-black font-normal uppercase">
-            AURA FASHION WEEK
+            EleccionCYD
           </h1>
           <p class="text-xs text-gray-500 mt-2 tracking-[0.3em] font-semibold uppercase">
-            JUDICIARY PORTAL
+            PORTAL DEL JURADO
           </p>
         </div>
       </Transition>
@@ -54,23 +54,23 @@ const handleSubmit = () => {
       <Transition appear name="fade-up" style="transition-delay: 0.3s">
         <div class="w-full bg-white border border-black/5 p-8 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.04)] rounded-none">
           <header class="mb-10">
-            <h2 class="text-3xl text-black font-light tracking-tight mb-2">Login</h2>
-            <p class="text-gray-500 text-sm">Please authenticate to access the judging dashboard.</p>
+            <h2 class="text-3xl text-black font-light tracking-tight mb-2">Iniciar sesión</h2>
+            <p class="text-gray-500 text-sm">Por favor autentícate para acceder al panel de evaluación.</p>
           </header>
 
           <form @submit.prevent="handleSubmit" class="space-y-8">
             <!-- Judge ID Field -->
             <div class="relative group">
               <label 
-                for="judge_id" 
+                for="judge_id"
                 class="text-[10px] text-gray-400 font-semibold uppercase tracking-[0.15em] mb-1 block group-focus-within:text-black group-focus-within:tracking-[0.2em] transition-all duration-300"
               >
-                Judge ID
+                ID de Jurado
               </label>
-              <input 
+              <input
                 id="judge_id"
                 type="text"
-                placeholder="Enter identification number"
+                placeholder="Ingresa tu número de identificación"
                 v-model="judgeId"
                 required
                 class="w-full bg-transparent border-t-0 border-x-0 border-b border-gray-300 py-3 px-0 text-sm text-black focus:ring-0 focus:border-black transition-all duration-300 rounded-none placeholder:text-gray-300"
@@ -81,17 +81,17 @@ const handleSubmit = () => {
             <div class="relative group">
               <div class="flex justify-between items-end mb-1">
                 <label 
-                  for="access_code" 
+                  for="access_code"
                   class="text-[10px] text-gray-400 font-semibold uppercase tracking-[0.15em] group-focus-within:text-black group-focus-within:tracking-[0.2em] transition-all duration-300"
                 >
-                  Access Code
+                  Código de Acceso
                 </label>
-                <button 
+                <button
                   type="button"
-                  @click="() => alert('Access code has been sent to your official device. (Default is PARIS2024)')"
+                  @click="() => alert('El código de acceso ha sido enviado a tu dispositivo oficial. (Por defecto es PARIS2024)')"
                   class="text-[9px] text-gray-400 hover:text-black transition-colors tracking-wider uppercase"
                 >
-                  Forgot Code?
+                  ¿Olvidaste tu código?
                 </button>
               </div>
               <input 
@@ -113,7 +113,7 @@ const handleSubmit = () => {
                 :disabled="isAuthenticating"
                 class="w-full bg-black text-white py-4 text-xs font-semibold tracking-[0.25em] uppercase hover:bg-neutral-800 active:scale-[0.99] transition-all duration-300 rounded-none cursor-pointer disabled:opacity-75"
               >
-                {{ isAuthenticating ? 'Authenticating...' : 'Sign In' }}
+                {{ isAuthenticating ? 'Autenticando...' : 'Iniciar sesión' }}
               </button>
             </div>
           </form>
@@ -121,7 +121,7 @@ const handleSubmit = () => {
           <footer class="mt-12 text-center">
             <div class="flex items-center justify-center gap-2 text-gray-400">
               <LockClosedIcon class="w-3.5 h-3.5 opacity-80" />
-              <span class="text-[10px] uppercase tracking-[0.2em]">Secure Judging Environment</span>
+              <span class="text-[10px] uppercase tracking-[0.2em]">Entorno de Evaluación Seguro</span>
             </div>
           </footer>
         </div>
@@ -131,7 +131,7 @@ const handleSubmit = () => {
       <Transition appear name="fade-in" style="transition-delay: 0.5s">
         <div class="mt-12 flex items-center gap-4 opacity-60">
           <span class="w-8 h-[1px] bg-gray-300"></span>
-          <span class="text-[10px] text-gray-500 uppercase tracking-[0.25em]">Paris Collection 2024</span>
+          <span class="text-[10px] text-gray-500 uppercase tracking-[0.25em]">Colección París 2024</span>
           <span class="w-8 h-[1px] bg-gray-300"></span>
         </div>
       </Transition>

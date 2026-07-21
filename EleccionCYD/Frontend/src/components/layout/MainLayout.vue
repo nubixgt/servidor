@@ -60,19 +60,19 @@ const closeAndGoToLeaderboard = () => {
         @click="router.push({ name: 'ModelDirectory' })"
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'ModelDirectory' ? 'text-black font-semibold' : 'text-gray-400']"
       >
-        <span class="text-[10px] font-bold uppercase tracking-wider">Models</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Modelos</span>
       </button>
-      <button 
+      <button
         @click="router.push({ name: 'LiveJudging' })"
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'LiveJudging' ? 'text-black font-semibold' : 'text-gray-400']"
       >
-        <span class="text-[10px] font-bold uppercase tracking-wider">Judging</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Evaluación</span>
       </button>
-      <button 
+      <button
         @click="router.push({ name: 'Leaderboard' })"
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'Leaderboard' ? 'text-black font-semibold' : 'text-gray-400']"
       >
-        <span class="text-[10px] font-bold uppercase tracking-wider">Results</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Resultados</span>
       </button>
     </nav>
     
@@ -83,11 +83,11 @@ const closeAndGoToLeaderboard = () => {
           <template v-if="modalType === 'confirm'">
             <div class="flex items-center gap-3 text-amber-600 mb-6">
               <ExclamationTriangleIcon class="w-6 h-6" />
-              <h4 class="text-lg font-bold tracking-widest uppercase text-black">Lock & Publish</h4>
+              <h4 class="text-lg font-bold tracking-widest uppercase text-black">Bloquear y Publicar</h4>
             </div>
 
             <p class="text-sm text-gray-500 leading-relaxed mb-6">
-              You are about to transmit all scored metrics to the central mainframe registry. This action locks your score sheets and completes your judiciary duty for Paris Collection 2024.
+              Estás por transmitir todas las métricas calificadas al registro central. Esta acción bloquea tus hojas de calificación y completa tu labor como jurado para la Colección París 2024.
             </p>
 
             <div class="flex flex-col gap-3">
@@ -95,13 +95,13 @@ const closeAndGoToLeaderboard = () => {
                 @click="confirmFinalSubmitAll"
                 class="w-full bg-black text-white py-4 text-xs font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-colors rounded-none cursor-pointer"
               >
-                Confirm and Transmit
+                Confirmar y Transmitir
               </button>
               <button
                 @click="isFinalScoreModalOpen = false"
                 class="w-full border border-gray-200 text-gray-500 py-4 text-xs font-semibold tracking-widest uppercase hover:text-black hover:border-black transition-colors rounded-none cursor-pointer"
               >
-                Cancel
+                Cancelar
               </button>
             </div>
           </template>
@@ -109,15 +109,15 @@ const closeAndGoToLeaderboard = () => {
             <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-6 text-white">
               <CheckIcon class="w-6 h-6 stroke-[2.5]" />
             </div>
-            <h4 class="text-lg font-bold tracking-widest uppercase text-black mb-3">Transmission Complete</h4>
+            <h4 class="text-lg font-bold tracking-widest uppercase text-black mb-3">Transmisión Completa</h4>
             <p class="text-sm text-gray-500 leading-relaxed mb-8">
-              Your final scores have been encrypted and synchronized across other jury terminals. Thank you for your architectural judgment.
+              Tus calificaciones finales han sido encriptadas y sincronizadas con las demás terminales del jurado. Gracias por tu criterio experto.
             </p>
             <button
               @click="closeAndGoToLeaderboard"
               class="w-full bg-black text-white py-4 text-xs font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-colors rounded-none cursor-pointer"
             >
-              Return to Leaderboard
+              Volver a la Tabla de Posiciones
             </button>
           </div>
         </div>

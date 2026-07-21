@@ -26,13 +26,13 @@ const handleLogout = () => {
       <div class="w-10 h-10 rounded-full bg-neutral-100 overflow-hidden border border-gray-100">
         <img 
           class="w-full h-full object-cover" 
-          alt="Official Judge portrait" 
+          alt="Foto del jurado oficial"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwGbxslq_rbCzMPL3FlMpsyeZ_SFYvR5KNwEy9riyV-1mGz0OVEVv6hN_ct2oDFSj3xKcP1kVXlllLXZfiFK54JXU5HvokGBZ1w-ZGfHZm3gzo4P4XvqHiY2VUD7AVTOBYok9BIi3papekiMf4Q-xx46mtjSOJaBVNGAm7TxrtSzEUv2WibH4tB--cyvqi0xAXMHmRhHMovdLoK38w-usJzeR8Bux85fymdttJbrG1XIcmmtLYZSyz"
         />
       </div>
       <div>
-        <p class="text-[11px] font-semibold tracking-wider text-black uppercase">Official Judge</p>
-        <p class="text-xs text-gray-500">Paris Collection 2024</p>
+        <p class="text-[11px] font-semibold tracking-wider text-black uppercase">Jurado Oficial</p>
+        <p class="text-xs text-gray-500">Colección París 2024</p>
       </div>
     </div>
 
@@ -46,7 +46,7 @@ const handleLogout = () => {
         ]"
       >
         <Squares2X2Icon class="w-[18px] h-[18px] stroke-[1.5]" />
-        <span class="text-xs uppercase tracking-widest font-semibold">Models</span>
+        <span class="text-xs uppercase tracking-widest font-semibold">Modelos</span>
       </button>
 
       <button 
@@ -57,7 +57,7 @@ const handleLogout = () => {
         ]"
       >
         <ScaleIcon class="w-[18px] h-[18px] stroke-[1.5]" />
-        <span class="text-xs uppercase tracking-widest font-semibold">Judging</span>
+        <span class="text-xs uppercase tracking-widest font-semibold">Evaluación</span>
       </button>
 
       <button 
@@ -68,33 +68,33 @@ const handleLogout = () => {
         ]"
       >
         <ChartBarIcon class="w-[18px] h-[18px] stroke-[1.5]" />
-        <span class="text-xs uppercase tracking-widest font-semibold">Results</span>
+        <span class="text-xs uppercase tracking-widest font-semibold">Resultados</span>
       </button>
     </nav>
 
     <!-- Bottom Actions -->
     <div class="px-4 mt-auto border-t border-gray-100 pt-6 flex flex-col gap-4">
       <button 
-        @click="() => alert('Judiciary environment settings loaded.')"
+        @click="() => alert('Configuración del entorno de evaluación cargada.')"
         class="flex items-center gap-4 text-gray-400 hover:text-black transition-colors pl-4 text-left cursor-pointer"
       >
         <Cog6ToothIcon class="w-4 h-4 stroke-[1.5]" />
-        <span class="text-[10px] uppercase tracking-widest font-semibold">Settings</span>
+        <span class="text-[10px] uppercase tracking-widest font-semibold">Configuración</span>
       </button>
 
-      <button 
+      <button
         @click="handleLogout"
         class="flex items-center gap-4 text-gray-400 hover:text-black transition-colors pl-4 text-left cursor-pointer"
       >
         <ArrowRightOnRectangleIcon class="w-4 h-4 stroke-[1.5]" />
-        <span class="text-[10px] uppercase tracking-widest font-semibold">Logout</span>
+        <span class="text-[10px] uppercase tracking-widest font-semibold">Cerrar sesión</span>
       </button>
 
       <button
         @click="emit('submit-scores')"
         class="mt-4 w-full bg-black text-white py-4 text-[10px] font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-all duration-200 rounded-none cursor-pointer"
       >
-        Submit Final Scores
+        Enviar Calificaciones Finales
       </button>
     </div>
   </aside>

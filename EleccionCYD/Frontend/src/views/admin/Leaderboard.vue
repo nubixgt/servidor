@@ -24,9 +24,9 @@ const selectModel = (model) => {
     
     <!-- Page Title -->
     <section class="mb-16">
-      <h1 class="text-3xl font-light tracking-tight text-black mb-2 uppercase">Live Ranking</h1>
+      <h1 class="text-3xl font-light tracking-tight text-black mb-2 uppercase">Clasificación en Vivo</h1>
       <p class="text-sm text-gray-400 leading-relaxed max-w-2xl">
-        Official live leaderboard for the Paris Collection 2024. Rankings are updated in real-time as judging panels submit their final evaluations.
+        Tabla de posiciones oficial en vivo para la Colección París 2024. Las posiciones se actualizan en tiempo real conforme los paneles de jurado envían sus evaluaciones finales.
       </p>
     </section>
 
@@ -40,18 +40,18 @@ const selectModel = (model) => {
           class="order-2 md:order-1 bg-white p-6 border-b-2 border-gray-300 relative flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all rounded-none"
         >
           <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gray-100 text-black px-3 py-1 text-[9px] font-bold tracking-widest uppercase">
-            RANK 02
+            PUESTO 02
           </div>
           <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4 bg-neutral-50 shadow-sm">
-            <img 
-              class="w-full h-full object-cover" 
-              :alt="podium2.name" 
+            <img
+              class="w-full h-full object-cover"
+              :alt="podium2.name"
               :src="podium2.podiumUrl || podium2.imageUrl"
             />
           </div>
           <h3 class="text-xs font-bold tracking-widest text-black mb-1 uppercase">{{ podium2.name }}</h3>
           <p class="text-gray-400 text-xs italic font-light">{{ podium2.look }}</p>
-          <p class="text-black font-semibold text-xs mt-2 uppercase tracking-wide">Score: {{ podium2.scores.total.toFixed(2) }}</p>
+          <p class="text-black font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ podium2.scores.total.toFixed(2) }}</p>
         </div>
       </Transition>
 
@@ -63,18 +63,18 @@ const selectModel = (model) => {
           class="order-1 md:order-2 bg-white p-8 border-b-4 border-black relative flex flex-col items-center text-center shadow-lg transform md:-translate-y-2 scale-105 cursor-pointer rounded-none z-10"
         >
           <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-1 text-[9px] font-bold tracking-widest uppercase">
-            WINNER
+            GANADOR
           </div>
           <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-black mb-4 bg-neutral-50 shadow-sm">
-            <img 
-              class="w-full h-full object-cover" 
-              :alt="podium1.name" 
+            <img
+              class="w-full h-full object-cover"
+              :alt="podium1.name"
               :src="podium1.podiumUrl || podium1.imageUrl"
             />
           </div>
           <h3 class="text-sm font-extrabold tracking-widest text-black mb-1 uppercase">{{ podium1.name }}</h3>
           <p class="text-gray-400 text-xs italic font-light">{{ podium1.look }}</p>
-          <p class="text-black font-extrabold text-sm mt-3 uppercase tracking-wider">Score: {{ podium1.scores.total.toFixed(2) }}</p>
+          <p class="text-black font-extrabold text-sm mt-3 uppercase tracking-wider">Puntaje: {{ podium1.scores.total.toFixed(2) }}</p>
         </div>
       </Transition>
 
@@ -86,18 +86,18 @@ const selectModel = (model) => {
           class="order-3 md:order-3 bg-white p-6 border-b-2 border-gray-200 relative flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all rounded-none"
         >
           <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gray-50 text-gray-500 px-3 py-1 text-[9px] font-bold tracking-widest uppercase">
-            RANK 03
+            PUESTO 03
           </div>
           <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4 bg-neutral-50 shadow-sm">
-            <img 
-              class="w-full h-full object-cover" 
-              :alt="podium3.name" 
+            <img
+              class="w-full h-full object-cover"
+              :alt="podium3.name"
               :src="podium3.podiumUrl || podium3.imageUrl"
             />
           </div>
           <h3 class="text-xs font-bold tracking-widest text-black mb-1 uppercase">{{ podium3.name }}</h3>
           <p class="text-gray-400 text-xs italic font-light">{{ podium3.look }}</p>
-          <p class="text-black font-semibold text-xs mt-2 uppercase tracking-wide">Score: {{ podium3.scores.total.toFixed(2) }}</p>
+          <p class="text-black font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ podium3.scores.total.toFixed(2) }}</p>
         </div>
       </Transition>
     </div>
@@ -107,11 +107,11 @@ const selectModel = (model) => {
       <table class="w-full border-collapse text-left">
         <thead>
           <tr class="border-b border-gray-200 bg-gray-50/50">
-            <th class="py-5 px-6 text-[10px] font-bold tracking-widest text-gray-400 uppercase w-20 text-center">Rank</th>
-            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase">Model</th>
-            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Walk</th>
-            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Presence</th>
-            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Garment</th>
+            <th class="py-5 px-6 text-[10px] font-bold tracking-widest text-gray-400 uppercase w-20 text-center">Puesto</th>
+            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase">Modelo</th>
+            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Caminata</th>
+            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Presencia</th>
+            <th class="py-5 px-4 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-center">Vestimenta</th>
             <th class="py-5 px-6 text-[10px] font-bold tracking-widest text-gray-400 uppercase text-right w-28">Total</th>
           </tr>
         </thead>
@@ -169,7 +169,7 @@ const selectModel = (model) => {
             <!-- Total -->
             <td class="py-5 px-6 text-right">
               <span :class="`text-xs font-bold tracking-widest ${model.scores.total > 0 ? 'text-black' : 'text-gray-300'}`">
-                {{ model.scores.total > 0 ? model.scores.total.toFixed(2) : 'PENDING' }}
+                {{ model.scores.total > 0 ? model.scores.total.toFixed(2) : 'PENDIENTE' }}
               </span>
             </td>
           </tr>
@@ -181,7 +181,7 @@ const selectModel = (model) => {
     <div class="flex justify-between items-center text-gray-400 select-none">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-black animate-pulse"></span>
-        <span class="text-[9px] font-bold tracking-widest uppercase">Live Data Stream Active</span>
+        <span class="text-[9px] font-bold tracking-widest uppercase">Transmisión de Datos en Vivo Activa</span>
       </div>
       <div class="flex gap-3">
         <button class="p-2 border border-gray-200 hover:border-black hover:text-black transition-colors rounded-none cursor-pointer">
