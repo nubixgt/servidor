@@ -47,9 +47,9 @@ function updateScore(model, rubricKey, rawValue) {
         </thead>
         <tbody>
           <tr v-for="model in models" :key="model.id" class="border-b border-white/5 last:border-b-0">
-            <td class="py-3 px-4">
+            <td class="py-4 px-4">
               <div class="flex items-center gap-4">
-                <img :src="model.avatarUrl || model.imageUrl" class="w-14 h-14 rounded-xl object-cover shrink-0" alt="" />
+                <img :src="model.imageUrl" class="w-20 aspect-[3/4] rounded-xl object-cover shrink-0" alt="" />
                 <span class="text-[11px] font-bold tracking-widest text-white uppercase">{{ model.name }}</span>
               </div>
             </td>
