@@ -18,12 +18,12 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <header class="bg-[#f9f9f9] border-b border-black sticky top-0 z-50 select-none">
+  <header class="bg-black/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 select-none">
     <div class="flex justify-between items-center w-full px-6 md:px-16 h-20 max-w-[1440px] mx-auto">
       <!-- Logo -->
-      <button 
-        @click="navigateTo('ModelDirectory')" 
-        class="font-serif text-lg md:text-xl tracking-[0.25em] text-black uppercase cursor-pointer text-left font-normal"
+      <button
+        @click="navigateTo('ModelDirectory')"
+        class="font-serif text-lg md:text-xl tracking-[0.25em] text-white uppercase cursor-pointer text-left font-normal"
       >
         EleccionCYD
       </button>
@@ -34,7 +34,7 @@ const handleLogout = () => {
           @click="navigateTo('ModelDirectory')"
           :class="[
             'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',
-            currentScreen === 'ModelDirectory' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
+            currentScreen === 'ModelDirectory' ? 'text-amber-400 border-b border-amber-400' : 'text-white/50 hover:text-white'
           ]"
         >
           Directorio
@@ -43,7 +43,7 @@ const handleLogout = () => {
           @click="navigateTo('LiveJudging')"
           :class="[
             'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',
-            currentScreen === 'LiveJudging' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
+            currentScreen === 'LiveJudging' ? 'text-amber-400 border-b border-amber-400' : 'text-white/50 hover:text-white'
           ]"
         >
           Evaluación en Vivo
@@ -52,7 +52,7 @@ const handleLogout = () => {
           @click="navigateTo('Leaderboard')"
           :class="[
             'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',
-            currentScreen === 'Leaderboard' ? 'text-black border-b border-black' : 'text-gray-400 hover:text-black'
+            currentScreen === 'Leaderboard' ? 'text-amber-400 border-b border-amber-400' : 'text-white/50 hover:text-white'
           ]"
         >
           Tabla de Posiciones
@@ -62,22 +62,22 @@ const handleLogout = () => {
       <!-- User Actions -->
       <div class="flex items-center gap-4">
         <div class="hidden sm:flex flex-col items-end text-right">
-          <span class="text-[10px] font-semibold tracking-wider text-black">Jurado Oficial</span>
+          <span class="text-[10px] font-semibold tracking-wider text-white">Jurado Oficial</span>
           <button
             @click="handleLogout"
-            class="text-[9px] uppercase tracking-widest text-gray-400 hover:text-black transition-colors cursor-pointer"
+            class="text-[9px] uppercase tracking-widest text-white/50 hover:text-white transition-colors cursor-pointer"
           >
             Cerrar sesión
           </button>
         </div>
         <button
-          class="text-black hover:opacity-80 transition-opacity p-1 cursor-pointer"
+          class="text-white hover:text-amber-400 transition-colors p-1 cursor-pointer"
           @click="navigateTo('Leaderboard')"
           title="Perfil / Resultados"
         >
           <UserIcon class="w-[22px] h-[22px] stroke-[1.5]" />
         </button>
-        <button class="md:hidden text-black p-1 cursor-pointer">
+        <button class="md:hidden text-white p-1 cursor-pointer">
           <Bars3Icon class="w-[22px] h-[22px] stroke-[1.5]" />
         </button>
       </div>

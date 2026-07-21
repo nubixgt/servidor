@@ -5,6 +5,7 @@ import { ExclamationTriangleIcon, CheckIcon } from '@heroicons/vue/24/outline';
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
 import { useModelStore } from '../../stores/modelStore';
+import appBg from '../../assets/images/Fondo.jpeg';
 
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +36,13 @@ const closeAndGoToLeaderboard = () => {
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden bg-[#f9f9f9] text-[#1a1c1c] flex flex-col font-sans selection:bg-black selection:text-white relative">
+  <div class="h-screen overflow-hidden text-white flex flex-col font-sans selection:bg-amber-400 selection:text-black relative">
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10">
+      <div class="w-full h-full bg-cover bg-center" :style="{ backgroundImage: `url('${appBg}')` }"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/90"></div>
+    </div>
+
     <!-- Sticky Top Navbar -->
     <Navbar />
 
@@ -55,67 +62,67 @@ const closeAndGoToLeaderboard = () => {
     </div>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 h-16 flex justify-around items-center z-40 shadow-md">
-      <button 
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xl border-t border-white/10 h-16 flex justify-around items-center z-40 shadow-md">
+      <button
         @click="router.push({ name: 'ModelDirectory' })"
-        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'ModelDirectory' ? 'text-black font-semibold' : 'text-gray-400']"
+        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'ModelDirectory' ? 'text-amber-400 font-semibold' : 'text-white/50']"
       >
         <span class="text-[10px] font-bold uppercase tracking-wider">Participantes</span>
       </button>
       <button
         @click="router.push({ name: 'LiveJudging' })"
-        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'LiveJudging' ? 'text-black font-semibold' : 'text-gray-400']"
+        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'LiveJudging' ? 'text-amber-400 font-semibold' : 'text-white/50']"
       >
         <span class="text-[10px] font-bold uppercase tracking-wider">Evaluación</span>
       </button>
       <button
         @click="router.push({ name: 'Leaderboard' })"
-        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'Leaderboard' ? 'text-black font-semibold' : 'text-gray-400']"
+        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'Leaderboard' ? 'text-amber-400 font-semibold' : 'text-white/50']"
       >
         <span class="text-[10px] font-bold uppercase tracking-wider">Resultados</span>
       </button>
     </nav>
-    
+
     <!-- Final Verification Overlay Modal -->
     <Transition name="fade-in">
-      <div v-if="isFinalScoreModalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 z-[100] selection:bg-white selection:text-black">
-        <div class="bg-white border border-gray-100 max-w-md w-full p-8 text-left rounded-none shadow-2xl relative">
+      <div v-if="isFinalScoreModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 z-[100] selection:bg-white selection:text-black">
+        <div class="bg-white/10 backdrop-blur-2xl border border-white/15 max-w-md w-full p-8 text-left rounded-3xl shadow-2xl relative">
           <template v-if="modalType === 'confirm'">
-            <div class="flex items-center gap-3 text-amber-600 mb-6">
+            <div class="flex items-center gap-3 text-amber-400 mb-6">
               <ExclamationTriangleIcon class="w-6 h-6" />
-              <h4 class="text-lg font-bold tracking-widest uppercase text-black">Bloquear y Publicar</h4>
+              <h4 class="text-lg font-bold tracking-widest uppercase text-white">Bloquear y Publicar</h4>
             </div>
 
-            <p class="text-sm text-gray-500 leading-relaxed mb-6">
+            <p class="text-sm text-white/70 leading-relaxed mb-6">
               Estás por transmitir todas las métricas calificadas al registro central. Esta acción bloquea tus hojas de calificación de todas las rondas y completa tu labor como jurado para EleccionCYD 2026.
             </p>
 
             <div class="flex flex-col gap-3">
               <button
                 @click="confirmFinalSubmitAll"
-                class="w-full bg-black text-white py-4 text-xs font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-colors rounded-none cursor-pointer"
+                class="w-full bg-amber-400 text-black py-4 text-xs font-semibold tracking-widest uppercase hover:bg-amber-300 transition-colors rounded-xl cursor-pointer"
               >
                 Confirmar y Transmitir
               </button>
               <button
                 @click="isFinalScoreModalOpen = false"
-                class="w-full border border-gray-200 text-gray-500 py-4 text-xs font-semibold tracking-widest uppercase hover:text-black hover:border-black transition-colors rounded-none cursor-pointer"
+                class="w-full border border-white/20 text-white/70 py-4 text-xs font-semibold tracking-widest uppercase hover:text-white hover:border-white/40 transition-colors rounded-xl cursor-pointer"
               >
                 Cancelar
               </button>
             </div>
           </template>
           <div v-else class="text-center py-4">
-            <div class="w-12 h-12 bg-black rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+            <div class="w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center mx-auto mb-6 text-black">
               <CheckIcon class="w-6 h-6 stroke-[2.5]" />
             </div>
-            <h4 class="text-lg font-bold tracking-widest uppercase text-black mb-3">Transmisión Completa</h4>
-            <p class="text-sm text-gray-500 leading-relaxed mb-8">
+            <h4 class="text-lg font-bold tracking-widest uppercase text-white mb-3">Transmisión Completa</h4>
+            <p class="text-sm text-white/70 leading-relaxed mb-8">
               Tus calificaciones finales han sido encriptadas y sincronizadas con las demás terminales del jurado. Gracias por tu criterio experto.
             </p>
             <button
               @click="closeAndGoToLeaderboard"
-              class="w-full bg-black text-white py-4 text-xs font-semibold tracking-widest uppercase hover:bg-neutral-800 transition-colors rounded-none cursor-pointer"
+              class="w-full bg-amber-400 text-black py-4 text-xs font-semibold tracking-widest uppercase hover:bg-amber-300 transition-colors rounded-xl cursor-pointer"
             >
               Volver a la Tabla de Posiciones
             </button>
@@ -125,15 +132,15 @@ const closeAndGoToLeaderboard = () => {
     </Transition>
 
     <!-- Subtle Grain Overlay for Texture -->
-    <div class="fixed inset-0 pointer-events-none opacity-[0.015] z-50" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg')"></div>
+    <div class="fixed inset-0 pointer-events-none opacity-[0.02] z-50" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg')"></div>
   </div>
 </template>
 
 <style>
 /* Global Layout Overrides for App consistency */
 body {
-  background-color: #f9f9f9 !important;
-  color: #1a1c1c !important;
+  background-color: #05070d !important;
+  color: #ffffff !important;
 }
 
 .fade-page-enter-active,

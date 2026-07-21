@@ -4,7 +4,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    @apply bg-slate-50 text-slate-600;
+    @apply bg-[#05070d] text-white;
 }
 
 /* Custom scrollbars and transitions for premium lookbook finish */
@@ -15,7 +15,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #000000;
+  background: #fbbf24;
 }
 .scrollbar-none::-webkit-scrollbar {
   display: none;

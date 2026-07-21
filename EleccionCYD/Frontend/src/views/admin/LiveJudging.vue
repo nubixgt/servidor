@@ -69,11 +69,11 @@ const selectModel = (model) => {
 </script>
 
 <template>
-  <div v-if="!activeModel" class="flex-1 flex items-center justify-center bg-gray-50 p-12 h-[calc(100vh-80px)]">
-    <p class="text-gray-400">No se encontraron participantes activos en el listado.</p>
+  <div v-if="!activeModel" class="flex-1 flex items-center justify-center p-12 h-[calc(100vh-80px)]">
+    <p class="text-white/40">No se encontraron participantes activos en el listado.</p>
   </div>
 
-  <div v-else class="flex-1 flex flex-col md:flex-row overflow-hidden bg-white select-none min-h-[calc(100vh-80px)]">
+  <div v-else class="flex-1 flex flex-col md:flex-row overflow-hidden select-none min-h-[calc(100vh-80px)]">
     <!-- Left Column: Large Runway Photo -->
     <section class="w-full md:w-1/2 h-[40vh] md:h-full relative group overflow-hidden">
       <div
@@ -82,17 +82,17 @@ const selectModel = (model) => {
       ></div>
 
       <!-- Model Info Overlay -->
-      <div class="absolute inset-x-0 bottom-0 p-8 md:p-12 bg-gradient-to-t from-black/80 via-black/45 to-transparent text-white flex flex-col justify-end h-1/2">
+      <div class="absolute inset-x-0 bottom-0 p-8 md:p-12 bg-gradient-to-t from-black/90 via-black/50 to-transparent text-white flex flex-col justify-end h-1/2">
         <div class="flex items-center gap-2 mb-3">
-          <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
           <span class="text-[10px] font-bold tracking-[0.25em] uppercase">En Vivo</span>
         </div>
         <h2 class="font-serif text-3xl md:text-5xl tracking-tight mb-2 uppercase font-light">
           {{ activeModel.name }}
         </h2>
-        <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs opacity-75 font-normal tracking-wide">
+        <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs opacity-90 font-normal tracking-wide">
           <p class="uppercase">{{ CATEGORY_LABELS[activeModel.category] }}</p>
-          <p class="text-gray-300">{{ roundsCompleted(activeModel) }}/{{ ROUNDS.length }} rondas calificadas</p>
+          <p class="text-amber-400">{{ roundsCompleted(activeModel) }}/{{ ROUNDS.length }} rondas calificadas</p>
         </div>
       </div>
 
@@ -101,13 +101,13 @@ const selectModel = (model) => {
     </section>
 
     <!-- Right Column: Judging Scorecard -->
-    <section class="w-full md:w-1/2 bg-[#f9f9f9] md:h-full p-8 md:p-16 overflow-y-auto flex flex-col border-t md:border-t-0 md:border-l border-gray-100">
+    <section class="w-full md:w-1/2 bg-black/30 backdrop-blur-xl md:h-full p-8 md:p-16 overflow-y-auto flex flex-col border-t md:border-t-0 md:border-l border-white/10">
       <div class="max-w-md mx-auto w-full flex-1 flex flex-col justify-center">
 
         <header class="mb-8 mt-8 md:mt-0">
-          <p class="text-[10px] font-bold tracking-[0.25em] text-gray-400 mb-2 uppercase">Hoja de Calificación</p>
-          <h3 class="text-2xl font-light tracking-tight text-black">{{ activeModel.name }}</h3>
-          <div class="w-12 h-[1px] bg-black mt-4"></div>
+          <p class="text-[10px] font-bold tracking-[0.25em] text-white/50 mb-2 uppercase">Hoja de Calificación</p>
+          <h3 class="text-2xl font-light tracking-tight text-white">{{ activeModel.name }}</h3>
+          <div class="w-12 h-[1px] bg-amber-400 mt-4"></div>
         </header>
 
         <!-- Round Selector -->
@@ -119,8 +119,8 @@ const selectModel = (model) => {
             :class="[
               'flex-1 px-3 py-2.5 text-[10px] font-bold tracking-widest border transition-all duration-300 cursor-pointer uppercase',
               activeRound === round.key
-                ? 'bg-black text-white border-black'
-                : 'bg-transparent text-gray-400 border-gray-200 hover:border-black hover:text-black'
+                ? 'bg-amber-400 text-black border-amber-400'
+                : 'bg-white/5 text-white/60 border-white/15 hover:border-white/40 hover:text-white'
             ]"
           >
             {{ round.label }}
@@ -130,8 +130,8 @@ const selectModel = (model) => {
         <form @submit.prevent="handleSubmit" class="space-y-10" :key="activeRound">
           <div v-for="rubric in activeRubrics" :key="rubric.key" class="space-y-3">
             <div class="flex justify-between items-end">
-              <label class="text-[10px] font-bold tracking-widest text-black uppercase">{{ rubric.label }}</label>
-              <span class="text-xs font-semibold text-gray-500">{{ sliderValues[rubric.key] }}/10</span>
+              <label class="text-[10px] font-bold tracking-widest text-white uppercase">{{ rubric.label }}</label>
+              <span class="text-xs font-semibold text-amber-400">{{ sliderValues[rubric.key] }}/10</span>
             </div>
             <div class="relative pt-1 custom-slider">
               <input
@@ -140,7 +140,7 @@ const selectModel = (model) => {
                 v-model.number="sliderValues[rubric.key]"
                 class="w-full cursor-pointer"
               />
-              <div class="flex justify-between text-[9px] font-bold tracking-wider text-gray-400 mt-2">
+              <div class="flex justify-between text-[9px] font-bold tracking-wider text-white/40 mt-2">
                 <span>1</span>
                 <span>10</span>
               </div>
@@ -148,10 +148,10 @@ const selectModel = (model) => {
           </div>
 
           <!-- Summary Live Calculation -->
-          <div class="pt-6 border-t border-gray-200">
+          <div class="pt-6 border-t border-white/10">
             <div class="flex justify-between items-center">
-              <p class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">Puntaje de la Ronda</p>
-              <p class="text-4xl font-light text-black tracking-tight font-sans">
+              <p class="text-[10px] font-bold tracking-widest text-white/50 uppercase">Puntaje de la Ronda</p>
+              <p class="text-4xl font-light text-amber-400 tracking-tight font-sans">
                 {{ averageScore.toFixed(1) }}
               </p>
             </div>
@@ -162,7 +162,7 @@ const selectModel = (model) => {
             <button
               type="submit"
               :disabled="isSubmitting || submitSuccess"
-              class="w-full bg-black text-white py-5 text-xs font-semibold tracking-widest uppercase hover:bg-neutral-800 active:scale-[0.99] transition-all duration-300 rounded-none flex items-center justify-center gap-3 cursor-pointer disabled:bg-neutral-800"
+              class="w-full bg-amber-400 text-black py-5 text-xs font-semibold tracking-widest uppercase hover:bg-amber-300 active:scale-[0.99] transition-all duration-300 rounded-xl flex items-center justify-center gap-3 cursor-pointer disabled:opacity-70"
             >
               <ArrowPathIcon v-if="isSubmitting" class="animate-spin w-4 h-4" />
               <template v-else-if="submitSuccess">
@@ -174,15 +174,15 @@ const selectModel = (model) => {
                 <ArrowRightIcon class="w-4 h-4" />
               </template>
             </button>
-            <p class="text-[9px] text-center text-gray-400 mt-4 uppercase tracking-wider leading-relaxed">
+            <p class="text-[9px] text-center text-white/40 mt-4 uppercase tracking-wider leading-relaxed">
               Guardando la ronda "{{ ROUNDS.find(r => r.key === activeRound)?.label }}" para {{ activeModel.id }}.
             </p>
           </div>
         </form>
 
         <!-- Model Switcher Carousel -->
-        <div class="mt-12 pt-8 border-t border-gray-200 pb-12 md:pb-0">
-          <p class="text-[9px] font-bold tracking-widest text-gray-400 uppercase mb-4">Participantes</p>
+        <div class="mt-12 pt-8 border-t border-white/10 pb-12 md:pb-0">
+          <p class="text-[9px] font-bold tracking-widest text-white/50 uppercase mb-4">Participantes</p>
           <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
             <button
               v-for="m in store.models"
@@ -191,14 +191,14 @@ const selectModel = (model) => {
               :class="[
                 'flex-shrink-0 flex items-center gap-2.5 px-3 py-2 border transition-all duration-300 cursor-pointer text-left',
                 activeModel.id === m.id
-                  ? 'border-black bg-white'
-                  : 'border-gray-200 bg-transparent hover:border-black'
+                  ? 'border-amber-400 bg-white/10'
+                  : 'border-white/15 bg-transparent hover:border-white/40'
               ]"
             >
-              <img :src="m.imageUrl" class="w-6 h-8 object-cover" alt="" />
+              <img :src="m.imageUrl" class="w-6 h-8 object-cover rounded" alt="" />
               <div>
-                <p class="text-[9px] font-bold uppercase text-black truncate max-w-[80px]">{{ m.name }}</p>
-                <p class="text-[8px] text-gray-400 uppercase">{{ roundsCompleted(m) }}/{{ ROUNDS.length }} rondas</p>
+                <p class="text-[9px] font-bold uppercase text-white truncate max-w-[80px]">{{ m.name }}</p>
+                <p class="text-[8px] text-white/40 uppercase">{{ roundsCompleted(m) }}/{{ ROUNDS.length }} rondas</p>
               </div>
             </button>
           </div>
@@ -223,13 +223,13 @@ const selectModel = (model) => {
   width: 100%;
   height: 1px;
   cursor: pointer;
-  background: #000000;
+  background: rgba(255, 255, 255, 0.25);
 }
 .custom-slider input[type="range"]::-webkit-slider-thumb {
   height: 12px;
   width: 12px;
-  border-radius: 0px;
-  background: #000000;
+  border-radius: 999px;
+  background: #fbbf24;
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -5px;
@@ -242,13 +242,14 @@ const selectModel = (model) => {
   width: 100%;
   height: 1px;
   cursor: pointer;
-  background: #000000;
+  background: rgba(255, 255, 255, 0.25);
 }
 .custom-slider input[type="range"]::-moz-range-thumb {
   height: 12px;
   width: 12px;
-  border-radius: 0px;
-  background: #000000;
+  border-radius: 999px;
+  border: none;
+  background: #fbbf24;
   cursor: pointer;
 }
 </style>
