@@ -43,13 +43,7 @@ const handleSubmit = () => {
       <!-- Header Branding -->
       <Transition appear name="fade-down" style="transition-delay: 0.1s">
         <div class="mb-10 text-center flex flex-col items-center">
-          <img :src="logo" alt="Logo Aniversario CYD" class="h-20 md:h-24 w-auto mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
-          <h1 class="font-serif text-3xl md:text-4xl tracking-[0.25em] text-white font-normal uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-            EleccionCYD
-          </h1>
-          <p class="text-xs text-white/80 mt-2 tracking-[0.3em] font-semibold uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-            PORTAL DEL JURADO
-          </p>
+          <img :src="logo" alt="Logo Aniversario CYD" class="h-20 md:h-24 w-auto drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
         </div>
       </Transition>
 
