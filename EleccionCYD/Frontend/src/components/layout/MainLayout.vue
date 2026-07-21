@@ -1,7 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ExclamationTriangleIcon, CheckIcon } from '@heroicons/vue/24/outline';
+import { ExclamationTriangleIcon, CheckIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import Navbar from './Navbar.vue';
 import Sidebar from './Sidebar.vue';
 import { useModelStore } from '../../stores/modelStore';
@@ -16,17 +16,36 @@ const showSidebar = computed(() => {
   return route.name === 'LiveJudging' || route.name === 'Leaderboard';
 });
 
+const loadError = ref('');
+
+const loadInitialData = async () => {
+  loadError.value = '';
+  try {
+    await store.initialize();
+  } catch (err) {
+    loadError.value = err.response?.data?.message || 'No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.';
+  }
+};
+
+onMounted(loadInitialData);
+
 const isFinalScoreModalOpen = ref(false);
 const modalType = ref('confirm');
+const isFinalizing = ref(false);
 
 const handleFinalSubmitAll = () => {
   modalType.value = 'confirm';
   isFinalScoreModalOpen.value = true;
 };
 
-const confirmFinalSubmitAll = () => {
-  modalType.value = 'success';
-  store.finalizeAllScores();
+const confirmFinalSubmitAll = async () => {
+  isFinalizing.value = true;
+  try {
+    await store.finalizeAllScores();
+    modalType.value = 'success';
+  } finally {
+    isFinalizing.value = false;
+  }
 };
 
 const closeAndGoToLeaderboard = () => {
@@ -46,8 +65,25 @@ const closeAndGoToLeaderboard = () => {
     <!-- Sticky Top Navbar -->
     <Navbar />
 
+    <!-- Estado de carga inicial / error de conexión con el Backend -->
+    <div v-if="!store.initialized" class="flex-1 flex items-center justify-center p-12">
+      <div v-if="loadError" class="text-center max-w-sm">
+        <p class="text-red-300 text-sm mb-4">{{ loadError }}</p>
+        <button
+          @click="loadInitialData"
+          class="px-6 py-2.5 bg-amber-400 text-black text-xs font-semibold uppercase tracking-widest rounded-xl hover:bg-amber-300 transition-colors cursor-pointer"
+        >
+          Reintentar
+        </button>
+      </div>
+      <div v-else class="flex flex-col items-center gap-3 text-white/50">
+        <ArrowPathIcon class="w-6 h-6 animate-spin" />
+        <p class="text-xs uppercase tracking-widest">Cargando datos...</p>
+      </div>
+    </div>
+
     <!-- Main Layout Area -->
-    <div class="flex-1 flex overflow-hidden">
+    <div v-else class="flex-1 flex overflow-hidden">
       <!-- Conditional Sidebar -->
       <Sidebar v-if="showSidebar" @submit-scores="handleFinalSubmitAll" />
 
@@ -100,13 +136,16 @@ const closeAndGoToLeaderboard = () => {
             <div class="flex flex-col gap-3">
               <button
                 @click="confirmFinalSubmitAll"
-                class="w-full bg-amber-400 text-black py-4 text-xs font-semibold tracking-widest uppercase hover:bg-amber-300 transition-colors rounded-xl cursor-pointer"
+                :disabled="isFinalizing"
+                class="w-full bg-amber-400 text-black py-4 text-xs font-semibold tracking-widest uppercase hover:bg-amber-300 transition-colors rounded-xl cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                Confirmar y Transmitir
+                <ArrowPathIcon v-if="isFinalizing" class="w-4 h-4 animate-spin" />
+                {{ isFinalizing ? 'Transmitiendo...' : 'Confirmar y Transmitir' }}
               </button>
               <button
                 @click="isFinalScoreModalOpen = false"
-                class="w-full border border-white/20 text-white/70 py-4 text-xs font-semibold tracking-widest uppercase hover:text-white hover:border-white/40 transition-colors rounded-xl cursor-pointer"
+                :disabled="isFinalizing"
+                class="w-full border border-white/20 text-white/70 py-4 text-xs font-semibold tracking-widest uppercase hover:text-white hover:border-white/40 transition-colors rounded-xl cursor-pointer disabled:opacity-60"
               >
                 Cancelar
               </button>

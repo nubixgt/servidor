@@ -33,3 +33,13 @@ export function loginError(message) {
     confirmButtonText: 'Entendido',
   });
 }
+
+export function showError(title, message) {
+  return swal.fire({
+    title,
+    text: message,
+    icon: 'error',
+    iconColor: '#f87171',
+    confirmButtonText: 'Entendido',
+  });
+}

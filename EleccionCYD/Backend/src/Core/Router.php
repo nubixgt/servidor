@@ -6,6 +6,7 @@ use App\Attributes\Authorize;
 use App\Attributes\HasPrivilege;
 use App\Utils\Response;
 use App\Utils\JwtUtils;
+use App\Core\Auth;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -92,10 +93,13 @@ class Router
 
     private function checkPermissions(array $requiredRoles)
     {
+        // Siempre valida el token cuando hay #[Authorize], aunque no pida roles específicos,
+        // para que el controlador pueda saber qué jurado está haciendo la petición (Auth::id()).
+        $payload = $this->validateToken();
+        Auth::setPayload($payload);
+
         if (empty($requiredRoles))
             return;
-
-        $payload = $this->validateToken(); // Reuse validation logic
 
         $userRole = $payload['role'] ?? 'guest';
 

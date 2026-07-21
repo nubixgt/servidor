@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useModelStore } from '../../stores/modelStore';
 import { Bars3BottomLeftIcon, ArrowRightIcon, GlobeAltIcon, ShareIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { FILTER_LABELS, SORT_LABELS, CATEGORY_LABELS, CATEGORY_COLORS } from '../../utils/labels';
-import { roundsCompleted, ROUNDS, computeFinalScore } from '../../utils/rubrics';
+import { ROUNDS } from '../../utils/rubrics';
 import logo from '../../assets/images/Logo.png';
 
 const router = useRouter();
@@ -14,8 +14,8 @@ const activeFilter = ref('ALL');
 const sortBy = ref('name');
 
 const filteredModels = computed(() => {
-  if (activeFilter.value === 'ALL') return store.models;
-  return store.models.filter((model) => model.category === activeFilter.value);
+  if (activeFilter.value === 'ALL') return store.participants;
+  return store.participants.filter((model) => model.category === activeFilter.value);
 });
 
 const sortedModels = computed(() => {
@@ -97,24 +97,21 @@ const navigateTo = (route, modelId = null) => {
               />
               <div class="absolute inset-0 border border-amber-400/0 group-hover:border-amber-400/60 transition-colors duration-300 pointer-events-none rounded-xl"></div>
 
-              <!-- Rounds progress indicator -->
+              <!-- Rounds progress indicator (de ESTE jurado) -->
               <div class="absolute top-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10">
                 <span
                   :class="[
                     'w-1.5 h-1.5 rounded-full',
-                    roundsCompleted(model) === ROUNDS.length ? 'bg-amber-400' : roundsCompleted(model) > 0 ? 'bg-amber-400 animate-pulse' : 'bg-white/30'
+                    store.roundsCompletedFor(model.id) === ROUNDS.length ? 'bg-amber-400' : store.roundsCompletedFor(model.id) > 0 ? 'bg-amber-400 animate-pulse' : 'bg-white/30'
                   ]"
                 ></span>
-                <span class="text-[9px] font-bold tracking-widest uppercase text-white">{{ roundsCompleted(model) }}/{{ ROUNDS.length }} RONDAS</span>
+                <span class="text-[9px] font-bold tracking-widest uppercase text-white">{{ store.roundsCompletedFor(model.id) }}/{{ ROUNDS.length }} RONDAS</span>
               </div>
             </div>
 
             <!-- Meta details -->
             <div class="space-y-1">
-              <div class="flex justify-between items-start">
-                <h3 class="text-[11px] font-bold tracking-widest uppercase text-white">{{ model.name }}</h3>
-                <span v-if="computeFinalScore(model) > 0" class="text-[10px] font-bold text-amber-400 shrink-0 ml-2">★ {{ computeFinalScore(model).toFixed(2) }}</span>
-              </div>
+              <h3 class="text-[11px] font-bold tracking-widest uppercase text-white">{{ model.name }}</h3>
               <p :class="['text-xs italic font-light', CATEGORY_COLORS[model.category]]">{{ CATEGORY_LABELS[model.category] }}</p>
             </div>
           </div>

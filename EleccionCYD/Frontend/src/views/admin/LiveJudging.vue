@@ -3,17 +3,18 @@ import { ref, computed, watch } from 'vue';
 import { useModelStore } from '../../stores/modelStore';
 import { ArrowRightIcon, CheckCircleIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { CATEGORY_LABELS } from '../../utils/labels';
-import { ROUNDS, getRubrics, roundsCompleted } from '../../utils/rubrics';
+import { ROUNDS, getRubrics } from '../../utils/rubrics';
+import { showError } from '../../utils/alerts';
 import GroupScoreTable from '../../components/judging/GroupScoreTable.vue';
 
 const store = useModelStore();
 
-const activeModel = computed(() => store.selectedModel || store.models[0]);
+const activeModel = computed(() => store.selectedModel || store.participants[0]);
 const activeRound = computed(() => store.activeRound);
 const isGroupRound = computed(() => activeRound.value === 'COREOGRAFIA');
 const activeRubrics = computed(() => getRubrics(activeRound.value, activeModel.value?.category));
 
-// Valores por defecto (escalonados) cuando el rubro aún no tiene calificación.
+// Valores por defecto (escalonados) cuando el rubro aún no tiene calificación de ESTE jurado.
 const DEFAULTS = [5, 7, 8];
 
 const sliderValues = ref({});
@@ -21,10 +22,10 @@ const sliderValues = ref({});
 const syncSliders = () => {
   const model = activeModel.value;
   if (!model || isGroupRound.value) return;
-  const roundScores = model.scores[activeRound.value];
+  const myScore = store.myScoreFor(model.id, activeRound.value);
   const values = {};
   activeRubrics.value.forEach((rubric, i) => {
-    values[rubric.key] = roundScores.total > 0 ? roundScores[rubric.key] : DEFAULTS[i] ?? 5;
+    values[rubric.key] = myScore ? myScore[rubric.key] : DEFAULTS[i] ?? 5;
   });
   sliderValues.value = values;
 };
@@ -44,25 +45,26 @@ const selectRound = (roundKey) => {
   store.setActiveRound(roundKey);
 };
 
-const handleSubmit = (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   isSubmitting.value = true;
 
-  setTimeout(() => {
-    isSubmitting.value = false;
+  const rubricValues = {};
+  activeRubrics.value.forEach((r) => {
+    rubricValues[r.key] = sliderValues.value[r.key];
+  });
+
+  try {
+    await store.submitScore(activeModel.value.id, activeRound.value, rubricValues);
     submitSuccess.value = true;
-
-    const roundScores = { total: averageScore.value };
-    activeRubrics.value.forEach((r) => {
-      roundScores[r.key] = sliderValues.value[r.key];
-    });
-
-    store.updateRoundScores(activeModel.value.id, activeRound.value, roundScores);
-
     setTimeout(() => {
       submitSuccess.value = false;
     }, 1500);
-  }, 1200);
+  } catch (err) {
+    showError('No se pudo guardar', err.response?.data?.message || 'Intenta de nuevo en unos segundos.');
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 const selectModel = (model) => {
@@ -124,7 +126,7 @@ const selectModel = (model) => {
           </h2>
           <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs opacity-90 font-normal tracking-wide">
             <p class="uppercase">{{ CATEGORY_LABELS[activeModel.category] }}</p>
-            <p class="text-amber-400">{{ roundsCompleted(activeModel) }}/{{ ROUNDS.length }} rondas calificadas</p>
+            <p class="text-amber-400">{{ store.roundsCompletedFor(activeModel.id) }}/{{ ROUNDS.length }} rondas calificadas</p>
           </div>
         </div>
 
@@ -200,7 +202,7 @@ const selectModel = (model) => {
             <p class="text-[9px] font-bold tracking-widest text-white/50 uppercase mb-4">Participantes</p>
             <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
               <button
-                v-for="m in store.models"
+                v-for="m in store.participants"
                 :key="m.id"
                 @click="selectModel(m)"
                 :class="[
@@ -213,7 +215,7 @@ const selectModel = (model) => {
                 <img :src="m.imageUrl" class="w-6 h-8 object-cover rounded" alt="" />
                 <div>
                   <p class="text-[9px] font-bold uppercase text-white truncate max-w-[80px]">{{ m.name }}</p>
-                  <p class="text-[8px] text-white/40 uppercase">{{ roundsCompleted(m) }}/{{ ROUNDS.length }} rondas</p>
+                  <p class="text-[8px] text-white/40 uppercase">{{ store.roundsCompletedFor(m.id) }}/{{ ROUNDS.length }} rondas</p>
                 </div>
               </button>
             </div>

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useModelStore } from '../../stores/modelStore';
-import { ROUNDS, computeFinalScore } from '../../utils/rubrics';
+import { ROUNDS } from '../../utils/rubrics';
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -46,7 +46,7 @@ const selectModel = (model) => {
             />
           </div>
           <h3 class="text-xs font-bold tracking-widest text-white mb-1 uppercase">{{ podium2.name }}</h3>
-          <p class="text-amber-400 font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ computeFinalScore(podium2).toFixed(2) }}</p>
+          <p class="text-amber-400 font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ podium2.totalFinal.toFixed(2) }}</p>
         </div>
       </Transition>
 
@@ -68,7 +68,7 @@ const selectModel = (model) => {
             />
           </div>
           <h3 class="text-sm font-extrabold tracking-widest text-white mb-1 uppercase">{{ podium1.name }}</h3>
-          <p class="text-amber-400 font-extrabold text-sm mt-3 uppercase tracking-wider">Puntaje: {{ computeFinalScore(podium1).toFixed(2) }}</p>
+          <p class="text-amber-400 font-extrabold text-sm mt-3 uppercase tracking-wider">Puntaje: {{ podium1.totalFinal.toFixed(2) }}</p>
         </div>
       </Transition>
 
@@ -90,7 +90,7 @@ const selectModel = (model) => {
             />
           </div>
           <h3 class="text-xs font-bold tracking-widest text-white mb-1 uppercase">{{ podium3.name }}</h3>
-          <p class="text-amber-400 font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ computeFinalScore(podium3).toFixed(2) }}</p>
+          <p class="text-amber-400 font-semibold text-xs mt-2 uppercase tracking-wide">Puntaje: {{ podium3.totalFinal.toFixed(2) }}</p>
         </div>
       </Transition>
     </div>
@@ -113,14 +113,14 @@ const selectModel = (model) => {
             @click="selectModel(model)"
             :class="[
               'border-b border-white/5 transition-all duration-300 hover:bg-white/5 hover:translate-x-1 cursor-pointer',
-              idx === 0 && computeFinalScore(model) > 0 ? 'border-l-[3px] border-l-amber-400' : '',
-              idx === 1 && computeFinalScore(model) > 0 ? 'border-l-[3px] border-l-slate-300' : '',
-              idx === 2 && computeFinalScore(model) > 0 ? 'border-l-[3px] border-l-orange-700/60' : ''
+              idx === 0 && model.totalFinal > 0 ? 'border-l-[3px] border-l-amber-400' : '',
+              idx === 1 && model.totalFinal > 0 ? 'border-l-[3px] border-l-slate-300' : '',
+              idx === 2 && model.totalFinal > 0 ? 'border-l-[3px] border-l-orange-700/60' : ''
             ]"
           >
             <!-- Rank -->
             <td class="py-5 px-6 text-center">
-              <span :class="`text-[11px] font-bold tracking-widest ${computeFinalScore(model) > 0 ? 'text-white' : 'text-white/25'}`">
+              <span :class="`text-[11px] font-bold tracking-widest ${model.totalFinal > 0 ? 'text-white' : 'text-white/25'}`">
                 {{ String(idx + 1).padStart(2, '0') }}
               </span>
             </td>
@@ -143,13 +143,13 @@ const selectModel = (model) => {
 
             <!-- Round totals -->
             <td v-for="round in ROUNDS" :key="round.key" class="py-5 px-4 text-center text-xs text-white/50 font-medium">
-              {{ model.scores[round.key].total > 0 ? model.scores[round.key].total.toFixed(1) : '—' }}
+              {{ model.rondas[round.key].total > 0 ? model.rondas[round.key].total.toFixed(1) : '—' }}
             </td>
 
             <!-- Total -->
             <td class="py-5 px-6 text-right">
-              <span :class="`text-xs font-bold tracking-widest ${computeFinalScore(model) > 0 ? 'text-amber-400' : 'text-white/25'}`">
-                {{ computeFinalScore(model) > 0 ? computeFinalScore(model).toFixed(2) : 'PENDIENTE' }}
+              <span :class="`text-xs font-bold tracking-widest ${model.totalFinal > 0 ? 'text-amber-400' : 'text-white/25'}`">
+                {{ model.totalFinal > 0 ? model.totalFinal.toFixed(2) : 'PENDIENTE' }}
               </span>
             </td>
           </tr>

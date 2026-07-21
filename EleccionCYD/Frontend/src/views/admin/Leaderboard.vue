@@ -1,13 +1,18 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useModelStore } from '../../stores/modelStore';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import RankingSection from '../../components/leaderboard/RankingSection.vue';
 
 const store = useModelStore();
 
 const rankedSenoritas = computed(() => store.rankedSenoritas);
 const rankedJovenes = computed(() => store.rankedJovenes);
+
+// Se recarga cada vez que se visita, porque otros jurados pueden haber calificado mientras tanto.
+onMounted(() => {
+  store.loadLeaderboard();
+});
 </script>
 
 <template>
@@ -21,8 +26,15 @@ const rankedJovenes = computed(() => store.rankedJovenes);
       </p>
     </section>
 
-    <RankingSection title="Señoritas" :models="rankedSenoritas" />
-    <RankingSection title="Jóvenes" :models="rankedJovenes" />
+    <div v-if="store.loadingLeaderboard && rankedSenoritas.length === 0 && rankedJovenes.length === 0" class="flex flex-col items-center gap-3 text-white/50 py-16">
+      <ArrowPathIcon class="w-6 h-6 animate-spin" />
+      <p class="text-xs uppercase tracking-widest">Cargando resultados...</p>
+    </div>
+
+    <template v-else>
+      <RankingSection title="Señoritas" :models="rankedSenoritas" />
+      <RankingSection title="Jóvenes" :models="rankedJovenes" />
+    </template>
 
     <!-- Footer Pagination Status -->
     <div class="flex justify-between items-center text-white/40 select-none">

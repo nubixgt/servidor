@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { useModelStore } from '../../stores/modelStore';
 import { getRubrics } from '../../utils/rubrics';
+import { showError } from '../../utils/alerts';
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -15,23 +16,51 @@ const store = useModelStore();
 // Coreografía usa los mismos rubros para ambas categorías (a diferencia de Gala).
 const rubrics = getRubrics(props.roundKey, props.models[0]?.category);
 
+// Borrador local por participante, para que la tabla responda al instante mientras se escribe
+// (el guardado real hacia la API se dispara solo al salir del campo, no en cada tecla).
+const drafts = reactive({});
+props.models.forEach((model) => {
+  const mine = store.myScoreFor(model.id, props.roundKey);
+  drafts[model.id] = {};
+  rubrics.forEach((r) => {
+    drafts[model.id][r.key] = mine ? mine[r.key] : '';
+  });
+});
+
+const savingIds = reactive(new Set());
+
 function clampScore(rawValue) {
-  if (rawValue === '' || rawValue === null) return 0;
+  if (rawValue === '' || rawValue === null) return '';
   const n = Math.round(Number(rawValue));
-  if (Number.isNaN(n)) return 0;
+  if (Number.isNaN(n)) return '';
   return Math.min(10, Math.max(1, n));
 }
 
-function updateScore(model, rubricKey, rawValue) {
-  const round = model.scores[props.roundKey];
-  round[rubricKey] = clampScore(rawValue);
+function totalFor(modelId) {
+  const values = rubrics.map((r) => drafts[modelId][r.key]);
+  if (!values.every((v) => v !== '' && v !== null)) return 0;
+  return parseFloat((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2));
+}
 
-  const values = rubrics.map((r) => round[r.key]);
-  round.total = values.every((v) => v > 0)
-    ? parseFloat((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2))
-    : 0;
+function onInput(model, rubricKey, rawValue) {
+  drafts[model.id][rubricKey] = clampScore(rawValue);
+}
 
-  store.saveModels();
+async function onChange(model) {
+  const values = rubrics.map((r) => drafts[model.id][r.key]);
+  if (!values.every((v) => v !== '' && v !== null)) return; // aún incompleto, no guarda todavía
+
+  const rubricValues = {};
+  rubrics.forEach((r) => { rubricValues[r.key] = drafts[model.id][r.key]; });
+
+  savingIds.add(model.id);
+  try {
+    await store.submitScore(model.id, props.roundKey, rubricValues);
+  } catch (err) {
+    showError('No se pudo guardar', err.response?.data?.message || `Intenta de nuevo con ${model.name}.`);
+  } finally {
+    savingIds.delete(model.id);
+  }
 }
 
 const zoomedModel = ref(null);
@@ -68,15 +97,17 @@ const closeZoom = () => { zoomedModel.value = null; };
               <input
                 type="number"
                 min="1" max="10" step="1"
-                :value="model.scores[roundKey][rubric.key] || ''"
-                @input="updateScore(model, rubric.key, $event.target.value)"
+                v-model="drafts[model.id][rubric.key]"
+                @input="onInput(model, rubric.key, $event.target.value)"
+                @change="onChange(model)"
                 placeholder="—"
                 class="w-14 bg-white/5 border border-white/15 rounded-lg text-center text-sm text-white py-1.5 focus:outline-none focus:border-amber-400 placeholder:text-white/25"
               />
             </td>
             <td class="py-3 px-4 text-right">
-              <span :class="['text-xs font-bold tracking-widest', model.scores[roundKey].total > 0 ? 'text-amber-400' : 'text-white/25']">
-                {{ model.scores[roundKey].total > 0 ? model.scores[roundKey].total.toFixed(2) : '—' }}
+              <span v-if="savingIds.has(model.id)" class="text-[9px] text-white/40 uppercase tracking-widest">Guardando...</span>
+              <span v-else :class="['text-xs font-bold tracking-widest', totalFor(model.id) > 0 ? 'text-amber-400' : 'text-white/25']">
+                {{ totalFor(model.id) > 0 ? totalFor(model.id).toFixed(2) : '—' }}
               </span>
             </td>
           </tr>
