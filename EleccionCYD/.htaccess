@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /EleccionCYD/
+
+    # Si es una petición a Backend, no hacer nada (Backend/.htaccess se encarga)
+    RewriteCond %{REQUEST_URI} ^/EleccionCYD/Backend/
+    RewriteRule ^ - [L]
+
+    # Redirigir peticiones de assets al directorio dist
+    RewriteCond %{REQUEST_URI} ^/EleccionCYD/assets/
+    RewriteRule ^assets/(.*)$ Frontend/dist/assets/$1 [L]
+
+    # Servir archivos estaticos de la carpeta public/ de Vite (logo.png, favicon, etc.)
+    RewriteRule ^([^/]+\.(png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf))$ Frontend/dist/$1 [L]
+
+    # Para cualquier otra ruta, si no existe el archivo real, mandar a index.html (Vue Router)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ Frontend/dist/index.html [L]
+
+    # Ruta base
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>
