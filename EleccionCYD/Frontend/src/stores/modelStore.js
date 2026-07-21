@@ -4,9 +4,27 @@ import { ROUNDS, getRubrics, computeFinalScore } from '../utils/rubrics';
 
 const STORAGE_KEY = 'eleccioncyd_participants';
 
+// El nombre, foto y categoría de cada participante SIEMPRE vienen del código (participants.js),
+// para que cualquier corrección (foto nueva, nombre corregido, etc.) se refleje de inmediato
+// sin depender de que el jurado borre el localStorage de su navegador.
+// Solo las calificaciones (scores) ya guardadas se preservan, buscadas por id.
+function loadModels() {
+  let saved = [];
+  try {
+    saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch {
+    saved = [];
+  }
+  const savedScoresById = Object.fromEntries(saved.map((m) => [m.id, m.scores]));
+  return INITIAL_PARTICIPANTS.map((participant) => ({
+    ...participant,
+    scores: savedScoresById[participant.id] || participant.scores,
+  }));
+}
+
 export const useModelStore = defineStore('model', {
   state: () => ({
-    models: JSON.parse(localStorage.getItem(STORAGE_KEY)) || INITIAL_PARTICIPANTS,
+    models: loadModels(),
     selectedModelId: null,
     activeRound: 'FASHION_SHOW',
   }),

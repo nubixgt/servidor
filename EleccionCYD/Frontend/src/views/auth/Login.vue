@@ -131,8 +131,6 @@ const handleSubmit = () => {
       </Transition>
     </main>
 
-    <!-- Subtle Grain Overlay for Texture -->
-    <div class="fixed inset-0 pointer-events-none opacity-[0.025] z-50" style="background-image: url('https://grainy-gradients.vercel.app/noise.svg')"></div>
   </div>
 </template>
 
