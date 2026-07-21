@@ -18,17 +18,14 @@ import GerradCanahui from '../assets/images/GerradCanahui.jpg';
 import PabloHernandez from '../assets/images/PabloHernandez.jpg';
 import AlainSarpec from '../assets/images/AlainSarpec.jpg';
 import SamuelCuellar from '../assets/images/SamuelCuellar.jpg';
-
-// Foto de prueba (placeholder) mientras llega la foto real de Ardany Edwin Mendoza.
-const PLACEHOLDER_IMAGE = {
-  imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCz7mTo7bIDZUvOvxhFqt8kRBCxCcRj5QITpH1QI8CnwPQdZ5uCJp0hsJcMRgQHuixD3XL_3sjmyclYgvzWwbryP4w7nRLj2PuP-cpwYhUXjlAC0ejABEtHrt7piSVUAnLLeX1RuVLtCPvyXHyLOoXwBSkRfvf08nSjnRSdTmuJShVXtYGk0AGD0UmrrRM6C4DNWVimUBtjwKJm64KBZCd4lupM-8jd7FSTx-gNFm0SVzZQcq5recoq',
-  avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAfaLcj0AaS-RYmD02RX7Rgw4cdvYN-Te4txhMEnon7o165KFlx7305UPfag0QiOQ7-uzE42LuIeBjgnzpv_EjH8oeYEjD_ccTbfnf4Awz2k71EqZmWg8FpQnkqM3lOYtAFzswhZKik9_W58GI4xhfmCLx2WM-7sBorggyWe7y9Fw3m7hN1IXZ462u2TKH-e00_lZ5HkPHF6oV_HZyp3eFhvKIuvuPOpZrqIKyH7gq0CCTDvReeSS75',
-  podiumUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAfaLcj0AaS-RYmD02RX7Rgw4cdvYN-Te4txhMEnon7o165KFlx7305UPfag0QiOQ7-uzE42LuIeBjgnzpv_EjH8oeYEjD_ccTbfnf4Awz2k71EqZmWg8FpQnkqM3lOYtAFzswhZKik9_W58GI4xhfmCLx2WM-7sBorggyWe7y9Fw3m7hN1IXZ462u2TKH-e00_lZ5HkPHF6oV_HZyp3eFhvKIuvuPOpZrqIKyH7gq0CCTDvReeSS75',
-};
+import PlaceholderLogo from '../assets/images/PlaceholderLogo.jpg';
 
 function photo(src) {
   return { imageUrl: src, avatarUrl: src, podiumUrl: src };
 }
+
+// Mientras llega la foto real de Ardany Edwin Mendoza, se usa el logo institucional en vez de una foto genérica.
+const PLACEHOLDER_IMAGE = photo(PlaceholderLogo);
 
 // Nombres y fotos tomados de "Copia de VOTACIONES JURADO.xlsx" (hojas FASHION SHOW / COREOGRAFIA / GALA / DATO FINAL),
 // con la ortografía confirmada por las fotos oficiales en src/assets/images/ (impresa en cada retrato).
