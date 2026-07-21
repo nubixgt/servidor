@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Handle Preflight OPTIONS requests for CORS (if server config allows it, otherwise handle in PHP)
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ api/v1/index.php [L,QSA]
+
+# API Routing
+# If the file/dir doesn't exist, route to api/v1/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api/v1/index.php [QSA,L]
