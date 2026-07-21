@@ -32,7 +32,7 @@ const handleLogout = () => {
       </div>
       <div>
         <p class="text-[11px] font-semibold tracking-wider text-black uppercase">Jurado Oficial</p>
-        <p class="text-xs text-gray-500">Colección París 2024</p>
+        <p class="text-xs text-gray-500">EleccionCYD · Edición 2026</p>
       </div>
     </div>
 
@@ -46,7 +46,7 @@ const handleLogout = () => {
         ]"
       >
         <Squares2X2Icon class="w-[18px] h-[18px] stroke-[1.5]" />
-        <span class="text-xs uppercase tracking-widest font-semibold">Modelos</span>
+        <span class="text-xs uppercase tracking-widest font-semibold">Participantes</span>
       </button>
 
       <button 

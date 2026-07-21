@@ -2,8 +2,9 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useModelStore } from '../../stores/modelStore';
-import { Bars3BottomLeftIcon, ArrowRightIcon, CheckIcon, GlobeAltIcon, ShareIcon } from '@heroicons/vue/24/outline';
-import { FILTER_LABELS, SORT_LABELS } from '../../utils/labels';
+import { Bars3BottomLeftIcon, ArrowRightIcon, GlobeAltIcon, ShareIcon } from '@heroicons/vue/24/outline';
+import { FILTER_LABELS, SORT_LABELS, CATEGORY_LABELS } from '../../utils/labels';
+import { roundsCompleted, ROUNDS, computeFinalScore } from '../../utils/rubrics';
 
 const router = useRouter();
 const store = useModelStore();
@@ -13,18 +14,18 @@ const sortBy = ref('name');
 
 const filteredModels = computed(() => {
   if (activeFilter.value === 'ALL') return store.models;
-  return store.models.filter(model => model.status === activeFilter.value);
+  return store.models.filter((model) => model.category === activeFilter.value);
 });
 
 const sortedModels = computed(() => {
   return [...filteredModels.value].sort((a, b) => {
     if (sortBy.value === 'name') return a.name.localeCompare(b.name);
-    return a.status.localeCompare(b.status);
+    return a.category.localeCompare(b.category);
   });
 });
 
 const toggleSort = () => {
-  sortBy.value = sortBy.value === 'name' ? 'status' : 'name';
+  sortBy.value = sortBy.value === 'name' ? 'category' : 'name';
 };
 
 const navigateTo = (route, modelId = null) => {
@@ -41,20 +42,20 @@ const navigateTo = (route, modelId = null) => {
       <!-- Header Section -->
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
         <div class="space-y-3">
-          <h1 class="text-3xl md:text-4xl font-light tracking-tight text-black">Directorio de Modelos</h1>
+          <h1 class="text-3xl md:text-4xl font-light tracking-tight text-black">Directorio de Participantes</h1>
           <p class="text-gray-500 text-sm max-w-md leading-relaxed">
-            Alineación oficial para la Colección París 2024. Seguimiento de estado en vivo y asignaciones de pasarela.
+            Listado oficial de candidatas y candidatos de EleccionCYD. Seguimiento en vivo de las rondas calificadas.
           </p>
         </div>
 
         <!-- Filters & Sorting -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none shrink-0">
           <button
-            v-for="filter in ['ALL', 'READY', 'WALKING', 'JUDGED']"
+            v-for="filter in ['ALL', 'SENORITA', 'JOVEN']"
             :key="filter"
             @click="activeFilter = filter"
             :class="[
-              'px-5 py-2.5 text-[10px] font-bold tracking-widest border transition-all duration-300 cursor-pointer',
+              'px-5 py-2.5 text-[10px] font-bold tracking-widest border transition-all duration-300 cursor-pointer uppercase',
               activeFilter === filter
                 ? 'bg-black text-white border-black'
                 : 'bg-transparent text-gray-400 border-gray-200 hover:border-black hover:text-black'
@@ -84,26 +85,23 @@ const navigateTo = (route, modelId = null) => {
           >
             <!-- Image Container -->
             <div class="aspect-[3/4] relative overflow-hidden bg-neutral-100">
-              <img 
-                :src="model.imageUrl" 
+              <img
+                :src="model.imageUrl"
                 :alt="model.name"
                 loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
               <div class="absolute inset-0 border border-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              
-              <!-- Status Indicator -->
-              <div v-if="model.status === 'WALKING'" class="absolute top-4 left-4 flex items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 shadow-sm border border-neutral-100">
-                <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
-                <span class="text-[9px] font-bold tracking-widest uppercase text-black">EN PASARELA</span>
-              </div>
-              <div v-else-if="model.status === 'READY'" class="absolute top-4 left-4 flex items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 shadow-sm border border-neutral-100">
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                <span class="text-[9px] font-bold tracking-widest uppercase text-gray-500">LISTO</span>
-              </div>
-              <div v-else-if="model.status === 'JUDGED'" class="absolute top-4 left-4 flex items-center gap-1 bg-white/95 backdrop-blur px-2.5 py-1.5 shadow-sm border border-neutral-100">
-                <CheckIcon class="w-3 h-3 text-black stroke-[3]" />
-                <span class="text-[9px] font-bold tracking-widest uppercase text-black">CALIFICADO</span>
+
+              <!-- Rounds progress indicator -->
+              <div class="absolute top-4 left-4 flex items-center gap-2 bg-white/95 backdrop-blur px-3 py-1.5 shadow-sm border border-neutral-100">
+                <span
+                  :class="[
+                    'w-1.5 h-1.5 rounded-full',
+                    roundsCompleted(model) === ROUNDS.length ? 'bg-black' : roundsCompleted(model) > 0 ? 'bg-gray-500 animate-pulse' : 'bg-gray-300'
+                  ]"
+                ></span>
+                <span class="text-[9px] font-bold tracking-widest uppercase text-black">{{ roundsCompleted(model) }}/{{ ROUNDS.length }} RONDAS</span>
               </div>
             </div>
 
@@ -111,9 +109,9 @@ const navigateTo = (route, modelId = null) => {
             <div class="space-y-1">
               <div class="flex justify-between items-start">
                 <h3 class="text-[11px] font-bold tracking-widest uppercase text-black">{{ model.name }}</h3>
-                <span v-if="model.scores.total > 0" class="text-[10px] font-bold text-gray-500">★ {{ model.scores.total.toFixed(2) }}</span>
+                <span v-if="computeFinalScore(model) > 0" class="text-[10px] font-bold text-gray-500">★ {{ computeFinalScore(model).toFixed(2) }}</span>
               </div>
-              <p class="text-xs text-gray-400 italic font-light">{{ model.look }}</p>
+              <p class="text-xs text-gray-400 italic font-light">{{ CATEGORY_LABELS[model.category] }}</p>
             </div>
           </div>
         </TransitionGroup>
@@ -121,7 +119,7 @@ const navigateTo = (route, modelId = null) => {
 
       <!-- Empty State -->
       <div v-if="sortedModels.length === 0" class="py-24 text-center border border-dashed border-gray-200 mt-8">
-        <p class="text-sm text-gray-400">No se encontraron modelos que coincidan con el filtro de estado activo.</p>
+        <p class="text-sm text-gray-400">No se encontraron participantes que coincidan con el filtro activo.</p>
       </div>
 
       <!-- Load More Section -->
@@ -141,7 +139,7 @@ const navigateTo = (route, modelId = null) => {
       <div class="max-w-[1440px] mx-auto px-6 md:px-16 flex flex-col md:flex-row justify-between items-start gap-12">
         <div class="space-y-4">
           <div class="font-serif text-lg tracking-[0.2em] text-black font-normal uppercase">EleccionCYD</div>
-          <p class="text-[10px] text-gray-400 tracking-[0.25em] uppercase">Colección París 2024</p>
+          <p class="text-[10px] text-gray-400 tracking-[0.25em] uppercase">Edición 2026</p>
         </div>
 
         <div class="grid grid-cols-2 gap-16">
@@ -162,7 +160,7 @@ const navigateTo = (route, modelId = null) => {
       </div>
 
       <div class="max-w-[1440px] mx-auto px-6 md:px-16 mt-12 pt-8 border-t border-gray-100 flex justify-between items-center text-gray-400">
-        <span class="text-[9px] tracking-widest uppercase font-semibold">© 2024 EleccionCYD</span>
+        <span class="text-[9px] tracking-widest uppercase font-semibold">© 2026 EleccionCYD</span>
         <div class="flex gap-4">
           <button class="hover:text-black transition-colors" title="Idioma"><GlobeAltIcon class="w-4 h-4 stroke-[1.5]" /></button>
           <button class="hover:text-black transition-colors" title="Compartir portal"><ShareIcon class="w-4 h-4 stroke-[1.5]" /></button>

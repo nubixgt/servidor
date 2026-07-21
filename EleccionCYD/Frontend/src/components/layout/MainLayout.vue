@@ -60,7 +60,7 @@ const closeAndGoToLeaderboard = () => {
         @click="router.push({ name: 'ModelDirectory' })"
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'ModelDirectory' ? 'text-black font-semibold' : 'text-gray-400']"
       >
-        <span class="text-[10px] font-bold uppercase tracking-wider">Modelos</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Participantes</span>
       </button>
       <button
         @click="router.push({ name: 'LiveJudging' })"
@@ -87,7 +87,7 @@ const closeAndGoToLeaderboard = () => {
             </div>
 
             <p class="text-sm text-gray-500 leading-relaxed mb-6">
-              Estás por transmitir todas las métricas calificadas al registro central. Esta acción bloquea tus hojas de calificación y completa tu labor como jurado para la Colección París 2024.
+              Estás por transmitir todas las métricas calificadas al registro central. Esta acción bloquea tus hojas de calificación de todas las rondas y completa tu labor como jurado para EleccionCYD 2026.
             </p>
 
             <div class="flex flex-col gap-3">

@@ -131,7 +131,7 @@ const handleSubmit = () => {
       <Transition appear name="fade-in" style="transition-delay: 0.5s">
         <div class="mt-12 flex items-center gap-4 opacity-60">
           <span class="w-8 h-[1px] bg-gray-300"></span>
-          <span class="text-[10px] text-gray-500 uppercase tracking-[0.25em]">Colección París 2024</span>
+          <span class="text-[10px] text-gray-500 uppercase tracking-[0.25em]">Edición 2026</span>
           <span class="w-8 h-[1px] bg-gray-300"></span>
         </div>
       </Transition>
