@@ -19,6 +19,7 @@ import GerradCanahui from '../assets/images/GerradCanahui.jpg';
 import PabloHernandez from '../assets/images/PabloHernandez.jpg';
 import AlainSarpec from '../assets/images/AlainSarpec.jpg';
 import SamuelCuellar from '../assets/images/SamuelCuellar.jpg';
+import ArdanyEdwin from '../assets/images/ArdanyEdwin.jpeg';
 import PlaceholderLogo from '../assets/images/PlaceholderLogo.jpg';
 
 export const PARTICIPANT_PHOTOS = {
@@ -39,6 +40,6 @@ export const PARTICIPANT_PHOTOS = {
   JV05: GerradCanahui,
   JV06: PabloHernandez,
   JV07: AlainSarpec,
-  JV08: PlaceholderLogo, // Ardany Edwin Mendoza -- pendiente de foto real
+  JV08: ArdanyEdwin,
   JV09: SamuelCuellar,
 };
