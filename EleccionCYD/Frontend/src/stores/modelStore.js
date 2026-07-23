@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import participantesService from '../services/participantesService';
 import calificacionesService from '../services/calificacionesService';
 import { PARTICIPANT_PHOTOS } from '../data/participantPhotos';
-import { ROUNDS, getRubrics } from '../utils/rubrics';
+import { ROUNDS } from '../utils/rubrics';
 
 function mergeLeaderboard(state, categoria) {
   // El Backend ya entrega el leaderboard ordenado por total_final; filtrar conserva ese orden.
@@ -115,21 +115,5 @@ export const useModelStore = defineStore('model', {
       }
     },
 
-    // Autocompleta con valores altos (8-10) los rubros que ESTE jurado no haya calificado todavía.
-    async finalizeAllScores() {
-      for (const participant of this.participants) {
-        for (const round of ROUNDS) {
-          if (this.myScores[round.key][participant.id]) continue;
-
-          const rubricKeys = getRubrics(round.key, participant.category).map((r) => r.key);
-          const rubricValues = {};
-          rubricKeys.forEach((key) => {
-            rubricValues[key] = Math.min(10, Math.round(8 + Math.random() * 2));
-          });
-
-          await this.submitScore(participant.id, round.key, rubricValues);
-        }
-      }
-    },
   },
 });

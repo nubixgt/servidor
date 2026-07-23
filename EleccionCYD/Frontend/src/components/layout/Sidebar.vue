@@ -7,8 +7,6 @@ import { confirmLogout } from '../../utils/alerts';
 const router = useRouter();
 const route = useRoute();
 
-const emit = defineEmits(['submit-scores']);
-
 const currentScreen = computed(() => route.name);
 
 const navigateTo = (routeName) => {
@@ -71,13 +69,6 @@ const handleLogout = async () => {
       >
         <ArrowRightOnRectangleIcon class="w-4 h-4 stroke-[1.5]" />
         <span class="text-[10px] uppercase tracking-widest font-semibold">Cerrar sesión</span>
-      </button>
-
-      <button
-        @click="emit('submit-scores')"
-        class="mt-4 w-full bg-amber-400 text-black py-4 text-[10px] font-semibold tracking-widest uppercase hover:bg-amber-300 transition-all duration-200 rounded-xl cursor-pointer"
-      >
-        Enviar Calificaciones Finales
       </button>
     </div>
   </aside>

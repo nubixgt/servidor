@@ -39,7 +39,7 @@ function clampScore(rawValue) {
 function totalFor(modelId) {
   const values = rubrics.map((r) => drafts[modelId][r.key]);
   if (!values.every((v) => v !== '' && v !== null)) return 0;
-  return parseFloat((values.reduce((a, b) => a + b, 0) / values.length).toFixed(2));
+  return values.reduce((a, b) => a + b, 0);
 }
 
 function onInput(model, rubricKey, rawValue) {
@@ -108,7 +108,7 @@ const closeZoom = () => { zoomedModel.value = null; };
             <td class="py-3 px-4 text-right">
               <span v-if="savingIds.has(model.id)" class="text-[9px] text-white/40 uppercase tracking-widest">Guardando...</span>
               <span v-else :class="['text-xs font-bold tracking-widest', totalFor(model.id) > 0 ? 'text-amber-400' : 'text-white/25']">
-                {{ totalFor(model.id) > 0 ? totalFor(model.id).toFixed(2) : '—' }}
+                {{ totalFor(model.id) > 0 ? totalFor(model.id) : '—' }}
               </span>
             </td>
           </tr>
