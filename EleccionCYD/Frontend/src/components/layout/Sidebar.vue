@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { Squares2X2Icon, ScaleIcon, ChartBarIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { Squares2X2Icon, ScaleIcon, ChartBarIcon, ArrowRightOnRectangleIcon, PresentationChartLineIcon } from '@heroicons/vue/24/outline';
 import { confirmLogout } from '../../utils/alerts';
 import { useModelStore } from '../../stores/modelStore';
 
@@ -50,6 +50,17 @@ const handleLogout = async () => {
       >
         <ScaleIcon class="w-[18px] h-[18px] stroke-[1.5]" />
         <span class="text-xs uppercase tracking-widest font-semibold">Evaluación</span>
+      </button>
+
+      <button
+        @click="navigateTo('Dashboard')"
+        :class="[
+          'flex items-center gap-4 pl-6 py-3 cursor-pointer text-left transition-all duration-200',
+          currentScreen === 'Dashboard' ? 'text-amber-400 font-semibold bg-white/5 border-l-2 border-amber-400' : 'text-white/50 hover:text-white hover:bg-white/5'
+        ]"
+      >
+        <PresentationChartLineIcon class="w-[18px] h-[18px] stroke-[1.5]" />
+        <span class="text-xs uppercase tracking-widest font-semibold">Mi Panel</span>
       </button>
 
       <button

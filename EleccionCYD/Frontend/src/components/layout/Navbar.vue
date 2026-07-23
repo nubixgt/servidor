@@ -66,6 +66,15 @@ const handleLogout = async () => {
           Evaluación en Vivo
         </button>
         <button
+          @click="navigateTo('Dashboard')"
+          :class="[
+            'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',
+            currentScreen === 'Dashboard' ? 'text-amber-400 border-b border-amber-400' : 'text-white/50 hover:text-white'
+          ]"
+        >
+          Mi Panel
+        </button>
+        <button
           @click="navigateTo('Leaderboard')"
           :class="[
             'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',

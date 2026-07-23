@@ -13,7 +13,7 @@ const store = useModelStore();
 
 // Igual que en el diseño original: el Sidebar solo se muestra en judging o leaderboard.
 const showSidebar = computed(() => {
-  return route.name === 'LiveJudging' || route.name === 'Leaderboard';
+  return route.name === 'LiveJudging' || route.name === 'Dashboard' || route.name === 'Leaderboard';
 });
 
 const loadError = ref('');
@@ -86,6 +86,12 @@ onMounted(loadInitialData);
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'LiveJudging' ? 'text-amber-400 font-semibold' : 'text-white/50']"
       >
         <span class="text-[10px] font-bold uppercase tracking-wider">Evaluación</span>
+      </button>
+      <button
+        @click="router.push({ name: 'Dashboard' })"
+        :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'Dashboard' ? 'text-amber-400 font-semibold' : 'text-white/50']"
+      >
+        <span class="text-[10px] font-bold uppercase tracking-wider">Mi Panel</span>
       </button>
       <button
         @click="router.push({ name: 'Leaderboard' })"

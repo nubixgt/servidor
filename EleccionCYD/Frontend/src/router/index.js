@@ -5,6 +5,7 @@ import Login from '../views/auth/Login.vue';
 import ModelDirectory from '../views/admin/ModelDirectory.vue';
 import LiveJudging from '../views/admin/LiveJudging.vue';
 import Leaderboard from '../views/admin/Leaderboard.vue';
+import Dashboard from '../views/admin/Dashboard.vue';
 
 // Layouts
 import MainLayout from '../components/layout/MainLayout.vue';
@@ -27,6 +28,7 @@ const routes = [
         children: [
             { path: 'directory', name: 'ModelDirectory', component: ModelDirectory },
             { path: 'judging', name: 'LiveJudging', component: LiveJudging },
+            { path: 'dashboard', name: 'Dashboard', component: Dashboard },
             { path: 'leaderboard', name: 'Leaderboard', component: Leaderboard },
         ]
     }
