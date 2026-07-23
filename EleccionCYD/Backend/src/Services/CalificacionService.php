@@ -15,7 +15,8 @@ class CalificacionService
 
     /**
      * Guarda (o actualiza) la calificación de UN jurado para UN participante en UNA ronda.
-     * El total es el promedio de los 3 rubros que metió ese jurado.
+     * El total es la SUMA de los rubros que metió ese jurado (confirmado con el cliente,
+     * ver comentario en LeaderboardService::calcular -- es suma en ambos niveles, no promedio).
      */
     public function guardar(string $rondaKey, int $participanteId, int $juradoId, array $rubrosInput): array
     {
@@ -35,7 +36,7 @@ class CalificacionService
             $rubros[$key] = $valor;
         }
 
-        $total = round(array_sum($rubros) / count($rubros), 2);
+        $total = array_sum($rubros);
 
         $this->repository->upsert($config['tabla'], $rubricKeys, $participanteId, $juradoId, $rubros, $total);
 

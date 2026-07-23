@@ -35,10 +35,9 @@ watch([activeModel, activeRound], syncSliders, { immediate: true });
 const isSubmitting = ref(false);
 const submitSuccess = ref(false);
 
-const averageScore = computed(() => {
+const totalScore = computed(() => {
   const values = activeRubrics.value.map((r) => sliderValues.value[r.key] ?? 0);
-  if (values.length === 0) return 0;
-  return parseFloat((values.reduce((a, b) => a + b, 0) / values.length).toFixed(1));
+  return values.reduce((a, b) => a + b, 0);
 });
 
 const selectRound = (roundKey) => {
@@ -170,7 +169,7 @@ const selectModel = (model) => {
               <div class="flex justify-between items-center">
                 <p class="text-[10px] font-bold tracking-widest text-white/50 uppercase">Puntaje de la Ronda</p>
                 <p class="text-4xl font-light text-amber-400 tracking-tight font-sans">
-                  {{ averageScore.toFixed(1) }}
+                  {{ totalScore }}
                 </p>
               </div>
             </div>
