@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 23-07-2026 a las 17:40:04
+-- Tiempo de generación: 23-07-2026 a las 17:52:03
 -- Versión del servidor: 11.4.12-MariaDB
 -- Versión de PHP: 8.4.22
 
@@ -44,9 +44,9 @@ CREATE TABLE `calificaciones_coreografia` (
 --
 
 INSERT INTO `calificaciones_coreografia` (`id`, `participante_id`, `jurado_id`, `coordinacion`, `ritmo`, `desplazamiento`, `total`, `created_at`, `updated_at`) VALUES
-(5, 6, 1, 4, 5, 5, 4.67, '2026-07-23 17:18:54', '2026-07-23 17:18:54'),
+(5, 6, 1, 10, 6, 5, 21.00, '2026-07-23 17:18:54', '2026-07-23 17:47:49'),
 (6, 1, 2, 10, 10, 10, 10.00, '2026-07-23 17:26:12', '2026-07-23 17:26:12'),
-(7, 6, 2, 10, 10, 10, 10.00, '2026-07-23 17:26:39', '2026-07-23 17:26:39');
+(7, 6, 2, 5, 5, 5, 15.00, '2026-07-23 17:26:39', '2026-07-23 17:50:14');
 
 -- --------------------------------------------------------
 
@@ -71,7 +71,8 @@ CREATE TABLE `calificaciones_fashion_show` (
 --
 
 INSERT INTO `calificaciones_fashion_show` (`id`, `participante_id`, `jurado_id`, `originalidad`, `presentacion`, `coordinacion`, `total`, `created_at`, `updated_at`) VALUES
-(5, 6, 1, 8, 10, 8, 8.67, '2026-07-23 17:18:31', '2026-07-23 17:18:31');
+(5, 6, 1, 4, 10, 8, 22.00, '2026-07-23 17:18:31', '2026-07-23 17:47:09'),
+(7, 6, 2, 1, 1, 1, 3.00, '2026-07-23 17:49:39', '2026-07-23 17:49:39');
 
 -- --------------------------------------------------------
 
@@ -90,6 +91,13 @@ CREATE TABLE `calificaciones_gala` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `calificaciones_gala`
+--
+
+INSERT INTO `calificaciones_gala` (`id`, `participante_id`, `jurado_id`, `modelaje`, `seguridad`, `pregunta_o_elegancia`, `total`, `created_at`, `updated_at`) VALUES
+(2, 6, 1, 5, 7, 8, 20.00, '2026-07-23 17:48:24', '2026-07-23 17:48:24');
 
 -- --------------------------------------------------------
 
@@ -206,19 +214,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `calificaciones_coreografia`
 --
 ALTER TABLE `calificaciones_coreografia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `calificaciones_fashion_show`
 --
 ALTER TABLE `calificaciones_fashion_show`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `calificaciones_gala`
 --
 ALTER TABLE `calificaciones_gala`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `participantes`
