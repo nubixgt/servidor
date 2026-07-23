@@ -1,5 +1,6 @@
 import axios from 'axios';
 import router from '../router';
+import { useModelStore } from '../stores/modelStore';
 
 export const getApiBaseUrl = () => {
     const isLocal = window.location.hostname === 'localhost' ||
@@ -57,6 +58,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && router.currentRoute.value.name !== 'Login') {
             localStorage.removeItem('token');
             localStorage.removeItem('usuario');
+            useModelStore().$reset();
             router.push({ name: 'Login' });
         }
         return Promise.reject(error);

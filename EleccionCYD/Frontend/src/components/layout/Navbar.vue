@@ -3,9 +3,11 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { UserIcon, Bars3Icon } from '@heroicons/vue/24/outline';
 import { confirmLogout } from '../../utils/alerts';
+import { useModelStore } from '../../stores/modelStore';
 
 const router = useRouter();
 const route = useRoute();
+const store = useModelStore();
 
 const currentScreen = computed(() => route.name);
 
@@ -26,6 +28,7 @@ const handleLogout = async () => {
   if (result.isConfirmed) {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    store.$reset();
     router.push('/login');
   }
 };
