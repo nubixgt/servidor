@@ -5,7 +5,7 @@ import JeimyEscobedo from '../assets/images/JeimyEscobedo.jpeg';
 import PlaceholderLogo from '../assets/images/PlaceholderLogo.jpg';
 
 export const USER_PHOTOS = {
-  2: JeimyEscobedo, // jescobedo
+  3: JeimyEscobedo, // jescobedo
 };
 
 export function getUserPhoto(id) {
