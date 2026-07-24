@@ -54,11 +54,11 @@
     <!-- Main Content -->
     <div class="relative z-10 text-center flex flex-col items-center">
       <h1 class="text-6xl md:text-8xl font-bold tracking-tight mb-6">
-        SISTEMAS <span class="text-gradient from-indigo-300 to-purple-400">WEB</span>
+        SISTEMAS WEB
       </h1>
       
       <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-lg mx-auto font-light">
-        Accede rápidamente a todos mis aplicaciones y recursos
+        Acceso rápido a proyectos web
       </p>
       
       <router-link 
