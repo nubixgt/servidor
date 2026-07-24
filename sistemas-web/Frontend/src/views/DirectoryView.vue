@@ -22,14 +22,6 @@
             <span class="font-medium text-sm">DIRECTORY</span>
           </router-link>
         </div>
-        
-        <div>
-          <div class="px-4 mb-3 text-xs font-bold text-slate-600 tracking-wider">ADMINISTRATION</div>
-          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-white transition-colors">
-            <LucideIcons.Settings class="w-5 h-5" />
-            <span class="font-medium text-sm">SETTINGS</span>
-          </a>
-        </div>
       </nav>
     </aside>
 
