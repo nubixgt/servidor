@@ -10,7 +10,7 @@ use App\Utils\Response;
 class ParticipanteController extends Controller
 {
     #[Route('/participantes', 'GET')]
-    #[Authorize(['admin'])]
+    #[Authorize(['admin', 'jurado'])]
     public function index()
     {
         $repository = new ParticipanteRepository();

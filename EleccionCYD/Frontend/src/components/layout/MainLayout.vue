@@ -11,6 +11,14 @@ const route = useRoute();
 const router = useRouter();
 const store = useModelStore();
 
+const esAdmin = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem('usuario'))?.rol === 'admin';
+  } catch {
+    return false;
+  }
+});
+
 // Igual que en el diseño original: el Sidebar solo se muestra en judging o leaderboard.
 const showSidebar = computed(() => {
   return route.name === 'LiveJudging' || route.name === 'Dashboard' || route.name === 'Leaderboard';
@@ -94,6 +102,7 @@ onMounted(loadInitialData);
         <span class="text-[10px] font-bold uppercase tracking-wider">Mi Panel</span>
       </button>
       <button
+        v-if="esAdmin"
         @click="router.push({ name: 'Leaderboard' })"
         :class="['flex flex-col items-center gap-1 cursor-pointer', route.name === 'Leaderboard' ? 'text-amber-400 font-semibold' : 'text-white/50']"
       >

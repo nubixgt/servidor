@@ -12,7 +12,7 @@ use App\Utils\Response;
 class CalificacionController extends Controller
 {
     #[Route('/calificaciones/{ronda}', 'POST')]
-    #[Authorize(['admin'])]
+    #[Authorize(['admin', 'jurado'])]
     public function guardar($ronda)
     {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
@@ -30,7 +30,7 @@ class CalificacionController extends Controller
     }
 
     #[Route('/calificaciones/{ronda}/mias', 'GET')]
-    #[Authorize(['admin'])]
+    #[Authorize(['admin', 'jurado'])]
     public function mias($ronda)
     {
         $juradoId = Auth::id();

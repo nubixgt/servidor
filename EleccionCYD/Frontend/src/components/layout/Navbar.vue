@@ -22,6 +22,7 @@ const usuarioActual = computed(() => {
 
 const usuarioNombre = computed(() => usuarioActual.value?.nombre || 'Jurado Oficial');
 const usuarioFoto = computed(() => getUserPhoto(usuarioActual.value?.id));
+const esAdmin = computed(() => usuarioActual.value?.rol === 'admin');
 
 const navigateTo = (routeName) => {
   router.push({ name: routeName });
@@ -79,6 +80,7 @@ const handleLogout = async () => {
           Mi Panel
         </button>
         <button
+          v-if="esAdmin"
           @click="navigateTo('Leaderboard')"
           :class="[
             'font-semibold text-xs uppercase tracking-[0.15em] pb-1 cursor-pointer transition-all duration-300',
@@ -102,8 +104,8 @@ const handleLogout = async () => {
         </div>
         <button
           class="rounded-full overflow-hidden w-9 h-9 border border-white/20 hover:border-amber-400 transition-colors cursor-pointer shrink-0"
-          @click="navigateTo('Leaderboard')"
-          title="Perfil / Resultados"
+          @click="navigateTo(esAdmin ? 'Leaderboard' : 'Dashboard')"
+          :title="esAdmin ? 'Perfil / Resultados' : 'Mi Panel'"
         >
           <img :src="usuarioFoto" :alt="usuarioNombre" class="w-full h-full object-cover" />
         </button>
