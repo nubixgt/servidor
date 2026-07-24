@@ -41,6 +41,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (sistemas-web)
+        run: |
+          cd sistemas-web/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
