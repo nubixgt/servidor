@@ -340,7 +340,16 @@
 
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Beneficiario *</label>
-              <input v-model="formExpense.beneficiario" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
+              <div v-if="formExpense.tipo_egreso === 'Contratista'" class="flex gap-2">
+                <select v-model="formExpense.contratista_id" @change="handleContractorSelect" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50 appearance-none">
+                  <option value="" disabled>Seleccione un contratista...</option>
+                  <option v-for="c in contractors" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+                </select>
+                <button type="button" @click="openQuickContractorModal" class="shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all" title="Nuevo contratista">
+                  <PlusIcon class="w-5 h-5" />
+                </button>
+              </div>
+              <input v-else v-model="formExpense.beneficiario" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
             </div>
 
             <div class="space-y-2">
@@ -393,6 +402,40 @@
       </div>
     </div>
 
+    <!-- QUICK NEW CONTRACTOR MODAL -->
+    <div v-if="showQuickContractorModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeQuickContractorModal"></div>
+      <div class="glass-card w-full max-w-lg rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="flex items-center justify-between mb-8">
+          <h3 class="text-xl font-bold text-white">Nuevo Contratista</h3>
+          <button @click="closeQuickContractorModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"><XMarkIcon class="w-6 h-6" /></button>
+        </div>
+
+        <form @submit.prevent="submitQuickContractor" class="space-y-5">
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nombre *</label>
+            <input v-model="formQuickContractor.nombre" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
+              <input v-model="formQuickContractor.telefono" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Correo Electrónico</label>
+              <input v-model="formQuickContractor.correo_electronico" type="email" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
+            </div>
+          </div>
+          <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
+            <button type="button" @click="closeQuickContractorModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+            <button type="submit" :disabled="isSubmittingQuickContractor" class="bg-tertiary border border-tertiary/50 text-white py-4 px-10 rounded-2xl font-bold shadow-xl shadow-tertiary/20 hover:shadow-tertiary/40 disabled:opacity-50 transition-all">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -410,6 +453,7 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
 const transactions = ref([]);
 const projects = ref([]);
+const contractors = ref([]);
 const loading = ref(true);
 const isSubmitting = ref(false);
 
@@ -464,9 +508,18 @@ const fetchProjects = async () => {
   } catch(e) {}
 };
 
+const fetchContractors = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/contractors`);
+    const data = await res.json();
+    if(data.status === 'success') contractors.value = data.data;
+  } catch(e) {}
+};
+
 onMounted(() => {
   fetchTransactions();
   fetchProjects();
+  fetchContractors();
   fetchBankAccounts();
   fetchRecurrents();
 });
@@ -622,8 +675,8 @@ const formIncome = ref({
 });
 
 const formExpense = ref({
-  proyecto_id: '', tipo_egreso: 'Proveedor', monto: 0, 
-  fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '', 
+  proyecto_id: '', contratista_id: '', tipo_egreso: 'Proveedor', monto: 0,
+  fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '',
   numero_cheque: '', beneficiario: '', descripcion: '',
   registros: []
 });
@@ -637,8 +690,8 @@ const openFinanceModal = () => {
     registros: [{ descripcion: '', monto: 0, monto_display: '' }]
   };
   formExpense.value = {
-    proyecto_id: '', tipo_egreso: 'Proveedor', monto: 0, 
-    fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '', 
+    proyecto_id: '', contratista_id: '', tipo_egreso: 'Proveedor', monto: 0,
+    fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '',
     numero_cheque: '', beneficiario: '', descripcion: '',
     registros: [{ descripcion: '', monto: 0, monto_display: '' }]
   };
@@ -722,6 +775,57 @@ const handleCurrencyInput = (event, record) => {
   let floatVal = (parseInt(num, 10) / 100);
   record.monto = floatVal;
   record.monto_display = 'Q' + floatVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+watch(() => formExpense.value.tipo_egreso, (tipo) => {
+  if (tipo !== 'Contratista') {
+    formExpense.value.contratista_id = '';
+  } else {
+    formExpense.value.beneficiario = '';
+  }
+});
+
+const handleContractorSelect = () => {
+  const contractor = contractors.value.find(c => c.id === formExpense.value.contratista_id);
+  formExpense.value.beneficiario = contractor ? contractor.nombre : '';
+};
+
+// QUICK NEW CONTRACTOR MODAL
+const showQuickContractorModal = ref(false);
+const isSubmittingQuickContractor = ref(false);
+const formQuickContractor = ref({ nombre: '', telefono: '', correo_electronico: '' });
+
+const openQuickContractorModal = () => {
+  formQuickContractor.value = { nombre: '', telefono: '', correo_electronico: '' };
+  showQuickContractorModal.value = true;
+};
+
+const closeQuickContractorModal = () => showQuickContractorModal.value = false;
+
+const submitQuickContractor = async () => {
+  isSubmittingQuickContractor.value = true;
+  const fd = new FormData();
+  Object.keys(formQuickContractor.value).forEach(k => {
+    if (formQuickContractor.value[k] !== null && formQuickContractor.value[k] !== '') fd.append(k, formQuickContractor.value[k]);
+  });
+
+  try {
+    const res = await fetch(`${BASE_URL}/contractors`, { method: 'POST', body: fd });
+    const json = await res.json();
+    if (json.status === 'success') {
+      await fetchContractors();
+      const created = contractors.value.find(c => c.nombre === formQuickContractor.value.nombre);
+      if (created) {
+        formExpense.value.contratista_id = created.id;
+        formExpense.value.beneficiario = created.nombre;
+      }
+      closeQuickContractorModal();
+      Swal.fire({background: '#0f172a', color: '#fff', icon: 'success', title: 'Contratista Registrado'});
+    } else {
+      Swal.fire({background: '#0f172a', color: '#fff', icon: 'error', text: json.message});
+    }
+  } catch(e) {}
+  isSubmittingQuickContractor.value = false;
 };
 
 const handleRecurrentSelection = (event) => {

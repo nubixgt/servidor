@@ -78,7 +78,8 @@ class FinanceController extends Controller
     {
         try {
             $data = [
-                'proyecto_id'   => isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '' ? (int)$_POST['proyecto_id'] : null,
+                'proyecto_id'    => isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '' ? (int)$_POST['proyecto_id'] : null,
+                'contratista_id' => isset($_POST['contratista_id']) && $_POST['contratista_id'] !== '' ? (int)$_POST['contratista_id'] : null,
                 'tipo_egreso'   => trim($_POST['tipo_egreso'] ?? ''),
                 'monto'         => isset($_POST['monto']) ? (float)$_POST['monto'] : 0,
                 'fecha_egreso'  => trim($_POST['fecha_egreso'] ?? ''),

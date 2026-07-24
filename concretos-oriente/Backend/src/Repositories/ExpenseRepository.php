@@ -28,13 +28,14 @@ class ExpenseRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO expenses 
-                    (proyecto_id, tipo_egreso, monto, fecha_egreso, cuenta_origen, numero_cheque, beneficiario, descripcion, comprobante_path)
-                VALUES 
-                    (:proyecto_id, :tipo_egreso, :monto, :fecha_egreso, :cuenta_origen, :numero_cheque, :beneficiario, :descripcion, NULL)";
-        
+        $sql = "INSERT INTO expenses
+                    (proyecto_id, contratista_id, tipo_egreso, monto, fecha_egreso, cuenta_origen, numero_cheque, beneficiario, descripcion, comprobante_path)
+                VALUES
+                    (:proyecto_id, :contratista_id, :tipo_egreso, :monto, :fecha_egreso, :cuenta_origen, :numero_cheque, :beneficiario, :descripcion, NULL)";
+
         $this->pdo->prepare($sql)->execute([
             'proyecto_id'     => $data['proyecto_id'],
+            'contratista_id'  => $data['contratista_id'] ?? null,
             'tipo_egreso'     => $data['tipo_egreso'],
             'monto'           => $data['monto'],
             'fecha_egreso'    => $data['fecha_egreso'],

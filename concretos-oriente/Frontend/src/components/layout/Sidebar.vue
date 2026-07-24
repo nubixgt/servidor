@@ -130,7 +130,7 @@ import {
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
-  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon
+  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';
 
@@ -163,6 +163,7 @@ const allNavItemsArr = [
   { id: "inventory", label: "Inventario", icon: CubeIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "concrete-control", label: "Control Concreto", icon: TruckIcon, roles: ["admin", "supervisor", "tecnico"] },
   { id: "suppliers", label: "Proveedores", icon: BuildingOfficeIcon, roles: ["admin"] },
+  { id: "contractors", label: "Contratistas", icon: UserGroupIcon, roles: ["admin"] },
   { id: "project-incomes", label: "Ingresos por Proyectos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "finance", label: "Ingresos y Egresos", icon: BanknotesIcon, roles: ["admin"] },
   { id: "recurrents", label: "Recurrentes", icon: ArrowPathIcon, roles: ["admin"] },

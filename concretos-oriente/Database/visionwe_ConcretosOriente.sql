@@ -217,6 +217,21 @@ CREATE TABLE `concrete_trips` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `contractors`
+--
+
+CREATE TABLE `contractors` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `correo_electronico` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `credits`
 --
 
@@ -378,6 +393,7 @@ INSERT INTO `estimation_items` (`id`, `estimation_id`, `budget_item_id`, `porcen
 CREATE TABLE `expenses` (
   `id` int(11) NOT NULL,
   `proyecto_id` int(11) DEFAULT NULL,
+  `contratista_id` int(11) DEFAULT NULL,
   `tipo_egreso` varchar(100) NOT NULL,
   `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
   `fecha_egreso` date NOT NULL,
@@ -914,6 +930,23 @@ INSERT INTO `projects` (`id`, `codigo`, `nombre`, `cliente_id`, `ubicacion`, `co
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `project_contractors`
+--
+
+CREATE TABLE `project_contractors` (
+  `id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `contractor_id` int(11) NOT NULL,
+  `monto_contratado` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `fecha_asignacion` date NOT NULL,
+  `observaciones` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `project_incomes`
 --
 
@@ -1314,6 +1347,12 @@ ALTER TABLE `concrete_trips`
   ADD KEY `created_by` (`created_by`);
 
 --
+-- Indices de la tabla `contractors`
+--
+ALTER TABLE `contractors`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `credits`
 --
 ALTER TABLE `credits`
@@ -1363,7 +1402,8 @@ ALTER TABLE `estimation_items`
 --
 ALTER TABLE `expenses`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_expense_project` (`proyecto_id`);
+  ADD KEY `fk_expense_project` (`proyecto_id`),
+  ADD KEY `fk_expense_contractor` (`contratista_id`);
 
 --
 -- Indices de la tabla `expense_records`
@@ -1496,6 +1536,14 @@ ALTER TABLE `projects`
   ADD KEY `fk_projects_client` (`cliente_id`);
 
 --
+-- Indices de la tabla `project_contractors`
+--
+ALTER TABLE `project_contractors`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_project_contractor` (`project_id`,`contractor_id`),
+  ADD KEY `fk_pc_contractor` (`contractor_id`);
+
+--
 -- Indices de la tabla `project_incomes`
 --
 ALTER TABLE `project_incomes`
@@ -1622,6 +1670,12 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `concrete_trips`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `contractors`
+--
+ALTER TABLE `contractors`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `credits`
@@ -1768,6 +1822,12 @@ ALTER TABLE `projects`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT de la tabla `project_contractors`
+--
+ALTER TABLE `project_contractors`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `project_incomes`
 --
 ALTER TABLE `project_incomes`
@@ -1902,7 +1962,8 @@ ALTER TABLE `estimation_items`
 -- Filtros para la tabla `expenses`
 --
 ALTER TABLE `expenses`
-  ADD CONSTRAINT `fk_expense_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_expense_project` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_expense_contractor` FOREIGN KEY (`contratista_id`) REFERENCES `contractors` (`id`) ON DELETE SET NULL;
 
 --
 -- Filtros para la tabla `expense_records`
@@ -2003,6 +2064,13 @@ ALTER TABLE `personnel`
 --
 ALTER TABLE `projects`
   ADD CONSTRAINT `fk_projects_client` FOREIGN KEY (`cliente_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `project_contractors`
+--
+ALTER TABLE `project_contractors`
+  ADD CONSTRAINT `fk_pc_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_pc_contractor` FOREIGN KEY (`contractor_id`) REFERENCES `contractors` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `project_incomes`

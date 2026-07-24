@@ -33,6 +33,7 @@ const routes = [
             { path: 'calendar', name: 'Calendar', component: () => import('../views/admin/Calendar.vue') },
             { path: 'inventory', name: 'Inventory', component: () => import('../views/admin/Inventory.vue') },
             { path: 'suppliers', name: 'Suppliers', component: () => import('../views/admin/Suppliers.vue') },
+            { path: 'contractors', name: 'Contractors', component: () => import('../views/admin/Contractors.vue') },
             { path: 'concrete-control', name: 'ConcreteControl', component: () => import('../views/admin/ConcreteControl.vue') },
 
             { path: 'users', name: 'Users', component: () => import('../views/admin/Users.vue') },
