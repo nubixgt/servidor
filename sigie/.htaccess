@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /sigie/
+
+    # 1. API Routing
+    # Pasa las peticiones de Backend a su propia carpeta (donde tiene su propio .htaccess)
+    RewriteRule ^Backend/(.*)$ Backend/$1 [QSA,L]
+
+    # 2. Static Files (Frontend)
+    # Revisa si el archivo estático existe en Frontend/dist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/sigie/Frontend/dist/$1 -f
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+
+    # 3. SPA Fallback
+    # Enruta el resto de peticiones al index.html de Vue
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . Frontend/dist/index.html [L]
+    
+    # Handle the root path specifically
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>
