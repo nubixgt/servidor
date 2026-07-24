@@ -71,25 +71,7 @@
           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-600 bg-[#161f42] px-2 py-1 rounded">CMD + K</div>
         </div>
 
-        <!-- Stats Row -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 border-b border-slate-800/50 pb-8">
-          <div>
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Nodes</div>
-            <div class="text-xl font-semibold text-white">124</div>
-          </div>
-          <div>
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Active Status</div>
-            <div class="text-xl font-semibold text-sky-400">99.8%</div>
-          </div>
-          <div>
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Security Tier</div>
-            <div class="text-xl font-semibold text-white">Class A</div>
-          </div>
-          <div>
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Data Flow</div>
-            <div class="text-xl font-semibold text-white">12 Gbps</div>
-          </div>
-        </div>
+
 
         <!-- Grid of Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
