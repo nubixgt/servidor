@@ -103,6 +103,11 @@
               ACCEDER
               <LucideIcons.ChevronRight class="w-4 h-4 text-slate-600" />
             </a>
+            
+            <!-- Link text for copying -->
+            <div class="mt-3 text-center text-[11px] text-slate-500 truncate select-all hover:text-slate-300 transition-colors" :title="sistema.url">
+              {{ sistema.url }}
+            </div>
           </div>
           
           <div v-if="filteredSistemas.length === 0" class="col-span-full py-12 text-center text-slate-500">
