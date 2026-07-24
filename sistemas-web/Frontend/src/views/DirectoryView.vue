@@ -35,14 +35,8 @@
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden relative">
-      <!-- Topbar -->
-      <header class="h-20 flex justify-end items-center px-8 gap-4">
-        <button class="p-2 text-slate-400 hover:text-white"><LucideIcons.Search class="w-5 h-5" /></button>
-        <button class="p-2 text-slate-400 hover:text-white"><LucideIcons.Bell class="w-5 h-5" /></button>
-        <button class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white ml-2">
-          <LucideIcons.User class="w-4 h-4" />
-        </button>
-      </header>
+      <!-- Espaciador superior -->
+      <div class="h-8"></div>
 
       <!-- Scrollable Area -->
       <div class="flex-1 overflow-y-auto px-6 md:px-12 pb-24">
