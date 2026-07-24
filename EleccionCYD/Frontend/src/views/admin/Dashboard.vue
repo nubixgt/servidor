@@ -3,8 +3,20 @@ import { computed } from 'vue';
 import { useModelStore } from '../../stores/modelStore';
 import { ROUNDS } from '../../utils/rubrics';
 import MyScoresTable from '../../components/dashboard/MyScoresTable.vue';
+import { getUserPhoto } from '../../data/userPhotos';
 
 const store = useModelStore();
+
+const usuarioActual = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem('usuario'));
+  } catch {
+    return null;
+  }
+});
+
+const usuarioNombre = computed(() => usuarioActual.value?.nombre || 'Jurado Oficial');
+const usuarioFoto = computed(() => getUserPhoto(usuarioActual.value?.id));
 
 // Cuántos participantes calificó ESTE jurado en cada ronda (de los que ya existen en el listado).
 const roundProgress = computed(() => {
@@ -23,12 +35,19 @@ const votosPosibles = computed(() => store.participants.length * ROUNDS.length);
 <template>
   <div class="flex-grow px-6 md:px-16 py-12 max-w-5xl mx-auto w-full text-white">
 
-    <section class="mb-12">
-      <h1 class="text-3xl font-light tracking-tight text-white mb-2 uppercase">Mi <span class="text-amber-400 font-normal">Panel</span></h1>
-      <p class="text-sm text-white/50 leading-relaxed max-w-2xl">
-        Este es tu propio avance como jurado: solo las calificaciones que TÚ has enviado. Para ver el
-        ranking combinado de todos los jurados, entra a "Tabla de Posiciones".
-      </p>
+    <section class="mb-12 flex items-center gap-5">
+      <img
+        :src="usuarioFoto"
+        :alt="usuarioNombre"
+        class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border border-white/20 shrink-0"
+      />
+      <div>
+        <h1 class="text-3xl font-light tracking-tight text-white mb-2 uppercase">Mi <span class="text-amber-400 font-normal">Panel</span></h1>
+        <p class="text-sm text-white/50 leading-relaxed max-w-2xl">
+          Este es tu propio avance como jurado: solo las calificaciones que TÚ has enviado. Para ver el
+          ranking combinado de todos los jurados, entra a "Tabla de Posiciones".
+        </p>
+      </div>
     </section>
 
     <!-- Stat Tiles -->

@@ -1,9 +1,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { UserIcon, Bars3Icon } from '@heroicons/vue/24/outline';
+import { Bars3Icon } from '@heroicons/vue/24/outline';
 import { confirmLogout } from '../../utils/alerts';
 import { useModelStore } from '../../stores/modelStore';
+import { getUserPhoto } from '../../data/userPhotos';
 
 const router = useRouter();
 const route = useRoute();
@@ -11,13 +12,16 @@ const store = useModelStore();
 
 const currentScreen = computed(() => route.name);
 
-const usuarioNombre = computed(() => {
+const usuarioActual = computed(() => {
   try {
-    return JSON.parse(localStorage.getItem('usuario'))?.nombre || 'Jurado Oficial';
+    return JSON.parse(localStorage.getItem('usuario'));
   } catch {
-    return 'Jurado Oficial';
+    return null;
   }
 });
+
+const usuarioNombre = computed(() => usuarioActual.value?.nombre || 'Jurado Oficial');
+const usuarioFoto = computed(() => getUserPhoto(usuarioActual.value?.id));
 
 const navigateTo = (routeName) => {
   router.push({ name: routeName });
@@ -97,11 +101,11 @@ const handleLogout = async () => {
           </button>
         </div>
         <button
-          class="text-white hover:text-amber-400 transition-colors p-1 cursor-pointer"
+          class="rounded-full overflow-hidden w-9 h-9 border border-white/20 hover:border-amber-400 transition-colors cursor-pointer shrink-0"
           @click="navigateTo('Leaderboard')"
           title="Perfil / Resultados"
         >
-          <UserIcon class="w-[22px] h-[22px] stroke-[1.5]" />
+          <img :src="usuarioFoto" :alt="usuarioNombre" class="w-full h-full object-cover" />
         </button>
         <button class="md:hidden text-white p-1 cursor-pointer">
           <Bars3Icon class="w-[22px] h-[22px] stroke-[1.5]" />
