@@ -43,8 +43,8 @@ export const useModelStore = defineStore('model', {
 
   getters: {
     selectedModel: (state) => state.participants.find((p) => p.id === state.selectedParticipantId) || null,
-    senoritas: (state) => state.participants.filter((p) => p.category === 'SENORITA'),
-    jovenes: (state) => state.participants.filter((p) => p.category === 'JOVEN'),
+    senoritas: (state) => state.participants.filter((p) => p.category === 'SENORITA').sort((a, b) => a.name.localeCompare(b.name)),
+    jovenes: (state) => state.participants.filter((p) => p.category === 'JOVEN').sort((a, b) => a.name.localeCompare(b.name)),
     rankedSenoritas: (state) => mergeLeaderboard(state, 'SENORITA'),
     rankedJovenes: (state) => mergeLeaderboard(state, 'JOVEN'),
 
