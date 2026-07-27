@@ -3,7 +3,7 @@
     <!-- Abstract Background -->
     <div class="absolute inset-0 z-0 bg-black">
       <!-- Image Background -->
-      <img src="../assets/fondo-estadio.jpg" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" alt="Background" />
+      <img :src="fondoEstadio" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" alt="Background" />
       
       <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212]/80 via-transparent to-[#050505]/90"></div>
       <!-- Decorative elements simulating the stadium/lights -->
@@ -93,5 +93,6 @@
 </template>
 
 <script setup>
+import fondoEstadio from '../assets/fondo-estadio.jpg'
 // Home page logic
 </script>

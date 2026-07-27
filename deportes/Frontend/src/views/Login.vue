@@ -3,7 +3,7 @@
     <!-- Abstract Background -->
     <div class="absolute inset-0 z-0 bg-black">
       <!-- Image Background -->
-      <img src="../assets/fondo-estadio.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" alt="Background" />
+      <img :src="fondoEstadio" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" alt="Background" />
       
       <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212]/90 via-[#0a0a0a]/80 to-[#050505]/95"></div>
       <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
@@ -67,6 +67,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
+import fondoEstadio from '../assets/fondo-estadio.jpg'
 
 const router = useRouter()
 const isLoading = ref(false)
