@@ -5,7 +5,7 @@
       <div class="p-6 border-b border-gray-800">
         <div class="flex items-center gap-3">
           <div class="w-10 h-12 bg-gray-900 border border-[#ccff00] rounded flex items-center justify-center overflow-hidden">
-             <img v-if="equipo?.foto_ruta" :src="apiUrl + '/' + equipo.foto_ruta" class="w-full h-full object-cover">
+             <img v-if="equipo?.foto_ruta" :src="IMAGE_BASE_URL + equipo.foto_ruta" class="w-full h-full object-cover">
              <svg v-else class="w-6 h-6 text-[#ccff00]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4v6c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12V6l9-4z"/></svg>
           </div>
           <div>
@@ -30,7 +30,7 @@
         <div class="flex items-center justify-between">
            <div class="flex items-center gap-2">
              <div class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center overflow-hidden">
-               <img v-if="equipo?.foto_representante_ruta" :src="apiUrl + '/' + equipo.foto_representante_ruta" class="w-full h-full object-cover">
+               <img v-if="equipo?.foto_representante_ruta" :src="IMAGE_BASE_URL + equipo.foto_representante_ruta" class="w-full h-full object-cover">
                <svg v-else class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
              </div>
              <div>
@@ -106,7 +106,7 @@
                 <tr v-for="jugador in equipo.jugadores" :key="jugador.id" class="border-b border-gray-800 hover:bg-[#252525] transition-colors">
                   <td class="p-4">
                     <div class="flex items-center gap-3">
-                      <img v-if="jugador.foto_ruta" :src="apiUrl + '/' + jugador.foto_ruta" class="w-10 h-10 rounded-full object-cover border border-gray-700">
+                      <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-10 h-10 rounded-full object-cover border border-gray-700">
                       <div v-else class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
                          <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                       </div>
@@ -137,15 +137,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '../services/api'
+import api, { IMAGE_BASE_URL } from '../services/api'
 
 const router = useRouter()
 const equipo = ref(null)
 const isLoading = ref(true)
 const error = ref('')
-
-// Para las imagenes
-const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost/deportes'
 
 onMounted(async () => {
   try {
