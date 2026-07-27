@@ -16,10 +16,6 @@
       </div>
       
       <nav class="flex-grow p-4 space-y-2">
-        <router-link to="/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-900 hover:text-white transition-colors">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-          Inicio
-        </router-link>
         <button @click="activeTab = 'jugadores'" :class="['w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold', activeTab === 'jugadores' ? 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20' : 'text-gray-400 hover:bg-gray-900 hover:text-white']">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           Jugadores
