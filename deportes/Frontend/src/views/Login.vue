@@ -1,8 +1,11 @@
 <template>
   <div class="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 relative overflow-hidden">
     <!-- Abstract Background -->
-    <div class="absolute inset-0 z-0">
-      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212] to-[#050505]"></div>
+    <div class="absolute inset-0 z-0 bg-black">
+      <!-- Image Background -->
+      <div class="absolute inset-0 bg-[url('../assets/fondo-estadio.jpg')] bg-cover bg-center bg-no-repeat opacity-30 mix-blend-luminosity"></div>
+      
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212]/90 via-[#0a0a0a]/80 to-[#050505]/95"></div>
       <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
     </div>
 
