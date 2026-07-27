@@ -16,14 +16,18 @@
       </div>
       
       <nav class="flex-grow p-4 space-y-2">
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-900 hover:text-white transition-colors">
+        <router-link to="/" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-900 hover:text-white transition-colors">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
           Inicio
-        </a>
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#ccff00]/10 text-[#ccff00] font-bold transition-colors border border-[#ccff00]/20">
+        </router-link>
+        <button @click="activeTab = 'jugadores'" :class="['w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold', activeTab === 'jugadores' ? 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20' : 'text-gray-400 hover:bg-gray-900 hover:text-white']">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           Jugadores
-        </a>
+        </button>
+        <button @click="activeTab = 'equipos'" :class="['w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold', activeTab === 'equipos' ? 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20' : 'text-gray-400 hover:bg-gray-900 hover:text-white']">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Equipos
+        </button>
       </nav>
 
       <div class="p-4 border-t border-gray-800">
@@ -48,7 +52,7 @@
     <!-- Main Content -->
     <main class="flex-grow p-4 md:p-8 overflow-y-auto">
       <!-- Top header -->
-      <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <header v-if="activeTab === 'jugadores'" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <p class="text-[#ccff00] text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
             <span class="w-6 h-px bg-[#ccff00]"></span> Gestión de Jugadores
@@ -61,6 +65,16 @@
           Agregar Jugador
         </router-link>
       </header>
+      
+      <header v-if="activeTab === 'equipos'" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <p class="text-[#ccff00] text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
+            <span class="w-6 h-px bg-[#ccff00]"></span> Directorio
+          </p>
+          <h1 class="text-4xl font-black italic tracking-tight">EQUIPOS</h1>
+          <p class="text-gray-400 text-sm mt-1">Explora los otros equipos registrados en el sistema.</p>
+        </div>
+      </header>
 
       <div v-if="isLoading" class="text-center py-12 text-gray-500">Cargando información...</div>
       
@@ -69,74 +83,72 @@
       </div>
 
       <div v-else>
-        <!-- Stats Row -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-            <div class="text-3xl font-black mb-1">{{ equipo.jugadores?.length || 0 }}</div>
-            <div class="text-xs text-gray-400 uppercase tracking-wider">Jugadores Registrados</div>
+        <!-- Tab: Jugadores -->
+        <div v-if="activeTab === 'jugadores'">
+          <!-- Stats Row -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+              <div class="text-3xl font-black mb-1">{{ equipo.jugadores?.length || 0 }}</div>
+              <div class="text-xs text-gray-400 uppercase tracking-wider">Jugadores Registrados</div>
+            </div>
+            <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
+               <svg class="w-8 h-8 text-[#ccff00] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+               <div class="text-xs text-gray-400 uppercase tracking-wider">Activos Disponibles</div>
+            </div>
           </div>
-          <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-             <svg class="w-8 h-8 text-[#ccff00] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-             <div class="text-xs text-gray-400 uppercase tracking-wider">Activos Disponibles</div>
-          </div>
-        </div>
 
-        <!-- Table -->
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl overflow-hidden">
-          <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-            <h3 class="font-bold text-sm uppercase tracking-wider">Lista de Jugadores</h3>
-          </div>
-          
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 bg-[#161616]">
-                  <th class="p-4 font-bold">Jugador</th>
-                  <th class="p-4 font-bold text-center">Posición</th>
-                  <th class="p-4 font-bold">DPI / ID</th>
-                  <th class="p-4 font-bold text-center">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="!equipo.jugadores || equipo.jugadores.length === 0">
-                  <td colspan="4" class="p-8 text-center text-gray-500 text-sm">
-                    No tienes jugadores registrados.
-                  </td>
-                </tr>
-                <tr v-for="jugador in equipo.jugadores" :key="jugador.id" class="border-b border-gray-800 hover:bg-[#252525] transition-colors">
-                  <td class="p-4">
-                    <div class="flex items-center gap-3">
-                      <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-10 h-10 rounded-full object-cover border border-gray-700">
-                      <div v-else class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
-                         <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <!-- Table -->
+          <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+              <h3 class="font-bold text-sm uppercase tracking-wider">Lista de Jugadores</h3>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 bg-[#161616]">
+                    <th class="p-4 font-bold">Jugador</th>
+                    <th class="p-4 font-bold text-center">Posición</th>
+                    <th class="p-4 font-bold">DPI / ID</th>
+                    <th class="p-4 font-bold text-center">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="!equipo.jugadores || equipo.jugadores.length === 0">
+                    <td colspan="4" class="p-8 text-center text-gray-500 text-sm">
+                      No tienes jugadores registrados.
+                    </td>
+                  </tr>
+                  <tr v-for="jugador in equipo.jugadores" :key="jugador.id" class="border-b border-gray-800 hover:bg-[#252525] transition-colors">
+                    <td class="p-4">
+                      <div class="flex items-center gap-3">
+                        <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-10 h-10 rounded-full object-cover border border-gray-700">
+                        <div v-else class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+                           <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <span class="font-bold text-sm">{{ jugador.nombre }}</span>
                       </div>
-                      <span class="font-bold text-sm">{{ jugador.nombre }}</span>
-                    </div>
-                  </td>
-                  <td class="p-4 text-center">
-                    <span class="inline-block px-2 py-1 bg-gray-800 text-gray-300 text-[10px] font-bold uppercase rounded border border-gray-700">
-                      {{ jugador.posicion }}
-                    </span>
-                  </td>
-                  <td class="p-4 text-sm text-gray-400 font-mono">{{ jugador.dpi }}</td>
-                  <td class="p-4 text-center">
-                    <span class="inline-block px-3 py-1 bg-[#ccff00]/10 text-[#ccff00] text-[10px] font-bold uppercase rounded-full border border-[#ccff00]/30">
-                      Activo
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                    </td>
+                    <td class="p-4 text-center">
+                      <span class="inline-block px-2 py-1 bg-gray-800 text-gray-300 text-[10px] font-bold uppercase rounded border border-gray-700">
+                        {{ jugador.posicion }}
+                      </span>
+                    </td>
+                    <td class="p-4 text-sm text-gray-400 font-mono">{{ jugador.dpi }}</td>
+                    <td class="p-4 text-center">
+                      <span class="inline-block px-3 py-1 bg-[#ccff00]/10 text-[#ccff00] text-[10px] font-bold uppercase rounded-full border border-[#ccff00]/30">
+                        Activo
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <!-- Todos los Equipos Section -->
-        <div class="mt-12 mb-8 border-t border-gray-800 pt-8">
-          <p class="text-[#ccff00] text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
-            <span class="w-6 h-px bg-[#ccff00]"></span> Directorio
-          </p>
-          <h2 class="text-3xl font-black italic tracking-tight mb-6 uppercase">OTROS EQUIPOS</h2>
-          
+        <!-- Tab: Equipos -->
+        <div v-if="activeTab === 'equipos'">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="eq in todosLosEquipos" :key="eq.id" class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex items-center gap-4 hover:border-gray-700 transition-colors">
               <div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
@@ -172,6 +184,7 @@ const equipo = ref(null)
 const todosLosEquipos = ref([])
 const isLoading = ref(true)
 const error = ref('')
+const activeTab = ref('jugadores')
 
 onMounted(async () => {
   try {
