@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
   
   if (to.meta.requiresAuth && !token) {
     next('/login')
-  } else if ((to.name === 'Login' || to.name === 'Home') && token) {
+  } else if (to.name === 'Login' && token) {
     next('/mi-equipo')
   } else {
     next()
