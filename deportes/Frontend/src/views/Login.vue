@@ -32,8 +32,12 @@
             <input 
               v-model="form.usuario" 
               type="text" 
+              minlength="13" 
+              maxlength="13" 
+              pattern="[0-9]{13}" 
+              title="Debe contener exactamente 13 dígitos numéricos"
               class="w-full bg-[#1e1e1e] border border-gray-700 focus:border-[#ccff00] text-white p-3 rounded-lg outline-none text-sm transition-colors"
-              placeholder="Ingresa el DPI sin espacios"
+              placeholder="Ingresa el DPI sin espacios (13 dígitos)"
               required
             >
           </div>
@@ -43,8 +47,12 @@
             <input 
               v-model="form.password" 
               type="password" 
+              minlength="8" 
+              maxlength="8" 
+              pattern="[0-9]{8}" 
+              title="Debe contener exactamente 8 dígitos numéricos"
               class="w-full bg-[#1e1e1e] border border-gray-700 focus:border-[#ccff00] text-white p-3 rounded-lg outline-none text-sm transition-colors"
-              placeholder="Ingresa el número de teléfono"
+              placeholder="Ingresa el número de teléfono (8 dígitos)"
               required
             >
           </div>
