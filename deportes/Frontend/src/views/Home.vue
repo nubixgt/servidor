@@ -14,12 +14,6 @@
     <div class="z-10 w-full max-w-4xl flex flex-col items-center">
       <!-- Header / Logo -->
       <div class="mb-12 text-center">
-        <div class="w-20 h-24 mx-auto mb-6 bg-[#0a0a0a] border-2 border-[#ccff00] rounded-t-full rounded-b-xl flex items-center justify-center relative shadow-[0_0_15px_rgba(204,255,0,0.3)]">
-          <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-          </svg>
-          <div class="absolute top-2 w-2 h-2 bg-[#ccff00] rounded-full"></div>
-        </div>
         <p class="text-[#ccff00] text-xs font-bold tracking-[0.3em] uppercase mb-2 flex items-center justify-center gap-4">
           <span class="h-px w-8 bg-gray-600"></span>
           PLATAFORMA INSTITUCIONAL
