@@ -64,7 +64,7 @@
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-300 uppercase mb-2">DPI / CUI</label>
-                <input v-model="form.dpi" type="text" maxlength="13" class="w-full bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500 tracking-widest" placeholder="0000 00000 0000" required>
+                <input v-model="form.dpi" type="text" minlength="13" maxlength="13" pattern="[0-9]{13}" title="Debe contener exactamente 13 dígitos" class="w-full bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500 tracking-widest" placeholder="13 dígitos sin espacios" required>
               </div>
             </div>
             
@@ -73,7 +73,7 @@
                 <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Teléfono de contacto</label>
                 <div class="flex">
                   <div class="bg-[#1e1e1e] border-r border-[#2a2a2a] px-4 py-4 text-sm text-gray-400 font-bold">+502</div>
-                  <input v-model="form.telefono" type="text" maxlength="8" class="flex-grow bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500" placeholder="5555 5555" required>
+                  <input v-model="form.telefono" type="text" minlength="8" maxlength="8" pattern="[0-9]{8}" title="Debe contener exactamente 8 dígitos" class="flex-grow bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500" placeholder="00000000" required>
                 </div>
               </div>
               <div>
@@ -178,6 +178,17 @@ const onFileChange = (e) => {
 const submitForm = async () => {
   if (!form.foto) {
     error.value = 'Debes subir la foto del jugador.'
+    return
+  }
+  
+  if (form.telefono.length !== 8 || !/^\d{8}$/.test(form.telefono)) {
+    error.value = 'El teléfono debe tener exactamente 8 dígitos numéricos.'
+    return
+  }
+
+  const dpiClean = form.dpi.replace(/\s/g, '')
+  if (dpiClean.length !== 13 || !/^\d{13}$/.test(dpiClean)) {
+    error.value = 'El DPI debe tener exactamente 13 dígitos numéricos.'
     return
   }
   

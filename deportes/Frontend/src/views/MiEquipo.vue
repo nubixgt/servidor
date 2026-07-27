@@ -129,6 +129,34 @@
             </table>
           </div>
         </div>
+
+        <!-- Todos los Equipos Section -->
+        <div class="mt-12 mb-8 border-t border-gray-800 pt-8">
+          <p class="text-[#ccff00] text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
+            <span class="w-6 h-px bg-[#ccff00]"></span> Directorio
+          </p>
+          <h2 class="text-3xl font-black italic tracking-tight mb-6 uppercase">OTROS EQUIPOS</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="eq in todosLosEquipos" :key="eq.id" class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex items-center gap-4 hover:border-gray-700 transition-colors">
+              <div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                 <img v-if="eq.foto_ruta" :src="IMAGE_BASE_URL + eq.foto_ruta" class="w-full h-full object-cover">
+                 <svg v-else class="w-8 h-8 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4v6c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12V6l9-4z"/></svg>
+              </div>
+              <div class="overflow-hidden">
+                <h3 class="font-bold text-sm uppercase truncate">{{ eq.nombre }}</h3>
+                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest truncate">Rep: {{ eq.representante }}</p>
+                <div class="mt-2 inline-block px-2 py-1 bg-gray-900 text-[#ccff00] text-[10px] font-bold uppercase rounded border border-gray-800">
+                  {{ eq.jugadores ? eq.jugadores.length : 0 }} Jugadores
+                </div>
+              </div>
+            </div>
+            
+            <div v-if="!todosLosEquipos || todosLosEquipos.length === 0" class="col-span-full text-center py-8 text-gray-500">
+              No hay otros equipos registrados aún.
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -141,6 +169,7 @@ import api, { IMAGE_BASE_URL } from '../services/api'
 
 const router = useRouter()
 const equipo = ref(null)
+const todosLosEquipos = ref([])
 const isLoading = ref(true)
 const error = ref('')
 
@@ -159,6 +188,11 @@ onMounted(async () => {
     })
     
     equipo.value = response.data
+
+    // Fetch all teams
+    const resEquipos = await api.get('/equipos')
+    // Filter out the current team if desired, or show all. Let's just show all for now.
+    todosLosEquipos.value = resEquipos.data
   } catch (err) {
     if (err.response?.status === 401) {
       logout()
