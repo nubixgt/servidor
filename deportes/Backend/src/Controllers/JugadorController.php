@@ -4,11 +4,31 @@ namespace Controllers;
 use Core\Response;
 use Models\JugadorModel;
 use Models\EquipoModel;
+use Utils\JwtUtils;
 
 class JugadorController {
-    public function getAll() {
-        // Not strictly requested, but good to have
-        Response::error('Not implemented', 501);
+    public function getByToken() {
+        $token = JwtUtils::getBearerToken();
+        if (!$token) {
+            Response::error('No autorizado. Token faltante.', 401);
+        }
+        $payload = JwtUtils::verifyToken($token);
+        if (!$payload) {
+            Response::error('Token inválido o expirado.', 401);
+        }
+
+        $equipo_id = $payload['equipo_id'];
+        
+        $equipoModel = new EquipoModel();
+        $equipo = $equipoModel->getById($equipo_id);
+        
+        if ($equipo) {
+            $jugadorModel = new JugadorModel();
+            $equipo['jugadores'] = $jugadorModel->getByEquipo($equipo_id);
+            Response::json($equipo);
+        } else {
+            Response::error('Equipo no encontrado', 404);
+        }
     }
 
     public function create() {
@@ -16,7 +36,16 @@ class JugadorController {
             Response::error('Method not allowed', 405);
         }
 
-        $equipo_id = $_POST['equipo_id'] ?? '';
+        $token = JwtUtils::getBearerToken();
+        if (!$token) {
+            Response::error('No autorizado. Token faltante.', 401);
+        }
+        $payload = JwtUtils::verifyToken($token);
+        if (!$payload) {
+            Response::error('Token inválido o expirado.', 401);
+        }
+
+        $equipo_id = $payload['equipo_id'];
         $nombre = $_POST['nombre'] ?? '';
         $dpi = $_POST['dpi'] ?? '';
         $telefono = $_POST['telefono'] ?? '';

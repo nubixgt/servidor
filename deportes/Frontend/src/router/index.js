@@ -1,8 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
 import InscripcionEquipo from '../views/InscripcionEquipo.vue'
+import MiEquipo from '../views/MiEquipo.vue'
 import InscripcionJugador from '../views/InscripcionJugador.vue'
-import Listado from '../views/Listado.vue'
 
 const routes = [
   {
@@ -11,9 +12,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/listado',
-    name: 'Listado',
-    component: Listado
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/inscripcion-equipo',
@@ -21,24 +22,38 @@ const routes = [
     component: InscripcionEquipo
   },
   {
+    path: '/mi-equipo',
+    name: 'MiEquipo',
+    component: MiEquipo,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/inscripcion-jugador',
     name: 'InscripcionJugador',
-    component: InscripcionJugador
+    component: InscripcionJugador,
+    meta: { requiresAuth: true }
   },
   {
-    // Redirect old routes or nav links
-    path: '/equipos',
-    redirect: '/listado'
-  },
-  {
-    path: '/jugadores',
-    redirect: '/listado' // Or create a dedicated players list later
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('deportes_token')
+  
+  if (to.meta.requiresAuth && !token) {
+    next('/login')
+  } else if ((to.name === 'Login' || to.name === 'Home') && token) {
+    next('/mi-equipo')
+  } else {
+    next()
+  }
 })
 
 export default router

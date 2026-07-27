@@ -1,124 +1,94 @@
 <template>
-  <div class="container mx-auto px-4 py-8 md:py-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-      
-      <!-- Text Content -->
-      <div>
-        <h2 class="text-primary font-bold text-sm tracking-widest uppercase mb-2 flex items-center gap-2">
-          <span class="w-8 h-[2px] bg-primary block"></span> PLATAFORMA INSTITUCIONAL
-        </h2>
-        <h1 class="text-7xl font-black italic tracking-tighter mb-6">DEPORTES</h1>
-        <p class="text-gray-300 mb-8 max-w-md text-sm leading-relaxed">
-          Lleva tu equipo al siguiente nivel con la infraestructura digital líder en gestión deportiva profesional.
+  <div class="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <!-- Abstract Background -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212] to-[#050505]"></div>
+      <!-- Decorative elements simulating the stadium/lights -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
+    </div>
+
+    <div class="z-10 w-full max-w-4xl flex flex-col items-center">
+      <!-- Header / Logo -->
+      <div class="mb-12 text-center">
+        <div class="w-20 h-24 mx-auto mb-6 bg-[#0a0a0a] border-2 border-[#ccff00] rounded-t-full rounded-b-xl flex items-center justify-center relative shadow-[0_0_15px_rgba(204,255,0,0.3)]">
+          <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+          </svg>
+          <div class="absolute top-2 w-2 h-2 bg-[#ccff00] rounded-full"></div>
+        </div>
+        <p class="text-[#ccff00] text-xs font-bold tracking-[0.3em] uppercase mb-2 flex items-center justify-center gap-4">
+          <span class="h-px w-8 bg-gray-600"></span>
+          PLATAFORMA INSTITUCIONAL
+          <span class="h-px w-8 bg-gray-600"></span>
         </p>
+        <h1 class="text-6xl md:text-8xl font-black text-white italic tracking-tighter">
+          DEPORTES
+        </h1>
+        <p class="text-gray-400 mt-4 text-sm md:text-base max-w-md mx-auto">
+          Gestiona la información de tu equipo de fútbol de forma profesional, rápida y segura.
+        </p>
+      </div>
+
+      <!-- Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
         
-        <div class="flex flex-col sm:flex-row gap-4 mb-16">
-          <router-link to="/inscripcion-equipo" class="bg-primary hover:bg-[#aacc00] text-black font-bold py-3 px-8 text-sm transition-colors text-center">
-            INSCRIBIR EQUIPO
-          </router-link>
-          <router-link to="/inscripcion-jugador" class="bg-transparent border border-gray-600 hover:border-gray-400 text-white font-bold py-3 px-8 text-sm transition-colors text-center">
-            INSCRIBIR JUGADOR
+        <!-- Registro Card -->
+        <div class="bg-[#121212] border border-[#ccff00]/40 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-[#ccff00] hover:shadow-[0_0_30px_rgba(204,255,0,0.15)] group">
+          <div class="w-16 h-16 rounded-full border border-[#ccff00] flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h2 class="text-white text-xl font-bold mb-1">REGISTRO DE</h2>
+          <h3 class="text-[#ccff00] text-3xl font-black italic tracking-tight mb-4">EQUIPOS</h3>
+          <p class="text-gray-400 text-sm mb-8 flex-grow">
+            Registra un nuevo equipo y forma parte de nuestra plataforma deportiva.
+          </p>
+          <router-link to="/inscripcion-equipo" class="w-full bg-[#ccff00] text-black font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-[#b3e600] transition-colors">
+            <span>REGISTRAR EQUIPO</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
           </router-link>
         </div>
-        
-        <!-- Stats -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="bg-panel p-4 border-l-2 border-primary">
-            <div class="text-primary text-xs flex justify-between items-center mb-2">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-              <span>REGISTRO</span>
-            </div>
-            <div class="text-3xl font-black mb-1">{{ stats.equipos || 0 }}</div>
-            <div class="text-[10px] text-gray-400 uppercase tracking-wide">EQUIPOS REGISTRADOS</div>
+
+        <!-- Login Card -->
+        <div class="bg-[#121212] border border-gray-800 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-gray-600 group">
+          <div class="w-16 h-16 rounded-full border border-gray-400 flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
           </div>
-          
-          <div class="bg-panel p-4 border-l-2 border-gray-600">
-            <div class="text-gray-400 text-xs flex justify-between items-center mb-2">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-              <span>TALENTO</span>
-            </div>
-            <div class="text-3xl font-black mb-1">{{ stats.jugadores || 0 }}</div>
-            <div class="text-[10px] text-gray-400 uppercase tracking-wide">JUGADORES ACTIVOS</div>
-            <div v-if="stats.jugadores > 0" class="text-primary text-[10px] mt-1 flex items-center gap-1">
-              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-              +12% este mes
-            </div>
-          </div>
-          
-          <div class="bg-panel p-4 border-l-2 border-[#ff6b6b]">
-            <div class="text-[#ff6b6b] text-xs flex justify-between items-center mb-2">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5v18l7-3 7 3V3z"/></svg>
-              <span>COMPETICIÓN</span>
-            </div>
-            <div class="text-3xl font-black mb-1">{{ stats.torneos || 0 }}</div>
-            <div class="text-[10px] text-gray-400 uppercase tracking-wide">TORNEOS EN CURSO</div>
-          </div>
-          
-          <div class="bg-panel p-4 border-l-2 border-primary">
-            <div class="text-primary text-xs flex justify-between items-center mb-2">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-              <span>MÉTRICAS</span>
-            </div>
-            <div class="text-3xl font-black mb-1">{{ stats.goles || 0 }}</div>
-            <div class="text-[10px] text-gray-400 uppercase tracking-wide">GOLES MARCADOS</div>
-          </div>
+          <h2 class="text-white text-xl font-bold mb-1">INICIAR</h2>
+          <h3 class="text-white text-3xl font-black italic tracking-tight mb-4">SESIÓN</h3>
+          <p class="text-gray-400 text-sm mb-8 flex-grow">
+            Accede a tu cuenta para gestionar tu equipo y jugadores.
+          </p>
+          <router-link to="/login" class="w-full bg-transparent border border-gray-600 text-white font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-gray-800 transition-colors">
+            <span>INICIAR SESIÓN</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
+          </router-link>
+        </div>
+
+      </div>
+
+      <!-- Footer tiny info -->
+      <div class="mt-16 flex items-center gap-3 text-xs text-gray-500">
+        <div class="w-6 h-8 bg-transparent border border-gray-600 rounded-t-full rounded-b-md flex items-center justify-center">
+           <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+        </div>
+        <div class="text-left">
+          <p>Plataforma institucional de deportes</p>
+          <p>Gestión profesional para equipos campeones.</p>
         </div>
       </div>
-      
-      <!-- Right Image Area -->
-      <div class="relative h-full min-h-[400px]">
-        <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent z-10"></div>
-        <div class="w-full h-full min-h-[400px] bg-gradient-to-br from-[#121212] via-[#1a1a1a] to-[#2a2a2a] rounded-lg border border-gray-800 shadow-2xl flex items-center justify-center">
-          <svg class="w-48 h-48 text-primary opacity-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        
-        <!-- Overlay Card -->
-        <div class="absolute bottom-4 left-4 right-4 z-20">
-          <div class="bg-dark/90 backdrop-blur-sm border border-gray-800 p-6 flex flex-col md:flex-row gap-6 items-center">
-            <div class="flex-grow">
-              <h3 class="text-white font-bold italic text-lg mb-2">DOMINA EL JUEGO</h3>
-              <p class="text-xs text-gray-400 mb-4">Nuestra plataforma no solo gestiona inscripciones, ofrece un ecosistema completo de seguimiento de rendimiento, estadísticas en tiempo real y perfiles de jugadores profesionales.</p>
-              <div class="space-y-2">
-                <div class="flex items-center gap-2 text-xs text-gray-300">
-                  <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  Validación oficial de ligas
-                </div>
-                <div class="flex items-center gap-2 text-xs text-gray-300">
-                  <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  Dashboard de rendimiento avanzado
-                </div>
-              </div>
-            </div>
-            <div class="bg-primary text-black font-bold p-4 text-center uppercase text-sm leading-tight max-w-[150px]">
-              Únete a la liga más prestigiosa del país
-            </div>
-          </div>
-        </div>
-      </div>
-      
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import api from '../services/api'
-
-const stats = ref({
-  equipos: 0,
-  jugadores: 0,
-  torneos: 0,
-  goles: 0
-})
-
-onMounted(async () => {
-  try {
-    const response = await api.get('/stats')
-    if (response.data) {
-      stats.value = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching stats:', error)
-  }
-})
+// Home page logic
 </script>

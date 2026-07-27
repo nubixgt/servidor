@@ -51,25 +51,6 @@
         <!-- Right Form Area -->
         <div class="flex-grow bg-panel p-8 md:p-10">
           
-          <!-- Section 1 -->
-          <div class="mb-10">
-            <h3 class="text-2xl font-black italic uppercase tracking-wider mb-6 flex items-center gap-4">
-              <span class="text-gray-600">01</span> Afiliación
-            </h3>
-            <div class="mb-6">
-              <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Seleccionar Equipo</label>
-              <div class="relative">
-                <select v-model="form.equipo_id" class="w-full bg-[#252525] border border-transparent focus:border-primary text-white p-4 appearance-none rounded-none outline-none text-sm cursor-pointer" required>
-                  <option value="" disabled selected>Elija un club...</option>
-                  <option v-for="equipo in equipos" :key="equipo.id" :value="equipo.id">{{ equipo.nombre }}</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
-                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                </div>
-              </div>
-            </div>
-          </div>
-          
           <!-- Section 2 -->
           <div class="mb-10">
             <h3 class="text-2xl font-black italic uppercase tracking-wider mb-6 flex items-center gap-4">
@@ -117,7 +98,7 @@
 
           <!-- Actions -->
           <div class="flex justify-end gap-6 items-center mt-12 pt-8 border-t border-gray-800">
-            <router-link to="/" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest">
+            <router-link to="/mi-equipo" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest">
               Cancelar
             </router-link>
             <button type="submit" :disabled="isLoading" class="bg-primary hover:bg-[#aacc00] text-black font-bold py-4 px-10 text-sm uppercase flex items-center gap-3 disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(204,255,0,0.3)]">
@@ -158,7 +139,6 @@ import api from '../services/api'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const equipos = ref([])
 const fileInput = ref(null)
 const previewUrl = ref(null)
 const isLoading = ref(false)
@@ -166,21 +146,11 @@ const error = ref('')
 const success = ref(false)
 
 const form = reactive({
-  equipo_id: '',
   nombre: '',
   dpi: '',
   telefono: '',
   posicion: 'MED',
   foto: null
-})
-
-onMounted(async () => {
-  try {
-    const response = await api.get('/equipos')
-    equipos.value = response.data
-  } catch (err) {
-    console.error('Error al cargar equipos', err)
-  }
 })
 
 const triggerFileInput = () => {
@@ -216,7 +186,6 @@ const submitForm = async () => {
   success.value = false
   
   const formData = new FormData()
-  formData.append('equipo_id', form.equipo_id)
   formData.append('nombre', form.nombre)
   formData.append('dpi', form.dpi.replace(/\s/g, ''))
   formData.append('telefono', form.telefono)
@@ -224,14 +193,16 @@ const submitForm = async () => {
   formData.append('foto', form.foto)
 
   try {
+    const token = localStorage.getItem('deportes_token')
     await api.post('/jugadores', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
       }
     })
     success.value = true
     setTimeout(() => {
-      router.push('/listado')
+      router.push('/mi-equipo')
     }, 2000)
   } catch (err) {
     error.value = err.response?.data?.message || 'Error al guardar el jugador'

@@ -13,8 +13,8 @@ class EquipoModel {
         $this->conn = $database->getConnection();
     }
 
-    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null) {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta)";
+    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null, $usuario = null, $password_hash = null) {
+        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta, usuario, password_hash) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta, :usuario, :password_hash)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":nombre", $nombre);
@@ -23,6 +23,8 @@ class EquipoModel {
         $stmt->bindParam(":dpi", $dpi);
         $stmt->bindParam(":foto_ruta", $foto_ruta);
         $stmt->bindParam(":foto_representante_ruta", $foto_representante_ruta);
+        $stmt->bindParam(":usuario", $usuario);
+        $stmt->bindParam(":password_hash", $password_hash);
 
         if($stmt->execute()) {
             return $this->conn->lastInsertId();
@@ -57,6 +59,14 @@ class EquipoModel {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 0,1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function findByUsuario($usuario) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE usuario = :usuario LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":usuario", $usuario);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

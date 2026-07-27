@@ -111,14 +111,34 @@
             </button>
           </div>
           
-          <div v-if="error" class="mt-4 p-3 bg-red-900/30 border border-red-500 text-red-400 text-sm">
+          <div v-if="error" class="mt-4 p-3 bg-red-900/30 border border-red-500 text-red-400 text-sm rounded-lg">
             {{ error }}
           </div>
-          <div v-if="success" class="mt-4 p-3 bg-green-900/30 border border-green-500 text-green-400 text-sm">
-            ¡Equipo registrado con éxito!
+        </form>
+
+        <!-- Success Credentials Card -->
+        <div v-if="success" class="absolute inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-[#ccff00]">
+          <div class="w-20 h-20 bg-[#ccff00]/10 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <h2 class="text-3xl font-black text-white italic tracking-tight mb-2">¡EQUIPO REGISTRADO!</h2>
+          <p class="text-gray-400 text-sm mb-8">Guarda estas credenciales. Las necesitarás para iniciar sesión y registrar a tus jugadores.</p>
+          
+          <div class="bg-[#1e1e1e] border border-gray-700 w-full max-w-sm rounded-xl p-6 mb-8 text-left">
+            <div class="mb-4">
+              <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Usuario (DPI)</label>
+              <div class="text-white font-mono text-lg font-bold bg-[#121212] p-3 rounded border border-gray-800">{{ credentials?.usuario }}</div>
+            </div>
+            <div>
+              <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Contraseña (Teléfono)</label>
+              <div class="text-[#ccff00] font-mono text-lg font-bold bg-[#121212] p-3 rounded border border-gray-800">{{ credentials?.password }}</div>
+            </div>
           </div>
 
-        </form>
+          <router-link to="/login" class="bg-[#ccff00] text-black font-bold py-4 px-12 rounded-full uppercase hover:bg-[#b3e600] transition-colors">
+            Ir a Iniciar Sesión
+          </router-link>
+        </div>
       </div>
       
       <!-- Right Decorative Info -->
@@ -150,6 +170,7 @@ const accepted = ref(false)
 const isLoading = ref(false)
 const error = ref('')
 const success = ref(false)
+const credentials = ref(null)
 
 const fileInputRep = ref(null)
 const previewUrlRep = ref(null)
@@ -235,9 +256,7 @@ const submitForm = async () => {
       }
     })
     success.value = true
-    setTimeout(() => {
-      router.push('/listado')
-    }, 2000)
+    credentials.value = response.data.credentials
   } catch (err) {
     error.value = err.response?.data?.message || 'Error al guardar el equipo'
   } finally {

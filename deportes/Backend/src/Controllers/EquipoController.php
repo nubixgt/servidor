@@ -53,8 +53,13 @@ class EquipoController {
         }
 
         $equipoModel = new EquipoModel();
+        
+        $usuario = str_replace(' ', '', $dpi);
+        $password = str_replace(' ', '', $telefono);
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
         // First insert with empty photo
-        $id = $equipoModel->create($nombre, $representante, $telefono, $dpi, '');
+        $id = $equipoModel->create($nombre, $representante, $telefono, $dpi, '', null, $usuario, $password_hash);
 
         if ($id) {
             // Handle file upload
@@ -93,7 +98,14 @@ class EquipoController {
                 }
 
                 $equipo = $equipoModel->getById($id);
-                Response::json(['message' => 'Equipo creado exitosamente', 'data' => $equipo], 201);
+                Response::json([
+                    'message' => 'Equipo creado exitosamente', 
+                    'data' => $equipo,
+                    'credentials' => [
+                        'usuario' => $usuario,
+                        'password' => $password
+                    ]
+                ], 201);
             } else {
                 Response::error('Error al subir la imagen del escudo', 500);
             }

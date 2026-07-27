@@ -18,6 +18,10 @@ require_once __DIR__ . '/../src/Core/Router.php';
 require_once __DIR__ . '/../src/Controllers/EquipoController.php';
 require_once __DIR__ . '/../src/Controllers/JugadorController.php';
 require_once __DIR__ . '/../src/Controllers/StatsController.php';
+require_once __DIR__ . '/../src/Controllers/AuthController.php';
+
+// Utils
+require_once __DIR__ . '/../src/Utils/JwtUtils.php';
 
 // Models
 require_once __DIR__ . '/../src/Models/EquipoModel.php';
@@ -32,6 +36,10 @@ $router->add('GET', '/api/equipos', 'EquipoController', 'getAll');
 $router->add('GET', '/api/equipos/{id}', 'EquipoController', 'getById');
 $router->add('POST', '/api/equipos', 'EquipoController', 'create');
 
+$router->add('POST', '/api/login', 'AuthController', 'login');
+$router->add('GET', '/api/mi-equipo', 'JugadorController', 'getByToken');
+
+// Keeping this for reference, though mi-equipo handles players now
 $router->add('GET', '/api/jugadores', 'JugadorController', 'getAll');
 $router->add('POST', '/api/jugadores', 'JugadorController', 'create');
 
