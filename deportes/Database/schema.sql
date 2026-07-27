@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS equipos (
     representante VARCHAR(100) NOT NULL,
     telefono VARCHAR(20) NOT NULL,
     foto_ruta VARCHAR(255) NOT NULL,
+    foto_representante_ruta VARCHAR(255) DEFAULT NULL,
     dpi VARCHAR(20) NOT NULL UNIQUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

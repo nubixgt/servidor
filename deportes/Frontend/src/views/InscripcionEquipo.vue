@@ -25,23 +25,41 @@
         </div>
         
         <form @submit.prevent="submitForm">
-          <!-- Image Upload -->
-          <div class="mb-8 relative w-32">
-            <div class="w-32 h-32 border border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 overflow-hidden relative cursor-pointer" @click="triggerFileInput">
-              <img v-if="previewUrl" :src="previewUrl" class="absolute inset-0 w-full h-full object-cover" />
-              <svg v-else class="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              
-              <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg" @change="onFileChange" />
+          <!-- Images Upload -->
+          <div class="flex flex-col md:flex-row gap-8 mb-8">
+            <div>
+              <div class="relative w-32 mb-2">
+                <div class="w-32 h-32 border border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 overflow-hidden relative cursor-pointer" @click="triggerFileInput">
+                  <img v-if="previewUrl" :src="previewUrl" class="absolute inset-0 w-full h-full object-cover" />
+                  <svg v-else class="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  
+                  <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg" @change="onFileChange" />
+                </div>
+                
+                <button type="button" class="absolute -bottom-3 -right-3 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center hover:bg-[#aacc00] transition-colors" @click="triggerFileInput">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </button>
+              </div>
+              <h3 class="text-xs font-bold text-gray-300 uppercase mb-1">Escudo del Equipo</h3>
+              <p class="text-xs text-gray-500">Formato PNG o JPG. Máximo 5MB.</p>
             </div>
             
-            <button type="button" class="absolute -bottom-3 -right-3 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center hover:bg-[#aacc00] transition-colors" @click="triggerFileInput">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            </button>
-          </div>
-          
-          <div class="mb-8">
-            <h3 class="text-xs font-bold text-gray-300 uppercase mb-1">Escudo del Equipo</h3>
-            <p class="text-xs text-gray-500">Formato PNG o JPG. Máximo 5MB.</p>
+            <div>
+              <div class="relative w-32 mb-2">
+                <div class="w-32 h-32 border border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 overflow-hidden relative cursor-pointer" @click="triggerFileInputRep">
+                  <img v-if="previewUrlRep" :src="previewUrlRep" class="absolute inset-0 w-full h-full object-cover" />
+                  <svg v-else class="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  
+                  <input type="file" ref="fileInputRep" class="hidden" accept="image/png, image/jpeg" @change="onFileChangeRep" />
+                </div>
+                
+                <button type="button" class="absolute -bottom-3 -right-3 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center hover:bg-[#aacc00] transition-colors" @click="triggerFileInputRep">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </button>
+              </div>
+              <h3 class="text-xs font-bold text-gray-300 uppercase mb-1">Foto del Representante</h3>
+              <p class="text-xs text-gray-500">Opcional. Formato PNG o JPG.</p>
+            </div>
           </div>
 
           <!-- Form Grid -->
@@ -58,12 +76,12 @@
               <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Teléfono <span class="text-primary">*</span></label>
               <div class="flex">
                 <div class="bg-[#121212] border-r border-[#1e1e1e] px-4 py-3 text-sm text-gray-400 font-bold">+502</div>
-                <input v-model="form.telefono" type="text" class="flex-grow bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600" placeholder="0000 0000" required>
+                <input v-model="form.telefono" type="text" maxlength="8" class="flex-grow bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600" placeholder="0000 0000" required>
               </div>
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-300 uppercase mb-2">DPI / Identificación <span class="text-primary">*</span></label>
-              <input v-model="form.dpi" type="text" class="w-full bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600 tracking-widest" placeholder="#### ##### ####" required>
+              <input v-model="form.dpi" type="text" maxlength="13" class="w-full bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600 tracking-widest" placeholder="#### ##### ####" required>
             </div>
           </div>
           
@@ -133,12 +151,16 @@ const isLoading = ref(false)
 const error = ref('')
 const success = ref(false)
 
+const fileInputRep = ref(null)
+const previewUrlRep = ref(null)
+
 const form = reactive({
   nombre: '',
   representante: '',
   telefono: '',
   dpi: '',
-  foto: null
+  foto: null,
+  foto_representante: null
 })
 
 const triggerFileInput = () => {
@@ -163,6 +185,28 @@ const onFileChange = (e) => {
   error.value = ''
 }
 
+const triggerFileInputRep = () => {
+  fileInputRep.value.click()
+}
+
+const onFileChangeRep = (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  
+  if (file.size > 5 * 1024 * 1024) {
+    error.value = 'La foto del representante supera el tamaño máximo de 5MB.'
+    return
+  }
+  
+  form.foto_representante = file
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    previewUrlRep.value = e.target.result
+  }
+  reader.readAsDataURL(file)
+  error.value = ''
+}
+
 const submitForm = async () => {
   if (!form.foto) {
     error.value = 'Debes subir el escudo del equipo.'
@@ -179,6 +223,10 @@ const submitForm = async () => {
   formData.append('telefono', form.telefono)
   formData.append('dpi', form.dpi.replace(/\s/g, ''))
   formData.append('foto', form.foto)
+  
+  if (form.foto_representante) {
+    formData.append('foto_representante', form.foto_representante)
+  }
 
   try {
     const response = await api.post('/equipos', formData, {

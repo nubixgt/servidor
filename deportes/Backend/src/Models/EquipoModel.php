@@ -13,8 +13,8 @@ class EquipoModel {
         $this->conn = $database->getConnection();
     }
 
-    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta) {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta)";
+    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null) {
+        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":nombre", $nombre);
@@ -22,6 +22,7 @@ class EquipoModel {
         $stmt->bindParam(":telefono", $telefono);
         $stmt->bindParam(":dpi", $dpi);
         $stmt->bindParam(":foto_ruta", $foto_ruta);
+        $stmt->bindParam(":foto_representante_ruta", $foto_representante_ruta);
 
         if($stmt->execute()) {
             return $this->conn->lastInsertId();
@@ -31,6 +32,14 @@ class EquipoModel {
 
     public function updateFoto($id, $foto_ruta) {
         $query = "UPDATE " . $this->table_name . " SET foto_ruta = :foto_ruta WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":foto_ruta", $foto_ruta);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
+    }
+
+    public function updateFotoRepresentante($id, $foto_ruta) {
+        $query = "UPDATE " . $this->table_name . " SET foto_representante_ruta = :foto_ruta WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":foto_ruta", $foto_ruta);
         $stmt->bindParam(":id", $id);

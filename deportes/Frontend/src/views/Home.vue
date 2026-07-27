@@ -28,7 +28,7 @@
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
               <span>REGISTRO</span>
             </div>
-            <div class="text-3xl font-black mb-1">128</div>
+            <div class="text-3xl font-black mb-1">{{ stats.equipos || 0 }}</div>
             <div class="text-[10px] text-gray-400 uppercase tracking-wide">EQUIPOS REGISTRADOS</div>
           </div>
           
@@ -37,9 +37,9 @@
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
               <span>TALENTO</span>
             </div>
-            <div class="text-3xl font-black mb-1">2450</div>
+            <div class="text-3xl font-black mb-1">{{ stats.jugadores || 0 }}</div>
             <div class="text-[10px] text-gray-400 uppercase tracking-wide">JUGADORES ACTIVOS</div>
-            <div class="text-primary text-[10px] mt-1 flex items-center gap-1">
+            <div v-if="stats.jugadores > 0" class="text-primary text-[10px] mt-1 flex items-center gap-1">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
               +12% este mes
             </div>
@@ -50,7 +50,7 @@
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5v18l7-3 7 3V3z"/></svg>
               <span>COMPETICIÓN</span>
             </div>
-            <div class="text-3xl font-black mb-1">12</div>
+            <div class="text-3xl font-black mb-1">{{ stats.torneos || 0 }}</div>
             <div class="text-[10px] text-gray-400 uppercase tracking-wide">TORNEOS EN CURSO</div>
           </div>
           
@@ -59,7 +59,7 @@
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
               <span>MÉTRICAS</span>
             </div>
-            <div class="text-3xl font-black mb-1">8900</div>
+            <div class="text-3xl font-black mb-1">{{ stats.goles || 0 }}</div>
             <div class="text-[10px] text-gray-400 uppercase tracking-wide">GOLES MARCADOS</div>
           </div>
         </div>
@@ -99,3 +99,26 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import api from '../services/api'
+
+const stats = ref({
+  equipos: 0,
+  jugadores: 0,
+  torneos: 0,
+  goles: 0
+})
+
+onMounted(async () => {
+  try {
+    const response = await api.get('/stats')
+    if (response.data) {
+      stats.value = response.data
+    }
+  } catch (error) {
+    console.error('Error fetching stats:', error)
+  }
+})
+</script>

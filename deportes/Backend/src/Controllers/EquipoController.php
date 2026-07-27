@@ -68,20 +68,34 @@ class EquipoController {
             $allowed = ['jpg', 'jpeg', 'png'];
 
             if (!in_array($extension, $allowed)) {
-                Response::error('Formato de imagen no permitido', 400);
+                Response::error('Formato de imagen de escudo no permitido', 400);
             }
 
-            $fileName = 'representante.' . $extension; // as per req, though UI says 'Escudo del equipo'
+            $fileName = 'escudo.' . $extension;
             $destination = $uploadDir . $fileName;
             
             if (move_uploaded_file($_FILES['foto']['tmp_name'], $destination)) {
                 $foto_ruta = 'uploads/equipos/' . $id . '/' . $fileName;
                 $equipoModel->updateFoto($id, $foto_ruta);
                 
+                // Handle foto_representante if provided
+                if (isset($_FILES['foto_representante'])) {
+                    $repInfo = pathinfo($_FILES['foto_representante']['name']);
+                    $repExt = strtolower($repInfo['extension']);
+                    if (in_array($repExt, $allowed)) {
+                        $repFileName = 'representante.' . $repExt;
+                        $repDest = $uploadDir . $repFileName;
+                        if (move_uploaded_file($_FILES['foto_representante']['tmp_name'], $repDest)) {
+                            $foto_rep_ruta = 'uploads/equipos/' . $id . '/' . $repFileName;
+                            $equipoModel->updateFotoRepresentante($id, $foto_rep_ruta);
+                        }
+                    }
+                }
+
                 $equipo = $equipoModel->getById($id);
                 Response::json(['message' => 'Equipo creado exitosamente', 'data' => $equipo], 201);
             } else {
-                Response::error('Error al subir la imagen', 500);
+                Response::error('Error al subir la imagen del escudo', 500);
             }
         } else {
             Response::error('Error al crear el equipo (¿DPI duplicado?)', 500);

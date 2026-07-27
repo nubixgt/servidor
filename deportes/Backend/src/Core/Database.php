@@ -19,7 +19,7 @@ class Database {
             $this->host = "localhost";
             $this->db_name = "visionwe_deportes";
             $this->username = "visionwe_deportes";
-            $this->password = "[iZ9r71YY@dcbbOf.]";
+            $this->password = "DeportesGT2026";
         } else {
             // Local
             $this->host = "localhost";

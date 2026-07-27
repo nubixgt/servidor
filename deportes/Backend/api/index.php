@@ -17,6 +17,7 @@ require_once __DIR__ . '/../src/Core/Router.php';
 // Controllers
 require_once __DIR__ . '/../src/Controllers/EquipoController.php';
 require_once __DIR__ . '/../src/Controllers/JugadorController.php';
+require_once __DIR__ . '/../src/Controllers/StatsController.php';
 
 // Models
 require_once __DIR__ . '/../src/Models/EquipoModel.php';
@@ -33,6 +34,8 @@ $router->add('POST', '/api/equipos', 'EquipoController', 'create');
 
 $router->add('GET', '/api/jugadores', 'JugadorController', 'getAll');
 $router->add('POST', '/api/jugadores', 'JugadorController', 'create');
+
+$router->add('GET', '/api/stats', 'StatsController', 'getStats');
 
 // Get request URI and Method
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

@@ -83,7 +83,7 @@
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-300 uppercase mb-2">DPI / CUI</label>
-                <input v-model="form.dpi" type="text" class="w-full bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500 tracking-widest" placeholder="0000 00000 0000" required>
+                <input v-model="form.dpi" type="text" maxlength="13" class="w-full bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500 tracking-widest" placeholder="0000 00000 0000" required>
               </div>
             </div>
             
@@ -92,7 +92,7 @@
                 <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Teléfono de contacto</label>
                 <div class="flex">
                   <div class="bg-[#1e1e1e] border-r border-[#2a2a2a] px-4 py-4 text-sm text-gray-400 font-bold">+502</div>
-                  <input v-model="form.telefono" type="text" class="flex-grow bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500" placeholder="5555 5555" required>
+                  <input v-model="form.telefono" type="text" maxlength="8" class="flex-grow bg-[#252525] border border-transparent focus:border-primary text-white p-4 rounded-none outline-none text-sm placeholder-gray-500" placeholder="5555 5555" required>
                 </div>
               </div>
               <div>
