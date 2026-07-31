@@ -32,6 +32,7 @@ class AuthController {
             $payload = [
                 'equipo_id' => $equipo['id'],
                 'usuario' => $equipo['usuario'],
+                'rol' => $equipo['rol'] ?? 'encargado',
                 'exp' => time() + (86400 * 7) // 7 days expiration
             ];
             $token = JwtUtils::generateToken($payload);
@@ -39,6 +40,7 @@ class AuthController {
             Response::json([
                 'message' => 'Login exitoso',
                 'token' => $token,
+                'rol' => $equipo['rol'] ?? 'encargado',
                 'equipo' => [
                     'id' => $equipo['id'],
                     'nombre' => $equipo['nombre'],

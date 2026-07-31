@@ -38,11 +38,28 @@ class JugadorModel {
         return $stmt->execute();
     }
 
-    public function getByEquipo($equipo_id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE equipo_id = :equipo_id ORDER BY fecha_creacion DESC";
+    public function getByEquipo($equipo_id, $estado = 'activo') {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE equipo_id = :equipo_id AND estado = :estado ORDER BY fecha_creacion DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":equipo_id", $equipo_id);
+        $stmt->bindParam(":estado", $estado);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getById($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function darDeBaja($id, $razon) {
+        $query = "UPDATE " . $this->table_name . " SET estado = 'inactivo', razon_baja = :razon, fecha_baja = NOW() WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":razon", $razon);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 }

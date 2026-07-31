@@ -42,6 +42,13 @@ $router->add('GET', '/api/mi-equipo', 'JugadorController', 'getByToken');
 // Keeping this for reference, though mi-equipo handles players now
 $router->add('GET', '/api/jugadores', 'JugadorController', 'getAll');
 $router->add('POST', '/api/jugadores', 'JugadorController', 'create');
+$router->add('PATCH', '/api/jugadores/{id}/baja', 'JugadorController', 'darDeBaja');
+$router->add('GET', '/api/mi-equipo/inactivos', 'JugadorController', 'getInactivosByToken');
+
+// Admin Routes
+require_once __DIR__ . '/../src/Controllers/AdminController.php';
+$router->add('GET', '/api/admin/equipos', 'AdminController', 'getEquipos');
+$router->add('GET', '/api/admin/equipos/{id}/jugadores', 'AdminController', 'getEquipoJugadores');
 
 $router->add('GET', '/api/stats', 'StatsController', 'getStats');
 

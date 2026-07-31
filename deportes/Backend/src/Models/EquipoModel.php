@@ -13,8 +13,8 @@ class EquipoModel {
         $this->conn = $database->getConnection();
     }
 
-    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null, $usuario = null, $password_hash = null) {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta, usuario, password_hash) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta, :usuario, :password_hash)";
+    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null, $usuario = null, $password_hash = null, $rol = 'encargado') {
+        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta, usuario, password_hash, rol) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta, :usuario, :password_hash, :rol)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(":nombre", $nombre);
@@ -25,6 +25,7 @@ class EquipoModel {
         $stmt->bindParam(":foto_representante_ruta", $foto_representante_ruta);
         $stmt->bindParam(":usuario", $usuario);
         $stmt->bindParam(":password_hash", $password_hash);
+        $stmt->bindParam(":rol", $rol);
 
         if($stmt->execute()) {
             return $this->conn->lastInsertId();
@@ -49,7 +50,7 @@ class EquipoModel {
     }
 
     public function getAll() {
-        $query = "SELECT * FROM " . $this->table_name . " ORDER BY fecha_creacion DESC";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE rol = 'encargado' ORDER BY fecha_creacion DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

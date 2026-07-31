@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS equipos (
     foto_ruta VARCHAR(255) NOT NULL,
     foto_representante_ruta VARCHAR(255) DEFAULT NULL,
     dpi VARCHAR(20) NOT NULL UNIQUE,
+    usuario VARCHAR(50) DEFAULT NULL,
+    password_hash VARCHAR(255) DEFAULT NULL,
+    rol ENUM('encargado', 'admin') DEFAULT 'encargado',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -17,6 +20,9 @@ CREATE TABLE IF NOT EXISTS jugadores (
     foto_ruta VARCHAR(255) NOT NULL,
     telefono VARCHAR(20) NOT NULL,
     posicion VARCHAR(10) DEFAULT NULL,
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
+    razon_baja TEXT NULL,
+    fecha_baja DATETIME NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (equipo_id) REFERENCES equipos(id) ON DELETE CASCADE
 );

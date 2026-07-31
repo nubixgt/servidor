@@ -34,6 +34,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/mi-equipo/inactivos',
+    name: 'JugadoresInactivos',
+    component: () => import('../views/MiEquipo/JugadoresInactivos.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin',
+    name: 'AdminPanel',
+    component: () => import('../views/AdminPanel.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/'
   }
@@ -46,11 +58,18 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('deportes_token')
+  const rol = localStorage.getItem('deportes_rol')
   
   if (to.meta.requiresAuth && !token) {
     next('/login')
-  } else if (to.name === 'Login' && token) {
+  } else if (to.meta.requiresAdmin && rol !== 'admin') {
     next('/mi-equipo')
+  } else if (to.name === 'Login' && token) {
+    if (rol === 'admin') {
+      next('/admin')
+    } else {
+      next('/mi-equipo')
+    }
   } else {
     next()
   }

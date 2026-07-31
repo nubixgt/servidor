@@ -24,6 +24,10 @@
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           Equipos
         </button>
+        <router-link to="/mi-equipo/inactivos" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold text-gray-400 hover:bg-gray-900 hover:text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>
+          Jugadores Inactivos
+        </router-link>
       </nav>
 
       <div class="p-4 border-t border-gray-800">
@@ -107,6 +111,7 @@
                     <th class="p-4 font-bold text-center">Posición</th>
                     <th class="p-4 font-bold">DPI / ID</th>
                     <th class="p-4 font-bold text-center">Estado</th>
+                    <th class="p-4 font-bold text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -135,6 +140,11 @@
                       <span class="inline-block px-3 py-1 bg-[#ccff00]/10 text-[#ccff00] text-[10px] font-bold uppercase rounded-full border border-[#ccff00]/30">
                         Activo
                       </span>
+                    </td>
+                    <td class="p-4 text-center">
+                      <button @click="abrirModalBaja(jugador)" class="text-gray-500 hover:text-red-500 transition-colors" title="Dar de baja">
+                        <svg class="w-5 h-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -167,6 +177,24 @@
         </div>
       </div>
     </main>
+
+    <!-- Modal Baja -->
+    <div v-if="showModalBaja" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <div class="bg-[#1a1a1a] border border-gray-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Dar de baja a jugador</h3>
+        <p class="text-sm text-gray-400 mb-4">¿Estás seguro que deseas dar de baja a <strong class="text-white">{{ jugadorSeleccionado?.nombre }}</strong>?</p>
+        
+        <div class="mb-4">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Razón de la baja *</label>
+          <textarea v-model="razonBaja" rows="3" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-[#ccff00]" placeholder="Escribe el motivo aquí..." required></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button @click="showModalBaja = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors">Cancelar</button>
+          <button @click="confirmarBaja" :disabled="!razonBaja.trim()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50">Confirmar baja</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -181,6 +209,42 @@ const todosLosEquipos = ref([])
 const isLoading = ref(true)
 const error = ref('')
 const activeTab = ref('jugadores')
+
+const showModalBaja = ref(false)
+const jugadorSeleccionado = ref(null)
+const razonBaja = ref('')
+
+const abrirModalBaja = (jugador) => {
+  jugadorSeleccionado.value = jugador
+  razonBaja.value = ''
+  showModalBaja.value = true
+}
+
+const confirmarBaja = async () => {
+  if (!razonBaja.value.trim()) return
+
+  try {
+    const token = localStorage.getItem('deportes_token')
+    await api.patch(`/jugadores/${jugadorSeleccionado.value.id}/baja`, {
+      razon_baja: razonBaja.value
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    
+    showModalBaja.value = false
+    
+    const response = await api.get('/mi-equipo', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    equipo.value = response.data
+  } catch (err) {
+    alert('Error al dar de baja: ' + (err.response?.data?.error || err.message))
+  }
+}
 
 onMounted(async () => {
   try {

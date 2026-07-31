@@ -93,4 +93,74 @@ class JugadorController {
             Response::error('Error al crear el jugador (¿DPI duplicado?)', 500);
         }
     }
+
+    public function darDeBaja($params) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'PATCH') {
+            Response::error('Method not allowed', 405);
+        }
+
+        $token = JwtUtils::getBearerToken();
+        if (!$token) {
+            Response::error('No autorizado. Token faltante.', 401);
+        }
+        $payload = JwtUtils::verifyToken($token);
+        if (!$payload) {
+            Response::error('Token inválido o expirado.', 401);
+        }
+
+        $equipo_id = $payload['equipo_id'];
+        $jugador_id = $params['id'] ?? null;
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        $razon_baja = $data['razon_baja'] ?? '';
+
+        if (!$jugador_id) {
+            Response::error('ID de jugador no proporcionado', 400);
+        }
+
+        if (empty($razon_baja)) {
+            Response::error('La razón de baja es obligatoria', 400);
+        }
+
+        $jugadorModel = new JugadorModel();
+        $jugador = $jugadorModel->getById($jugador_id);
+
+        if (!$jugador) {
+            Response::error('Jugador no encontrado', 404);
+        }
+
+        if ($jugador['equipo_id'] != $equipo_id && (!isset($payload['rol']) || $payload['rol'] !== 'admin')) {
+            Response::error('No autorizado para modificar este jugador', 403);
+        }
+
+        if ($jugadorModel->darDeBaja($jugador_id, $razon_baja)) {
+            Response::json(['message' => 'Jugador dado de baja exitosamente']);
+        } else {
+            Response::error('Error al dar de baja al jugador', 500);
+        }
+    }
+
+    public function getInactivosByToken() {
+        $token = JwtUtils::getBearerToken();
+        if (!$token) {
+            Response::error('No autorizado. Token faltante.', 401);
+        }
+        $payload = JwtUtils::verifyToken($token);
+        if (!$payload) {
+            Response::error('Token inválido o expirado.', 401);
+        }
+
+        $equipo_id = $payload['equipo_id'];
+        
+        $equipoModel = new EquipoModel();
+        $equipo = $equipoModel->getById($equipo_id);
+        
+        if ($equipo) {
+            $jugadorModel = new JugadorModel();
+            $equipo['jugadores'] = $jugadorModel->getByEquipo($equipo_id, 'inactivo');
+            Response::json($equipo);
+        } else {
+            Response::error('Equipo no encontrado', 404);
+        }
+    }
 }
