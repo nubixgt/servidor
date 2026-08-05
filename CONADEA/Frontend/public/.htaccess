@@ -1,0 +1,10 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /CONADEA/
+
+# Si el archivo o directorio existe físicamente, servirlo directo
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Cualquier otra ruta la redirige al index.html del SPA
+RewriteRule ^ index.html [L]

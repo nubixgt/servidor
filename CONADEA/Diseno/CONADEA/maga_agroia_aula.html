@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGA AgroIA · Aula Virtual</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root{
+  --texto: #FFFFFF;
+  --texto-suave: rgba(255, 255, 255, 0.70);
+  --verde: #4ADE80;
+  --verde-fuerte: #22C55E;
+  --verde-oscuro: #15803D;
+  --lima: #A3E635;
+  --oro: #F4C542;
+  --azul: #38BDF8;
+  --rojo: #F87171;
+  --vidrio: rgba(13, 38, 48, 0.45);
+  --vidrio-2: rgba(255, 255, 255, 0.08);
+  --vidrio-3: rgba(255, 255, 255, 0.15);
+  --borde: rgba(255, 255, 255, 0.12);
+  --borde-claro: rgba(255, 255, 255, 0.22);
+  --radio: 20px;
+  --tinta-oscura: #0B2530;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--texto);
+  min-height: 100vh;
+  background: #0C2630;
+  overflow-x: hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select{font-family:inherit;font-size:1rem;}
+h1,h2,h3,h4{
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+.oculto{display:none !important;}
+
+/* ============ FONDO PAISAJE ============ */
+.fondo{
+  position: fixed; inset: 0; z-index: -2; overflow: hidden;
+  background: url('fondoC.png') no-repeat center center;
+  background-size: cover;
+}
+.fondo::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(8, 25, 32, 0.45) 0%, rgba(6, 20, 26, 0.7) 100%);
+  z-index: 1;
+}
+.fondo .niebla, .fondo svg, .fondo .hoja { display: none !important; }
+
+/* ============ ESTRUCTURA ============ */
+.app-grid{display:grid;grid-template-columns:260px 1fr;gap:24px;max-width:1560px;margin:0 auto;padding:24px;}
+@media(max-width:980px){.app-grid{grid-template-columns:1fr;padding:12px;}}
+
+/* ============ SIDEBAR ============ */
+.sidebar{
+  background: rgba(13, 38, 48, 0.55);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--borde); border-radius: 24px;
+  padding: 24px 16px; height: calc(100vh - 48px); position: sticky; top: 24px;
+  display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: thin;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  gap: 8px;
+}
+@media(max-width:980px){
+  .sidebar{position:fixed;left:12px;top:12px;bottom:12px;height:auto;width:258px;z-index:90;
+    transform:translateX(-120%);transition:transform .28s ease;}
+  .sidebar.abierto{transform:translateX(0);}
+}
+.logo-zona{text-align:center;padding:6px 4px 16px;border-bottom:1px solid var(--borde);margin-bottom:16px;}
+.logo-svg-container {
+  width: 100px; height: 100px; margin: 0 auto 12px;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.25));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.logo-svg-container:hover {
+  transform: scale(1.08) rotate(-2deg);
+}
+.logo-zona .ministerio{
+  font-family: 'Outfit', sans-serif;
+  font-size: .62rem; font-weight: 800; letter-spacing: .06em; line-height: 1.4; color: #FFFFFF;
+  margin-top: 10px; text-transform: uppercase;
+}
+.logo-zona .lema{
+  font-family: 'Inter', sans-serif;
+  font-size: .52rem; letter-spacing: .12em; color: var(--texto-suave); margin-top: 4px; text-transform: uppercase;
+}
+
+.menu{list-style:none;display:flex;flex-direction:column;gap:4px;flex:1;}
+.menu button{
+  width:100%;display:flex;align-items:center;gap:12px;
+  padding:8px 14px;border-radius:12px;font-size:.88rem;font-weight:600;
+  color: var(--texto-suave);text-align:left;transition:all 0.2s ease;
+}
+.menu button:hover{background:var(--vidrio-2);color:#FFFFFF;transform:translateX(4px);}
+.menu button.activo{
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.3) 0%, rgba(34, 197, 94, 0.15) 100%);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.2);
+}
+.menu .ic{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--vidrio-2);border:1px solid var(--borde);
+  display:inline-flex;align-items:center;justify-content:center;
+  flex:none;
+  transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.menu .ic svg{
+  width:16px;height:16px;
+  stroke:var(--texto-suave);
+  fill:none;
+  stroke-width:2.5;
+  transition:all 0.3s ease;
+}
+.menu button:hover .ic{
+  background:rgba(74, 222, 128, 0.25);
+  border-color:rgba(74, 222, 128, 0.5);
+  transform:scale(1.15) rotate(10deg);
+  box-shadow:0 0 10px rgba(74, 222, 128, 0.4);
+}
+.menu button:hover .ic svg{
+  stroke:#FFFFFF;
+  filter:drop-shadow(0 0 4px var(--verde));
+}
+.menu button.activo .ic{
+  background:rgba(74, 222, 128, 0.4);
+  border-color:var(--verde);
+}
+.menu button.activo .ic svg{
+  stroke:#FFFFFF;
+}
+.menu .sep{height:1px;background:var(--borde);margin:10px 4px;}
+.menu .salir{color:var(--rojo);}
+.menu .salir:hover{background:rgba(248,113,113,0.1);color:#FF8A8A;}
+
+/* ============ ZONA PRINCIPAL ============ */
+.principal{min-width:0;padding-bottom:30px;}
+.topbar{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.topbar .saludo h1{
+  font-size:2rem; font-weight:800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.topbar .saludo p{font-size:.9rem;color:var(--texto-suave);margin-top:4px;}
+.topbar .derecha{margin-left:auto;display:flex;align-items:center;gap:18px;}
+.campana{position:relative;font-size:1.35rem;padding:6px;transition: transform 0.2s ease;}
+.campana:hover{transform: scale(1.08);}
+.campana .punto{
+  position:absolute;top:2px;right:-1px;min-width:18px;height:18px;border-radius:10px;
+  background:var(--verde);color:#06281A;font-size:.68rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+}
+.chip-usuario{display:flex;align-items:center;gap:12px;text-align:left;transition: transform 0.2s ease;}
+.chip-usuario:hover{transform: translateY(-1px);}
+.chip-usuario .avatar{
+  width:44px;height:44px;border-radius:50%;flex:none;
+  background:linear-gradient(135deg,var(--verde),#16A34A);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#06281A;
+  border:2px solid var(--borde-claro);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.chip-usuario b{display:block;font-size:.9rem;font-family:'Outfit',sans-serif;font-weight:700;}
+.chip-usuario small{display:block;font-size:.74rem;color:var(--texto-suave);margin-top:1px;}
+.hamburguesa{display:none;font-size:1.6rem;padding:6px 12px;border:1px solid var(--borde);border-radius:12px;background:var(--vidrio);backdrop-filter:blur(10px);}
+@media(max-width:980px){.hamburguesa{display:block;}}
+
+.buscador{
+  display:flex;align-items:center;gap:12px;width:100%;max-width:560px;
+  background:rgba(13, 38, 48, 0.35);border:1px solid var(--borde);border-radius:16px;
+  padding:12px 18px;margin-bottom:24px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:all 0.3s ease;
+}
+.buscador input{flex:1;background:none;border:none;outline:none;color:var(--texto);font-size:.95rem;}
+.buscador input::placeholder{color:rgba(255, 255, 255, 0.5);}
+.buscador:focus-within{
+  border-color:var(--verde);
+  box-shadow:0 0 0 3px rgba(74,222,128,.2);
+  background:rgba(13, 38, 48, 0.5);
+}
+
+/* ============ TARJETAS VIDRIO ============ */
+.vidrio{
+  background:var(--vidrio);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--borde);border-radius:var(--radio);
+  padding:20px;box-shadow:0 8px 32px rgba(0,0,0,.22);
+  transition:all 0.3s ease;
+}
+.vidrio:hover{
+  border-color: rgba(74, 222, 128, 0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.cab-tarjeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.cab-tarjeta h3{font-size:1.05rem;font-family:'Outfit',sans-serif;font-weight:700;}
+.ver-todas{font-size:.82rem;color:var(--verde);font-weight:700;transition: color 0.2s;}
+.ver-todas:hover{color:#FFFFFF;text-decoration:underline;}
+.grid-dash{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+@media(max-width:1280px){.grid-dash{grid-template-columns:1fr 1fr;}}
+@media(max-width:760px){.grid-dash{grid-template-columns:1fr;}}
+
+/* ---- progreso general ---- */
+.prog-flex{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.anillo{position:relative;width:128px;height:128px;flex:none;}
+.anillo svg{transform:rotate(-90deg);}
+.anillo .centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.anillo .centro b{font-size:1.7rem;font-family:'Outfit',sans-serif;font-weight:800;}
+.anillo .centro small{font-size:.64rem;color:var(--texto-suave);text-transform:uppercase;letter-spacing:.06em;}
+.stats-prog{flex:1;min-width:170px;display:flex;flex-direction:column;gap:12px;}
+.stat-linea{display:flex;align-items:center;gap:12px;font-size:.86rem;color:var(--texto-suave);}
+.stat-linea .ic{width:32px;height:32px;border-radius:10px;background:var(--vidrio-2);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex:none;}
+.stat-linea .ic svg{width:16px;height:16px;stroke:var(--texto-suave);fill:none;stroke-width:2.5;}
+.stat-linea b{margin-left:auto;font-size:1.05rem;color:var(--texto);font-family:'Outfit',sans-serif;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--vidrio-2);border:1px solid var(--borde-claro);
+  border-bottom: 4px solid rgba(255, 255, 255, 0.2);
+  color:var(--texto);
+  font-weight:700;font-size:.86rem;padding:10px 20px 12px;border-radius:14px;
+  transition:all 0.1s ease;
+  cursor:pointer;
+  position:relative;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.btn:hover{
+  background:var(--vidrio-3);
+  transform:translateY(-2px);
+  border-bottom-width: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+.btn:active{
+  transform:translateY(2px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.btn.verde{
+  background:linear-gradient(135deg,var(--verde),var(--verde-fuerte));
+  color:#06281A;
+  border:1px solid rgba(74, 222, 128, 0.4);
+  border-bottom:4px solid #166534;
+  box-shadow: 0 4px 14px rgba(34,197,94,0.3);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+.btn.verde:hover{
+  filter:brightness(1.15);
+  transform:translateY(-2px);
+  border-bottom-width: 6px;
+  box-shadow: 0 6px 20px rgba(34,197,94,0.5);
+}
+.btn.verde:active{
+  transform:translateY(2px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+.btn.bloq{opacity:.35;pointer-events:none;border-bottom-width:2px;}
+.btn-ancho{width:100%;margin-top:14px;}
+
+/* ---- racha ---- */
+.racha-num{text-align:center;margin:4px 0 2px;}
+.racha-num b{font-size:3.2rem;line-height:1;font-family:'Outfit',sans-serif;font-weight:900;}
+.racha-num p{font-size:.86rem;color:var(--texto-suave);margin-top:2px;}
+.racha-num .animo{color:var(--verde);font-weight:700;font-size:.88rem;margin-top:4px;}
+.dias-semana{display:flex;justify-content:space-between;margin-top:18px;padding:0 2px;}
+.dia{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:.72rem;color:var(--texto-suave);font-weight:700;}
+.dia .marca{
+  width:28px;height:28px;border-radius:50%;border:1.5px solid var(--borde-claro);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all 0.3s ease;
+}
+.dia.hecho .marca{
+  background:var(--verde-fuerte);border-color:var(--verde-fuerte);color:#06281A;font-weight:900;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+.dia.hoy .marca{box-shadow:0 0 0 3px rgba(74,222,128,.4);border-color:#FFFFFF;}
+
+/* ---- novedades ---- */
+.nov-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--borde);transition:all 0.2s;}
+.nov-item:hover{background:rgba(255,255,255,0.02);padding-left:4px;}
+.nov-item:last-child{border-bottom:none;}
+.nov-item .icono{
+  width:42px;height:42px;border-radius:12px;flex:none;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.nov-item.video .icono{background:linear-gradient(135deg,#60A5FA,#2563EB);}
+.nov-item.alerta .icono{background:linear-gradient(135deg,#FBBF24,#D97706);}
+.nov-item b{font-size:.86rem;display:block;font-family:'Outfit',sans-serif;font-weight:700;}
+.nov-item p{font-size:.8rem;color:var(--texto-suave);line-height:1.45;margin-top:2px;}
+.nov-item small{font-size:.72rem;color:var(--texto-suave);opacity:.8;display:block;margin-top:4px;}
+
+/* ---- cursos en progreso ---- */
+.curso-fila{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--borde);transition:all 0.2s;}
+.curso-fila:hover{background:rgba(255,255,255,0.02);padding-left:4px;}
+.curso-fila:last-of-type{border-bottom:none;}
+.miniatura{
+  width:64px;height:48px;border-radius:12px;flex:none;font-size:1.6rem;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--borde-claro);
+  transition: transform 0.3s ease;
+}
+.curso-fila:hover .miniatura{transform: scale(1.05);}
+.curso-fila .datos{flex:1;min-width:0;}
+.curso-fila .datos b{
+  font-size:.92rem;display:block;margin-bottom:6px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;font-family:'Outfit',sans-serif;
+  font-weight:700;color:#FFFFFF;
+}
+.pista{height:8px;border-radius:6px;background:rgba(255,255,255,.14);overflow:hidden;position:relative;}
+.pista>div{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--lima),var(--verde-fuerte));
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+  transition:width .5s ease;
+}
+.curso-fila .pct{font-size:.78rem;color:var(--texto-suave);margin-top:4px;display:block;}
+.btn-continuar{
+  border:1.5px solid var(--verde);
+  border-bottom: 3.5px solid var(--verde-oscuro);
+  color:var(--verde);font-size:.78rem;font-weight:700;
+  padding:7px 16px 9px;border-radius:12px;flex:none;transition:all 0.1s ease;
+  background: transparent;
+  cursor:pointer;
+}
+.btn-continuar:hover{
+  background:var(--verde);color:#06281A;
+  border-bottom-color: #166534;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+  transform: translateY(-1.5px);
+  border-bottom-width: 5px;
+}
+.btn-continuar:active{
+  transform: translateY(1.5px);
+  border-bottom-width: 1.5px;
+  box-shadow: 0 1px 4px rgba(74, 222, 128, 0.2);
+}
+.btn-continuar.hecho{
+  border-color:var(--oro);
+  border-bottom-color: #B45309;
+  color:var(--oro);
+}
+.btn-continuar.hecho:hover{
+  background:var(--oro);color:#3A2A00;
+  border-bottom-color: #854D0E;
+  box-shadow: 0 4px 12px rgba(244, 197, 66, 0.4);
+  transform: translateY(-1.5px);
+  border-bottom-width: 5px;
+}
+.btn-continuar.hecho:active{
+  transform: translateY(1.5px);
+  border-bottom-width: 1.5px;
+  box-shadow: 0 1px 4px rgba(244, 197, 66, 0.2);
+}
+
+/* ---- rutas ---- */
+.ruta{
+  display:flex;gap:16px;background:var(--vidrio);border:1px solid var(--borde);
+  border-radius:16px;padding:14px;margin-bottom:12px;transition:all 0.3s ease;
+}
+.ruta:hover{
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(13, 38, 48, 0.5);
+}
+.ruta:last-of-type{margin-bottom:0;}
+.ruta .icono{
+  width:56px;height:56px;border-radius:14px;flex:none;font-size:1.7rem;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#34D399,#059669);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.ruta .icono svg{
+  width:28px;height:28px;
+  stroke:#FFFFFF;fill:none;stroke-width:2;
+  transition:all 0.3s ease;
+}
+.ruta:hover .icono{
+  transform: scale(1.15) rotate(-5deg);
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+}
+.ruta:hover .icono svg{
+  transform: scale(1.1);
+}
+.ruta.azul:hover .icono{
+  box-shadow: 0 0 15px rgba(96, 165, 250, 0.5);
+}
+.ruta.oro:hover .icono{
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+}
+.ruta.azul .icono{background:linear-gradient(135deg,#60A5FA,#1D4ED8);}
+.ruta.oro .icono{background:linear-gradient(135deg,#FCD34D,#D97706);}
+.ruta.verde .icono{background:linear-gradient(135deg,#4ADE80,#15803D);box-shadow: 0 4px 10px rgba(34,197,94,0.25);}
+.ruta.verde:hover .icono{box-shadow: 0 0 15px rgba(74,222,128,0.6);}
+.ruta .datos{flex:1;min-width:0;}
+.ruta b{font-size:.95rem;font-family:'Outfit',sans-serif;font-weight:700;}
+.ruta p{font-size:.78rem;color:var(--texto-suave);line-height:1.45;margin:4px 0 8px;}
+.ruta .estado-ruta{font-size:.76rem;color:var(--lima);font-weight:700;margin-bottom:6px;display:block;}
+
+/* ---- insignias hexagonales ---- */
+.hex-item{
+  display:flex;gap:14px;align-items:center;padding:10px 0;
+  border-bottom:1px solid var(--borde);transition:all 0.3s ease;
+}
+.hex-item:hover{padding-left:4px;}
+.hex-item:last-child{border-bottom:none;}
+.hexagono{
+  width:52px;height:58px;flex:none;font-size:1.4rem;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(160deg,#FDE68A,#D97706);
+  display:flex;align-items:center;justify-content:center;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+  transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.hexagono svg{
+  width:24px;height:24px;
+  stroke:#FFFFFF;fill:none;stroke-width:2;
+  transition:all 0.3s ease;
+}
+.hex-item:hover .hexagono{
+  transform: scale(1.18) rotate(10deg);
+  filter: brightness(1.1) drop-shadow(0 4px 12px rgba(217, 119, 6, 0.5));
+}
+.hex-item:hover .hexagono.verde{
+  filter: brightness(1.1) drop-shadow(0 4px 12px rgba(34, 197, 94, 0.5));
+}
+.hex-item:hover .hexagono.azul{
+  filter: brightness(1.1) drop-shadow(0 4px 12px rgba(56, 189, 248, 0.5));
+}
+
+/* Pestañas de Autenticación */
+.tabs-auth {
+  display: flex;
+  background: rgba(13, 38, 48, 0.45);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 24px;
+  gap: 4px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn:hover {
+  color: #FFF;
+  background: var(--vidrio-2);
+}
+.tab-btn.activo {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.25) 0%, rgba(34, 197, 94, 0.1) 100%);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-bottom: 3px solid var(--verde);
+  color: #FFF;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+.auth-panel {
+  transition: opacity 0.25s ease;
+}
+.auth-panel.oculto {
+  display: none !important;
+}
+.select-glass {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m19 9-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px !important;
+}
+.hexagono.verde{
+  background:linear-gradient(160deg,#86EFAC,#15803D);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+.hexagono.azul{
+  background:linear-gradient(160deg,#7DD3FC,#0369A1);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+.hexagono.gris{
+  background:linear-gradient(160deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
+  filter:grayscale(1);opacity:.4;
+}
+.hex-item b{font-size:.88rem;display:block;font-family:'Outfit',sans-serif;font-weight:700;}
+.hex-item small{font-size:.76rem;color:var(--texto-suave);display:block;line-height:1.4;margin-top:1px;}
+.grid-insignias{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:14px;}
+.grid-insignias .hex-item{background:rgba(13,38,48,0.35);border:1px solid var(--borde);border-radius:16px;padding:14px;}
+.grid-insignias .hex-item:hover{
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* ---- banner objetivos ---- */
+.banner{
+  display:flex;align-items:center;gap:24px;margin-top:24px;
+  background:linear-gradient(110deg,rgba(34,197,94,.2),rgba(56,189,248,.15));
+  border:1px solid rgba(255,255,255,.15);border-radius:20px;
+  padding:24px 30px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.25);flex-wrap:wrap;
+}
+.banner .trofeo{
+  font-size:3rem;filter:drop-shadow(0 0 15px rgba(74,222,128,0.6));
+  animation: floatTrophy 3s ease-in-out infinite;
+}
+@keyframes floatTrophy {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.banner b{font-size:1.15rem;display:block;font-family:'Outfit',sans-serif;font-weight:800;color:#FFFFFF;}
+.banner p{font-size:.86rem;color:var(--texto-suave);margin-top:2px;}
+.banner .btn{margin-left:auto;}
+
+/* ============ CATÁLOGO / MIS CURSOS ============ */
+.grid-catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+.carta-curso{
+  display:flex;flex-direction:column;text-align:left;overflow:hidden;padding:0;
+  transition: all 0.3s ease;
+}
+.carta-curso:hover{
+  transform: translateY(-4px);
+  border-color: var(--verde);
+}
+.carta-curso .portada{
+  height:120px;font-size:2.8rem;display:flex;align-items:center;justify-content:center;position:relative;
+  border-bottom: 1px solid var(--borde);
+}
+.carta-curso .portada .num{position:absolute;top:10px;left:12px;font-size:.68rem;font-weight:800;letter-spacing:.08em;
+  background:rgba(0,0,0,.55);padding:4px 10px;border-radius:20px;text-transform:uppercase;}
+.carta-curso .portada .listo{position:absolute;top:10px;right:12px;font-size:.68rem;font-weight:800;
+  background:var(--oro);color:#3A2A00;padding:4px 10px;border-radius:20px;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+.carta-curso .cuerpo-carta{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;}
+.carta-curso h4{font-size:1rem;font-family:'Outfit',sans-serif;font-weight:700;}
+.carta-curso .desc{font-size:.8rem;color:var(--texto-suave);line-height:1.5;flex:1;}
+.carta-curso .meta-curso{display:flex;gap:12px;font-size:.74rem;color:var(--texto-suave);border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;margin-top:4px;}
+
+/* ============ DETALLE / LECCIONES ============ */
+.volver{display:inline-flex;align-items:center;gap:7px;color:var(--verde);font-weight:700;font-size:.9rem;margin-bottom:18px;transition:all 0.2s;}
+.volver:hover{color:#FFFFFF;transform:translateX(-2px);}
+.cab-detalle{display:flex;gap:20px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+.cab-detalle .icono-grande{
+  width:72px;height:72px;border-radius:18px;font-size:2.2rem;
+  display:flex;align-items:center;justify-content:center;flex:none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+.cab-detalle h2{font-size:1.55rem;font-family:'Outfit',sans-serif;font-weight:800;}
+.cab-detalle p{font-size:.88rem;color:var(--texto-suave);margin-top:2px;}
+.leccion{border:1px solid var(--borde);border-radius:16px;margin-bottom:12px;overflow:hidden;background:var(--vidrio);transition:all 0.3s ease;}
+.leccion:hover{border-color:rgba(255,255,255,0.25);box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+.leccion>button{width:100%;display:flex;align-items:center;gap:14px;padding:16px;text-align:left;}
+.leccion .check{
+  width:26px;height:26px;border-radius:50%;flex:none;border:2px solid var(--borde-claro);
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#06281A;transition:all 0.2s;
+}
+.leccion.hecha .check{background:var(--verde);border-color:var(--verde);color:#06281A;font-weight:900;box-shadow:0 0 8px rgba(74,222,128,0.4);}
+.leccion .tit{flex:1;font-weight:600;font-size:.95rem;font-family:'Outfit',sans-serif;}
+.leccion .flecha{color:var(--texto-suave);transition:transform .2s;font-size:1.1rem;}
+.leccion.abierta .flecha{transform:rotate(90deg);}
+.leccion .cuerpo{display:none;padding:0 20px 20px 58px;font-size:.92rem;color:var(--texto);line-height:1.65;border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;margin-top:-4px;}
+.leccion.abierta .cuerpo{display:block;}
+.leccion .cuerpo p{margin-bottom:14px;color:var(--texto-suave);}
+
+/* ============ EVALUACIÓN ============ */
+.pregunta{margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:18px;}
+.pregunta:last-child{border-bottom:none;padding-bottom:0;}
+.pregunta h4{font-size:1rem;margin-bottom:14px;font-family:'Outfit',sans-serif;font-weight:700;}
+.opcion{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+  padding:12px 16px 15px;border:1.5px solid var(--borde);
+  border-bottom: 4.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;margin-bottom:10px;
+  font-size:.9rem;background:var(--vidrio);transition:all 0.1s ease;
+  cursor:pointer;
+}
+.opcion:hover{
+  border-color:rgba(255,255,255,0.3);
+  transform:translateY(-1.5px);
+  border-bottom-width: 5.5px;
+}
+.opcion:active{
+  transform:translateY(1.5px);
+  border-bottom-width: 1.5px;
+}
+.opcion .letra{font-weight:800;color:var(--verde);font-family:'Outfit',sans-serif;}
+.opcion.sel{
+  border-color:var(--verde);
+  border-bottom-color: var(--verde-fuerte);
+  background:rgba(74,222,128,.12);
+  box-shadow:0 0 10px rgba(74,222,128,0.25);
+}
+.opcion.ok{
+  border-color:var(--verde);
+  border-bottom-color: var(--verde-oscuro);
+  background:rgba(74,222,128,.2);
+  box-shadow:0 0 10px rgba(74,222,128,0.3);
+}
+.opcion.mal{
+  border-color:var(--rojo);
+  border-bottom-color: #C0392B;
+  background:rgba(248,113,113,.15);
+  box-shadow:0 0 10px rgba(248,113,113,0.25);
+}
+.resultado-quiz{text-align:center;padding:18px 0 6px;animation: zoomIn 0.4s ease;}
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.resultado-quiz .nota{font-size:3.5rem;font-weight:900;color:var(--verde);font-family:'Outfit',sans-serif;line-height:1.1;}
+
+/* ============ CALENDARIO ============ */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;font-size:.85rem;}
+.cal-grid .enc{font-weight:800;color:var(--texto-suave);font-size:.72rem;text-transform:uppercase;padding:6px 0;}
+.cal-dia{padding:12px 0;border-radius:12px;border:1px solid transparent;position:relative;transition:all 0.2s;}
+.cal-dia.mes{border-color:var(--borde);background:var(--vidrio);}
+.cal-dia.mes:hover{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.05);}
+.cal-dia.evento{background:rgba(74,222,128,.15);border-color:var(--verde);font-weight:800;color:#FFFFFF;box-shadow:inset 0 0 6px rgba(74,222,128,0.2);}
+.cal-dia.hoy{outline:2.5px solid var(--azul);font-weight:800;box-shadow:0 0 10px rgba(56,189,248,0.4);}
+.evento-linea{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--borde);font-size:.9rem;align-items:center;}
+.evento-linea:last-child{border-bottom:none;}
+.evento-linea .fecha-caja{width:56px;flex:none;text-align:center;background:var(--vidrio-2);border:1px solid var(--borde);border-radius:12px;padding:8px 4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.evento-linea .fecha-caja b{display:block;font-size:1.15rem;font-family:'Outfit',sans-serif;font-weight:800;}
+.evento-linea .fecha-caja small{font-size:.62rem;text-transform:uppercase;color:var(--texto-suave);font-weight:700;}
+
+/* ============ FOROS / AYUDA ============ */
+.foro-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--borde);align-items:center;transition:all 0.2s;}
+.foro-item:hover{background:rgba(255,255,255,0.02);padding-left:4px;}
+.foro-item:last-child{border-bottom:none;}
+.foro-item .icono{width:44px;height:44px;border-radius:50%;background:var(--vidrio-2);border:1px solid var(--borde);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex:none;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.foro-item b{font-size:.9rem;display:block;font-family:'Outfit',sans-serif;font-weight:700;}
+.foro-item small{font-size:.76rem;color:var(--texto-suave);display:block;margin-top:2px;}
+.foro-item .resp{margin-left:auto;text-align:center;font-size:.74rem;color:var(--texto-suave);flex:none;background:rgba(255,255,255,0.04);padding:6px 12px;border-radius:10px;border:1px solid var(--borde);}
+.foro-item .resp b{font-size:1.1rem;color:var(--verde);display:inline;font-family:'Outfit',sans-serif;font-weight:800;margin-right:2px;}
+
+/* ============ PERFIL ============ */
+.cab-perfil{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.avatar-grande{
+  width:82px;height:82px;border-radius:50%;flex:none;font-size:1.9rem;font-weight:800;color:#06281A;
+  background:linear-gradient(135deg,var(--verde),#16A34A);display:flex;align-items:center;justify-content:center;
+  border:3px solid var(--oro);box-shadow: 0 4px 16px rgba(244,197,66,0.35);
+  overflow: hidden;
+}
+.estadisticas{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px;}
+@media(max-width:700px){.estadisticas{grid-template-columns:repeat(2,1fr);}}
+.stat-caja{background:var(--vidrio);border:1px solid var(--borde);border-radius:16px;padding:16px 10px;text-align:center;transition:all 0.2s;}
+.stat-caja:hover{border-color:rgba(255,255,255,0.25);transform:translateY(-2px);}
+.stat-caja b{font-size:1.65rem;display:block;color:var(--verde);font-family:'Outfit',sans-serif;font-weight:800;}
+.stat-caja small{font-size:.7rem;color:var(--texto-suave);text-transform:uppercase;letter-spacing:.05em;font-weight:700;display:block;margin-top:2px;}
+.tabla-avance{width:100%;border-collapse:collapse;font-size:.9rem;}
+.tabla-avance td{padding:12px 8px;border-bottom:1px solid var(--borde);vertical-align:middle;}
+.tabla-avance tr:last-child td{border-bottom:none;}
+.tabla-avance td:first-child{width:40px;font-size:1.25rem;}
+
+/* ============ REGISTRO ============ */
+.pantalla-registro{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.caja-registro{
+  background:rgba(13, 38, 48, 0.6);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255, 255, 255, 0.15);border-radius:24px;
+  padding:36px 30px;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);
+}
+.caja-registro h1{font-size:1.6rem;margin:12px 0 6px;text-align:center;font-family:'Outfit',sans-serif;font-weight:800;}
+.caja-registro .sub{font-size:.84rem;color:var(--texto-suave);margin-bottom:24px;text-align:center;line-height:1.5;}
+.campo{margin-bottom:16px;}
+.campo label{display:block;font-size:.78rem;font-weight:700;margin-bottom:6px;color:var(--texto-suave);text-transform:uppercase;letter-spacing:0.05em;}
+.campo input,.campo select{
+  width:100%;padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:12px;
+  background:rgba(255,255,255,0.07);color:var(--texto);outline:none;transition:all 0.3s ease;
+}
+.campo input::placeholder{color:rgba(255, 255, 255, 0.4);}
+.campo select option{color:#0B2530;background:#FFF;}
+.campo input:focus,.campo select:focus{
+  border-color:var(--verde);box-shadow:0 0 0 3px rgba(74,222,128,0.25);
+  background:rgba(255,255,255,0.12);
+}
+.pie-registro{margin-top:18px;font-size:.72rem;color:var(--texto-suave);text-align:center;line-height:1.55;}
+
+/* ============ CERTIFICADO ============ */
+.fondo-modal{position:fixed;inset:0;background:rgba(5,20,26,.85);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px);}
+.certificado{
+  background:#FFFDF4;color:#21302A;max-width:680px;width:100%;border-radius:12px;
+  border:3px double #C8932B;padding:40px 36px;text-align:center;position:relative;
+  max-height:92vh;overflow:auto;box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.certificado::before{content:"";position:absolute;inset:9px;border:1px solid #E9B44C;border-radius:8px;pointer-events:none;}
+.certificado .sello{font-size:2.8rem;filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));}
+.certificado .ente{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#8C5E35;margin:8px 0 16px;font-weight:700;}
+.certificado h2{font-size:1.8rem;color:#16382B;margin-bottom:8px;font-family:Georgia,serif;font-weight:700;}
+.certificado .otorga{font-size:.9rem;color:#5C6B62;}
+.certificado .nombre{font-family:Georgia,serif;font-size:1.8rem;color:#2D6A4F;font-weight:700;margin:16px 0;border-bottom:1.5px solid #E9B44C;display:inline-block;padding:0 30px 8px;}
+.certificado .detalle{font-size:.9rem;margin-bottom:20px;line-height:1.65;}
+.certificado .firmas{display:flex;justify-content:space-around;margin-top:30px;font-size:.74rem;color:#5C6B62;}
+.certificado .firmas div{border-top:1px solid #5C6B62;padding-top:8px;width:38%;font-weight:600;}
+.acciones-cert{display:flex;gap:12px;justify-content:center;margin-top:24px;}
+.acciones-cert .btn{color:#21302A;border-color:#2D6A4F;}
+.acciones-cert .btn.verde{color:#06281A;}
+@media print{
+  body *{visibility:hidden;}
+  .fondo-modal{position:absolute;background:none;padding:0;backdrop-filter:none;}
+  .certificado,.certificado *{visibility:visible;}
+  .acciones-cert{display:none;}
+}
+
+/* ============ TOAST ============ */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:rgba(11,37,48,.94);border:1px solid var(--borde-claro);color:var(--texto);
+  padding:14px 20px;border-radius:18px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:110;opacity:0;transition:all .35s ease;max-width:92vw;
+  backdrop-filter:blur(16px);
+}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast .hexagono{width:42px;height:46px;font-size:1.15rem;margin: 0;}
+.toast b{display:block;font-size:.9rem;font-family:'Outfit',sans-serif;font-weight:700;}
+.toast small{font-size:.78rem;color:var(--texto-suave);margin-top:2px;display:block;}
+
+.fila-seccion{display:flex;align-items:baseline;justify-content:space-between;margin:6px 0 16px;}
+.fila-seccion h2{font-size:1.35rem;font-family:'Outfit',sans-serif;}
+.nota-pie{font-size:.7rem;color:var(--texto-suave);text-align:center;margin-top:24px;line-height:1.6;}
+.velo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80;backdrop-filter:blur(4px);}
+@media(min-width:981px){.velo{display:none !important;}}
+@media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+
+/* Personalización de Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 222, 128, 0.4);
+}
+</style>
+</head>
+<body>
+
+<div class="fondo" aria-hidden="true"></div>
+
+<!-- ============ AUTENTICACIÓN (LOGIN / REGISTRO) ============ -->
+<div id="pantallaRegistro" class="pantalla-registro">
+  <div class="caja-registro">
+    <div class="logo-svg-container">
+      <img src="logo Mag_AgroIA.png" alt="Logo MAGA AgroIA" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+    <h1>Aula Virtual AgroIA</h1>
+    <p class="sub">Ministerio de Agricultura, Ganadería y Alimentación · CONADEA<br>Capacitación digital para productores agropecuarios</p>
+    
+    <div class="tabs-auth">
+      <button id="tab-login" class="tab-btn activo" onclick="cambiarPestaña('login')">Iniciar Sesión</button>
+      <button id="tab-registro" class="tab-btn" onclick="cambiarPestaña('registro')">Registrarse</button>
+    </div>
+
+    <!-- Panel de Iniciar Sesión -->
+    <div id="panel-login" class="auth-panel">
+      <div class="campo" id="campo-perfiles-guardados">
+        <label for="loginUsuarioSelect">Seleccionar Perfil Guardado</label>
+        <select id="loginUsuarioSelect" class="select-glass" onchange="actualizarNombreLogin(this.value)">
+          <option value="">-- Selecciona un perfil --</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="loginNombre">O ingresa tu Nombre Completo</label>
+        <input id="loginNombre" type="text" placeholder="Ej. Ana María García" autocomplete="name">
+      </div>
+      <button class="btn verde btn-ancho" onclick="iniciarSesion()">Iniciar Sesión →</button>
+    </div>
+
+    <!-- Panel de Registrarse -->
+    <div id="panel-registro" class="auth-panel oculto">
+      <div class="campo">
+        <label for="regNombre">Nombre completo</label>
+        <input id="regNombre" type="text" placeholder="Ej. Ana María García" autocomplete="name">
+      </div>
+      <div class="campo">
+        <label for="regOrg">Asociación o cooperativa</label>
+        <input id="regOrg" type="text" placeholder="Ej. Cooperativa El Porvenir">
+      </div>
+      <div class="campo">
+        <label for="regMuni">Municipio y departamento</label>
+        <input id="regMuni" type="text" placeholder="Ej. Sanarate, El Progreso">
+      </div>
+      <div class="campo">
+        <label for="regAct">Actividad principal</label>
+        <select id="regAct">
+          <option value="Agrícola">Agrícola</option>
+          <option value="Ganadera">Ganadera</option>
+          <option value="Mixta">Mixta (agrícola y ganadera)</option>
+          <option value="Organizativa">Directiva / organizativa</option>
+        </select>
+      </div>
+      <button class="btn verde btn-ancho" onclick="registrar()">Registrarse y comenzar →</button>
+    </div>
+
+    <p class="pie-registro">Juntos para alimentar Guatemala<br>Programa MAGA · CONADEA AgroIA</p>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="app-grid oculto">
+  <div id="velo" class="velo oculto" onclick="cerrarMenu()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-zona">
+      <div class="logo-svg-container">
+        <img src="logo Mag_AgroIA.png" alt="Logo MAGA AgroIA" style="width: 100%; height: 100%; object-fit: contain;">
+      </div>
+      <div class="ministerio">MINISTERIO DE<br>AGRICULTURA, GANADERÍA<br>Y ALIMENTACIÓN</div>
+      <div class="lema">Juntos para alimentar Guatemala</div>
+    </div>
+    <ul class="menu">
+      <li><button id="m-inicio" class="activo" onclick="irA('inicio')"><span class="ic"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>Inicio</button></li>
+      <li><button id="m-miscursos" onclick="irA('miscursos')"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10M6 10h10M6 14h10"></path></svg></span>Mis cursos</button></li>
+      <li><button id="m-catalogo" onclick="irA('catalogo')"><span class="ic"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path><path d="M6 8h2M16 8h2M6 12h2M16 12h2"></path></svg></span>Catálogo de cursos</button></li>
+      <li><button id="m-rutas" onclick="irA('rutas')"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg></span>Rutas de aprendizaje</button></li>
+      <li><button id="m-calendario" onclick="irA('calendario')"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span>Calendario</button></li>
+      <li><button id="m-novedades" onclick="irA('novedades')"><span class="ic"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></span>Novedades</button></li>
+      <li><button id="m-insignias" onclick="irA('insignias')"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></span>Insignias</button></li>
+      <li><button id="m-certificados" onclick="irA('certificados')"><span class="ic"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg></span>Certificados</button></li>
+      <li><button id="m-foros" onclick="irA('foros')"><span class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>Foros</button></li>
+      <li><button id="m-ayuda" onclick="irA('ayuda')"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span>Ayuda y soporte</button></li>
+      <li class="sep"></li>
+      <li><button id="m-perfil" onclick="irA('perfil')"><span class="ic"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>Mi perfil</button></li>
+      <li><button id="m-config" onclick="irA('config')"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>Configuración</button></li>
+      <li class="sep"></li>
+      <li><button class="salir" onclick="cerrarSesion()"><span class="ic"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></span>Cerrar sesión</button></li>
+    </ul>
+  </aside>
+
+  <main class="principal">
+    <div class="topbar">
+      <button class="hamburguesa" onclick="abrirMenu()" aria-label="Abrir menú">☰</button>
+      <div class="saludo">
+        <h1 id="saludoTitulo">¡Hola! 👋</h1>
+        <p>Sigue aprendiendo y avanza en tu crecimiento profesional.</p>
+      </div>
+      <div class="derecha">
+        <button class="campana" onclick="irA('novedades')" aria-label="Novedades">🔔<span class="punto" id="puntoNov">3</span></button>
+        <button class="chip-usuario" onclick="irA('perfil')">
+          <span class="avatar" id="avatarIni">--</span>
+          <span><b id="nombreCorto">Usuario</b><small>Ver perfil ▾</small></span>
+        </button>
+      </div>
+    </div>
+    <div class="buscador">
+      <span>🔍</span>
+      <input id="busqueda" type="text" placeholder="Buscar cursos, rutas, temas..." oninput="buscar(this.value)">
+    </div>
+
+    <section id="vista-inicio"></section>
+    <section id="vista-miscursos" class="oculto"></section>
+    <section id="vista-catalogo" class="oculto"></section>
+    <section id="vista-detalle" class="oculto"></section>
+    <section id="vista-rutas" class="oculto"></section>
+    <section id="vista-calendario" class="oculto"></section>
+    <section id="vista-novedades" class="oculto"></section>
+    <section id="vista-insignias" class="oculto"></section>
+    <section id="vista-certificados" class="oculto"></section>
+    <section id="vista-foros" class="oculto"></section>
+    <section id="vista-ayuda" class="oculto"></section>
+    <section id="vista-perfil" class="oculto"></section>
+    <section id="vista-config" class="oculto"></section>
+
+    <p class="nota-pie">Prototipo demostrativo · Programa MAGA CONADEA AgroIA · Los datos se guardan únicamente en este dispositivo.</p>
+  </main>
+</div>
+
+<div id="modalCert" class="fondo-modal oculto" onclick="if(event.target===this)cerrarCert()"></div>
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+/* ================= DATOS DEL PROGRAMA ================= */
+const MODULOS = [
+{id:1, ic:"📱", t:"Uso de WhatsApp AgroIA", d:"Aprende a usar el asistente AgroIA para resolver problemas de tu finca.", img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Cómo enviar consultas", c:"Escribe tu consulta al número oficial de AgroIA describiendo el cultivo o animal, el problema que observas y desde cuándo ocurre. Entre más clara sea tu consulta, mejor será la orientación que recibirás. Ejemplo: «Tengo milpa de 40 días con hojas amarillas en la parte baja»."},
+  {t:"Cómo tomar fotos útiles", c:"Toma las fotos con buena luz natural, sin sombra encima. Envía una foto de cerca del síntoma (hoja, fruto o lesión) y otra de lejos para ver toda la planta o el animal. Limpia el lente del teléfono antes de tomar la foto y evita fotos movidas."},
+  {t:"Cómo grabar audios claros", c:"Graba en un lugar sin mucho ruido, habla despacio y menciona: qué cultivo o animal es, qué problema observas, hace cuánto empezó y qué has aplicado o hecho. Un audio de 30 a 60 segundos es suficiente."},
+  {t:"Cómo compartir tu ubicación", c:"Compartir tu ubicación ayuda a que las recomendaciones tomen en cuenta tu zona y clima, y permite a CONADEA conocer dónde están ocurriendo los problemas. En WhatsApp toca el clip 📎, elige «Ubicación» y luego «Enviar mi ubicación actual»."},
+  {t:"Cómo interpretar las recomendaciones", c:"AgroIA da una orientación inicial, no un diagnóstico definitivo. Lee con atención las posibles causas y los pasos sugeridos. Si la respuesta dice «este caso necesita revisión técnica», espera la atención del técnico antes de aplicar productos."},
+  {t:"Cuándo solicitar revisión técnica", c:"Pide revisión de un técnico cuando: el problema avanza rápido, hay muchos animales o plantas afectadas, hay riesgo de perder la cosecha, o la orientación automática no resolvió el caso. Los casos urgentes (nivel rojo) se derivan de inmediato a un especialista."}
+ ],
+ quiz:[
+  {q:"¿Cuál es la mejor manera de enviar una foto para diagnóstico?", o:["Una sola foto de lejos y con sombra","Una foto de cerca del síntoma y otra de toda la planta, con buena luz","Una captura de pantalla de otra foto"], r:1},
+  {q:"¿Qué debe incluir un buen audio de consulta?", o:["Solo un saludo","Música de fondo para que sea agradable","Cultivo o animal, problema, tiempo del problema y qué se ha hecho"], r:2},
+  {q:"¿Cuándo debes pedir revisión de un técnico humano?", o:["Cuando el problema avanza rápido o hay riesgo de pérdida severa","Nunca, la IA siempre es suficiente","Solo en diciembre"], r:0}
+ ]},
+{id:2, ic:"🌿", t:"Diagnóstico básico de cultivos", d:"Identifica síntomas comunes en hojas, frutos y plantas.", img:"https://images.unsplash.com/photo-1560493676-04071c5f467b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Síntomas en hojas", c:"Las hojas hablan: el amarillamiento general puede indicar falta de nitrógeno; manchas con anillos suelen ser hongos; bordes quemados pueden ser exceso de sal o fertilizante; y hojas enrolladas pueden indicar virus o ataque de insectos chupadores."},
+  {t:"Síntomas en frutos", c:"Revisa pudriciones, perforaciones, deformaciones y manchas. Una perforación con excremento indica gusano o larva; pudrición blanda con mal olor suele ser bacteria; manchas hundidas y oscuras suelen ser antracnosis (hongo)."},
+  {t:"Plagas comunes", c:"Aprende a reconocer gusano cogollero en maíz, mosca blanca en hortalizas, pulgones, trips y gallina ciega en el suelo. Revisa el envés (parte de abajo) de las hojas: ahí se esconden la mayoría de plagas pequeñas."},
+  {t:"Enfermedades frecuentes", c:"Los hongos avanzan con humedad y se ven como manchas, polvillos o mohos. Las bacterias producen pudriciones acuosas y mal olor. Los virus deforman y amarillan la planta en patrones de mosaico, y se transmiten por insectos."},
+  {t:"Deficiencias nutricionales", c:"Nitrógeno: hojas viejas amarillas. Fósforo: tonos morados y plantas pequeñas. Potasio: bordes quemados en hojas viejas. Las deficiencias aparecen parejas en el lote; las enfermedades suelen empezar en focos o manchones."},
+  {t:"Estrés por agua", c:"La falta de agua marchita la planta al mediodía y las hojas se recuperan en la noche al inicio. El exceso de agua amarilla la planta, pudre raíces y favorece hongos. Revisa el suelo a 10 cm de profundidad antes de regar."},
+  {t:"Prevención y monitoreo", c:"Camina tu parcela al menos dos veces por semana en forma de zigzag, revisa 5 plantas por punto y anota lo que ves. Detectar a tiempo un foco pequeño es más barato que controlar todo el lote enfermo."}
+ ],
+ quiz:[
+  {q:"¿Dónde se esconden la mayoría de plagas pequeñas?", o:["En el envés (parte de abajo) de las hojas","Solo en las flores","En el tallo principal únicamente"], r:0},
+  {q:"Si las hojas viejas están amarillas de manera pareja en todo el lote, lo más probable es:", o:["Un virus","Falta de nitrógeno","Daño por pájaros"], r:1},
+  {q:"¿Cada cuánto se recomienda monitorear la parcela?", o:["Una vez al mes","Solo al sembrar","Al menos dos veces por semana"], r:2}
+ ]},
+{id:3, ic:"🐛", t:"Manejo integrado de plagas y enfermedades", d:"Previene y controla con métodos responsables y seguros.", img:"https://images.unsplash.com/photo-1600132806370-bf17e65e942f?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Monitoreo constante", c:"El manejo integrado (MIP) empieza por observar. Usa trampas amarillas con pegamento para insectos voladores, revisa el suelo y lleva un registro semanal. Solo se controla bien lo que se conoce."},
+  {t:"Prevención primero", c:"Usa semilla sana, variedades resistentes, rota cultivos, elimina rastrojos enfermos y desinfecta herramientas. La mayoría de problemas graves se evitan antes de sembrar."},
+  {t:"Control cultural", c:"Las prácticas de manejo también controlan: distancias de siembra adecuadas para ventilación, eliminación de malezas hospederas, podas sanitarias y manejo correcto del riego para no favorecer hongos."},
+  {t:"Control biológico", c:"Aprovecha a los aliados naturales: mariquitas y crisopas comen pulgones; avispas parasitan gusanos; hongos como Beauveria y Trichoderma controlan plagas y enfermedades. Protege a estos aliados evitando aplicaciones innecesarias."},
+  {t:"Uso responsable de productos", c:"Si es necesario aplicar, usa solo productos registrados, respeta la dosis de la etiqueta, usa equipo de protección (mascarilla, guantes, camisa manga larga) y respeta los días de espera antes de cosechar. Nunca apliques productos sin diagnóstico confirmado."},
+  {t:"Registro de aplicaciones", c:"Anota fecha, producto, dosis, cultivo y resultado de cada aplicación. Este registro evita repetir productos que no funcionaron, previene resistencia de las plagas y es requisito para vender en mercados formales."},
+  {t:"Cuándo consultar a un técnico", c:"Consulta cuando la plaga no cede después de dos manejos, cuando no logres identificar el problema o cuando pienses usar productos de alta toxicidad. AgroIA puede derivar tu caso a un ingeniero agrónomo de la red de validadores."}
+ ],
+ quiz:[
+  {q:"¿Cuál es el primer paso del manejo integrado de plagas?", o:["Aplicar el producto más fuerte","Monitorear y conocer el problema","Quemar el lote"], r:1},
+  {q:"¿Qué insecto es un aliado natural contra los pulgones?", o:["La mariquita","La mosca blanca","El gusano cogollero"], r:0},
+  {q:"Antes de aplicar un producto químico siempre debes:", o:["Aplicar el doble de dosis para asegurar","Confirmar el diagnóstico, leer la etiqueta y usar protección","Aplicar al mediodía con viento"], r:1}
+ ]},
+{id:4, ic:"🪱", t:"Nutrición y manejo de suelos", d:"Un suelo vivo y fértil es la base de toda buena cosecha.", img:"https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Fertilidad del suelo", c:"Un suelo fértil tiene buena estructura, materia orgánica, vida (lombrices y microorganismos) y nutrientes disponibles. La fertilidad no es solo aplicar fertilizante: es manejar el suelo como un organismo vivo."},
+  {t:"Materia orgánica", c:"Incorpora rastrojos, abonos verdes, compost o lombricompost. La materia orgánica retiene humedad, alimenta los microorganismos y mejora la estructura. Una finca que devuelve materia orgánica al suelo depende menos del fertilizante comprado."},
+  {t:"Conservación de suelos", c:"En laderas usa barreras vivas, curvas a nivel, terrazas y acequias. Evita la quema: destruye la materia orgánica y deja el suelo desnudo frente a la lluvia. El suelo que se pierde por erosión tarda décadas en recuperarse."},
+  {t:"Análisis de suelo", c:"Un análisis de laboratorio te dice qué nutrientes tiene tu suelo y cuáles faltan. Toma submuestras en zigzag a 20 cm de profundidad, mézclalas y envía 1 libra al laboratorio. Fertilizar sin análisis es como recetar sin examinar al paciente."},
+  {t:"Fertilización responsable", c:"Aplica el nutriente correcto, en la dosis correcta, en el momento correcto y en el lugar correcto (las 4 C). Fracciona el nitrógeno en 2 o 3 aplicaciones y entiérralo o tápalo para que no se pierda."},
+  {t:"Control de la erosión", c:"Mantén el suelo siempre cubierto con rastrojo o cultivos de cobertura. Un suelo desnudo pierde hasta 40 toneladas por hectárea al año en laderas. La cobertura también conserva humedad y controla malezas."},
+  {t:"Manejo de humedad", c:"El acolchado (mulch), las coberturas y la materia orgánica guardan agua en el suelo. En época seca, cada práctica que conserve humedad puede ser la diferencia entre cosechar o perder."}
+ ],
+ quiz:[
+  {q:"¿Qué aporta la materia orgánica al suelo?", o:["Solo color oscuro","Retiene humedad, alimenta la vida del suelo y mejora la estructura","Aumenta la erosión"], r:1},
+  {q:"¿Por qué no se recomienda la quema de rastrojos?", o:["Porque destruye la materia orgánica y deja el suelo expuesto","Porque el fuego enfría el suelo","Porque atrae lombrices"], r:0},
+  {q:"Las «4 C» de la fertilización responsable son: nutriente correcto, dosis correcta...", o:["...color correcto y costal correcto","...momento correcto y lugar correcto","...camión correcto y caja correcta"], r:1}
+ ]},
+{id:5, ic:"🐄", t:"Ganadería sostenible", d:"Mejora la nutrición, sanidad y bienestar de tu hato.", img:"https://images.unsplash.com/photo-1570042225831-d9b085d44e20?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Condición corporal", c:"La condición corporal se evalúa de 1 (muy flaco) a 5 (obeso) observando costillas, columna y base de la cola. Lo ideal es mantener el hato entre 3 y 3.5. Una vaca flaca produce menos leche, se preña menos y se enferma más."},
+  {t:"Nutrición animal", c:"El animal necesita energía, proteína, minerales y agua. El pasto solo a veces no alcanza en época seca: planifica ensilaje, heno, bloques minerales y suplementos. La sal mineralizada debe estar disponible todo el año."},
+  {t:"Manejo de pasturas", c:"Divide el potrero en apartos y rota el ganado: deja descansar el pasto de 25 a 35 días según la especie. El sobrepastoreo degrada el pasto y compacta el suelo. Pasto bien manejado es el alimento más barato."},
+  {t:"Agua y sombra", c:"Una vaca lechera puede tomar de 40 a 80 litros de agua al día. Sin agua limpia y sombra, el animal come menos y produce menos. Los árboles en potreros dan sombra, forraje y mejoran el suelo."},
+  {t:"Bienestar animal", c:"Animales sin estrés producen más: evita gritos y golpes en el manejo, mantén corrales sin lodo excesivo ni piedras, y maneja con calma en el embudo y la manga. El buen trato también es rentabilidad."},
+  {t:"Sanidad preventiva", c:"Cumple el calendario de vacunación y desparasitación de tu zona, revisa parásitos externos (garrapatas, tórsalo), y aísla animales enfermos. Prevenir cuesta menos que curar; ante síntomas graves consulta al veterinario."},
+  {t:"Sistemas silvopastoriles", c:"Combinar pastos con árboles y arbustos forrajeros (madreado, leucaena) da más alimento por área, sombra, fija nitrógeno y hace la finca más resistente a la sequía. Es la base de la ganadería sostenible que promueve el programa."}
+ ],
+ quiz:[
+  {q:"¿Cuál es la condición corporal ideal para el hato?", o:["Entre 1 y 2","Entre 3 y 3.5","5 en todos los animales"], r:1},
+  {q:"¿Cuántos días de descanso necesita un potrero en rotación?", o:["De 25 a 35 días según la especie de pasto","2 días","1 año completo"], r:0},
+  {q:"¿Qué beneficios dan los árboles forrajeros en un sistema silvopastoril?", o:["Solo adornan la finca","Quitan espacio al pasto","Sombra, forraje, nitrógeno y resistencia a la sequía"], r:2}
+ ]},
+{id:6, ic:"💧", t:"Manejo de agua y adaptación climática", d:"Prepara tu finca para la sequía y el exceso de lluvia.", img:"https://images.unsplash.com/photo-1463123081488-729f60c1926d?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Cosecha de agua", c:"Aprovecha la lluvia: techos con canaletas hacia toneles o cisternas, reservorios y aljibes. Cada metro cuadrado de techo puede cosechar cerca de 1 litro por cada milímetro de lluvia. El agua cosechada en invierno salva cultivos y animales en verano."},
+  {t:"Riego eficiente", c:"El riego por goteo usa hasta 60% menos agua que el riego por gravedad y pone el agua directo en la raíz. Riega temprano en la mañana o al atardecer para reducir la evaporación. Más agua no siempre es más cosecha."},
+  {t:"Manejo en sequía", c:"En años secos: siembra variedades de ciclo corto y tolerantes, reduce el área a la que sí puedes dar agua, usa acolchado y prioriza el agua para los cultivos y animales de mayor valor."},
+  {t:"Manejo del exceso de lluvia", c:"Construye drenajes y acequias antes del invierno, siembra en camellones altos en zonas que se inundan y refuerza el control preventivo de hongos, que aumentan con la humedad."},
+  {t:"Conservación de humedad", c:"Acolchado, coberturas vivas, materia orgánica y barreras rompevientos reducen la pérdida de agua del suelo. Estas prácticas cuestan poco y alargan la humedad disponible varias semanas."},
+  {t:"Alertas climáticas", c:"Atiende los boletines del INSIVUMEH y las alertas que enviará AgroIA: pronóstico de canícula, lluvias intensas o heladas. Planificar con el pronóstico evita sembrar en el momento equivocado."},
+  {t:"Planificación por temporada", c:"Haz un calendario de tu finca: qué siembras en primera, qué en postrera, cuándo vacunas, cuándo haces ensilaje. Una finca planificada por temporada sufre menos los golpes del clima."}
+ ],
+ quiz:[
+  {q:"¿Cuánta agua puede ahorrar el riego por goteo frente al riego por gravedad?", o:["Hasta 60% menos","No ahorra nada","Solo 1%"], r:0},
+  {q:"¿Cuál es el mejor momento del día para regar?", o:["Al mediodía con pleno sol","Temprano en la mañana o al atardecer","A cualquier hora da igual"], r:1},
+  {q:"Ante pronóstico de lluvias intensas conviene:", o:["No hacer nada","Quitar todos los drenajes","Preparar drenajes y reforzar la prevención de hongos"], r:2}
+ ]},
+{id:7, ic:"🧮", t:"Administración rural y costos", d:"Lleva las cuentas de tu finca y conoce tu rentabilidad.", img:"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Registro de ingresos y gastos", c:"Anota todo lo que entra y sale: ventas, compras de insumos, jornales, transporte. Puede ser en un cuaderno o en el teléfono. Sin registros, no se sabe si la finca gana o pierde; se administra a ciegas."},
+  {t:"Costos de producción", c:"Suma todo lo que cuesta producir: semilla, fertilizante, jornales (incluido tu propio trabajo), transporte y alquileres. Divide el total entre los quintales producidos: ese es tu costo por quintal, el número más importante de tu finca."},
+  {t:"Precio de venta", c:"Vende conociendo tu costo: si producir un quintal cuesta Q150 y lo vendes a Q140, pierdes aunque parezca que entra dinero. Infórmate del precio de mercado antes de vender y evita vender por necesidad en el peor momento."},
+  {t:"Control de inventarios", c:"Lleva control de insumos, herramientas, cosecha almacenada y animales. Saber qué tienes evita compras dobles, pérdidas por vencimiento y robos que pasan desapercibidos."},
+  {t:"Rentabilidad", c:"Rentabilidad = ingresos menos costos. Calcula por cultivo o actividad: a veces un cultivo querido da pérdida y otro pequeño da la ganancia. Los números ayudan a decidir qué ampliar y qué cambiar."},
+  {t:"Presupuesto", c:"Antes de cada ciclo, planifica cuánto vas a gastar y cuándo. Un presupuesto evita quedarse sin dinero a mitad del ciclo, justo cuando el cultivo más necesita inversión."},
+  {t:"Control financiero", c:"Compara cada mes lo planificado contra lo real, separa el dinero de la finca del dinero de la casa y guarda una reserva para emergencias. El orden financiero es lo que permite crecer."}
+ ],
+ quiz:[
+  {q:"¿Cómo se calcula el costo por quintal?", o:["Total de costos dividido entre los quintales producidos","El precio que ponga el comprador","El doble del precio de la semilla"], r:0},
+  {q:"Si producir un quintal cuesta Q150 y lo vendes a Q140:", o:["Ganas Q10","Pierdes Q10 por quintal","No pasa nada"], r:1},
+  {q:"Una buena práctica financiera es:", o:["Mezclar el dinero de la finca con el de la casa","No anotar los gastos pequeños","Separar las cuentas y guardar una reserva para emergencias"], r:2}
+ ]},
+{id:8, ic:"🤝", t:"Organización asociativa y cooperativa", d:"Fortalece tu asociación con buenas prácticas de gestión.", img:"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Funciones de la organización", c:"Una asociación o cooperativa sirve para lograr juntos lo que no se logra solo: comprar insumos más baratos, vender en volumen, acceder a proyectos y asistencia técnica. La organización es una herramienta económica, no solo un requisito."},
+  {t:"Junta directiva", c:"La junta directiva administra por mandato de la asamblea, no es dueña de la organización. Debe rendir cuentas, convocar asambleas según los estatutos y renovar cargos en los plazos establecidos."},
+  {t:"Actas y documentos", c:"Toda decisión importante debe quedar en acta: asambleas, acuerdos, elecciones. Las actas al día y los libros autorizados son requisito para optar a proyectos y mantener la personería jurídica vigente."},
+  {t:"Participación de los socios", c:"Una organización es fuerte cuando los socios participan: asisten a asambleas, opinan, fiscalizan y asumen cargos. La apatía de los socios es la principal enfermedad de las organizaciones rurales."},
+  {t:"Transparencia", c:"Informes financieros claros y periódicos, compras con cotizaciones y cuentas bancarias a nombre de la organización generan confianza. Donde hay transparencia, hay socios comprometidos."},
+  {t:"Resolución de conflictos", c:"Los conflictos son normales; lo importante es manejarlos: escuchar a las partes, basarse en los estatutos, dejar acuerdos por escrito y buscar mediación cuando sea necesario. Un conflicto mal manejado puede dividir años de trabajo."},
+  {t:"Plan de trabajo", c:"Cada año la organización debe definir metas, actividades, responsables y fechas. Un plan de trabajo realista permite evaluar a la directiva y demostrar resultados ante socios y aliados."}
+ ],
+ quiz:[
+  {q:"¿Quién manda en una cooperativa?", o:["La asamblea de socios","Solo el presidente","El contador"], r:0},
+  {q:"¿Por qué son importantes las actas?", o:["Para adornar la oficina","Porque documentan decisiones y son requisito legal y para proyectos","No son importantes"], r:1},
+  {q:"¿Cuál es la principal «enfermedad» de las organizaciones rurales?", o:["El exceso de asambleas","Tener plan de trabajo","La apatía y poca participación de los socios"], r:2}
+ ]},
+{id:9, ic:"🛒", t:"Comercialización y acceso a mercados", d:"Vende mejor: calidad, volumen, negociación y clientes.", img:"https://images.unsplash.com/photo-1542838132-92c53300491e?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Calidad del producto", c:"El mercado paga la calidad: clasifica tu producto por tamaño y estado, cosecha en el punto correcto, usa empaques limpios y maneja con cuidado. Un producto bien presentado puede valer 20% o 30% más."},
+  {t:"Volumen asociativo", c:"Vender juntos cambia la negociación: la asociación puede reunir volumen, cumplir contratos y acceder a compradores formales que un productor solo no alcanza. El volumen también reduce el costo de transporte por quintal."},
+  {t:"Negociación", c:"Llega a negociar conociendo tu costo de producción, el precio del mercado y tu volumen disponible. Pide acuerdos por escrito: producto, calidad, cantidad, precio, fecha y forma de pago."},
+  {t:"Presentación comercial", c:"Etiqueta, marca y empaque cuentan tu historia: quién produce, de dónde viene, cómo se produjo. Una marca de la cooperativa diferencia tu producto y fideliza clientes."},
+  {t:"Redes sociales para vender", c:"WhatsApp Business y Facebook permiten mostrar el producto, recibir pedidos y mantener clientes informados sin costo. Publica fotos reales, precios claros y responde rápido: la rapidez vende."},
+  {t:"Búsqueda de compradores", c:"Explora varios canales: mercado local, intermediarios, agroindustria, exportadores, programas de compras públicas y ferias. Depender de un solo comprador es un riesgo; tener opciones mejora el precio."},
+  {t:"Trazabilidad", c:"Registrar qué se produjo, dónde, cuándo y con qué prácticas permite responder ante reclamos y acceder a mercados formales y de exportación que exigen conocer el origen del producto."}
+ ],
+ quiz:[
+  {q:"¿Qué información debes conocer antes de negociar?", o:["Solo el clima","Tu costo de producción, el precio de mercado y tu volumen","El nombre del comprador y nada más"], r:1},
+  {q:"¿Por qué conviene vender en asociación?", o:["Se reúne volumen, se accede a mejores compradores y baja el costo de transporte","Porque es obligatorio","Para vender más barato"], r:0},
+  {q:"La trazabilidad sirve para:", o:["Hacer el producto más pesado","Nada en especial","Demostrar el origen y las prácticas, y acceder a mercados formales"], r:2}
+ ]},
+{id:10, ic:"📑", t:"Formulación de proyectos y acceso a fondos", d:"Convierte las necesidades de tu organización en proyectos financiables.", img:"https://images.unsplash.com/photo-1450133064473-71024230f91b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Identificación del problema", c:"Todo proyecto nace de un problema bien definido: ¿qué pasa, a quiénes afecta, desde cuándo y qué causa lo provoca? Un problema claro («perdemos 30% de la cosecha por falta de secado») vale más que una idea vaga («queremos apoyo»)."},
+  {t:"Objetivos", c:"El objetivo general dice el cambio que se busca; los específicos, los pasos para lograrlo. Deben ser medibles y realistas: «reducir las pérdidas postcosecha del 30% al 10% en un año» se puede verificar; «mejorar la situación» no."},
+  {t:"Actividades", c:"Las actividades son las acciones concretas para cumplir cada objetivo: construir, capacitar, comprar, organizar. Cada actividad debe tener responsable, fecha y costo. Si una actividad no aporta a un objetivo, sobra."},
+  {t:"Presupuesto", c:"Detalla cada costo con cotizaciones reales: materiales, mano de obra, equipos, transporte, imprevistos (5-10%). Un presupuesto inflado o sin sustento hace perder credibilidad ante el donante o el banco."},
+  {t:"Cronograma", c:"Ordena las actividades en el tiempo, mes a mes. El cronograma demuestra que el proyecto está pensado y permite dar seguimiento. Considera la época de lluvia y los ciclos de cultivo al programar."},
+  {t:"Documentos legales", c:"Ten al día: personería jurídica, representación legal vigente, RTU, libros autorizados, solvencias y cuenta bancaria de la organización. Muchos proyectos se pierden por papeles vencidos, no por malas ideas."},
+  {t:"Rendición de cuentas", c:"Ejecutar bien incluye informar bien: guarda facturas, fotografías y listados de participantes, e informa a los socios y al donante. Una organización que rinde cuentas bien queda en la lista para los siguientes fondos."}
+ ],
+ quiz:[
+  {q:"¿Cuál de estos es un objetivo bien formulado?", o:["«Mejorar la situación de los socios»","«Reducir las pérdidas postcosecha del 30% al 10% en un año»","«Conseguir apoyo»"], r:1},
+  {q:"¿Qué porcentaje de imprevistos se recomienda en el presupuesto?", o:["Entre 5% y 10%","50%","Nada de imprevistos"], r:0},
+  {q:"¿Por qué se pierden muchos proyectos?", o:["Por exceso de cotizaciones","Por tener cronograma","Por documentos legales vencidos o incompletos"], r:2}
+ ]},
+{id:11, ic:"🐄", t:"Fundamentos de la ganadería", d:"Importancia de la ganadería en Guatemala, anatomía básica de rumiantes y razas ganaderas.", img:"https://images.unsplash.com/photo-1543362906-acfc16c67564?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Importancia socioeconómica", c:"La ganadería bovina es una actividad clave en el medio rural de Guatemala, aportando a la seguridad alimentaria familiar, el empleo y la economía del país. Aproximadamente el 62.1% de las fincas con menos de cinco animales producen leche para autoconsumo, destacando su rol social en la reducción de la desnutrición."},
+  {t:"Razas de carne y leche", c:"Las razas bovinas se clasifican principalmente según su especialidad. Las razas de leche (como Holstein o Jersey) se caracterizan por una estructura angulosa y alta producción láctea. Las razas de carne (como Angus o Brahman) poseen gran musculatura y conversión de forraje a carne. También existen razas de doble propósito."},
+  {t:"Fisiología y digestión del rumiante", c:"Los bovinos son rumiantes, lo que significa que poseen un estómago compuesto de cuatro compartimentos: rumen, retículo, omaso y abomaso. El rumen actúa como una gran tina de fermentación donde los microbios digieren la fibra del pasto y la convierten en energía para el animal."},
+  {t:"Transición a la ganadería sostenible", c:"La ganadería convencional a menudo provoca degradación de suelos, deforestación y bajas rentabilidades. La ganadería sostenible busca transitar hacia prácticas de conservación que eléven la rentabilidad del productor al mismo tiempo que protegen los recursos naturales como suelos y agua."}
+ ],
+ quiz:[
+  {q:"¿Qué porcentaje de fincas pequeñas con menos de 5 animales produce leche para autoconsumo?", o:["Aproximadamente 25%","Aproximadamente 62.1%","Aproximadamente 85%"], r:1},
+  {q:"¿Cuál es la función del rumen en el aparato digestivo del ganado?", o:["Fermentación de la fibra mediante microorganismos","Absorción directa de agua únicamente","Masticación primaria de los alimentos"], r:0},
+  {q:"¿Cuál es el principal objetivo de la transición a la ganadería sostenible?", o:["Incrementar el uso de agroquímicos","Aumentar la productividad y reducir el impacto ambiental","Disminuir el tamaño del hato a la mitad"], r:1}
+ ]},
+{id:12, ic:"🌱", t:"Conceptos de sostenibilidad", d:"Principios de ganadería sostenible, huella ambiental y la estrategia ganadera nacional.", img:"https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Sostenibilidad y ganadería", c:"La ganadería sostenible satisface las necesidades de carne y leche de las generaciones presentes sin comprometer los recursos naturales (suelo, agua, biodiversidad) ni el bienestar de las generaciones futuras. Se basa en tres pilares: económico, social y ambiental."},
+  {t:"Impactos de la ganadería convencional", c:"La ganadería tradicional basada en el pastoreo extensivo provoca la degradación del suelo por pisoteo y sobrepastoreo, la deforestación de bosques nativos para abrir potreros, la contaminación de fuentes de agua por escorrentía del estiércol, y contribuye al cambio climático con emisiones de gases de efecto invernadero."},
+  {t:"Estrategia nacional de ganadería", c:"Guatemala cuenta con la Estrategia de Desarrollo Sostenible de la Ganadería Bovina, la cual incluye el eje de innovación de prácticas en finca. Su propósito es impulsar la adopción de tecnologías sostenibles que mejoren la competitividad del sector y la resiliencia climática del país."},
+  {t:"Principios de buenas prácticas", c:"Las Buenas Prácticas Ganaderas (BPG) abarcan desde el manejo humanitario de los animales hasta la protección del agua, el control en el uso de insumos químicos, y la restauración de la fertilidad natural del suelo mediante abonos orgánicos."}
+ ],
+ quiz:[
+  {q:"¿Cuál de los siguientes es un impacto de la ganadería convencional?", o:["Aumento de la biodiversidad de insectos","Restauración natural del suelo","Deforestación y degradación de suelos"], r:2},
+  {q:"¿En qué estrategia nacional se inserta el desarrollo ganadero sostenible de Guatemala?", o:["Estrategia de Desarrollo Sostenible de la Ganadería Bovina","Estatuto Forestal Municipal","Plan de Riego por Gravedad"], r:0},
+  {q:"El concepto de sostenibilidad en ganadería busca:", o:["Producir sin importar el agotamiento de recursos","Satisfacer necesidades actuales sin comprometer las futuras","Exclusivamente eliminar el uso de pasturas"], r:1}
+ ]},
+{id:13, ic:"📊", t:"Planificación y control productivo", d:"Planificación de fincas, zonificación de áreas y el control financiero mediante registros.", img:"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Zonificación y plano de la finca", c:"El primer paso para mejorar la finca es la planificación territorial. Consiste en elaborar un mapa o plano actual de la finca para identificar áreas productivas, zonas de conservación de bosques, fuentes de agua y accesos, definiendo hacia dónde se expandirán las pasturas o bosques."},
+  {t:"Registros productivos esenciales", c:"No se puede mejorar lo que no se mide. Llevar registros sistemáticos de partos, pesaje de leche o carne, mortalidad, servicios de inseminación y sanidad animal permite evaluar el rendimiento real de los animales e identificar cuáles son rentables y cuáles no."},
+  {t:"Presupuesto y costos de producción", c:"El control financiero es vital. Es necesario anotar detalladamente todos los gastos de insumos, mano de obra y servicios de la finca. Esto ayuda a determinar el costo de producción por litro de leche o kilogramo de carne, garantizando una negociación de precios más informada."},
+  {t:"Elaboración de planes de finca", c:"Un plan de finca establece metas productivas claras a corto, mediano y largo plazo, programando inversiones paso a paso (como el establecimiento de cercas eléctricas o sistemas silvopastoriles) para ordenar el crecimiento de la finca."}
+ ],
+ quiz:[
+  {q:"¿Cuál es el primer paso recomendado para realizar la zonificación de la finca?", o:["Comprar reproductores de raza pura","Elaborar un mapa o plano de la finca","Aplicar fertilizantes químicos a todo el lote"], r:1},
+  {q:"¿Por qué es importante llevar registros productivos en el hato?", o:["Para cumplir con el pago de impuestos únicamente","Permite medir el rendimiento real de los animales y tomar decisiones informadas","Para evitar que el ganado se escape de los potreros"], r:1},
+  {q:"¿Qué variable es fundamental para calcular la rentabilidad real de la leche?", o:["El color del pelaje del animal","El costo de producción por litro de leche","La distancia a la capital de la República"], r:1}
+ ]},
+{id:14, ic:"💧", t:"Diseño de potreros y manejo del agua", d:"Uso de aguadas mejoradas, bebederos eficientes y diseño de cercas eléctricas.", img:"https://images.unsplash.com/photo-1463123081488-729f60c1926d?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Aguadas mejoradas y suministro", c:"El manual destaca que ubicar el agua cerca del ganado genera un incremento productivo sustancial: de 90 a 135 gramos de peso extra al día y entre 0.55 y 1.1 litros de leche diarios por animal. Se debe calcular la demanda total del hato y seleccionar sitios protegidos de la contaminación."},
+  {t:"Estimación de consumo diario", c:"El consumo diario promedio varía según la categoría y temperatura. Las vacas de leche consumen 38-110 litros/día; los bovinos en engorde 26-66 litros/día. En general, se estima un consumo equivalente al 8-12% del peso corporal a temperaturas de 25°C."},
+  {t:"Diseño y subdivisión de potreros", c:"Subdividir la finca permite controlar mejor la alimentación del hato. Se busca limitar el tiempo de ocupación en cada potrero (máximo 3 días) para evitar que los animales dañen el rebrote y permitir un descanso adecuado de las pasturas."},
+  {t:"Cercas eléctricas de bajo costo", c:"Las cercas eléctricas son una herramienta eficiente y de menor costo que las tradicionales. Permiten delimitar potreros pequeños con facilidad y educar al ganado para respetar los límites mediante pulsos eléctricos inofensivos."}
+ ],
+ quiz:[
+  {q:"¿Cuánto peso diario adicional puede ganar un bovino si el agua se ubica cerca de él?", o:["Entre 10 y 20 gramos","De 90 a 135 gramos","Alrededor de 1 kilogramo"], r:1},
+  {q:"¿Qué porcentaje del peso corporal consume en agua un animal a 25°C?", o:["Entre 1% y 2%","Entre 8% y 12%","Más del 50%"], r:1},
+  {q:"¿Cuál es el tiempo de ocupación máximo recomendado por potrero?", o:["15 días","3 días","1 mes"], r:1}
+ ]},
+{id:15, ic:"🌿", t:"Pastoreo rotacional y manejo de pasturas", d:"Principios del pastoreo rotacional, capacidad de carga y periodos de descanso del pasto.", img:"https://images.unsplash.com/photo-1589923188900-85dae440342b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Principios del pastoreo rotacional", c:"El pastoreo rotacional intensivo consiste en utilizar el pasto en su punto óptimo de madurez nutricional. Requiere dividir el área en potreros pequeños y rotar al ganado sistemáticamente respetando la capacidad de carga del potrero."},
+  {t:"Beneficios productivos y económicos", c:"El pastoreo rotacional elimina hasta el 50% del desperdicio de pasto por pisoteo y aumenta la producción de carne y leche hasta un 20% por hectárea. Asimismo, mejora el control de parásitos al romper su ciclo biológico."},
+  {t:"Beneficios ambientales de la rotación", c:"Favorece la fertilidad natural del suelo gracias a una mejor distribución del estiércol y la orina. Además, al concentrar a los animales se liberan áreas marginales de la finca para la regeneración de bosques y se incrementa la captura de carbono."},
+  {t:"Períodos de descanso y ocupación", c:"La clave es dar descanso al pasto. Los animales no deben permanecer más de 3 días en un potrero para evitar el sobrepastoreo del rebrote. Los períodos de descanso varían según la especie y época (lluvia o sequía), oscilando de 25 a 45 días."}
+ ],
+ quiz:[
+  {q:"¿En cuánto puede incrementarse la producción de carne o leche por hectárea mediante el pastoreo rotacional?", o:["Hasta 5%","Hasta 20%","No incrementa, solo ahorra agua"], r:1},
+  {q:"¿Por qué no se debe permitir que el ganado permanezca más de 3 días en el mismo potrero?", o:["Porque se aburren del paisaje","Para evitar que consuman el rebrote tierno del pasto debilitando la raíz","Porque el agua se ensucia"], r:1},
+  {q:"¿Cuál de los siguientes es un beneficio ambiental del pastoreo rotacional?", o:["Uso excesivo de herbicidas","Compactación severa del suelo","Distribución uniforme del estiércol e incremento de carbono en el suelo"], r:2}
+ ]},
+{id:16, ic:"🌳", t:"Sistemas silvopastoriles: cercas vivas y árboles dispersos", d:"Establecimiento de cercas vivas multiestrato y árboles dispersos para confort animal.", img:"https://images.unsplash.com/photo-1448375240586-882707db888b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Cercas vivas multiestrato", c:"Las cercas vivas combinan árboles y arbustos plantados en línea. Reemplazan postes de madera muerta y producen forraje rico en proteína (especies como madrecacao o pita), leña, madera y frutos. Aportan de 3.5 a 6 toneladas de materia seca por kilómetro al año."},
+  {t:"Importancia de la sombra en potreros", c:"La sombra es vital para reducir el estrés térmico en climas cálidos. Un animal estresado por calor produce menos leche y gana menos peso. Se estima que una vaca requiere unos 5 m² de sombra, lo que se logra con unos 50 árboles para un hato de 100 vacas."},
+  {t:"Árboles dispersos en potreros", c:"Mantener árboles dispersos protege el suelo contra la erosión y mejora su fertilidad gracias a la caída de hojas. Además, los pastos que crecen bajo sombra parcial suelen tener mayor valor proteico y digestibilidad. Se recomiendan entre 25 y 40 árboles adultos por hectárea."},
+  {t:"Remoción de carbono y biodiversidad", c:"Los sistemas silvopastoriles actúan como sumideros de carbono, capturando de 22 a 55 toneladas de CO2 equivalente por hectárea. Al mismo tiempo, sirven de corredores biológicos para aves e insectos benéficos."}
+ ],
+ quiz:[
+  {q:"¿Cuánta materia seca de forraje puede producir al año un kilómetro de cerca viva multiestrato?", o:["Entre 100 y 200 kg","De 3.5 a 6 toneladas","Más de 50 toneladas"], r:1},
+  {q:"¿Cuántos árboles adultos por hectárea se recomiendan para lograr una cobertura óptima de 20-30% de sombra?", o:["De 5 a 10 árboles","De 25 a 40 árboles","150 árboles"], r:1},
+  {q:"¿Cuánta sombra en metros cuadrados requiere una vaca lechera para evitar el estrés calórico?", o:["1 metro cuadrado","5 metros cuadrados","50 metros cuadrados"], r:1}
+ ]},
+{id:17, ic:"🌾", t:"Bancos de forraje, silaje y nutrición", d:"Establecimiento de bancos proteicos y energéticos, y técnicas de ensilaje.", img:"https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Bancos forrajeros proteicos", c:"Son áreas sembradas con alta densidad de arbustos leguminosos (Leucaena, Erythrina, Gliricidia, Morera, Cratylia) para suministrar follaje de alta calidad (>= 15% proteína cruda y >= 60% digestibilidad) durante la escasez, reduciendo costos de concentrados."},
+  {t:"Bancos forrajeros energéticos", c:"Áreas destinadas a forrajes perennes ricos en carbohidratos (caña de azúcar, Napier) que aportan la energía necesaria para la fermentación ruminal. Complementan la proteína de las leguminosas, manteniendo la producción en sequía."},
+  {t:"Ensilaje: Principios básicos", c:"El ensilaje es un método de conservación de forrajes verdes por medio de una fermentación anaerobia (sin oxígeno). El éxito radica en cosechar en el punto óptimo, picar finamente (1-2 cm), compactar vigorosamente para extraer el aire, y sellar herméticamente."},
+  {t:"Fases del silo y precauciones", c:"El proceso de ensilaje tiene cuatro fases: aeróbica, fermentación láctica (donde el pH baja y estabiliza el alimento), estabilización, y deterioro (al abrir el silo). La exposición al aire acelera el crecimiento de mohos tóxicos."}
+ ],
+ quiz:[
+  {q:"¿Qué porcentaje mínimo de proteína cruda aportan los bancos forrajeros proteicos?", o:["Menos del 5%","Al menos 15%","Exactamente 50%"], r:1},
+  {q:"¿Cuál es el factor clave para evitar pérdidas de calidad en el ensilaje?", o:["Agregar grandes cantidades de agua","Exponer el silo al sol directo","Lograr una compactación firme y un sellado 100% hermético sin oxígeno"], r:2},
+  {q:"Especies como Leucaena y Gliricidia se utilizan principalmente en bancos:", o:["Energéticos","Minerales","Proteicos"], r:2}
+ ]},
+{id:18, ic:"🪱", t:"Manejo de suelos, restauración y gestión del estiércol", d:"Conservación de suelos, técnicas de compostaje y aprovechamiento con biodigestores.", img:"https://images.unsplash.com/photo-1592417817098-8f3d6eb19675?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Conservación y restauración del suelo", c:"El suelo es el activo más importante. El pastoreo rotacional evita la compactación por sobrepisoteo y la erosión. Incorporar leguminosas y coberturas orgánicas ayuda a devolver la fertilidad natural y reactivar la vida biológica del suelo."},
+  {t:"Elaboración de compostaje en finca", c:"El compostaje recicla los nutrientes de la finca. Consiste en apilar capas alternas de residuos vegetales secos y estiércol, intercaladas con tierra, ceniza y cal. Manteniendo aireación mediante respiradores y volteos periódicos, se obtiene abono orgánico en 14-16 semanas."},
+  {t:"Biodigestores tubulares", c:"El biodigestor tubular procesa el estiércol diluido en agua mediante fermentación anaerobia. Convierte los desechos en biogás (útil para cocinar e iluminar en el hogar) y biol o biofertilizante (rico en nitrógeno para regar pasturas)."},
+  {t:"Mitigación de emisiones de gases", c:"La gestión integral del estiércol mediante el compostaje cerrado y la digestión en biodigestores evita la escorrentía que contamina acuíferos y captura el gas metano, reduciendo la huella de carbono de la finca."}
+ ],
+ quiz:[
+  {q:"¿Qué materiales se alternan en la pila de compostaje según el manual?", o:["Plásticos, estiércol y piedras","Residuos vegetales, estiércol, tierra, ceniza y cal","Únicamente tierra fertilizada"], r:1},
+  {q:"¿Qué dos valiosos recursos se obtienen del funcionamiento de un biodigestor?", o:["Piedras y arena fina","Biogás y biofertilizante líquido (biol)","Diésel y abono químico"], r:1},
+  {q:"¿Cuánto tiempo aproximado tarda el proceso de compostaje tradicional?", o:["2 semanas","De 14 a 16 semanas","1 año completo"], r:1}
+ ]},
+{id:19, ic:"🧬", t:"Genética ganadera y bienestar animal", d:"Selección de razas adaptadas, cruzamiento y las libertades del bienestar animal.", img:"https://images.unsplash.com/photo-1570042225831-d9b085d44e20?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Selección y razas adaptadas", c:"En Guatemala es fundamental elegir animales adaptados al trópico para resistir el calor y los parásitos. Razas con genes Cebuinos o cruzamientos adaptados (como el Gyrolando) logran producciones sostenibles con menor necesidad de medicamentos."},
+  {t:"Cruzamientos y consanguinidad", c:"Cruzar razas con propósitos claros (leche o carne) aumenta el vigor híbrido. Es crucial llevar un registro de monta y un árbol genealógico del hato para evitar la consanguinidad (cruce de parientes), que causa debilidad genética y malformaciones."},
+  {t:"Las libertades del bienestar animal", c:"El bienestar animal se basa en que los animales estén libres de hambre y sed (agua fresca y pasto abundante), libres de incomodidad (sombra y alojamiento), libres de dolor y enfermedades (sanidad), y libres de expresar su comportamiento natural."},
+  {t:"Manejo humanitario y productividad", c:"Un ganado manejado con calma, sin gritos, golpes ni perros agresivos, produce más leche y de mejor calidad. El estrés reduce la liberación de oxitocina, dificultando el ordeño y alterando el pH de la carne."}
+ ],
+ quiz:[
+  {q:"¿Por qué es importante evitar la consanguinidad en el hato?", o:["Porque altera el color del pelaje","Evita debilidad genética, malformaciones y bajas tasas de fertilidad","No tiene importancia en sistemas extensivos"], r:1},
+  {q:"¿Cuál es una consecuencia productiva de manejar al ganado con gritos o golpes?", o:["Aumento espontáneo de la leche","Disminución de la producción por estrés del animal","Ninguna, los animales no sienten estrés"], r:1},
+  {q:"Un cruzamiento ganadero adaptado al trópico busca:", o:["Maximizar el consumo de concentrados comerciales","Lograr resistencia al calor y plagas con buena producción","Criar animales sin cuernos únicamente"], r:1}
+ ]},
+{id:20, ic:"🤝", t:"Diversificación y asociatividad", d:"Integración de cultivos complementarios, valor agregado y asociatividad campesina.", img:"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Diversificación productiva en fincas", c:"La ganadería monocultivo es vulnerable a crisis de precios y clima. Integrar frutales, hortalizas, apicultura o sistemas agroforestales distribuye el riesgo y genera ingresos adicionales a lo largo del año."},
+  {t:"Asociatividad y cooperativismo", c:"Pertenecer a una asociación o cooperativa organizada permite comprar insumos en volumen a menor precio, compartir costos de transporte, negociar colectivamente y acceder a capacitaciones y asistencia técnica gubernamental."},
+  {t:"Inclusión de mujeres y jóvenes", c:"El relevo generacional y la equidad de género fortalecen las organizaciones. Incluir a mujeres y jóvenes en las directivas y comités de comercialización aporta nuevas ideas, dinamismo digital y sostenibilidad social al campo."},
+  {t:"Generación de valor agregado", c:"En lugar de vender solo leche cruda o animales en pie, transformar la leche en quesos madurados, crema o yogur abre mercados locales más rentables y estables."}
+ ],
+ quiz:[
+  {q:"¿Cuál es la principal ventaja de diversificar la producción en la finca?", o:["Facilita el ordeño mecánico","Reduce los riesgos económicos al no depender de un solo producto","Disminuye la fertilidad del suelo"], r:1},
+  {q:"¿Cómo ayuda la asociatividad a los pequeños productores ganaderos?", o:["Los obliga a vender sus tierras","Permite comprar insumos más baratos y negociar mejores precios de venta","Evita la necesidad de llevar registros"], r:1},
+  {q:"Integrar apicultura o árboles frutales en la finca ganadera es una práctica de:", o:["Sobrepastoreo","Monocultivo tradicional","Diversificación productiva"], r:2}
+ ]},
+{id:21, ic:"📑", t:"Incentivos y política pública", d:"Programas de incentivos forestales PROBOSQUE y PINPEP para sistemas agroforestales.", img:"https://images.unsplash.com/photo-1450133064473-71024230f91b?w=320&auto=format&fit=crop&q=80",
+ lecciones:[
+  {t:"Programa PROBOSQUE", c:"PROBOSQUE es un programa de incentivos estatales que financia proyectos de reforestación, manejo de bosques naturales y establecimiento de sistemas agroforestales o silvopastoriles por 30 años. Otorga pagos de hasta Q23,400 por hectárea silvopastoril."},
+  {t:"Programa PINPEP", c:"PINPEP está diseñado para pequeños poseedores de tierras con vocación forestal o agroforestal que no poseen título de propiedad registrado (de 0.1 a 15 hectáreas). Otorga incentivos económicos durante 6 años."},
+  {t:"Requisitos de aplicación", c:"Los solicitantes deben presentar: solicitud oficial, fotocopia del DPI, constancia del Registro Tributario Unificado (RTU) solvente, un Plan de Manejo Forestal/Agroforestal elaborado por un regente aprobado, y documentos de posesión o propiedad."},
+  {t:"Beneficios de los incentivos", c:"Los incentivos cubren parte de los costos de establecimiento y mantenimiento de los sistemas silvopastoriles, estimulando al productor a plantar árboles y conservar el bosque al recibir un ingreso en efectivo."}
+ ],
+ quiz:[
+  {q:"¿Cuál es el pago máximo por hectárea que puede otorgar PROBOSQUE para sistemas silvopastoriles?", o:["Q500","Q5,000","Hasta Q23,400"], r:2},
+  {q:"¿Qué rango de hectáreas es elegible para ingresar al programa PINPEP?", o:["De 0.1 a 15 hectáreas","Más de 500 hectáreas","No hay límite mínimo ni máximo"], r:0},
+  {q:"¿Durante cuántos años otorga incentivos el programa PINPEP?", o:["30 años","6 años","1 año únicamente"], r:1}
+ ]}
+];
+
+const INSIGNIAS = [
+ {id:"semilla",  ic:"🌱", t:"Primera semilla",     d:"Completaste tu primera lección."},
+ {id:"modulo1",  ic:"📘", t:"Primer surco",        d:"Completaste tu primer módulo con evaluación aprobada."},
+ {id:"tres",     ic:"🌿", t:"En crecimiento",      d:"Completaste 3 módulos del programa."},
+ {id:"cinco",    ic:"🌾", t:"Media cosecha",       d:"Completaste 5 módulos del programa."},
+ {id:"perfecto", ic:"⭐", t:"Evaluación perfecta", d:"Obtuviste 3 de 3 en una evaluación."},
+ {id:"explorador",ic:"🧭",t:"Explorador",          d:"Abriste lecciones en 4 módulos distintos."},
+ {id:"todas",    ic:"🏆", t:"Cosecha completa",    d:"Completaste los 21 módulos del programa AgroIA."}
+];
+
+const NOVEDADES = [
+ {tipo:"alerta", chip:"Alerta fitosanitaria", fecha:"08 jun 2026", t:"Presencia de gusano cogollero en la región oriente",
+  p:"Se reporta aumento de gusano cogollero en maíz de primera. Revisa tus cogollos esta semana y consulta el Módulo 3 sobre manejo integrado. Si encuentras daño en más del 20% de plantas, envía fotos a AgroIA por WhatsApp."},
+ {tipo:"video", chip:"Nuevo video", fecha:"05 jun 2026", t:"Cómo tomar fotos útiles para diagnóstico",
+  p:"Ya está disponible en el canal de YouTube AgroIA el video práctico de 4 minutos sobre cómo fotografiar síntomas en cultivos y ganado para recibir mejor orientación técnica."},
+ {tipo:"info", chip:"Convocatoria", fecha:"02 jun 2026", t:"Formación de facilitadores digitales comunitarios",
+  p:"Las asociaciones participantes pueden proponer a 2 jóvenes o líderes locales para la segunda cohorte de facilitadores digitales. Solicita información con tu organización o escribe a AgroIA."},
+ {tipo:"info", chip:"Clima", fecha:"01 jun 2026", t:"Pronóstico: canícula moderada en julio",
+  p:"INSIVUMEH prevé reducción de lluvias entre el 5 y el 20 de julio. Revisa el Módulo 6 para preparar tu finca: conservación de humedad, prioridades de riego y variedades tolerantes."},
+ {tipo:"video", chip:"Nuevo video", fecha:"28 may 2026", t:"Condición corporal del ganado en 3 pasos",
+  p:"Aprende a evaluar la condición corporal de tus animales observando costillas, columna y base de la cola. Video disponible en el canal educativo del programa."},
+ {tipo:"info", chip:"Programa", fecha:"25 may 2026", t:"Nuevo módulo disponible: Formulación de proyectos",
+  p:"Ya puedes cursar el Módulo 10 sobre formulación de proyectos y acceso a fondos, validado por la red de especialistas del programa."}
+];
+</script>
+<script>
+/* ====== DATOS COMPLEMENTARIOS DEL REDISEÑO ====== */
+const COLORES = {
+ 1:["#34D399","#0F766E"], 2:["#A3E635","#3F6212"], 3:["#FBBF24","#B45309"],
+ 4:["#FB923C","#9A3412"], 5:["#60A5FA","#1E40AF"], 6:["#22D3EE","#155E75"],
+ 7:["#C084FC","#6B21A8"], 8:["#F472B6","#9D174D"], 9:["#FACC15","#854D0E"],
+ 10:["#4ADE80","#166534"],
+ 11:["#86EFAC","#15803D"], 12:["#6EE7B7","#047857"], 13:["#93C5FD","#1D4ED8"],
+ 14:["#7DD3FC","#0369A1"], 15:["#A7F3D0","#064E3B"], 16:["#FDE047","#A16207"],
+ 17:["#F9A8D4","#BE185D"], 18:["#C084FC","#581C87"], 19:["#FDA4AF","#BE123C"],
+ 20:["#FDBA74","#C2410C"], 21:["#818CF8","#4338CA"]
+};
+function gradMod(id){ const c=COLORES[id]; return `background:linear-gradient(135deg,${c[0]},${c[1]});`; }
+
+function obtenerIconoSVG(key, size=24) {
+  const icons = {
+    "📱": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`,
+    "🌿": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22C2 12 10 4 22 2c-2 10-10 18-20 20z"></path><path d="M9 15c3-3 7-5 11-6"></path><path d="M15 9c-3 3-5 7-6 11"></path></svg>`,
+    "🌱": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"></path><path d="M10 20V12a4 4 0 0 1 8-4h2"></path><path d="M10 16a4 4 0 0 0-8-4h2"></path></svg>`,
+    "🐛": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="8" height="14" rx="4"></rect><path d="M12 2v4M12 20v2M6 8h12M6 12h12M6 16h12M8 4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"></path></svg>`,
+    "🪱": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v14M12 16a4 4 0 0 1-8 0v-2M12 16a4 4 0 0 0 8 0v-2M8 6h8"></path></svg>`,
+    "🐄": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V5C19 3.89543 18.1046 3 17 3Z"></path><path d="M9 7h6M9 11h6M9 15h3"></path></svg>`,
+    "💧": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`,
+    "🧮": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>`,
+    "🤝": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+    "🛒": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`,
+    "📑": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+    "📊": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+    "🌳": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-8M9 12l3-3 3 3M17 12c1.7 0 3-1.3 3-3s-1.3-3-3-3a5 5 0 0 0-10 0c-1.7 0-3 1.3-3 3s1.3 3 3 3z"></path></svg>`,
+    "🌾": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M8 5c0 2 4 4 4 4s4-2 4-4-4-2-4-2zM8 11c0 2 4 4 4 4s4-2 4-4-4-2-4-2zM8 17c0 2 4 4 4 4s4-2 4-4-4-2-4-2z"></path></svg>`,
+    "🧬": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 10.5C5 8.5 7 7.5 9 7.5c3.5 0 5.5 3 7.5 3s4-1 4.5-3M4.5 16.5C5 14.5 7 13.5 9 13.5c3.5 0 5.5 3 7.5 3s4-1 4.5-3M12 6v12"></path></svg>`,
+    "⏱️": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+    "📗": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path></svg>`,
+    "📈": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
+    "🎬": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`,
+    "📢": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19c-1.1 0-2-.9-2-2H6c-2.2 0-4-1.8-4-4V9c0-2.2 1.8-4 4-4h4c0-1.1.9-2 2-2s2 .9 2 2v14c0 1.1-.9 2-2 2z"></path><path d="M16 8a5 5 0 0 1 0 8"></path></svg>`,
+    "📘": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
+    "⭐": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
+    "🧭": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>`,
+    "🏆": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"></path><path d="M12 2a6 6 0 0 1 6 6v5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z"></path></svg>`,
+    "🔒": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`,
+    "video": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`,
+    "alerta": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19c-1.1 0-2-.9-2-2H6c-2.2 0-4-1.8-4-4V9c0-2.2 1.8-4 4-4h4c0-1.1.9-2 2-2s2 .9 2 2v14c0 1.1-.9 2-2 2z"></path><path d="M16 8a5 5 0 0 1 0 8"></path></svg>`,
+    "🎓": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>`,
+    "❓": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    "💬": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`,
+    "🌽": `<svg viewBox="0 0 24 24" width="${size}" height="${size}" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.5 2 6 5.5 6 10c0 4.5 2.5 8 6 10 3.5-2 6-5.5 6-10 0-4.5-2.5-8-6-10z"></path><path d="M9 20v2M15 20v2M6 10h12M12 2v18"></path></svg>`
+  };
+  return icons[key] || key;
+}
+
+const RUTAS = [
+ {id:"ganaderia_sostenible", clase:"verde", ic:"🐄", t:"Ganadería Sostenible (Plan Piloto)",
+  d:"Malla curricular completa para la transición gradual hacia fincas más productivas y resilientes.", mods:[11,12,13,14,15,16,17,18,19,20,21]},
+ {id:"sostenible", clase:"", ic:"🌱", t:"Agricultura Sostenible",
+  d:"Aprende técnicas sostenibles para mejorar la productividad cuidando el medio ambiente.", mods:[2,3,4,6]},
+ {id:"pecuaria", clase:"azul", ic:"🐄", t:"Producción Pecuaria",
+  d:"Fortalece tus conocimientos en manejo, nutrición y producción animal.", mods:[5,6]},
+ {id:"gestion", clase:"oro", ic:"📈", t:"Gestión, Organización y Mercados",
+  d:"Administra tu finca, fortalece tu organización y vende mejor tu producción.", mods:[7,8,9,10]},
+ {id:"digital", clase:"", ic:"📱", t:"Competencias Digitales AgroIA",
+  d:"Domina el asistente AgroIA y las herramientas digitales del programa.", mods:[1]}
+];
+const HEXCOLOR = {semilla:"verde", modulo1:"verde", tres:"verde", cinco:"", perfecto:"", explorador:"azul", todas:""};
+
+const EVENTOS = [
+ {dia:10, mes:"JUN", t:"Webinar en vivo: Innovaciones en riego tecnificado", h:"10:00 a.m.", ic:"💻"},
+ {dia:12, mes:"JUN", t:"Cierre de inscripción: facilitadores digitales (2.ª cohorte)", h:"5:00 p.m.", ic:"📝"},
+ {dia:17, mes:"JUN", t:"Jornada de campo: sistemas silvopastoriles · TNC Guatemala", h:"8:00 a.m.", ic:"🌳"},
+ {dia:24, mes:"JUN", t:"Charla: precios y mercados de granos básicos", h:"3:00 p.m.", ic:"📊"},
+ {dia:30, mes:"JUN", t:"Entrega de reportes territoriales a CONADEA", h:"Todo el día", ic:"📑"}
+];
+const FOROS = [
+ {ic:"🌽", t:"Gusano cogollero en maíz de primera, ¿qué están aplicando?", a:"Asoc. El Esfuerzo · hace 2 horas", r:14},
+ {ic:"🐄", t:"Experiencias con bloques multinutricionales en verano", a:"Coop. Ganaderos del Norte · hace 5 horas", r:9},
+ {ic:"💧", t:"Cosecha de agua de techo: medidas de toneles y canaletas", a:"Asoc. Mujeres Rurales · ayer", r:22},
+ {ic:"🤝", t:"Modelo de acta para renovación de junta directiva", a:"Coop. La Unión · hace 2 días", r:6},
+ {ic:"🛒", t:"Compradores de tomate en oriente, recomendaciones", a:"Asoc. Hortaliceros Unidos · hace 3 días", r:17}
+];
+
+/* ====== ESTADO ====== */
+let estado = {
+  usuario:null, prog:{}, insignias:[], abiertos:[],
+  actividad:[], novVisto:false,
+  config:{notif:true, datos:false, recordatorio:true}
+};
+
+let listaUsuarios = [];
+let usuarioActivoNombre = "";
+
+function guardarTodos() {
+  try {
+    localStorage.setItem("agroia_usuarios_lista", JSON.stringify(listaUsuarios));
+    localStorage.setItem("agroia_usuario_activo", usuarioActivoNombre);
+  } catch (e) {}
+}
+
+function cargarTodos() {
+  try {
+    const listData = localStorage.getItem("agroia_usuarios_lista");
+    if (listData) listaUsuarios = JSON.parse(listData);
+    usuarioActivoNombre = localStorage.getItem("agroia_usuario_activo") || "";
+  } catch (e) {}
+}
+
+function guardar(){
+  if (!estado.usuario) return;
+  const idx = listaUsuarios.findIndex(u => u.nombre.toLowerCase() === estado.usuario.nombre.toLowerCase());
+  const profileData = {
+    nombre: estado.usuario.nombre,
+    org: estado.usuario.org,
+    muni: estado.usuario.muni,
+    act: estado.usuario.act,
+    desde: estado.usuario.desde,
+    prog: estado.prog,
+    insignias: estado.insignias,
+    abiertos: estado.abiertos,
+    actividad: estado.actividad,
+    config: estado.config
+  };
+  if (idx !== -1) {
+    listaUsuarios[idx] = profileData;
+  } else {
+    listaUsuarios.push(profileData);
+  }
+  usuarioActivoNombre = estado.usuario.nombre;
+  guardarTodos();
+}
+
+function cargar(){
+  cargarTodos();
+  if (usuarioActivoNombre) {
+    const profile = listaUsuarios.find(u => u.nombre.toLowerCase() === usuarioActivoNombre.toLowerCase());
+    if (profile) {
+      estado.usuario = {
+        nombre: profile.nombre,
+        org: profile.org,
+        muni: profile.muni,
+        act: profile.act,
+        desde: profile.desde
+      };
+      estado.prog = profile.prog || {};
+      estado.insignias = profile.insignias || [];
+      estado.abiertos = profile.abiertos || [];
+      estado.actividad = profile.actividad || [];
+      estado.config = profile.config || {notif:true, datos:false, recordatorio:true};
+      return;
+    }
+  }
+  estado.usuario = null;
+  estado.prog = {};
+  estado.insignias = [];
+  estado.abiertos = [];
+  estado.actividad = [];
+  estado.config = {notif:true, datos:false, recordatorio:true};
+}
+
+function progDe(id){ if(!estado.prog[id]) estado.prog[id]={lec:[],nota:null,ok:false,fecha:null}; return estado.prog[id]; }
+function modulosCompletos(){ return MODULOS.filter(m=>progDe(m.id).ok).length; }
+function enProgreso(){ return MODULOS.filter(m=>{const p=progDe(m.id); return !p.ok && p.lec.length>0;}).length; }
+function leccionesHechas(){ return MODULOS.reduce((s,m)=>s+progDe(m.id).lec.length,0); }
+function totalLecciones(){ return MODULOS.reduce((s,m)=>s+m.lecciones.length,0); }
+function horasCapacitacion(){ return Math.round(leccionesHechas()*0.5 + modulosCompletos()*0.5); }
+function pctModulo(m){ const p=progDe(m.id); const t=m.lecciones.length+1; return Math.round((p.lec.length+(p.ok?1:0))/t*100); }
+function pctGlobal(){ return Math.round(MODULOS.reduce((s,m)=>s+pctModulo(m),0)/MODULOS.length); }
+function pctRuta(r){ return Math.round(r.mods.reduce((s,id)=>s+pctModulo(MODULOS.find(m=>m.id===id)),0)/r.mods.length); }
+
+/* ====== ACTIVIDAD / RACHA ====== */
+function hoyISO(){ return new Date().toISOString().slice(0,10); }
+function registrarActividad(){
+  const h = hoyISO();
+  if(!estado.actividad.includes(h)){ estado.actividad.push(h); guardar(); }
+}
+function racha(){
+  const set = new Set(estado.actividad);
+  let n=0, d=new Date();
+  while(set.has(d.toISOString().slice(0,10))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function semanaActual(){
+  const hoy = new Date(); const dow = (hoy.getDay()+6)%7;
+  const lunes = new Date(hoy); lunes.setDate(hoy.getDate()-dow);
+  const set = new Set(estado.actividad);
+  return ["L","M","M","J","V","S","D"].map((l,i)=>{
+    const f = new Date(lunes); f.setDate(lunes.getDate()+i);
+    const iso = f.toISOString().slice(0,10);
+    return {l, hecho:set.has(iso), hoy:iso===hoyISO()};
+  });
+}
+
+/* ====== REGISTRO / SESIÓN ====== */
+function cambiarPestaña(tipo) {
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegistro = document.getElementById("tab-registro");
+  const panelLogin = document.getElementById("panel-login");
+  const panelRegistro = document.getElementById("panel-registro");
+
+  if (tipo === "login") {
+    tabLogin.classList.add("activo");
+    tabRegistro.classList.remove("activo");
+    panelLogin.classList.remove("oculto");
+    panelRegistro.classList.add("oculto");
+    llenarDropdownPerfiles();
+  } else {
+    tabLogin.classList.remove("activo");
+    tabRegistro.classList.add("activo");
+    panelLogin.classList.add("oculto");
+    panelRegistro.classList.remove("oculto");
+  }
+}
+
+function llenarDropdownPerfiles() {
+  cargarTodos();
+  const select = document.getElementById("loginUsuarioSelect");
+  if (!select) return;
+  select.innerHTML = '<option value="">-- Selecciona un perfil --</option>';
+  listaUsuarios.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u.nombre;
+    opt.textContent = u.nombre;
+    select.appendChild(opt);
+  });
+}
+
+function actualizarNombreLogin(val) {
+  const input = document.getElementById("loginNombre");
+  if (input) {
+    input.value = val;
+  }
+}
+
+function iniciarSesion() {
+  let n = document.getElementById("loginNombre").value.trim();
+  if (!n) {
+    const select = document.getElementById("loginUsuarioSelect");
+    if (select && select.value) {
+      n = select.value;
+    }
+  }
+  if (!n) {
+    document.getElementById("loginNombre").focus();
+    return;
+  }
+  
+  cargarTodos();
+  const profile = listaUsuarios.find(u => u.nombre.toLowerCase() === n.toLowerCase());
+  if (profile) {
+    usuarioActivoNombre = profile.nombre;
+    cargar();
+    iniciarApp();
+  } else {
+    if (confirm("El perfil '" + n + "' no está registrado en este dispositivo. ¿Deseas registrar un nuevo perfil con este nombre?")) {
+      cambiarPestaña('registro');
+      document.getElementById("regNombre").value = n;
+      document.getElementById("regOrg").focus();
+    }
+  }
+}
+
+function registrar(){
+  const n=document.getElementById("regNombre").value.trim();
+  if(!n){ document.getElementById("regNombre").focus(); return; }
+  
+  cargarTodos();
+  const existe = listaUsuarios.some(u => u.nombre.toLowerCase() === n.toLowerCase());
+  if (existe) {
+    alert("Ya existe un perfil con este nombre. Por favor, inicia sesión con él o usa otro nombre.");
+    cambiarPestaña('login');
+    document.getElementById("loginNombre").value = n;
+    llenarDropdownPerfiles();
+    document.getElementById("loginUsuarioSelect").value = n;
+    return;
+  }
+
+  estado.usuario={
+    nombre:n,
+    org:document.getElementById("regOrg").value.trim()||"Sin organización registrada",
+    muni:document.getElementById("regMuni").value.trim()||"Guatemala",
+    act:document.getElementById("regAct").value,
+    desde:new Date().toLocaleDateString("es-GT",{day:"numeric",month:"long",year:"numeric"})
+  };
+  estado.prog={};
+  estado.insignias=[];
+  estado.abiertos=[];
+  estado.actividad=[];
+  estado.config={notif:true, datos:false, recordatorio:true};
+
+  registrarActividad();
+  guardar();
+  iniciarApp();
+}
+
+function iniciarApp(){
+  document.getElementById("pantallaRegistro").classList.add("oculto");
+  document.getElementById("app").classList.remove("oculto");
+  const u=estado.usuario;
+  document.getElementById("saludoTitulo").textContent="¡Hola, "+u.nombre.split(" ")[0]+"! 👋";
+  document.getElementById("nombreCorto").textContent=u.nombre.split(" ").slice(0,2).join(" ");
+  
+  const avatarEl = document.getElementById("avatarIni");
+  if (!estado.config.datos) {
+    const isFemale = /ana|maria|garcia|sofia|lucia|laura|elena|claudia|garcía|maría/i.test(u.nombre);
+    const imgUrl = isFemale 
+      ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+      : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80";
+    avatarEl.innerHTML = `<img src="${imgUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;" alt="${u.nombre}">`;
+    avatarEl.style.background = "none";
+  } else {
+    avatarEl.textContent = u.nombre.split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
+    avatarEl.style.background = "";
+  }
+  
+  actualizarCampana();
+  irA("inicio");
+}
+
+function cerrarSesion(){
+  if(!confirm("¿Cerrar sesión? Tu avance quedará guardado en este dispositivo.")) return;
+  guardar();
+  usuarioActivoNombre = "";
+  estado.usuario = null;
+  guardarTodos();
+  location.reload();
+}
+
+function actualizarCampana(){
+  const p=document.getElementById("puntoNov");
+  if(estado.novVisto){ p.classList.add("oculto"); } else { p.classList.remove("oculto"); p.textContent=Math.min(NOVEDADES.length,9); }
+}
+function abrirMenu(){ document.getElementById("sidebar").classList.add("abierto"); document.getElementById("velo").classList.remove("oculto"); }
+function cerrarMenu(){ document.getElementById("sidebar").classList.remove("abierto"); document.getElementById("velo").classList.add("oculto"); }
+
+/* ====== NAVEGACIÓN ====== */
+const VISTAS=["inicio","miscursos","catalogo","detalle","rutas","calendario","novedades","insignias","certificados","foros","ayuda","perfil","config"];
+function irA(v,arg){
+  VISTAS.forEach(x=>document.getElementById("vista-"+x).classList.add("oculto"));
+  document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("activo"));
+  const mapaMenu={detalle:"catalogo"};
+  const mb=document.getElementById("m-"+(mapaMenu[v]||v));
+  if(mb) mb.classList.add("activo");
+  if(v==="novedades"){ estado.novVisto=true; guardar(); actualizarCampana(); }
+  const pintores={inicio:pintarInicio,miscursos:pintarMisCursos,catalogo:pintarCatalogo,detalle:()=>pintarDetalle(arg),
+    rutas:pintarRutas,calendario:pintarCalendario,novedades:pintarNovedades,insignias:pintarInsignias,
+    certificados:pintarCertificados,foros:pintarForos,ayuda:pintarAyuda,perfil:pintarPerfil,config:pintarConfig};
+  pintores[v]();
+  document.getElementById("vista-"+v).classList.remove("oculto");
+  cerrarMenu(); window.scrollTo({top:0});
+}
+
+/* ====== COMPONENTES REUTILIZABLES ====== */
+function anilloSVG(pct){
+  const r=54, c=2*Math.PI*r;
+  return `<div class="anillo">
+    <svg width="128" height="128" viewBox="0 0 128 128">
+      <circle cx="64" cy="64" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+      <circle cx="64" cy="64" r="${r}" fill="none" stroke="url(#gradAnillo)" stroke-width="8"
+        stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct/100)}"
+        style="filter: drop-shadow(0 0 4px rgba(74, 222, 128, 0.5));"/>
+      <defs>
+        <linearGradient id="gradAnillo" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#A3E635"/>
+          <stop offset="100%" stop-color="#4ADE80"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="centro"><b>${pct}%</b><small>Completado</small></div>
+  </div>`;
+}
+function filaCurso(m){
+  const p=progDe(m.id), pct=pctModulo(m);
+  const minStyle = estado.config.datos ? gradMod(m.id) : `background-image: url('${m.img}'); background-size: cover; background-position: center;`;
+  const minContent = estado.config.datos ? obtenerIconoSVG(m.ic, 16) : '';
+  return `<div class="curso-fila">
+    <div class="miniatura" style="${minStyle}">${minContent}</div>
+    <div class="datos">
+      <b>${m.t}</b>
+      <div class="pista"><div style="width:${pct}%"></div></div>
+      <span class="pct">${pct}% completado</span>
+    </div>
+    <button class="btn-continuar ${p.ok?'hecho':''}" onclick="irA('detalle',${m.id})">${p.ok?'Repasar':'Continuar'}</button>
+  </div>`;
+}
+function tarjetaRuta(r){
+  const pct=pctRuta(r);
+  return `<div class="ruta ${r.clase}">
+    <div class="icono">${obtenerIconoSVG(r.ic, 28)}</div>
+    <div class="datos">
+      <b>${r.t}</b>
+      <p>${r.d}</p>
+      <span class="estado-ruta">${pct}% completado · ${r.mods.length} cursos</span>
+      <div class="pista"><div style="width:${pct}%"></div></div>
+    </div>
+  </div>`;
+}
+function hexInsignia(b, fechaTxt){
+  const tiene=estado.insignias.includes(b.id);
+  return `<div class="hex-item">
+    <div class="hexagono ${tiene?(HEXCOLOR[b.id]||''):'gris'}">${obtenerIconoSVG(tiene?b.ic:'🔒', 24)}</div>
+    <div><b>${b.t}</b><small>${b.d}</small>${tiene&&fechaTxt?`<small style="color:var(--lima);">Obtenida</small>`:''}</div>
+  </div>`;
+}
+function itemNovedad(n, compacto){
+  const ic = n.tipo==="video"?"🎬":n.tipo==="alerta"?"📢":"📗";
+  return `<div class="nov-item ${n.tipo}">
+    <div class="icono">${obtenerIconoSVG(ic, 24)}</div>
+    <div><b>${n.t}</b>${compacto?'':`<p>${n.p}</p>`}<small>${n.chip} · ${n.fecha}</small></div>
+  </div>`;
+}
+
+/* ====== VISTA: INICIO (DASHBOARD) ====== */
+function pintarInicio(){
+  const comp=modulosCompletos(), prog=enProgreso(), pct=pctGlobal(), rch=racha();
+  const cursosProg = MODULOS.filter(m=>{const p=progDe(m.id);return p.lec.length>0&&!p.ok;}).slice(0,3);
+  const lista = cursosProg.length? cursosProg : MODULOS.slice(0,3);
+  const recientes=[...estado.insignias].slice(-3).reverse().map(id=>INSIGNIAS.find(b=>b.id===id));
+  const html=`
+  <div class="grid-dash">
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Tu progreso general</h3></div>
+      <div class="prog-flex">
+        ${anilloSVG(pct)}
+        <div class="stats-prog">
+          <div class="stat-linea"><span class="ic">${obtenerIconoSVG('📗', 16)}</span>Cursos completados<b>${comp}</b></div>
+          <div class="stat-linea"><span class="ic">${obtenerIconoSVG('📈', 16)}</span>En progreso<b>${prog}</b></div>
+          <div class="stat-linea"><span class="ic">${obtenerIconoSVG('⏱️', 16)}</span>Horas de capacitación<b>${horasCapacitacion()}h</b></div>
+        </div>
+      </div>
+      <button class="btn btn-ancho" onclick="irA('perfil')">Ver mi progreso →</button>
+    </div>
+
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Racha de aprendizaje 🔥</h3></div>
+      <div class="racha-num">
+        <b>${rch}</b>
+        <p>${rch===1?'día consecutivo':'días consecutivos'}</p>
+        <div class="animo">${rch>0?'¡Sigue así!':'Completa una lección hoy para iniciar tu racha'}</div>
+      </div>
+      <div class="dias-semana">
+        ${semanaActual().map(d=>`<div class="dia ${d.hecho?'hecho':''} ${d.hoy?'hoy':''}"><span class="marca">${d.hecho?'✓':''}</span>${d.l}</div>`).join("")}
+      </div>
+    </div>
+
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Novedades</h3><button class="ver-todas" onclick="irA('novedades')">Ver todas</button></div>
+      ${NOVEDADES.slice(0,3).map(n=>itemNovedad(n,true)).join("")}
+    </div>
+  </div>
+
+  <div class="grid-dash">
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Mis cursos en progreso</h3><button class="ver-todas" onclick="irA('miscursos')">Ver todos</button></div>
+      ${lista.map(m=>filaCurso(m)).join("")}
+      <button class="ver-todas" style="margin-top:10px;" onclick="irA('miscursos')">Ver todos mis cursos →</button>
+    </div>
+
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Rutas de aprendizaje</h3><button class="ver-todas" onclick="irA('rutas')">Ver todas</button></div>
+      ${RUTAS.slice(0,2).map(r=>tarjetaRuta(r)).join("")}
+      <button class="ver-todas" style="margin-top:10px;" onclick="irA('rutas')">Explorar rutas de aprendizaje →</button>
+    </div>
+
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Insignias recientes</h3><button class="ver-todas" onclick="irA('insignias')">Ver todas</button></div>
+      ${recientes.length
+        ? recientes.map(b=>hexInsignia(b,true)).join("")
+        : `<p style="font-size:.8rem;color:var(--texto-suave);">Aún no tienes insignias. Completa tu primera lección para ganar 🌱 <b>Primera semilla</b>.</p>`
+        + INSIGNIAS.slice(0,2).map(b=>hexInsignia(b)).join("")}
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="trofeo">🏆</div>
+    <div>
+      <b>¡Sigue así, ${estado.usuario.nombre.split(" ")[0]}!</b>
+      <p>Vas por buen camino. Cada curso te acerca más a tus objetivos.</p>
+    </div>
+    <button class="btn verde" onclick="irA('perfil')">Ver mis objetivos →</button>
+  </div>`;
+  document.getElementById("vista-inicio").innerHTML=html;
+}
+
+/* ====== VISTA: MIS CURSOS ====== */
+function pintarMisCursos(){
+  const iniciados=MODULOS.filter(m=>progDe(m.id).lec.length>0||progDe(m.id).ok);
+  document.getElementById("vista-miscursos").innerHTML=`
+  <div class="fila-seccion"><h2>Mis cursos</h2><button class="ver-todas" onclick="irA('catalogo')">Ir al catálogo →</button></div>
+  <div class="vidrio">
+    ${iniciados.length? iniciados.map(m=>filaCurso(m)).join("")
+      : `<p style="font-size:.85rem;color:var(--texto-suave);">Todavía no has iniciado ningún curso. Explora el <b>catálogo</b> y comienza tu primera lección.</p>`}
+  </div>`;
+}
+
+/* ====== VISTA: CATÁLOGO ====== */
+function cartaCurso(m){
+  const p=progDe(m.id), pct=pctModulo(m);
+  const portStyle = estado.config.datos ? gradMod(m.id) : `background-image: url('${m.img}'); background-size: cover; background-position: center;`;
+  const portContent = estado.config.datos ? m.ic : '';
+  return `<button class="vidrio carta-curso" onclick="irA('detalle',${m.id})">
+    <div class="portada" style="${portStyle}">
+      <span class="num">Módulo ${m.id}</span>
+      ${p.ok?'<span class="listo">✓ Completado</span>':''}
+      ${portContent}
+    </div>
+    <div class="cuerpo-carta">
+      <h4>${m.t}</h4>
+      <p class="desc">${m.d}</p>
+      <div class="pista"><div style="width:${pct}%"></div></div>
+      <div class="meta-curso"><span>📖 ${m.lecciones.length} lecciones</span><span>📝 Evaluación</span><span>🎓 Certificado</span></div>
+    </div>
+  </button>`;
+}
+function pintarCatalogo(filtro){
+  const f=(filtro||"").toLowerCase();
+  const lista=MODULOS.filter(m=>!f||m.t.toLowerCase().includes(f)||m.d.toLowerCase().includes(f)||m.lecciones.some(l=>l.t.toLowerCase().includes(f)));
+  document.getElementById("vista-catalogo").innerHTML=`
+  <div class="fila-seccion"><h2>Catálogo de cursos</h2><span style="font-size:.78rem;color:var(--texto-suave);">${lista.length} de ${MODULOS.length} cursos</span></div>
+  ${f?`<p style="font-size:.8rem;color:var(--texto-suave);margin-bottom:12px;">Resultados para «${filtro}»</p>`:''}
+  <div class="grid-catalogo">${lista.map(m=>cartaCurso(m)).join("")||'<p style="color:var(--texto-suave);">No se encontraron cursos para esa búsqueda.</p>'}</div>`;
+}
+function buscar(txt){
+  if(document.getElementById("vista-catalogo").classList.contains("oculto")) irA("catalogo");
+  pintarCatalogo(txt.trim());
+  document.getElementById("busqueda").focus();
+}
+</script>
+<script>
+/* ====== VISTA: DETALLE DE CURSO ====== */
+let modActual=null, quizSel={};
+function pintarDetalle(id){
+  modActual=MODULOS.find(m=>m.id===id); quizSel={};
+  if(!estado.abiertos.includes(id)){ estado.abiertos.push(id); guardar(); revisarInsignias(); }
+  renderDetalle();
+}
+function renderDetalle(){
+  const m=modActual, p=progDe(m.id);
+  const todas=p.lec.length===m.lecciones.length;
+  document.getElementById("vista-detalle").innerHTML=`
+  <button class="volver" onclick="irA('catalogo')">‹ Catálogo de cursos</button>
+  <div class="vidrio" style="margin-bottom:16px;">
+    <div class="cab-detalle">
+      <div class="icono-grande" style="${gradMod(m.id)}">${m.ic}</div>
+      <div style="flex:1;min-width:200px;">
+        <small style="font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--texto-suave);font-weight:800;">Módulo ${m.id} · ${m.lecciones.length} lecciones · Evaluación final</small>
+        <h2>${m.t}</h2>
+        <p>${m.d}</p>
+      </div>
+      <div style="text-align:center;min-width:90px;">
+        <b style="font-size:1.6rem;color:var(--verde);">${pctModulo(m)}%</b>
+        <small style="display:block;font-size:.66rem;color:var(--texto-suave);text-transform:uppercase;">Avance</small>
+      </div>
+    </div>
+    <div class="pista" style="height:9px;"><div style="width:${pctModulo(m)}%"></div></div>
+  </div>
+
+  ${m.lecciones.map((l,i)=>{
+    const hecha=p.lec.includes(i);
+    return `<div class="leccion ${hecha?'hecha':''}" id="lec-${i}">
+      <button onclick="toggleLeccion(${i})">
+        <span class="check">${hecha?'✓':''}</span>
+        <span class="tit">${i+1}. ${l.t}</span>
+        <span class="flecha">›</span>
+      </button>
+      <div class="cuerpo">
+        <p>${l.c}</p>
+        ${hecha?'<p style="color:var(--verde);font-weight:700;font-size:.8rem;">✓ Lección completada</p>'
+               :`<button class="btn verde" onclick="completarLeccion(${i})">Marcar como completada</button>`}
+      </div>
+    </div>`;}).join("")}
+
+  <div class="vidrio" style="margin-top:18px;">
+    <h3 style="margin-bottom:6px;">📝 Evaluación del módulo</h3>
+    <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:13px;">
+      ${p.ok?`Evaluación aprobada con nota ${p.nota}/3 el ${p.fecha}.`
+        :todas?"Responde 3 preguntas. Necesitas al menos 2 correctas para aprobar y obtener tu certificado."
+        :"Completa todas las lecciones para habilitar la evaluación."}
+    </p>
+    <div id="zona-quiz">
+      ${p.ok?`<button class="btn verde" onclick="verCertificado(${m.id})">🎓 Ver mi certificado</button>
+              <button class="btn" style="margin-left:8px;" onclick="iniciarQuiz()">Repetir evaluación</button>`
+            :`<button class="btn verde ${todas?'':'bloq'}" onclick="iniciarQuiz()">Iniciar evaluación</button>`}
+    </div>
+  </div>`;
+}
+function toggleLeccion(i){ document.getElementById("lec-"+i).classList.toggle("abierta"); }
+function completarLeccion(i){
+  const p=progDe(modActual.id);
+  if(!p.lec.includes(i)) p.lec.push(i);
+  registrarActividad(); guardar(); renderDetalle();
+  const sig=document.getElementById("lec-"+Math.min(i+1,modActual.lecciones.length-1));
+  if(sig) sig.classList.add("abierta");
+  revisarInsignias();
+}
+
+/* ====== EVALUACIÓN ====== */
+function iniciarQuiz(){
+  quizSel={};
+  const m=modActual;
+  document.getElementById("zona-quiz").innerHTML=
+    m.quiz.map((q,qi)=>`
+    <div class="pregunta">
+      <h4>${qi+1}. ${q.q}</h4>
+      ${q.o.map((o,oi)=>`<button class="opcion" id="op-${qi}-${oi}" onclick="elegir(${qi},${oi})">
+        <span class="letra">${"ABC"[oi]}.</span><span>${o}</span></button>`).join("")}
+    </div>`).join("")+
+    `<button class="btn verde" style="width:100%;" onclick="calificar()">Enviar respuestas</button>`;
+}
+function elegir(qi,oi){
+  quizSel[qi]=oi;
+  modActual.quiz[qi].o.forEach((_,x)=>document.getElementById(`op-${qi}-${x}`).classList.toggle("sel",x===oi));
+}
+function calificar(){
+  const m=modActual;
+  if(Object.keys(quizSel).length<m.quiz.length){
+    mostrarToast("✍️","Responde todas las preguntas","Te falta al menos una pregunta por contestar."); return;
+  }
+  let nota=0;
+  m.quiz.forEach((q,qi)=>{
+    q.o.forEach((_,oi)=>{
+      const el=document.getElementById(`op-${qi}-${oi}`);
+      el.style.pointerEvents="none";
+      if(oi===q.r) el.classList.add("ok");
+      else if(quizSel[qi]===oi) el.classList.add("mal");
+    });
+    if(quizSel[qi]===q.r) nota++;
+  });
+  const p=progDe(m.id), aprobado=nota>=2, yaEra=p.ok;
+  p.nota=Math.max(p.nota||0,nota);
+  if(aprobado&&!p.ok){ p.ok=true; p.fecha=new Date().toLocaleDateString("es-GT",{day:"numeric",month:"long",year:"numeric"}); }
+  registrarActividad(); guardar();
+  document.getElementById("zona-quiz").insertAdjacentHTML("beforeend",`
+  <div class="resultado-quiz">
+    <div class="nota">${nota}/3</div>
+    <p style="font-weight:700;color:${aprobado?'var(--verde)':'var(--rojo)'};margin-bottom:6px;">
+      ${aprobado?'¡Módulo aprobado! 🎉':'Aún no apruebas'}</p>
+    <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">
+      ${aprobado?'Tu certificado ya está disponible y tu avance quedó registrado.':'Repasa las lecciones y vuelve a intentarlo. Necesitas 2 respuestas correctas.'}</p>
+    ${aprobado?`<button class="btn verde" onclick="verCertificado(${m.id})">🎓 Ver mi certificado</button>`
+              :`<button class="btn" onclick="iniciarQuiz()">Intentar de nuevo</button>`}
+  </div>`);
+  if(nota===3&&!estado.insignias.includes("perfecto")) otorgar("perfecto");
+  if(aprobado&&!yaEra) setTimeout(revisarInsignias,700);
+}
+
+/* ====== INSIGNIAS ====== */
+function otorgar(id){
+  if(estado.insignias.includes(id)) return;
+  estado.insignias.push(id); guardar();
+  const b=INSIGNIAS.find(x=>x.id===id);
+  mostrarToast(b.ic,"¡Nueva insignia: "+b.t+"!",b.d,true);
+}
+function revisarInsignias(){
+  const c=modulosCompletos();
+  if(leccionesHechas()>=1) otorgar("semilla");
+  if(c>=1) otorgar("modulo1");
+  if(c>=3) otorgar("tres");
+  if(c>=5) otorgar("cinco");
+  if(c>=21) otorgar("todas");
+  if(estado.abiertos.length>=4) otorgar("explorador");
+}
+function pintarInsignias(){
+  document.getElementById("vista-insignias").innerHTML=`
+  <div class="fila-seccion"><h2>Mis insignias</h2>
+    <span style="font-size:.78rem;color:var(--texto-suave);">${estado.insignias.length} de ${INSIGNIAS.length} obtenidas</span></div>
+  <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">Completa lecciones, aprueba evaluaciones y participa en el programa para desbloquearlas todas.</p>
+  <div class="grid-insignias">${INSIGNIAS.map(b=>hexInsignia(b,true)).join("")}</div>`;
+}
+
+/* ====== VISTA: RUTAS ====== */
+function pintarRutas(){
+  document.getElementById("vista-rutas").innerHTML=`
+  <div class="fila-seccion"><h2>Rutas de aprendizaje</h2></div>
+  <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">Las rutas agrupan cursos de la malla curricular AgroIA según tu actividad productiva. Completa todos los cursos de una ruta para dominar el tema.</p>
+  ${RUTAS.map(r=>`
+    <div class="vidrio" style="margin-bottom:14px;">
+      ${tarjetaRuta(r)}
+      <div style="margin-top:12px;">
+        ${r.mods.map(id=>filaCurso(MODULOS.find(m=>m.id===id))).join("")}
+      </div>
+    </div>`).join("")}`;
+}
+
+/* ====== VISTA: CALENDARIO ====== */
+function pintarCalendario(){
+  // Junio 2026: 1 de junio = lunes; 30 días
+  const eventosDias=new Set(EVENTOS.map(e=>e.dia));
+  let celdas="";
+  for(let d=1;d<=30;d++){
+    const cls=["cal-dia","mes"];
+    if(eventosDias.has(d)) cls.push("evento");
+    if(d===9) cls.push("hoy");
+    celdas+=`<div class="${cls.join(" ")}">${d}</div>`;
+  }
+  document.getElementById("vista-calendario").innerHTML=`
+  <div class="fila-seccion"><h2>Calendario · Junio 2026</h2></div>
+  <div class="grid-dash" style="grid-template-columns:1.1fr 1fr;">
+    <div class="vidrio">
+      <div class="cal-grid">
+        ${["L","M","M","J","V","S","D"].map(d=>`<div class="enc">${d}</div>`).join("")}
+        ${celdas}
+      </div>
+      <p style="font-size:.72rem;color:var(--texto-suave);margin-top:12px;">🟩 Días con actividades del programa · Borde azul: hoy</p>
+    </div>
+    <div class="vidrio">
+      <div class="cab-tarjeta"><h3>Próximas actividades</h3></div>
+      ${EVENTOS.map(e=>`
+        <div class="evento-linea">
+          <div class="fecha-caja"><b>${e.dia}</b><small>${e.mes}</small></div>
+          <div><b style="font-size:.84rem;">${e.ic} ${e.t}</b><br><small style="color:var(--texto-suave);">${e.h}</small></div>
+        </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+/* ====== VISTA: NOVEDADES ====== */
+function pintarNovedades(){
+  document.getElementById("vista-novedades").innerHTML=`
+  <div class="fila-seccion"><h2>Novedades del programa</h2></div>
+  <div class="vidrio">${NOVEDADES.map(n=>itemNovedad(n,false)).join("")}</div>`;
+}
+
+/* ====== VISTA: CERTIFICADOS ====== */
+function pintarCertificados(){
+  const obtenidos=MODULOS.filter(m=>progDe(m.id).ok);
+  document.getElementById("vista-certificados").innerHTML=`
+  <div class="fila-seccion"><h2>Mis certificados</h2>
+    <span style="font-size:.78rem;color:var(--texto-suave);">${obtenidos.length} de ${MODULOS.length}</span></div>
+  <div class="vidrio">
+  ${obtenidos.length? obtenidos.map(m=>{
+    const p=progDe(m.id);
+    return `<div class="curso-fila">
+      <div class="miniatura" style="${gradMod(m.id)}">${obtenerIconoSVG('🎓', 24)}</div>
+      <div class="datos"><b>${m.t}</b><span class="pct">Aprobado con ${p.nota}/3 · ${p.fecha}</span></div>
+      <button class="btn-continuar hecho" onclick="verCertificado(${m.id})">Ver certificado</button>
+    </div>`;}).join("")
+  : `<p style="font-size:.85rem;color:var(--texto-suave);">Aún no tienes certificados. Completa las lecciones de un curso y aprueba su evaluación para obtener el primero. 🎓</p>`}
+  </div>`;
+}
+
+/* ====== VISTA: FOROS ====== */
+function pintarForos(){
+  document.getElementById("vista-foros").innerHTML=`
+  <div class="fila-seccion"><h2>Foros de productores</h2></div>
+  <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">Espacio de intercambio entre asociaciones y cooperativas participantes. Comparte experiencias y resuelve dudas con otros productores y técnicos del programa.</p>
+  <div class="vidrio">
+    ${FOROS.map(f=>`
+      <div class="foro-item">
+        <div class="icono">${obtenerIconoSVG(f.ic, 24)}</div>
+        <div><b>${f.t}</b><small>${f.a}</small></div>
+        <div class="resp"><b>${f.r}</b>respuestas</div>
+      </div>`).join("")}
+    <button class="btn btn-ancho" onclick="mostrarToast('💬','Función en desarrollo','Los foros estarán disponibles en la fase piloto del programa.')">+ Nueva publicación</button>
+  </div>`;
+}
+
+/* ====== VISTA: AYUDA ====== */
+function pintarAyuda(){
+  const faqs=[
+    ["¿Cómo obtengo un certificado?","Completa todas las lecciones de un curso y aprueba su evaluación con al menos 2 de 3 respuestas correctas. El certificado se genera de inmediato y puedes imprimirlo o guardarlo como PDF."],
+    ["¿Qué es la racha de aprendizaje?","Es el número de días seguidos en los que has completado al menos una lección o evaluación. Mantenerla activa te ayuda a avanzar constante."],
+    ["¿Cómo envío una consulta técnica de mi finca?","Las consultas con fotos y audios se envían por el WhatsApp AgroIA. Esta aula virtual complementa ese servicio con cursos y certificación. Revisa el Módulo 1 para aprender a usarlo."],
+    ["¿La plataforma consume muchos datos?","No. El aula está diseñada para bajo consumo de datos y tu avance se guarda en tu propio dispositivo."],
+    ["¿Quién valida los contenidos?","La red de especialistas del programa: CEFEP, TNC Guatemala, la Universidad Rafael Landívar, el Colegio de Ingenieros Agrónomos y técnicos de MAGA."]
+  ];
+  document.getElementById("vista-ayuda").innerHTML=`
+  <div class="fila-seccion"><h2>Ayuda y soporte</h2></div>
+  ${faqs.map((f,i)=>`
+    <div class="leccion" id="faq-${i}">
+      <button onclick="document.getElementById('faq-${i}').classList.toggle('abierta')">
+        <span class="check" style="border:none;">${obtenerIconoSVG('❓', 20)}</span><span class="tit">${f[0]}</span><span class="flecha">›</span>
+      </button>
+      <div class="cuerpo"><p>${f[1]}</p></div>
+    </div>`).join("")}
+  <div class="vidrio" style="margin-top:14px;">
+    <h3 style="margin-bottom:8px;">¿Necesitas más ayuda?</h3>
+    <p style="font-size:.84rem;color:var(--texto-suave);">Contacta al facilitador digital de tu asociación o escribe al WhatsApp AgroIA. En casos técnicos complejos, tu consulta será derivada a un especialista de la red de validadores.</p>
+  </div>`;
+}
+
+/* ====== VISTA: PERFIL ====== */
+function pintarPerfil(){
+  const u=estado.usuario;
+  const ini=u.nombre.split(" ").map(s=>s[0]).slice(0,2).join("").toUpperCase();
+  
+  let avatarHTML = `<div class="avatar-grande">${ini}</div>`;
+  if (!estado.config.datos) {
+    const isFemale = /ana|maria|garcia|sofia|lucia|laura|elena|claudia|garcía|maría/i.test(u.nombre);
+    const imgUrl = isFemale 
+      ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+      : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80";
+    avatarHTML = `<div class="avatar-grande" style="background: none; border-color: var(--oro);"><img src="${imgUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;" alt="${u.nombre}"></div>`;
+  }
+  
+  document.getElementById("vista-perfil").innerHTML=`
+  <div class="fila-seccion"><h2>Mi perfil y avance</h2></div>
+  <div class="vidrio" style="margin-bottom:16px;">
+    <div class="cab-perfil">
+      ${avatarHTML}
+      <div>
+        <h3 style="font-size:1.15rem;">${u.nombre}</h3>
+        <p style="font-size:.82rem;color:var(--texto-suave);">🏢 ${u.org}<br>📍 ${u.muni} · ${u.act}<br>📅 En el programa desde el ${u.desde}</p>
+      </div>
+    </div>
+    <div class="estadisticas">
+      <div class="stat-caja"><b>${pctGlobal()}%</b><small>Avance</small></div>
+      <div class="stat-caja"><b>${leccionesHechas()}/${totalLecciones()}</b><small>Lecciones</small></div>
+      <div class="stat-caja"><b>${modulosCompletos()}</b><small>Certificados</small></div>
+      <div class="stat-caja"><b>${racha()}</b><small>Días de racha</small></div>
+    </div>
+  </div>
+  <div class="vidrio">
+    <div class="cab-tarjeta"><h3>Avance por curso</h3></div>
+    <table class="tabla-avance">
+      ${MODULOS.map(m=>{
+        const p=progDe(m.id);
+        return `<tr>
+          <td style="font-size: 1.5rem; text-align: center; vertical-align: middle; padding: 12px 14px 12px 0;">${obtenerIconoSVG(m.ic, 24)}</td>
+          <td><b style="font-size:.85rem;">${m.t}</b>
+            <div class="pista" style="margin-top:5px;"><div style="width:${pctModulo(m)}%"></div></div></td>
+          <td style="text-align:right;white-space:nowrap;">
+            ${p.ok?`<button class="btn-continuar hecho" onclick="verCertificado(${m.id})">🎓 Certificado</button>`
+                  :`<span style="font-size:.78rem;color:var(--texto-suave);">${pctModulo(m)}%</span>`}
+          </td></tr>`;}).join("")}
+    </table>
+  </div>`;
+}
+
+/* ====== VISTA: CONFIGURACIÓN ====== */
+function pintarConfig(){
+  const c=estado.config;
+  const interruptor=(clave,titulo,desc)=>`
+    <div class="curso-fila">
+      <div class="datos"><b>${titulo}</b><span class="pct">${desc}</span></div>
+      <button class="btn-continuar ${c[clave]?'':'hecho'}" onclick="estado.config.${clave}=!estado.config.${clave};guardar();pintarConfig();">
+        ${c[clave]?'Activado ✓':'Desactivado'}</button>
+    </div>`;
+  document.getElementById("vista-config").innerHTML=`
+  <div class="fila-seccion"><h2>Configuración</h2></div>
+  <div class="vidrio">
+    ${interruptor("notif","Notificaciones de novedades","Alertas fitosanitarias, climáticas y avisos del programa.")}
+    ${interruptor("recordatorio","Recordatorio de racha","Aviso diario para mantener tu racha de aprendizaje.")}
+    ${interruptor("datos","Modo ahorro de datos","Reduce imágenes y animaciones para conexiones lentas.")}
+  </div>
+  <div class="vidrio" style="margin-top:14px;">
+    <h3 style="margin-bottom:8px;">Datos de la cuenta</h3>
+    <p style="font-size:.82rem;color:var(--texto-suave);margin-bottom:12px;">Tu avance se guarda en este dispositivo. Si cierras sesión, podrás retomarlo al volver a ingresar en este mismo equipo.</p>
+    <button class="btn" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+  </div>`;
+}
+
+/* ====== CERTIFICADO ====== */
+function verCertificado(id){
+  const m=MODULOS.find(x=>x.id===id), p=progDe(id), u=estado.usuario;
+  document.getElementById("modalCert").innerHTML=`
+  <div class="certificado">
+    <div class="sello">🌽</div>
+    <div class="ente">MAGA · Consejo Nacional de Desarrollo Agropecuario · Programa AgroIA</div>
+    <h2>Certificado de finalización</h2>
+    <p class="otorga">Se otorga el presente certificado a</p>
+    <div class="nombre">${u.nombre}</div>
+    <p class="detalle">de <b>${u.org}</b>, ${u.muni},<br>
+    por haber completado satisfactoriamente el<br>
+    <b>Módulo ${m.id}: ${m.t}</b><br>
+    del programa de capacitación digital AgroIA,<br>
+    con evaluación aprobada (${p.nota}/3) el ${p.fecha}.</p>
+    <div class="firmas">
+      <div>Coordinación CONADEA<br>Programa AgroIA</div>
+      <div>Red de técnicos validadores<br>Validación académica</div>
+    </div>
+    <div class="acciones-cert">
+      <button class="btn verde" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      <button class="btn" onclick="cerrarCert()">Cerrar</button>
+    </div>
+  </div>`;
+  document.getElementById("modalCert").classList.remove("oculto");
+}
+function cerrarCert(){ document.getElementById("modalCert").classList.add("oculto"); }
+
+/* ====== TOAST ====== */
+let toastTimer=null;
+function mostrarToast(ic,titulo,texto,hex){
+  const t=document.getElementById("toast");
+  t.innerHTML=(hex?`<div class="hexagono">${ic}</div>`:`<div style="font-size:1.5rem;">${ic}</div>`)+
+    `<div><b>${titulo}</b><small>${texto}</small></div>`;
+  t.classList.add("visible");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("visible"),4200);
+}
+
+/* ====== ARRANQUE ====== */
+cargar();
+if(estado.usuario) {
+  iniciarApp();
+} else {
+  cambiarPestaña('login');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { MODULOS, INSIGNIAS } from '../data/local.js';
+
+/**
+ * Store Principal de la App AgroIA
+ *
+ * 📌 NOTA: Actualmente usa localStorage para persistencia local.
+ * Cuando el Backend esté listo, las funciones guardar()/cargar() se
+ * reemplazarán por llamadas al API en src/services/.
+ * El store en sí PERMANECE, solo cambia la fuente de datos.
+ */
+export const useAppStore = defineStore('app', () => {
+
+  // ========================
+  // ESTADO
+  // ========================
+  const usuario = ref(null);      // { nombre, org, muni, act, desde }
+  const prog = ref({});           // { [moduloId]: { lec: [], nota: null, ok: false, fecha: null } }
+  const insignias = ref([]);      // ['semilla', 'modulo1', ...]
+  const abiertos = ref([]);       // IDs de módulos abiertos
+  const actividad = ref([]);      // Array de fechas ISO 'YYYY-MM-DD' con actividad
+  const novVisto = ref(false);
+  const config = ref({
+    notif: true,
+    datos: false,       // Modo ahorro de datos
+    recordatorio: true
+  });
+
+  // Para módulo en detalle (usado por DetalleCurso)
+  const modActual = ref(null);
+
+  // ========================
+  // COMPUTADAS
+  // ========================
+  const estaLogueado = computed(() => !!usuario.value);
+
+  const modulosCompletos = computed(() =>
+    MODULOS.filter(m => progDe(m.id).ok).length
+  );
+
+  const enProgreso = computed(() =>
+    MODULOS.filter(m => {
+      const p = progDe(m.id);
+      return !p.ok && p.lec.length > 0;
+    }).length
+  );
+
+  const totalLecciones = computed(() =>
+    MODULOS.reduce((s, m) => s + m.lecciones.length, 0)
+  );
+
+  const leccionesHechas = computed(() =>
+    MODULOS.reduce((s, m) => s + progDe(m.id).lec.length, 0)
+  );
+
+  const horasCapacitacion = computed(() =>
+    Math.round(leccionesHechas.value * 0.5 + modulosCompletos.value * 0.5)
+  );
+
+  const pctGlobal = computed(() =>
+    Math.round(MODULOS.reduce((s, m) => s + pctModulo(m), 0) / MODULOS.length)
+  );
+
+  const racha = computed(() => {
+    const set = new Set(actividad.value);
+    let n = 0;
+    const d = new Date();
+    while (set.has(d.toISOString().slice(0, 10))) {
+      n++;
+      d.setDate(d.getDate() - 1);
+    }
+    return n;
+  });
+
+  const semanaActual = computed(() => {
+    const hoy = new Date();
+    const dow = (hoy.getDay() + 6) % 7;
+    const lunes = new Date(hoy);
+    lunes.setDate(hoy.getDate() - dow);
+    const set = new Set(actividad.value);
+    return ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((l, i) => {
+      const f = new Date(lunes);
+      f.setDate(lunes.getDate() + i);
+      const iso = f.toISOString().slice(0, 10);
+      return { l, hecho: set.has(iso), hoy: iso === hoyISO() };
+    });
+  });
+
+  // ========================
+  // UTILIDADES INTERNAS
+  // ========================
+  function hoyISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function progDe(id) {
+    if (!prog.value[id]) {
+      prog.value[id] = { lec: [], nota: null, ok: false, fecha: null };
+    }
+    return prog.value[id];
+  }
+
+  function pctModulo(m) {
+    const p = progDe(m.id);
+    const t = m.lecciones.length + 1;
+    return Math.round((p.lec.length + (p.ok ? 1 : 0)) / t * 100);
+  }
+
+  function pctRuta(r) {
+    return Math.round(
+      r.mods.reduce((s, id) => s + pctModulo(MODULOS.find(m => m.id === id)), 0) / r.mods.length
+    );
+  }
+
+  // ========================
+  // ACCIONES
+  // ========================
+
+  function registrarActividad() {
+    const h = hoyISO();
+    if (!actividad.value.includes(h)) {
+      actividad.value.push(h);
+      guardar();
+    }
+  }
+
+  function revisarInsignias() {
+    const c = modulosCompletos.value;
+    if (leccionesHechas.value >= 1) otorgar('semilla');
+    if (c >= 1) otorgar('modulo1');
+    if (c >= 3) otorgar('tres');
+    if (c >= 5) otorgar('cinco');
+    if (c >= 21) otorgar('todas');
+    if (abiertos.value.length >= 4) otorgar('explorador');
+  }
+
+  function otorgar(id) {
+    if (insignias.value.includes(id)) return;
+    insignias.value.push(id);
+    guardar();
+    const badge = INSIGNIAS.find(x => x.id === id);
+    if (badge) {
+      mostrarToastGlobal(badge.ic, `¡Nueva insignia: ${badge.t}!`, badge.d, true);
+    }
+  }
+
+  // Toast global (evento simple)
+  const toastData = ref({ visible: false, ic: '', titulo: '', texto: '', hex: false });
+  let toastTimer = null;
+  function mostrarToastGlobal(ic, titulo, texto, hex = false) {
+    toastData.value = { visible: true, ic, titulo, texto, hex };
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastData.value.visible = false;
+    }, 4200);
+  }
+
+  // ========================
+  // AUTH - LOGIN / REGISTRO
+  // ========================
+
+  function iniciarSesion(nombre) {
+    const key = `agroia_user_${nombre.toLowerCase().replace(/\s+/g, '_')}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const data = JSON.parse(saved);
+      usuario.value    = { nombre: data.nombre, org: data.org, muni: data.muni, act: data.act, desde: data.desde };
+      prog.value       = data.prog || {};
+      insignias.value  = data.insignias || [];
+      abiertos.value   = data.abiertos || [];
+      actividad.value  = data.actividad || [];
+      config.value     = data.config || { notif: true, datos: false, recordatorio: true };
+      novVisto.value   = false;
+      return { ok: true };
+    }
+    return { ok: false, msg: 'Perfil no encontrado' };
+  }
+
+  function registrar(datos) {
+    const key = `agroia_user_${datos.nombre.toLowerCase().replace(/\s+/g, '_')}`;
+    if (localStorage.getItem(key)) {
+      return { ok: false, msg: 'Ya existe un perfil con ese nombre' };
+    }
+    usuario.value = {
+      nombre: datos.nombre,
+      org:    datos.org    || 'Sin organización registrada',
+      muni:   datos.muni   || 'Guatemala',
+      act:    datos.act    || 'Agrícola',
+      desde:  new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric' })
+    };
+    prog.value      = {};
+    insignias.value = [];
+    abiertos.value  = [];
+    actividad.value = [];
+    config.value    = { notif: true, datos: false, recordatorio: true };
+    registrarActividad();
+    guardar();
+    return { ok: true };
+  }
+
+  function cerrarSesion() {
+    guardar();
+    usuario.value    = null;
+    prog.value       = {};
+    insignias.value  = [];
+    abiertos.value   = [];
+    actividad.value  = [];
+    novVisto.value   = false;
+  }
+
+  // ========================
+  // PERSISTENCIA LOCAL
+  // (Reemplazar por API cuando Backend esté listo)
+  // ========================
+  function guardar() {
+    if (!usuario.value) return;
+    const key = `agroia_user_${usuario.value.nombre.toLowerCase().replace(/\s+/g, '_')}`;
+    localStorage.setItem(key, JSON.stringify({
+      nombre:   usuario.value.nombre,
+      org:      usuario.value.org,
+      muni:     usuario.value.muni,
+      act:      usuario.value.act,
+      desde:    usuario.value.desde,
+      prog:     prog.value,
+      insignias: insignias.value,
+      abiertos: abiertos.value,
+      actividad: actividad.value,
+      config:   config.value
+    }));
+  }
+
+  // ========================
+  // ACCIONES DE CURSOS
+  // ========================
+  function abrirModulo(id) {
+    if (!abiertos.value.includes(id)) {
+      abiertos.value.push(id);
+      guardar();
+      revisarInsignias();
+    }
+    modActual.value = MODULOS.find(m => m.id === id) || null;
+  }
+
+  function completarLeccion(moduloId, leccionIdx) {
+    const p = progDe(moduloId);
+    if (!p.lec.includes(leccionIdx)) {
+      p.lec.push(leccionIdx);
+    }
+    registrarActividad();
+    guardar();
+    revisarInsignias();
+  }
+
+  function aprobarModulo(moduloId, nota) {
+    const p = progDe(moduloId);
+    p.nota = Math.max(p.nota || 0, nota);
+    if (nota >= 2 && !p.ok) {
+      p.ok = true;
+      p.fecha = new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    if (nota === 3 && !insignias.value.includes('perfecto')) {
+      otorgar('perfecto');
+    }
+    registrarActividad();
+    guardar();
+    setTimeout(revisarInsignias, 700);
+  }
+
+  function actualizarConfig(key, value) {
+    config.value[key] = value;
+    guardar();
+  }
+
+  // ========================
+  // EXPOSE
+  // ========================
+  return {
+    // Estado
+    usuario, prog, insignias, abiertos, actividad, novVisto, config, modActual, toastData,
+    // Computadas
+    estaLogueado, modulosCompletos, enProgreso, totalLecciones, leccionesHechas,
+    horasCapacitacion, pctGlobal, racha, semanaActual,
+    // Funciones de utilidad (exportadas para usar en componentes)
+    progDe, pctModulo, pctRuta, hoyISO,
+    // Acciones
+    iniciarSesion, registrar, cerrarSesion,
+    completarLeccion, aprobarModulo, abrirModulo,
+    actualizarConfig, registrarActividad, guardar,
+    mostrarToastGlobal, revisarInsignias
+  };
+});
