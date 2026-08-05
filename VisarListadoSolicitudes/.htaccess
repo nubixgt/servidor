@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /VisarListadoSolicitudes/
+
+    # Static Files (Frontend)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/VisarListadoSolicitudes/dist/$1 -f
+    RewriteRule ^(.*)$ dist/$1 [L]
+
+    # SPA Fallback
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . dist/index.html [L]
+    
+    # Handle the root path specifically
+    RewriteRule ^$ dist/index.html [L]
+</IfModule>
