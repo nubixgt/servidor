@@ -257,6 +257,8 @@
 
         .tabla-container {
             overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         table {
@@ -272,6 +274,9 @@
             font-weight: 600;
             color: #374151;
             border-bottom: 2px solid;
+            position: sticky;
+            top: 0;
+            background: #f3f4f6;
         }
 
         td {
@@ -308,15 +313,89 @@
             background: #2563eb;
         }
 
-        .tabla-nota {
-            padding: 15px;
-            background: #f9fafb;
-            text-align: center;
+        .sin-observaciones {
             color: #9ca3af;
-            font-size: 12px;
-            border-top: 1px solid #e5e7eb;
+            font-style: italic;
         }
 
+        /* Paginación */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 12px 12px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.3s;
+            color: #374151;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            color: #9ca3af;
+        }
+
+        .pagination-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .page-input-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .page-input-group input {
+            width: 50px;
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .registros-por-pagina {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .registros-por-pagina select {
+            padding: 6px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Modal para observaciones */
         .modal {
             display: none;
             position: fixed;
@@ -369,6 +448,7 @@
             font-size: 18px;
             margin: 0;
             color: #111827;
+            word-break: break-word;
         }
 
         .close-btn {
@@ -378,6 +458,7 @@
             cursor: pointer;
             color: #6b7280;
             transition: color 0.3s;
+            flex-shrink: 0;
         }
 
         .close-btn:hover {
@@ -414,11 +495,6 @@
         .footer p:first-child {
             font-weight: 600;
             color: #d1d5db;
-        }
-
-        .sin-observaciones {
-            color: #9ca3af;
-            font-style: italic;
         }
     </style>
 </head>
@@ -479,7 +555,26 @@
                             <tbody id="tabla-body"></tbody>
                         </table>
                     </div>
-                    <div class="tabla-nota" id="tabla-nota"></div>
+                    <div class="pagination-container" id="pagination-container">
+                        <div class="pagination-info">Registros por página:</div>
+                        <div class="registros-por-pagina">
+                            <select id="registrosPorPagina" onchange="cambiarRegistrosPorPagina()">
+                                <option value="10">10</option>
+                                <option value="15" selected>15</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                        <div class="pagination-info" id="pagination-info"></div>
+                        <button class="pagination-btn" id="prevBtn" onclick="cambiarPagina(-1)">← Anterior</button>
+                        <div class="page-input-group">
+                            <span>Página</span>
+                            <input type="number" id="pageInput" min="1" onkeypress="if(event.key=='Enter')irAPagina()">
+                            <span id="totalPages">de 1</span>
+                        </div>
+                        <button class="pagination-btn" id="nextBtn" onclick="cambiarPagina(1)">Siguiente →</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -518,7 +613,7 @@
                         {
                                 "Nombre": "Dorilet Magali Chavarria Ruano",
                                 "CUE": "320-17-14-6719",
-                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Ch",
+                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Chal Peten",
                                 "Fecha": "2026-07-19",
                                 "Días": 12,
                                 "Observaciones": ""
@@ -726,7 +821,7 @@
                         {
                                 "Nombre": "Francklin Soél Pinto Videz",
                                 "CUE": "320-17-5-4926",
-                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Liberta",
+                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Libertad, El Plantel",
                                 "Fecha": "2026-05-28",
                                 "Días": 40,
                                 "Observaciones": ""
@@ -750,7 +845,7 @@
                         {
                                 "Nombre": "Gustavo Adolfo Morales Sandoval",
                                 "CUE": "320-5-1-3173",
-                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Oliv",
+                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Olivos., Aldea Los Olivo",
                                 "Fecha": "2026-05-27",
                                 "Días": 41,
                                 "Observaciones": ""
@@ -758,7 +853,7 @@
                         {
                                 "Nombre": "Gustavo Adolfo Morales Sandoval",
                                 "CUE": "320-5-5-1747",
-                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de ",
+                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de milla, Los Pedros",
                                 "Fecha": "2026-05-27",
                                 "Días": 41,
                                 "Observaciones": ""
@@ -782,7 +877,7 @@
                         {
                                 "Nombre": "Bovinver S.A",
                                 "CUE": "320-17-6-6690",
-                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San",
+                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San Francisco, Petén, G",
                                 "Fecha": "2026-05-26",
                                 "Días": 48,
                                 "Observaciones": ""
@@ -831,12 +926,12 @@
                                 "Ubicación": "Finca El Presumido, Barrios Las Delicias, Zona 0",
                                 "Fecha": "2026-07-20",
                                 "Días": 15,
-                                "Observaciones": "Se le informa que, derivado del proceso de verificación e inspección en campo y la toma de coordenadas geográficas realizadas a su establecimiento, la solicitud ha sido _x000D_\nRECHAZADA debido a las "
+                                "Observaciones": "Se le informa que, derivado del proceso de verificación e inspección en campo y la toma de coordenadas geográficas realizadas a su establecimiento, la solicitud ha sido _x000D_\nRECHAZADA debido a las siguientes inconsistencias detectadas:_x000D_\n​Inconsistencia de ubicación: En el formulario ingresa"
                         },
                         {
                                 "Nombre": "Dorilet Magali Chavarria Ruano",
                                 "CUE": "320",
-                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Ch",
+                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Chal Peten",
                                 "Fecha": "2026-07-15",
                                 "Días": 9,
                                 "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
@@ -898,10 +993,10 @@
                         {
                                 "Nombre": "Engracia  Ruballos Quijada Sandoval",
                                 "CUE": "320",
-                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,JoventÃ©, Aldea ChactÃ©, municipio de San ",
+                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,JoventÃ©, Aldea ChactÃ©, municipio de San Luis, departamento d",
                                 "Fecha": "2026-08-03",
                                 "Días": 1,
-                                "Observaciones": "Corrección del contenido:  en la solicitud presentada, específicamente en el numeral 2.4,  se debe eliminar la opción Corrales de tránsito\". ya que no corresponde a la solicitud. En el contexto del Mi"
+                                "Observaciones": "Corrección del contenido:  en la solicitud presentada, específicamente en el numeral 2.4,  se debe eliminar la opción Corrales de tránsito\". ya que no corresponde a la solicitud. En el contexto del Ministerio de Agricultura, Ganadería y Alimentación (MAGA) en Guatemala, los corrales de tránsito (reg"
                         },
                         {
                                 "Nombre": "FRANCISCO JAVIER MIRANDA LEMUS",
@@ -909,7 +1004,7 @@
                                 "Ubicación": "Finca La Cumbre, Km 345, Zona 0, CaserÃ­o la cumbre, San Luis, PetÃ©n",
                                 "Fecha": "2026-07-16",
                                 "Días": 4,
-                                "Observaciones": "La patente de comercio adjuntada no coincide con la dirección comercial del establecimiento registrado en SISAR, ya que es el de \"Finca La Cumbre\" con Direccion en San Luis, Petén, y la patente es de "
+                                "Observaciones": "La patente de comercio adjuntada no coincide con la dirección comercial del establecimiento registrado en SISAR, ya que es el de \"Finca La Cumbre\" con Direccion en San Luis, Petén, y la patente es de \"Finca Las 3 Marías\"."
                         },
                         {
                                 "Nombre": "JosÃ© Rodrigo Aguirre LÃ³pez",
@@ -933,7 +1028,7 @@
                                 "Ubicación": "Finca Eben - Ezer, Aldea Cansis, San Luis, PetÃ©n",
                                 "Fecha": "2026-06-09",
                                 "Días": 9,
-                                "Observaciones": "Se solicita subsanación a solicitud del usuario debido a información errónea ingresada en la actividad económica de la persona individual. En la presente solicitud indica que es \"productor\" cuando deb"
+                                "Observaciones": "Se solicita subsanación a solicitud del usuario debido a información errónea ingresada en la actividad económica de la persona individual. En la presente solicitud indica que es \"productor\" cuando debería ser \"comerciante\". NO SUBSANAR NADA EN ÉSTE FORMULARIO PARA QUE EL SISTEMA LE DE BAJA EN AUTOMÁ"
                         },
                         {
                                 "Nombre": "Plantas Fiesta Verde, S. A.",
@@ -954,7 +1049,7 @@
                         {
                                 "Nombre": "Inmobiliaria Giarfe, S. A.",
                                 "CUE": "320",
-                                "Ubicación": "Inmobiliaria Giarfe, S.A., 7 AVENIDA, 5-10, ZONA 4, EDIFICIO CENTRO FINANCIERO T",
+                                "Ubicación": "Inmobiliaria Giarfe, S.A., 7 AVENIDA, 5-10, ZONA 4, EDIFICIO CENTRO FINANCIERO TORRE 2 NIVEL 11 OFIC",
                                 "Fecha": "2026-05-29",
                                 "Días": 18,
                                 "Observaciones": "Las solicitudes de productos agrícolas no corresponden al módulo pecuario. Debe ingresar una nueva solicitud en el módulo agrícola."
@@ -962,26 +1057,26 @@
                         {
                                 "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
                                 "CUE": "320-17-6-6187",
-                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 485.5, san juan de Dio",
                                 "Fecha": "2026-05-25",
                                 "Días": 16,
-                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalmente, en la plataforma Trazar-Agro ya existe un establecimiento registrado con la misma dirección, corr"
                         },
                         {
                                 "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
                                 "CUE": "320-17-6-6187",
-                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 485.5, san juan de Dio",
                                 "Fecha": "2026-05-25",
                                 "Días": 16,
-                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalmente, en la plataforma Trazar-Agro ya existe un establecimiento registrado con la misma dirección, corr"
                         },
                         {
                                 "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
                                 "CUE": "320-17-6-6187",
-                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 485.5",
                                 "Fecha": "2026-05-25",
                                 "Días": 16,
-                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalmente, en la plataforma Trazar-Agro ya existe un establecimiento registrado con la misma dirección, corr"
                         },
                         {
                                 "Nombre": "Ana Garcia Aguirre",
@@ -1008,7 +1103,7 @@
                         {
                                 "Nombre": "Engracia ------ ------ Ruballos Quijada Sandoval",
                                 "CUE": "320",
-                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,Joventé, Aldea Chacté, municipio de San Lu",
+                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,Joventé, Aldea Chacté, municipio de San Luis, departamento de ",
                                 "Fecha": "2026-08-03",
                                 "Días": 1,
                                 "Observaciones": "El creador realizó las correcciones solicitadas. Motivo de edición: Correccion solicitada"
@@ -1056,7 +1151,7 @@
                         {
                                 "Nombre": "HUGO ROBERTO SANDOVAL RUBALLOS",
                                 "CUE": "320",
-                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San L",
+                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San Luis, departamento de",
                                 "Fecha": "2026-07-30",
                                 "Días": 5,
                                 "Observaciones": "El creador realizó las correcciones solicitadas. Motivo de edición: Corrrecion realizada "
@@ -1064,7 +1159,7 @@
                         {
                                 "Nombre": "HUGO ROBERTO SANDOVAL RUBALLOS",
                                 "CUE": "320",
-                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San L",
+                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San Luis, departamento de",
                                 "Fecha": "2026-07-30",
                                 "Días": 1,
                                 "Observaciones": ""
@@ -1072,7 +1167,7 @@
                         {
                                 "Nombre": "Jayro Jeovany Pinto Peña",
                                 "CUE": "320-17-5-6613",
-                                "Ubicación": "Finca El Mango, Entrada a Comunidad El Mango, Zona 0, Comunidad El Mango, La Lib",
+                                "Ubicación": "Finca El Mango, Entrada a Comunidad El Mango, Zona 0, Comunidad El Mango, La Libertad, Petén.",
                                 "Fecha": "2026-07-29",
                                 "Días": 6,
                                 "Observaciones": ""
@@ -1080,7 +1175,7 @@
                         {
                                 "Nombre": "HENRY SAMUEL MAYORGA PAREDES",
                                 "CUE": "320",
-                                "Ubicación": "Terreno de San Jose Alsacia., Aldea San José Alsacia, Los Amates, Izabal, camino",
+                                "Ubicación": "Terreno de San Jose Alsacia., Aldea San José Alsacia, Los Amates, Izabal, camino a la Aldea El Ocote",
                                 "Fecha": "2026-07-29",
                                 "Días": 2,
                                 "Observaciones": ""
@@ -1088,7 +1183,7 @@
                         {
                                 "Nombre": "Oscar Margarito González Soto",
                                 "CUE": "320",
-                                "Ubicación": "OSCAR MARGARITO GONZALEZ SOTO, CALLE PRINCIPAL, ZONA 0, ALDEA EL ZAPOTE, JALPATA",
+                                "Ubicación": "OSCAR MARGARITO GONZALEZ SOTO, CALLE PRINCIPAL, ZONA 0, ALDEA EL ZAPOTE, JALPATAGUA, JUTIAPA",
                                 "Fecha": "2026-07-29",
                                 "Días": 2,
                                 "Observaciones": "VERIFICAR SI TIENE CUE PREEXITENTE"
@@ -1291,7 +1386,7 @@
                                 "Ubicación": "FINCA EBEN-EZER, ZONA 0, ALDEA CANSIS, SAN LUIS, PETEN",
                                 "Fecha": "2026-06-12",
                                 "Días": 53,
-                                "Observaciones": "Ésta finca debe solicitarse corrección debido a que son arrendantes de finca la bendición de Dios, por lo que se envía para autorización y debe solicitarse corrección al analista para posteriormente s"
+                                "Observaciones": "Ésta finca debe solicitarse corrección debido a que son arrendantes de finca la bendición de Dios, por lo que se envía para autorización y debe solicitarse corrección al analista para posteriormente solicitar corrección al usuario."
                         },
                         {
                                 "Nombre": "CÉSAR EDUARDO CERNA ACEVEDO",
@@ -1376,7 +1471,7 @@
                         {
                                 "Nombre": "AGRICOLA AMSA, SOCIEDAD ANONIMA",
                                 "CUE": "320",
-                                "Ubicación": "AGRIAMSA, Finca Lorena, San Antonio Suchitepequez, Finca Lorena, km. 146.5 carre",
+                                "Ubicación": "AGRIAMSA, Finca Lorena, San Antonio Suchitepequez, Finca Lorena, km. 146.5 carretera al Pacifico",
                                 "Fecha": "2026-05-29",
                                 "Días": 40,
                                 "Observaciones": ""
@@ -1400,7 +1495,7 @@
                         {
                                 "Nombre": "Francklin Soél Pinto Videz",
                                 "CUE": "320-17-5-4926",
-                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Liberta",
+                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Libertad, El Plantel",
                                 "Fecha": "2026-05-28",
                                 "Días": 40,
                                 "Observaciones": ""
@@ -1440,7 +1535,7 @@
                         {
                                 "Nombre": "Gustavo Adolfo Morales Sandoval",
                                 "CUE": "320-5-5-1747",
-                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de ",
+                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de milla, Los Pedros",
                                 "Fecha": "2026-05-27",
                                 "Días": 41,
                                 "Observaciones": ""
@@ -1448,7 +1543,7 @@
                         {
                                 "Nombre": "Gustavo Adolfo Morales Sandoval",
                                 "CUE": "320-5-1-3173",
-                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Oliv",
+                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Olivos., Aldea Los Olivo",
                                 "Fecha": "2026-05-27",
                                 "Días": 41,
                                 "Observaciones": ""
@@ -1456,7 +1551,7 @@
                         {
                                 "Nombre": "Bovinver S.A",
                                 "CUE": "320-17-6-6690",
-                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San",
+                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San Francisco, Petén, G",
                                 "Fecha": "2026-05-26",
                                 "Días": 48,
                                 "Observaciones": ""
@@ -1480,7 +1575,7 @@
                         {
                                 "Nombre": "Francisco Jose Rodriguez Moraga",
                                 "CUE": "320",
-                                "Ubicación": "Finca Entre Rios, Carretera al Pacifico km 71.5 FInca Entre Rios, Siquinala, Esc",
+                                "Ubicación": "Finca Entre Rios, Carretera al Pacifico km 71.5 FInca Entre Rios, Siquinala, Escuintla",
                                 "Fecha": "2026-05-25",
                                 "Días": 44,
                                 "Observaciones": "Llega mi chucho"
@@ -1507,6 +1602,9 @@
 
         let categoriaActual = Object.keys(datos)[0];
         let graficoInstancia = null;
+        let paginaActual = 1;
+        let registrosPorPagina = 15;
+        let registrosFiltrados = [];
 
         function init() {
             crearBotonesCategorias();
@@ -1540,8 +1638,15 @@
 
         function cambiarCategoria(categoria) {
             categoriaActual = categoria;
+            paginaActual = 1;
             crearBotonesCategorias();
             actualizarGrafico();
+            actualizarTabla();
+        }
+
+        function cambiarRegistrosPorPagina() {
+            registrosPorPagina = parseInt(document.getElementById("registrosPorPagina").value);
+            paginaActual = 1;
             actualizarTabla();
         }
 
@@ -1624,6 +1729,7 @@
         function actualizarTabla() {
             const datosActuales = datos[categoriaActual];
             const color = datosActuales.color;
+            registrosFiltrados = datosActuales.registros;
 
             document.getElementById("tabla-header").style.backgroundColor = color;
             document.getElementById("titulo-tabla").textContent = categoriaActual;
@@ -1634,10 +1740,17 @@
                 th.style.borderBottomColor = color;
             });
 
+            // Calcular paginación
+            const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
+            const indiceInicio = (paginaActual - 1) * registrosPorPagina;
+            const indiceFin = indiceInicio + registrosPorPagina;
+            const registrosPagina = registrosFiltrados.slice(indiceInicio, indiceFin);
+
+            // Renderizar tabla
             const tbody = document.getElementById("tabla-body");
             tbody.innerHTML = "";
 
-            datosActuales.registros.slice(0, 15).forEach(registro => {
+            registrosPagina.forEach(registro => {
                 const tr = document.createElement("tr");
                 
                 let btnObservacion = '';
@@ -1660,11 +1773,33 @@
                 tbody.appendChild(tr);
             });
 
-            const nota = document.getElementById("tabla-nota");
-            if (datosActuales.registros.length > 15) {
-                nota.textContent = `Mostrando 15 de ${datosActuales.registros.length} registros`;
-            } else {
-                nota.textContent = `Total: ${datosActuales.registros.length} registros`;
+            // Actualizar paginación
+            document.getElementById("pagination-info").textContent = `${indiceInicio + 1} - ${Math.min(indiceFin, registrosFiltrados.length)} de ${registrosFiltrados.length} registros`;
+            document.getElementById("totalPages").textContent = `de ${totalPaginas}`;
+            document.getElementById("pageInput").value = paginaActual;
+            document.getElementById("pageInput").max = totalPaginas;
+
+            document.getElementById("prevBtn").disabled = paginaActual === 1;
+            document.getElementById("nextBtn").disabled = paginaActual === totalPaginas;
+        }
+
+        function cambiarPagina(direccion) {
+            const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
+            const nuevaPagina = paginaActual + direccion;
+            if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+                paginaActual = nuevaPagina;
+                actualizarTabla();
+                document.querySelector('.tabla-container').scrollTop = 0;
+            }
+        }
+
+        function irAPagina() {
+            const pagina = parseInt(document.getElementById("pageInput").value);
+            const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
+            if (pagina >= 1 && pagina <= totalPaginas) {
+                paginaActual = pagina;
+                actualizarTabla();
+                document.querySelector('.tabla-container').scrollTop = 0;
             }
         }
 
