@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SISAR - Emisión de Dictámenes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf1 100%);
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003D6B 0%, #1E5A96 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 4px 12px rgba(0, 61, 107, 0.2);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            font-size: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 20px;
+            border-radius: 10px;
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title-bar {
+            width: 4px;
+            height: 24px;
+            background: #003D6B;
+            border-radius: 2px;
+        }
+
+        .categoria-btn {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .categoria-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .categoria-btn.active {
+            color: white;
+        }
+
+        .categoria-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .total-box {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .total-box label {
+            display: block;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .total-number {
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .update-date {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-bottom: 20px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            font-size: 13px;
+        }
+
+        .legend-item:hover {
+            opacity: 0.8;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .legend-text {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .legend-count {
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .tabla-header {
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tabla-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .tabla-header-count {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .tabla-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f3f4f6;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .dias-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+        }
+
+        .observacion-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .observacion-btn:hover {
+            background: #2563eb;
+        }
+
+        .tabla-nota {
+            padding: 15px;
+            background: #f9fafb;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            margin: 0;
+            color: #111827;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #111827;
+        }
+
+        .modal-body {
+            line-height: 1.6;
+            color: #374151;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-body strong {
+            color: #111827;
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            background: #1f2937;
+            color: #9ca3af;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 50px;
+            font-size: 13px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer p:first-child {
+            font-weight: 600;
+            color: #d1d5db;
+        }
+
+        .sin-observaciones {
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-icon">🌾</div>
+            <div class="header-text">
+                <h1>Emisión de Dictámenes de Calificación</h1>
+                <p>Sistema de Trazabilidad Pecuaria - SISAR</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-grid">
+            <div class="sidebar">
+                <h2>
+                    <div class="sidebar-title-bar"></div>
+                    Estado de Solicitudes
+                </h2>
+                <div id="categorias-container"></div>
+                <div class="total-box">
+                    <label>Total Solicitudes</label>
+                    <div class="total-number" id="total-number">122</div>
+                </div>
+                <div class="update-date">📅 Actualizado: 4 de agosto de 2026</div>
+            </div>
+
+            <div class="content">
+                <div class="card">
+                    <h2>Distribución de Solicitudes</h2>
+                    <div class="chart-container">
+                        <canvas id="miGrafico"></canvas>
+                    </div>
+                    <div class="chart-legend" id="legend-container"></div>
+                </div>
+
+                <div class="card">
+                    <div class="tabla-header" id="tabla-header">
+                        <div class="tabla-header-title">
+                            📋 <span id="titulo-tabla">Constancias Emitidas</span>
+                            <span class="tabla-header-count"><span id="count-tabla">37</span> registros</span>
+                        </div>
+                    </div>
+                    <div class="tabla-container">
+                        <table id="tabla-datos">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>CUE</th>
+                                    <th>Ubicación</th>
+                                    <th>Fecha Solicitud</th>
+                                    <th style="text-align: center;">Días</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="tabla-nota" id="tabla-nota"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalObservaciones" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Observaciones</h2>
+                <button class="close-btn" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalContenido"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Ministerio de Agricultura, Ganadería y Alimentación (MAGA)</p>
+        <p>Viceministério de Sanidad Agropecuaria y Regulaciones</p>
+        <p style="margin-top: 15px; font-size: 12px;">Sistema de Trazabilidad Pecuaria (SISAR) - 2026</p>
+    </div>
+
+    <script>
+        const datos = {
+        "Constancias Emitidas": {
+                "count": 37,
+                "color": "#8B5FCF",
+                "registros": [
+                        {
+                                "Nombre": "Nelso Vinicio Morales Díaz",
+                                "CUE": "320-17-8-6554",
+                                "Ubicación": "MORCAR, Cooperativa Las Flores, El chal, Petén",
+                                "Fecha": "2026-07-23",
+                                "Días": 8,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Dorilet Magali Chavarria Ruano",
+                                "CUE": "320-17-14-6719",
+                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Ch",
+                                "Fecha": "2026-07-19",
+                                "Días": 12,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Luis Arnaldo Garza Guevara",
+                                "CUE": "320-17-8-6729",
+                                "Ubicación": "Finca La Joyita, El Molde, Aldea Boca del Monte, Dolores, Petén",
+                                "Fecha": "2026-07-18",
+                                "Días": 13,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Wiliam Amilcar Salguero Hernández",
+                                "CUE": "320-17-5-6042",
+                                "Ubicación": "Finca La Deseada, Sector 1, campo de futbol, zona 0",
+                                "Fecha": "2026-07-16",
+                                "Días": 15,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Manuel Estuardo Aldana Palacios",
+                                "CUE": "320",
+                                "Ubicación": "Finca El Cubilete, Finca EL Cubilete",
+                                "Fecha": "2026-07-14",
+                                "Días": 9,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "ELMER MANUEL ORTEGA MANCHAME",
+                                "CUE": "320-18-4-3461",
+                                "Ubicación": "FINCA LA VEGA, ALDEA CREEK ZARCO, ZONA 0, CALLE PRINCIPAL, MORALES, IZABAL",
+                                "Fecha": "2026-07-14",
+                                "Días": 17,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jorge Rafael Aleu Sandoval",
+                                "CUE": "320-17-8-6489",
+                                "Ubicación": "El Rodeo, El Quetzalito, Chal, Petén",
+                                "Fecha": "2026-07-13",
+                                "Días": 18,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Walfred Miguel Chavarria Ruano",
+                                "CUE": "320-17-14-6674",
+                                "Ubicación": "Finca las flores, calle principal zona 0, comunidad cooperativa las flores",
+                                "Fecha": "2026-07-13",
+                                "Días": 10,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Elder Antonio Muñoz Salguero",
+                                "CUE": "320-17-9-6270",
+                                "Ubicación": "Finca Los Cocos, Aldea Pusilá Arriba, San Luis, Petén",
+                                "Fecha": "2026-07-07",
+                                "Días": 16,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Elmer Noé Duque Villela",
+                                "CUE": "320-17-5-6038",
+                                "Ubicación": "Finca Los Duque, Aldea La Esperancita Uno, La Libertad, Petén",
+                                "Fecha": "2026-07-06",
+                                "Días": 14,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Mario Fredy Chavarria Hernández",
+                                "CUE": "320-17-8-2001",
+                                "Ubicación": "finca las palmeras, Caserio Poxte 1",
+                                "Fecha": "2026-07-03",
+                                "Días": 20,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Bayron Orlando Betancourt",
+                                "CUE": "320-17-5-6343",
+                                "Ubicación": "FINCA EL CORRALON, KM 75, LA LIBERTAD PETEN",
+                                "Fecha": "2026-07-02",
+                                "Días": 13,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Irma Caroletty Chavarria Ruano Gaytan",
+                                "CUE": "320-17-14-6665",
+                                "Ubicación": "finca las orquideas, calle principal zona 0 Aldea el Quetzalito",
+                                "Fecha": "2026-06-24",
+                                "Días": 37,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-686",
+                                "Ubicación": "Finca las Gemelas, Km 485.5 San Juan de Dios Ruta a la Libertad",
+                                "Fecha": "2026-06-12",
+                                "Días": 33,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-686",
+                                "Ubicación": "Finca las Gemelas, Km 485.5 San Juan de Dios Ruta a la Libertad",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Alejandro Jose Hurtarte Gaytan",
+                                "CUE": "320-17-7-1805",
+                                "Ubicación": "Finca Campo Alegre, El pumpal, Chal, Peten",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CÉSAR EDUARDO CERNA ACEVEDO",
+                                "CUE": "320-17-13-6359",
+                                "Ubicación": "COMERCIALIZADORA AGROPECUARIA DEL NORTE, Caserío Palestina",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CÉSAR EDUARDO CERNA ACEVEDO",
+                                "CUE": "320-17-13-6359",
+                                "Ubicación": "COMERCIALIZADORA AGROPECUARIA DEL NORTE, Caserío Palestina",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "VICTOR HUGO HERNÁNDEZ MARROQUÍN",
+                                "CUE": "320-17-9-2881",
+                                "Ubicación": "FINCA LA BENDICION DE DIOS, CASERIO CANSIS CARRETERA SAN LUIS, PETEN",
+                                "Fecha": "2026-06-10",
+                                "Días": 51,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Luis Arnaldo Garza Guevara",
+                                "CUE": "320-18-2-6667",
+                                "Ubicación": "Finca Toquelá, Km 309 ruta hacia Petén",
+                                "Fecha": "2026-06-10",
+                                "Días": 35,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CARLOS ENRIQUE HURTARTE RIVERA",
+                                "CUE": "320-17-7-1748",
+                                "Ubicación": "Finca Chaltecoco, Finca Chaltecoco, carretera a Pueblo Nuevo, Pueblo Nuevo",
+                                "Fecha": "2026-06-05",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "constantino muralles véliz",
+                                "CUE": "320-17-5-5939",
+                                "Ubicación": "Finca Dalila, km 588.5 ruta al naranjo frontera",
+                                "Fecha": "2026-06-04",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Manuel Antonio Guido Flores",
+                                "CUE": "320-17-7-1971",
+                                "Ubicación": "Rancho La Fortuna MG, Carretera que Conduce al Chal, km 455 CA-13, Santa Ana",
+                                "Fecha": "2026-06-01",
+                                "Días": 36,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Grainver S.A",
+                                "CUE": "320-17-13-6212",
+                                "Ubicación": "Ganadería San Ignacio, Lote 1213, Las cruces, Petén., RUTA A RIO YAXTUNILA",
+                                "Fecha": "2026-05-29",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Pedro Pablo Salguero Salguero",
+                                "CUE": "320-17-13-6344",
+                                "Ubicación": "Ganadería San Ignacio, Finca 95-71, RUTA A RIO YAXTUNILA",
+                                "Fecha": "2026-05-29",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Stephania Barillas Lemus",
+                                "CUE": "320-17-5-5710",
+                                "Ubicación": "Rancho Sandino, Caserío El Plantel",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jaime Anibal Regalado Bocache",
+                                "CUE": "320-17-13-5888",
+                                "Ubicación": "Finca Roca Linda, Barrio Nuevo León",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Francklin Soél Pinto Videz",
+                                "CUE": "320-17-5-4926",
+                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Liberta",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "LA REATA, S.A.",
+                                "CUE": "320-17-8-6342",
+                                "Ubicación": "Hacienda La Reata, Finca El Pumpal El Chal, El Pumpal",
+                                "Fecha": "2026-05-28",
+                                "Días": 46,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jaime Anibal Regalado Oliva",
+                                "CUE": "320-17-7-3038",
+                                "Ubicación": "Finca el Pacay, Caserío El Chal",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Gustavo Adolfo Morales Sandoval",
+                                "CUE": "320-5-1-3173",
+                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Oliv",
+                                "Fecha": "2026-05-27",
+                                "Días": 41,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Gustavo Adolfo Morales Sandoval",
+                                "CUE": "320-5-5-1747",
+                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de ",
+                                "Fecha": "2026-05-27",
+                                "Días": 41,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Rony Estuardo Urías Orellana",
+                                "CUE": "320-17-12-2700",
+                                "Ubicación": "Finca El Presumido, Barrios Las Delicias, Zona 0",
+                                "Fecha": "2026-05-26",
+                                "Días": 42,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Julio Estuardo Sandoval martinez",
+                                "CUE": "320-18-1-6660",
+                                "Ubicación": "finca el centinela, a 22 km de entre rios, san francisco creek ventura",
+                                "Fecha": "2026-05-26",
+                                "Días": 42,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Bovinver S.A",
+                                "CUE": "320-17-6-6690",
+                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San",
+                                "Fecha": "2026-05-26",
+                                "Días": 48,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Bayron Orlando Betancourt",
+                                "CUE": "320-17-5-6343",
+                                "Ubicación": "FINCA EL CORRALON, KM 75, LA LIBERTAD PETEN, KM 75, LA LIBERTAD, PETEN",
+                                "Fecha": "2026-05-20",
+                                "Días": 54,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "LESLY DANILO MOSCOSO SMITH",
+                                "CUE": "320-19-1-6659",
+                                "Ubicación": "Ganaderia Moscoso, Caserio El Tocino, La Majada, Zacapa",
+                                "Fecha": "2026-05-19",
+                                "Días": 49,
+                                "Observaciones": ""
+                        }
+                ]
+        },
+        "Rechazados": {
+                "count": 10,
+                "color": "#E94B3C",
+                "registros": [
+                        {
+                                "Nombre": "Abastecedora Humcasta, Sociedad Anonima",
+                                "CUE": "320",
+                                "Ubicación": "MANZANOTES ABASTECEDORA, ALDEA MANZANOTES, ZACAPA",
+                                "Fecha": "2026-07-23",
+                                "Días": 1,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "HUMCASTA, SOCIEDAD ANONIMA",
+                                "CUE": "320",
+                                "Ubicación": "MANZANOTES HUMCASTA, ALDEA MANZANOTES, ZACAPA",
+                                "Fecha": "2026-07-23",
+                                "Días": 1,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "Rony Estiven Urias Casasola",
+                                "CUE": "320-17-12-2700",
+                                "Ubicación": "Finca El Presumido, Barrios Las Delicias, Zona 0",
+                                "Fecha": "2026-07-20",
+                                "Días": 15,
+                                "Observaciones": "Se le informa que, derivado del proceso de verificación e inspección en campo y la toma de coordenadas geográficas realizadas a su establecimiento, la solicitud ha sido _x000D_\nRECHAZADA debido a las "
+                        },
+                        {
+                                "Nombre": "Dorilet Magali Chavarria Ruano",
+                                "CUE": "320",
+                                "Ubicación": "FINCA LOS MANACOS, Caserio san juan, zona 0, caserio  agricultores unidos, El Ch",
+                                "Fecha": "2026-07-15",
+                                "Días": 9,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "ELMER MANUEL ORTEGA MANCHAME",
+                                "CUE": "320-18-4-3461",
+                                "Ubicación": "Finca La Vega, Aldea, Creek Zarco, Morales, Izabal",
+                                "Fecha": "2026-07-14",
+                                "Días": 10,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "Fredy Rodolfo Aguirre Castañeda",
+                                "CUE": "320",
+                                "Ubicación": "Finca El Estadio, Aldea Jolobob",
+                                "Fecha": "2026-07-13",
+                                "Días": 11,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "Rony Estiven Urias Casasola",
+                                "CUE": "320-17-12-2700",
+                                "Ubicación": "Finca El Presumido, Barrios Las Delicias, Zona 0",
+                                "Fecha": "2026-07-02",
+                                "Días": 33,
+                                "Observaciones": "El usuario manifestó que éste formulario no tuviera  validez debido a cambio en el tipo de actividad económica que realiza."
+                        },
+                        {
+                                "Nombre": "INVERSIONES ESTRATÉGICAS BDO, S.A.",
+                                "CUE": "320",
+                                "Ubicación": "RAINFISH, 34 avenida 19-94 zona 5, Guatemala, Guatemala",
+                                "Fecha": "2026-06-30",
+                                "Días": 24,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "Bayron Orlando Betancourt",
+                                "CUE": "320-17-5-6343",
+                                "Ubicación": "FINCA EL CORRALON, KM 75, LA LIBERTAD PETEN",
+                                "Fecha": "2026-06-22",
+                                "Días": 32,
+                                "Observaciones": "El tipo de intermediario no corresponde con la descripción de la actividad declarada y con la finalidad del establecimiento. Se debe crear la gestión como intermediario de bovinos en pie."
+                        },
+                        {
+                                "Nombre": "SANDRA MARITZA TUPA MOLINA",
+                                "CUE": "320-17-9-2881",
+                                "Ubicación": "FINCA ADONAY, ALDEA CANSIS, SAN LUIS, PETEN",
+                                "Fecha": "2026-06-11",
+                                "Días": 54,
+                                "Observaciones": "NO COINCIDE NOMBRE DE FINCA, ADICIONAL INVENTARIO EN PLATAFORMA TRAZAR AGRO ES MAYOR"
+                        }
+                ]
+        },
+        "Por Corregir": {
+                "count": 12,
+                "color": "#FF6B35",
+                "registros": [
+                        {
+                                "Nombre": "Engracia  Ruballos Quijada Sandoval",
+                                "CUE": "320",
+                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,JoventÃ©, Aldea ChactÃ©, municipio de San ",
+                                "Fecha": "2026-08-03",
+                                "Días": 1,
+                                "Observaciones": "Corrección del contenido:  en la solicitud presentada, específicamente en el numeral 2.4,  se debe eliminar la opción Corrales de tránsito\". ya que no corresponde a la solicitud. En el contexto del Mi"
+                        },
+                        {
+                                "Nombre": "FRANCISCO JAVIER MIRANDA LEMUS",
+                                "CUE": "320-17-9-6298",
+                                "Ubicación": "Finca La Cumbre, Km 345, Zona 0, CaserÃ­o la cumbre, San Luis, PetÃ©n",
+                                "Fecha": "2026-07-16",
+                                "Días": 4,
+                                "Observaciones": "La patente de comercio adjuntada no coincide con la dirección comercial del establecimiento registrado en SISAR, ya que es el de \"Finca La Cumbre\" con Direccion en San Luis, Petén, y la patente es de "
+                        },
+                        {
+                                "Nombre": "JosÃ© Rodrigo Aguirre LÃ³pez",
+                                "CUE": "320",
+                                "Ubicación": "Finca La Laguna, Aldea La Laguna",
+                                "Fecha": "2026-07-13",
+                                "Días": 22,
+                                "Observaciones": "La dirección no coincide con las coordenadas brindadas."
+                        },
+                        {
+                                "Nombre": "Rony Estiven Urias Casasola",
+                                "CUE": "320-17-12-6364",
+                                "Ubicación": "Rancho Buena Vista, Poxte, Zona 0, Calle Central",
+                                "Fecha": "2026-06-10",
+                                "Días": 8,
+                                "Observaciones": "Por duplicidad de establecimientos se solicita ingresar la solicitud como arrendante del establecimiento donde tiene la explotación ganadera. INGRESAR NUEVA SOLICITUD."
+                        },
+                        {
+                                "Nombre": "LIMNY ANALÃ HERNÃNDEZ TUPA",
+                                "CUE": "320-17-9-5983",
+                                "Ubicación": "Finca Eben - Ezer, Aldea Cansis, San Luis, PetÃ©n",
+                                "Fecha": "2026-06-09",
+                                "Días": 9,
+                                "Observaciones": "Se solicita subsanación a solicitud del usuario debido a información errónea ingresada en la actividad económica de la persona individual. En la presente solicitud indica que es \"productor\" cuando deb"
+                        },
+                        {
+                                "Nombre": "Plantas Fiesta Verde, S. A.",
+                                "CUE": "320",
+                                "Ubicación": "Finca Agua Caliente, Final del  camino Chiguichon Los Pinos,, Aldea Xesuj",
+                                "Fecha": "2026-06-08",
+                                "Días": 8,
+                                "Observaciones": "Las solicitudes de cultivos agrícolas no corresponden al módulo pecuario, favor de ingresar una nueva solicitud en el módulo para productos agrícolas."
+                        },
+                        {
+                                "Nombre": "Alejandro Jose Hurtarte Gaytan",
+                                "CUE": "320-17-7-1748",
+                                "Ubicación": "CAMPO ALEGRE, EL PUMPAL EL CHAL",
+                                "Fecha": "2026-06-05",
+                                "Días": 7,
+                                "Observaciones": "EL CUE COLOCADO NO CORRESPONDE A CAMPO ALEGRE, EL CUE QUE COLOCARON CORRESPONDE A FINCA CHALTECOCO"
+                        },
+                        {
+                                "Nombre": "Inmobiliaria Giarfe, S. A.",
+                                "CUE": "320",
+                                "Ubicación": "Inmobiliaria Giarfe, S.A., 7 AVENIDA, 5-10, ZONA 4, EDIFICIO CENTRO FINANCIERO T",
+                                "Fecha": "2026-05-29",
+                                "Días": 18,
+                                "Observaciones": "Las solicitudes de productos agrícolas no corresponden al módulo pecuario. Debe ingresar una nueva solicitud en el módulo agrícola."
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-6187",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Fecha": "2026-05-25",
+                                "Días": 16,
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-6187",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Fecha": "2026-05-25",
+                                "Días": 16,
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-6187",
+                                "Ubicación": "SUKARNE AGROINDUSTRIAL GUATEMALA S.A., CALLE CONDUCE A LA LIBERTAD, PETEN. KM 48",
+                                "Fecha": "2026-05-25",
+                                "Días": 16,
+                                "Observaciones": "La solicitud debe ser corregida, ya que se encuentran registrados como arrendatarios; sin embargo, se está consignando el CUE como si ustedes fueran los propietarios del establecimiento. Adicionalment"
+                        },
+                        {
+                                "Nombre": "Ana Garcia Aguirre",
+                                "CUE": "320",
+                                "Ubicación": "Paraiso III, Km 323.Aldea Los Angeles, San Luis, PetÃ©n, Los Angeles",
+                                "Fecha": "2026-05-04",
+                                "Días": 36,
+                                "Observaciones": "Colocar nombre completo, que coincida con el DPI y RTU ingresado. _x000D_\n_x000D_\nPara corregir dato, llamar al PBX 1557 Ext. 7490 o 7488"
+                        }
+                ]
+        },
+        "En Proceso": {
+                "count": 63,
+                "color": "#059669",
+                "registros": [
+                        {
+                                "Nombre": "CÉSAR AUGUSTO SUCHINI SAGASTUME",
+                                "CUE": "320",
+                                "Ubicación": "Finca Nueva Esperanza, ZONA 0, ALDEA MILLA 7, MORALES, IZABAL",
+                                "Fecha": "2026-08-04",
+                                "Días": 0,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Engracia ------ ------ Ruballos Quijada Sandoval",
+                                "CUE": "320",
+                                "Ubicación": "Finca La pajarera, km 368, Ruta CA-13,Joventé, Aldea Chacté, municipio de San Lu",
+                                "Fecha": "2026-08-03",
+                                "Días": 1,
+                                "Observaciones": "El creador realizó las correcciones solicitadas. Motivo de edición: Correccion solicitada"
+                        },
+                        {
+                                "Nombre": "Tilapias de Centroamérica, Sociedad Anonima",
+                                "CUE": "320",
+                                "Ubicación": "ALICARIBE, Kilómetro 264 CA13, Ruta a Río Dulce Livingston Izabal",
+                                "Fecha": "2026-08-03",
+                                "Días": 1,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "José Aroldo Ovando Rousselin",
+                                "CUE": "320",
+                                "Ubicación": "JOSE AROLDO OVANDO ROUSSELINE, 0 AVENIDA 3-072 ZONA 0",
+                                "Fecha": "2026-08-03",
+                                "Días": 1,
+                                "Observaciones": "VERIFICAR SI CUENTA CON CUE E INVENTARIO TRAZADO"
+                        },
+                        {
+                                "Nombre": "Hugo Elisandro Rodríguez Estrada",
+                                "CUE": "320-17-12-6299",
+                                "Ubicación": "Rancho La Bendicion, Las Delicias Mopan, Dolores, Petén",
+                                "Fecha": "2026-07-31",
+                                "Días": 0,
+                                "Observaciones": "VERIFICAR SI ESTABLECIMIENTO EFECTIVAMENTE SE ENCUENTRA EN BARRIOS LAS DELICIAS"
+                        },
+                        {
+                                "Nombre": "Nelso Vinicio Morales Díaz",
+                                "CUE": "320",
+                                "Ubicación": "MORCAR, EL OCOTE, SANTA ANA PETÉN",
+                                "Fecha": "2026-07-31",
+                                "Días": 0,
+                                "Observaciones": "VIRIFICAR Y AGREGAR CUE PREEXISTENDE POSTERIOR A VISITA DE CAMPO"
+                        },
+                        {
+                                "Nombre": "Hugo Elisandro Rodríguez Estrada",
+                                "CUE": "320-17-12-6299",
+                                "Ubicación": "Rancho La Bendicion, Las Delicias Mopan, Dolores, Petén",
+                                "Fecha": "2026-07-31",
+                                "Días": 0,
+                                "Observaciones": "HACER REQUERIMIENTO PARA QUE ACTUALICE INVENTARIO, EN TRAZABILIDAD VIA CORREO INSTITUCIONAL"
+                        },
+                        {
+                                "Nombre": "HUGO ROBERTO SANDOVAL RUBALLOS",
+                                "CUE": "320",
+                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San L",
+                                "Fecha": "2026-07-30",
+                                "Días": 5,
+                                "Observaciones": "El creador realizó las correcciones solicitadas. Motivo de edición: Corrrecion realizada "
+                        },
+                        {
+                                "Nombre": "HUGO ROBERTO SANDOVAL RUBALLOS",
+                                "CUE": "320",
+                                "Ubicación": "FINCA LA PAJARERA, km 368, Ruta CA-13,Joventé,  Aldea Chacté, municipio de San L",
+                                "Fecha": "2026-07-30",
+                                "Días": 1,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jayro Jeovany Pinto Peña",
+                                "CUE": "320-17-5-6613",
+                                "Ubicación": "Finca El Mango, Entrada a Comunidad El Mango, Zona 0, Comunidad El Mango, La Lib",
+                                "Fecha": "2026-07-29",
+                                "Días": 6,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "HENRY SAMUEL MAYORGA PAREDES",
+                                "CUE": "320",
+                                "Ubicación": "Terreno de San Jose Alsacia., Aldea San José Alsacia, Los Amates, Izabal, camino",
+                                "Fecha": "2026-07-29",
+                                "Días": 2,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Oscar Margarito González Soto",
+                                "CUE": "320",
+                                "Ubicación": "OSCAR MARGARITO GONZALEZ SOTO, CALLE PRINCIPAL, ZONA 0, ALDEA EL ZAPOTE, JALPATA",
+                                "Fecha": "2026-07-29",
+                                "Días": 2,
+                                "Observaciones": "VERIFICAR SI TIENE CUE PREEXITENTE"
+                        },
+                        {
+                                "Nombre": "Elmer Estuardo Zúñiga Alarcón",
+                                "CUE": "320",
+                                "Ubicación": "Ganadería Poza Verde, Tierra Blanca",
+                                "Fecha": "2026-07-28",
+                                "Días": 3,
+                                "Observaciones": "Cuenta con finca libre, verificar historial y si coincide inventario"
+                        },
+                        {
+                                "Nombre": "Daniel Fernando Castro Guerra",
+                                "CUE": "320",
+                                "Ubicación": "GANADERIA 2D, ANGUIATU FRONTERA, ZONA 0, CARRETERA FRONTERA",
+                                "Fecha": "2026-07-28",
+                                "Días": 3,
+                                "Observaciones": "Verificar tipo de establecimiento"
+                        },
+                        {
+                                "Nombre": "Jairo Alberto Sosa Orellana",
+                                "CUE": "320",
+                                "Ubicación": "Finca Lagarto, Agua Caliente",
+                                "Fecha": "2026-07-27",
+                                "Días": 4,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Nelso Vinicio Morales Díaz",
+                                "CUE": "320-17-8-6554",
+                                "Ubicación": "MORCAR, Cooperativa Las Flores, El chal, Petén",
+                                "Fecha": "2026-07-23",
+                                "Días": 8,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "BLANCA ESTELA CHAVARRÍA MONTERROSO HERNÁNDEZ",
+                                "CUE": "320-10-14-6687",
+                                "Ubicación": "La Bodega, 2da. Avenida, 6-86",
+                                "Fecha": "2026-07-21",
+                                "Días": 14,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "BLANCA ESTELA CHAVARRÍA MONTERROSO HERNÁNDEZ",
+                                "CUE": "320-10-14-6687",
+                                "Ubicación": "La Bodega, 2da. Avenida, 6-86",
+                                "Fecha": "2026-07-21",
+                                "Días": 3,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jorge Rafael Aleu Sandoval",
+                                "CUE": "320-17-8-6489",
+                                "Ubicación": "El Rodeo, El Quetzalito, Chal, Petén",
+                                "Fecha": "2026-07-13",
+                                "Días": 18,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CROBO INVERSIONES, SOCIEDAD ANONIMA",
+                                "CUE": "320",
+                                "Ubicación": "CROBO INVERSIONES, S.A., 8 AVE CALZADA DOS HECTOR ZONA 2",
+                                "Fecha": "2026-07-08",
+                                "Días": 7,
+                                "Observaciones": "Asignado a Verificación de campo a Ludwin Pocón."
+                        },
+                        {
+                                "Nombre": "Elder Antonio Muñoz Salguero",
+                                "CUE": "320-17-9-6270",
+                                "Ubicación": "Finca Los Cocos, Aldea Pusilá Arriba, San Luis, Petén",
+                                "Fecha": "2026-07-07",
+                                "Días": 16,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Elmer Noé Duque Villela",
+                                "CUE": "320-17-5-6038",
+                                "Ubicación": "Finca Los Duque, Aldea La Esperancita Uno, La Libertad, Petén",
+                                "Fecha": "2026-07-06",
+                                "Días": 14,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Josué Vicente Ovalle Lorenzana",
+                                "CUE": "320",
+                                "Ubicación": "Agroindustrias Los Chentios, Aldea La Pepesca",
+                                "Fecha": "2026-07-05",
+                                "Días": 30,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Mario Fredy Chavarria Hernández",
+                                "CUE": "320-17-8-2001",
+                                "Ubicación": "finca las palmeras, Caserio Poxte 1",
+                                "Fecha": "2026-07-03",
+                                "Días": 20,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jony Estuardo Barahona Vargas",
+                                "CUE": "320-19-1-6736",
+                                "Ubicación": "AGRODISTRIBUIDORA JJ, LAMPARA",
+                                "Fecha": "2026-07-03",
+                                "Días": 32,
+                                "Observaciones": "Establecimiento nuevo"
+                        },
+                        {
+                                "Nombre": "Bayron Orlando Betancourt",
+                                "CUE": "320-17-5-6343",
+                                "Ubicación": "FINCA EL CORRALON, KM 75, LA LIBERTAD PETEN",
+                                "Fecha": "2026-07-02",
+                                "Días": 13,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Irma Caroletty Chavarria Ruano Gaytan",
+                                "CUE": "320-17-14-6665",
+                                "Ubicación": "finca las orquideas, calle principal zona 0 Aldea el Quetzalito",
+                                "Fecha": "2026-06-24",
+                                "Días": 37,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Carlos Rene Gaytan Gonzalez",
+                                "CUE": "320",
+                                "Ubicación": "finca el refugio, Aldea la Cobanerita",
+                                "Fecha": "2026-06-24",
+                                "Días": 28,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Nelva Leticia Carrera Amalla Diaz",
+                                "CUE": "320-17-5-3107",
+                                "Ubicación": "Finca Nelecar, Caserío el Quetzalito, El Chal.",
+                                "Fecha": "2026-06-19",
+                                "Días": 46,
+                                "Observaciones": "Inventario Animal en trazar agro: 290_x000D_\nInventario registrado en SISAR: 200"
+                        },
+                        {
+                                "Nombre": "Edgar Raúl Mayén Portillo",
+                                "CUE": "320-17-5-5920",
+                                "Ubicación": "RANCHO EL EDÉN, Caserío La Bomba, La Libertad, Petén.",
+                                "Fecha": "2026-06-17",
+                                "Días": 29,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Edgar Raúl Mayén Portillo",
+                                "CUE": "320-17-5-5920",
+                                "Ubicación": "RANCHO EL EDÉN, Caserío La Bomba, La Libertad, Petén.",
+                                "Fecha": "2026-06-17",
+                                "Días": 47,
+                                "Observaciones": "Favor corregir el apartado donde firma la persona que solicita la verificación, debido a que solo se consigna la firma más no el nombre, cuando el formulario solicita nombre y firma."
+                        },
+                        {
+                                "Nombre": "Norma Ruby Belteton Reyes Teni",
+                                "CUE": "320-16-13-5502",
+                                "Ubicación": "Finca Sebelantt, Lomas del Norte, Chisec",
+                                "Fecha": "2026-06-15",
+                                "Días": 49,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Norma Ruby Belteton Reyes Teni",
+                                "CUE": "320-16-13-5502",
+                                "Ubicación": "Finca Sebelantt, Lomas del Norte, (microregión),  Chisec, Alta Verapaz",
+                                "Fecha": "2026-06-15",
+                                "Días": 49,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-686",
+                                "Ubicación": "Finca las Gemelas, Km 485.5 San Juan de Dios Ruta a la Libertad",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Alejandro Jose Hurtarte Gaytan",
+                                "CUE": "320-17-7-1805",
+                                "Ubicación": "Finca Campo Alegre, El pumpal, Chal, Peten",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Agrogua Integral, Sociedad Anonima",
+                                "CUE": "320-17-12-6734",
+                                "Ubicación": "Agrogua Integral, Finca Rio Escondido, Aldea Machaquilá, Poptún, Petén.",
+                                "Fecha": "2026-06-12",
+                                "Días": 53,
+                                "Observaciones": "Establecimiento nuevo"
+                        },
+                        {
+                                "Nombre": "LIMNY ANALÍ HERNÁNDEZ TUPA",
+                                "CUE": "320-17-9-2881",
+                                "Ubicación": "FINCA EBEN-EZER, ZONA 0, ALDEA CANSIS, SAN LUIS, PETEN",
+                                "Fecha": "2026-06-12",
+                                "Días": 53,
+                                "Observaciones": "Ésta finca debe solicitarse corrección debido a que son arrendantes de finca la bendición de Dios, por lo que se envía para autorización y debe solicitarse corrección al analista para posteriormente s"
+                        },
+                        {
+                                "Nombre": "CÉSAR EDUARDO CERNA ACEVEDO",
+                                "CUE": "320-17-13-6359",
+                                "Ubicación": "COMERCIALIZADORA AGROPECUARIA DEL NORTE, Caserío Palestina",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "SUKARNE AGROINDUSTRIAL GUATEMALA, S.A.",
+                                "CUE": "320-17-6-686",
+                                "Ubicación": "Finca las Gemelas, Km 485.5 San Juan de Dios Ruta a la Libertad",
+                                "Fecha": "2026-06-12",
+                                "Días": 33,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CÉSAR EDUARDO CERNA ACEVEDO",
+                                "CUE": "320-17-13-6359",
+                                "Ubicación": "COMERCIALIZADORA AGROPECUARIA DEL NORTE, Caserío Palestina",
+                                "Fecha": "2026-06-12",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "DULCE MARÍA HERNÁNDEZ TUPA",
+                                "CUE": "320-17-9-2881",
+                                "Ubicación": "FINCA EL EDÉN, ZONA 0, ALDEA CANSIS, SAN LUIS, PETEN",
+                                "Fecha": "2026-06-11",
+                                "Días": 53,
+                                "Observaciones": "Dra. Éste establecimiento debe enviármelo de vuelta para  corrección para que posteriormente yo pueda pedirle correcciones al usuario por nombre del establecimiento."
+                        },
+                        {
+                                "Nombre": "VICTOR HUGO HERNÁNDEZ MARROQUÍN",
+                                "CUE": "320-17-9-2881",
+                                "Ubicación": "FINCA LA BENDICION DE DIOS, CASERIO CANSIS CARRETERA SAN LUIS, PETEN",
+                                "Fecha": "2026-06-10",
+                                "Días": 51,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Luis Arnaldo Garza Guevara",
+                                "CUE": "320-18-2-6667",
+                                "Ubicación": "Finca Toquelá, Km 309 ruta hacia Petén",
+                                "Fecha": "2026-06-10",
+                                "Días": 35,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "CARLOS ENRIQUE HURTARTE RIVERA",
+                                "CUE": "320-17-7-1748",
+                                "Ubicación": "Finca Chaltecoco, Finca Chaltecoco, carretera a Pueblo Nuevo, Pueblo Nuevo",
+                                "Fecha": "2026-06-05",
+                                "Días": 38,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "constantino muralles véliz",
+                                "CUE": "320-17-5-5939",
+                                "Ubicación": "Finca Dalila, km 588.5 ruta al naranjo frontera",
+                                "Fecha": "2026-06-04",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "brayan estuardo muralles vásquez",
+                                "CUE": "320-17-5-6053",
+                                "Ubicación": "PARCELA LA SOLEDAD, CASERIO SAGRADO CORAZON DE JESUS",
+                                "Fecha": "2026-06-04",
+                                "Días": 57,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Manuel Antonio Guido Flores",
+                                "CUE": "320-17-7-1971",
+                                "Ubicación": "Rancho La Fortuna MG, Carretera que Conduce al Chal, km 455 CA-13, Santa Ana",
+                                "Fecha": "2026-06-01",
+                                "Días": 36,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "AGRICOLA AMSA, SOCIEDAD ANONIMA",
+                                "CUE": "320",
+                                "Ubicación": "AGRIAMSA, Finca Lorena, San Antonio Suchitepequez, Finca Lorena, km. 146.5 carre",
+                                "Fecha": "2026-05-29",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Pedro Pablo Salguero Salguero",
+                                "CUE": "320-17-13-6344",
+                                "Ubicación": "Ganadería San Ignacio, Finca 95-71, RUTA A RIO YAXTUNILA",
+                                "Fecha": "2026-05-29",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Grainver S.A",
+                                "CUE": "320-17-13-6212",
+                                "Ubicación": "Ganadería San Ignacio, Lote 1213, Las cruces, Petén., RUTA A RIO YAXTUNILA",
+                                "Fecha": "2026-05-29",
+                                "Días": 39,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Francklin Soél Pinto Videz",
+                                "CUE": "320-17-5-4926",
+                                "Ubicación": "Hacienda El Plantel, Caserío el Plantel, Hacia La Esperanza, Proyecto La Liberta",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jaime Anibal Regalado Bocache",
+                                "CUE": "320-17-13-5888",
+                                "Ubicación": "Finca Roca Linda, Barrio Nuevo León",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Jaime Anibal Regalado Oliva",
+                                "CUE": "320-17-7-3038",
+                                "Ubicación": "Finca el Pacay, Caserío El Chal",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "LA REATA, S.A.",
+                                "CUE": "320-17-8-6342",
+                                "Ubicación": "Hacienda La Reata, Finca El Pumpal El Chal, El Pumpal",
+                                "Fecha": "2026-05-28",
+                                "Días": 46,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Stephania Barillas Lemus",
+                                "CUE": "320-17-5-5710",
+                                "Ubicación": "Rancho Sandino, Caserío El Plantel",
+                                "Fecha": "2026-05-28",
+                                "Días": 40,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Gustavo Adolfo Morales Sandoval",
+                                "CUE": "320-5-5-1747",
+                                "Ubicación": "Finca Tres Morros, km 75.5 Carretera a depto Quetzal, Final calle del Cuarto de ",
+                                "Fecha": "2026-05-27",
+                                "Días": 41,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Gustavo Adolfo Morales Sandoval",
+                                "CUE": "320-5-1-3173",
+                                "Ubicación": "Finca San Martín II, Km. 68 Carretera a Taxisco, 2da Calle Final, Aldea Los Oliv",
+                                "Fecha": "2026-05-27",
+                                "Días": 41,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Bovinver S.A",
+                                "CUE": "320-17-6-6690",
+                                "Ubicación": "Finca San Francisco, Finca Polígono 13 Código 17-06-13-0062 Área 1700000 M2, San",
+                                "Fecha": "2026-05-26",
+                                "Días": 48,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Julio Estuardo Sandoval martinez",
+                                "CUE": "320-18-1-6660",
+                                "Ubicación": "finca el centinela, a 22 km de entre rios, san francisco creek ventura",
+                                "Fecha": "2026-05-26",
+                                "Días": 42,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Rony Estuardo Urías Orellana",
+                                "CUE": "320-17-12-2700",
+                                "Ubicación": "Finca El Presumido, Barrios Las Delicias, Zona 0",
+                                "Fecha": "2026-05-26",
+                                "Días": 42,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "Francisco Jose Rodriguez Moraga",
+                                "CUE": "320",
+                                "Ubicación": "Finca Entre Rios, Carretera al Pacifico km 71.5 FInca Entre Rios, Siquinala, Esc",
+                                "Fecha": "2026-05-25",
+                                "Días": 44,
+                                "Observaciones": "Llega mi chucho"
+                        },
+                        {
+                                "Nombre": "Bayron Orlando Betancourt",
+                                "CUE": "320-17-5-6343",
+                                "Ubicación": "FINCA EL CORRALON, KM 75, LA LIBERTAD PETEN, KM 75, LA LIBERTAD, PETEN",
+                                "Fecha": "2026-05-20",
+                                "Días": 54,
+                                "Observaciones": ""
+                        },
+                        {
+                                "Nombre": "LESLY DANILO MOSCOSO SMITH",
+                                "CUE": "320-19-1-6659",
+                                "Ubicación": "Ganaderia Moscoso, Caserio El Tocino, La Majada, Zacapa",
+                                "Fecha": "2026-05-19",
+                                "Días": 49,
+                                "Observaciones": ""
+                        }
+                ]
+        }
+};
+
+        let categoriaActual = Object.keys(datos)[0];
+        let graficoInstancia = null;
+
+        function init() {
+            crearBotonesCategorias();
+            actualizarGrafico();
+            actualizarTabla();
+        }
+
+        function crearBotonesCategorias() {
+            const container = document.getElementById("categorias-container");
+            container.innerHTML = "";
+
+            Object.keys(datos).forEach(categoria => {
+                const btn = document.createElement("button");
+                btn.className = "categoria-btn" + (categoria === categoriaActual ? " active" : "");
+                
+                const badge = document.createElement("div");
+                badge.className = "categoria-badge";
+                badge.style.backgroundColor = datos[categoria].color;
+                badge.textContent = datos[categoria].count;
+
+                btn.appendChild(badge);
+                btn.appendChild(document.createTextNode(categoria));
+
+                btn.style.backgroundColor = categoria === categoriaActual ? datos[categoria].color : "#f3f4f6";
+                btn.style.color = categoria === categoriaActual ? "white" : "#374151";
+
+                btn.onclick = () => cambiarCategoria(categoria);
+                container.appendChild(btn);
+            });
+        }
+
+        function cambiarCategoria(categoria) {
+            categoriaActual = categoria;
+            crearBotonesCategorias();
+            actualizarGrafico();
+            actualizarTabla();
+        }
+
+        function actualizarGrafico() {
+            const ctx = document.getElementById("miGrafico");
+            
+            if (graficoInstancia) {
+                graficoInstancia.destroy();
+            }
+
+            const chartData = Object.entries(datos).map(([nombre, d]) => ({
+                label: nombre,
+                value: d.count,
+                color: d.color
+            }));
+
+            graficoInstancia = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.map(d => d.label),
+                    datasets: [{
+                        data: chartData.map(d => d.value),
+                        backgroundColor: chartData.map(d => d.color),
+                        borderColor: '#ffffff',
+                        borderWidth: 3,
+                        padding: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    return context.label + ': ' + context.parsed + ' solicitudes';
+                                }
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            cambiarCategoria(Object.keys(datos)[index]);
+                        }
+                    }
+                }
+            });
+
+            const legendContainer = document.getElementById("legend-container");
+            legendContainer.innerHTML = "";
+
+            Object.entries(datos).forEach(([nombre, d]) => {
+                const item = document.createElement("div");
+                item.className = "legend-item";
+                item.onclick = () => cambiarCategoria(nombre);
+
+                const color = document.createElement("div");
+                color.className = "legend-color";
+                color.style.backgroundColor = d.color;
+
+                const text = document.createElement("span");
+                text.className = "legend-text";
+                text.textContent = nombre;
+
+                const count = document.createElement("span");
+                count.className = "legend-count";
+                count.textContent = d.count;
+
+                item.appendChild(color);
+                item.appendChild(text);
+                item.appendChild(count);
+                legendContainer.appendChild(item);
+            });
+        }
+
+        function actualizarTabla() {
+            const datosActuales = datos[categoriaActual];
+            const color = datosActuales.color;
+
+            document.getElementById("tabla-header").style.backgroundColor = color;
+            document.getElementById("titulo-tabla").textContent = categoriaActual;
+            document.getElementById("count-tabla").textContent = datosActuales.count;
+
+            const ths = document.querySelectorAll("th");
+            ths.forEach(th => {
+                th.style.borderBottomColor = color;
+            });
+
+            const tbody = document.getElementById("tabla-body");
+            tbody.innerHTML = "";
+
+            datosActuales.registros.slice(0, 15).forEach(registro => {
+                const tr = document.createElement("tr");
+                
+                let btnObservacion = '';
+                if (registro.Observaciones && registro.Observaciones.trim() !== '') {
+                    btnObservacion = `<button class="observacion-btn" onclick="abrirObservaciones('${registro.Nombre}', '${registro.Observaciones}')" style="background-color: ${color};">Ver 📋</button>`;
+                } else {
+                    btnObservacion = '<span class="sin-observaciones">Sin observaciones</span>';
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${registro.Nombre}</strong></td>
+                    <td><code style="font-size: 11px;">${registro.CUE}</code></td>
+                    <td><small>${registro.Ubicación}</small></td>
+                    <td>${registro.Fecha}</td>
+                    <td style="text-align: center;">
+                        <span class="dias-badge" style="background-color: ${color};">${registro.Días}</span>
+                    </td>
+                    <td>${btnObservacion}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const nota = document.getElementById("tabla-nota");
+            if (datosActuales.registros.length > 15) {
+                nota.textContent = `Mostrando 15 de ${datosActuales.registros.length} registros`;
+            } else {
+                nota.textContent = `Total: ${datosActuales.registros.length} registros`;
+            }
+        }
+
+        function abrirObservaciones(nombre, observaciones) {
+            document.getElementById("modalTitulo").textContent = 'Observaciones - ' + nombre;
+            document.getElementById("modalContenido").innerHTML = '<strong>📝 Detalles:</strong><p>' + observaciones.replace(/\n/g, '<br>') + '</p>';
+            document.getElementById("modalObservaciones").style.display = "block";
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalObservaciones").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("modalObservaciones");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>
