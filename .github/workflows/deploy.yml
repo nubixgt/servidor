@@ -47,6 +47,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (VisarListadoSolicitudes)
+        run: |
+          cd VisarListadoSolicitudes
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
