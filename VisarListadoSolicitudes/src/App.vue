@@ -289,11 +289,7 @@ const getChartSegments = computed(() => {
             <span class="material-symbols-outlined text-4xl text-[#8bc34a] absolute animate-[pulse_3s_ease-in-out_infinite]">eco</span>
             <span class="material-symbols-outlined text-4xl text-white/20 absolute -ml-1 mt-1">eco</span>
           </div>
-          <div class="flex flex-col border-l border-[#8bc34a]/50 pl-3">
-            <span class="text-[8px] tracking-[0.2em] text-[#8bc34a] font-bold uppercase leading-none mb-1">Sanidad Agropecuaria</span>
-            <span class="text-xl font-black leading-none tracking-wide text-white drop-shadow-md">INOCUIDAD</span>
-            <span class="text-[9px] font-bold tracking-widest uppercase text-white/90 leading-tight mt-1">Y Competitividad</span>
-          </div>
+
         </div>
       </div>
     </div>
