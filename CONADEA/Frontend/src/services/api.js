@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+    return '/CONADEA/Backend/api/v1';
+};
+
 const api = axios.create({
-    baseURL: 'http://localhost/IEMCOOP/template/Backend/api/v1', // Adjust this to match your local setup
+    baseURL: getBaseURL(),
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

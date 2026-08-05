@@ -5,4 +5,12 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
     plugins: [vue()],
     base: '/CONADEA/',
+    server: {
+        proxy: {
+            '/CONADEA/Backend': {
+                target: 'http://m.nubix.gt',
+                changeOrigin: true
+            }
+        }
+    }
 })
