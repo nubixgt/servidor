@@ -2,6 +2,10 @@
     RewriteEngine On
     RewriteBase /VisarListadoSolicitudes/
 
+    # Force root and index.html to serve dist/index.html
+    RewriteRule ^$ dist/index.html [L]
+    RewriteRule ^index\.html$ dist/index.html [L]
+
     # Static Files (Frontend)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -12,7 +16,4 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . dist/index.html [L]
-    
-    # Handle the root path specifically
-    RewriteRule ^$ dist/index.html [L]
 </IfModule>
