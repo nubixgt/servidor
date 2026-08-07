@@ -7,9 +7,10 @@ import 'progress_track.dart';
 /// Tarjeta de ruta de aprendizaje — equivalente a `.ruta` en Dashboard.vue / Rutas.vue,
 /// con una foto de fondo (como en la imagen de referencia) detrás del ícono.
 class RutaCard extends StatelessWidget {
-  const RutaCard({super.key, required this.ruta, this.imagenUrl, this.onTap});
+  const RutaCard({super.key, required this.ruta, required this.pct, this.imagenUrl, this.onTap});
 
   final RutaAprendizaje ruta;
+  final int pct;
   final String? imagenUrl;
   final VoidCallback? onTap;
 
@@ -41,12 +42,12 @@ class RutaCard extends StatelessWidget {
                   Text(ruta.descripcion, style: AppTextStyles.cuerpo(size: 12)),
                   const SizedBox(height: 8),
                   Text(
-                    '${ruta.pctCompletado}% completado · ${ruta.cursos.length} cursos',
+                    '$pct% completado · ${ruta.cursos.length} cursos',
                     style: AppTextStyles.etiqueta(size: 11, color: AppColors.lima)
                         .copyWith(letterSpacing: 0),
                   ),
                   const SizedBox(height: 6),
-                  ProgressTrack(pct: ruta.pctCompletado),
+                  ProgressTrack(pct: pct),
                 ],
               ),
             ),

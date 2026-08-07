@@ -5,9 +5,15 @@ import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_bottom_nav.dart';
 import '../asistente/asistente_screen.dart';
 import '../auth/login_screen.dart';
+import '../ayuda/ayuda_screen.dart';
+import '../calendario/calendario_screen.dart';
+import '../certificados/certificados_screen.dart';
+import '../configuracion/configuracion_screen.dart';
 import '../cursos/cursos_screen.dart';
+import '../foros/foros_screen.dart';
 import '../home/home_screen.dart';
 import '../insignias/insignias_screen.dart';
+import '../perfil/perfil_screen.dart';
 import '../rutas/rutas_screen.dart';
 
 /// Shell principal de la app: 4 pestañas (Inicio, Cursos, Rutas, Insignias)
@@ -76,14 +82,14 @@ class _MainShellState extends State<MainShell> {
 class _AppDrawer extends StatelessWidget {
   const _AppDrawer();
 
-  static const _opciones = [
-    (Icons.person_outline_rounded, 'Mi perfil'),
-    (Icons.event_note_outlined, 'Calendario'),
-    (Icons.campaign_outlined, 'Novedades'),
-    (Icons.workspace_premium_outlined, 'Certificados'),
-    (Icons.forum_outlined, 'Foros'),
-    (Icons.settings_outlined, 'Configuración'),
-    (Icons.help_outline_rounded, 'Ayuda y soporte'),
+  static final List<(IconData, String, WidgetBuilder?)> _opciones = [
+    (Icons.person_outline_rounded, 'Mi perfil', (_) => const PerfilScreen()),
+    (Icons.event_note_outlined, 'Calendario', (_) => const CalendarioScreen()),
+    (Icons.campaign_outlined, 'Novedades', null),
+    (Icons.workspace_premium_outlined, 'Certificados', (_) => const CertificadosScreen()),
+    (Icons.forum_outlined, 'Foros', (_) => const ForosScreen()),
+    (Icons.settings_outlined, 'Configuración', (_) => const ConfiguracionScreen()),
+    (Icons.help_outline_rounded, 'Ayuda y soporte', (_) => const AyudaScreen()),
   ];
 
   @override
@@ -130,9 +136,14 @@ class _AppDrawer extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       onTap: () {
                         Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Próximamente'), behavior: SnackBarBehavior.floating),
-                        );
+                        final builder = o.$3;
+                        if (builder == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Próximamente'), behavior: SnackBarBehavior.floating),
+                          );
+                          return;
+                        }
+                        Navigator.of(context).push(MaterialPageRoute(builder: builder));
                       },
                     ),
                 ],

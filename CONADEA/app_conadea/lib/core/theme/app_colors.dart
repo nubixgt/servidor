@@ -39,6 +39,17 @@ class AppColors {
     8: [Color(0xFFF472B6), Color(0xFF9D174D)],
     9: [Color(0xFFFACC15), Color(0xFF854D0E)],
     10: [Color(0xFF4ADE80), Color(0xFF166534)],
+    11: [Color(0xFF86EFAC), Color(0xFF15803D)],
+    12: [Color(0xFF6EE7B7), Color(0xFF047857)],
+    13: [Color(0xFF93C5FD), Color(0xFF1D4ED8)],
+    14: [Color(0xFF7DD3FC), Color(0xFF0369A1)],
+    15: [Color(0xFFA7F3D0), Color(0xFF064E3B)],
+    16: [Color(0xFFFDE047), Color(0xFFA16207)],
+    17: [Color(0xFFF9A8D4), Color(0xFFBE185D)],
+    18: [Color(0xFFC084FC), Color(0xFF581C87)],
+    19: [Color(0xFFFDA4AF), Color(0xFFBE123C)],
+    20: [Color(0xFFFDBA74), Color(0xFFC2410C)],
+    21: [Color(0xFF818CF8), Color(0xFF4338CA)],
   };
 
   static List<Color> gradMod(int id) => colorMod[id] ?? [verde, verdeOscuro];

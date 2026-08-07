@@ -9,6 +9,8 @@ import '../../core/widgets/ruta_card.dart';
 import '../../core/widgets/section_header.dart';
 import '../../data/mock/mock_data.dart';
 import '../../data/models/insignia.dart';
+import '../../data/state/progreso_controller.dart';
+import '../cursos/detalle_curso_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({
@@ -25,48 +27,68 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = resumenUsuario;
-    final cursosEnProgreso = cursos.where((c) => c.enProgreso).take(3).toList();
     final rutasPreview = rutas.take(2).toList();
     final insigniasObtenidas = insignias.where((i) => i.obtenida).toList();
     final insigniasPreview = insigniasObtenidas.length >= 3
         ? insigniasObtenidas.sublist(insigniasObtenidas.length - 3)
         : insigniasObtenidas;
+    final controller = ProgresoController.instance;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
-      children: [
-        _TopBar(nombre: r.nombre),
-        const SizedBox(height: 22),
-        _ProgresoGeneralCard(),
-        const SizedBox(height: 16),
-        _RachaCard(),
-        const SizedBox(height: 16),
-        _NovedadesCard(),
-        const SizedBox(height: 24),
-        SectionHeader(title: 'Continuar aprendiendo', actionLabel: 'Ver todos', onAction: onVerCursos),
-        GlassCard(
-          child: Column(
-            children: [
-              for (final c in cursosEnProgreso) CursoRow(curso: c),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        SectionHeader(title: 'Rutas de aprendizaje', actionLabel: 'Ver todas', onAction: onVerRutas),
-        for (final ruta in rutasPreview)
-          RutaCard(ruta: ruta, imagenUrl: ruta.cursos.first.imagenUrl, onTap: onVerRutas),
-        const SizedBox(height: 10),
-        SectionHeader(title: 'Insignias recientes', actionLabel: 'Ver todas', onAction: onVerInsignias),
-        GlassCard(
-          child: Column(
-            children: [
-              for (final b in insigniasPreview) _InsigniaFila(insignia: b),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        _Banner(nombre: r.nombre),
-      ],
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final cursosEnProgreso = cursos.where(controller.enProgreso).take(3).toList();
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
+          children: [
+            _TopBar(nombre: r.nombre),
+            const SizedBox(height: 22),
+            _ProgresoGeneralCard(),
+            const SizedBox(height: 16),
+            _RachaCard(),
+            const SizedBox(height: 16),
+            _NovedadesCard(),
+            const SizedBox(height: 24),
+            SectionHeader(title: 'Continuar aprendiendo', actionLabel: 'Ver todos', onAction: onVerCursos),
+            GlassCard(
+              child: Column(
+                children: [
+                  for (final c in cursosEnProgreso)
+                    CursoRow(
+                      curso: c,
+                      pct: controller.pctCurso(c),
+                      completado: controller.aprobado(c.id),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => DetalleCursoScreen(cursoId: c.id)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SectionHeader(title: 'Rutas de aprendizaje', actionLabel: 'Ver todas', onAction: onVerRutas),
+            for (final ruta in rutasPreview)
+              RutaCard(
+                ruta: ruta,
+                pct: controller.pctRuta(ruta),
+                imagenUrl: ruta.cursos.first.imagenUrl,
+                onTap: onVerRutas,
+              ),
+            const SizedBox(height: 10),
+            SectionHeader(title: 'Insignias recientes', actionLabel: 'Ver todas', onAction: onVerInsignias),
+            GlassCard(
+              child: Column(
+                children: [
+                  for (final b in insigniasPreview) _InsigniaFila(insignia: b),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            _Banner(nombre: r.nombre),
+          ],
+        );
+      },
     );
   }
 }

@@ -3,14 +3,17 @@
 /// NOTA: igual que Frontend/src/data/local.js, este archivo es TEMPORAL,
 /// solo para el desarrollo del Frontend de la app. Cuando el Backend esté
 /// listo se reemplaza por llamadas al API (ver services/ en el Frontend web
-/// como referencia de esa migración futura).
+/// como referencia de esa migración futura). El catálogo de cursos vive en
+/// mock_cursos.dart (es más extenso) y se reexporta aquí.
 library;
 
-import '../models/curso.dart';
 import '../models/insignia.dart';
 import '../models/novedad.dart';
 import '../models/resumen_usuario.dart';
 import '../models/ruta.dart';
+import 'mock_cursos.dart';
+
+export 'mock_cursos.dart';
 
 const resumenUsuario = ResumenUsuario(
   nombre: 'Admin',
@@ -21,103 +24,7 @@ const resumenUsuario = ResumenUsuario(
   rachaDias: 7,
 );
 
-final List<Curso> cursos = [
-  const Curso(
-    id: 1,
-    icono: '📱',
-    titulo: 'Uso de WhatsApp AgroIA',
-    descripcion: 'Aprende a usar el asistente AgroIA para resolver problemas de tu finca.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 45,
-  ),
-  const Curso(
-    id: 2,
-    icono: '🌿',
-    titulo: 'Diagnóstico básico de cultivos',
-    descripcion: 'Identifica síntomas comunes en hojas, frutos y plantas.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 30,
-  ),
-  const Curso(
-    id: 3,
-    icono: '🐛',
-    titulo: 'Manejo integrado de plagas y enfermedades',
-    descripcion: 'Previene y controla con métodos responsables y seguros.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 60,
-  ),
-  const Curso(
-    id: 4,
-    icono: '🪱',
-    titulo: 'Nutrición y manejo de suelos',
-    descripcion: 'Un suelo vivo y fértil es la base de toda buena cosecha.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 0,
-  ),
-  const Curso(
-    id: 5,
-    icono: '🐄',
-    titulo: 'Ganadería sostenible',
-    descripcion: 'Mejora la nutrición, sanidad y bienestar de tu hato.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1570042225831-d9b085d44e20?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 100,
-    completado: true,
-  ),
-  const Curso(
-    id: 6,
-    icono: '💧',
-    titulo: 'Manejo de agua y adaptación climática',
-    descripcion: 'Prepara tu finca para la sequía y el exceso de lluvia.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1463123081488-729f60c1926d?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 20,
-  ),
-  const Curso(
-    id: 7,
-    icono: '🧮',
-    titulo: 'Administración rural y costos',
-    descripcion: 'Lleva las cuentas de tu finca y conoce tu rentabilidad.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 0,
-  ),
-  const Curso(
-    id: 8,
-    icono: '🤝',
-    titulo: 'Organización asociativa y cooperativa',
-    descripcion: 'Fortalece tu asociación con buenas prácticas de gestión.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 0,
-  ),
-  const Curso(
-    id: 9,
-    icono: '🛒',
-    titulo: 'Comercialización y acceso a mercados',
-    descripcion: 'Vende mejor: calidad, volumen, negociación y clientes.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1542838132-92c53300491e?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 0,
-  ),
-  const Curso(
-    id: 10,
-    icono: '📑',
-    titulo: 'Formulación de proyectos y acceso a fondos',
-    descripcion: 'Convierte las necesidades de tu organización en proyectos financiables.',
-    imagenUrl:
-        'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=320&auto=format&fit=crop&q=80',
-    progresoPct: 100,
-    completado: true,
-  ),
-];
-
-Curso cursoPorId(int id) => cursos.firstWhere((c) => c.id == id);
-
+/// Rutas de aprendizaje — equivalente a RUTAS en Frontend/src/data/local.js.
 final List<RutaAprendizaje> rutas = [
   RutaAprendizaje(
     id: 'ganaderia_sostenible',
@@ -126,7 +33,7 @@ final List<RutaAprendizaje> rutas = [
     descripcion:
         'Malla curricular completa para la transición gradual hacia fincas más productivas y resilientes.',
     color: RutaColor.verde,
-    cursos: [cursoPorId(5), cursoPorId(6)],
+    cursos: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].map(cursoPorId).toList(),
   ),
   RutaAprendizaje(
     id: 'sostenible',
@@ -134,7 +41,15 @@ final List<RutaAprendizaje> rutas = [
     titulo: 'Agricultura Sostenible',
     descripcion: 'Aprende técnicas sostenibles para mejorar la productividad cuidando el medio ambiente.',
     color: RutaColor.teal,
-    cursos: [cursoPorId(2), cursoPorId(3), cursoPorId(4), cursoPorId(6)],
+    cursos: [2, 3, 4, 6].map(cursoPorId).toList(),
+  ),
+  RutaAprendizaje(
+    id: 'pecuaria',
+    icono: '🐄',
+    titulo: 'Producción Pecuaria',
+    descripcion: 'Fortalece tus conocimientos en manejo, nutrición y producción animal.',
+    color: RutaColor.azul,
+    cursos: [5, 6].map(cursoPorId).toList(),
   ),
   RutaAprendizaje(
     id: 'gestion',
@@ -142,15 +57,15 @@ final List<RutaAprendizaje> rutas = [
     titulo: 'Gestión, Organización y Mercados',
     descripcion: 'Administra tu finca, fortalece tu organización y vende mejor tu producción.',
     color: RutaColor.oro,
-    cursos: [cursoPorId(7), cursoPorId(8), cursoPorId(9), cursoPorId(10)],
+    cursos: [7, 8, 9, 10].map(cursoPorId).toList(),
   ),
   RutaAprendizaje(
     id: 'digital',
     icono: '📱',
     titulo: 'Competencias Digitales AgroIA',
     descripcion: 'Domina el asistente AgroIA y las herramientas digitales del programa.',
-    color: RutaColor.azul,
-    cursos: [cursoPorId(1)],
+    color: RutaColor.teal,
+    cursos: [1].map(cursoPorId).toList(),
   ),
 ];
 
@@ -230,5 +145,156 @@ const List<Novedad> novedades = [
     titulo: 'Nuevos módulos de Ganadería Sostenible disponibles',
     chip: '📗 Novedad',
     fecha: 'Hace 3 días',
+  ),
+  Novedad(
+    tipo: TipoNovedad.alerta,
+    titulo: 'Pronóstico: inicio de canícula en julio',
+    chip: '⛅ Clima',
+    fecha: 'Hace 4 días',
+  ),
+  Novedad(
+    tipo: TipoNovedad.novedad,
+    titulo: 'Convocatoria: facilitadores digitales 2.ª cohorte',
+    chip: '📣 Convocatoria',
+    fecha: 'Hace 5 días',
+  ),
+];
+
+/// Evento del calendario — equivalente a EVENTOS en Frontend/src/data/local.js.
+class EventoCalendario {
+  const EventoCalendario({
+    required this.dia,
+    required this.mes,
+    required this.titulo,
+    required this.hora,
+    required this.icono,
+  });
+
+  final int dia;
+  final String mes;
+  final String titulo;
+  final String hora;
+  final String icono;
+}
+
+const List<EventoCalendario> eventos = [
+  EventoCalendario(
+    dia: 10,
+    mes: 'JUN',
+    titulo: 'Webinar en vivo: Innovaciones en riego tecnificado',
+    hora: '10:00 a.m.',
+    icono: '💻',
+  ),
+  EventoCalendario(
+    dia: 12,
+    mes: 'JUN',
+    titulo: 'Cierre de inscripción: facilitadores digitales (2.ª cohorte)',
+    hora: '5:00 p.m.',
+    icono: '📝',
+  ),
+  EventoCalendario(
+    dia: 17,
+    mes: 'JUN',
+    titulo: 'Jornada de campo: sistemas silvopastoriles · TNC Guatemala',
+    hora: '8:00 a.m.',
+    icono: '🌳',
+  ),
+  EventoCalendario(
+    dia: 24,
+    mes: 'JUN',
+    titulo: 'Charla: precios y mercados de granos básicos',
+    hora: '3:00 p.m.',
+    icono: '📊',
+  ),
+  EventoCalendario(
+    dia: 30,
+    mes: 'JUN',
+    titulo: 'Entrega de reportes territoriales a CONADEA',
+    hora: 'Todo el día',
+    icono: '📑',
+  ),
+];
+
+/// Publicación de foro — equivalente a FOROS en Frontend/src/data/local.js.
+class PublicacionForo {
+  const PublicacionForo({
+    required this.icono,
+    required this.titulo,
+    required this.autor,
+    required this.respuestas,
+  });
+
+  final String icono;
+  final String titulo;
+  final String autor;
+  final int respuestas;
+}
+
+const List<PublicacionForo> foros = [
+  PublicacionForo(
+    icono: '🌽',
+    titulo: 'Gusano cogollero en maíz de primera, ¿qué están aplicando?',
+    autor: 'Asoc. El Esfuerzo · hace 2 horas',
+    respuestas: 14,
+  ),
+  PublicacionForo(
+    icono: '🐄',
+    titulo: 'Experiencias con bloques multinutricionales en verano',
+    autor: 'Coop. Ganaderos del Norte · hace 5 horas',
+    respuestas: 9,
+  ),
+  PublicacionForo(
+    icono: '💧',
+    titulo: 'Cosecha de agua de techo: medidas de toneles y canaletas',
+    autor: 'Asoc. Mujeres Rurales · ayer',
+    respuestas: 22,
+  ),
+  PublicacionForo(
+    icono: '🤝',
+    titulo: 'Modelo de acta para renovación de junta directiva',
+    autor: 'Coop. La Unión · hace 2 días',
+    respuestas: 6,
+  ),
+  PublicacionForo(
+    icono: '🛒',
+    titulo: 'Compradores de tomate en oriente, recomendaciones',
+    autor: 'Asoc. Hortaliceros Unidos · hace 3 días',
+    respuestas: 17,
+  ),
+];
+
+/// Pregunta frecuente — equivalente a FAQS en Frontend/src/data/local.js.
+class Faq {
+  const Faq({required this.pregunta, required this.respuesta});
+
+  final String pregunta;
+  final String respuesta;
+}
+
+const List<Faq> faqs = [
+  Faq(
+    pregunta: '¿Cómo obtengo un certificado?',
+    respuesta:
+        'Completa todas las lecciones de un curso y aprueba su evaluación con al menos 2 de 3 respuestas correctas. El certificado se genera de inmediato y puedes imprimirlo o guardarlo como PDF.',
+  ),
+  Faq(
+    pregunta: '¿Qué es la racha de aprendizaje?',
+    respuesta:
+        'Es el número de días seguidos en los que has completado al menos una lección o evaluación. Mantenerla activa te ayuda a avanzar de manera constante.',
+  ),
+  Faq(
+    pregunta: '¿Cómo envío una consulta técnica de mi finca?',
+    respuesta:
+        'Las consultas con fotos y audios se envían por el WhatsApp AgroIA. Esta aula virtual complementa ese servicio con cursos y certificación. Revisa el Módulo 1 para aprender a usarlo.',
+  ),
+  Faq(
+    pregunta: '¿La plataforma consume muchos datos?',
+    respuesta:
+        'No. El aula está diseñada para bajo consumo de datos y tu avance se guarda en tu propio dispositivo. El modo ahorro de datos está disponible en Configuración.',
+  ),
+  Faq(
+    pregunta: '¿Quién valida los contenidos?',
+    respuesta:
+        'La red de especialistas del programa: CEFEP, TNC Guatemala, la Universidad Rafael Landívar, el Colegio de Ingenieros Agrónomos y técnicos de MAGA.',
   ),
 ];

@@ -6,6 +6,9 @@ import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/top_header.dart';
 import '../../data/mock/mock_data.dart';
+import '../../data/state/progreso_controller.dart';
+import 'catalogo_screen.dart';
+import 'detalle_curso_screen.dart';
 
 /// Pantalla "Mis cursos" — equivalente a MisCursos.vue, con el toggle
 /// En progreso / Completados de la imagen de referencia.
@@ -21,36 +24,55 @@ class _CursosScreenState extends State<CursosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final lista = cursos.where((c) => _completados ? c.completado : c.enProgreso).toList();
+    final controller = ProgresoController.instance;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-      children: [
-        const TopHeader(title: 'Mis cursos'),
-        const SizedBox(height: 12),
-        _Toggle(
-          completados: _completados,
-          onChange: (v) => setState(() => _completados = v),
-        ),
-        const SizedBox(height: 16),
-        if (lista.isEmpty)
-          GlassCard(
-            child: Text(
-              _completados
-                  ? 'Todavía no has completado ningún curso.'
-                  : 'Todavía no has iniciado ningún curso. Explora el catálogo y comienza tu primera lección.',
-              style: AppTextStyles.cuerpo(size: 13),
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final lista = cursos
+            .where((c) => _completados ? controller.aprobado(c.id) : controller.enProgreso(c))
+            .toList();
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
+          children: [
+            const TopHeader(title: 'Mis cursos'),
+            const SizedBox(height: 12),
+            _Toggle(
+              completados: _completados,
+              onChange: (v) => setState(() => _completados = v),
             ),
-          )
-        else
-          GlassCard(
-            child: Column(
-              children: [for (final c in lista) CursoRow(curso: c)],
-            ),
-          ),
-        const SizedBox(height: 20),
-        _BannerCatalogo(),
-      ],
+            const SizedBox(height: 16),
+            if (lista.isEmpty)
+              GlassCard(
+                child: Text(
+                  _completados
+                      ? 'Todavía no has completado ningún curso.'
+                      : 'Todavía no has iniciado ningún curso. Explora el catálogo y comienza tu primera lección.',
+                  style: AppTextStyles.cuerpo(size: 13),
+                ),
+              )
+            else
+              GlassCard(
+                child: Column(
+                  children: [
+                    for (final c in lista)
+                      CursoRow(
+                        curso: c,
+                        pct: controller.pctCurso(c),
+                        completado: controller.aprobado(c.id),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => DetalleCursoScreen(cursoId: c.id)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 20),
+            _BannerCatalogo(),
+          ],
+        );
+      },
     );
   }
 }
@@ -131,11 +153,9 @@ class _BannerCatalogo extends StatelessWidget {
           PrimaryButton(
             label: 'Ver catálogo →',
             expand: false,
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Próximamente'), behavior: SnackBarBehavior.floating),
-              );
-            },
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CatalogoScreen()),
+            ),
           ),
         ],
       ),

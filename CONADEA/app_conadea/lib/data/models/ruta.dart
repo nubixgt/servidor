@@ -35,10 +35,4 @@ class RutaAprendizaje {
   final String descripcion;
   final RutaColor color;
   final List<Curso> cursos;
-
-  int get pctCompletado {
-    if (cursos.isEmpty) return 0;
-    final suma = cursos.fold<int>(0, (s, c) => s + c.progresoPct);
-    return (suma / cursos.length).round();
-  }
 }

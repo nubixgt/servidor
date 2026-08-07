@@ -5,11 +5,20 @@ import '../theme/app_text_styles.dart';
 import 'progress_track.dart';
 
 /// Fila de curso con miniatura + progreso — equivalente a `.curso-fila` en
-/// Dashboard.vue / MisCursos.vue.
+/// Dashboard.vue / MisCursos.vue. El progreso se pasa explícito (viene de
+/// ProgresoController) para que este widget no dependa de dónde se use.
 class CursoRow extends StatelessWidget {
-  const CursoRow({super.key, required this.curso, this.onTap});
+  const CursoRow({
+    super.key,
+    required this.curso,
+    required this.pct,
+    required this.completado,
+    this.onTap,
+  });
 
   final Curso curso;
+  final int pct;
+  final bool completado;
   final VoidCallback? onTap;
 
   @override
@@ -47,17 +56,17 @@ class CursoRow extends StatelessWidget {
                   style: AppTextStyles.subtitulo(size: 13.5),
                 ),
                 const SizedBox(height: 6),
-                ProgressTrack(pct: curso.progresoPct),
+                ProgressTrack(pct: pct),
                 const SizedBox(height: 4),
                 Text(
-                  curso.completado ? 'Completado' : '${curso.progresoPct}% completado',
+                  completado ? 'Completado' : '$pct% completado',
                   style: AppTextStyles.cuerpo(size: 11.5),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 10),
-          _BotonContinuar(completado: curso.completado, onTap: onTap),
+          _BotonContinuar(completado: completado, onTap: onTap),
         ],
       ),
     );
