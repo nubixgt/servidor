@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /deportes/
+
+    # 1. Enrutamiento del API / Backend
+    # No reescribir peticiones al Backend (son manejadas por Backend/.htaccess o servidas directamente)
+    RewriteRule ^Backend/(.*)$ - [L]
+
+    # 2. Archivos Estáticos (Frontend)
+    # Verificar si el archivo solicitado existe físicamente en Frontend/dist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/deportes/Frontend/dist/$1 -f
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+
+    # 3. Fallback de SPA
+    # Redirigir todas las demás peticiones a Frontend/dist/index.html para Vue Router
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . Frontend/dist/index.html [L]
+    
+    # Manejar la ruta raíz específicamente
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>
