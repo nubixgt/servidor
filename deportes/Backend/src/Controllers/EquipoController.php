@@ -4,6 +4,7 @@ namespace Controllers;
 use Core\Response;
 use Models\EquipoModel;
 use Models\JugadorModel;
+use Utils\JwtUtils;
 
 class EquipoController {
     public function getAll() {
@@ -111,6 +112,65 @@ class EquipoController {
             }
         } else {
             Response::error('Error al crear el equipo (¿DPI duplicado?)', 500);
+        }
+    }
+
+    public function updateSubRepresentante() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Response::error('Method not allowed', 405);
+        }
+
+        $token = JwtUtils::getBearerToken();
+        if (!$token) {
+            Response::error('No autorizado. Token faltante.', 401);
+        }
+        $payload = JwtUtils::verifyToken($token);
+        if (!$payload) {
+            Response::error('Token inválido o expirado.', 401);
+        }
+
+        $equipo_id = $payload['equipo_id'];
+        
+        $nombre = $_POST['nombre'] ?? '';
+        $dpi = $_POST['dpi'] ?? '';
+        $telefono = $_POST['telefono'] ?? '';
+
+        if (empty($nombre) || empty($dpi) || empty($telefono)) {
+            Response::error('Todos los campos son obligatorios', 400);
+        }
+
+        $equipoModel = new EquipoModel();
+        
+        $foto_ruta = null;
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../uploads/equipos/' . $equipo_id . '/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $fileInfo = pathinfo($_FILES['foto']['name']);
+            $extension = strtolower($fileInfo['extension']);
+            $allowed = ['jpg', 'jpeg', 'png'];
+
+            if (!in_array($extension, $allowed)) {
+                Response::error('Formato de imagen no permitido', 400);
+            }
+
+            $fileName = 'sub_representante.' . $extension;
+            $destination = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['foto']['tmp_name'], $destination)) {
+                $foto_ruta = 'uploads/equipos/' . $equipo_id . '/' . $fileName;
+            } else {
+                Response::error('Error al subir la imagen', 500);
+            }
+        }
+
+        if ($equipoModel->updateSubRepresentante($equipo_id, $nombre, $dpi, $telefono, $foto_ruta)) {
+            $equipo = $equipoModel->getById($equipo_id);
+            Response::json(['message' => 'Sub representante actualizado', 'data' => $equipo]);
+        } else {
+            Response::error('Error al actualizar sub representante', 500);
         }
     }
 }

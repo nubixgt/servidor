@@ -9,6 +9,10 @@ CREATE TABLE IF NOT EXISTS equipos (
     usuario VARCHAR(50) DEFAULT NULL,
     password_hash VARCHAR(255) DEFAULT NULL,
     rol ENUM('encargado', 'admin') DEFAULT 'encargado',
+    sub_representante_nombre VARCHAR(150) NULL,
+    sub_representante_dpi VARCHAR(13) NULL,
+    sub_representante_telefono VARCHAR(8) NULL,
+    sub_representante_foto_ruta VARCHAR(255) NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

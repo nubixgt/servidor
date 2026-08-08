@@ -38,10 +38,12 @@ $router->add('POST', '/api/equipos', 'EquipoController', 'create');
 
 $router->add('POST', '/api/login', 'AuthController', 'login');
 $router->add('GET', '/api/mi-equipo', 'JugadorController', 'getByToken');
+$router->add('POST', '/api/mi-equipo/sub-representante', 'EquipoController', 'updateSubRepresentante');
 
 // Keeping this for reference, though mi-equipo handles players now
 $router->add('GET', '/api/jugadores', 'JugadorController', 'getAll');
 $router->add('POST', '/api/jugadores', 'JugadorController', 'create');
+$router->add('POST', '/api/jugadores/{id}/edit', 'JugadorController', 'update');
 $router->add('PATCH', '/api/jugadores/{id}/baja', 'JugadorController', 'darDeBaja');
 $router->add('GET', '/api/mi-equipo/inactivos', 'JugadorController', 'getInactivosByToken');
 

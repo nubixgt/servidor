@@ -49,6 +49,24 @@ class EquipoModel {
         return $stmt->execute();
     }
 
+    public function updateSubRepresentante($id, $nombre, $dpi, $telefono, $foto_ruta = null) {
+        if ($foto_ruta) {
+            $query = "UPDATE " . $this->table_name . " SET sub_representante_nombre = :nombre, sub_representante_dpi = :dpi, sub_representante_telefono = :telefono, sub_representante_foto_ruta = :foto_ruta WHERE id = :id";
+        } else {
+            $query = "UPDATE " . $this->table_name . " SET sub_representante_nombre = :nombre, sub_representante_dpi = :dpi, sub_representante_telefono = :telefono WHERE id = :id";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":nombre", $nombre);
+        $stmt->bindParam(":dpi", $dpi);
+        $stmt->bindParam(":telefono", $telefono);
+        if ($foto_ruta) {
+            $stmt->bindParam(":foto_ruta", $foto_ruta);
+        }
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
+    }
+
     public function getAll() {
         $query = "SELECT * FROM " . $this->table_name . " WHERE rol = 'encargado' ORDER BY fecha_creacion DESC";
         $stmt = $this->conn->prepare($query);

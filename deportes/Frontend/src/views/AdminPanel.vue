@@ -89,49 +89,53 @@
               <div>
                 <h1 class="text-3xl font-black italic tracking-tight">{{ equipoSeleccionado.nombre }}</h1>
                 <p class="text-sm text-gray-400">Representante: {{ equipoSeleccionado.representante }}</p>
+                <p v-if="equipoSeleccionado.sub_representante_nombre" class="text-xs text-gray-500 mt-1">Sub Rep: {{ equipoSeleccionado.sub_representante_nombre }} ({{ equipoSeleccionado.sub_representante_telefono }})</p>
               </div>
             </div>
           </header>
 
-          <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl overflow-hidden mb-8">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-[#1a1a1a]">
+          <div class="mb-8">
+            <div class="pb-4 border-b border-gray-800 flex justify-between items-center mb-6">
               <h3 class="font-bold text-sm uppercase tracking-wider text-purple-400">Jugadores Activos</h3>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 bg-[#161616]">
-                    <th class="p-4 font-bold">Jugador</th>
-                    <th class="p-4 font-bold text-center">Posición</th>
-                    <th class="p-4 font-bold text-center">Estado</th>
-                    <th class="p-4 font-bold text-center">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="!equipoSeleccionado.jugadores_activos?.length">
-                    <td colspan="4" class="p-8 text-center text-gray-500 text-sm">No hay jugadores activos.</td>
-                  </tr>
-                  <tr v-for="jugador in equipoSeleccionado.jugadores_activos" :key="jugador.id" @click="verDetalle(jugador)" class="border-b border-gray-800 hover:bg-[#252525] transition-colors cursor-pointer">
-                    <td class="p-4">
-                      <div class="flex items-center gap-3">
-                        <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-8 h-8 rounded-full object-cover border border-gray-700">
-                        <span class="font-bold text-sm">{{ jugador.nombre }}</span>
-                      </div>
-                    </td>
-                    <td class="p-4 text-center">
-                      <span class="inline-block px-2 py-1 bg-gray-800 text-gray-300 text-[10px] font-bold uppercase rounded border border-gray-700">{{ jugador.posicion }}</span>
-                    </td>
-                    <td class="p-4 text-center">
-                      <span class="inline-block px-3 py-1 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase rounded-full border border-purple-500/30">Activo</span>
-                    </td>
-                    <td class="p-4 text-center">
-                      <button @click.stop="abrirModalBaja(jugador)" class="text-gray-500 hover:text-red-500 transition-colors" title="Dar de baja">
-                        <svg class="w-5 h-5 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div v-if="!equipoSeleccionado.jugadores_activos?.length" class="p-8 text-center text-gray-500 text-sm bg-[#1e1e1e] border border-gray-800 rounded-xl">
+              No hay jugadores activos.
+            </div>
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              <div v-for="jugador in equipoSeleccionado.jugadores_activos" :key="jugador.id" @click="verDetalle(jugador)" class="relative w-48 h-72 mx-auto rounded-lg shadow-2xl overflow-hidden text-[#3b2800] font-serif transform transition-transform hover:scale-105 cursor-pointer group" style="background: linear-gradient(135deg, #e6c875 0%, #b28a38 100%); border: 1px solid #ffe9a6;">
+                <!-- Top section -->
+                <div class="flex justify-between items-start pt-3 px-3">
+                  <div class="flex flex-col items-center leading-none">
+                    <span class="text-3xl font-black tracking-tighter">{{ jugador.posicion === 'POR' ? '85' : '82' }}</span>
+                    <span class="text-[10px] uppercase font-bold mt-1">{{ jugador.posicion || 'JUG' }}</span>
+                    <div class="mt-2 w-6 h-4 bg-white flex items-center justify-center border border-black/20">
+                       <svg class="w-full h-full text-blue-500" viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24" fill="#4997D0"/><rect width="24" height="8" y="8" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#F6B40E"/></svg>
+                    </div>
+                  </div>
+                  <!-- Photo -->
+                  <div class="w-32 h-32 absolute top-4 right-0 flex justify-center items-end" style="mask-image: linear-gradient(to bottom, black 70%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
+                     <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-full h-full object-cover object-top filter contrast-125">
+                     <div v-else class="w-full h-full bg-black/20 flex items-center justify-center"><svg class="w-12 h-12 text-[#3b2800]/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                  </div>
+                </div>
+                
+                <!-- Info section -->
+                <div class="absolute bottom-3 left-0 right-0 px-3 text-center">
+                  <h3 class="text-sm font-black uppercase border-b border-[#3b2800]/30 pb-1 mb-2 mx-1 truncate">{{ jugador.nombre }}</h3>
+                  <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-bold px-1">
+                    <div class="flex justify-between"><span>PAC</span><span>80</span></div>
+                    <div class="flex justify-between"><span>DRI</span><span>82</span></div>
+                    <div class="flex justify-between"><span>SHO</span><span>75</span></div>
+                    <div class="flex justify-between"><span>DEF</span><span>60</span></div>
+                    <div class="flex justify-between"><span>PAS</span><span>78</span></div>
+                    <div class="flex justify-between"><span>PHY</span><span>70</span></div>
+                  </div>
+                  <div class="flex justify-center gap-2 mt-2 pt-2 border-t border-[#3b2800]/30 mx-1">
+                     <button @click.stop="abrirModalEdit(jugador)" class="p-1.5 hover:text-white bg-black/10 hover:bg-black/40 rounded transition-colors" title="Editar"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                     <button @click.stop="abrirModalBaja(jugador)" class="p-1.5 hover:text-red-500 bg-black/10 hover:bg-black/40 rounded transition-colors" title="Dar de baja"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -231,6 +235,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Editar Jugador -->
+    <div v-if="showModalEdit" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div class="bg-[#1a1a1a] border border-gray-800 p-6 rounded-xl w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4">Editar Jugador</h3>
+        <form @submit.prevent="guardarEdicionJugador">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre *</label>
+              <input v-model="editJugadorForm.nombre" type="text" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-purple-500" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">DPI *</label>
+              <input v-model="editJugadorForm.dpi" type="text" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-purple-500" minlength="13" maxlength="13" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Foto (opcional para actualizar)</label>
+              <input type="file" @change="handleEditFileChange" accept="image/*" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2 text-white">
+              <div v-if="editJugadorForm.fotoUrl" class="mt-2 w-24 h-24 bg-black rounded overflow-hidden border border-gray-700">
+                 <img :src="editJugadorForm.fotoUrl" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-6">
+            <button type="button" @click="showModalEdit = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors">Cancelar</button>
+            <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors hover:bg-purple-600">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -249,11 +283,60 @@ const showModalBaja = ref(false)
 const jugadorABajar = ref(null)
 const razonBaja = ref('')
 
+// Edit Player State
+const showModalEdit = ref(false)
+const editJugadorForm = ref({ id: '', nombre: '', dpi: '', foto: null, fotoUrl: '' })
+const editJugadorFile = ref(null)
+
 const jugadorDetalle = ref(null)
 
 const verDetalle = (jugador) => {
   jugadorDetalle.value = jugador
 }
+
+const abrirModalEdit = (jugador) => {
+  editJugadorForm.value = {
+    id: jugador.id,
+    nombre: jugador.nombre,
+    dpi: jugador.dpi,
+    fotoUrl: jugador.foto_ruta ? IMAGE_BASE_URL + jugador.foto_ruta : ''
+  }
+  editJugadorFile.value = null
+  showModalEdit.value = true
+}
+
+const handleEditFileChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    editJugadorFile.value = file
+    editJugadorForm.value.fotoUrl = URL.createObjectURL(file)
+  }
+}
+
+const guardarEdicionJugador = async () => {
+  try {
+    const token = localStorage.getItem('deportes_token')
+    const formData = new FormData()
+    formData.append('nombre', editJugadorForm.value.nombre)
+    formData.append('dpi', editJugadorForm.value.dpi)
+    if (editJugadorFile.value) {
+      formData.append('foto', editJugadorFile.value)
+    }
+
+    await api.post(`/jugadores/${editJugadorForm.value.id}/edit`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    
+    showModalEdit.value = false
+    await verEquipo(equipoSeleccionado.value.id)
+  } catch (err) {
+    alert('Error al editar jugador: ' + (err.response?.data?.error || err.message))
+  }
+}
+
 
 onMounted(async () => {
   await cargarEquipos()

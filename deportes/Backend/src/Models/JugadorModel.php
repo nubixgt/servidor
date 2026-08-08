@@ -38,6 +38,22 @@ class JugadorModel {
         return $stmt->execute();
     }
 
+    public function updateJugador($id, $nombre, $dpi, $foto_ruta = null) {
+        if ($foto_ruta) {
+            $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, dpi = :dpi, foto_ruta = :foto_ruta WHERE id = :id";
+        } else {
+            $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, dpi = :dpi WHERE id = :id";
+        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":nombre", $nombre);
+        $stmt->bindParam(":dpi", $dpi);
+        if ($foto_ruta) {
+            $stmt->bindParam(":foto_ruta", $foto_ruta);
+        }
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
+    }
+
     public function getByEquipo($equipo_id, $estado = 'activo') {
         $query = "SELECT * FROM " . $this->table_name . " WHERE equipo_id = :equipo_id AND estado = :estado ORDER BY fecha_creacion DESC";
         $stmt = $this->conn->prepare($query);
