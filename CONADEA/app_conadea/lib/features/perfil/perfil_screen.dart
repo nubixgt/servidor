@@ -101,7 +101,7 @@ class PerfilScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: InkWell(
                               onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => DetalleCursoScreen(cursoId: m.id)),
+                                MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: m)),
                               ),
                               child: Row(
                                 children: [

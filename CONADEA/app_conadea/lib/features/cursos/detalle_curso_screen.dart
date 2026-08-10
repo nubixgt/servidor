@@ -5,17 +5,18 @@ import '../../core/widgets/app_background.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/progress_track.dart';
-import '../../data/mock/mock_cursos.dart';
 import '../../data/models/curso.dart';
 import '../../data/state/progreso_controller.dart';
 import 'certificado_dialog.dart';
 
 /// Detalle de curso — equivalente a DetalleCurso.vue: lecciones expandibles
 /// y evaluación final interactiva (3 preguntas) que desbloquea el certificado.
+/// Recibe el [Curso] ya cargado (de mock_cursos.dart o del Backend real vía
+/// CursoService) — a esta pantalla no le importa de dónde vino.
 class DetalleCursoScreen extends StatefulWidget {
-  const DetalleCursoScreen({super.key, required this.cursoId});
+  const DetalleCursoScreen({super.key, required this.curso});
 
-  final int cursoId;
+  final Curso curso;
 
   @override
   State<DetalleCursoScreen> createState() => _DetalleCursoScreenState();
@@ -28,7 +29,7 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
   final Map<int, int> _quizSel = {};
   int _notaObtenida = 0;
 
-  late final curso = cursoPorId(widget.cursoId);
+  late final curso = widget.curso;
   final controller = ProgresoController.instance;
 
   void _toggleLeccion(int i) {

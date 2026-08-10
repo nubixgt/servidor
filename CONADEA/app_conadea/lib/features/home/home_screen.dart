@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                       pct: controller.pctCurso(c),
                       completado: controller.aprobado(c.id),
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => DetalleCursoScreen(cursoId: c.id)),
+                        MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: c)),
                       ),
                     ),
                 ],

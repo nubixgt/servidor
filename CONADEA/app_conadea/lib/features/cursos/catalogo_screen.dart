@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
+import '../../core/widgets/app_dialog.dart';
+import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/progress_track.dart';
-import '../../data/mock/mock_cursos.dart';
 import '../../data/models/curso.dart';
+import '../../data/services/api_exception.dart';
+import '../../data/services/curso_service.dart';
 import '../../data/state/progreso_controller.dart';
 import 'detalle_curso_screen.dart';
 
 /// Catálogo completo de cursos — equivalente a Catalogo.vue, con buscador.
+/// Muestra los cursos reales creados desde "Crear curso" (Backend/src/Controllers/CursoController.php).
 class CatalogoScreen extends StatefulWidget {
   const CatalogoScreen({super.key});
 
@@ -17,8 +21,20 @@ class CatalogoScreen extends StatefulWidget {
 }
 
 class _CatalogoScreenState extends State<CatalogoScreen> {
+  final _cursoService = CursoService();
   final _busquedaCtrl = TextEditingController();
   String _termino = '';
+
+  bool _cargando = true;
+  String? _error;
+  List<Curso> _cursos = [];
+  int? _abriendoId;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarCursos();
+  }
 
   @override
   void dispose() {
@@ -26,16 +42,46 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
     super.dispose();
   }
 
+  Future<void> _cargarCursos() async {
+    setState(() {
+      _cargando = true;
+      _error = null;
+    });
+    try {
+      final cursos = await _cursoService.listarCursos();
+      setState(() => _cursos = cursos);
+    } on ApiException catch (e) {
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  Future<void> _abrirCurso(int id) async {
+    if (_abriendoId != null) return;
+    setState(() => _abriendoId = id);
+    try {
+      final completo = await _cursoService.obtenerCurso(id);
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: completo)),
+      );
+    } on ApiException catch (e) {
+      if (mounted) {
+        await mostrarAlerta(context, tipo: AppDialogType.error, titulo: 'No se pudo abrir el curso', mensaje: e.message);
+      }
+    } finally {
+      if (mounted) setState(() => _abriendoId = null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final f = _termino.toLowerCase().trim();
     final lista = f.isEmpty
-        ? cursos
-        : cursos
-            .where((c) =>
-                c.titulo.toLowerCase().contains(f) ||
-                c.descripcion.toLowerCase().contains(f) ||
-                c.lecciones.any((l) => l.titulo.toLowerCase().contains(f)))
+        ? _cursos
+        : _cursos
+            .where((c) => c.titulo.toLowerCase().contains(f) || c.descripcion.toLowerCase().contains(f))
             .toList();
     final controller = ProgresoController.instance;
 
@@ -64,7 +110,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            '${lista.length} de ${cursos.length} cursos',
+                            _cargando ? 'Cargando...' : '${lista.length} de ${_cursos.length} cursos',
                             style: AppTextStyles.cuerpo(size: 11.5),
                           ),
                           const SizedBox(height: 12),
@@ -98,12 +144,37 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                       ),
                     ),
                   ),
-                  if (lista.isEmpty)
+                  if (_cargando)
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(child: CircularProgressIndicator(color: AppColors.verde)),
+                      ),
+                    )
+                  else if (_error != null)
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       sliver: SliverToBoxAdapter(
-                        child: Text('No se encontraron cursos para esa búsqueda.',
-                            style: AppTextStyles.cuerpo(size: 13)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_error!, style: AppTextStyles.cuerpo(size: 13, color: AppColors.rojo)),
+                            const SizedBox(height: 12),
+                            PrimaryButton(label: 'Reintentar', expand: false, onPressed: _cargarCursos),
+                          ],
+                        ),
+                      ),
+                    )
+                  else if (lista.isEmpty)
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      sliver: SliverToBoxAdapter(
+                        child: Text(
+                          _cursos.isEmpty
+                              ? 'Todavía no hay cursos publicados.'
+                              : 'No se encontraron cursos para esa búsqueda.',
+                          style: AppTextStyles.cuerpo(size: 13),
+                        ),
                       ),
                     )
                   else
@@ -116,9 +187,8 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                           curso: lista[i],
                           pct: controller.pctCurso(lista[i]),
                           aprobado: controller.aprobado(lista[i].id),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => DetalleCursoScreen(cursoId: lista[i].id)),
-                          ),
+                          cargando: _abriendoId == lista[i].id,
+                          onTap: () => _abrirCurso(lista[i].id),
                         ),
                       ),
                     ),
@@ -133,17 +203,24 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
 }
 
 class _CursoCard extends StatelessWidget {
-  const _CursoCard({required this.curso, required this.pct, required this.aprobado, required this.onTap});
+  const _CursoCard({
+    required this.curso,
+    required this.pct,
+    required this.aprobado,
+    required this.cargando,
+    required this.onTap,
+  });
 
   final Curso curso;
   final int pct;
   final bool aprobado;
+  final bool cargando;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: cargando ? null : onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         decoration: BoxDecoration(
@@ -165,16 +242,17 @@ class _CursoCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => Container(color: AppColors.vidrio2),
                   ),
-                  Positioned(
-                    top: 10,
-                    left: 12,
-                    child: _Chip(text: 'Módulo ${curso.id}', bg: Colors.black.withValues(alpha: 0.55)),
-                  ),
                   if (aprobado)
                     Positioned(
                       top: 10,
                       right: 12,
                       child: _Chip(text: '✓ Completado', bg: AppColors.oro, fg: const Color(0xFF3A2A00)),
+                    ),
+                  if (cargando)
+                    Container(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(color: AppColors.verde),
                     ),
                 ],
               ),
@@ -190,15 +268,7 @@ class _CursoCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   ProgressTrack(pct: pct),
                   const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 4,
-                    children: [
-                      Text('📖 ${curso.lecciones.length} lecciones', style: AppTextStyles.cuerpo(size: 11)),
-                      Text('📝 Evaluación', style: AppTextStyles.cuerpo(size: 11)),
-                      Text('🎓 Certificado', style: AppTextStyles.cuerpo(size: 11)),
-                    ],
-                  ),
+                  Text('${curso.icono} Curso', style: AppTextStyles.cuerpo(size: 11)),
                 ],
               ),
             ),

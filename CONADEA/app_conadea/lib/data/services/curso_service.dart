@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import '../models/curso.dart';
 import 'api_client.dart';
 import 'auth_service.dart';
 
-/// Creación de cursos (Backend/src/Controllers/CursoController.php),
-/// exclusiva del rol Administrador — el token JWT ya viaja con el rol.
+/// Cursos reales (Backend/src/Controllers/CursoController.php). Crear es
+/// exclusivo del rol Administrador; listar/obtener funciona para cualquier
+/// rol autenticado — el token JWT ya viaja con el rol en ambos casos.
 class CursoService {
   CursoService({ApiClient? apiClient, AuthService? authService})
       : _api = apiClient ?? ApiClient(),
@@ -27,5 +29,21 @@ class CursoService {
       filePath: imagenPath,
       token: token,
     );
+  }
+
+  /// Catálogo completo (sin lecciones/quiz — GET /cursos solo manda lo
+  /// general, para no cargar de más una lista).
+  Future<List<Curso>> listarCursos() async {
+    final token = await _authService.obtenerToken();
+    final response = await _api.get('/cursos', token: token);
+    final data = response['data'] as List<dynamic>;
+    return data.map((e) => Curso.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  /// Curso completo, con lecciones y quiz — para abrir el detalle.
+  Future<Curso> obtenerCurso(int id) async {
+    final token = await _authService.obtenerToken();
+    final response = await _api.get('/cursos/$id', token: token);
+    return Curso.fromJson(response['data'] as Map<String, dynamic>);
   }
 }
