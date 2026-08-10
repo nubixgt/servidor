@@ -4,6 +4,7 @@ use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\AuthController;
 use App\Controllers\LocationController;
+use App\Controllers\CursoController;
 
 // Backend/api/v1/index.php
 
@@ -35,6 +36,7 @@ $router = new Router();
 $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(LocationController::class);
+$router->registerController(CursoController::class);
 // $router->registerController(YourController::class);
 
 

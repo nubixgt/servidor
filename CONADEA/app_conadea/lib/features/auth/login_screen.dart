@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
+import '../../core/widgets/app_dialog.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../data/models/departamento.dart';
@@ -114,8 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
         await _authService.cerrarSesion();
         if (!mounted) return;
 
-        await _alerta(
-          tipo: _TipoAlerta.exito,
+        await mostrarAlerta(
+          context,
+          tipo: AppDialogType.exito,
           titulo: '¡Cuenta creada!',
           mensaje: 'Tu registro se guardó correctamente. Ahora inicia sesión con tu usuario y contraseña.',
         );
@@ -129,8 +131,9 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         if (!mounted) return;
 
-        await _alerta(
-          tipo: _TipoAlerta.exito,
+        await mostrarAlerta(
+          context,
+          tipo: AppDialogType.exito,
           titulo: '¡Bienvenido!',
           mensaje: 'Inicio de sesión correcto.',
           autoCerrar: const Duration(milliseconds: 900),
@@ -190,28 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _alertaError(String mensaje) {
-    _alerta(tipo: _TipoAlerta.error, titulo: 'Ocurrió un problema', mensaje: mensaje);
-  }
-
-  Future<void> _alerta({
-    required _TipoAlerta tipo,
-    required String titulo,
-    required String mensaje,
-    Duration? autoCerrar,
-  }) async {
-    final future = showDialog<void>(
-      context: context,
-      barrierDismissible: autoCerrar == null,
-      builder: (_) => _DialogoAlerta(tipo: tipo, titulo: titulo, mensaje: mensaje),
-    );
-
-    if (autoCerrar != null) {
-      Future.delayed(autoCerrar, () {
-        if (mounted) Navigator.of(context).pop();
-      });
-    }
-
-    await future;
+    mostrarAlerta(context, tipo: AppDialogType.error, titulo: 'Ocurrió un problema', mensaje: mensaje);
   }
 
   @override
@@ -676,57 +658,6 @@ class _HojaBuscadorState<T> extends State<_HojaBuscador<T>> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-enum _TipoAlerta { exito, error }
-
-/// Diálogo estilo "sweetalert" con la estética glass/verde de CONADEA
-/// (Flutter no tiene SweetAlert; este widget cumple el mismo rol).
-class _DialogoAlerta extends StatelessWidget {
-  const _DialogoAlerta({required this.tipo, required this.titulo, required this.mensaje});
-
-  final _TipoAlerta tipo;
-  final String titulo;
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    final esExito = tipo == _TipoAlerta.exito;
-    final color = esExito ? AppColors.verde : AppColors.rojo;
-
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 32),
-      child: GlassCard(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color.withValues(alpha: 0.15),
-                border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
-              ),
-              child: Icon(
-                esExito ? Icons.check_rounded : Icons.close_rounded,
-                color: color,
-                size: 34,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(titulo, textAlign: TextAlign.center, style: AppTextStyles.subtitulo(size: 17)),
-            const SizedBox(height: 8),
-            Text(mensaje, textAlign: TextAlign.center, style: AppTextStyles.cuerpo(size: 13)),
-            const SizedBox(height: 20),
-            PrimaryButton(label: 'Entendido', onPressed: () => Navigator.of(context).pop()),
-          ],
         ),
       ),
     );

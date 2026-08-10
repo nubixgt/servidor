@@ -3,6 +3,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_bottom_nav.dart';
+import '../../data/models/usuario_sesion.dart';
+import '../../data/services/auth_service.dart';
+import '../admin/crear_curso_screen.dart';
 import '../asistente/asistente_screen.dart';
 import '../auth/login_screen.dart';
 import '../ayuda/ayuda_screen.dart';
@@ -79,18 +82,36 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-class _AppDrawer extends StatelessWidget {
+class _AppDrawer extends StatefulWidget {
   const _AppDrawer();
 
-  static final List<(IconData, String, WidgetBuilder?)> _opciones = [
-    (Icons.person_outline_rounded, 'Mi perfil', (_) => const PerfilScreen()),
-    (Icons.event_note_outlined, 'Calendario', (_) => const CalendarioScreen()),
-    (Icons.campaign_outlined, 'Novedades', null),
-    (Icons.workspace_premium_outlined, 'Certificados', (_) => const CertificadosScreen()),
-    (Icons.forum_outlined, 'Foros', (_) => const ForosScreen()),
-    (Icons.settings_outlined, 'Configuración', (_) => const ConfiguracionScreen()),
-    (Icons.help_outline_rounded, 'Ayuda y soporte', (_) => const AyudaScreen()),
-  ];
+  @override
+  State<_AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<_AppDrawer> {
+  final _authService = AuthService();
+  UsuarioSesion? _sesion;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService.obtenerSesionGuardada().then((sesion) {
+      if (mounted) setState(() => _sesion = sesion);
+    });
+  }
+
+  List<(IconData, String, WidgetBuilder?)> get _opciones => [
+        if (_sesion?.rol == 'Administrador')
+          (Icons.add_box_outlined, 'Crear curso', (_) => const CrearCursoScreen()),
+        (Icons.person_outline_rounded, 'Mi perfil', (_) => const PerfilScreen()),
+        (Icons.event_note_outlined, 'Calendario', (_) => const CalendarioScreen()),
+        (Icons.campaign_outlined, 'Novedades', null),
+        (Icons.workspace_premium_outlined, 'Certificados', (_) => const CertificadosScreen()),
+        (Icons.forum_outlined, 'Foros', (_) => const ForosScreen()),
+        (Icons.settings_outlined, 'Configuración', (_) => const ConfiguracionScreen()),
+        (Icons.help_outline_rounded, 'Ayuda y soporte', (_) => const AyudaScreen()),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +176,9 @@ class _AppDrawer extends StatelessWidget {
                 leading: const Icon(Icons.logout_rounded, color: AppColors.rojo, size: 20),
                 title: Text('Cerrar sesión', style: AppTextStyles.cuerpo(size: 13.5, color: AppColors.rojo)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                onTap: () {
+                onTap: () async {
+                  await _authService.cerrarSesion();
+                  if (!context.mounted) return;
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                     (route) => false,
