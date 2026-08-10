@@ -1,10 +1,12 @@
 /// Configuración del Backend PHP (Backend/api/v1).
 ///
-/// - Emulador Android -> usa 10.0.2.2 en vez de localhost.
-/// - Dispositivo físico en la misma red -> usa la IP local de tu PC (ej. http://192.168.1.50/CONADEA/Backend).
-/// - Producción -> el dominio final, respetando la ruta /CONADEA/Backend definida en el .htaccess de la raíz.
+/// Apunta al dominio real (m.nubix.gt) para que las pruebas del registro/login
+/// lleguen al servidor de verdad. Si alguna vez pruebas contra un backend
+/// corriendo en tu propia PC en vez del hosting, cambia esto:
+/// - Emulador Android -> http://10.0.2.2/CONADEA/Backend (10.0.2.2 = localhost de tu PC visto desde el emulador).
+/// - Dispositivo físico en la misma red -> http://IP-LOCAL-DE-TU-PC/CONADEA/Backend.
 class ApiConfig {
   ApiConfig._();
 
-  static const String baseUrl = 'http://10.0.2.2/CONADEA/Backend';
+  static const String baseUrl = 'https://m.nubix.gt/CONADEA/Backend';
 }

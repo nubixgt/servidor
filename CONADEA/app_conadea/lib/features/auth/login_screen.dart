@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
@@ -110,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
           nombreCompleto: _regNombreCtrl.text.trim(),
           usuario: _regUsuarioCtrl.text.trim(),
           password: _regPasswordCtrl.text,
-          telefono: _regTelefonoCtrl.text.trim(),
+          telefono: _regTelefonoCtrl.text.trim().replaceAll('-', ''),
           departamentoId: _departamentoSeleccionado!.id,
           municipioId: _municipioSeleccionado!.id,
         );
@@ -149,8 +150,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_regPasswordCtrl.text.length < 6) {
       return 'La contraseña debe tener al menos 6 caracteres.';
     }
-    if (!RegExp(r'^\+?[0-9]{8,15}$').hasMatch(_regTelefonoCtrl.text.trim())) {
-      return 'Ingresa un número de teléfono válido (el que usas en WhatsApp).';
+    if (!RegExp(r'^\d{4}-\d{4}$').hasMatch(_regTelefonoCtrl.text.trim())) {
+      return 'Ingresa tu número de teléfono completo (formato 0000-0000).';
     }
     if (_departamentoSeleccionado == null) {
       return 'Selecciona tu departamento.';
@@ -272,9 +273,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       _CampoTexto(
         label: 'Número de teléfono (WhatsApp)',
-        hint: 'Ej. 55123456',
+        hint: 'Ej. 5512-3456',
         controller: _regTelefonoCtrl,
         tipoTeclado: TextInputType.phone,
+        inputFormatters: [_TelefonoFormatter()],
       ),
       _CampoDropdown<Departamento>(
         label: 'Departamento',
@@ -367,6 +369,7 @@ class _CampoTexto extends StatefulWidget {
     this.controller,
     this.esPassword = false,
     this.tipoTeclado,
+    this.inputFormatters,
   });
 
   final String label;
@@ -374,6 +377,7 @@ class _CampoTexto extends StatefulWidget {
   final TextEditingController? controller;
   final bool esPassword;
   final TextInputType? tipoTeclado;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   State<_CampoTexto> createState() => _CampoTextoState();
@@ -393,6 +397,7 @@ class _CampoTextoState extends State<_CampoTexto> {
           controller: widget.controller,
           obscureText: widget.esPassword && _oculto,
           keyboardType: widget.tipoTeclado,
+          inputFormatters: widget.inputFormatters,
           style: AppTextStyles.cuerpo(size: 14, color: Colors.white),
           decoration: InputDecoration(
             hintText: widget.hint,
@@ -492,6 +497,27 @@ class _CampoDropdown<T> extends StatelessWidget {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+}
+
+/// Formatea el teléfono como 0000-0000 mientras se escribe y no deja
+/// ingresar más de 8 dígitos.
+class _TelefonoFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    final digitos = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final limitados = digitos.length > 8 ? digitos.substring(0, 8) : digitos;
+
+    final buffer = StringBuffer();
+    for (var i = 0; i < limitados.length; i++) {
+      if (i == 4) buffer.write('-');
+      buffer.write(limitados[i]);
+    }
+
+    return TextEditingValue(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
 }
