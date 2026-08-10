@@ -28,15 +28,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 4. Initialize Router
+// 4. TEMPORARY diagnostics — remove after fixing routing on this host.
+// Usage: GET /?__debug=1 (through the rewritten Backend/ URL)
+if (isset($_GET['__debug'])) {
+    echo json_encode([
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
+        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
+        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? null,
+        'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? null,
+        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? null,
+        'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? null,
+        'ORIG_PATH_INFO' => $_SERVER['ORIG_PATH_INFO'] ?? null,
+    ]);
+    exit;
+}
+
+// 5. Initialize Router
 $router = new Router();
 
-// 5. Register Controllers manually 
+// 6. Register Controllers manually
 $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(LocationController::class);
 // $router->registerController(YourController::class);
 
 
-// 6. Dispatch
+// 7. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
