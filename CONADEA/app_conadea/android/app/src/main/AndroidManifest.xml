@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Tomar foto para el curso en la pantalla Crear Curso (rol Administrador) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:label="app_conadea"
         android:name="${applicationName}"

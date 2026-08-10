@@ -44,6 +44,9 @@ dependencies:
   # Guardar el token JWT de forma segura en el dispositivo
   flutter_secure_storage: ^9.2.2
 
+  # Elegir foto de galería o tomarla con la cámara (Crear Curso)
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

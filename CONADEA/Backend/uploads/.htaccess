@@ -1,0 +1,6 @@
+# Las imágenes de cursos se sirven como archivos estáticos desde aquí
+# (ver el ajuste en el .htaccess raíz). Esta carpeta nunca debe ejecutar
+# PHP, aunque alguien logre subir un archivo con extensión .php.
+<FilesMatch "\.(php|phtml|php\d|pht|phar)$">
+    Require all denied
+</FilesMatch>

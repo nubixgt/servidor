@@ -12,7 +12,7 @@ class Curso
         public string $icono = '',
         public string $titulo = '',
         public string $descripcion = '',
-        public string $imagenUrl = '',
+        public string $imagenPath = '',
         public array $lecciones = [],
         public array $quiz = []
     ) {

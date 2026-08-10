@@ -23,14 +23,14 @@ class CursoRepository
 
         try {
             $stmt = $this->pdo->prepare(
-                "INSERT INTO cursos (icono, titulo, descripcion, imagen_url)
-                 VALUES (:icono, :titulo, :descripcion, :imagen_url)"
+                "INSERT INTO cursos (icono, titulo, descripcion, imagen_path)
+                 VALUES (:icono, :titulo, :descripcion, :imagen_path)"
             );
             $stmt->execute([
                 'icono' => $curso->icono,
                 'titulo' => $curso->titulo,
                 'descripcion' => $curso->descripcion,
-                'imagen_url' => $curso->imagenUrl,
+                'imagen_path' => $curso->imagenPath,
             ]);
             $cursoId = (int) $this->pdo->lastInsertId();
 
@@ -84,7 +84,7 @@ class CursoRepository
     public function findAll(): array
     {
         $stmt = $this->pdo->query(
-            "SELECT id, icono, titulo, descripcion, imagen_url FROM cursos ORDER BY id DESC"
+            "SELECT id, icono, titulo, descripcion, imagen_path FROM cursos ORDER BY id DESC"
         );
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -94,7 +94,7 @@ class CursoRepository
                 $row['icono'],
                 $row['titulo'],
                 $row['descripcion'],
-                $row['imagen_url']
+                $row['imagen_path']
             ),
             $rows
         );
@@ -103,7 +103,7 @@ class CursoRepository
     public function findById(int $id): ?Curso
     {
         $stmt = $this->pdo->prepare(
-            "SELECT id, icono, titulo, descripcion, imagen_url FROM cursos WHERE id = :id LIMIT 1"
+            "SELECT id, icono, titulo, descripcion, imagen_path FROM cursos WHERE id = :id LIMIT 1"
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -119,10 +119,22 @@ class CursoRepository
             $row['icono'],
             $row['titulo'],
             $row['descripcion'],
-            $row['imagen_url'],
+            $row['imagen_path'],
             $lecciones,
             $quiz
         );
+    }
+
+    public function actualizarImagen(int $id, string $imagenPath): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE cursos SET imagen_path = :imagen_path WHERE id = :id");
+        $stmt->execute(['imagen_path' => $imagenPath, 'id' => $id]);
+    }
+
+    public function eliminar(int $id): void
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM cursos WHERE id = :id");
+        $stmt->execute(['id' => $id]);
     }
 
     private function findLeccionesByCurso(int $cursoId): array

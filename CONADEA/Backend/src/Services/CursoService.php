@@ -7,9 +7,17 @@ use App\Entities\Curso;
 use App\Entities\Leccion;
 use App\Entities\PreguntaQuiz;
 use App\Entities\OpcionQuiz;
+use App\Utils\UrlHelper;
 
 class CursoService
 {
+    private const TAMANO_MAXIMO_BYTES = 5 * 1024 * 1024; // 5 MB
+    private const EXTENSIONES_PERMITIDAS = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
     private $repository;
 
     public function __construct()
@@ -17,9 +25,13 @@ class CursoService
         $this->repository = new CursoRepository();
     }
 
-    public function crear(CrearCursoDTO $dto): array
+    /**
+     * @param array|null $archivoImagen Entrada cruda de $_FILES['imagen']
+     */
+    public function crear(CrearCursoDTO $dto, ?array $archivoImagen): array
     {
         $this->validar($dto);
+        $this->validarImagen($archivoImagen);
 
         $lecciones = [];
         foreach (array_values($dto->lecciones) as $i => $leccion) {
@@ -41,8 +53,18 @@ class CursoService
             $quiz[] = new PreguntaQuiz(null, 0, $i, trim($pregunta['pregunta'] ?? ''), $opciones);
         }
 
-        $curso = new Curso(null, $dto->icono, $dto->titulo, $dto->descripcion, $dto->imagenUrl, $lecciones, $quiz);
+        // La imagen se guarda después de insertar porque el nombre de la
+        // carpeta depende del id autoincremental del curso.
+        $curso = new Curso(null, $dto->icono, $dto->titulo, $dto->descripcion, '', $lecciones, $quiz);
         $id = $this->repository->create($curso);
+
+        try {
+            $imagenPath = $this->guardarImagen($id, $archivoImagen);
+            $this->repository->actualizarImagen($id, $imagenPath);
+        } catch (\Exception $e) {
+            $this->repository->eliminar($id);
+            throw new \Exception('No se pudo guardar la imagen del curso. Intenta de nuevo.');
+        }
 
         return $this->toArray($this->repository->findById($id));
     }
@@ -55,7 +77,7 @@ class CursoService
                 'icono' => $c->icono,
                 'titulo' => $c->titulo,
                 'descripcion' => $c->descripcion,
-                'imagen_url' => $c->imagenUrl,
+                'imagen_url' => UrlHelper::toAbsolute($c->imagenPath),
             ],
             $this->repository->findAll()
         );
@@ -80,9 +102,6 @@ class CursoService
         }
         if ($dto->descripcion === '') {
             throw new \Exception('La descripción del curso es obligatoria.');
-        }
-        if (!preg_match('#^https?://#i', $dto->imagenUrl)) {
-            throw new \Exception('La imagen debe ser una URL válida (http:// o https://).');
         }
         if (count($dto->lecciones) < 1) {
             throw new \Exception('Agrega al menos una lección.');
@@ -118,6 +137,49 @@ class CursoService
         }
     }
 
+    private function validarImagen(?array $archivo): void
+    {
+        if ($archivo === null || ($archivo['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            throw new \Exception('Selecciona o toma una foto para el curso.');
+        }
+        if ($archivo['error'] !== UPLOAD_ERR_OK) {
+            throw new \Exception('Ocurrió un problema al subir la imagen. Intenta de nuevo.');
+        }
+        if ($archivo['size'] > self::TAMANO_MAXIMO_BYTES) {
+            throw new \Exception('La imagen no puede pesar más de 5 MB.');
+        }
+    }
+
+    /**
+     * Valida (con getimagesize, no confiando en la extensión que mande el
+     * cliente) que el archivo sea una imagen real y la guarda en
+     * Backend/uploads/cursos/{id}/imagen.<ext>.
+     */
+    private function guardarImagen(int $cursoId, array $archivo): string
+    {
+        $info = @getimagesize($archivo['tmp_name']);
+        if ($info === false) {
+            throw new \Exception('El archivo no es una imagen válida.');
+        }
+
+        $extension = self::EXTENSIONES_PERMITIDAS[$info['mime']] ?? null;
+        if ($extension === null) {
+            throw new \Exception('Formato de imagen no soportado. Usa JPG, PNG o WEBP.');
+        }
+
+        $directorio = __DIR__ . '/../../uploads/cursos/' . $cursoId;
+        if (!is_dir($directorio) && !mkdir($directorio, 0755, true) && !is_dir($directorio)) {
+            throw new \Exception('No se pudo crear la carpeta de subida.');
+        }
+
+        $rutaAbsoluta = $directorio . '/imagen.' . $extension;
+        if (!move_uploaded_file($archivo['tmp_name'], $rutaAbsoluta)) {
+            throw new \Exception('No se pudo guardar el archivo de imagen.');
+        }
+
+        return "uploads/cursos/{$cursoId}/imagen.{$extension}";
+    }
+
     private function toArray(Curso $curso): array
     {
         return [
@@ -125,7 +187,7 @@ class CursoService
             'icono' => $curso->icono,
             'titulo' => $curso->titulo,
             'descripcion' => $curso->descripcion,
-            'imagen_url' => $curso->imagenUrl,
+            'imagen_url' => UrlHelper::toAbsolute($curso->imagenPath),
             'lecciones' => array_map(
                 fn(Leccion $l) => ['titulo' => $l->titulo, 'contenido' => $l->contenido],
                 $curso->lecciones

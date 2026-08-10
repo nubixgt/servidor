@@ -9,16 +9,18 @@ use App\Services\CursoService;
 
 class CursoController extends Controller
 {
+    // multipart/form-data: campo "data" con el JSON del curso + campo
+    // "imagen" con el archivo (así viaja todo en una sola petición).
     #[Route('/cursos', 'POST')]
     #[Authorize(['Administrador'])]
     public function crear()
     {
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+        $data = json_decode($_POST['data'] ?? '{}', true) ?? [];
         $dto = CrearCursoDTO::fromRequest($data);
         $service = new CursoService();
 
         try {
-            $curso = $service->crear($dto);
+            $curso = $service->crear($dto, $_FILES['imagen'] ?? null);
             $this->json(['status' => 'success', 'message' => 'Curso creado correctamente', 'data' => $curso], 201);
         } catch (\Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);

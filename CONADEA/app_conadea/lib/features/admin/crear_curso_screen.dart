@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
@@ -21,12 +24,13 @@ class CrearCursoScreen extends StatefulWidget {
 
 class _CrearCursoScreenState extends State<CrearCursoScreen> {
   final _cursoService = CursoService();
+  final _picker = ImagePicker();
   bool _guardando = false;
+  XFile? _imagenSeleccionada;
 
   final _iconoCtrl = TextEditingController(text: '📘');
   final _tituloCtrl = TextEditingController();
   final _descripcionCtrl = TextEditingController();
-  final _imagenUrlCtrl = TextEditingController();
 
   final List<_LeccionForm> _lecciones = [_LeccionForm()];
   final List<_PreguntaForm> _preguntas = [_PreguntaForm()];
@@ -36,7 +40,6 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
     _iconoCtrl.dispose();
     _tituloCtrl.dispose();
     _descripcionCtrl.dispose();
-    _imagenUrlCtrl.dispose();
     for (final l in _lecciones) {
       l.dispose();
     }
@@ -44,6 +47,18 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
       p.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _elegirImagen() async {
+    final fuente = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _HojaFuenteImagen(),
+    );
+    if (fuente == null) return;
+
+    final archivo = await _picker.pickImage(source: fuente, imageQuality: 85, maxWidth: 1600);
+    if (archivo != null) setState(() => _imagenSeleccionada = archivo);
   }
 
   void _agregarLeccion() => setState(() => _lecciones.add(_LeccionForm()));
@@ -79,9 +94,7 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
     if (_iconoCtrl.text.trim().isEmpty) return 'Elige un ícono (emoji) para el curso.';
     if (_tituloCtrl.text.trim().length < 3) return 'El título del curso es obligatorio.';
     if (_descripcionCtrl.text.trim().isEmpty) return 'La descripción del curso es obligatoria.';
-    if (!RegExp(r'^https?://').hasMatch(_imagenUrlCtrl.text.trim())) {
-      return 'La imagen debe ser una URL que empiece con http:// o https://';
-    }
+    if (_imagenSeleccionada == null) return 'Selecciona o toma una foto para el curso.';
     for (final l in _lecciones) {
       if (l.tituloCtrl.text.trim().isEmpty || l.contenidoCtrl.text.trim().isEmpty) {
         return 'Completa el título y el contenido de todas las lecciones.';
@@ -110,25 +123,27 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
 
     setState(() => _guardando = true);
     try {
-      await _cursoService.crearCurso({
-        'icono': _iconoCtrl.text.trim(),
-        'titulo': _tituloCtrl.text.trim(),
-        'descripcion': _descripcionCtrl.text.trim(),
-        'imagen_url': _imagenUrlCtrl.text.trim(),
-        'lecciones': [
-          for (final l in _lecciones)
-            {'titulo': l.tituloCtrl.text.trim(), 'contenido': l.contenidoCtrl.text.trim()},
-        ],
-        'quiz': [
-          for (final p in _preguntas)
-            {
-              'pregunta': p.preguntaCtrl.text.trim(),
-              'opciones': [
-                for (final o in p.opciones) {'texto': o.textoCtrl.text.trim(), 'es_correcta': o.esCorrecta},
-              ],
-            },
-        ],
-      });
+      await _cursoService.crearCurso(
+        datos: {
+          'icono': _iconoCtrl.text.trim(),
+          'titulo': _tituloCtrl.text.trim(),
+          'descripcion': _descripcionCtrl.text.trim(),
+          'lecciones': [
+            for (final l in _lecciones)
+              {'titulo': l.tituloCtrl.text.trim(), 'contenido': l.contenidoCtrl.text.trim()},
+          ],
+          'quiz': [
+            for (final p in _preguntas)
+              {
+                'pregunta': p.preguntaCtrl.text.trim(),
+                'opciones': [
+                  for (final o in p.opciones) {'texto': o.textoCtrl.text.trim(), 'es_correcta': o.esCorrecta},
+                ],
+              },
+          ],
+        },
+        imagenPath: _imagenSeleccionada!.path,
+      );
 
       if (!mounted) return;
       await mostrarAlerta(
@@ -178,11 +193,16 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
                       controller: _descripcionCtrl,
                       lineas: 3,
                     ),
-                    _Campo(
-                      label: 'URL de la imagen',
-                      hint: 'https://...',
-                      controller: _imagenUrlCtrl,
-                      tipoTeclado: TextInputType.url,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('IMAGEN DEL CURSO', style: AppTextStyles.etiqueta()),
+                          const SizedBox(height: 6),
+                          _SelectorImagen(imagen: _imagenSeleccionada, onTap: _elegirImagen),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -418,14 +438,12 @@ class _Campo extends StatelessWidget {
     required this.hint,
     required this.controller,
     this.lineas = 1,
-    this.tipoTeclado,
   });
 
   final String label;
   final String hint;
   final TextEditingController controller;
   final int lineas;
-  final TextInputType? tipoTeclado;
 
   @override
   Widget build(BuildContext context) {
@@ -439,7 +457,6 @@ class _Campo extends StatelessWidget {
           TextField(
             controller: controller,
             maxLines: lineas,
-            keyboardType: tipoTeclado,
             style: AppTextStyles.cuerpo(size: 14, color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
@@ -462,6 +479,107 @@ class _Campo extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Recuadro que muestra la foto elegida (o un placeholder) y abre el
+/// selector de cámara/galería al tocarlo.
+class _SelectorImagen extends StatelessWidget {
+  const _SelectorImagen({required this.imagen, required this.onTap});
+
+  final XFile? imagen;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        height: 160,
+        width: double.infinity,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        ),
+        child: imagen == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_a_photo_outlined, size: 30, color: Colors.white.withValues(alpha: 0.4)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Toca para tomar o elegir una foto',
+                    style: AppTextStyles.cuerpo(size: 12.5, color: Colors.white.withValues(alpha: 0.5)),
+                  ),
+                ],
+              )
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.file(File(imagen!.path), fit: BoxFit.cover),
+                  Positioned(
+                    right: 8,
+                    bottom: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppColors.fondoBase.withValues(alpha: 0.75),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+/// Hoja inferior para elegir entre cámara y galería.
+class _HojaFuenteImagen extends StatelessWidget {
+  const _HojaFuenteImagen();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: Container(
+        color: AppColors.fondoBase,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: const Icon(Icons.camera_alt_outlined, color: Colors.white),
+                title: Text('Tomar foto', style: AppTextStyles.cuerpo(size: 14, color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined, color: Colors.white),
+                title: Text('Elegir de la galería', style: AppTextStyles.cuerpo(size: 14, color: Colors.white)),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
     );
   }

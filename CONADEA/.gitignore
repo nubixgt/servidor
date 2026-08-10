@@ -1,0 +1,5 @@
+# Imágenes subidas en tiempo de ejecución (Crear Curso) — no se versionan.
+# La carpeta y el .htaccess que bloquea ejecución de PHP sí se versionan.
+Backend/uploads/cursos/
+!Backend/uploads/.htaccess
+!Backend/uploads/.gitkeep

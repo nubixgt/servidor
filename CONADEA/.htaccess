@@ -2,7 +2,12 @@
     RewriteEngine On
     RewriteBase /CONADEA/
 
-    # 1. API Routing
+    # 1a. Serve real files under Backend/ as-is (e.g. uploaded course
+    # images in Backend/uploads/), instead of swallowing them into the API.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^Backend/(.*)$ - [L]
+
+    # 1b. API Routing
     # Send requests starting with Backend/ to the API entry point
     RewriteRule ^Backend/(.*)$ Backend/api/v1/index.php [QSA,L]
 

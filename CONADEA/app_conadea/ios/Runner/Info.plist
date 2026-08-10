@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Se usa para tomar la foto del curso al crearlo (solo Administrador).</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Se usa para elegir la foto del curso al crearlo (solo Administrador).</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

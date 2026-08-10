@@ -20,6 +20,27 @@ class ApiClient {
     );
   }
 
+  /// POST multipart/form-data: los campos van como texto (usa [jsonEncode]
+  /// tú mismo si alguno es una estructura anidada) y [filePath] es la ruta
+  /// local del archivo a subir bajo el nombre de campo [fileField].
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required Map<String, String> fields,
+    required String fileField,
+    required String filePath,
+    String? token,
+  }) {
+    return _send(() async {
+      final request = http.MultipartRequest('POST', _uri(path));
+      if (token != null) request.headers['Authorization'] = 'Bearer $token';
+      request.fields.addAll(fields);
+      request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+
+      final streamed = await request.send();
+      return http.Response.fromStream(streamed);
+    });
+  }
+
   Uri _uri(String path) => Uri.parse('${ApiConfig.baseUrl}$path');
 
   Map<String, String> _headers(String? token) {

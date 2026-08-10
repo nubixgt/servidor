@@ -11,7 +11,6 @@ class CrearCursoDTO
         public string $icono,
         public string $titulo,
         public string $descripcion,
-        public string $imagenUrl,
         public array $lecciones,
         public array $quiz
     ) {
@@ -23,7 +22,6 @@ class CrearCursoDTO
             trim($data['icono'] ?? ''),
             trim($data['titulo'] ?? ''),
             trim($data['descripcion'] ?? ''),
-            trim($data['imagen_url'] ?? ''),
             is_array($data['lecciones'] ?? null) ? $data['lecciones'] : [],
             is_array($data['quiz'] ?? null) ? $data['quiz'] : []
         );
