@@ -14,7 +14,8 @@ import '../shell/main_shell.dart';
 
 /// Pantalla de acceso — conectada al Backend (AuthController/LocationController).
 /// Login: usuario + contraseña. Registro: nombre, usuario, contraseña,
-/// teléfono (para vincular WhatsApp) y departamento -> municipio en cascada.
+/// teléfono (para vincular WhatsApp) y departamento -> municipio en cascada,
+/// con selector tipo buscador (ver [_CampoBuscador]).
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -28,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _tabRegistro = false;
   bool _cargando = false;
-  String? _error;
 
   // Login
   final _loginUsuarioCtrl = TextEditingController();
@@ -49,10 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Municipio? _municipioSeleccionado;
 
   void _cambiarTab(bool registro) {
-    setState(() {
-      _tabRegistro = registro;
-      _error = null;
-    });
+    setState(() => _tabRegistro = registro);
     if (registro) _cargarDepartamentos();
   }
 
@@ -66,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _departamentosCargados = true;
       });
     } on ApiException catch (e) {
-      setState(() => _error = e.message);
+      _alertaError(e.message);
     } finally {
       if (mounted) setState(() => _cargandoDepartamentos = false);
     }
@@ -85,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final municipios = await _catalogoService.listarMunicipios(departamento.id);
       setState(() => _municipios = municipios);
     } on ApiException catch (e) {
-      setState(() => _error = e.message);
+      _alertaError(e.message);
     } finally {
       if (mounted) setState(() => _cargandoMunicipios = false);
     }
@@ -96,14 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final error = _tabRegistro ? _validarRegistro() : _validarLogin();
     if (error != null) {
-      setState(() => _error = error);
+      _alertaError(error);
       return;
     }
 
-    setState(() {
-      _cargando = true;
-      _error = null;
-    });
+    setState(() => _cargando = true);
 
     try {
       if (_tabRegistro) {
@@ -115,22 +109,55 @@ class _LoginScreenState extends State<LoginScreen> {
           departamentoId: _departamentoSeleccionado!.id,
           municipioId: _municipioSeleccionado!.id,
         );
+        // El registro no inicia sesión automáticamente: la persona debe
+        // volver a escribir su usuario y contraseña en Iniciar Sesión.
+        await _authService.cerrarSesion();
+        if (!mounted) return;
+
+        await _alerta(
+          tipo: _TipoAlerta.exito,
+          titulo: '¡Cuenta creada!',
+          mensaje: 'Tu registro se guardó correctamente. Ahora inicia sesión con tu usuario y contraseña.',
+        );
+        if (!mounted) return;
+        _limpiarFormularioRegistro();
+        _cambiarTab(false);
       } else {
         await _authService.iniciarSesion(
           usuario: _loginUsuarioCtrl.text.trim(),
           password: _loginPasswordCtrl.text,
         );
-      }
+        if (!mounted) return;
 
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainShell()),
-      );
+        await _alerta(
+          tipo: _TipoAlerta.exito,
+          titulo: '¡Bienvenido!',
+          mensaje: 'Inicio de sesión correcto.',
+          autoCerrar: const Duration(milliseconds: 900),
+        );
+        if (!mounted) return;
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainShell()),
+        );
+      }
     } on ApiException catch (e) {
-      setState(() => _error = e.message);
+      _alertaError(e.message);
     } finally {
       if (mounted) setState(() => _cargando = false);
     }
+  }
+
+  void _limpiarFormularioRegistro() {
+    _regNombreCtrl.clear();
+    _regUsuarioCtrl.clear();
+    _regPasswordCtrl.clear();
+    _regTelefonoCtrl.clear();
+    setState(() {
+      _departamentoSeleccionado = null;
+      _municipioSeleccionado = null;
+      _municipios = [];
+    });
   }
 
   String? _validarLogin() {
@@ -160,6 +187,31 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Selecciona tu municipio.';
     }
     return null;
+  }
+
+  void _alertaError(String mensaje) {
+    _alerta(tipo: _TipoAlerta.error, titulo: 'Ocurrió un problema', mensaje: mensaje);
+  }
+
+  Future<void> _alerta({
+    required _TipoAlerta tipo,
+    required String titulo,
+    required String mensaje,
+    Duration? autoCerrar,
+  }) async {
+    final future = showDialog<void>(
+      context: context,
+      barrierDismissible: autoCerrar == null,
+      builder: (_) => _DialogoAlerta(tipo: tipo, titulo: titulo, mensaje: mensaje),
+    );
+
+    if (autoCerrar != null) {
+      Future.delayed(autoCerrar, () {
+        if (mounted) Navigator.of(context).pop();
+      });
+    }
+
+    await future;
   }
 
   @override
@@ -211,20 +263,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       _Tabs(registro: _tabRegistro, onChange: _cambiarTab),
                       const SizedBox(height: 20),
                       if (!_tabRegistro) ..._camposLogin() else ..._camposRegistro(),
-                      if (_error != null) ...[
-                        const SizedBox(height: 4),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: AppColors.rojo.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.rojo.withValues(alpha: 0.3)),
-                          ),
-                          child: Text(_error!, style: AppTextStyles.cuerpo(size: 12, color: AppColors.rojo)),
-                        ),
-                      ],
                       const SizedBox(height: 8),
                       PrimaryButton(
                         label: _cargando
@@ -278,25 +316,27 @@ class _LoginScreenState extends State<LoginScreen> {
         tipoTeclado: TextInputType.phone,
         inputFormatters: [_TelefonoFormatter()],
       ),
-      _CampoDropdown<Departamento>(
+      _CampoBuscador<Departamento>(
         label: 'Departamento',
         hint: _cargandoDepartamentos ? 'Cargando...' : 'Selecciona tu departamento',
-        valor: _departamentoSeleccionado,
+        tituloBuscador: 'Elige tu departamento',
+        valorTexto: _departamentoSeleccionado?.nombre,
         opciones: _departamentos,
         etiquetaDe: (d) => d.nombre,
-        onChanged: _cargandoDepartamentos ? null : _seleccionarDepartamento,
+        habilitado: !_cargandoDepartamentos,
+        onSeleccionado: _seleccionarDepartamento,
       ),
-      _CampoDropdown<Municipio>(
+      _CampoBuscador<Municipio>(
         label: 'Municipio',
         hint: _departamentoSeleccionado == null
             ? 'Primero elige un departamento'
             : (_cargandoMunicipios ? 'Cargando...' : 'Selecciona tu municipio'),
-        valor: _municipioSeleccionado,
+        tituloBuscador: 'Elige tu municipio',
+        valorTexto: _municipioSeleccionado?.nombre,
         opciones: _municipios,
         etiquetaDe: (m) => m.nombre,
-        onChanged: (_departamentoSeleccionado == null || _cargandoMunicipios)
-            ? null
-            : (m) => setState(() => _municipioSeleccionado = m),
+        habilitado: _departamentoSeleccionado != null && !_cargandoMunicipios,
+        onSeleccionado: (m) => setState(() => _municipioSeleccionado = m),
       ),
     ];
   }
@@ -435,23 +475,39 @@ class _CampoTextoState extends State<_CampoTexto> {
   }
 }
 
-class _CampoDropdown<T> extends StatelessWidget {
-  const _CampoDropdown({
+/// Campo de solo lectura que, al tocarlo, abre un buscador (bottom sheet)
+/// en vez de desplegar una lista larga completa en pantalla.
+class _CampoBuscador<T> extends StatelessWidget {
+  const _CampoBuscador({
     required this.label,
     required this.hint,
-    required this.valor,
+    required this.tituloBuscador,
+    required this.valorTexto,
     required this.opciones,
     required this.etiquetaDe,
-    required this.onChanged,
+    required this.onSeleccionado,
+    required this.habilitado,
     super.key,
   });
 
   final String label;
   final String hint;
-  final T? valor;
+  final String tituloBuscador;
+  final String? valorTexto;
   final List<T> opciones;
   final String Function(T) etiquetaDe;
-  final ValueChanged<T?>? onChanged;
+  final ValueChanged<T> onSeleccionado;
+  final bool habilitado;
+
+  Future<void> _abrir(BuildContext context) async {
+    final seleccion = await showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _HojaBuscador<T>(titulo: tituloBuscador, opciones: opciones, etiquetaDe: etiquetaDe),
+    );
+    if (seleccion != null) onSeleccionado(seleccion);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -460,43 +516,219 @@ class _CampoDropdown<T> extends StatelessWidget {
       children: [
         Text(label.toUpperCase(), style: AppTextStyles.etiqueta()),
         const SizedBox(height: 6),
-        DropdownButtonFormField<T>(
-          initialValue: valor,
-          isExpanded: true,
-          dropdownColor: AppColors.fondoBase,
-          icon: Icon(Icons.expand_more, color: Colors.white.withValues(alpha: 0.5)),
-          style: AppTextStyles.cuerpo(size: 14, color: Colors.white),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: AppTextStyles.cuerpo(size: 13, color: Colors.white.withValues(alpha: 0.4)),
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.07),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.verde, width: 1.5),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+        Opacity(
+          opacity: habilitado ? 1 : 0.5,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: habilitado ? () => _abrir(context) : null,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.search, size: 18, color: Colors.white.withValues(alpha: 0.45)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      valorTexto ?? hint,
+                      overflow: TextOverflow.ellipsis,
+                      style: valorTexto != null
+                          ? AppTextStyles.cuerpo(size: 14, color: Colors.white)
+                          : AppTextStyles.cuerpo(size: 13, color: Colors.white.withValues(alpha: 0.4)),
+                    ),
+                  ),
+                  Icon(Icons.expand_more, size: 20, color: Colors.white.withValues(alpha: 0.5)),
+                ],
+              ),
             ),
           ),
-          items: [
-            for (final opcion in opciones)
-              DropdownMenuItem(value: opcion, child: Text(etiquetaDe(opcion), overflow: TextOverflow.ellipsis)),
-          ],
-          onChanged: onChanged,
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+}
+
+/// Hoja inferior con buscador: escribe y filtra en vivo, toca una fila
+/// para seleccionarla.
+class _HojaBuscador<T> extends StatefulWidget {
+  const _HojaBuscador({required this.titulo, required this.opciones, required this.etiquetaDe, super.key});
+
+  final String titulo;
+  final List<T> opciones;
+  final String Function(T) etiquetaDe;
+
+  @override
+  State<_HojaBuscador<T>> createState() => _HojaBuscadorState<T>();
+}
+
+class _HojaBuscadorState<T> extends State<_HojaBuscador<T>> {
+  final _buscarCtrl = TextEditingController();
+  late List<T> _filtrados = widget.opciones;
+
+  void _filtrar(String texto) {
+    final q = texto.trim().toLowerCase();
+    setState(() {
+      _filtrados = q.isEmpty
+          ? widget.opciones
+          : widget.opciones.where((o) => widget.etiquetaDe(o).toLowerCase().contains(q)).toList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _buscarCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final alturaMax = MediaQuery.of(context).size.height * 0.75;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: alturaMax),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: Container(
+            color: AppColors.fondoBase,
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.titulo, style: AppTextStyles.subtitulo(size: 16)),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: _buscarCtrl,
+                          autofocus: true,
+                          onChanged: _filtrar,
+                          style: AppTextStyles.cuerpo(size: 14, color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Escribe para buscar...',
+                            hintStyle: AppTextStyles.cuerpo(size: 13, color: Colors.white.withValues(alpha: 0.4)),
+                            prefixIcon: Icon(Icons.search, size: 20, color: Colors.white.withValues(alpha: 0.5)),
+                            filled: true,
+                            fillColor: Colors.white.withValues(alpha: 0.07),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: AppColors.verde, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    child: _filtrados.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Text(
+                              'No se encontraron resultados.',
+                              style: AppTextStyles.cuerpo(size: 13),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(bottom: 12),
+                            itemCount: _filtrados.length,
+                            itemBuilder: (context, i) {
+                              final opcion = _filtrados[i];
+                              return ListTile(
+                                title: Text(
+                                  widget.etiquetaDe(opcion),
+                                  style: AppTextStyles.cuerpo(size: 14, color: Colors.white),
+                                ),
+                                onTap: () => Navigator.of(context).pop(opcion),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _TipoAlerta { exito, error }
+
+/// Diálogo estilo "sweetalert" con la estética glass/verde de CONADEA
+/// (Flutter no tiene SweetAlert; este widget cumple el mismo rol).
+class _DialogoAlerta extends StatelessWidget {
+  const _DialogoAlerta({required this.tipo, required this.titulo, required this.mensaje});
+
+  final _TipoAlerta tipo;
+  final String titulo;
+  final String mensaje;
+
+  @override
+  Widget build(BuildContext context) {
+    final esExito = tipo == _TipoAlerta.exito;
+    final color = esExito ? AppColors.verde : AppColors.rojo;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+      child: GlassCard(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color.withValues(alpha: 0.15),
+                border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+              ),
+              child: Icon(
+                esExito ? Icons.check_rounded : Icons.close_rounded,
+                color: color,
+                size: 34,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(titulo, textAlign: TextAlign.center, style: AppTextStyles.subtitulo(size: 17)),
+            const SizedBox(height: 8),
+            Text(mensaje, textAlign: TextAlign.center, style: AppTextStyles.cuerpo(size: 13)),
+            const SizedBox(height: 20),
+            PrimaryButton(label: 'Entendido', onPressed: () => Navigator.of(context).pop()),
+          ],
+        ),
+      ),
     );
   }
 }
