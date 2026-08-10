@@ -28,38 +28,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 4. TEMPORARY diagnostics — remove after fixing routing on this host.
-// Usage: GET /?__debug=1 (through the rewritten Backend/ URL)
-if (isset($_GET['__debug'])) {
-    $routerPath = __DIR__ . '/../../src/Core/Router.php';
-    $routerSrc = file_get_contents($routerPath);
-    preg_match('/\$scriptDir\s*=\s*dirname\([^\n]*/', $routerSrc, $m);
-
-    $uri = strtok($_SERVER['REQUEST_URI'], '?');
-    $scriptName = $_SERVER['SCRIPT_NAME'];
-
-    echo json_encode([
-        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
-        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
-        'uri_sin_query' => $uri,
-        'scriptDir_formula_vieja_dirname_x1' => dirname($scriptName),
-        'scriptDir_formula_nueva_dirname_x2' => dirname(dirname($scriptName)),
-        'router_deployado_linea_scriptDir' => $m[0] ?? 'NO ENCONTRADA EN EL ARCHIVO',
-        'router_php_mtime' => date('Y-m-d H:i:s', filemtime($routerPath)),
-        'router_php_md5' => md5($routerSrc),
-    ]);
-    exit;
-}
-
-// 5. Initialize Router
+// 4. Initialize Router
 $router = new Router();
 
-// 6. Register Controllers manually
+// 5. Register Controllers manually
 $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(LocationController::class);
 // $router->registerController(YourController::class);
 
 
-// 7. Dispatch
+// 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

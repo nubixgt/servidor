@@ -25,11 +25,11 @@ class Router
 
         // Strip the base path if we are running in a subdirectory.
         // The entry point is always at <base>/api/v1/index.php (contract in
-        // Backend/README.md), so going up two directories from SCRIPT_NAME
-        // yields <base> regardless of how deep the deployment is nested
-        // (e.g. domain root, /Backend, or /CONADEA/Backend via the root .htaccess).
+        // Backend/README.md) — that's 3 path segments (api, v1, index.php) to
+        // remove from SCRIPT_NAME to get back to <base>, regardless of how
+        // deep the deployment is nested (domain root, /Backend, /CONADEA/Backend...).
         $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /CONADEA/Backend/api/v1/index.php
-        $scriptDir = dirname(dirname($scriptName)); // e.g., /CONADEA/Backend
+        $scriptDir = dirname(dirname(dirname($scriptName))); // e.g., /CONADEA/Backend
 
         // Normalize slashes
         $scriptDir = str_replace('\\', '/', $scriptDir);
