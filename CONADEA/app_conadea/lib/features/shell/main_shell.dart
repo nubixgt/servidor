@@ -3,6 +3,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
 import '../../core/widgets/app_bottom_nav.dart';
+import '../../core/widgets/app_dialog.dart';
 import '../../data/models/usuario_sesion.dart';
 import '../../data/services/auth_service.dart';
 import '../admin/crear_curso_screen.dart';
@@ -177,6 +178,15 @@ class _AppDrawerState extends State<_AppDrawer> {
                 title: Text('Cerrar sesión', style: AppTextStyles.cuerpo(size: 13.5, color: AppColors.rojo)),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 onTap: () async {
+                  final confirmar = await mostrarConfirmacion(
+                    context,
+                    titulo: '¿Cerrar sesión?',
+                    mensaje: '¿Seguro que quieres salir de tu cuenta?',
+                    textoConfirmar: 'Sí, salir',
+                    textoCancelar: 'No',
+                  );
+                  if (!confirmar) return;
+
                   await _authService.cerrarSesion();
                   if (!context.mounted) return;
                   Navigator.of(context).pushAndRemoveUntil(
