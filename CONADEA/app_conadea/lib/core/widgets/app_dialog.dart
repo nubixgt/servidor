@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -22,13 +24,19 @@ Future<void> mostrarAlerta(
     builder: (_) => _AppAlertDialog(tipo: tipo, titulo: titulo, mensaje: mensaje),
   );
 
+  // Si el usuario toca "Entendido" antes de que se cumpla [autoCerrar], hay
+  // que cancelar este timer — si no, dispara un pop() de más ya sin diálogo
+  // en pantalla, cerrando lo que sea que haya quedado arriba (ej. la
+  // pantalla a la que se acaba de navegar) y rompe el Navigator.
+  Timer? timer;
   if (autoCerrar != null) {
-    Future.delayed(autoCerrar, () {
+    timer = Timer(autoCerrar, () {
       if (context.mounted) Navigator.of(context).pop();
     });
   }
 
   await future;
+  timer?.cancel();
 }
 
 class _AppAlertDialog extends StatelessWidget {
