@@ -15,41 +15,19 @@ class ProgresoCurso {
 /// Frontend/src/stores/app.js, pero en memoria (sin backend ni persistencia
 /// todavía). Fuente única de verdad para el avance en Inicio, Cursos,
 /// Catálogo, Detalle, Perfil, Certificados y Rutas.
+///
+/// Importante: no siembra progreso de ejemplo. Los cursos reales del
+/// Backend usan ids autoincrementales que pueden coincidir con los ids de
+/// los cursos mock (Rutas/Insignias siguen en mock por ahora) — si aquí se
+/// "sembrara" progreso falso para el id 1, un curso real que también caiga
+/// en el id 1 heredaría ese avance falso. Cada curso empieza en 0%.
 class ProgresoController extends ChangeNotifier {
   ProgresoController._();
-  static final ProgresoController instance = ProgresoController._().._sembrarEjemplo();
+  static final ProgresoController instance = ProgresoController._();
 
   final Map<int, ProgresoCurso> _progreso = {};
 
   ProgresoCurso progresoDe(int cursoId) => _progreso.putIfAbsent(cursoId, () => ProgresoCurso());
-
-  /// Datos de ejemplo iniciales (mismos cursos que mostraba la app antes de
-  /// tener progreso dinámico), para que Inicio se vea igual al abrir la app.
-  void _sembrarEjemplo() {
-    _marcarLecciones(1, 3); // Uso de WhatsApp AgroIA ~45%
-    _marcarLecciones(2, 2); // Diagnóstico básico de cultivos ~30%
-    _marcarLecciones(3, 4); // Manejo integrado de plagas ~60%
-    _marcarLecciones(6, 1); // Manejo de agua y adaptación climática ~20%
-    _aprobarSemilla(5, 3); // Ganadería sostenible: completo y aprobado
-    _aprobarSemilla(10, 3); // Formulación de proyectos: completo y aprobado
-  }
-
-  void _marcarLecciones(int cursoId, int cantidad) {
-    final p = progresoDe(cursoId);
-    for (var i = 0; i < cantidad; i++) {
-      p.leccionesCompletadas.add(i);
-    }
-  }
-
-  void _aprobarSemilla(int cursoId, int totalLecciones) {
-    final p = progresoDe(cursoId);
-    for (var i = 0; i < totalLecciones; i++) {
-      p.leccionesCompletadas.add(i);
-    }
-    p.aprobado = true;
-    p.nota = 3;
-    p.fecha = '3 de junio de 2026';
-  }
 
   /// Porcentaje de avance de un curso (lecciones + evaluación final).
   int pctCurso(Curso curso) {

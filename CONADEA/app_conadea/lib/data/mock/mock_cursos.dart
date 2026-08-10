@@ -1,8 +1,10 @@
-/// Catálogo completo de cursos — portado 1:1 desde MODULOS en
-/// Frontend/src/data/local.js (mismo contenido real del programa CONADEA).
+/// Catálogo de ejemplo — portado 1:1 desde MODULOS en Frontend/src/data/local.js.
 ///
-/// NOTA: igual que en el Frontend web, este archivo es TEMPORAL y sirve
-/// solo para el desarrollo sin Backend.
+/// Los cursos reales ya salen del Backend (ver data/services/curso_service.dart
+/// y Backend/src/Controllers/CursoController.php) en Mis cursos, Inicio,
+/// Perfil y Catálogo. Este archivo solo sigue vivo porque Rutas/Insignias
+/// todavía no tienen su propio Backend y `rutas` (en mock_data.dart) arma
+/// sus grupos de cursos a partir de este catálogo de ejemplo.
 library;
 
 import '../models/curso.dart';

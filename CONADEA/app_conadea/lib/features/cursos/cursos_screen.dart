@@ -5,13 +5,15 @@ import '../../core/widgets/curso_row.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/top_header.dart';
-import '../../data/mock/mock_data.dart';
+import '../../data/models/curso.dart';
+import '../../data/services/api_exception.dart';
+import '../../data/services/curso_service.dart';
 import '../../data/state/progreso_controller.dart';
+import 'abrir_curso.dart';
 import 'catalogo_screen.dart';
-import 'detalle_curso_screen.dart';
 
 /// Pantalla "Mis cursos" — equivalente a MisCursos.vue, con el toggle
-/// En progreso / Completados de la imagen de referencia.
+/// En progreso / Completados. Cursos reales (Backend/src/Controllers/CursoController.php).
 class CursosScreen extends StatefulWidget {
   const CursosScreen({super.key});
 
@@ -20,7 +22,32 @@ class CursosScreen extends StatefulWidget {
 }
 
 class _CursosScreenState extends State<CursosScreen> {
+  final _cursoService = CursoService();
   bool _completados = false;
+  bool _cargando = true;
+  String? _error;
+  List<Curso> _cursos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarCursos();
+  }
+
+  Future<void> _cargarCursos() async {
+    setState(() {
+      _cargando = true;
+      _error = null;
+    });
+    try {
+      final cursos = await _cursoService.listarCursos();
+      setState(() => _cursos = cursos);
+    } on ApiException catch (e) {
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _cargando = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +56,7 @@ class _CursosScreenState extends State<CursosScreen> {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
-        final lista = cursos
+        final lista = _cursos
             .where((c) => _completados ? controller.aprobado(c.id) : controller.enProgreso(c))
             .toList();
 
@@ -43,7 +70,23 @@ class _CursosScreenState extends State<CursosScreen> {
               onChange: (v) => setState(() => _completados = v),
             ),
             const SizedBox(height: 16),
-            if (lista.isEmpty)
+            if (_cargando)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Center(child: CircularProgressIndicator(color: AppColors.verde)),
+              )
+            else if (_error != null)
+              GlassCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_error!, style: AppTextStyles.cuerpo(size: 13, color: AppColors.rojo)),
+                    const SizedBox(height: 12),
+                    PrimaryButton(label: 'Reintentar', expand: false, onPressed: _cargarCursos),
+                  ],
+                ),
+              )
+            else if (lista.isEmpty)
               GlassCard(
                 child: Text(
                   _completados
@@ -61,9 +104,7 @@ class _CursosScreenState extends State<CursosScreen> {
                         curso: c,
                         pct: controller.pctCurso(c),
                         completado: controller.aprobado(c.id),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: c)),
-                        ),
+                        onTap: () => abrirDetalleCurso(context, _cursoService, c.id),
                       ),
                   ],
                 ),

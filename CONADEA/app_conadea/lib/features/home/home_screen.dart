@@ -8,11 +8,15 @@ import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/ruta_card.dart';
 import '../../core/widgets/section_header.dart';
 import '../../data/mock/mock_data.dart';
+import '../../data/models/curso.dart';
 import '../../data/models/insignia.dart';
+import '../../data/services/curso_service.dart';
 import '../../data/state/progreso_controller.dart';
-import '../cursos/detalle_curso_screen.dart';
+import '../cursos/abrir_curso.dart';
 
-class HomeScreen extends StatelessWidget {
+/// Rutas/Insignias/Novedades/resumen siguen en mock (sin Backend todavía);
+/// "Continuar aprendiendo" ya usa cursos reales (Backend/src/Controllers/CursoController.php).
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     this.onVerCursos,
@@ -23,6 +27,22 @@ class HomeScreen extends StatelessWidget {
   final VoidCallback? onVerCursos;
   final VoidCallback? onVerRutas;
   final VoidCallback? onVerInsignias;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _cursoService = CursoService();
+  List<Curso> _cursos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cursoService.listarCursos().then((cursos) {
+      if (mounted) setState(() => _cursos = cursos);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +57,7 @@ class HomeScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
-        final cursosEnProgreso = cursos.where(controller.enProgreso).take(3).toList();
+        final cursosEnProgreso = _cursos.where(controller.enProgreso).take(3).toList();
 
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 110),
@@ -50,33 +70,39 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _NovedadesCard(),
             const SizedBox(height: 24),
-            SectionHeader(title: 'Continuar aprendiendo', actionLabel: 'Ver todos', onAction: onVerCursos),
-            GlassCard(
-              child: Column(
-                children: [
-                  for (final c in cursosEnProgreso)
-                    CursoRow(
-                      curso: c,
-                      pct: controller.pctCurso(c),
-                      completado: controller.aprobado(c.id),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: c)),
+            SectionHeader(title: 'Continuar aprendiendo', actionLabel: 'Ver todos', onAction: widget.onVerCursos),
+            if (cursosEnProgreso.isEmpty)
+              GlassCard(
+                child: Text(
+                  'Todavía no has iniciado ningún curso.',
+                  style: AppTextStyles.cuerpo(size: 13),
+                ),
+              )
+            else
+              GlassCard(
+                child: Column(
+                  children: [
+                    for (final c in cursosEnProgreso)
+                      CursoRow(
+                        curso: c,
+                        pct: controller.pctCurso(c),
+                        completado: controller.aprobado(c.id),
+                        onTap: () => abrirDetalleCurso(context, _cursoService, c.id),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 24),
-            SectionHeader(title: 'Rutas de aprendizaje', actionLabel: 'Ver todas', onAction: onVerRutas),
+            SectionHeader(title: 'Rutas de aprendizaje', actionLabel: 'Ver todas', onAction: widget.onVerRutas),
             for (final ruta in rutasPreview)
               RutaCard(
                 ruta: ruta,
                 pct: controller.pctRuta(ruta),
                 imagenUrl: ruta.cursos.first.imagenUrl,
-                onTap: onVerRutas,
+                onTap: widget.onVerRutas,
               ),
             const SizedBox(height: 10),
-            SectionHeader(title: 'Insignias recientes', actionLabel: 'Ver todas', onAction: onVerInsignias),
+            SectionHeader(title: 'Insignias recientes', actionLabel: 'Ver todas', onAction: widget.onVerInsignias),
             GlassCard(
               child: Column(
                 children: [

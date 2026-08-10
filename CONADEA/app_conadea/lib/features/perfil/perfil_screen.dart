@@ -6,12 +6,32 @@ import '../../core/widgets/back_header.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/progress_track.dart';
 import '../../data/mock/mock_data.dart';
+import '../../data/models/curso.dart';
+import '../../data/services/curso_service.dart';
 import '../../data/state/progreso_controller.dart';
-import '../cursos/detalle_curso_screen.dart';
+import '../cursos/abrir_curso.dart';
 
-/// Mi perfil y avance — equivalente a Perfil.vue.
-class PerfilScreen extends StatelessWidget {
+/// Mi perfil y avance — equivalente a Perfil.vue. `resumenUsuario` (nombre,
+/// racha) sigue en mock; el avance por curso ya usa cursos reales
+/// (Backend/src/Controllers/CursoController.php).
+class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
+
+  @override
+  State<PerfilScreen> createState() => _PerfilScreenState();
+}
+
+class _PerfilScreenState extends State<PerfilScreen> {
+  final _cursoService = CursoService();
+  List<Curso> _cursos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cursoService.listarCursos().then((cursos) {
+      if (mounted) setState(() => _cursos = cursos);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +44,10 @@ class PerfilScreen extends StatelessWidget {
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) {
-              final leccionesHechas = controller.leccionesHechas(cursos);
-              final totalLecciones = controller.totalLecciones(cursos);
-              final certificados = controller.cursosCompletados(cursos);
-              final pctGlobal = controller.pctGlobal(cursos);
+              final leccionesHechas = controller.leccionesHechas(_cursos);
+              final totalLecciones = controller.totalLecciones(_cursos);
+              final certificados = controller.cursosCompletados(_cursos);
+              final pctGlobal = controller.pctGlobal(_cursos);
 
               return ListView(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
@@ -96,13 +116,11 @@ class PerfilScreen extends StatelessWidget {
                       children: [
                         Text('Avance por curso', style: AppTextStyles.subtitulo(size: 15)),
                         const SizedBox(height: 10),
-                        for (final m in cursos)
+                        for (final m in _cursos)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             child: InkWell(
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => DetalleCursoScreen(curso: m)),
-                              ),
+                              onTap: () => abrirDetalleCurso(context, _cursoService, m.id),
                               child: Row(
                                 children: [
                                   Text(m.icono, style: const TextStyle(fontSize: 20)),
