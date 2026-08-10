@@ -23,9 +23,13 @@ class Router
         // Simple URI matching for now (ignores query params in matching logic)
         $uri = strtok($uri, '?');
 
-        // Strip the base path if we are running in a subdirectory
-        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /project/api/v1/index.php
-        $scriptDir = dirname($scriptName);     // e.g., /project/api/v1
+        // Strip the base path if we are running in a subdirectory.
+        // The entry point is always at <base>/api/v1/index.php (contract in
+        // Backend/README.md), so going up two directories from SCRIPT_NAME
+        // yields <base> regardless of how deep the deployment is nested
+        // (e.g. domain root, /Backend, or /CONADEA/Backend via the root .htaccess).
+        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /CONADEA/Backend/api/v1/index.php
+        $scriptDir = dirname(dirname($scriptName)); // e.g., /CONADEA/Backend
 
         // Normalize slashes
         $scriptDir = str_replace('\\', '/', $scriptDir);

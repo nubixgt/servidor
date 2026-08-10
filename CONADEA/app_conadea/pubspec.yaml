@@ -38,6 +38,12 @@ dependencies:
   # Tipografías Inter / Outfit (mismas del Frontend web)
   google_fonts: ^6.2.1
 
+  # Llamadas HTTP al Backend PHP (login, registro, catálogos)
+  http: ^1.2.2
+
+  # Guardar el token JWT de forma segura en el dispositivo
+  flutter_secure_storage: ^9.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
