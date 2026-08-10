@@ -63,7 +63,7 @@ class CertificadosScreen extends StatelessWidget {
                                         Text(c.titulo, style: AppTextStyles.subtitulo(size: 13)),
                                         const SizedBox(height: 3),
                                         Text(
-                                          'Aprobado con ${controller.progresoDe(c.id).nota}/3 · ${controller.progresoDe(c.id).fecha}',
+                                          'Aprobado con ${controller.progresoDe(c.id).nota}/${c.quiz.length} · ${controller.progresoDe(c.id).fecha}',
                                           style: AppTextStyles.cuerpo(size: 11),
                                         ),
                                       ],
@@ -74,6 +74,7 @@ class CertificadosScreen extends StatelessWidget {
                                       context,
                                       curso: c,
                                       nota: controller.progresoDe(c.id).nota ?? 0,
+                                      total: c.quiz.length,
                                       fecha: controller.progresoDe(c.id).fecha ?? '',
                                     ),
                                     style: OutlinedButton.styleFrom(

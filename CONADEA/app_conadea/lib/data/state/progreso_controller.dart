@@ -52,10 +52,13 @@ class ProgresoController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void aprobarCurso(int cursoId, int nota) {
+  /// Aprueba si acierta al menos el 60% de las preguntas del quiz — antes
+  /// era un umbral fijo de "2 de 3", que ya no tiene sentido porque el
+  /// Administrador puede crear quizzes con cualquier cantidad de preguntas.
+  void aprobarCurso(int cursoId, int nota, int totalPreguntas) {
     final p = progresoDe(cursoId);
     p.nota = nota;
-    if (nota >= 2 && !p.aprobado) {
+    if (totalPreguntas > 0 && nota / totalPreguntas >= 0.6 && !p.aprobado) {
       p.aprobado = true;
       p.fecha = _hoyLegible();
     }

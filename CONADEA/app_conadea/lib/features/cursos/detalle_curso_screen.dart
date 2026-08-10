@@ -10,9 +10,11 @@ import '../../data/state/progreso_controller.dart';
 import 'certificado_dialog.dart';
 
 /// Detalle de curso — equivalente a DetalleCurso.vue: lecciones expandibles
-/// y evaluación final interactiva (3 preguntas) que desbloquea el certificado.
-/// Recibe el [Curso] ya cargado (de mock_cursos.dart o del Backend real vía
-/// CursoService) — a esta pantalla no le importa de dónde vino.
+/// y evaluación final interactiva (cualquier cantidad de preguntas, definida
+/// por el Administrador al crear el curso) que desbloquea el certificado
+/// al acertar al menos 60%. Recibe el [Curso] ya cargado (de mock_cursos.dart
+/// o del Backend real vía CursoService) — a esta pantalla no le importa de
+/// dónde vino.
 class DetalleCursoScreen extends StatefulWidget {
   const DetalleCursoScreen({super.key, required this.curso});
 
@@ -78,7 +80,7 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
       _notaObtenida = nota;
       _quizCalificado = true;
     });
-    controller.aprobarCurso(curso.id, nota);
+    controller.aprobarCurso(curso.id, nota, curso.quiz.length);
   }
 
   @override
@@ -169,9 +171,11 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
                         const SizedBox(height: 8),
                         Text(
                           prog.aprobado
-                              ? 'Evaluación aprobada con nota ${prog.nota}/3 el ${prog.fecha}.'
+                              ? 'Evaluación aprobada con nota ${prog.nota}/${curso.quiz.length} el ${prog.fecha}.'
                               : todasHechas
-                                  ? 'Responde 3 preguntas. Necesitas al menos 2 correctas para aprobar y obtener tu certificado.'
+                                  ? 'Responde ${curso.quiz.length} pregunta${curso.quiz.length == 1 ? '' : 's'}. '
+                                      'Necesitas al menos ${(curso.quiz.length * 0.6).ceil()} correcta${(curso.quiz.length * 0.6).ceil() == 1 ? '' : 's'} '
+                                      'para aprobar y obtener tu certificado.'
                                   : 'Completa todas las lecciones para habilitar la evaluación.',
                           style: AppTextStyles.cuerpo(size: 12.5),
                         ),
@@ -188,6 +192,7 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
                                   context,
                                   curso: curso,
                                   nota: prog.nota ?? 0,
+                                  total: curso.quiz.length,
                                   fecha: prog.fecha ?? '',
                                 ),
                               ),
@@ -227,10 +232,12 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
                           if (_quizCalificado)
                             _ResultadoQuiz(
                               nota: _notaObtenida,
+                              total: curso.quiz.length,
                               onVerCertificado: () => mostrarCertificado(
                                 context,
                                 curso: curso,
                                 nota: _notaObtenida,
+                                total: curso.quiz.length,
                                 fecha: prog.fecha ?? '',
                               ),
                               onReintentar: _iniciarQuiz,
@@ -375,7 +382,9 @@ class _PreguntaWidget extends StatelessWidget {
           const SizedBox(height: 10),
           for (var oi = 0; oi < pregunta.opciones.length; oi++)
             _OpcionQuiz(
-              letra: 'ABC'[oi],
+              // 'A' + oi: soporta cualquier cantidad de opciones (antes
+              // estaba hardcodeado a 'ABC'[oi], que reventaba desde la 4ª).
+              letra: String.fromCharCode('A'.codeUnitAt(0) + oi),
               texto: pregunta.opciones[oi],
               estado: !calificado
                   ? (seleccion == oi ? _EstadoOpcion.seleccionada : _EstadoOpcion.normal)
@@ -447,20 +456,27 @@ class _OpcionQuiz extends StatelessWidget {
 }
 
 class _ResultadoQuiz extends StatelessWidget {
-  const _ResultadoQuiz({required this.nota, required this.onVerCertificado, required this.onReintentar});
+  const _ResultadoQuiz({
+    required this.nota,
+    required this.total,
+    required this.onVerCertificado,
+    required this.onReintentar,
+  });
 
   final int nota;
+  final int total;
   final VoidCallback onVerCertificado;
   final VoidCallback onReintentar;
 
   @override
   Widget build(BuildContext context) {
-    final aprobado = nota >= 2;
+    final necesarias = (total * 0.6).ceil();
+    final aprobado = total > 0 && nota / total >= 0.6;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         children: [
-          Text('$nota/3', style: AppTextStyles.titulo(size: 44).copyWith(color: AppColors.verde)),
+          Text('$nota/$total', style: AppTextStyles.titulo(size: 44).copyWith(color: AppColors.verde)),
           const SizedBox(height: 4),
           Text(
             aprobado ? '¡Módulo aprobado! 🎉' : 'Aún no apruebas',
@@ -470,7 +486,7 @@ class _ResultadoQuiz extends StatelessWidget {
           Text(
             aprobado
                 ? 'Tu certificado ya está disponible y tu avance quedó registrado.'
-                : 'Repasa las lecciones y vuelve a intentarlo. Necesitas 2 respuestas correctas.',
+                : 'Repasa las lecciones y vuelve a intentarlo. Necesitas $necesarias respuesta${necesarias == 1 ? '' : 's'} correcta${necesarias == 1 ? '' : 's'}.',
             textAlign: TextAlign.center,
             style: AppTextStyles.cuerpo(size: 12.5),
           ),

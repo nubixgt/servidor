@@ -9,6 +9,7 @@ void mostrarCertificado(
   BuildContext context, {
   required Curso curso,
   required int nota,
+  required int total,
   required String fecha,
 }) {
   showDialog(
@@ -74,7 +75,7 @@ void mostrarCertificado(
                   'por haber completado satisfactoriamente el\n'
                   'Módulo ${curso.id}: ${curso.titulo}\n'
                   'del programa de capacitación digital AgroIA,\n'
-                  'con evaluación aprobada ($nota/3) el $fecha.',
+                  'con evaluación aprobada ($nota/$total) el $fecha.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 13, color: Color(0xFF21302A), height: 1.6),
                 ),
