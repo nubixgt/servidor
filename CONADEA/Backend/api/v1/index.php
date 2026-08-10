@@ -31,14 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // 4. TEMPORARY diagnostics — remove after fixing routing on this host.
 // Usage: GET /?__debug=1 (through the rewritten Backend/ URL)
 if (isset($_GET['__debug'])) {
+    $routerPath = __DIR__ . '/../../src/Core/Router.php';
+    $routerSrc = file_get_contents($routerPath);
+    preg_match('/\$scriptDir\s*=\s*dirname\([^\n]*/', $routerSrc, $m);
+
+    $uri = strtok($_SERVER['REQUEST_URI'], '?');
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+
     echo json_encode([
         'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? null,
         'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? null,
-        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? null,
-        'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? null,
-        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? null,
-        'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? null,
-        'ORIG_PATH_INFO' => $_SERVER['ORIG_PATH_INFO'] ?? null,
+        'uri_sin_query' => $uri,
+        'scriptDir_formula_vieja_dirname_x1' => dirname($scriptName),
+        'scriptDir_formula_nueva_dirname_x2' => dirname(dirname($scriptName)),
+        'router_deployado_linea_scriptDir' => $m[0] ?? 'NO ENCONTRADA EN EL ARCHIVO',
+        'router_php_mtime' => date('Y-m-d H:i:s', filemtime($routerPath)),
+        'router_php_md5' => md5($routerSrc),
     ]);
     exit;
 }
