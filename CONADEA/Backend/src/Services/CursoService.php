@@ -98,6 +98,7 @@ class CursoService
                 'titulo' => $c->titulo,
                 'descripcion' => $c->descripcion,
                 'imagen_url' => UrlHelper::toAbsolute($c->imagenPath),
+                'total_lecciones' => $c->totalLecciones,
             ],
             $this->repository->findAll()
         );
@@ -245,6 +246,7 @@ class CursoService
             'titulo' => $curso->titulo,
             'descripcion' => $curso->descripcion,
             'imagen_url' => UrlHelper::toAbsolute($curso->imagenPath),
+            'total_lecciones' => count($curso->lecciones),
             'lecciones' => array_map(
                 fn(Leccion $l) => [
                     'id' => $l->id,

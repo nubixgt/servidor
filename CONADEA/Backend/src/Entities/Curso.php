@@ -14,7 +14,8 @@ class Curso
         public string $descripcion = '',
         public string $imagenPath = '',
         public array $lecciones = [],
-        public array $quiz = []
+        public array $quiz = [],
+        public int $totalLecciones = 0
     ) {
     }
 }

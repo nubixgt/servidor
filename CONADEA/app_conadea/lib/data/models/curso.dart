@@ -60,6 +60,7 @@ class Curso {
     required this.imagenUrl,
     required this.lecciones,
     required this.quiz,
+    this.totalLecciones,
   });
 
   final int id;
@@ -70,6 +71,16 @@ class Curso {
   final List<Leccion> lecciones;
   final List<PreguntaQuiz> quiz;
 
+  /// Cuántas lecciones tiene el curso en total — viene del Backend aparte
+  /// porque GET /cursos (listado) no manda el arreglo completo de
+  /// [lecciones] (para no cargar de más). Usar esto en vez de
+  /// `lecciones.length` para calcular avance/porcentajes, que también debe
+  /// funcionar con cursos que vienen del listado (Inicio, Perfil, Mis
+  /// cursos, Catálogo) y no solo con el curso completo (Detalle).
+  final int? totalLecciones;
+
+  int get numeroLecciones => totalLecciones ?? lecciones.length;
+
   /// GET /cursos (listado) no manda lecciones/quiz, solo los datos
   /// generales; por eso son opcionales aquí y quedan vacíos en ese caso.
   factory Curso.fromJson(Map<String, dynamic> json) {
@@ -79,6 +90,7 @@ class Curso {
       titulo: json['titulo'] as String,
       descripcion: json['descripcion'] as String,
       imagenUrl: json['imagen_url'] as String,
+      totalLecciones: json['total_lecciones'] as int?,
       lecciones: (json['lecciones'] as List<dynamic>? ?? [])
           .map((l) => Leccion.fromJson(l as Map<String, dynamic>))
           .toList(),

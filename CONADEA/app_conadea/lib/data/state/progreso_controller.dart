@@ -50,6 +50,12 @@ class ProgresoController extends ChangeNotifier {
   Future<void> cargarProgreso() async {
     try {
       final remoto = await _service.obtenerTodo();
+      // Limpia lo que haya quedado en memoria (de una sesión anterior con
+      // otro usuario, por ejemplo) antes de poblar con lo del usuario
+      // actual — si no, el progreso de un usuario se le pega al siguiente
+      // que inicie sesión en la misma instalación de la app.
+      _progreso.clear();
+      _segundosVideo.clear();
       for (final l in remoto.lecciones) {
         final p = progresoDe(l.cursoId);
         if (l.completada) p.leccionesCompletadas.add(l.leccionId);
@@ -71,7 +77,7 @@ class ProgresoController extends ChangeNotifier {
   /// Porcentaje de avance de un curso (lecciones + evaluación final).
   int pctCurso(Curso curso) {
     final p = progresoDe(curso.id);
-    final total = curso.lecciones.length + 1;
+    final total = curso.numeroLecciones + 1;
     final hechas = p.leccionesCompletadas.length + (p.aprobado ? 1 : 0);
     return ((hechas / total) * 100).round();
   }
@@ -141,7 +147,7 @@ class ProgresoController extends ChangeNotifier {
   int leccionesHechas(List<Curso> cursos) =>
       cursos.fold(0, (s, c) => s + progresoDe(c.id).leccionesCompletadas.length);
 
-  int totalLecciones(List<Curso> cursos) => cursos.fold(0, (s, c) => s + c.lecciones.length);
+  int totalLecciones(List<Curso> cursos) => cursos.fold(0, (s, c) => s + c.numeroLecciones);
 
   int pctGlobal(List<Curso> cursos) {
     if (cursos.isEmpty) return 0;

@@ -86,10 +86,17 @@ class CursoRepository
         }
     }
 
+    /**
+     * El listado no manda las lecciones completas (para no cargar de más),
+     * pero sí cuántas tiene cada curso — la app lo necesita para calcular
+     * bien el % de avance sin tener que pedir el curso completo.
+     */
     public function findAll(): array
     {
         $stmt = $this->pdo->query(
-            "SELECT id, icono, titulo, descripcion, imagen_path FROM cursos ORDER BY id DESC"
+            "SELECT c.id, c.icono, c.titulo, c.descripcion, c.imagen_path,
+                    (SELECT COUNT(*) FROM lecciones l WHERE l.curso_id = c.id) AS total_lecciones
+             FROM cursos c ORDER BY c.id DESC"
         );
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -99,7 +106,10 @@ class CursoRepository
                 $row['icono'],
                 $row['titulo'],
                 $row['descripcion'],
-                $row['imagen_path']
+                $row['imagen_path'],
+                [],
+                [],
+                (int) $row['total_lecciones']
             ),
             $rows
         );
