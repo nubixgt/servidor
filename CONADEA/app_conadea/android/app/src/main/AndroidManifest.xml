@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Llamadas al Backend (login, cursos, progreso, subir/reproducir video).
+         Sin esto el APK de release no puede hacer ninguna petición de red —
+         solo funcionaba con `flutter run` porque el manifest de debug la
+         trae aparte (android/app/src/debug/AndroidManifest.xml), pero ese
+         no se usa al compilar el APK que se comparte. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Tomar foto para el curso en la pantalla Crear Curso (rol Administrador) -->
     <uses-permission android:name="android.permission.CAMERA" />
 
