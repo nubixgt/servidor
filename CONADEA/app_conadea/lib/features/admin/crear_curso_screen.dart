@@ -61,6 +61,16 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
     if (archivo != null) setState(() => _imagenSeleccionada = archivo);
   }
 
+  /// Video opcional de una lección (estilo Udemy: 1 video por lección). Se
+  /// elige de la galería porque son videos ya grabados, no algo que tenga
+  /// sentido filmar en el momento dentro del formulario.
+  Future<void> _elegirVideoLeccion(_LeccionForm form) async {
+    final archivo = await _picker.pickVideo(source: ImageSource.gallery);
+    if (archivo != null) setState(() => form.video = archivo);
+  }
+
+  void _quitarVideoLeccion(_LeccionForm form) => setState(() => form.video = null);
+
   void _agregarLeccion() => setState(() => _lecciones.add(_LeccionForm()));
 
   void _quitarLeccion(int i) {
@@ -143,6 +153,10 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
           ],
         },
         imagenPath: _imagenSeleccionada!.path,
+        videosLecciones: {
+          for (var i = 0; i < _lecciones.length; i++)
+            if (_lecciones[i].video != null) i: _lecciones[i].video!.path,
+        },
       );
 
       if (!mounted) return;
@@ -215,6 +229,8 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
                   numero: i + 1,
                   form: _lecciones[i],
                   onQuitar: _lecciones.length > 1 ? () => _quitarLeccion(i) : null,
+                  onElegirVideo: () => _elegirVideoLeccion(_lecciones[i]),
+                  onQuitarVideo: () => _quitarVideoLeccion(_lecciones[i]),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -263,6 +279,7 @@ class _CrearCursoScreenState extends State<CrearCursoScreen> {
 class _LeccionForm {
   final tituloCtrl = TextEditingController();
   final contenidoCtrl = TextEditingController();
+  XFile? video;
 
   void dispose() {
     tituloCtrl.dispose();
@@ -292,11 +309,19 @@ class _PreguntaForm {
 }
 
 class _TarjetaLeccion extends StatelessWidget {
-  const _TarjetaLeccion({required this.numero, required this.form, required this.onQuitar});
+  const _TarjetaLeccion({
+    required this.numero,
+    required this.form,
+    required this.onQuitar,
+    required this.onElegirVideo,
+    required this.onQuitarVideo,
+  });
 
   final int numero;
   final _LeccionForm form;
   final VoidCallback? onQuitar;
+  final VoidCallback onElegirVideo;
+  final VoidCallback onQuitarVideo;
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +343,88 @@ class _TarjetaLeccion extends StatelessWidget {
           ),
           _Campo(label: 'Título', hint: 'Ej. Cómo enviar consultas', controller: form.tituloCtrl),
           _Campo(label: 'Contenido', hint: 'Explica el paso a paso...', controller: form.contenidoCtrl, lineas: 4),
+          Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('VIDEO (OPCIONAL)', style: AppTextStyles.etiqueta()),
+                const SizedBox(height: 6),
+                _SelectorVideoLeccion(video: form.video, onElegir: onElegirVideo, onQuitar: onQuitarVideo),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Muestra el nombre del video elegido (o un placeholder) para la lección,
+/// con opción de quitarlo — equivalente a `_SelectorImagen` pero sin
+/// vista previa (los videos no se pre-visualizan aquí, solo se confirma
+/// que se eligió el archivo correcto por su nombre).
+class _SelectorVideoLeccion extends StatelessWidget {
+  const _SelectorVideoLeccion({required this.video, required this.onElegir, required this.onQuitar});
+
+  final XFile? video;
+  final VoidCallback onElegir;
+  final VoidCallback onQuitar;
+
+  @override
+  Widget build(BuildContext context) {
+    if (video == null) {
+      return InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onElegir,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.07),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.video_call_outlined, size: 20, color: Colors.white.withValues(alpha: 0.5)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Toca para elegir un video de la galería',
+                  style: AppTextStyles.cuerpo(size: 12.5, color: Colors.white.withValues(alpha: 0.5)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.verde.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.verde.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_outline, size: 20, color: AppColors.verde),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              video!.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.cuerpo(size: 12.5, color: Colors.white),
+            ),
+          ),
+          IconButton(
+            onPressed: onQuitar,
+            icon: Icon(Icons.close, size: 18, color: Colors.white.withValues(alpha: 0.5)),
+          ),
         ],
       ),
     );

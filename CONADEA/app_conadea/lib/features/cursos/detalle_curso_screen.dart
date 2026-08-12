@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/app_background.dart';
@@ -41,7 +45,7 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
   }
 
   void _marcarLeccion(int i) {
-    controller.completarLeccion(curso.id, i);
+    controller.completarLeccion(curso.id, curso.lecciones[i].id);
     setState(() {
       final siguiente = i + 1;
       if (siguiente < curso.lecciones.length) _leccionesAbiertas.add(siguiente);
@@ -157,8 +161,9 @@ class _DetalleCursoScreenState extends State<DetalleCursoScreen> {
                     _LeccionTile(
                       indice: i,
                       leccion: curso.lecciones[i],
-                      hecha: prog.leccionesCompletadas.contains(i),
+                      hecha: prog.leccionesCompletadas.contains(curso.lecciones[i].id),
                       abierta: _leccionesAbiertas.contains(i),
+                      controller: controller,
                       onToggle: () => _toggleLeccion(i),
                       onMarcar: () => _marcarLeccion(i),
                     ),
@@ -282,6 +287,7 @@ class _LeccionTile extends StatelessWidget {
     required this.leccion,
     required this.hecha,
     required this.abierta,
+    required this.controller,
     required this.onToggle,
     required this.onMarcar,
   });
@@ -290,6 +296,7 @@ class _LeccionTile extends StatelessWidget {
   final Leccion leccion;
   final bool hecha;
   final bool abierta;
+  final ProgresoController controller;
   final VoidCallback onToggle;
   final VoidCallback onMarcar;
 
@@ -340,6 +347,13 @@ class _LeccionTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (leccion.videoUrl != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: _ReproductorLeccion(leccion: leccion, controller: controller),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   Text(leccion.contenido, style: AppTextStyles.cuerpo(size: 13)),
                   const SizedBox(height: 12),
                   if (hecha)
@@ -352,6 +366,131 @@ class _LeccionTile extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Reproduce el video de la lección y retoma en el segundo donde el usuario
+/// se quedó la última vez (guardado en el Backend vía [ProgresoController]).
+/// Mientras reproduce, guarda la posición cada 10s y también al pausar,
+/// salir de la pantalla o mandar la app a segundo plano — así, si cierran
+/// la app a medio video, la próxima vez retoma cerca de donde se quedaron.
+class _ReproductorLeccion extends StatefulWidget {
+  const _ReproductorLeccion({required this.leccion, required this.controller});
+
+  final Leccion leccion;
+  final ProgresoController controller;
+
+  @override
+  State<_ReproductorLeccion> createState() => _ReproductorLeccionState();
+}
+
+class _ReproductorLeccionState extends State<_ReproductorLeccion> with WidgetsBindingObserver {
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
+  Timer? _timerGuardado;
+  bool _cargando = true;
+  bool _error = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _inicializar();
+  }
+
+  Future<void> _inicializar() async {
+    final url = widget.leccion.videoUrl;
+    if (url == null) return;
+
+    final video = VideoPlayerController.networkUrl(Uri.parse(url));
+    try {
+      await video.initialize();
+
+      final inicio = widget.controller.segundosDe(widget.leccion.id);
+      if (inicio > 0 && inicio < video.value.duration.inSeconds) {
+        await video.seekTo(Duration(seconds: inicio));
+      }
+
+      if (!mounted) {
+        await video.dispose();
+        return;
+      }
+
+      setState(() {
+        _videoController = video;
+        _chewieController = ChewieController(
+          videoPlayerController: video,
+          autoPlay: false,
+          looping: false,
+          materialProgressColors: ChewieProgressColors(
+            playedColor: AppColors.verde,
+            handleColor: AppColors.verde,
+          ),
+        );
+        _cargando = false;
+      });
+
+      _timerGuardado = Timer.periodic(const Duration(seconds: 10), (_) => _guardarPosicion());
+    } catch (_) {
+      if (mounted) setState(() => _error = true);
+    } finally {
+      if (mounted && _cargando) setState(() => _cargando = false);
+    }
+  }
+
+  void _guardarPosicion() {
+    final video = _videoController;
+    if (video == null || !video.value.isInitialized) return;
+    widget.controller.guardarSegundos(widget.leccion.id, video.value.position.inSeconds);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _guardarPosicion();
+    }
+  }
+
+  @override
+  void dispose() {
+    _guardarPosicion();
+    _timerGuardado?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _chewieController?.dispose();
+    _videoController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_error) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: AppColors.vidrio2,
+          alignment: Alignment.center,
+          child: Text('No se pudo cargar el video.', style: AppTextStyles.cuerpo(size: 12.5)),
+        ),
+      );
+    }
+
+    final chewie = _chewieController;
+    final video = _videoController;
+    if (_cargando || chewie == null || video == null) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Container(
+          color: AppColors.vidrio2,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(color: AppColors.verde),
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: video.value.aspectRatio,
+      child: Chewie(controller: chewie),
     );
   }
 }

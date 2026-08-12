@@ -47,6 +47,13 @@ dependencies:
   # Elegir foto de galería o tomarla con la cámara (Crear Curso)
   image_picker: ^1.1.2
 
+  # Reproducir el video de cada lección (Detalle de curso)
+  video_player: ^2.9.5
+
+  # Controles listos (play/pausa, barra de progreso, pantalla completa)
+  # sobre video_player, para no construir la UI del reproductor a mano
+  chewie: ^1.11.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

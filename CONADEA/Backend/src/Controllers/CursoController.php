@@ -10,7 +10,9 @@ use App\Services\CursoService;
 class CursoController extends Controller
 {
     // multipart/form-data: campo "data" con el JSON del curso + campo
-    // "imagen" con el archivo (así viaja todo en una sola petición).
+    // "imagen" con el archivo + un campo "leccion_video_N" por cada lección
+    // (N = su posición en el array "lecciones" de "data") que tenga video
+    // adjunto — el video es opcional, así que no todas las lecciones lo traen.
     #[Route('/cursos', 'POST')]
     #[Authorize(['Administrador'])]
     public function crear()
@@ -19,8 +21,16 @@ class CursoController extends Controller
         $dto = CrearCursoDTO::fromRequest($data);
         $service = new CursoService();
 
+        $archivosVideo = [];
+        foreach ($_FILES as $campo => $archivo) {
+            if (preg_match('/^leccion_video_(\d+)$/', $campo, $matches)
+                && ($archivo['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                $archivosVideo[(int) $matches[1]] = $archivo;
+            }
+        }
+
         try {
-            $curso = $service->crear($dto, $_FILES['imagen'] ?? null);
+            $curso = $service->crear($dto, $_FILES['imagen'] ?? null, $archivosVideo);
             $this->json(['status' => 'success', 'message' => 'Curso creado correctamente', 'data' => $curso], 201);
         } catch (\Exception $e) {
             $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);

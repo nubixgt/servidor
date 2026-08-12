@@ -17,7 +17,10 @@ class CursoRepository
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    public function create(Curso $curso): int
+    /**
+     * @return array{0: int, 1: array<int, int>} [cursoId, [índice original en $curso->lecciones => leccionId]]
+     */
+    public function create(Curso $curso): array
     {
         $this->pdo->beginTransaction();
 
@@ -38,13 +41,15 @@ class CursoRepository
                 "INSERT INTO lecciones (curso_id, orden, titulo, contenido)
                  VALUES (:curso_id, :orden, :titulo, :contenido)"
             );
-            foreach ($curso->lecciones as $leccion) {
+            $leccionIds = [];
+            foreach ($curso->lecciones as $i => $leccion) {
                 $stmtLeccion->execute([
                     'curso_id' => $cursoId,
                     'orden' => $leccion->orden,
                     'titulo' => $leccion->titulo,
                     'contenido' => $leccion->contenido,
                 ]);
+                $leccionIds[$i] = (int) $this->pdo->lastInsertId();
             }
 
             $stmtPregunta = $this->pdo->prepare(
@@ -74,7 +79,7 @@ class CursoRepository
             }
 
             $this->pdo->commit();
-            return $cursoId;
+            return [$cursoId, $leccionIds];
         } catch (\Exception $e) {
             $this->pdo->rollBack();
             throw $e;
@@ -131,6 +136,12 @@ class CursoRepository
         $stmt->execute(['imagen_path' => $imagenPath, 'id' => $id]);
     }
 
+    public function actualizarVideoLeccion(int $leccionId, string $videoPath): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE lecciones SET video_path = :video_path WHERE id = :id");
+        $stmt->execute(['video_path' => $videoPath, 'id' => $leccionId]);
+    }
+
     public function eliminar(int $id): void
     {
         $stmt = $this->pdo->prepare("DELETE FROM cursos WHERE id = :id");
@@ -140,7 +151,7 @@ class CursoRepository
     private function findLeccionesByCurso(int $cursoId): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT id, curso_id, orden, titulo, contenido
+            "SELECT id, curso_id, orden, titulo, contenido, video_path
              FROM lecciones WHERE curso_id = :curso_id ORDER BY orden ASC"
         );
         $stmt->execute(['curso_id' => $cursoId]);
@@ -152,7 +163,8 @@ class CursoRepository
                 (int) $row['curso_id'],
                 (int) $row['orden'],
                 $row['titulo'],
-                $row['contenido']
+                $row['contenido'],
+                $row['video_path']
             ),
             $rows
         );

@@ -1,13 +1,23 @@
 /// Lección de un curso — equivalente a los objetos de `lecciones` en MODULOS
-/// (Frontend/src/data/local.js).
+/// (Frontend/src/data/local.js). [id] es 0 en los cursos de ejemplo
+/// (mock_cursos.dart, que no vienen del Backend); los cursos reales siempre
+/// traen su id real, que es la clave que usa ProgresoController para
+/// guardar avance/segundos de video contra el Backend.
 class Leccion {
-  const Leccion({required this.titulo, required this.contenido});
+  const Leccion({this.id = 0, required this.titulo, required this.contenido, this.videoUrl});
 
+  final int id;
   final String titulo;
   final String contenido;
+  final String? videoUrl;
 
   factory Leccion.fromJson(Map<String, dynamic> json) {
-    return Leccion(titulo: json['titulo'] as String, contenido: json['contenido'] as String);
+    return Leccion(
+      id: json['id'] as int? ?? 0,
+      titulo: json['titulo'] as String,
+      contenido: json['contenido'] as String,
+      videoUrl: json['video_url'] as String?,
+    );
   }
 }
 

@@ -6,6 +6,7 @@ import '../../core/widgets/app_bottom_nav.dart';
 import '../../core/widgets/app_dialog.dart';
 import '../../data/models/usuario_sesion.dart';
 import '../../data/services/auth_service.dart';
+import '../../data/state/progreso_controller.dart';
 import '../admin/crear_curso_screen.dart';
 import '../asistente/asistente_screen.dart';
 import '../auth/login_screen.dart';
@@ -32,6 +33,15 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ya hay sesión activa para llegar hasta aquí: se trae el progreso real
+    // del usuario (antes vivía solo en memoria y no sobrevivía a cerrar la
+    // app) para poblar Inicio/Cursos/Rutas/Insignias/Perfil/Certificados.
+    ProgresoController.instance.cargarProgreso();
+  }
 
   static const _items = [
     NavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Inicio'),

@@ -8,7 +8,8 @@ class Leccion
         public int $cursoId = 0,
         public int $orden = 0,
         public string $titulo = '',
-        public string $contenido = ''
+        public string $contenido = '',
+        public ?string $videoPath = null
     ) {
     }
 }

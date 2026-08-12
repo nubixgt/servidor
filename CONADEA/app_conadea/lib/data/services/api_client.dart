@@ -20,25 +20,36 @@ class ApiClient {
     );
   }
 
+  Future<Map<String, dynamic>> put(String path, Map<String, dynamic> body, {String? token}) {
+    return _send(
+      () => http.put(_uri(path), headers: _headers(token), body: jsonEncode(body)),
+    );
+  }
+
   /// POST multipart/form-data: los campos van como texto (usa [jsonEncode]
-  /// tú mismo si alguno es una estructura anidada) y [filePath] es la ruta
-  /// local del archivo a subir bajo el nombre de campo [fileField].
+  /// tú mismo si alguno es una estructura anidada) y [files] son los
+  /// archivos a subir, nombre de campo -> ruta local (puede ir más de uno,
+  /// ej. la imagen del curso + un video por lección).
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, String> fields,
-    required String fileField,
-    required String filePath,
+    required Map<String, String> files,
     String? token,
   }) {
+    // Timeout largo: puede ir la imagen del curso + varios videos de
+    // lección, que juntos pesan mucho más de lo que el timeout corto de
+    // las llamadas normales (15s) alcanzaría a subir.
     return _send(() async {
       final request = http.MultipartRequest('POST', _uri(path));
       if (token != null) request.headers['Authorization'] = 'Bearer $token';
       request.fields.addAll(fields);
-      request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+      for (final entry in files.entries) {
+        request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value));
+      }
 
       final streamed = await request.send();
       return http.Response.fromStream(streamed);
-    });
+    }, timeout: const Duration(minutes: 10));
   }
 
   Uri _uri(String path) => Uri.parse('${ApiConfig.baseUrl}$path');
@@ -50,11 +61,14 @@ class ApiClient {
     };
   }
 
-  Future<Map<String, dynamic>> _send(Future<http.Response> Function() request) async {
+  Future<Map<String, dynamic>> _send(
+    Future<http.Response> Function() request, {
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
     late final http.Response response;
 
     try {
-      response = await request().timeout(const Duration(seconds: 15));
+      response = await request().timeout(timeout);
     } on SocketException {
       throw const ApiException('No se pudo conectar al servidor. Revisa tu conexión a internet.');
     } catch (_) {

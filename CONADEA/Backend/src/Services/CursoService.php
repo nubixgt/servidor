@@ -18,6 +18,12 @@ class CursoService
         'image/webp' => 'webp',
     ];
 
+    private const VIDEO_TAMANO_MAXIMO_BYTES = 300 * 1024 * 1024; // 300 MB
+    private const VIDEO_EXTENSIONES_PERMITIDAS = [
+        'video/mp4' => 'mp4',
+        'video/quicktime' => 'mov',
+    ];
+
     private $repository;
 
     public function __construct()
@@ -27,11 +33,17 @@ class CursoService
 
     /**
      * @param array|null $archivoImagen Entrada cruda de $_FILES['imagen']
+     * @param array<int, array> $archivosVideo Entradas crudas de $_FILES['leccion_video_N'],
+     *        indexadas por la posición de la lección en $dto->lecciones. El video es opcional
+     *        por lección, así que este array puede traer solo algunos índices (o ninguno).
      */
-    public function crear(CrearCursoDTO $dto, ?array $archivoImagen): array
+    public function crear(CrearCursoDTO $dto, ?array $archivoImagen, array $archivosVideo = []): array
     {
         $this->validar($dto);
         $this->validarImagen($archivoImagen);
+        foreach ($archivosVideo as $archivo) {
+            $this->validarVideo($archivo);
+        }
 
         $lecciones = [];
         foreach (array_values($dto->lecciones) as $i => $leccion) {
@@ -53,17 +65,25 @@ class CursoService
             $quiz[] = new PreguntaQuiz(null, 0, $i, trim($pregunta['pregunta'] ?? ''), $opciones);
         }
 
-        // La imagen se guarda después de insertar porque el nombre de la
-        // carpeta depende del id autoincremental del curso.
+        // La imagen (y los videos de lección) se guardan después de insertar
+        // porque el nombre de la carpeta depende del id autoincremental.
         $curso = new Curso(null, $dto->icono, $dto->titulo, $dto->descripcion, '', $lecciones, $quiz);
-        $id = $this->repository->create($curso);
+        [$id, $leccionIds] = $this->repository->create($curso);
 
         try {
             $imagenPath = $this->guardarImagen($id, $archivoImagen);
             $this->repository->actualizarImagen($id, $imagenPath);
+
+            foreach ($archivosVideo as $i => $archivo) {
+                if (!isset($leccionIds[$i])) {
+                    continue;
+                }
+                $videoPath = $this->guardarVideoLeccion($id, $leccionIds[$i], $archivo);
+                $this->repository->actualizarVideoLeccion($leccionIds[$i], $videoPath);
+            }
         } catch (\Exception $e) {
             $this->repository->eliminar($id);
-            throw new \Exception('No se pudo guardar la imagen del curso. Intenta de nuevo.');
+            throw new \Exception('No se pudo guardar la imagen o el video del curso. Intenta de nuevo.');
         }
 
         return $this->toArray($this->repository->findById($id));
@@ -180,6 +200,43 @@ class CursoService
         return "uploads/cursos/{$cursoId}/imagen.{$extension}";
     }
 
+    private function validarVideo(array $archivo): void
+    {
+        if ($archivo['error'] !== UPLOAD_ERR_OK) {
+            throw new \Exception('Ocurrió un problema al subir un video de lección. Intenta de nuevo.');
+        }
+        if ($archivo['size'] > self::VIDEO_TAMANO_MAXIMO_BYTES) {
+            throw new \Exception('Cada video de lección no puede pesar más de 300 MB.');
+        }
+    }
+
+    /**
+     * No se puede validar un video con getimagesize; se confía en el MIME
+     * que reporta PHP a partir del contenido real del archivo (fileinfo),
+     * no en la extensión que mande el cliente. Se guarda en
+     * Backend/uploads/cursos/{cursoId}/lecciones/{orden}/video.<ext>.
+     */
+    private function guardarVideoLeccion(int $cursoId, int $leccionId, array $archivo): string
+    {
+        $mime = @mime_content_type($archivo['tmp_name']);
+        $extension = self::VIDEO_EXTENSIONES_PERMITIDAS[$mime] ?? null;
+        if ($extension === null) {
+            throw new \Exception('Formato de video no soportado. Usa MP4 o MOV.');
+        }
+
+        $directorio = __DIR__ . '/../../uploads/cursos/' . $cursoId . '/lecciones/' . $leccionId;
+        if (!is_dir($directorio) && !mkdir($directorio, 0755, true) && !is_dir($directorio)) {
+            throw new \Exception('No se pudo crear la carpeta de subida del video.');
+        }
+
+        $rutaAbsoluta = $directorio . '/video.' . $extension;
+        if (!move_uploaded_file($archivo['tmp_name'], $rutaAbsoluta)) {
+            throw new \Exception('No se pudo guardar el archivo de video.');
+        }
+
+        return "uploads/cursos/{$cursoId}/lecciones/{$leccionId}/video.{$extension}";
+    }
+
     private function toArray(Curso $curso): array
     {
         return [
@@ -189,7 +246,12 @@ class CursoService
             'descripcion' => $curso->descripcion,
             'imagen_url' => UrlHelper::toAbsolute($curso->imagenPath),
             'lecciones' => array_map(
-                fn(Leccion $l) => ['titulo' => $l->titulo, 'contenido' => $l->contenido],
+                fn(Leccion $l) => [
+                    'id' => $l->id,
+                    'titulo' => $l->titulo,
+                    'contenido' => $l->contenido,
+                    'video_url' => $l->videoPath !== null ? UrlHelper::toAbsolute($l->videoPath) : null,
+                ],
                 $curso->lecciones
             ),
             'quiz' => array_map(

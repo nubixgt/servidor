@@ -15,18 +15,28 @@ class CursoService {
   final ApiClient _api;
   final AuthService _authService;
 
-  /// [datos] es todo lo del formulario menos la imagen (icono, título,
+  /// [datos] es todo lo del formulario menos los archivos (icono, título,
   /// descripción, lecciones, quiz); [imagenPath] es la ruta local del
-  /// archivo elegido con la cámara o la galería. Viaja todo en una sola
-  /// petición multipart: el Backend guarda la imagen en
-  /// Backend/uploads/cursos/{id}/ una vez que sabe el id del curso.
-  Future<void> crearCurso({required Map<String, dynamic> datos, required String imagenPath}) async {
+  /// archivo elegido con la cámara o la galería, y [videosLecciones] trae
+  /// (opcionalmente) la ruta local del video de cada lección, indexada por
+  /// su posición en `datos['lecciones']` — el video es opcional por
+  /// lección, así que no todos los índices tienen que estar presentes.
+  /// Viaja todo en una sola petición multipart: el Backend guarda la
+  /// imagen y los videos en Backend/uploads/cursos/{id}/... una vez que
+  /// sabe el id del curso (y de cada lección).
+  Future<void> crearCurso({
+    required Map<String, dynamic> datos,
+    required String imagenPath,
+    Map<int, String> videosLecciones = const {},
+  }) async {
     final token = await _authService.obtenerToken();
     await _api.postMultipart(
       '/cursos',
       fields: {'data': jsonEncode(datos)},
-      fileField: 'imagen',
-      filePath: imagenPath,
+      files: {
+        'imagen': imagenPath,
+        for (final entry in videosLecciones.entries) 'leccion_video_${entry.key}': entry.value,
+      },
       token: token,
     );
   }
