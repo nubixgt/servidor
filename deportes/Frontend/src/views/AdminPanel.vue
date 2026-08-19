@@ -104,18 +104,9 @@
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               <div v-for="jugador in equipoSeleccionado.jugadores_activos" :key="jugador.id" @click="verDetalle(jugador)" class="relative w-48 h-72 mx-auto rounded-lg shadow-2xl overflow-hidden text-[#3b2800] font-serif transform transition-transform hover:scale-105 cursor-pointer group" style="background: linear-gradient(135deg, #e6c875 0%, #b28a38 100%); border: 1px solid #ffe9a6;">
                 <!-- Top section -->
-                <div class="flex justify-between items-start pt-3 px-3">
-                  <div class="flex flex-col items-center leading-none">
-                    <span class="text-[10px] uppercase font-bold mt-1">{{ jugador.posicion || 'JUG' }}</span>
-                    <div class="mt-2 w-6 h-6 flex items-center justify-center overflow-hidden">
-                       <img v-if="equipoSeleccionado?.foto_ruta" :src="IMAGE_BASE_URL + equipoSeleccionado.foto_ruta" class="w-full h-full object-contain">
-                    </div>
-                  </div>
-                  <!-- Photo -->
-                  <div class="w-32 h-32 absolute top-4 right-0 flex justify-center items-end" style="mask-image: linear-gradient(to bottom, black 70%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);">
-                     <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-full h-full object-cover object-top filter contrast-125">
-                     <div v-else class="w-full h-full bg-black/20 flex items-center justify-center"><svg class="w-12 h-12 text-[#3b2800]/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
-                  </div>
+                <div class="w-full h-40 absolute top-0 left-0 flex justify-center items-end" style="mask-image: linear-gradient(to bottom, black 75%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);">
+                   <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-full h-full object-cover object-top filter contrast-125">
+                   <div v-else class="w-full h-full bg-black/20 flex items-center justify-center"><svg class="w-12 h-12 text-[#3b2800]/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
                 </div>
                 
                 <!-- Info section -->
