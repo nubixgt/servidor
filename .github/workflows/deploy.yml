@@ -53,6 +53,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (keyline)
+        run: |
+          cd keyline/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
