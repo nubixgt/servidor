@@ -2,6 +2,7 @@
 deployment:
   tasks:
     - export DEPORTES_PATH=/home/visionwe/m.nubix.gt/deportes/
+    - /bin/mkdir -p $DEPORTES_PATH
     - /bin/cp -R deportes/Backend $DEPORTES_PATH
     - /bin/cp -R deportes/Database $DEPORTES_PATH
     - /bin/cp -R deportes/Frontend/dist/* $DEPORTES_PATH
