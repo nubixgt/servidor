@@ -82,6 +82,18 @@
                 <div class="flex flex-wrap gap-1.5">
                     <span v-for="v in g.variables" :key="v" class="text-[10px] bg-white/10 border border-white/15 text-white/80 px-2.5 py-1 rounded-lg font-medium">{{ v }}</span>
                 </div>
+
+                <div class="mt-4 pt-3 border-t border-white/10">
+                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider flex items-center gap-1 mb-1.5">
+                        <ChartNoAxesCombined class="w-3 h-3" />
+                        <span>Datos reales registrados</span>
+                    </span>
+                    <ul v-if="loadingParcelas" class="text-[11px] text-white/50">Cargando…</ul>
+                    <ul v-else-if="groupStats[g.id]?.length" class="space-y-1">
+                        <li v-for="(s, i) in groupStats[g.id]" :key="i" class="text-[11px] text-white/80">{{ s }}</li>
+                    </ul>
+                    <p v-else class="text-[11px] text-white/50">Aún no hay parcelas con este dato registrado.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -89,7 +101,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Mountain, Droplets, CloudRain, AlertOctagon, Sprout, Compass, LayoutGrid, ListChecks, BookOpen, Search } from '@lucide/vue';
+import parcelaService from '../../services/parcelaService';
+import { Mountain, Droplets, CloudRain, AlertOctagon, Sprout, Compass, LayoutGrid, ListChecks, BookOpen, Search, ChartNoAxesCombined } from '@lucide/vue';
 
 const GRUPOS = [
     { id: 'soil', label: 'Suelo', icon: Mountain, color: 'text-[#facc15]', variables: ['Profundidad de suelo', 'Tipo / textura', 'Estructura', 'Compactación', 'Materia orgánica', 'Infiltración', 'Riesgo de erosión', 'Color', 'pH', 'Humedad'] },
@@ -101,9 +114,104 @@ const GRUPOS = [
 ];
 
 const searchTerm = ref('');
+const parcelas = ref([]);
+const loadingParcelas = ref(true);
 
 const totalVariables = computed(() => GRUPOS.reduce((sum, g) => sum + g.variables.length, 0));
 const grupoMasGrande = computed(() => GRUPOS.reduce((max, g) => (g.variables.length > max.variables.length ? g : max), GRUPOS[0]));
+
+function fmtNum(n) {
+    return Number(n || 0).toLocaleString('es-GT', { maximumFractionDigits: 1 });
+}
+
+function toNum(v) {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+}
+
+function avgOf(field) {
+    const vals = parcelas.value.map((p) => toNum(p[field])).filter((n) => n !== null);
+    return vals.length ? { avg: vals.reduce((a, b) => a + b, 0) / vals.length, n: vals.length } : null;
+}
+
+function modeOf(field) {
+    const counts = {};
+    parcelas.value.forEach((p) => {
+        const v = (p[field] || '').toString().trim();
+        if (v) counts[v] = (counts[v] || 0) + 1;
+    });
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    return entries.length ? { value: entries[0][0], count: entries[0][1] } : null;
+}
+
+function countWhere(field, value) {
+    return parcelas.value.filter((p) => (p[field] || '').toString().trim() === value).length;
+}
+
+function topBioindicadores() {
+    const counts = {};
+    parcelas.value.forEach((p) => {
+        (p.bioindicadores || '').split(/[,;/]+/).map((s) => s.trim()).filter(Boolean).forEach((b) => {
+            counts[b] = (counts[b] || 0) + 1;
+        });
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([nombre, conteo]) => ({ nombre, conteo }));
+}
+
+const groupStats = computed(() => {
+    const total = parcelas.value.length;
+    const prof = avgOf('profundidadSuelo');
+    const riesgo = modeOf('riesgoErosion');
+    const tipoSuelo = modeOf('tipoSuelo');
+    const nivelAgua = modeOf('agua');
+    const fuenteAgua = modeOf('fuenteAgua');
+    const conEncharca = countWhere('encharca', 'Sí');
+    const evalEncharca = conEncharca + countWhere('encharca', 'No');
+    const lluvia = avgOf('lluviaAnual');
+    const fuenteLluvia = modeOf('lluviaFuente');
+    const conTalpetate = countWhere('talpetate', 'Sí');
+    const evalTalpetate = conTalpetate + countWhere('talpetate', 'No');
+    const conBio = parcelas.value.filter((p) => (p.bioindicadores || '').trim()).length;
+    const pendiente = avgOf('pendiente');
+    const altitud = avgOf('altitud');
+
+    return {
+        soil: [
+            prof && `Profundidad promedio: ${prof.avg.toFixed(1)} cm (${prof.n} parcelas)`,
+            riesgo && `Riesgo de erosión más común: ${riesgo.value} (${riesgo.count} parcelas)`,
+            tipoSuelo && `Tipo de suelo más común: ${tipoSuelo.value} (${tipoSuelo.count} parcelas)`,
+        ].filter(Boolean),
+        water: [
+            nivelAgua && `Nivel de agua más común: ${nivelAgua.value} (${nivelAgua.count} parcelas)`,
+            fuenteAgua && `Fuente más común: ${fuenteAgua.value} (${fuenteAgua.count} parcelas)`,
+            evalEncharca > 0 && `Con encharcamiento: ${conEncharca} de ${evalEncharca} evaluadas`,
+        ].filter(Boolean),
+        rainfall: [
+            lluvia && `Lluvia anual promedio: ${fmtNum(lluvia.avg)} mm (${lluvia.n} parcelas)`,
+            fuenteLluvia && `Fuente del dato más común: ${fuenteLluvia.value} (${fuenteLluvia.count} parcelas)`,
+        ].filter(Boolean),
+        talpetate: [
+            evalTalpetate > 0 && `Con talpetate: ${conTalpetate} de ${evalTalpetate} evaluadas`,
+        ].filter(Boolean),
+        bioindicators: [
+            total > 0 && `${conBio} de ${total} parcelas con bioindicadores registrados`,
+            ...topBioindicadores().map((b) => `${b.nombre}: ${b.conteo} parcela(s)`),
+        ].filter(Boolean),
+        topography: [
+            pendiente && `Pendiente promedio: ${pendiente.avg.toFixed(1)}% (${pendiente.n} parcelas)`,
+            altitud && `Altitud promedio: ${fmtNum(altitud.avg)} msnm (${altitud.n} parcelas)`,
+        ].filter(Boolean),
+    };
+});
+
+(async () => {
+    try {
+        const { data } = await parcelaService.listar();
+        parcelas.value = data.parcelas;
+    } finally {
+        loadingParcelas.value = false;
+    }
+})();
 
 const gruposFiltrados = computed(() => {
     const term = searchTerm.value.trim().toLowerCase();
