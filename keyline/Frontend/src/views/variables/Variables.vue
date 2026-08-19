@@ -14,7 +14,7 @@
                     <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#4ade80]"><LayoutGrid class="w-4 h-4" /></div>
                 </div>
                 <div class="mt-3">
-                    <div class="text-3xl font-bold text-white font-mono">{{ GRUPOS.length }}</div>
+                    <div class="text-3xl font-bold text-white">{{ GRUPOS.length }}</div>
                     <p class="text-xs text-white/80 mt-1">Categorías del formulario de registro</p>
                 </div>
             </div>
@@ -25,7 +25,7 @@
                     <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#38bdf8]"><ListChecks class="w-4 h-4" /></div>
                 </div>
                 <div class="mt-3">
-                    <div class="text-3xl font-bold text-white font-mono">{{ totalVariables }}</div>
+                    <div class="text-3xl font-bold text-white">{{ totalVariables }}</div>
                     <p class="text-xs text-white/80 mt-1">Términos de referencia técnica</p>
                 </div>
             </div>

@@ -27,7 +27,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#4ade80]"><Activity class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ conBio.length }}</div>
+                            <div class="text-3xl font-bold text-white">{{ conBio.length }}</div>
                             <p class="text-xs text-[#4ade80] font-semibold mt-1">{{ pct }}% del total de parcelas</p>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#38bdf8]"><Bug class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ resumen.topBioindicadores.length }}</div>
+                            <div class="text-3xl font-bold text-white">{{ resumen.topBioindicadores.length }}</div>
                             <p class="text-xs text-white/80 mt-1">Términos únicos reportados</p>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#facc15]"><Ruler class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ resumen.diagnosticoFisico.profundidadProm.toFixed(1) }} cm</div>
+                            <div class="text-3xl font-bold text-white">{{ resumen.diagnosticoFisico.profundidadProm.toFixed(1) }} cm</div>
                             <p class="text-xs text-white/80 mt-1">{{ resumen.diagnosticoFisico.muestras }} mediciones</p>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#f59e0b]"><CircleAlert class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ parcelas.length - conBio.length }}</div>
+                            <div class="text-3xl font-bold text-white">{{ parcelas.length - conBio.length }}</div>
                             <p class="text-xs text-white/80 mt-1">Parcelas por diagnosticar</p>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                     <div v-for="p in filteredParcelas" :key="p.id" class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200">
                         <div>
                             <div class="flex justify-between items-start mb-2.5">
-                                <span class="text-xs font-mono text-[#38bdf8] bg-[#38bdf8]/15 px-2.5 py-0.5 rounded-lg border border-[#38bdf8]/30">{{ p.codigo }}</span>
+                                <span class="text-xs text-[#38bdf8] bg-[#38bdf8]/15 px-2.5 py-0.5 rounded-lg border border-[#38bdf8]/30">{{ p.codigo }}</span>
                                 <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-[#22c55e]/20 text-[#4ade80] border-[#4ade80]/30">{{ p.estado }}</span>
                             </div>
 

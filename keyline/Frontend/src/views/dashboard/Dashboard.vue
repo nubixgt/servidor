@@ -213,7 +213,7 @@
                                     <tr v-for="r in data.registrosRecientes" :key="r.id" class="hover:bg-white/10 transition-colors">
                                         <td class="py-2.5 pr-2">
                                             <p class="font-semibold text-white text-[11px] truncate">{{ r.nombre }}</p>
-                                            <p class="text-[9px] font-mono text-white/60 truncate">{{ r.codigo }} · {{ r.departamento }}</p>
+                                            <p class="text-[9px] text-white/60 truncate">{{ r.codigo }} · {{ r.departamento }}</p>
                                         </td>
                                         <td class="py-2.5 px-2 text-white/80 text-[11px] truncate">{{ r.tecnico }}</td>
                                         <td class="py-2.5 pl-2">

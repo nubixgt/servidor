@@ -6,7 +6,7 @@
                 <h2 class="text-2xl font-bold text-white tracking-tight">{{ isEditing ? 'Editar parcela' : 'Registrar nueva parcela' }}</h2>
                 <p class="text-xs text-white/80 mt-0.5">
                     Completa los datos técnicos de la parcela keyline. Los campos con * son obligatorios.
-                    <span v-if="parcela?.codigo" class="ml-2 text-xs font-mono bg-[#38bdf8]/15 text-[#38bdf8] px-2 py-0.5 rounded border border-[#38bdf8]/30">{{ parcela.codigo }}</span>
+                    <span v-if="parcela?.codigo" class="ml-2 text-xs bg-[#38bdf8]/15 text-[#38bdf8] px-2 py-0.5 rounded border border-[#38bdf8]/30">{{ parcela.codigo }}</span>
                 </p>
             </div>
             <button @click="cancelar" class="text-xs text-white/80 hover:text-white px-3.5 py-1.5 rounded-xl border border-white/15 hover:bg-white/5 transition-colors flex-shrink-0">
@@ -24,20 +24,12 @@
                     :key="step.key"
                     @click="stepIndex = i"
                     class="p-3 rounded-2xl border transition-all cursor-pointer"
-                    :class="i === stepIndex
-                        ? 'bg-white/10 border-[#4ade80]/60 shadow-[0_0_15px_rgba(74,222,128,0.2)]'
-                        : i < stepIndex
-                        ? 'bg-black/30 border-[#4ade80]/30'
-                        : 'bg-black/20 border-white/10 opacity-60'"
+                    :class="i === stepIndex ? 'bg-white/10 border-[#4ade80]/60 shadow-[0_0_15px_rgba(74,222,128,0.2)]' : i < stepIndex ? 'bg-black/30 border-[#4ade80]/30' : 'bg-black/20 border-white/10 opacity-60'"
                 >
                     <div class="flex items-center gap-2 mb-1">
                         <span
                             class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                            :class="i < stepIndex
-                                ? 'bg-[#22c55e] text-white'
-                                : i === stepIndex
-                                ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]'
-                                : 'bg-white/10 text-white/60'"
+                            :class="i < stepIndex ? 'bg-[#22c55e] text-white' : i === stepIndex ? 'bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]' : 'bg-white/10 text-white/60'"
                         >
                             <Check v-if="i < stepIndex" class="w-3.5 h-3.5" />
                             <template v-else>{{ i + 1 }}</template>
@@ -105,7 +97,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Familias beneficiadas</label>
-                                <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" placeholder="Ej. 4" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" placeholder="Ej. 4" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
@@ -126,19 +118,19 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Latitud</span>
-                                    <input v-model="form.latitud" type="number" step="any" placeholder="15.4700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
+                                    <input v-model="form.latitud" type="number" step="any" placeholder="15.4700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Longitud</span>
-                                    <input v-model="form.longitud" type="number" step="any" placeholder="-90.3700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
+                                    <input v-model="form.longitud" type="number" step="any" placeholder="-90.3700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Altitud (msnm)</span>
-                                    <input v-model="form.altitud" type="number" min="0" step="1" placeholder="650" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
+                                    <input v-model="form.altitud" type="number" min="0" step="1" placeholder="650" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Precisión GPS (m)</span>
-                                    <input v-model="form.gpsPrecision" type="number" min="0" step="1" readonly placeholder="Automático" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white/70 focus:outline-none" />
+                                    <input v-model="form.gpsPrecision" type="number" min="0" step="1" readonly placeholder="Automático" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs text-white/70 focus:outline-none" />
                                 </div>
                             </div>
                         </div>
@@ -146,7 +138,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Área (hectáreas) *</label>
-                                <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required placeholder="12.50" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required placeholder="12.50" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Estado del proceso *</label>
@@ -185,7 +177,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Pendiente estimada (%)</label>
-                                <input v-model.number="form.pendiente" type="number" min="0" step="0.1" placeholder="8.5" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.pendiente" type="number" min="0" step="0.1" placeholder="8.5" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
@@ -228,7 +220,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Profundidad de suelo (cm)</label>
-                                    <input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Presencia de talpetate</label>
@@ -261,7 +253,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Lluvia acumulada anual (mm)</label>
-                                    <input v-model.number="form.lluviaAnual" type="number" min="0" step="1" placeholder="1800" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model.number="form.lluviaAnual" type="number" min="0" step="1" placeholder="1800" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Fuente / año</label>

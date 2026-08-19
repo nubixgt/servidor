@@ -21,21 +21,21 @@
             <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 flex flex-col justify-between">
                 <span class="text-[11px] font-bold tracking-wider text-white/60 uppercase">Total usuarios</span>
                 <div class="mt-2">
-                    <div class="text-3xl font-bold text-white font-mono">{{ usuarios.length }}</div>
+                    <div class="text-3xl font-bold text-white">{{ usuarios.length }}</div>
                     <p class="text-xs text-[#4ade80] font-semibold mt-1">Activos en la plataforma</p>
                 </div>
             </div>
             <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 flex flex-col justify-between">
                 <span class="text-[11px] font-bold tracking-wider text-white/60 uppercase">Técnicos de campo</span>
                 <div class="mt-2">
-                    <div class="text-3xl font-bold text-white font-mono">{{ usuarios.filter(u => u.role === 'tecnico').length }}</div>
+                    <div class="text-3xl font-bold text-white">{{ usuarios.filter(u => u.role === 'tecnico').length }}</div>
                     <p class="text-xs text-white/80 mt-1">Levantamiento de parcelas</p>
                 </div>
             </div>
             <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 flex flex-col justify-between">
                 <span class="text-[11px] font-bold tracking-wider text-white/60 uppercase">Supervisores &amp; admins</span>
                 <div class="mt-2">
-                    <div class="text-3xl font-bold text-white font-mono">{{ usuarios.filter(u => u.role === 'supervisor' || u.role === 'administrador').length }}</div>
+                    <div class="text-3xl font-bold text-white">{{ usuarios.filter(u => u.role === 'supervisor' || u.role === 'administrador').length }}</div>
                     <p class="text-xs text-[#38bdf8] font-semibold mt-1">Validación y control de calidad</p>
                 </div>
             </div>

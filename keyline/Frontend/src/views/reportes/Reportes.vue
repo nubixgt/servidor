@@ -27,7 +27,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#4ade80]"><Layers class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ resumen.totales.parcelas }}</div>
+                            <div class="text-3xl font-bold text-white">{{ resumen.totales.parcelas }}</div>
                             <p class="text-xs text-white/80 mt-1">{{ fmtNum(resumen.totales.areaHa) }} ha acumuladas</p>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#38bdf8]"><MapPin class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ resumen.totales.coberturaPct }}%</div>
+                            <div class="text-3xl font-bold text-white">{{ resumen.totales.coberturaPct }}%</div>
                             <p class="text-xs text-white/80 mt-1">{{ resumen.totales.departamentos }} de {{ resumen.totales.metaDepartamentos }} departamentos</p>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#facc15]"><CheckCircle2 class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ resumen.totales.implementadas }}</div>
+                            <div class="text-3xl font-bold text-white">{{ resumen.totales.implementadas }}</div>
                             <p class="text-xs text-[#4ade80] font-semibold mt-1">{{ resumen.totales.validadas }} parcelas validadas</p>
                         </div>
                     </div>
@@ -60,7 +60,7 @@
                             <div class="w-8 h-8 rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-[#f59e0b]"><FileText class="w-4 h-4" /></div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-3xl font-bold text-white font-mono">{{ pendientes.length }}</div>
+                            <div class="text-3xl font-bold text-white">{{ pendientes.length }}</div>
                             <p class="text-xs text-white/80 mt-1">En cola de supervisión</p>
                         </div>
                     </div>
@@ -73,14 +73,14 @@
                             <h3 class="text-base font-bold text-white tracking-tight">Cola de validación técnica</h3>
                             <p class="text-xs text-white/80 mt-0.5">Parcelas cargadas recientemente que requieren visto bueno de supervisor.</p>
                         </div>
-                        <span class="text-xs px-3 py-1 bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30 rounded-full font-mono whitespace-nowrap">{{ pendientes.length }} pendientes</span>
+                        <span class="text-xs px-3 py-1 bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30 rounded-full whitespace-nowrap">{{ pendientes.length }} pendientes</span>
                     </div>
 
                     <div class="divide-y divide-white/10 mt-2">
                         <div v-for="p in pendientes.slice(0, 8)" :key="p.id" class="py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-white/5 px-2 rounded-xl transition-colors">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs font-mono text-[#38bdf8] bg-black/40 px-2 py-0.5 rounded border border-white/10">{{ p.codigo }}</span>
+                                    <span class="text-xs text-[#38bdf8] bg-black/40 px-2 py-0.5 rounded border border-white/10">{{ p.codigo }}</span>
                                     <h4 class="text-xs font-bold text-white">{{ p.nombreParcela }}</h4>
                                 </div>
                                 <p class="text-xs text-white/80">
@@ -114,7 +114,7 @@
                             <div>
                                 <div class="flex justify-between text-xs text-white/80 mb-1">
                                     <span>Parcelas registradas</span>
-                                    <span class="font-mono text-white font-bold">{{ selectedDeptData.cantidad }}</span>
+                                    <span class="text-white font-bold">{{ selectedDeptData.cantidad }}</span>
                                 </div>
                                 <div class="w-full bg-black/40 h-2.5 rounded-full overflow-hidden border border-white/10">
                                     <div class="bg-[#38bdf8] h-full" :style="{ width: pct(selectedDeptData.cantidad, maxCantidad) + '%' }"></div>
@@ -124,7 +124,7 @@
                             <div>
                                 <div class="flex justify-between text-xs text-white/80 mb-1">
                                     <span>Implementadas</span>
-                                    <span class="font-mono text-[#4ade80] font-bold">{{ selectedDeptData.implementadas }}</span>
+                                    <span class="text-[#4ade80] font-bold">{{ selectedDeptData.implementadas }}</span>
                                 </div>
                                 <div class="w-full bg-black/40 h-2.5 rounded-full overflow-hidden border border-white/10">
                                     <div class="bg-[#22c55e] h-full" :style="{ width: pct(selectedDeptData.implementadas, selectedDeptData.cantidad) + '%' }"></div>
@@ -170,7 +170,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div v-for="ind in indicadores" :key="ind.label" class="bg-black/30 p-3 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">{{ ind.label }}</span>
-                            <span class="text-lg font-bold text-white font-mono">{{ ind.value }}</span>
+                            <span class="text-lg font-bold text-white">{{ ind.value }}</span>
                         </div>
                     </div>
                 </div>

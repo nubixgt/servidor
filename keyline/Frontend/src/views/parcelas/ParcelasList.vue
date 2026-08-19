@@ -80,7 +80,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
                         <div class="absolute top-3 left-3 right-3 flex justify-between items-center gap-2">
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/70 border border-white/20 text-white backdrop-blur-md truncate">{{ p.codigo }}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-black/70 border border-white/20 text-white backdrop-blur-md truncate">{{ p.codigo }}</span>
                             <span class="text-[10px] px-2 py-0.5 rounded-full border font-semibold whitespace-nowrap" :class="ESTADO_BADGE[p.estado]">{{ p.estado }}</span>
                         </div>
 
@@ -151,7 +151,7 @@
                         </div>
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-xs font-mono bg-[#06b6d4]/15 text-[#38bdf8] px-2 py-0.5 rounded border border-[#38bdf8]/30">{{ detail.codigo }}</span>
+                                <span class="text-xs bg-[#06b6d4]/15 text-[#38bdf8] px-2 py-0.5 rounded border border-[#38bdf8]/30">{{ detail.codigo }}</span>
                                 <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold border" :class="VALIDACION_BADGE[detail.estadoValidacion]">{{ detail.estadoValidacion }}</span>
                             </div>
                             <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">{{ detail.nombreParcela }}</h2>
@@ -171,7 +171,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Área total</span>
-                            <span class="text-xl font-bold text-white font-mono">{{ detail.areaHa }} ha</span>
+                            <span class="text-xl font-bold text-white">{{ detail.areaHa }} ha</span>
                         </div>
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Estado del proceso</span>
@@ -179,11 +179,11 @@
                         </div>
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Profundidad de suelo</span>
-                            <span class="text-xl font-bold text-[#4ade80] font-mono">{{ detail.profundidadSuelo || 'N/D' }} cm</span>
+                            <span class="text-xl font-bold text-[#4ade80]">{{ detail.profundidadSuelo || 'N/D' }} cm</span>
                         </div>
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Coordenadas GPS</span>
-                            <span class="text-xs font-bold text-[#38bdf8] font-mono">{{ detail.latitud !== '' && detail.latitud !== null ? `${detail.latitud}, ${detail.longitud}` : 'No registrado' }}</span>
+                            <span class="text-xs font-bold text-[#38bdf8]">{{ detail.latitud !== '' && detail.latitud !== null ? `${detail.latitud}, ${detail.longitud}` : 'No registrado' }}</span>
                         </div>
                     </div>
 
@@ -197,8 +197,8 @@
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between"><span class="text-white/60">Uso actual del suelo:</span><span class="text-white font-medium">{{ detail.usoActual || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Tipo de suelo:</span><span class="text-white font-medium">{{ detail.tipoSuelo || 'N/D' }}</span></div>
-                                <div class="flex justify-between"><span class="text-white/60">Disponibilidad de agua:</span><span class="text-white font-mono">{{ detail.agua || 'N/D' }}</span></div>
-                                <div class="flex justify-between"><span class="text-white/60">Lluvia anual:</span><span class="text-white font-mono">{{ detail.lluviaAnual !== '' && detail.lluviaAnual !== null ? detail.lluviaAnual + ' mm' : 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Disponibilidad de agua:</span><span class="text-white">{{ detail.agua || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Lluvia anual:</span><span class="text-white">{{ detail.lluviaAnual !== '' && detail.lluviaAnual !== null ? detail.lluviaAnual + ' mm' : 'N/D' }}</span></div>
                             </div>
                         </div>
 
@@ -211,7 +211,7 @@
                                 <div class="flex justify-between"><span class="text-white/60">Presencia de talpetate:</span><span class="text-white font-medium">{{ detail.talpetate || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Encharcamiento:</span><span class="text-[#38bdf8] font-medium">{{ detail.encharca || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Riesgo de erosión:</span><span class="text-[#fca5a5] font-medium">{{ detail.riesgoErosion || 'N/D' }}</span></div>
-                                <div class="flex justify-between"><span class="text-white/60">Pendiente:</span><span class="text-white font-mono">{{ detail.pendiente !== '' && detail.pendiente !== null ? detail.pendiente + '%' : 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Pendiente:</span><span class="text-white">{{ detail.pendiente !== '' && detail.pendiente !== null ? detail.pendiente + '%' : 'N/D' }}</span></div>
                             </div>
                         </div>
                     </div>
