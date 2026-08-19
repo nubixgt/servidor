@@ -151,7 +151,7 @@
                 <div class="flex flex-col gap-y-1 text-[9px] font-bold px-1">
                   <div class="flex justify-between"><span>DPI</span><span class="font-mono">{{ jugador.dpi }}</span></div>
                   <div class="flex justify-between"><span>TELÉFONO</span><span>{{ jugador.telefono }}</span></div>
-                  <div class="flex justify-between"><span>POSICIÓN</span><span>{{ jugador.posicion || 'N/A' }}</span></div>
+                  <div class="flex justify-between"><span>POSICIÓN</span><span>{{ getNombrePosicion(jugador.posicion) }}</span></div>
                 </div>
                 <div class="flex justify-center gap-2 mt-2 pt-2 border-t border-[#3b2800]/30 mx-1">
                    <button @click="abrirModalEdit(jugador)" class="p-1.5 hover:text-white bg-black/10 hover:bg-black/40 rounded transition-colors" title="Editar"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
@@ -286,6 +286,16 @@ const activeTab = ref('jugadores')
 const showModalBaja = ref(false)
 const jugadorSeleccionado = ref(null)
 const razonBaja = ref('')
+
+const getNombrePosicion = (pos) => {
+  const posiciones = {
+    'POR': 'PORTERO',
+    'DEF': 'DEFENSA',
+    'MED': 'MEDIOCAMPISTA',
+    'DEL': 'DELANTERO'
+  }
+  return posiciones[pos] || pos || 'N/A'
+}
 
 // Edit Player State
 const showModalEdit = ref(false)
