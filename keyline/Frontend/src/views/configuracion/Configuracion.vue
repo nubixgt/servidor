@@ -60,11 +60,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="text-white/80 block mb-1 font-medium">Contraseña actual</label>
-                                <input v-model="actual" type="password" required placeholder="••••••••" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white focus:outline-none focus:border-[#22c55e]/60" />
+                                <input v-model="actual" type="password" required placeholder="••••••••" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white focus:outline-none focus:border-white/50" />
                             </div>
                             <div>
                                 <label class="text-white/80 block mb-1 font-medium">Nueva contraseña</label>
-                                <input v-model="nueva" type="password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white focus:outline-none focus:border-[#22c55e]/60" />
+                                <input v-model="nueva" type="password" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-white focus:outline-none focus:border-white/50" />
                             </div>
                         </div>
 

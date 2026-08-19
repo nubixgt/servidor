@@ -48,7 +48,7 @@
                 <input
                     v-model="searchTerm"
                     placeholder="Buscar por nombre, usuario o correo..."
-                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#22c55e]/60 transition-all placeholder:text-white/40"
+                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-white/50 transition-all placeholder:text-white/40"
                 />
             </div>
             <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
@@ -117,41 +117,41 @@
         </div>
 
         <!-- Add/Edit modal -->
-        <div v-if="modalUser !== null" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn" @click.self="modalUser = null">
+        <div v-if="showModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn" @click.self="showModal = false">
             <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] max-w-md w-full p-6 shadow-2xl space-y-4">
                 <div class="flex justify-between items-center pb-2 border-b border-white/15">
                     <h3 class="text-base font-bold text-white">{{ editing ? 'Editar usuario' : 'Nuevo miembro del equipo' }}</h3>
-                    <button @click="modalUser = null" class="text-white/60 hover:text-white"><X class="w-5 h-5" /></button>
+                    <button @click="showModal = false" class="text-white/60 hover:text-white"><X class="w-5 h-5" /></button>
                 </div>
 
                 <div class="space-y-3">
                     <div>
                         <label class="text-xs text-white/80 block mb-1">Nombre completo</label>
-                        <input v-model="form.nombre" placeholder="ej. Carlos Morales" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60" />
+                        <input v-model="form.nombre" placeholder="ej. Carlos Morales" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50" />
                     </div>
                     <div>
                         <label class="text-xs text-white/80 block mb-1">Usuario</label>
-                        <input v-model="form.usuario" :disabled="editing" placeholder="nombre.usuario" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60 disabled:opacity-50" />
+                        <input v-model="form.usuario" :disabled="editing" placeholder="nombre.usuario" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50 disabled:opacity-50" />
                     </div>
                     <div>
                         <label class="text-xs text-white/80 block mb-1">Correo institucional (opcional)</label>
-                        <input v-model="form.email" type="email" placeholder="c.morales@keylinegt.com" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60" />
+                        <input v-model="form.email" type="email" placeholder="c.morales@keylinegt.com" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50" />
                     </div>
                     <div>
                         <label class="text-xs text-white/80 block mb-1">{{ editing ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</label>
-                        <input v-model="form.password" type="password" :placeholder="editing ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres'" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60" />
+                        <input v-model="form.password" type="password" :placeholder="editing ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres'" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50" />
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-xs text-white/80 block mb-1">Rol asignado</label>
-                            <select v-model="form.role" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60">
+                            <select v-model="form.role" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
                                 <option v-for="r in ROLES" :key="r" :value="r">{{ ROLE_LABELS[r] }}</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-xs text-white/80 block mb-1">Departamento / región</label>
-                            <select v-model="form.regionAsignada" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60">
+                            <select v-model="form.regionAsignada" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
                                 <option value="">Sin asignar / nacional</option>
                                 <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
                             </select>
@@ -160,7 +160,14 @@
 
                     <div>
                         <label class="text-xs text-white/80 block mb-1">Teléfono móvil</label>
-                        <input v-model="form.telefono" placeholder="+502 " class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60" />
+                        <input
+                            :value="form.telefono"
+                            @input="onPhoneInput"
+                            inputmode="numeric"
+                            maxlength="9"
+                            placeholder="0000-0000"
+                            class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50"
+                        />
                     </div>
 
                     <label v-if="editing" class="flex items-center gap-2 text-xs text-white/80 cursor-pointer select-none">
@@ -170,7 +177,7 @@
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-white/15">
-                    <button @click="modalUser = null" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-xs text-white/80 rounded-xl">Cancelar</button>
+                    <button @click="showModal = false" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-xs text-white/80 rounded-xl">Cancelar</button>
                     <button @click="save" :disabled="saving" class="px-4 py-2 bg-[#22c55e] hover:bg-[#16a34a] text-xs font-bold text-black rounded-xl shadow-lg disabled:opacity-60">
                         {{ editing ? 'Guardar cambios' : 'Crear usuario' }}
                     </button>
@@ -197,9 +204,10 @@ const ROLE_BADGE = {
 const auth = useAuthStore();
 const usuarios = ref([]);
 const loading = ref(true);
-const modalUser = ref(null);
+const showModal = ref(false);
+const editingUser = ref(null);
 const saving = ref(false);
-const editing = computed(() => !!modalUser.value);
+const editing = computed(() => !!editingUser.value);
 
 const searchTerm = ref('');
 const roleFilter = ref('');
@@ -233,7 +241,8 @@ async function load() {
 load();
 
 function openModal(user = null) {
-    modalUser.value = user || {};
+    showModal.value = true;
+    editingUser.value = user;
     form.nombre = user?.nombre || '';
     form.usuario = user?.usuario || '';
     form.email = user?.email || '';
@@ -244,22 +253,28 @@ function openModal(user = null) {
     form.activo = user?.activo !== false;
 }
 
+function onPhoneInput(e) {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+    form.telefono = digits.length > 4 ? `${digits.slice(0, 4)}-${digits.slice(4)}` : digits;
+    e.target.value = form.telefono;
+}
+
 async function save() {
     if (!form.nombre || (!editing.value && (!form.usuario || !form.password))) {
         alertError('Nombre, usuario y contraseña son obligatorios.');
         return;
     }
     saving.value = true;
-    const wasEditing = editing.value && !!modalUser.value.id;
+    const wasEditing = editing.value;
     try {
         const payload = { ...form };
         if (!payload.password) delete payload.password;
         if (wasEditing) {
-            await usuarioService.actualizar(modalUser.value.id, payload);
+            await usuarioService.actualizar(editingUser.value.id, payload);
         } else {
             await usuarioService.crear(payload);
         }
-        modalUser.value = null;
+        showModal.value = false;
         toastSuccess(wasEditing ? 'Usuario actualizado.' : 'Usuario creado correctamente.');
         await load();
     } catch (err) {

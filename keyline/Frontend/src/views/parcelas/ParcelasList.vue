@@ -20,7 +20,7 @@
                     v-model="filters.q"
                     @input="debouncedLoad"
                     placeholder="Buscar por código, nombre, productor, municipio..."
-                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#22c55e]/60 transition-all placeholder:text-white/40"
+                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-white/50 transition-all placeholder:text-white/40"
                 />
             </div>
 
@@ -270,13 +270,13 @@
                 <p class="text-xs text-white/60">{{ reviewing.nombreParcela }} · {{ reviewing.codigo }}</p>
                 <div>
                     <label class="text-xs text-white/80 block mb-1">Estado de validación</label>
-                    <select v-model="reviewForm.estadoValidacion" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60">
+                    <select v-model="reviewForm.estadoValidacion" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
                         <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e">{{ e }}</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-xs text-white/80 block mb-1">Comentario para el técnico</label>
-                    <textarea v-model="reviewForm.comentario" rows="3" placeholder="Observaciones, correcciones solicitadas..." class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white resize-none focus:outline-none focus:border-[#22c55e]/60"></textarea>
+                    <textarea v-model="reviewForm.comentario" rows="3" placeholder="Observaciones, correcciones solicitadas..." class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white resize-none focus:outline-none focus:border-white/50"></textarea>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t border-white/15">
                     <button @click="reviewing = null" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-xs text-white/80 rounded-xl">Cancelar</button>

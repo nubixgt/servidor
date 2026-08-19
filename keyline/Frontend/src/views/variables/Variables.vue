@@ -59,7 +59,7 @@
                 <input
                     v-model="searchTerm"
                     placeholder="Buscar una variable (ej. pH, encharcamiento, curvas de nivel...)"
-                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#22c55e]/60 transition-all placeholder:text-white/40"
+                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-white/50 transition-all placeholder:text-white/40"
                 />
             </div>
         </div>

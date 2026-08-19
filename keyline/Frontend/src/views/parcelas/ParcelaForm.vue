@@ -61,33 +61,33 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="text-xs font-medium text-white/80 block mb-1">Nombre de la parcela / finca / terreno *</label>
-                                <input v-model="form.nombreParcela" required placeholder="Ej. Finca El Pinar" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.nombreParcela" required placeholder="Ej. Finca El Pinar" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Departamento *</label>
-                                <select v-model="form.departamento" required class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.departamento" required class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value="">Seleccione...</option>
                                     <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Municipio *</label>
-                                <input v-model="form.municipio" required placeholder="Ej. Cobán" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.municipio" required placeholder="Ej. Cobán" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Aldea / comunidad</label>
-                                <input v-model="form.comunidad" placeholder="Ej. Chisecito" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.comunidad" placeholder="Ej. Chisecito" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Fecha de registro</label>
-                                <input v-model="form.fechaRegistro" type="date" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors" />
+                                <input v-model="form.fechaRegistro" type="date" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Tenencia de la tierra</label>
-                                <select v-model="form.tenenciaTierra" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.tenenciaTierra" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value="">Sin especificar</option>
                                     <option v-for="t in TENENCIA_TIERRA" :key="t" :value="t">{{ t }}</option>
                                 </select>
@@ -97,15 +97,15 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Productor / responsable</label>
-                                <input v-model="form.propietario" placeholder="Nombre del responsable" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.propietario" placeholder="Nombre del responsable" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Teléfono / contacto</label>
-                                <input v-model="form.telefono" placeholder="Opcional" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.telefono" placeholder="Opcional" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Familias beneficiadas</label>
-                                <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" placeholder="Ej. 4" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" placeholder="Ej. 4" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
@@ -126,15 +126,15 @@
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Latitud</span>
-                                    <input v-model="form.latitud" type="number" step="any" placeholder="15.4700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-[#22c55e]/60" />
+                                    <input v-model="form.latitud" type="number" step="any" placeholder="15.4700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Longitud</span>
-                                    <input v-model="form.longitud" type="number" step="any" placeholder="-90.3700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-[#22c55e]/60" />
+                                    <input v-model="form.longitud" type="number" step="any" placeholder="-90.3700" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Altitud (msnm)</span>
-                                    <input v-model="form.altitud" type="number" min="0" step="1" placeholder="650" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-[#22c55e]/60" />
+                                    <input v-model="form.altitud" type="number" min="0" step="1" placeholder="650" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs font-mono text-white focus:outline-none focus:border-white/50" />
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-white/60 uppercase font-bold block mb-1">Precisión GPS (m)</span>
@@ -146,11 +146,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Área (hectáreas) *</label>
-                                <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required placeholder="12.50" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required placeholder="12.50" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Estado del proceso *</label>
-                                <select v-model="form.estado" required class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.estado" required class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e">{{ e }}</option>
                                 </select>
                             </div>
@@ -167,39 +167,39 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Uso actual del suelo</label>
-                                <select v-model="form.usoActual" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.usoActual" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value=""></option>
                                     <option v-for="u in USOS_ACTUALES" :key="u" :value="u">{{ u }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Cultivo principal</label>
-                                <input v-model="form.cultivoPrincipal" placeholder="Maíz, café, pastos..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.cultivoPrincipal" placeholder="Maíz, café, pastos..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Tipo de suelo</label>
-                                <input v-model="form.tipoSuelo" placeholder="Franco, arcilloso, limoso..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.tipoSuelo" placeholder="Franco, arcilloso, limoso..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Pendiente estimada (%)</label>
-                                <input v-model.number="form.pendiente" type="number" min="0" step="0.1" placeholder="8.5" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model.number="form.pendiente" type="number" min="0" step="0.1" placeholder="8.5" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Disponibilidad de agua</label>
-                                <select v-model="form.agua" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.agua" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value=""></option>
                                     <option v-for="a in NIVELES_AGUA" :key="a" :value="a">{{ a }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Fuente de agua</label>
-                                <select v-model="form.fuenteAgua" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.fuenteAgua" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value="">Sin especificar</option>
                                     <option v-for="f in FUENTE_AGUA" :key="f" :value="f">{{ f }}</option>
                                 </select>
@@ -209,14 +209,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Riesgo de erosión</label>
-                                <select v-model="form.riesgoErosion" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.riesgoErosion" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value=""></option>
                                     <option v-for="r in RIESGO_EROSION" :key="r" :value="r">{{ r }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Sistema de riego</label>
-                                <input v-model="form.sistemaRiego" placeholder="Goteo, aspersión, ninguno..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <input v-model="form.sistemaRiego" placeholder="Goteo, aspersión, ninguno..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                         </div>
 
@@ -228,11 +228,11 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Profundidad de suelo (cm)</label>
-                                    <input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Presencia de talpetate</label>
-                                    <select v-model="form.talpetate" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                    <select v-model="form.talpetate" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                         <option value="">Sin evaluar</option>
                                         <option value="No">No</option>
                                         <option value="Sí">Sí</option>
@@ -240,7 +240,7 @@
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">¿Se encharca el agua?</label>
-                                    <select v-model="form.encharca" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                    <select v-model="form.encharca" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                         <option value="">Sin evaluar</option>
                                         <option value="No">No</option>
                                         <option value="Sí">Sí</option>
@@ -248,7 +248,7 @@
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="text-xs font-medium text-white/80 block mb-1">Bioindicadores de suelo</label>
-                                    <input v-model="form.bioindicadores" placeholder="Lombrices, hormigas, hongos, hojarasca..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model="form.bioindicadores" placeholder="Lombrices, hormigas, hongos, hojarasca..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                             </div>
                         </div>
@@ -261,11 +261,11 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Lluvia acumulada anual (mm)</label>
-                                    <input v-model.number="form.lluviaAnual" type="number" min="0" step="1" placeholder="1800" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model.number="form.lluviaAnual" type="number" min="0" step="1" placeholder="1800" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs font-mono text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Fuente / año</label>
-                                    <input v-model="form.lluviaFuente" placeholder="INSIVUMEH 2025, estación local..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <input v-model="form.lluviaFuente" placeholder="INSIVUMEH 2025, estación local..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                             </div>
                         </div>
@@ -280,18 +280,18 @@
 
                         <div>
                             <label class="text-xs font-medium text-white/80 block mb-1">Intervenciones previstas / ejecutadas</label>
-                            <input v-model="form.intervenciones" placeholder="Canales keyline, reservorios, reforestación, zanjas de infiltración..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                            <input v-model="form.intervenciones" placeholder="Canales keyline, reservorios, reforestación, zanjas de infiltración..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                         </div>
 
                         <div>
                             <label class="text-xs font-medium text-white/80 block mb-1">Especies usadas en reforestación / cobertura</label>
-                            <input v-model="form.especiesReforestacion" placeholder="Ej. madrecacao, gravilea, pasto de corte..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                            <input v-model="form.especiesReforestacion" placeholder="Ej. madrecacao, gravilea, pasto de corte..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Fecha próxima visita de seguimiento</label>
-                                <input v-model="form.fechaProximaVisita" type="date" class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors" />
+                                <input v-model="form.fechaProximaVisita" type="date" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors" />
                             </div>
                             <label class="flex items-center gap-2.5 text-xs text-white/80 cursor-pointer select-none pt-5">
                                 <input v-model="form.consentimientoProductor" type="checkbox" class="rounded border-white/20 text-[#22c55e] focus:ring-0 bg-white/10 w-4 h-4" />
@@ -301,7 +301,7 @@
 
                         <div>
                             <label class="text-xs font-medium text-white/80 block mb-1">Observaciones</label>
-                            <textarea v-model="form.observaciones" rows="4" placeholder="Notas técnicas, restricciones, acuerdos con el productor, próximos pasos..." class="w-full bg-white/5 border border-white/15 focus:border-[#22c55e]/60 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors resize-none"></textarea>
+                            <textarea v-model="form.observaciones" rows="4" placeholder="Notas técnicas, restricciones, acuerdos con el productor, próximos pasos..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors resize-none"></textarea>
                         </div>
                     </div>
 
