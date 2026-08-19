@@ -51,13 +51,12 @@
                     class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-white/50 transition-all placeholder:text-white/40"
                 />
             </div>
-            <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
-                <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Rol:</span>
-                <select v-model="roleFilter" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                    <option value="">Todos</option>
-                    <option v-for="r in ROLES" :key="r" :value="r">{{ ROLE_LABELS[r] }}</option>
-                </select>
-            </div>
+            <CustomSelect
+                v-model="roleFilter"
+                variant="chip"
+                chip-label="Rol:"
+                :options="[{ value: '', label: 'Todos' }, ...ROLES.map((r) => ({ value: r, label: ROLE_LABELS[r] }))]"
+            />
         </div>
 
         <div v-if="loading" class="py-12 text-center text-xs text-white/60">Cargando…</div>
@@ -145,16 +144,11 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-xs text-white/80 block mb-1">Rol asignado</label>
-                            <select v-model="form.role" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
-                                <option v-for="r in ROLES" :key="r" :value="r">{{ ROLE_LABELS[r] }}</option>
-                            </select>
+                            <CustomSelect v-model="form.role" :options="ROLES.map((r) => ({ value: r, label: ROLE_LABELS[r] }))" />
                         </div>
                         <div>
                             <label class="text-xs text-white/80 block mb-1">Departamento / región</label>
-                            <select v-model="form.regionAsignada" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
-                                <option value="">Sin asignar / nacional</option>
-                                <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
-                            </select>
+                            <CustomSelect v-model="form.regionAsignada" :options="[{ value: '', label: 'Sin asignar / nacional' }, ...DEPARTAMENTOS]" />
                         </div>
                     </div>
 
@@ -193,6 +187,7 @@ import usuarioService from '../../services/usuarioService';
 import { useAuthStore } from '../../stores/auth';
 import { ROLES, ROLE_LABELS, DEPARTAMENTOS } from '../../constants/keyline';
 import { toastSuccess, alertError, confirmDialog, toastInfo } from '../../utils/alerts';
+import CustomSelect from '../../components/ui/CustomSelect.vue';
 import { UserPlus, Search, Mail, MapPin, Phone, Clock, Pencil, Trash2, X } from '@lucide/vue';
 
 const ROLE_BADGE = {

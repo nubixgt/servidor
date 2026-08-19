@@ -25,29 +25,27 @@
             </div>
 
             <div class="flex flex-wrap gap-2.5 items-center">
-                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Depto:</span>
-                    <select v-model="filters.departamento" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                        <option value="">Todos</option>
-                        <option v-for="d in DEPARTAMENTOS" :key="d" :value="d" class="bg-white/10 text-white">{{ d }}</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Estado:</span>
-                    <select v-model="filters.estado" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                        <option value="">Cualquiera</option>
-                        <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e" class="bg-white/10 text-white">{{ e }}</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
-                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Validación:</span>
-                    <select v-model="filters.estadoValidacion" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
-                        <option value="">Cualquiera</option>
-                        <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e" class="bg-white/10 text-white">{{ e }}</option>
-                    </select>
-                </div>
+                <CustomSelect
+                    v-model="filters.departamento"
+                    @change="load"
+                    variant="chip"
+                    chip-label="Depto:"
+                    :options="[{ value: '', label: 'Todos' }, ...DEPARTAMENTOS]"
+                />
+                <CustomSelect
+                    v-model="filters.estado"
+                    @change="load"
+                    variant="chip"
+                    chip-label="Estado:"
+                    :options="[{ value: '', label: 'Cualquiera' }, ...ESTADOS_PROCESO]"
+                />
+                <CustomSelect
+                    v-model="filters.estadoValidacion"
+                    @change="load"
+                    variant="chip"
+                    chip-label="Validación:"
+                    :options="[{ value: '', label: 'Cualquiera' }, ...ESTADOS_VALIDACION]"
+                />
 
                 <button
                     @click="exportCsv"
@@ -314,9 +312,7 @@
                 <p class="text-xs text-white/60">{{ reviewing.nombreParcela }} · {{ reviewing.codigo }}</p>
                 <div>
                     <label class="text-xs text-white/80 block mb-1">Estado de validación</label>
-                    <select v-model="reviewForm.estadoValidacion" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-white/50">
-                        <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e">{{ e }}</option>
-                    </select>
+                    <CustomSelect v-model="reviewForm.estadoValidacion" :options="ESTADOS_VALIDACION" />
                 </div>
                 <div>
                     <label class="text-xs text-white/80 block mb-1">Comentario para el técnico</label>
@@ -340,6 +336,7 @@ import parcelaService from '../../services/parcelaService';
 import { parcelaFotoUrl } from '../../services/api';
 import { useAuthStore } from '../../stores/auth';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
+import CustomSelect from '../../components/ui/CustomSelect.vue';
 import {
     DEPARTAMENTOS, ESTADOS_PROCESO, ESTADOS_VALIDACION,
 } from '../../constants/keyline';

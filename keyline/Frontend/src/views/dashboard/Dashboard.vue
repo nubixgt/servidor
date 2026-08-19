@@ -26,7 +26,7 @@
                                 <ChevronDown class="w-3 h-3 text-white/60" />
                             </button>
 
-                            <div v-if="showDateDropdown" class="absolute right-0 mt-1.5 w-44 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-1.5 z-30 animate-fadeIn">
+                            <div v-if="showDateDropdown" class="absolute right-0 mt-1.5 w-44 bg-[#0c1e17]/95 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-1.5 z-30 animate-fadeIn">
                                 <button
                                     v-for="range in ['Este mes', 'Último trimestre', 'Año 2026', 'Todo el histórico']"
                                     :key="range"

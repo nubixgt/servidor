@@ -126,7 +126,7 @@
                             <Bell class="w-4 h-4" />
                         </button>
 
-                        <div v-if="showNotifications" class="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-4 z-50 animate-fadeIn">
+                        <div v-if="showNotifications" class="absolute right-0 mt-2 w-80 bg-[#0c1e17]/95 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-4 z-50 animate-fadeIn">
                             <div class="flex justify-between items-center pb-2 mb-2 border-b border-white/15">
                                 <h4 class="text-xs font-bold text-white uppercase tracking-wider">Alertas activas</h4>
                             </div>
@@ -144,7 +144,7 @@
                             </div>
                         </button>
 
-                        <div v-if="showProfileMenu" class="absolute right-0 mt-2 w-56 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-2 z-50 animate-fadeIn">
+                        <div v-if="showProfileMenu" class="absolute right-0 mt-2 w-56 bg-[#0c1e17]/95 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-2xl p-2 z-50 animate-fadeIn">
                             <div class="p-2.5 border-b border-white/15 mb-1">
                                 <p class="text-xs font-bold text-white truncate">{{ auth.user?.nombre }}</p>
                                 <p class="text-[11px] text-[#22c55e]">{{ roleLabel }}</p>

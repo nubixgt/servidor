@@ -105,9 +105,11 @@
                     <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-6 space-y-4">
                         <div class="flex justify-between items-center">
                             <h3 class="text-base font-bold text-white tracking-tight">Avance por departamento</h3>
-                            <select v-model="selectedDept" class="bg-black/40 border border-white/15 text-xs text-white rounded-xl px-3 py-1.5 focus:outline-none">
-                                <option v-for="d in resumen.porDepartamento" :key="d.departamento" :value="d.departamento" class="bg-black/90 text-white">{{ d.departamento }}</option>
-                            </select>
+                            <CustomSelect
+                                v-model="selectedDept"
+                                variant="chip"
+                                :options="resumen.porDepartamento.map((d) => d.departamento)"
+                            />
                         </div>
 
                         <div v-if="selectedDeptData" class="space-y-4 pt-2">
@@ -211,6 +213,7 @@ import { ref, computed } from 'vue';
 import parcelaService from '../../services/parcelaService';
 import dashboardService from '../../services/dashboardService';
 import { alertError } from '../../utils/alerts';
+import CustomSelect from '../../components/ui/CustomSelect.vue';
 import { Download, Layers, MapPin, CheckCircle2, FileText, FileSpreadsheet } from '@lucide/vue';
 
 const loading = ref(true);

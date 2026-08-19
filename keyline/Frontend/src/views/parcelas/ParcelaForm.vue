@@ -57,23 +57,16 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Departamento *</label>
-                                <select v-model="form.departamento" required @change="onDepartamentoChange" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value="">Seleccione...</option>
-                                    <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
-                                </select>
+                                <CustomSelect v-model="form.departamento" @change="onDepartamentoChange" :options="DEPARTAMENTOS" placeholder="Seleccione..." />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Municipio *</label>
-                                <select
+                                <CustomSelect
                                     v-model="form.municipio"
-                                    required
                                     :disabled="!form.departamento"
-                                    class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors disabled:opacity-50"
-                                >
-                                    <option value="">{{ form.departamento ? 'Seleccione...' : 'Elige primero un departamento' }}</option>
-                                    <option v-for="m in municipiosDisponibles" :key="m" :value="m">{{ m }}</option>
-                                    <option v-if="form.municipio && !municipiosDisponibles.includes(form.municipio)" :value="form.municipio">{{ form.municipio }}</option>
-                                </select>
+                                    :options="municipioOptions"
+                                    :placeholder="form.departamento ? 'Seleccione...' : 'Elige primero un departamento'"
+                                />
                             </div>
                         </div>
 
@@ -88,10 +81,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Tenencia de la tierra</label>
-                                <select v-model="form.tenenciaTierra" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value="">Sin especificar</option>
-                                    <option v-for="t in TENENCIA_TIERRA" :key="t" :value="t">{{ t }}</option>
-                                </select>
+                                <CustomSelect v-model="form.tenenciaTierra" :options="[{ value: '', label: 'Sin especificar' }, ...TENENCIA_TIERRA]" />
                             </div>
                         </div>
 
@@ -151,9 +141,7 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Estado del proceso *</label>
-                                <select v-model="form.estado" required class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e">{{ e }}</option>
-                                </select>
+                                <CustomSelect v-model="form.estado" :options="ESTADOS_PROCESO" />
                             </div>
                         </div>
                     </div>
@@ -168,10 +156,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Uso actual del suelo</label>
-                                <select v-model="form.usoActual" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value=""></option>
-                                    <option v-for="u in USOS_ACTUALES" :key="u" :value="u">{{ u }}</option>
-                                </select>
+                                <CustomSelect v-model="form.usoActual" :options="USOS_ACTUALES" placeholder="Sin especificar" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Cultivo principal</label>
@@ -193,27 +178,18 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Disponibilidad de agua</label>
-                                <select v-model="form.agua" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value=""></option>
-                                    <option v-for="a in NIVELES_AGUA" :key="a" :value="a">{{ a }}</option>
-                                </select>
+                                <CustomSelect v-model="form.agua" :options="NIVELES_AGUA" placeholder="Sin especificar" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Fuente de agua</label>
-                                <select v-model="form.fuenteAgua" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value="">Sin especificar</option>
-                                    <option v-for="f in FUENTE_AGUA" :key="f" :value="f">{{ f }}</option>
-                                </select>
+                                <CustomSelect v-model="form.fuenteAgua" :options="[{ value: '', label: 'Sin especificar' }, ...FUENTE_AGUA]" />
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Riesgo de erosión</label>
-                                <select v-model="form.riesgoErosion" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                    <option value=""></option>
-                                    <option v-for="r in RIESGO_EROSION" :key="r" :value="r">{{ r }}</option>
-                                </select>
+                                <CustomSelect v-model="form.riesgoErosion" :options="RIESGO_EROSION" placeholder="Sin especificar" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Sistema de riego</label>
@@ -233,19 +209,11 @@
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">Presencia de talpetate</label>
-                                    <select v-model="form.talpetate" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                        <option value="">Sin evaluar</option>
-                                        <option value="No">No</option>
-                                        <option value="Sí">Sí</option>
-                                    </select>
+                                    <CustomSelect v-model="form.talpetate" :options="[{ value: '', label: 'Sin evaluar' }, 'No', 'Sí']" />
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">¿Se encharca el agua?</label>
-                                    <select v-model="form.encharca" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
-                                        <option value="">Sin evaluar</option>
-                                        <option value="No">No</option>
-                                        <option value="Sí">Sí</option>
-                                    </select>
+                                    <CustomSelect v-model="form.encharca" :options="[{ value: '', label: 'Sin evaluar' }, 'No', 'Sí']" />
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="text-xs font-medium text-white/80 block mb-1">Bioindicadores de suelo</label>
@@ -390,6 +358,7 @@ import { useRoute, useRouter } from 'vue-router';
 import parcelaService from '../../services/parcelaService';
 import { parcelaFotoUrl } from '../../services/api';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
+import CustomSelect from '../../components/ui/CustomSelect.vue';
 import {
     DEPARTAMENTOS, ESTADOS_PROCESO, USOS_ACTUALES, NIVELES_AGUA,
     RIESGO_EROSION, TENENCIA_TIERRA, FUENTE_AGUA, MUNICIPIOS_POR_DEPARTAMENTO,
@@ -437,6 +406,11 @@ function blankForm() {
 const form = reactive(blankForm());
 
 const municipiosDisponibles = computed(() => MUNICIPIOS_POR_DEPARTAMENTO[form.departamento] || []);
+const municipioOptions = computed(() => (
+    form.municipio && !municipiosDisponibles.value.includes(form.municipio)
+        ? [...municipiosDisponibles.value, form.municipio]
+        : municipiosDisponibles.value
+));
 
 function onDepartamentoChange() {
     if (!municipiosDisponibles.value.includes(form.municipio)) {
@@ -471,6 +445,17 @@ onMounted(async () => {
 });
 
 function nextStep() {
+    if (stepIndex.value === 0) {
+        if (!form.departamento) {
+            alertError('Selecciona un departamento antes de continuar.');
+            return;
+        }
+        if (!form.municipio) {
+            alertError('Selecciona un municipio antes de continuar.');
+            return;
+        }
+    }
+
     const panel = formRef.value?.querySelectorAll('[required]');
     let firstInvalid = null;
     panel?.forEach((el) => {
@@ -543,6 +528,11 @@ async function removeExistingFoto(foto) {
 }
 
 async function submit() {
+    if (!form.departamento || !form.municipio) {
+        alertError('Selecciona departamento y municipio antes de guardar.');
+        stepIndex.value = 0;
+        return;
+    }
     if (formRef.value && !formRef.value.checkValidity()) {
         formRef.value.reportValidity();
         return;
