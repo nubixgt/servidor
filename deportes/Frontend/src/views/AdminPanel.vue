@@ -108,8 +108,8 @@
                   <div class="flex flex-col items-center leading-none">
                     <span class="text-3xl font-black tracking-tighter">{{ jugador.posicion === 'POR' ? '85' : '82' }}</span>
                     <span class="text-[10px] uppercase font-bold mt-1">{{ jugador.posicion || 'JUG' }}</span>
-                    <div class="mt-2 w-6 h-4 bg-white flex items-center justify-center border border-black/20">
-                       <svg class="w-full h-full text-blue-500" viewBox="0 0 24 24" fill="currentColor"><rect width="24" height="24" fill="#4997D0"/><rect width="24" height="8" y="8" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#F6B40E"/></svg>
+                    <div class="mt-2 w-6 h-6 flex items-center justify-center overflow-hidden">
+                       <img v-if="equipoSeleccionado?.foto_ruta" :src="IMAGE_BASE_URL + equipoSeleccionado.foto_ruta" class="w-full h-full object-contain">
                     </div>
                   </div>
                   <!-- Photo -->
@@ -121,14 +121,11 @@
                 
                 <!-- Info section -->
                 <div class="absolute bottom-3 left-0 right-0 px-3 text-center">
-                  <h3 class="text-sm font-black uppercase border-b border-[#3b2800]/30 pb-1 mb-2 mx-1 truncate">{{ jugador.nombre }}</h3>
-                  <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-bold px-1">
-                    <div class="flex justify-between"><span>PAC</span><span>80</span></div>
-                    <div class="flex justify-between"><span>DRI</span><span>82</span></div>
-                    <div class="flex justify-between"><span>SHO</span><span>75</span></div>
-                    <div class="flex justify-between"><span>DEF</span><span>60</span></div>
-                    <div class="flex justify-between"><span>PAS</span><span>78</span></div>
-                    <div class="flex justify-between"><span>PHY</span><span>70</span></div>
+                  <h3 class="text-[11px] leading-tight font-black uppercase border-b border-[#3b2800]/30 pb-1 mb-2 mx-1 h-8 flex items-center justify-center">{{ jugador.nombre }}</h3>
+                  <div class="flex flex-col gap-y-1 text-[9px] font-bold px-1">
+                    <div class="flex justify-between"><span>DPI</span><span class="font-mono">{{ jugador.dpi }}</span></div>
+                    <div class="flex justify-between"><span>TELÉFONO</span><span>{{ jugador.telefono }}</span></div>
+                    <div class="flex justify-between"><span>POSICIÓN</span><span>{{ jugador.posicion || 'N/A' }}</span></div>
                   </div>
                   <div class="flex justify-center gap-2 mt-2 pt-2 border-t border-[#3b2800]/30 mx-1">
                      <button @click.stop="abrirModalEdit(jugador)" class="p-1.5 hover:text-white bg-black/10 hover:bg-black/40 rounded transition-colors" title="Editar"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
