@@ -8,14 +8,17 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
-                serif: ['Playfair Display', 'serif'],
             },
             colors: {
                 'primary': {
-                    500: '#3b82f6',
-                    600: '#2563eb',
-                }
-            }
+                    500: '#18b75b',
+                    600: '#0f8a45',
+                },
+                'forest': '#0b3d2e',
+                'deep-green': '#082c22',
+                'keyline-green': '#18b75b',
+                'emerald': '#35d77c',
+            },
         },
     },
     plugins: [],

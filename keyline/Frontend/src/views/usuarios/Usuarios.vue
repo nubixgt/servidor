@@ -1,44 +1,38 @@
 <template>
     <div>
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">{{ auth.role === 'administrador' ? 'Equipo del proyecto' : 'Equipo técnico' }}</h1>
-                <p class="text-sm text-slate-500">
-                    {{ auth.role === 'administrador' ? 'Gestiona técnicos, supervisores y administradores del sistema.' : 'Técnicos de tu región asignada.' }}
-                </p>
-            </div>
-            <button v-if="auth.role === 'administrador'" class="btn-primary" @click="openModal()">+ Nuevo usuario</button>
+        <div v-if="auth.role === 'administrador'" style="display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" @click="openModal()">+ Nuevo usuario</button>
         </div>
 
-        <div class="bg-white rounded-lg shadow overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+        <div class="table-wrap">
+            <table>
+                <thead>
                     <tr>
-                        <th class="p-3 text-left">Nombre</th>
-                        <th class="p-3 text-left">Usuario</th>
-                        <th class="p-3 text-left">Correo</th>
-                        <th class="p-3 text-left">Rol</th>
-                        <th class="p-3 text-left">Región asignada</th>
-                        <th class="p-3 text-left">Estado</th>
-                        <th class="p-3 text-left">Último acceso</th>
-                        <th v-if="auth.role === 'administrador'" class="p-3 text-left">Acciones</th>
+                        <th>Nombre</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Región asignada</th>
+                        <th>Estado</th>
+                        <th>Último acceso</th>
+                        <th v-if="auth.role === 'administrador'">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="loading"><td colspan="8" class="p-8 text-center text-slate-400">Cargando…</td></tr>
-                    <tr v-else-if="!usuarios.length"><td colspan="8" class="p-8 text-center text-slate-400">No hay usuarios registrados.</td></tr>
-                    <tr v-for="u in usuarios" :key="u.id" class="border-t border-slate-100">
-                        <td class="p-3 font-semibold">{{ u.nombre }}</td>
-                        <td class="p-3">{{ u.usuario }}</td>
-                        <td class="p-3">{{ u.email || '—' }}</td>
-                        <td class="p-3"><span class="tag bg-slate-100 text-slate-600">{{ ROLE_LABELS[u.role] }}</span></td>
-                        <td class="p-3">{{ u.regionAsignada || '—' }}</td>
-                        <td class="p-3"><span class="tag" :class="u.activo === false ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'">{{ u.activo === false ? 'Inactivo' : 'Activo' }}</span></td>
-                        <td class="p-3">{{ u.ultimoAcceso ? new Date(u.ultimoAcceso).toLocaleString('es-GT') : 'Nunca' }}</td>
-                        <td v-if="auth.role === 'administrador'" class="p-3">
-                            <div class="flex gap-2">
-                                <button class="btn-secondary btn-sm" @click="openModal(u)">Editar</button>
-                                <button class="btn-danger btn-sm" @click="eliminar(u)">Eliminar</button>
+                    <tr v-if="loading"><td colspan="8" class="empty-state">Cargando…</td></tr>
+                    <tr v-else-if="!usuarios.length"><td colspan="8" class="empty-state">No hay usuarios registrados.</td></tr>
+                    <tr v-for="u in usuarios" :key="u.id">
+                        <td><strong>{{ u.nombre }}</strong></td>
+                        <td>{{ u.usuario }}</td>
+                        <td>{{ u.email || '—' }}</td>
+                        <td><span class="badge">{{ ROLE_LABELS[u.role] }}</span></td>
+                        <td>{{ u.regionAsignada || '—' }}</td>
+                        <td><span class="tag" :class="u.activo === false ? 'tag-pendiente' : 'tag-implementado'">{{ u.activo === false ? 'Inactivo' : 'Activo' }}</span></td>
+                        <td>{{ u.ultimoAcceso ? new Date(u.ultimoAcceso).toLocaleString('es-GT') : 'Nunca' }}</td>
+                        <td v-if="auth.role === 'administrador'">
+                            <div class="row-actions">
+                                <button class="btn btn-secondary btn-sm" @click="openModal(u)">Editar</button>
+                                <button class="btn btn-danger btn-sm" @click="eliminar(u)">Eliminar</button>
                             </div>
                         </td>
                     </tr>
@@ -47,52 +41,50 @@
         </div>
 
         <div v-if="modalUser !== null" class="modal-overlay" @click.self="modalUser = null">
-            <div class="modal-box max-w-md">
-                <div class="flex justify-between items-start mb-4">
-                    <h3 class="text-xl font-bold">{{ editing ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
-                    <button @click="modalUser = null" class="text-slate-400 hover:text-slate-700">✕</button>
+            <div class="modal-box glass">
+                <div class="modal-head">
+                    <h3>{{ editing ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
+                    <button class="modal-close" @click="modalUser = null">✕</button>
                 </div>
-                <div class="space-y-3">
-                    <div>
-                        <label class="field-label">Nombre completo</label>
-                        <input v-model="form.nombre" class="field-input" />
-                    </div>
-                    <div>
-                        <label class="field-label">Usuario</label>
-                        <input v-model="form.usuario" class="field-input" :disabled="editing" placeholder="nombre.usuario" />
-                    </div>
-                    <div>
-                        <label class="field-label">Correo electrónico (opcional)</label>
-                        <input v-model="form.email" type="email" class="field-input" />
-                    </div>
-                    <div>
-                        <label class="field-label">{{ editing ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</label>
-                        <input v-model="form.password" type="password" class="field-input" :placeholder="editing ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres'" />
-                    </div>
-                    <div>
-                        <label class="field-label">Rol</label>
-                        <select v-model="form.role" class="field-input">
-                            <option v-for="r in ROLES" :key="r" :value="r">{{ ROLE_LABELS[r] }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Región asignada (para supervisores)</label>
-                        <select v-model="form.regionAsignada" class="field-input">
-                            <option value="">Sin asignar / nacional</option>
-                            <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Teléfono</label>
-                        <input v-model="form.telefono" class="field-input" />
-                    </div>
-                    <label v-if="editing" class="flex items-center gap-2 text-sm text-slate-700">
-                        <input v-model="form.activo" type="checkbox" /> Usuario activo
-                    </label>
+                <div class="field">
+                    <label>Nombre completo</label>
+                    <input v-model="form.nombre" />
                 </div>
-                <div class="flex justify-end gap-2 mt-6">
-                    <button class="btn-secondary" @click="modalUser = null">Cancelar</button>
-                    <button class="btn-primary" :disabled="saving" @click="save">{{ editing ? 'Guardar cambios' : 'Crear usuario' }}</button>
+                <div class="field">
+                    <label>Usuario</label>
+                    <input v-model="form.usuario" :disabled="editing" placeholder="nombre.usuario" />
+                </div>
+                <div class="field">
+                    <label>Correo electrónico (opcional)</label>
+                    <input v-model="form.email" type="email" />
+                </div>
+                <div class="field">
+                    <label>{{ editing ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</label>
+                    <input v-model="form.password" type="password" :placeholder="editing ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres'" />
+                </div>
+                <div class="field">
+                    <label>Rol</label>
+                    <select v-model="form.role">
+                        <option v-for="r in ROLES" :key="r" :value="r">{{ ROLE_LABELS[r] }}</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Región asignada (para supervisores)</label>
+                    <select v-model="form.regionAsignada">
+                        <option value="">Sin asignar / nacional</option>
+                        <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Teléfono</label>
+                    <input v-model="form.telefono" />
+                </div>
+                <label v-if="editing" style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500;">
+                    <input v-model="form.activo" type="checkbox" style="width: auto;" /> Usuario activo
+                </label>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" @click="modalUser = null">Cancelar</button>
+                    <button class="btn btn-primary" :disabled="saving" @click="save">{{ editing ? 'Guardar cambios' : 'Crear usuario' }}</button>
                 </div>
             </div>
         </div>
@@ -175,15 +167,3 @@ async function eliminar(u) {
     }
 }
 </script>
-
-<style scoped>
-.field-label { @apply block mb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide; }
-.field-input { @apply w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100; }
-.btn-primary { @apply px-4 py-2 bg-primary-500 text-white rounded-md text-sm font-semibold hover:bg-primary-600 disabled:opacity-60; }
-.btn-secondary { @apply px-4 py-2 bg-slate-100 text-slate-700 rounded-md text-sm font-semibold hover:bg-slate-200; }
-.btn-danger { @apply px-4 py-2 bg-rose-100 text-rose-700 rounded-md text-sm font-semibold hover:bg-rose-200; }
-.btn-sm { @apply px-2.5 py-1 text-xs; }
-.tag { @apply text-xs font-semibold px-2 py-1 rounded-full; }
-.modal-overlay { @apply fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50; }
-.modal-box { @apply bg-white rounded-lg shadow-xl p-6 w-full max-h-[85vh] overflow-y-auto; }
-</style>

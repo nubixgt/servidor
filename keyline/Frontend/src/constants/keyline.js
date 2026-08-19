@@ -25,14 +25,14 @@ export const ROLE_LABELS = {
 };
 
 export const ESTADO_COLORS = {
-    Levantamiento: 'bg-sky-100 text-sky-700',
-    'Diseño': 'bg-amber-100 text-amber-700',
-    Implementado: 'bg-emerald-100 text-emerald-700',
-    Pendiente: 'bg-rose-100 text-rose-700',
+    Levantamiento: 'tag-levantamiento',
+    'Diseño': 'tag-diseno',
+    Implementado: 'tag-implementado',
+    Pendiente: 'tag-pendiente',
 };
 
 export const VALIDACION_COLORS = {
-    'Pendiente de revisión': 'bg-amber-100 text-amber-700',
-    Validado: 'bg-emerald-100 text-emerald-700',
-    'Requiere corrección': 'bg-rose-100 text-rose-700',
+    'Pendiente de revisión': 'tag-revision',
+    Validado: 'tag-validado',
+    'Requiere corrección': 'tag-correccion',
 };

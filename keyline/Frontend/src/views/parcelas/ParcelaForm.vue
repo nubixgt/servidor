@@ -1,253 +1,246 @@
 <template>
-    <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-start justify-between mb-4">
+    <div class="panel glass">
+        <div class="panel-head">
             <div>
-                <h1 class="text-2xl font-bold">{{ isEditing ? 'Editar parcela' : 'Registrar nueva parcela' }}</h1>
-                <p class="text-sm text-slate-500">Completa los datos técnicos de la parcela keyline. Los campos con * son obligatorios.</p>
+                <h3>{{ isEditing ? 'Editar parcela' : 'Registrar nueva parcela' }}</h3>
+                <p>Completa los datos técnicos de la parcela keyline. Los campos con * son obligatorios.</p>
             </div>
-            <span v-if="parcela?.codigo" class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">{{ parcela.codigo }}</span>
+            <span v-if="parcela?.codigo" class="badge">{{ parcela.codigo }}</span>
         </div>
 
-        <div v-if="loadingParcela" class="py-12 text-center text-slate-400">Cargando…</div>
+        <div v-if="loadingParcela" class="py-12 text-center hint">Cargando…</div>
 
         <template v-else>
-            <!-- Pasos -->
-            <div class="flex gap-2 mb-6 flex-wrap">
-                <button
-                    v-for="(step, i) in STEPS"
-                    :key="step.key"
-                    type="button"
-                    @click="stepIndex = i"
-                    class="px-3 py-1.5 rounded-full text-sm font-medium border"
-                    :class="i === stepIndex
-                        ? 'bg-primary-500 text-white border-primary-500'
-                        : i < stepIndex
-                            ? 'bg-primary-50 text-primary-600 border-primary-200'
-                            : 'bg-white text-slate-500 border-slate-200'"
-                >
-                    {{ step.icon }} {{ step.label }}
-                </button>
-            </div>
-
-            <form @submit.prevent="submit" ref="formRef">
-                <!-- Paso 1: Ubicación -->
-                <div v-show="stepIndex === 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="field-label">Nombre de la parcela / finca / terreno *</label>
-                        <input v-model="form.nombreParcela" required class="field-input" placeholder="Ej. Finca El Pinar" />
-                    </div>
-                    <div>
-                        <label class="field-label">Departamento *</label>
-                        <select v-model="form.departamento" required class="field-input">
-                            <option value="">Seleccione...</option>
-                            <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Municipio *</label>
-                        <input v-model="form.municipio" required class="field-input" placeholder="Ej. Cobán" />
-                    </div>
-                    <div>
-                        <label class="field-label">Aldea / comunidad</label>
-                        <input v-model="form.comunidad" class="field-input" placeholder="Ej. Chisecito" />
-                    </div>
-                    <div>
-                        <label class="field-label">Fecha de registro</label>
-                        <input v-model="form.fechaRegistro" type="date" class="field-input" />
-                    </div>
-                    <div>
-                        <label class="field-label">Productor / responsable</label>
-                        <input v-model="form.propietario" class="field-input" placeholder="Nombre del responsable" />
-                    </div>
-                    <div>
-                        <label class="field-label">Teléfono / contacto</label>
-                        <input v-model="form.telefono" class="field-input" placeholder="Opcional" />
-                    </div>
-                    <div>
-                        <label class="field-label">Tenencia de la tierra</label>
-                        <select v-model="form.tenenciaTierra" class="field-input">
-                            <option value="">Sin especificar</option>
-                            <option v-for="t in TENENCIA_TIERRA" :key="t" :value="t">{{ t }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Familias beneficiadas</label>
-                        <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" class="field-input" placeholder="Ej. 4" />
-                    </div>
-
-                    <div class="md:col-span-2 border border-dashed border-slate-300 rounded-lg p-4">
-                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Ubicación GPS</p>
-                        <div class="flex items-center gap-3 mb-3">
-                            <button type="button" @click="capturarGeo" class="btn-secondary">📍 Capturar ubicación actual</button>
-                            <span class="text-sm text-slate-500">{{ geoStatus }}</span>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div><label class="field-label">Latitud</label><input v-model="form.latitud" type="number" step="any" class="field-input" placeholder="15.4700" /></div>
-                            <div><label class="field-label">Longitud</label><input v-model="form.longitud" type="number" step="any" class="field-input" placeholder="-90.3700" /></div>
-                            <div><label class="field-label">Altitud (msnm)</label><input v-model="form.altitud" type="number" min="0" step="1" class="field-input" placeholder="650" /></div>
-                            <div><label class="field-label">Precisión GPS (m)</label><input v-model="form.gpsPrecision" type="number" min="0" step="1" class="field-input" readonly placeholder="Automático" /></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="field-label">Área (hectáreas) *</label>
-                        <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required class="field-input" placeholder="12.50" />
-                    </div>
-                    <div>
-                        <label class="field-label">Estado del proceso *</label>
-                        <select v-model="form.estado" required class="field-input">
-                            <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e">{{ e }}</option>
-                        </select>
-                    </div>
+            <div class="wizard">
+                <div class="wizard-steps">
+                    <button
+                        v-for="(step, i) in STEPS"
+                        :key="step.key"
+                        type="button"
+                        @click="stepIndex = i"
+                        class="wizard-step"
+                        :class="{ active: i === stepIndex, done: i < stepIndex }"
+                    >
+                        {{ step.icon }} {{ step.label }}
+                    </button>
                 </div>
 
-                <!-- Paso 2: Suelo y agua -->
-                <div v-show="stepIndex === 1" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="field-label">Uso actual del suelo</label>
-                        <select v-model="form.usoActual" class="field-input">
-                            <option value=""></option>
-                            <option v-for="u in USOS_ACTUALES" :key="u" :value="u">{{ u }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Cultivo principal</label>
-                        <input v-model="form.cultivoPrincipal" class="field-input" placeholder="Maíz, café, pastos..." />
-                    </div>
-                    <div>
-                        <label class="field-label">Tipo de suelo</label>
-                        <input v-model="form.tipoSuelo" class="field-input" placeholder="Franco, arcilloso, limoso..." />
-                    </div>
-                    <div>
-                        <label class="field-label">Pendiente estimada (%)</label>
-                        <input v-model.number="form.pendiente" type="number" min="0" step="0.1" class="field-input" placeholder="8.5" />
-                    </div>
-                    <div>
-                        <label class="field-label">Disponibilidad de agua</label>
-                        <select v-model="form.agua" class="field-input">
-                            <option value=""></option>
-                            <option v-for="a in NIVELES_AGUA" :key="a" :value="a">{{ a }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Fuente de agua</label>
-                        <select v-model="form.fuenteAgua" class="field-input">
-                            <option value="">Sin especificar</option>
-                            <option v-for="f in FUENTE_AGUA" :key="f" :value="f">{{ f }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Riesgo de erosión</label>
-                        <select v-model="form.riesgoErosion" class="field-input">
-                            <option value=""></option>
-                            <option v-for="r in RIESGO_EROSION" :key="r" :value="r">{{ r }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="field-label">Sistema de riego</label>
-                        <input v-model="form.sistemaRiego" class="field-input" placeholder="Goteo, aspersión, ninguno..." />
+                <form @submit.prevent="submit" ref="formRef">
+                    <!-- Paso 1: Ubicación -->
+                    <div v-show="stepIndex === 0" class="form-grid">
+                        <div class="full">
+                            <label class="field-label">Nombre de la parcela / finca / terreno *</label>
+                            <input v-model="form.nombreParcela" required placeholder="Ej. Finca El Pinar" />
+                        </div>
+                        <div>
+                            <label class="field-label">Departamento *</label>
+                            <select v-model="form.departamento" required>
+                                <option value="">Seleccione...</option>
+                                <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Municipio *</label>
+                            <input v-model="form.municipio" required placeholder="Ej. Cobán" />
+                        </div>
+                        <div>
+                            <label class="field-label">Aldea / comunidad</label>
+                            <input v-model="form.comunidad" placeholder="Ej. Chisecito" />
+                        </div>
+                        <div>
+                            <label class="field-label">Fecha de registro</label>
+                            <input v-model="form.fechaRegistro" type="date" />
+                        </div>
+                        <div>
+                            <label class="field-label">Productor / responsable</label>
+                            <input v-model="form.propietario" placeholder="Nombre del responsable" />
+                        </div>
+                        <div>
+                            <label class="field-label">Teléfono / contacto</label>
+                            <input v-model="form.telefono" placeholder="Opcional" />
+                        </div>
+                        <div>
+                            <label class="field-label">Tenencia de la tierra</label>
+                            <select v-model="form.tenenciaTierra">
+                                <option value="">Sin especificar</option>
+                                <option v-for="t in TENENCIA_TIERRA" :key="t" :value="t">{{ t }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Familias beneficiadas</label>
+                            <input v-model.number="form.numFamiliasBeneficiadas" type="number" min="0" step="1" placeholder="Ej. 4" />
+                        </div>
+
+                        <div class="subgroup">
+                            <div class="subgroup-title"><span class="dot"></span>Ubicación GPS</div>
+                            <div class="geo-box" style="margin-bottom: 12px;">
+                                <button type="button" @click="capturarGeo" class="btn btn-secondary btn-sm">📍 Capturar ubicación actual</button>
+                                <span class="geo-status">{{ geoStatus }}</span>
+                            </div>
+                            <div class="form-grid">
+                                <div><label class="field-label">Latitud</label><input v-model="form.latitud" type="number" step="any" placeholder="15.4700" /></div>
+                                <div><label class="field-label">Longitud</label><input v-model="form.longitud" type="number" step="any" placeholder="-90.3700" /></div>
+                                <div><label class="field-label">Altitud (msnm)</label><input v-model="form.altitud" type="number" min="0" step="1" placeholder="650" /></div>
+                                <div><label class="field-label">Precisión GPS (m)</label><input v-model="form.gpsPrecision" type="number" min="0" step="1" readonly placeholder="Automático" /></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="field-label">Área (hectáreas) *</label>
+                            <input v-model.number="form.areaHa" type="number" min="0" step="0.01" required placeholder="12.50" />
+                        </div>
+                        <div>
+                            <label class="field-label">Estado del proceso *</label>
+                            <select v-model="form.estado" required>
+                                <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e">{{ e }}</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="md:col-span-2 border border-slate-200 rounded-lg p-4">
-                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Diagnóstico físico del suelo</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="field-label">Profundidad de suelo (cm)</label><input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" class="field-input" placeholder="45" /></div>
-                            <div>
-                                <label class="field-label">Presencia de talpetate</label>
-                                <select v-model="form.talpetate" class="field-input">
-                                    <option value="">Sin evaluar</option>
-                                    <option value="No">No</option>
-                                    <option value="Sí">Sí</option>
-                                </select>
+                    <!-- Paso 2: Suelo y agua -->
+                    <div v-show="stepIndex === 1" class="form-grid">
+                        <div>
+                            <label class="field-label">Uso actual del suelo</label>
+                            <select v-model="form.usoActual">
+                                <option value=""></option>
+                                <option v-for="u in USOS_ACTUALES" :key="u" :value="u">{{ u }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Cultivo principal</label>
+                            <input v-model="form.cultivoPrincipal" placeholder="Maíz, café, pastos..." />
+                        </div>
+                        <div>
+                            <label class="field-label">Tipo de suelo</label>
+                            <input v-model="form.tipoSuelo" placeholder="Franco, arcilloso, limoso..." />
+                        </div>
+                        <div>
+                            <label class="field-label">Pendiente estimada (%)</label>
+                            <input v-model.number="form.pendiente" type="number" min="0" step="0.1" placeholder="8.5" />
+                        </div>
+                        <div>
+                            <label class="field-label">Disponibilidad de agua</label>
+                            <select v-model="form.agua">
+                                <option value=""></option>
+                                <option v-for="a in NIVELES_AGUA" :key="a" :value="a">{{ a }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Fuente de agua</label>
+                            <select v-model="form.fuenteAgua">
+                                <option value="">Sin especificar</option>
+                                <option v-for="f in FUENTE_AGUA" :key="f" :value="f">{{ f }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Riesgo de erosión</label>
+                            <select v-model="form.riesgoErosion">
+                                <option value=""></option>
+                                <option v-for="r in RIESGO_EROSION" :key="r" :value="r">{{ r }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">Sistema de riego</label>
+                            <input v-model="form.sistemaRiego" placeholder="Goteo, aspersión, ninguno..." />
+                        </div>
+
+                        <div class="subgroup">
+                            <div class="subgroup-title"><span class="dot"></span>Diagnóstico físico del suelo</div>
+                            <div class="form-grid">
+                                <div><label class="field-label">Profundidad de suelo (cm)</label><input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" /></div>
+                                <div>
+                                    <label class="field-label">Presencia de talpetate</label>
+                                    <select v-model="form.talpetate">
+                                        <option value="">Sin evaluar</option>
+                                        <option value="No">No</option>
+                                        <option value="Sí">Sí</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label">¿Se encharca el agua en la parcela?</label>
+                                    <select v-model="form.encharca">
+                                        <option value="">Sin evaluar</option>
+                                        <option value="No">No</option>
+                                        <option value="Sí">Sí</option>
+                                    </select>
+                                </div>
+                                <div class="full">
+                                    <label class="field-label">Bioindicadores de suelo</label>
+                                    <input v-model="form.bioindicadores" placeholder="Lombrices, hormigas, hongos, hojarasca..." />
+                                </div>
                             </div>
-                            <div>
-                                <label class="field-label">¿Se encharca el agua en la parcela?</label>
-                                <select v-model="form.encharca" class="field-input">
-                                    <option value="">Sin evaluar</option>
-                                    <option value="No">No</option>
-                                    <option value="Sí">Sí</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="field-label">Bioindicadores de suelo</label>
-                                <input v-model="form.bioindicadores" class="field-input" placeholder="Lombrices, hormigas, hongos, hojarasca..." />
+                        </div>
+
+                        <div class="subgroup">
+                            <div class="subgroup-title"><span class="dot"></span>Lluvia (opcional)</div>
+                            <div class="form-grid">
+                                <div><label class="field-label">Lluvia acumulada anual (mm)</label><input v-model.number="form.lluviaAnual" type="number" min="0" step="1" placeholder="1800" /></div>
+                                <div><label class="field-label">Fuente / año</label><input v-model="form.lluviaFuente" placeholder="INSIVUMEH 2025, estación local..." /></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="md:col-span-2 border border-slate-200 rounded-lg p-4">
-                        <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-3">Lluvia (opcional)</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="field-label">Lluvia acumulada anual (mm)</label><input v-model.number="form.lluviaAnual" type="number" min="0" step="1" class="field-input" placeholder="1800" /></div>
-                            <div><label class="field-label">Fuente / año</label><input v-model="form.lluviaFuente" class="field-input" placeholder="INSIVUMEH 2025, estación local..." /></div>
+                    <!-- Paso 3: Intervención -->
+                    <div v-show="stepIndex === 2" class="form-grid">
+                        <div class="full">
+                            <label class="field-label">Intervenciones previstas / ejecutadas</label>
+                            <input v-model="form.intervenciones" placeholder="Canales keyline, reservorios, reforestación, zanjas de infiltración..." />
                         </div>
-                    </div>
-                </div>
-
-                <!-- Paso 3: Intervención -->
-                <div v-show="stepIndex === 2" class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="field-label">Intervenciones previstas / ejecutadas</label>
-                        <input v-model="form.intervenciones" class="field-input" placeholder="Canales keyline, reservorios, reforestación, zanjas de infiltración..." />
-                    </div>
-                    <div>
-                        <label class="field-label">Especies usadas en reforestación / cobertura</label>
-                        <input v-model="form.especiesReforestacion" class="field-input" placeholder="Ej. madrecacao, gravilea, pasto de corte..." />
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="full">
+                            <label class="field-label">Especies usadas en reforestación / cobertura</label>
+                            <input v-model="form.especiesReforestacion" placeholder="Ej. madrecacao, gravilea, pasto de corte..." />
+                        </div>
                         <div>
                             <label class="field-label">Fecha próxima visita de seguimiento</label>
-                            <input v-model="form.fechaProximaVisita" type="date" class="field-input" />
+                            <input v-model="form.fechaProximaVisita" type="date" />
                         </div>
-                        <div class="flex items-end">
-                            <label class="flex items-center gap-2 text-sm text-slate-700">
-                                <input v-model="form.consentimientoProductor" type="checkbox" />
+                        <div style="display: flex; align-items: flex-end;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500;">
+                                <input v-model="form.consentimientoProductor" type="checkbox" style="width: auto;" />
                                 El productor autoriza el uso de esta información
                             </label>
                         </div>
-                    </div>
-                    <div>
-                        <label class="field-label">Observaciones</label>
-                        <textarea v-model="form.observaciones" rows="4" class="field-input" placeholder="Notas técnicas, restricciones, acuerdos con el productor, próximos pasos..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Paso 4: Fotos -->
-                <div v-show="stepIndex === 3">
-                    <p class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Fotografías de la parcela</p>
-                    <p class="text-sm text-slate-500 mb-3">Sube fotos del terreno, obras keyline, suelo o cualquier evidencia relevante.</p>
-                    <label class="block border-2 border-dashed border-slate-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary-400">
-                        <input type="file" accept="image/*" multiple capture="environment" class="hidden" @change="onPhotoInput" />
-                        <div>📷 Toca para tomar o seleccionar fotos</div>
-                        <div class="text-xs text-slate-400 mt-1">JPG, PNG o WEBP, máx. 12MB cada una</div>
-                    </label>
-
-                    <div v-if="existingFotos.length" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                        <div v-for="f in existingFotos" :key="f.id" class="relative">
-                            <img :src="fotoUrl(f.miniatura || f.archivo)" class="w-full h-28 object-cover rounded-lg" />
-                            <button type="button" @click="removeExistingFoto(f)" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 text-xs">✕</button>
+                        <div class="full">
+                            <label class="field-label">Observaciones</label>
+                            <textarea v-model="form.observaciones" rows="4" placeholder="Notas técnicas, restricciones, acuerdos con el productor, próximos pasos..."></textarea>
                         </div>
                     </div>
 
-                    <div v-if="pendingPhotos.length" class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                        <div v-for="(file, i) in pendingPhotos" :key="i" class="relative">
-                            <img :src="previewUrl(file)" class="w-full h-28 object-cover rounded-lg" />
-                            <button type="button" @click="pendingPhotos.splice(i, 1)" class="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full w-6 h-6 text-xs">✕</button>
+                    <!-- Paso 4: Fotos -->
+                    <div v-show="stepIndex === 3">
+                        <label class="photo-drop">
+                            <input type="file" accept="image/*" multiple capture="environment" @change="onPhotoInput" />
+                            <div>📷 Toca para tomar o seleccionar fotos</div>
+                            <div class="hint" style="margin-top: 4px;">JPG, PNG o WEBP, máx. 12MB cada una</div>
+                        </label>
+
+                        <div v-if="existingFotos.length" class="photo-grid">
+                            <div v-for="f in existingFotos" :key="f.id" class="photo-thumb">
+                                <img :src="fotoUrl(f.miniatura || f.archivo)" />
+                                <button type="button" @click="removeExistingFoto(f)" class="rm">✕</button>
+                            </div>
+                        </div>
+
+                        <div v-if="pendingPhotos.length" class="photo-grid">
+                            <div v-for="(file, i) in pendingPhotos" :key="i" class="photo-thumb">
+                                <img :src="previewUrl(file)" />
+                                <button type="button" @click="pendingPhotos.splice(i, 1)" class="rm">✕</button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="flex items-center justify-between mt-8 pt-4 border-t">
-                    <button type="button" v-show="stepIndex > 0" @click="stepIndex--" class="btn-ghost">← Anterior</button>
-                    <div class="flex gap-2 ml-auto">
-                        <button type="button" @click="cancelar" class="btn-secondary">Cancelar</button>
-                        <button v-if="stepIndex < STEPS.length - 1" type="button" @click="nextStep" class="btn-primary">Siguiente →</button>
-                        <button v-else type="submit" :disabled="saving" class="btn-primary">
-                            {{ saving ? 'Guardando…' : '💾 Guardar parcela' }}
-                        </button>
+                    <div class="wizard-actions">
+                        <button type="button" v-show="stepIndex > 0" @click="stepIndex--" class="btn btn-ghost">← Anterior</button>
+                        <div style="display: flex; gap: 10px; margin-left: auto;">
+                            <button type="button" @click="cancelar" class="btn btn-secondary">Cancelar</button>
+                            <button v-if="stepIndex < STEPS.length - 1" type="button" @click="nextStep" class="btn btn-primary">Siguiente →</button>
+                            <button v-else type="submit" :disabled="saving" class="btn btn-primary">
+                                {{ saving ? 'Guardando…' : '💾 Guardar parcela' }}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </template>
     </div>
 </template>
@@ -423,11 +416,3 @@ function cancelar() {
     router.push(homeAfterSave());
 }
 </script>
-
-<style scoped>
-.field-label { @apply block mb-1 text-xs font-semibold text-slate-500 uppercase tracking-wide; }
-.field-input { @apply w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500; }
-.btn-primary { @apply px-4 py-2 bg-primary-500 text-white rounded-md text-sm font-semibold hover:bg-primary-600 disabled:opacity-60; }
-.btn-secondary { @apply px-4 py-2 bg-slate-100 text-slate-700 rounded-md text-sm font-semibold hover:bg-slate-200; }
-.btn-ghost { @apply px-4 py-2 text-slate-500 text-sm font-semibold hover:text-slate-700; }
-</style>
