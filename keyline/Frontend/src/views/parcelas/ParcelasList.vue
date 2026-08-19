@@ -1,102 +1,259 @@
 <template>
-    <div>
-        <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
-            <button class="btn btn-secondary" @click="exportCsv">⬇️ Exportar CSV</button>
-            <router-link :to="{ name: 'ParcelaNueva' }" class="btn btn-primary">+ Nueva parcela</router-link>
+    <div class="space-y-5 max-w-[1600px] mx-auto pb-4">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Todas las parcelas</h2>
+                <p class="text-xs sm:text-sm text-white/60 mt-0.5">Gestión centralizada de polígonos, curvas a nivel y beneficiarios.</p>
+            </div>
+            <router-link :to="{ name: 'ParcelaNueva' }" class="flex items-center space-x-2 px-4 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] text-black rounded-xl text-xs font-bold transition-all shadow-md">
+                <Plus class="w-4 h-4" />
+                <span>Registrar parcela</span>
+            </router-link>
         </div>
 
-        <div class="panel glass" style="display: flex; flex-wrap: wrap; gap: 12px;">
-            <input v-model="filters.q" @input="debouncedLoad" placeholder="Buscar por finca, municipio, departamento o responsable" style="flex: 1; min-width: 240px;" />
-            <select v-model="filters.departamento" @change="load" style="width: auto; min-width: 190px;">
-                <option value="">Todos los departamentos</option>
-                <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
-            </select>
-            <select v-model="filters.estado" @change="load" style="width: auto; min-width: 170px;">
-                <option value="">Todos los estados</option>
-                <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e">{{ e }}</option>
-            </select>
-            <select v-model="filters.estadoValidacion" @change="load" style="width: auto; min-width: 190px;">
-                <option value="">Toda validación</option>
-                <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e">{{ e }}</option>
-            </select>
+        <!-- Filter and search bar -->
+        <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+            <div class="flex-1 relative group">
+                <Search class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors" />
+                <input
+                    v-model="filters.q"
+                    @input="debouncedLoad"
+                    placeholder="Buscar por código, nombre, productor, municipio..."
+                    class="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#22c55e]/60 transition-all placeholder:text-white/40"
+                />
+            </div>
+
+            <div class="flex flex-wrap gap-2.5 items-center">
+                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
+                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Depto:</span>
+                    <select v-model="filters.departamento" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                        <option value="">Todos</option>
+                        <option v-for="d in DEPARTAMENTOS" :key="d" :value="d" class="bg-white/10 text-white">{{ d }}</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
+                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Estado:</span>
+                    <select v-model="filters.estado" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                        <option value="">Cualquiera</option>
+                        <option v-for="e in ESTADOS_PROCESO" :key="e" :value="e" class="bg-white/10 text-white">{{ e }}</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 bg-white/5 border border-white/15 rounded-xl px-3 py-1.5">
+                    <span class="text-[10px] text-white/60 font-bold uppercase tracking-wider">Validación:</span>
+                    <select v-model="filters.estadoValidacion" @change="load" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                        <option value="">Cualquiera</option>
+                        <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e" class="bg-white/10 text-white">{{ e }}</option>
+                    </select>
+                </div>
+
+                <button
+                    @click="exportCsv"
+                    title="Exportar archivo CSV"
+                    class="flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/40 text-white rounded-xl text-xs font-medium transition-all"
+                >
+                    <Download class="w-3.5 h-3.5 text-[#22c55e]" />
+                    <span class="hidden sm:inline">CSV</span>
+                </button>
+            </div>
         </div>
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parcela</th>
-                        <th>Ubicación</th>
-                        <th>Área</th>
-                        <th>Estado</th>
-                        <th>Validación</th>
-                        <th>Técnico</th>
-                        <th>Fotos</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-if="loading"><td colspan="8" class="empty-state">Cargando…</td></tr>
-                    <tr v-else-if="!parcelas.length"><td colspan="8" class="empty-state">No hay parcelas que coincidan con los filtros actuales.</td></tr>
-                    <tr v-for="p in parcelas" :key="p.id">
-                        <td>
-                            <strong>{{ p.nombreParcela }}</strong><br />
-                            <span class="hint">{{ p.codigo }} · {{ p.fechaRegistro }}</span>
-                        </td>
-                        <td>
-                            {{ p.departamento }} / {{ p.municipio }}<br />
-                            <span class="hint">{{ p.latitud !== '' && p.latitud !== null ? `${p.latitud}, ${p.longitud}` : 'Sin GPS' }}</span>
-                        </td>
-                        <td>{{ p.areaHa }} ha</td>
-                        <td><span class="tag" :class="ESTADO_COLORS[p.estado]">{{ p.estado }}</span></td>
-                        <td><span class="tag" :class="VALIDACION_COLORS[p.estadoValidacion]">{{ p.estadoValidacion }}</span></td>
-                        <td>{{ p.tecnicoNombre }}</td>
-                        <td>{{ p.fotos?.length ? `📷 ${p.fotos.length}` : '—' }}</td>
-                        <td>
-                            <div class="row-actions">
-                                <button class="btn btn-secondary btn-sm" @click="openDetail(p)">Ver</button>
-                                <router-link :to="{ name: 'ParcelaEditar', params: { id: p.id } }" class="btn btn-secondary btn-sm">Editar</router-link>
-                                <button class="btn btn-warning btn-sm" @click="openReview(p)">Revisar</button>
-                                <button v-if="auth.role === 'administrador'" class="btn btn-danger btn-sm" @click="eliminar(p)">Eliminar</button>
+        <div v-if="loading" class="py-12 text-center text-xs text-white/60">Cargando…</div>
+        <div v-else-if="!parcelas.length" class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-10 text-center text-xs text-white/60">
+            No hay parcelas que coincidan con los filtros actuales.
+        </div>
+
+        <!-- Grid of plot cards -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+                v-for="p in parcelas"
+                :key="p.id"
+                class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl overflow-hidden transition-all duration-200 flex flex-col justify-between group"
+            >
+                <div>
+                    <!-- Image header -->
+                    <div class="relative h-40 w-full overflow-hidden bg-white/10 flex items-center justify-center cursor-pointer" @click="openDetail(p)">
+                        <img v-if="firstFoto(p)" :src="firstFoto(p)" :alt="p.nombreParcela" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Sprout v-else class="w-10 h-10 text-white/20" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+
+                        <div class="absolute top-3 left-3 right-3 flex justify-between items-center gap-2">
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/70 border border-white/20 text-white backdrop-blur-md truncate">{{ p.codigo }}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full border font-semibold whitespace-nowrap" :class="ESTADO_BADGE[p.estado]">{{ p.estado }}</span>
+                        </div>
+
+                        <div class="absolute bottom-2 right-3 bg-black/70 border border-white/15 px-2.5 py-1 rounded-lg text-xs font-bold text-white backdrop-blur-md">{{ p.areaHa }} ha</div>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <h3 class="text-base font-bold text-white group-hover:text-[#22c55e] transition-colors truncate">{{ p.nombreParcela }}</h3>
+                            <p class="text-xs text-white/60 truncate mt-0.5">Productor: <span class="text-white/80">{{ p.propietario || 'N/D' }}</span></p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-[11px] text-white/80">
+                            <div class="flex items-center gap-1.5 truncate">
+                                <MapPin class="w-3.5 h-3.5 text-[#22c55e] flex-shrink-0" />
+                                <span class="truncate">{{ p.municipio }}, {{ p.departamento }}</span>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            <div class="flex items-center gap-1.5 truncate">
+                                <Calendar class="w-3.5 h-3.5 text-white/40 flex-shrink-0" />
+                                <span>{{ p.fechaRegistro }}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/10 rounded-xl p-2.5 border border-white/20 text-[11px] text-white/80 space-y-1">
+                            <div class="flex justify-between">
+                                <span class="text-white/60">Suelo:</span>
+                                <span class="font-semibold text-white truncate max-w-[170px]">{{ p.tipoSuelo || 'N/D' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white/60">Validación:</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full border font-semibold" :class="VALIDACION_BADGE[p.estadoValidacion]">{{ p.estadoValidacion }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer actions -->
+                <div class="p-4 pt-0 border-t border-white/15 flex items-center justify-between mt-2">
+                    <span class="text-[11px] text-white/60 truncate">Técnico: <span class="text-white/80">{{ p.tecnicoNombre?.split(' ')[0] }}</span></span>
+
+                    <div class="flex items-center gap-1.5">
+                        <router-link :to="{ name: 'ParcelaEditar', params: { id: p.id } }" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white/60 hover:text-white transition-colors" title="Editar">
+                            <Pencil class="w-3.5 h-3.5" />
+                        </router-link>
+                        <button @click="openReview(p)" class="p-1.5 rounded-lg bg-white/10 hover:bg-[#eab308]/20 border border-white/20 text-white/60 hover:text-[#eab308] transition-colors" title="Revisar">
+                            <ShieldCheck class="w-3.5 h-3.5" />
+                        </button>
+                        <button v-if="auth.role === 'administrador'" @click="eliminar(p)" class="p-1.5 rounded-lg bg-white/10 hover:bg-[#ef4444]/20 border border-white/20 text-white/60 hover:text-[#ef4444] transition-colors" title="Eliminar">
+                            <Trash2 class="w-3.5 h-3.5" />
+                        </button>
+                        <button @click="openDetail(p)" class="flex items-center gap-1.5 px-3 py-1.5 bg-white/15 hover:bg-[#1a4f3a] text-[#22c55e] border border-[#22c55e]/30 rounded-xl text-xs font-semibold transition-colors">
+                            <Eye class="w-3.5 h-3.5" />
+                            <span>Ver detalle</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Modal detalle -->
-        <div v-if="detail" class="modal-overlay" @click.self="detail = null">
-            <div class="modal-box glass wide">
-                <div class="modal-head">
-                    <h3>{{ detail.nombreParcela }}</h3>
-                    <button class="modal-close" @click="detail = null">✕</button>
+        <div v-if="detail" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto" @click.self="detail = null">
+            <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fadeIn">
+                <div class="sticky top-0 bg-white/10/95 backdrop-blur-2xl border-b border-white/15 p-4 sm:p-6 flex justify-between items-start z-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-[#4ade80] flex-shrink-0">
+                            <Trees class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-mono bg-[#06b6d4]/15 text-[#38bdf8] px-2 py-0.5 rounded border border-[#38bdf8]/30">{{ detail.codigo }}</span>
+                                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold border" :class="VALIDACION_BADGE[detail.estadoValidacion]">{{ detail.estadoValidacion }}</span>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">{{ detail.nombreParcela }}</h2>
+                            <p class="text-xs text-white/80 flex items-center gap-1 mt-0.5">
+                                <MapPin class="w-3.5 h-3.5 text-[#38bdf8]" />
+                                <span>{{ detail.comunidad ? detail.comunidad + ', ' : '' }}{{ detail.municipio }}, {{ detail.departamento }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <button @click="detail = null" class="p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/15 rounded-lg transition-colors flex-shrink-0">
+                        <X class="w-5 h-5" />
+                    </button>
                 </div>
-                <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                    <span class="tag" :class="ESTADO_COLORS[detail.estado]">{{ detail.estado }}</span>
-                    <span class="tag" :class="VALIDACION_COLORS[detail.estadoValidacion]">{{ detail.estadoValidacion }}</span>
-                    <span class="badge">{{ detail.codigo }}</span>
-                </div>
-                <div class="form-grid" style="font-size: 13.5px;">
-                    <div><span class="detail-label">Ubicación</span><div>{{ detail.departamento }} / {{ detail.municipio }} {{ detail.comunidad ? '· ' + detail.comunidad : '' }}</div></div>
-                    <div><span class="detail-label">GPS</span><div>{{ detail.latitud !== '' && detail.latitud !== null ? `${detail.latitud}, ${detail.longitud}` : 'No registrado' }}</div></div>
-                    <div><span class="detail-label">Área</span><div>{{ detail.areaHa }} ha</div></div>
-                    <div><span class="detail-label">Uso actual</span><div>{{ detail.usoActual || 'N/D' }}</div></div>
-                    <div><span class="detail-label">Suelo</span><div>{{ detail.tipoSuelo || 'N/D' }} · Prof. {{ detail.profundidadSuelo || 'N/D' }} cm</div></div>
-                    <div><span class="detail-label">Talpetate / Encharca</span><div>{{ detail.talpetate || 'N/D' }} / {{ detail.encharca || 'N/D' }}</div></div>
-                    <div><span class="detail-label">Agua</span><div>{{ detail.agua || 'N/D' }} · {{ detail.fuenteAgua || '' }}</div></div>
-                    <div><span class="detail-label">Lluvia anual</span><div>{{ detail.lluviaAnual !== '' && detail.lluviaAnual !== null ? detail.lluviaAnual + ' mm' : 'N/D' }}</div></div>
-                    <div class="full"><span class="detail-label">Bioindicadores</span><div>{{ detail.bioindicadores || 'Sin registro' }}</div></div>
-                    <div class="full"><span class="detail-label">Intervenciones</span><div>{{ detail.intervenciones || 'Sin detalle' }}</div></div>
-                    <div class="full"><span class="detail-label">Observaciones</span><div>{{ detail.observaciones || '—' }}</div></div>
-                    <div><span class="detail-label">Responsable / técnico</span><div>{{ detail.propietario || 'N/D' }} · Cargado por {{ detail.tecnicoNombre }}</div></div>
-                    <div v-if="detail.comentarioSupervisor" class="full"><span class="detail-label">Comentario del supervisor</span><div>{{ detail.comentarioSupervisor }}</div></div>
-                </div>
-                <div v-if="detail.fotos?.length" style="margin-top: 16px;">
-                    <span class="detail-label">Fotografías</span>
-                    <div class="photo-grid">
-                        <div v-for="f in detail.fotos" :key="f.id" class="photo-thumb">
-                            <img :src="fotoUrl(detail.id, f.miniatura || f.archivo)" />
+
+                <div class="p-4 sm:p-6 space-y-6">
+                    <!-- Key metrics -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-white/60 block">Área total</span>
+                            <span class="text-xl font-bold text-white font-mono">{{ detail.areaHa }} ha</span>
+                        </div>
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-white/60 block">Estado del proceso</span>
+                            <span class="text-xl font-bold text-white">{{ detail.estado }}</span>
+                        </div>
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-white/60 block">Profundidad de suelo</span>
+                            <span class="text-xl font-bold text-[#4ade80] font-mono">{{ detail.profundidadSuelo || 'N/D' }} cm</span>
+                        </div>
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-white/60 block">Coordenadas GPS</span>
+                            <span class="text-xs font-bold text-[#38bdf8] font-mono">{{ detail.latitud !== '' && detail.latitud !== null ? `${detail.latitud}, ${detail.longitud}` : 'No registrado' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Diagnostics -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                                <Compass class="w-4 h-4 text-[#4ade80]" />
+                                <span>Suelo y agua</span>
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-white/60">Uso actual del suelo:</span><span class="text-white font-medium">{{ detail.usoActual || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Tipo de suelo:</span><span class="text-white font-medium">{{ detail.tipoSuelo || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Disponibilidad de agua:</span><span class="text-white font-mono">{{ detail.agua || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Lluvia anual:</span><span class="text-white font-mono">{{ detail.lluviaAnual !== '' && detail.lluviaAnual !== null ? detail.lluviaAnual + ' mm' : 'N/D' }}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                                <Mountain class="w-4 h-4 text-[#facc15]" />
+                                <span>Diagnóstico físico del terreno</span>
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-white/60">Presencia de talpetate:</span><span class="text-white font-medium">{{ detail.talpetate || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Encharcamiento:</span><span class="text-[#38bdf8] font-medium">{{ detail.encharca || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Riesgo de erosión:</span><span class="text-[#fca5a5] font-medium">{{ detail.riesgoErosion || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Pendiente:</span><span class="text-white font-mono">{{ detail.pendiente !== '' && detail.pendiente !== null ? detail.pendiente + '%' : 'N/D' }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interventions -->
+                    <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <Trees class="w-4 h-4 text-[#4ade80]" />
+                            <span>Bioindicadores e intervenciones</span>
+                        </h3>
+                        <p class="text-xs text-white/80">{{ detail.bioindicadores || 'Sin bioindicadores registrados' }}</p>
+                        <p class="text-xs text-white/80">{{ detail.intervenciones || 'Sin intervenciones registradas' }}</p>
+                    </div>
+
+                    <div v-if="detail.observaciones" class="bg-black/30 p-5 rounded-xl border border-white/10">
+                        <h3 class="text-sm font-bold text-white mb-2">Observaciones</h3>
+                        <p class="text-xs text-white/80">{{ detail.observaciones }}</p>
+                    </div>
+
+                    <div v-if="detail.comentarioSupervisor" class="bg-[#eab308]/10 p-5 rounded-xl border border-[#eab308]/30">
+                        <h3 class="text-sm font-bold text-[#fbbf24] mb-2">Comentario del supervisor</h3>
+                        <p class="text-xs text-[#fde68a]">{{ detail.comentarioSupervisor }}</p>
+                    </div>
+
+                    <!-- Photos -->
+                    <div v-if="detail.fotos?.length">
+                        <h3 class="text-sm font-bold text-white mb-3">Evidencia fotográfica de campo</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div v-for="f in detail.fotos" :key="f.id" class="h-32 rounded-xl overflow-hidden border border-white/15 group relative bg-black/40">
+                                <img :src="fotoUrl(detail.id, f.miniatura || f.archivo)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
+                        <div class="space-y-0.5 text-white/60">
+                            <p>Productor: <strong class="text-white">{{ detail.propietario || 'N/D' }}</strong></p>
+                            <p>Técnico responsable: <strong class="text-white">{{ detail.tecnicoNombre }}</strong> · Registrado el {{ detail.fechaRegistro }}</p>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button @click="detail = null" class="flex-1 sm:flex-initial px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">Cerrar</button>
                         </div>
                     </div>
                 </div>
@@ -104,26 +261,29 @@
         </div>
 
         <!-- Modal revisión -->
-        <div v-if="reviewing" class="modal-overlay" @click.self="reviewing = null">
-            <div class="modal-box glass">
-                <div class="modal-head">
-                    <h3>Revisar parcela</h3>
-                    <button class="modal-close" @click="reviewing = null">✕</button>
+        <div v-if="reviewing" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn" @click.self="reviewing = null">
+            <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] max-w-lg w-full p-6 shadow-2xl space-y-4">
+                <div class="flex justify-between items-center pb-2 border-b border-white/15">
+                    <h3 class="text-base font-bold text-white">Revisar parcela</h3>
+                    <button @click="reviewing = null" class="text-white/60 hover:text-white"><X class="w-5 h-5" /></button>
                 </div>
-                <p class="hint" style="margin-bottom: 16px;">{{ reviewing.nombreParcela }} · {{ reviewing.codigo }}</p>
-                <div class="field">
-                    <label>Estado de validación</label>
-                    <select v-model="reviewForm.estadoValidacion">
+                <p class="text-xs text-white/60">{{ reviewing.nombreParcela }} · {{ reviewing.codigo }}</p>
+                <div>
+                    <label class="text-xs text-white/80 block mb-1">Estado de validación</label>
+                    <select v-model="reviewForm.estadoValidacion" class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-[#22c55e]/60">
                         <option v-for="e in ESTADOS_VALIDACION" :key="e" :value="e">{{ e }}</option>
                     </select>
                 </div>
-                <div class="field">
-                    <label>Comentario para el técnico</label>
-                    <textarea v-model="reviewForm.comentario" rows="3" placeholder="Observaciones, correcciones solicitadas..."></textarea>
+                <div>
+                    <label class="text-xs text-white/80 block mb-1">Comentario para el técnico</label>
+                    <textarea v-model="reviewForm.comentario" rows="3" placeholder="Observaciones, correcciones solicitadas..." class="w-full bg-white/5 border border-white/15 rounded-xl p-2.5 text-xs text-white resize-none focus:outline-none focus:border-[#22c55e]/60"></textarea>
                 </div>
-                <div class="modal-actions">
-                    <button class="btn btn-secondary" @click="reviewing = null">Cancelar</button>
-                    <button class="btn btn-primary" :disabled="savingReview" @click="saveReview">Guardar revisión</button>
+                <div class="flex justify-end gap-2 pt-3 border-t border-white/15">
+                    <button @click="reviewing = null" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-xs text-white/80 rounded-xl">Cancelar</button>
+                    <button @click="saveReview" :disabled="savingReview" class="px-4 py-2 bg-[#22c55e] hover:bg-[#16a34a] text-xs font-bold text-white rounded-xl shadow-lg disabled:opacity-60 flex items-center gap-1.5">
+                        <CheckCircle2 class="w-3.5 h-3.5" />
+                        <span>Guardar revisión</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -137,8 +297,24 @@ import { parcelaFotoUrl } from '../../services/api';
 import { useAuthStore } from '../../stores/auth';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
 import {
-    DEPARTAMENTOS, ESTADOS_PROCESO, ESTADOS_VALIDACION, ESTADO_COLORS, VALIDACION_COLORS,
+    DEPARTAMENTOS, ESTADOS_PROCESO, ESTADOS_VALIDACION,
 } from '../../constants/keyline';
+import {
+    Plus, Search, Download, Eye, MapPin, Calendar, Trash2, Sprout, Pencil, ShieldCheck,
+    X, Trees, Compass, Mountain, CheckCircle2,
+} from '@lucide/vue';
+
+const ESTADO_BADGE = {
+    Levantamiento: 'bg-[#38bdf8]/15 border-[#38bdf8]/30 text-[#38bdf8]',
+    'Diseño': 'bg-[#eab308]/15 border-[#eab308]/30 text-[#eab308]',
+    Implementado: 'bg-[#22c55e]/15 border-[#22c55e]/30 text-[#22c55e]',
+    Pendiente: 'bg-[#ef4444]/15 border-[#ef4444]/30 text-[#ef4444]',
+};
+const VALIDACION_BADGE = {
+    'Pendiente de revisión': 'bg-[#eab308]/15 border-[#eab308]/30 text-[#eab308]',
+    Validado: 'bg-[#22c55e]/15 border-[#22c55e]/30 text-[#22c55e]',
+    'Requiere corrección': 'bg-[#ef4444]/15 border-[#ef4444]/30 text-[#ef4444]',
+};
 
 const auth = useAuthStore();
 const parcelas = ref([]);
@@ -171,6 +347,12 @@ load();
 
 function fotoUrl(parcelaId, name) {
     return parcelaFotoUrl(parcelaId, name);
+}
+
+function firstFoto(p) {
+    if (!p.fotos?.length) return null;
+    const f = p.fotos[0];
+    return fotoUrl(p.id, f.miniatura || f.archivo);
 }
 
 async function openDetail(p) {

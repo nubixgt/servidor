@@ -6,8 +6,8 @@ const toastBase = Swal.mixin({
     showConfirmButton: false,
     timer: 3200,
     timerProgressBar: true,
-    background: '#0d3a20',
-    color: '#f2fbf6',
+    background: '#0c1e17',
+    color: '#ffffff',
 });
 
 export function toastSuccess(message) {
@@ -25,8 +25,8 @@ export function toastInfo(message) {
 export function alertError(message, title = 'Ocurrió un error') {
     return Swal.fire({
         icon: 'error', title, text: message,
-        confirmButtonColor: '#18b75b',
-        background: '#0d3a20', color: '#f2fbf6',
+        confirmButtonColor: '#22c55e',
+        background: '#0c1e17', color: '#ffffff',
     });
 }
 
@@ -38,8 +38,8 @@ export function confirmDialog(message, { title = '¿Estás seguro?', danger = fa
         showCancelButton: true,
         confirmButtonText: confirmText,
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: danger ? '#f04444' : '#18b75b',
+        confirmButtonColor: danger ? '#ef4444' : '#22c55e',
         cancelButtonColor: 'rgba(255,255,255,0.18)',
-        background: '#0d3a20', color: '#f2fbf6',
+        background: '#0c1e17', color: '#ffffff',
     }).then((r) => r.isConfirmed);
 }

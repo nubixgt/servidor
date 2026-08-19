@@ -11,13 +11,23 @@ export default {
             },
             colors: {
                 'primary': {
-                    500: '#18b75b',
-                    600: '#0f8a45',
+                    500: '#22c55e',
+                    600: '#16a34a',
                 },
-                'forest': '#0b3d2e',
-                'deep-green': '#082c22',
-                'keyline-green': '#18b75b',
-                'emerald': '#35d77c',
+                'card': '#0c1e17',
+                'inset': '#081611',
+                'line': '#17382b',
+                'accent': '#22c55e',
+                'accent-light': '#4ade80',
+            },
+            keyframes: {
+                fadeIn: {
+                    from: { opacity: 0, transform: 'translateY(6px)' },
+                    to: { opacity: 1, transform: 'translateY(0)' },
+                },
+            },
+            animation: {
+                fadeIn: 'fadeIn .25s ease',
             },
         },
     },
