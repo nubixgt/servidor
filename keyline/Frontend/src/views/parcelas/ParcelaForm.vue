@@ -318,7 +318,7 @@
                             <label class="border-2 border-dashed border-white/20 hover:border-[#4ade80] rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-black/30 transition-colors">
                                 <Upload class="w-8 h-8 text-[#4ade80] mb-2" />
                                 <span class="text-xs font-bold text-white">Toca para tomar o seleccionar fotos</span>
-                                <span class="text-[10px] text-white/60 mt-1">JPG, PNG o WEBP, máx. 12MB cada una</span>
+                                <span class="text-[10px] text-white/60 mt-1">JPG, PNG o WEBP · máx. 12MB cada una · hasta 8 fotos por carga</span>
                                 <input type="file" accept="image/*" multiple capture="environment" @change="onPhotoInput" class="hidden" />
                             </label>
 
@@ -506,9 +506,24 @@ function capturarGeo() {
     );
 }
 
+const MAX_FOTOS = 8;
+const MAX_FOTO_MB = 12;
+
 function onPhotoInput(e) {
-    pendingPhotos.value = pendingPhotos.value.concat(Array.from(e.target.files || []));
+    const nuevos = Array.from(e.target.files || []);
     e.target.value = '';
+
+    const sobrepeso = nuevos.filter((f) => f.size > MAX_FOTO_MB * 1024 * 1024);
+    const validos = nuevos.filter((f) => f.size <= MAX_FOTO_MB * 1024 * 1024);
+    if (sobrepeso.length) {
+        alertError(`${sobrepeso.length} foto(s) superan los ${MAX_FOTO_MB}MB y no se agregaron.`);
+    }
+
+    const combinados = pendingPhotos.value.concat(validos);
+    if (combinados.length > MAX_FOTOS) {
+        alertError(`Máximo ${MAX_FOTOS} fotos por carga. Se tomaron las primeras ${MAX_FOTOS}.`);
+    }
+    pendingPhotos.value = combinados.slice(0, MAX_FOTOS);
 }
 
 function previewUrl(file) {

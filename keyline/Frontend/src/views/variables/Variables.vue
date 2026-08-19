@@ -69,7 +69,7 @@
             Ninguna variable coincide con "{{ searchTerm }}".
         </div>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="g in gruposFiltrados" :key="g.id" class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl p-5 transition-all duration-200">
+            <div v-for="g in gruposFiltrados" :key="g.id" class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/40 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 transition-all duration-200">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2.5">
                         <div class="w-9 h-9 rounded-xl bg-black/30 border border-white/15 flex items-center justify-center flex-shrink-0" :class="g.color">

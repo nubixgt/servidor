@@ -22,7 +22,7 @@
                 v-for="p in parcelas"
                 :key="p.id"
                 :to="{ name: 'ParcelaEditar', params: { id: p.id } }"
-                class="block bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl p-4 transition-all duration-200"
+                class="block bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/40 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-4 transition-all duration-200"
             >
                 <div class="flex items-center justify-between gap-2 mb-2">
                     <h4 class="text-base font-bold text-white truncate">{{ p.nombreParcela }}</h4>

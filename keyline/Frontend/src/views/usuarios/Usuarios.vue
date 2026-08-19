@@ -65,7 +65,7 @@
 
         <!-- User grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div v-for="u in filteredUsuarios" :key="u.id" class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200">
+            <div v-for="u in filteredUsuarios" :key="u.id" class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/40 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 flex flex-col justify-between transition-all duration-200">
                 <div>
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex items-center gap-3">

@@ -70,7 +70,7 @@
             <div
                 v-for="p in parcelas"
                 :key="p.id"
-                class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl overflow-hidden transition-all duration-200 flex flex-col justify-between group"
+                class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/40 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] overflow-hidden transition-all duration-200 flex flex-col justify-between group"
             >
                 <div>
                     <!-- Image header -->
@@ -144,7 +144,7 @@
         <!-- Modal detalle -->
         <div v-if="detail" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto" @click.self="detail = null">
             <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fadeIn">
-                <div class="sticky top-0 bg-white/10/95 backdrop-blur-2xl border-b border-white/15 p-4 sm:p-6 flex justify-between items-start z-20">
+                <div class="sticky top-0 bg-[#0c1e17]/80 backdrop-blur-2xl border-b border-white/15 p-4 sm:p-6 flex justify-between items-start z-20">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-[#4ade80] flex-shrink-0">
                             <Trees class="w-6 h-6" />
@@ -168,10 +168,14 @@
 
                 <div class="p-4 sm:p-6 space-y-6">
                     <!-- Key metrics -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Área total</span>
                             <span class="text-xl font-bold text-white">{{ detail.areaHa }} ha</span>
+                        </div>
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-white/60 block">Altitud</span>
+                            <span class="text-xl font-bold text-white">{{ detail.altitud || 'N/D' }} <span v-if="detail.altitud" class="text-xs font-normal text-white/60">msnm</span></span>
                         </div>
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Estado del proceso</span>
@@ -184,6 +188,21 @@
                         <div class="bg-black/30 p-3.5 rounded-xl border border-white/10">
                             <span class="text-[10px] uppercase font-bold text-white/60 block">Coordenadas GPS</span>
                             <span class="text-xs font-bold text-[#38bdf8]">{{ detail.latitud !== '' && detail.latitud !== null ? `${detail.latitud}, ${detail.longitud}` : 'No registrado' }}</span>
+                            <span v-if="detail.gpsPrecision" class="text-[10px] text-white/50 block mt-0.5">±{{ detail.gpsPrecision }} m</span>
+                        </div>
+                    </div>
+
+                    <!-- Identificación y responsable -->
+                    <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                            <User class="w-4 h-4 text-[#4ade80]" />
+                            <span>Identificación y responsable</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+                            <div class="flex justify-between"><span class="text-white/60">Productor / responsable:</span><span class="text-white font-medium">{{ detail.propietario || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Teléfono / contacto:</span><span class="text-white font-medium">{{ detail.telefono || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Tenencia de la tierra:</span><span class="text-white font-medium">{{ detail.tenenciaTierra || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Familias beneficiadas:</span><span class="text-white font-medium">{{ detail.numFamiliasBeneficiadas || 'N/D' }}</span></div>
                         </div>
                     </div>
 
@@ -196,9 +215,13 @@
                             </h3>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between"><span class="text-white/60">Uso actual del suelo:</span><span class="text-white font-medium">{{ detail.usoActual || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Cultivo principal:</span><span class="text-white font-medium">{{ detail.cultivoPrincipal || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Tipo de suelo:</span><span class="text-white font-medium">{{ detail.tipoSuelo || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Disponibilidad de agua:</span><span class="text-white">{{ detail.agua || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Fuente de agua:</span><span class="text-white">{{ detail.fuenteAgua || 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Sistema de riego:</span><span class="text-white">{{ detail.sistemaRiego || 'N/D' }}</span></div>
                                 <div class="flex justify-between"><span class="text-white/60">Lluvia anual:</span><span class="text-white">{{ detail.lluviaAnual !== '' && detail.lluviaAnual !== null ? detail.lluviaAnual + ' mm' : 'N/D' }}</span></div>
+                                <div class="flex justify-between"><span class="text-white/60">Fuente del dato de lluvia:</span><span class="text-white">{{ detail.lluviaFuente || 'N/D' }}</span></div>
                             </div>
                         </div>
 
@@ -216,14 +239,35 @@
                         </div>
                     </div>
 
-                    <!-- Interventions -->
-                    <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <Trees class="w-4 h-4 text-[#4ade80]" />
-                            <span>Bioindicadores e intervenciones</span>
-                        </h3>
-                        <p class="text-xs text-white/80">{{ detail.bioindicadores || 'Sin bioindicadores registrados' }}</p>
-                        <p class="text-xs text-white/80">{{ detail.intervenciones || 'Sin intervenciones registradas' }}</p>
+                    <!-- Interventions & follow-up -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                                <Trees class="w-4 h-4 text-[#4ade80]" />
+                                <span>Bioindicadores e intervenciones</span>
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div><span class="text-white/60 block mb-0.5">Bioindicadores:</span><span class="text-white">{{ detail.bioindicadores || 'Sin registro' }}</span></div>
+                                <div><span class="text-white/60 block mb-0.5">Intervenciones:</span><span class="text-white">{{ detail.intervenciones || 'Sin detalle' }}</span></div>
+                                <div><span class="text-white/60 block mb-0.5">Especies de reforestación:</span><span class="text-white">{{ detail.especiesReforestacion || 'Sin registro' }}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+                                <CalendarClock class="w-4 h-4 text-[#38bdf8]" />
+                                <span>Seguimiento</span>
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-white/60">Próxima visita:</span><span class="text-white font-medium">{{ detail.fechaProximaVisita || 'Sin programar' }}</span></div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white/60">Consentimiento del productor:</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full border font-semibold" :class="detail.consentimientoProductor ? 'bg-[#22c55e]/15 border-[#22c55e]/30 text-[#22c55e]' : 'bg-white/10 border-white/20 text-white/60'">
+                                        {{ detail.consentimientoProductor ? 'Autorizado' : 'No registrado' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div v-if="detail.observaciones" class="bg-black/30 p-5 rounded-xl border border-white/10">
@@ -249,8 +293,8 @@
                     <!-- Footer -->
                     <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
                         <div class="space-y-0.5 text-white/60">
-                            <p>Productor: <strong class="text-white">{{ detail.propietario || 'N/D' }}</strong></p>
                             <p>Técnico responsable: <strong class="text-white">{{ detail.tecnicoNombre }}</strong> · Registrado el {{ detail.fechaRegistro }}</p>
+                            <p v-if="detail.comunidad">Comunidad: <strong class="text-white">{{ detail.comunidad }}</strong></p>
                         </div>
                         <div class="flex items-center gap-2 w-full sm:w-auto">
                             <button @click="detail = null" class="flex-1 sm:flex-initial px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">Cerrar</button>
@@ -301,7 +345,7 @@ import {
 } from '../../constants/keyline';
 import {
     Plus, Search, Download, Eye, MapPin, Calendar, Trash2, Sprout, Pencil, ShieldCheck,
-    X, Trees, Compass, Mountain, CheckCircle2,
+    X, Trees, Compass, Mountain, CheckCircle2, User, CalendarClock,
 } from '@lucide/vue';
 
 const ESTADO_BADGE = {

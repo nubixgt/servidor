@@ -102,7 +102,7 @@
                     No hay parcelas con bioindicadores que coincidan.
                 </div>
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div v-for="p in filteredParcelas" :key="p.id" class="bg-white/10 border border-white/20 hover:border-white/40 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200">
+                    <div v-for="p in filteredParcelas" :key="p.id" class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 hover:border-white/40 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5 flex flex-col justify-between transition-all duration-200">
                         <div>
                             <div class="flex justify-between items-start mb-2.5">
                                 <span class="text-xs text-[#38bdf8] bg-[#38bdf8]/15 px-2.5 py-0.5 rounded-lg border border-[#38bdf8]/30">{{ p.codigo }}</span>

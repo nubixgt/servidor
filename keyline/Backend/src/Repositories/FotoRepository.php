@@ -22,6 +22,33 @@ class FotoRepository
         return array_map([$this, 'hydrate'], $stmt->fetchAll());
     }
 
+    /**
+     * Trae solo la primera foto (para portada) de cada parcela dada, en una única
+     * consulta — evita hacer una consulta por parcela al listar (N+1).
+     * @param int[] $parcelaIds
+     * @return array<int, Foto> Indexado por parcelaId.
+     */
+    public function findFirstByParcelaIds(array $parcelaIds): array
+    {
+        if (!$parcelaIds) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($parcelaIds), '?'));
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM fotos WHERE parcela_id IN ($placeholders) ORDER BY parcela_id ASC, fecha ASC"
+        );
+        $stmt->execute(array_values($parcelaIds));
+
+        $primeras = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $pid = (int)$row['parcela_id'];
+            if (!isset($primeras[$pid])) {
+                $primeras[$pid] = $this->hydrate($row);
+            }
+        }
+        return $primeras;
+    }
+
     public function create(Foto $foto): Foto
     {
         $stmt = $this->pdo->prepare(

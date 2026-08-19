@@ -116,7 +116,19 @@ class ParcelaRepository
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
 
-        return array_map(fn($row) => $this->hydrate($row, false), $stmt->fetchAll());
+        $parcelas = array_map(fn($row) => $this->hydrate($row, false), $stmt->fetchAll());
+
+        if ($parcelas) {
+            $ids = array_map(fn($p) => $p->id, $parcelas);
+            $primeras = $this->fotos->findFirstByParcelaIds($ids);
+            foreach ($parcelas as $p) {
+                if (isset($primeras[$p->id])) {
+                    $p->fotos = [$primeras[$p->id]];
+                }
+            }
+        }
+
+        return $parcelas;
     }
 
     public function findById(int $id): ?Parcela
