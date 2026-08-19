@@ -57,14 +57,23 @@
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Departamento *</label>
-                                <select v-model="form.departamento" required class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
+                                <select v-model="form.departamento" required @change="onDepartamentoChange" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors">
                                     <option value="">Seleccione...</option>
                                     <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Municipio *</label>
-                                <input v-model="form.municipio" required placeholder="Ej. Cobán" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <select
+                                    v-model="form.municipio"
+                                    required
+                                    :disabled="!form.departamento"
+                                    class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white focus:outline-none transition-colors disabled:opacity-50"
+                                >
+                                    <option value="">{{ form.departamento ? 'Seleccione...' : 'Elige primero un departamento' }}</option>
+                                    <option v-for="m in municipiosDisponibles" :key="m" :value="m">{{ m }}</option>
+                                    <option v-if="form.municipio && !municipiosDisponibles.includes(form.municipio)" :value="form.municipio">{{ form.municipio }}</option>
+                                </select>
                             </div>
                         </div>
 
@@ -376,14 +385,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import parcelaService from '../../services/parcelaService';
 import { parcelaFotoUrl } from '../../services/api';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
 import {
     DEPARTAMENTOS, ESTADOS_PROCESO, USOS_ACTUALES, NIVELES_AGUA,
-    RIESGO_EROSION, TENENCIA_TIERRA, FUENTE_AGUA,
+    RIESGO_EROSION, TENENCIA_TIERRA, FUENTE_AGUA, MUNICIPIOS_POR_DEPARTAMENTO,
 } from '../../constants/keyline';
 import {
     Check, MapPin, Sliders, Upload, Compass, Camera, ArrowLeft, ArrowRight,
@@ -426,6 +435,14 @@ function blankForm() {
 }
 
 const form = reactive(blankForm());
+
+const municipiosDisponibles = computed(() => MUNICIPIOS_POR_DEPARTAMENTO[form.departamento] || []);
+
+function onDepartamentoChange() {
+    if (!municipiosDisponibles.value.includes(form.municipio)) {
+        form.municipio = '';
+    }
+}
 
 function todayISO() {
     const now = new Date();
