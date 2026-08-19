@@ -278,13 +278,19 @@ onMounted(async () => {
     try {
         const { data: resumen } = await dashboardService.resumen();
         data.value = resumen;
+        // loading debe pasar a false ANTES del nextTick: el mapa y las
+        // gráficas viven dentro de v-else-if="data", que solo se monta
+        // cuando loading ya es false. Si no, los refs del mapa/canvas
+        // siguen en null y renderMap/renderChart* retornan sin hacer nada
+        // (y sin lanzar error).
+        loading.value = false;
         await nextTick();
         // Cada gráfica/mapa se aísla en su propio try: si uno falla, no debe
         // impedir que los demás se dibujen.
         try { renderMap(resumen.puntosMapa); } catch (e) { console.error('Error al iniciar el mapa:', e); }
         try { renderChartValidacion(resumen.totales); } catch (e) { console.error('Error en gráfico de validación:', e); }
         try { renderChartEstado(resumen.porEstadoProceso); } catch (e) { console.error('Error en gráfico de estado:', e); }
-    } finally {
+    } catch (e) {
         loading.value = false;
     }
 });
