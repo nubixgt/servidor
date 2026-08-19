@@ -114,8 +114,8 @@
                             <h3 class="text-[15px] font-bold text-white">Validación técnica</h3>
                             <p class="text-[11px] text-white/60">Revisión de calidad de la información cargada.</p>
                         </div>
-                        <div class="flex justify-center my-2">
-                            <canvas ref="chartValidacionRef" height="180"></canvas>
+                        <div class="relative h-[200px] my-2">
+                            <canvas ref="chartValidacionRef"></canvas>
                         </div>
                     </div>
                 </div>
@@ -158,7 +158,9 @@
                         <div class="bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5">
                             <h3 class="text-[15px] font-bold text-white">Estado del proceso</h3>
                             <p class="text-[11px] text-white/60 mb-3">Distribución por fase técnica.</p>
-                            <canvas ref="chartEstadoRef" height="200"></canvas>
+                            <div class="relative h-[220px]">
+                                <canvas ref="chartEstadoRef"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,7 +212,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-white/10">
                                     <tr v-if="!data.registrosRecientes.length"><td colspan="3" class="py-6 text-center text-white/60">Sin registros aún.</td></tr>
-                                    <tr v-for="r in data.registrosRecientes" :key="r.id" class="hover:bg-white/10 transition-colors">
+                                    <tr v-for="r in data.registrosRecientes" :key="r.id" class="hover:bg-white/10 transition-colors cursor-pointer" @click="openDetail(r)">
                                         <td class="py-2.5 pr-2">
                                             <p class="font-semibold text-white text-[11px] truncate">{{ r.nombre }}</p>
                                             <p class="text-[9px] text-white/60 truncate">{{ r.codigo }} · {{ r.departamento }}</p>
@@ -226,17 +228,21 @@
                     </div>
                 </div>
             </div>
+
+            <ParcelaDetailModal v-if="detail" :parcela="detail" @close="detail = null" />
         </template>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import Chart from 'chart.js/auto';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import dashboardService from '../../services/dashboardService';
+import parcelaService from '../../services/parcelaService';
 import StatCard from '../../components/dashboard/StatCard.vue';
+import ParcelaDetailModal from '../../components/parcelas/ParcelaDetailModal.vue';
 import { ESTADO_COLORS } from '../../constants/keyline';
 import { useAuthStore } from '../../stores/auth';
 import {
@@ -251,12 +257,21 @@ const showDateDropdown = ref(false);
 
 const loading = ref(true);
 const data = ref(null);
+const detail = ref(null);
 const mapRef = ref(null);
 const chartValidacionRef = ref(null);
 const chartEstadoRef = ref(null);
+let mapInstance = null;
+let chartValidacionInstance = null;
+let chartEstadoInstance = null;
 
 function fmtNum(n) {
     return Number(n || 0).toLocaleString('es-GT', { maximumFractionDigits: 1 });
+}
+
+async function openDetail(r) {
+    const { data } = await parcelaService.obtener(r.id);
+    detail.value = data.parcela;
 }
 
 onMounted(async () => {
@@ -264,18 +279,31 @@ onMounted(async () => {
         const { data: resumen } = await dashboardService.resumen();
         data.value = resumen;
         await nextTick();
-        renderMap(resumen.puntosMapa);
-        renderChartValidacion(resumen.totales);
-        renderChartEstado(resumen.porEstadoProceso);
+        // Cada gráfica/mapa se aísla en su propio try: si uno falla, no debe
+        // impedir que los demás se dibujen.
+        try { renderMap(resumen.puntosMapa); } catch (e) { console.error('Error al iniciar el mapa:', e); }
+        try { renderChartValidacion(resumen.totales); } catch (e) { console.error('Error en gráfico de validación:', e); }
+        try { renderChartEstado(resumen.porEstadoProceso); } catch (e) { console.error('Error en gráfico de estado:', e); }
     } finally {
         loading.value = false;
     }
 });
 
+onUnmounted(() => {
+    if (mapInstance) { mapInstance.remove(); mapInstance = null; }
+    if (chartValidacionInstance) { chartValidacionInstance.destroy(); chartValidacionInstance = null; }
+    if (chartEstadoInstance) { chartEstadoInstance.destroy(); chartEstadoInstance = null; }
+});
+
 function renderMap(puntos) {
     if (!mapRef.value) return;
+    if (mapInstance) {
+        mapInstance.remove();
+        mapInstance = null;
+    }
     const center = puntos.length ? [puntos[0].lat, puntos[0].lng] : [15.5, -90.25];
     const map = L.map(mapRef.value, { scrollWheelZoom: false }).setView(center, puntos.length ? 7 : 6);
+    mapInstance = map;
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18,
     }).addTo(map);
@@ -290,11 +318,18 @@ function renderMap(puntos) {
     if (!puntos.length) {
         L.popup().setLatLng(center).setContent('Aún no hay parcelas con coordenadas GPS registradas.').openOn(map);
     }
+    // El contenedor puede no tener su tamaño final resuelto en el primer paint
+    // (transiciones/blur del panel); esto obliga a Leaflet a recalcular.
+    setTimeout(() => map.invalidateSize(), 150);
 }
 
 function renderChartValidacion(totales) {
     if (!chartValidacionRef.value) return;
-    new Chart(chartValidacionRef.value, {
+    if (chartValidacionInstance) {
+        chartValidacionInstance.destroy();
+        chartValidacionInstance = null;
+    }
+    chartValidacionInstance = new Chart(chartValidacionRef.value, {
         type: 'doughnut',
         data: {
             labels: ['Validadas', 'Pendientes de revisión', 'Otras'],
@@ -304,20 +339,31 @@ function renderChartValidacion(totales) {
                 borderWidth: 0,
             }],
         },
-        options: { plugins: { legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.85)', font: { size: 11 } } } }, cutout: '68%' },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.85)', font: { size: 11 } } } },
+            cutout: '68%',
+        },
     });
 }
 
 function renderChartEstado(items) {
     if (!chartEstadoRef.value) return;
+    if (chartEstadoInstance) {
+        chartEstadoInstance.destroy();
+        chartEstadoInstance = null;
+    }
     const colors = { Levantamiento: '#38bdf8', 'Diseño': '#eab308', Implementado: '#22c55e', Pendiente: '#ef4444' };
-    new Chart(chartEstadoRef.value, {
+    chartEstadoInstance = new Chart(chartEstadoRef.value, {
         type: 'bar',
         data: {
             labels: items.map((i) => i.estado),
             datasets: [{ data: items.map((i) => i.cantidad), backgroundColor: items.map((i) => colors[i.estado] || '#22c55e'), borderRadius: 8 }],
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
                 x: { ticks: { color: 'rgba(255,255,255,0.85)', font: { size: 11 } }, grid: { display: false } },
