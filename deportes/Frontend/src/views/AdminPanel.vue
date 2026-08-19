@@ -106,7 +106,6 @@
                 <!-- Top section -->
                 <div class="flex justify-between items-start pt-3 px-3">
                   <div class="flex flex-col items-center leading-none">
-                    <span class="text-3xl font-black tracking-tighter">{{ jugador.posicion === 'POR' ? '85' : '82' }}</span>
                     <span class="text-[10px] uppercase font-bold mt-1">{{ jugador.posicion || 'JUG' }}</span>
                     <div class="mt-2 w-6 h-6 flex items-center justify-center overflow-hidden">
                        <img v-if="equipoSeleccionado?.foto_ruta" :src="IMAGE_BASE_URL + equipoSeleccionado.foto_ruta" class="w-full h-full object-contain">
