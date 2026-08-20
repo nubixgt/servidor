@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../core/config/asistente_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/primary_button.dart';
 
 /// Hoja de acceso rápido al asistente AgroIA por WhatsApp — se abre desde el
-/// botón central del bottom nav. El número oficial se conectará cuando el
-/// Backend esté listo; por ahora es solo la interfaz.
+/// botón central del bottom nav y abre un chat con el número del Asistente
+/// (whatsapp-bot/), que saluda por nombre y conduce un menú de opciones.
 class AsistenteScreen extends StatelessWidget {
   const AsistenteScreen({super.key});
 
@@ -57,14 +59,18 @@ class AsistenteScreen extends StatelessWidget {
               PrimaryButton(
                 label: 'Abrir WhatsApp AgroIA →',
                 icon: Icons.chat_bubble_rounded,
-                onPressed: () {
+                onPressed: () async {
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Se conectará con el número oficial cuando el Backend esté listo'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
+                  final uri = Uri.parse('https://wa.me/${AsistenteConfig.numeroWhatsapp}');
+                  final abierto = await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  if (!abierto && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('No se pudo abrir WhatsApp. ¿Está instalado?'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
                 },
               ),
             ],

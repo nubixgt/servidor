@@ -54,6 +54,9 @@ dependencies:
   # sobre video_player, para no construir la UI del reproductor a mano
   chewie: ^1.11.3
 
+  # Abrir WhatsApp con el número del Asistente AgroIA (wa.me deep link)
+  url_launcher: ^6.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

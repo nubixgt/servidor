@@ -3,3 +3,12 @@
 Backend/uploads/cursos/
 !Backend/uploads/.htaccess
 !Backend/uploads/.gitkeep
+
+# Fotos/audios de consultas técnicas recibidas por el Asistente WhatsApp.
+Backend/uploads/consultas/
+
+# Servicio del Asistente WhatsApp (Baileys): dependencias y sesión de
+# WhatsApp nunca se versionan (whatsapp-bot/ tiene su propio .gitignore,
+# esto es una red de seguridad extra).
+whatsapp-bot/node_modules/
+whatsapp-bot/session/
