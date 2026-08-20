@@ -76,6 +76,17 @@ startSocket();
 
 const app = express();
 
+// Passenger para Node.js manda la ruta completa (incluyendo el
+// PassengerBaseURI configurado en cPanel) en vez de recortarla como hace
+// con otros lenguajes, así que la quitamos nosotros mismos.
+app.use((req, res, next) => {
+    const prefix = '/CONADEA/whatsapp-bot';
+    if (req.url.startsWith(prefix)) {
+        req.url = req.url.slice(prefix.length) || '/';
+    }
+    next();
+});
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', whatsappReady: isReady });
 });
