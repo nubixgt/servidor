@@ -11,6 +11,11 @@
     # Send requests starting with Backend/ to the API entry point
     RewriteRule ^Backend/(.*)$ Backend/api/v1/index.php [QSA,L]
 
+    # 1c. Let requests to whatsapp-bot/ through untouched — that path is
+    # served by the Node.js app (Passenger), not by this Apache vhost's
+    # static/SPA rules below.
+    RewriteRule ^whatsapp-bot/ - [L]
+
     # 2. Static Files (Frontend)
     # Check if the requested file exists in Frontend/dist
     RewriteCond %{REQUEST_FILENAME} !-f
