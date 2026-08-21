@@ -14,6 +14,14 @@ const { handleIncomingMessage } = require('./lib/messageHandler');
 const SESSION_DIR = path.join(__dirname, 'session');
 const logger = pino({ level: 'silent' });
 
+// Baileys a veces lanza rechazos de promesa no capturados en tareas de
+// fondo (ej. timeout subiendo pre-keys) que no pasan por el evento
+// connection.update — sin este handler, Node mata todo el proceso por un
+// hipo transitorio en vez de dejar que la reconexión propia se encargue.
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled rejection (ignorada, la conexión sigue):', err?.message || err);
+});
+
 const pairPhoneArg = process.argv.find(a => a.startsWith('--phone='));
 const pairPhone = pairPhoneArg ? pairPhoneArg.split('=')[1].replace(/\D/g, '') : null;
 
