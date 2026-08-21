@@ -49,6 +49,7 @@ async function procesarMensaje(sock, msg) {
     // — Baileys igual expone el número real en key.senderPn cuando existe.
     const jidTelefono = msg.key.senderPn || jid;
     const telefono = jidTelefono.split('@')[0].replace(/\D/g, '');
+    console.log('DEBUG mensaje entrante:', JSON.stringify({ jid, key: msg.key, telefono }));
     const responder = (texto) => sock.sendMessage(jid, { text: texto });
     const comando = extraerTexto(msg.message).trim().toLowerCase();
 
