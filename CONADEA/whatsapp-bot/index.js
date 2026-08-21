@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const pino = require('pino');
 const qrcode = require('qrcode-terminal');
+const dns = require('dns');
+const tls = require('tls');
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -29,6 +31,38 @@ let sock = null;
 let isReady = false;
 let lastConnectionUpdate = null;
 let startedAt = new Date().toISOString();
+let networkDiag = { step: 'iniciando' };
+
+// Diagnóstico: bajo Passenger, la conexión a WhatsApp se queda atascada en
+// "connecting" para siempre, mientras que corriendo el mismo código a mano
+// por SSH sí conecta — esto prueba resolución DNS + handshake TLS directo
+// contra el servidor de WhatsApp, en el MISMO contexto/proceso que Passenger
+// supervisa, para comparar contra una corrida manual.
+function runNetworkDiagnostic() {
+    const t0 = Date.now();
+    dns.lookup('web.whatsapp.com', { all: true, verbatim: true }, (err, addresses) => {
+        if (err) {
+            networkDiag = { step: 'dns-error', error: err.message, ms: Date.now() - t0 };
+            return;
+        }
+        const t1 = Date.now();
+        const socket = tls.connect(
+            { host: 'web.whatsapp.com', port: 443, servername: 'web.whatsapp.com', timeout: 8000 },
+            () => {
+                networkDiag = { step: 'ok', addresses, dnsMs: t1 - t0, tlsMs: Date.now() - t1 };
+                socket.end();
+            }
+        );
+        socket.on('error', (err) => {
+            networkDiag = { step: 'tls-error', error: err.message, addresses, dnsMs: t1 - t0, elapsedMs: Date.now() - t1 };
+        });
+        socket.on('timeout', () => {
+            networkDiag = { step: 'tls-timeout', addresses, dnsMs: t1 - t0 };
+            socket.destroy();
+        });
+    });
+}
+runNetworkDiagnostic();
 
 async function startSocket() {
     const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
@@ -107,7 +141,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', whatsappReady: isReady, startedAt, lastConnectionUpdate });
+    res.json({ status: 'ok', whatsappReady: isReady, startedAt, lastConnectionUpdate, networkDiag });
 });
 
 app.listen(config.port, () => {
