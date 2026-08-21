@@ -34,12 +34,12 @@ class AsistenteRepository
                 COALESCE(pc.aprobado, 0) AS aprobado
              FROM cursos c
              LEFT JOIN lecciones l ON l.curso_id = c.id
-             LEFT JOIN progreso_lecciones pl ON pl.leccion_id = l.id AND pl.usuario_id = :usuario_id
-             LEFT JOIN progreso_cursos pc ON pc.curso_id = c.id AND pc.usuario_id = :usuario_id
+             LEFT JOIN progreso_lecciones pl ON pl.leccion_id = l.id AND pl.usuario_id = :usuario_id1
+             LEFT JOIN progreso_cursos pc ON pc.curso_id = c.id AND pc.usuario_id = :usuario_id2
              GROUP BY c.id, c.titulo, pc.aprobado
              ORDER BY c.id"
         );
-        $stmt->execute(['usuario_id' => $usuarioId]);
+        $stmt->execute(['usuario_id1' => $usuarioId, 'usuario_id2' => $usuarioId]);
 
         return array_map(
             fn($row) => [
