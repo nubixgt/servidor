@@ -27,6 +27,8 @@ const pairPhone = pairPhoneArg ? pairPhoneArg.split('=')[1].replace(/\D/g, '') :
 
 let sock = null;
 let isReady = false;
+let lastConnectionUpdate = null;
+let startedAt = new Date().toISOString();
 
 async function startSocket() {
     const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
@@ -57,6 +59,15 @@ async function startSocket() {
 
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
+
+        if (connection) {
+            lastConnectionUpdate = {
+                connection,
+                at: new Date().toISOString(),
+                errorMessage: lastDisconnect?.error?.message || null,
+                statusCode: lastDisconnect?.error?.output?.statusCode ?? null,
+            };
+        }
 
         if (qr && !pairPhone) {
             console.log('Escanea este QR con WhatsApp (Dispositivos vinculados):');
@@ -96,7 +107,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', whatsappReady: isReady });
+    res.json({ status: 'ok', whatsappReady: isReady, startedAt, lastConnectionUpdate });
 });
 
 app.listen(config.port, () => {
