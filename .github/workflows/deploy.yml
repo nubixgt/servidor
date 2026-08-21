@@ -75,6 +75,7 @@ jobs:
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude '**/whatsapp-bot/.htaccess' \
+            --exclude '**/whatsapp-bot/session/' \
             --chmod=D755,F644 \
             -e "ssh -p ${{ secrets.SSH_PORT }}" \
             ./ \
