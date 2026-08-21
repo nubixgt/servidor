@@ -6,7 +6,10 @@ const config = require('../config');
 const estados = new Map();
 
 function getState(jid) {
-    return estados.get(jid) || { paso: 'root', datos: {}, actualizadoEn: Date.now() };
+    // actualizadoEn: 0 (no Date.now()) para una conversación nueva — si no,
+    // el primer mensaje de cualquier chat nuevo siempre queda dentro de la
+    // ventana del filtro anti-abuso ("ahora - ahora" ≈ 0) y se descarta solo.
+    return estados.get(jid) || { paso: 'root', datos: {}, actualizadoEn: 0 };
 }
 
 function setState(jid, estado) {
