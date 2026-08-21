@@ -49,19 +49,19 @@ async function procesarMensaje(sock, msg) {
     // — Baileys igual expone el número real en key.senderPn cuando existe.
     const jidTelefono = msg.key.senderPn || jid;
     const telefono = jidTelefono.split('@')[0].replace(/\D/g, '');
-    console.log('DEBUG mensaje entrante:', JSON.stringify({ jid, key: msg.key, telefono }));
     const responder = (texto) => sock.sendMessage(jid, { text: texto });
     const comando = extraerTexto(msg.message).trim().toLowerCase();
+    const usuario = estadoActual.datos?.usuario;
 
     // "menu"/"0" siempre reinician el flujo, sin importar en qué paso esté.
     if (comando === '0' || comando === 'salir') {
         clearState(jid);
-        await responder(menu.textoDespedida());
+        await responder(menu.textoDespedida(usuario?.nombre_completo));
         return;
     }
 
     if (estadoActual.paso === 'consulta_esperando_adjunto') {
-        await manejarAdjuntoConsulta(sock, msg, jid, telefono, responder);
+        await manejarAdjuntoConsulta(sock, msg, jid, telefono, usuario, responder);
         return;
     }
 
@@ -70,7 +70,7 @@ async function procesarMensaje(sock, msg) {
         return;
     }
 
-    await manejarOpcionMenu(comando, jid, telefono, responder);
+    await manejarOpcionMenu(comando, jid, telefono, usuario, responder);
 }
 
 async function saludarYMostrarMenu(jid, telefono, responder) {
@@ -93,7 +93,7 @@ async function saludarYMostrarMenu(jid, telefono, responder) {
     setState(jid, { paso: 'menu', datos: { usuario } });
 }
 
-async function manejarOpcionMenu(comando, jid, telefono, responder) {
+async function manejarOpcionMenu(comando, jid, telefono, usuario, responder) {
     switch (comando) {
         case '1':
         case '2': {
@@ -105,25 +105,26 @@ async function manejarOpcionMenu(comando, jid, telefono, responder) {
                 await responder(menu.textoErrorGenerico());
                 return;
             }
-            await responder(comando === '1' ? menu.textoCursos(progreso) : menu.textoResumen(progreso));
-            setState(jid, { paso: 'menu', datos: {} });
+            const nombre = usuario?.nombre_completo;
+            await responder(comando === '1' ? menu.textoCursos(nombre, progreso) : menu.textoResumen(nombre, progreso));
+            setState(jid, { paso: 'menu', datos: { usuario } });
             return;
         }
         case '3':
-            await responder(menu.textoPideAdjunto());
-            setState(jid, { paso: 'consulta_esperando_adjunto', datos: {} });
+            await responder(menu.textoPideAdjunto(usuario?.nombre_completo));
+            setState(jid, { paso: 'consulta_esperando_adjunto', datos: { usuario } });
             return;
         case '4':
-            await responder(menu.textoSoporte());
-            setState(jid, { paso: 'menu', datos: {} });
+            await responder(menu.textoSoporte(usuario?.nombre_completo));
+            setState(jid, { paso: 'menu', datos: { usuario } });
             return;
         default:
-            await responder(`${menu.textoOpcionInvalida()}\n\n${menu.textoMenu()}`);
-            setState(jid, { paso: 'menu', datos: {} });
+            await responder(`${menu.textoOpcionInvalida(usuario?.nombre_completo)}\n\n${menu.textoMenu()}`);
+            setState(jid, { paso: 'menu', datos: { usuario } });
     }
 }
 
-async function manejarAdjuntoConsulta(sock, msg, jid, telefono, responder) {
+async function manejarAdjuntoConsulta(sock, msg, jid, telefono, usuario, responder) {
     const tipoAdjunto = detectarAdjunto(msg.message);
     const mensaje = extraerTexto(msg.message) || undefined;
 
@@ -138,12 +139,12 @@ async function manejarAdjuntoConsulta(sock, msg, jid, telefono, responder) {
         } else if (mensaje) {
             await backend.registrarConsulta({ telefono, tipo: 'texto', mensaje });
         } else {
-            await responder(menu.textoPideAdjunto());
+            await responder(menu.textoPideAdjunto(usuario?.nombre_completo));
             return;
         }
 
-        await responder(`${menu.textoConsultaRecibida()}\n\n${menu.textoMenu()}`);
-        setState(jid, { paso: 'menu', datos: {} });
+        await responder(`${menu.textoConsultaRecibida(usuario?.nombre_completo)}\n\n${menu.textoMenu()}`);
+        setState(jid, { paso: 'menu', datos: { usuario } });
     } catch (err) {
         console.error('Error registrando consulta técnica:', err);
         await responder(menu.textoErrorGenerico());
