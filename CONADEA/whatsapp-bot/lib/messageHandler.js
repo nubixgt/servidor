@@ -44,7 +44,11 @@ async function procesarMensaje(sock, msg) {
     const estadoActual = getState(jid);
     if (Date.now() - estadoActual.actualizadoEn < RATE_LIMIT_MS) return;
 
-    const telefono = jid.split('@')[0].replace(/\D/g, '');
+    // Si el remitente usa el sistema nuevo de LID de WhatsApp (privacidad),
+    // "jid" es un identificador opaco (termina en @lid), no el número real
+    // — Baileys igual expone el número real en key.senderPn cuando existe.
+    const jidTelefono = msg.key.senderPn || jid;
+    const telefono = jidTelefono.split('@')[0].replace(/\D/g, '');
     const responder = (texto) => sock.sendMessage(jid, { text: texto });
     const comando = extraerTexto(msg.message).trim().toLowerCase();
 
