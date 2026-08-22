@@ -111,7 +111,7 @@ class EquipoModel {
     }
 
     public function getEncargados() {
-        $query = "SELECT e.id as equipo_id, e.nombre as equipo_nombre, e.representante, e.telefono, e.foto_representante_ruta,
+        $query = "SELECT e.id as equipo_id, e.nombre as equipo_nombre, e.representante, e.telefono, e.foto_representante_ruta, e.dpi, e.foto_ruta,
                   (SELECT COUNT(*) FROM jugadores j WHERE j.equipo_id = e.id AND j.estado = 'activo') as cantidad_jugadores
                   FROM " . $this->table_name . " e
                   WHERE e.rol = 'encargado'
