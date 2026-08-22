@@ -156,15 +156,20 @@
           </div>
           <!-- DASHBOARD END -->
 
-          <header class="mb-8">
+          <header class="mb-8 mt-12">
             <p class="text-purple-500 text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
               <span class="w-6 h-px bg-purple-500"></span> Directorio General
             </p>
             <h2 class="text-2xl font-black italic tracking-tight">EQUIPOS REGISTRADOS</h2>
           </header>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="eq in equipos" :key="eq.id" @click="verEquipo(eq.id)" class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex items-center gap-4 hover:border-purple-500/50 cursor-pointer transition-colors group">
+          <div v-if="equipos.length === 0" class="text-center py-12 bg-[#1e1e1e] border border-gray-800 rounded-xl mb-12">
+            <p class="text-gray-500 font-bold mb-2">No se encontraron equipos.</p>
+            <p class="text-xs text-gray-600">Asegúrate de que haya equipos registrados y que la API esté funcionando.</p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div v-for="eq in equipos" :key="eq.id" @click="verEquipo(eq.id)" class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 flex items-center gap-4 hover:border-purple-500/50 cursor-pointer transition-colors group shadow-lg">
               <div class="w-16 h-16 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden shrink-0 group-hover:border-purple-500/30 transition-colors">
                  <img v-if="eq.foto_ruta" :src="IMAGE_BASE_URL + eq.foto_ruta" class="w-full h-full object-cover">
                  <svg v-else class="w-8 h-8 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l9 4v6c0 5.55-3.84 10.74-9 12-5.16-1.26-9-6.45-9-12V6l9-4z"/></svg>
@@ -173,7 +178,7 @@
                 <h3 class="font-bold text-sm uppercase truncate text-white">{{ eq.nombre }}</h3>
                 <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest truncate">Rep: {{ eq.representante }}</p>
                 <div class="mt-2 inline-block px-2 py-1 bg-gray-900 text-purple-400 text-[10px] font-bold uppercase rounded border border-gray-800">
-                  {{ eq.cantidad_jugadores || 0 }} Jugadores Activos
+                  {{ eq.cantidad_jugadores || 0 }} Jugadores
                 </div>
               </div>
             </div>
