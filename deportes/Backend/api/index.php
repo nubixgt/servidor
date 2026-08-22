@@ -64,6 +64,7 @@ $router->add('GET', '/api/stats', 'StatsController', 'getStats');
 $router->add('POST', '/api/partidos', 'PartidoController', 'create');
 $router->add('GET', '/api/partidos', 'PartidoController', 'getAll');
 $router->add('GET', '/api/partidos/{id}', 'PartidoController', 'getById');
+$router->add('POST', '/api/partidos/{id}/eliminar', 'PartidoController', 'delete');
 
 // Estadisticas Rankings
 $router->add('GET', '/api/rankings/goleadores', 'EstadisticasController', 'getGoleadores');

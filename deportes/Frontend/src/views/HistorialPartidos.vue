@@ -218,7 +218,7 @@ const confirmDelete = (id) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        await api.delete(`/partidos/${id}`, { headers: getAuthHeaders() });
+        await api.post(`/partidos/${id}/eliminar`, {}, { headers: getAuthHeaders() });
         partidoSeleccionado.value = null; // Cerrar modal si está abierto
         await fetchPartidos(); // Recargar lista
         Swal.fire({
