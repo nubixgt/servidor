@@ -249,7 +249,7 @@ const cargarJugadores = async () => {
   if (form.equipo_local_id) {
     try {
       const res = await api.get(`/admin/equipos/${form.equipo_local_id}/jugadores`, { headers: getAuthHeaders() });
-      jugadoresLocal.value = res.data.map(j => ({...j, equipo_id: form.equipo_local_id}));
+      jugadoresLocal.value = res.data.jugadores_activos.map(j => ({...j, equipo_id: form.equipo_local_id}));
     } catch (e) { console.error(e); }
   } else {
     jugadoresLocal.value = [];
@@ -258,7 +258,7 @@ const cargarJugadores = async () => {
   if (form.equipo_visitante_id) {
     try {
       const res = await api.get(`/admin/equipos/${form.equipo_visitante_id}/jugadores`, { headers: getAuthHeaders() });
-      jugadoresVisitante.value = res.data.map(j => ({...j, equipo_id: form.equipo_visitante_id}));
+      jugadoresVisitante.value = res.data.jugadores_activos.map(j => ({...j, equipo_id: form.equipo_visitante_id}));
     } catch (e) { console.error(e); }
   } else {
     jugadoresVisitante.value = [];
