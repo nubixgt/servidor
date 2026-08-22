@@ -19,14 +19,14 @@ class PartidoController {
             return;
         }
 
-        $decoded = JwtUtils::validate($token);
+        $decoded = JwtUtils::verifyToken($token);
         if (!$decoded) {
             Response::error('Token inválido', 401);
             return;
         }
         
-        $rol = $decoded->data->rol;
-        $equipo_id_logueado = $decoded->data->id;
+        $rol = $decoded['rol'] ?? null;
+        $equipo_id_logueado = $decoded['equipo_id'] ?? null;
 
         if (!isset($data['fecha']) || !isset($data['equipo_local_id']) || !isset($data['equipo_visitante_id']) || !isset($data['estadisticas'])) {
             Response::error('Faltan datos requeridos', 400);
