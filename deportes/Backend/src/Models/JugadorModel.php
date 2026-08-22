@@ -78,4 +78,12 @@ class JugadorModel {
         $stmt->bindParam(":id", $id);
         return $stmt->execute();
     }
+
+    public function countActivos() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE estado = 'activo'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
 }

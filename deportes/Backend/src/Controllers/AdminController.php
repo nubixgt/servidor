@@ -4,6 +4,7 @@ namespace Controllers;
 use Core\Response;
 use Models\EquipoModel;
 use Models\JugadorModel;
+use Models\PartidoModel;
 use Utils\JwtUtils;
 
 class AdminController {
@@ -62,5 +63,32 @@ class AdminController {
         $equipo['jugadores_inactivos'] = $jugadorModel->getByEquipo($equipo_id, 'inactivo');
         
         Response::json($equipo);
+    }
+
+    public function getEstadisticasGenerales() {
+        $this->verifyAdmin();
+
+        $equipoModel = new EquipoModel();
+        $jugadorModel = new JugadorModel();
+        $partidoModel = new PartidoModel();
+
+        $equiposIncompletos = $equipoModel->getEquiposIncompletos();
+
+        $data = [
+            'total_jugadores' => $jugadorModel->countActivos(),
+            'total_equipos' => $equipoModel->countEquipos(),
+            'equipos_incompletos_count' => count($equiposIncompletos),
+            'equipos_incompletos_list' => $equiposIncompletos,
+            'total_partidos' => $partidoModel->countPartidos()
+        ];
+
+        Response::json($data);
+    }
+
+    public function getEncargados() {
+        $this->verifyAdmin();
+        $equipoModel = new EquipoModel();
+        $encargados = $equipoModel->getEncargados();
+        Response::json($encargados);
     }
 }

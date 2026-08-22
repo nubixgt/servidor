@@ -89,4 +89,35 @@ class EquipoModel {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function countEquipos() {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE rol = 'encargado'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
+    public function getEquiposIncompletos() {
+        $query = "SELECT e.id, e.nombre, e.foto_ruta, COUNT(j.id) as cantidad_jugadores 
+                  FROM " . $this->table_name . " e 
+                  LEFT JOIN jugadores j ON e.id = j.equipo_id AND j.estado = 'activo'
+                  WHERE e.rol = 'encargado' 
+                  GROUP BY e.id 
+                  HAVING cantidad_jugadores < 10";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getEncargados() {
+        $query = "SELECT e.id as equipo_id, e.nombre as equipo_nombre, e.representante, e.telefono, e.foto_representante_ruta,
+                  (SELECT COUNT(*) FROM jugadores j WHERE j.equipo_id = e.id AND j.estado = 'activo') as cantidad_jugadores
+                  FROM " . $this->table_name . " e
+                  WHERE e.rol = 'encargado'
+                  ORDER BY e.nombre ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

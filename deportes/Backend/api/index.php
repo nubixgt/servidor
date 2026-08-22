@@ -55,6 +55,8 @@ $router->add('GET', '/api/mi-equipo/inactivos', 'JugadorController', 'getInactiv
 require_once __DIR__ . '/../src/Controllers/AdminController.php';
 $router->add('GET', '/api/admin/equipos', 'AdminController', 'getEquipos');
 $router->add('GET', '/api/admin/equipos/{id}/jugadores', 'AdminController', 'getEquipoJugadores');
+$router->add('GET', '/api/admin/estadisticas-generales', 'AdminController', 'getEstadisticasGenerales');
+$router->add('GET', '/api/admin/encargados', 'AdminController', 'getEncargados');
 
 $router->add('GET', '/api/stats', 'StatsController', 'getStats');
 

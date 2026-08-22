@@ -58,11 +58,109 @@
       <div v-else>
         <!-- Vista Directorio de Equipos -->
         <div v-if="!equipoSeleccionado">
+          <!-- DASHBOARD START -->
+          <div class="mb-12">
+            <h1 class="text-3xl font-black italic tracking-tight mb-6">DASHBOARD</h1>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              
+              <!-- Total Jugadores -->
+              <div class="bg-[#1e1e1e] border-l-4 border-blue-500 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                <i class="fas fa-users absolute -bottom-4 -right-4 text-6xl text-gray-800/50"></i>
+                <div class="relative z-10">
+                  <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Jugadores Activos</p>
+                  <h3 class="text-4xl font-black text-blue-400">{{ animacionStats.total_jugadores }}</h3>
+                </div>
+              </div>
+
+              <!-- Total Equipos -->
+              <div class="bg-[#1e1e1e] border-l-4 border-green-500 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                <i class="fas fa-shield-alt absolute -bottom-4 -right-4 text-6xl text-gray-800/50"></i>
+                <div class="relative z-10">
+                  <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Total Equipos</p>
+                  <h3 class="text-4xl font-black text-green-400">{{ animacionStats.total_equipos }}</h3>
+                </div>
+              </div>
+
+              <!-- Partidos Registrados -->
+              <div class="bg-[#1e1e1e] border-l-4 border-purple-500 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                <i class="fas fa-futbol absolute -bottom-4 -right-4 text-6xl text-gray-800/50"></i>
+                <div class="relative z-10">
+                  <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Partidos Registrados</p>
+                  <h3 class="text-4xl font-black text-purple-400">{{ animacionStats.total_partidos }}</h3>
+                </div>
+              </div>
+
+              <!-- Equipos Incompletos -->
+              <div @click="estadisticasGenerales.equipos_incompletos_count > 0 ? (showModalIncompletos = true) : null" 
+                   :class="['border-l-4 rounded-xl p-6 shadow-lg relative overflow-hidden transition-colors', estadisticasGenerales.equipos_incompletos_count > 0 ? 'bg-[#2a1a1a] border-red-500 cursor-pointer hover:bg-[#351a1a]' : 'bg-[#1e1e1e] border-gray-600']">
+                <i class="fas fa-exclamation-triangle absolute -bottom-4 -right-4 text-6xl text-gray-800/50"></i>
+                <div class="relative z-10">
+                  <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Equipos Incompletos</p>
+                  <h3 :class="['text-4xl font-black', estadisticasGenerales.equipos_incompletos_count > 0 ? 'text-red-500' : 'text-gray-500']">{{ animacionStats.equipos_incompletos }}</h3>
+                  <p v-if="estadisticasGenerales.equipos_incompletos_count > 0" class="text-[10px] text-red-400 mt-2 font-bold uppercase">Ver detalles &rarr;</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          <!-- DIRECTORIO DE ENCARGADOS -->
+          <div class="mb-12">
+             <header class="mb-4">
+              <p class="text-purple-500 text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
+                <span class="w-6 h-px bg-purple-500"></span> Contactos
+              </p>
+              <h2 class="text-2xl font-black italic tracking-tight">LISTA DE ENCARGADOS</h2>
+            </header>
+            <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl overflow-hidden shadow-lg overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-800 text-[10px] uppercase tracking-widest text-gray-500 bg-[#161616]">
+                    <th class="p-4 font-bold">Representante</th>
+                    <th class="p-4 font-bold">Equipo</th>
+                    <th class="p-4 font-bold">Teléfono</th>
+                    <th class="p-4 font-bold text-center">Jugadores</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="encargados.length === 0">
+                    <td colspan="4" class="p-8 text-center text-gray-500 text-sm">No hay encargados registrados.</td>
+                  </tr>
+                  <tr v-for="enc in encargados" :key="enc.equipo_id" class="border-b border-gray-800 hover:bg-[#252525] transition-colors">
+                    <td class="p-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-gray-700 bg-gray-900 overflow-hidden shrink-0">
+                          <img v-if="enc.foto_representante_ruta" :src="IMAGE_BASE_URL + enc.foto_representante_ruta" class="w-full h-full object-cover">
+                          <svg v-else class="w-full h-full text-gray-500 p-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <div>
+                          <p class="font-bold text-sm text-gray-200">{{ enc.representante }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="p-4">
+                      <span class="text-sm font-bold text-purple-400">{{ enc.equipo_nombre }}</span>
+                    </td>
+                    <td class="p-4 text-xs font-mono text-gray-400">
+                      {{ enc.telefono || 'N/A' }}
+                    </td>
+                    <td class="p-4 text-center">
+                      <span :class="['px-2 py-1 rounded text-xs font-bold', enc.cantidad_jugadores < 10 ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-gray-800 text-gray-300']">
+                        {{ enc.cantidad_jugadores }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- DASHBOARD END -->
+
           <header class="mb-8">
             <p class="text-purple-500 text-xs font-bold tracking-widest uppercase flex items-center gap-2 mb-1">
               <span class="w-6 h-px bg-purple-500"></span> Directorio General
             </p>
-            <h1 class="text-4xl font-black italic tracking-tight">EQUIPOS REGISTRADOS</h1>
+            <h2 class="text-2xl font-black italic tracking-tight">EQUIPOS REGISTRADOS</h2>
           </header>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -260,6 +358,33 @@
         </form>
       </div>
     </div>
+    <!-- Modal Equipos Incompletos -->
+    <div v-if="showModalIncompletos" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <div class="bg-[#1a1a1a] border border-gray-800 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl">
+        <div class="p-6 border-b border-gray-800 bg-red-500/10 flex justify-between items-center">
+          <h3 class="text-xl font-bold text-red-500 flex items-center gap-2">
+            <i class="fas fa-exclamation-triangle"></i> Equipos Incompletos
+          </h3>
+          <button @click="showModalIncompletos = false" class="text-gray-400 hover:text-white">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div class="p-6 max-h-[60vh] overflow-y-auto">
+          <p class="text-sm text-gray-400 mb-4">Los siguientes equipos tienen menos de 10 jugadores activos registrados:</p>
+          <ul class="space-y-3">
+            <li v-for="eq in estadisticasGenerales.equipos_incompletos_list" :key="eq.id" class="flex items-center justify-between p-3 bg-gray-900 rounded-lg border border-gray-800">
+              <div class="flex items-center gap-3">
+                <img :src="IMAGE_BASE_URL + eq.foto_ruta" @error="handleImageError" class="w-8 h-8 rounded-full object-cover">
+                <span class="font-bold text-sm text-white">{{ eq.nombre }}</span>
+              </div>
+              <span class="text-xs font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded">
+                {{ eq.cantidad_jugadores }} jug.
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -273,6 +398,25 @@ const equipos = ref([])
 const equipoSeleccionado = ref(null)
 const isLoading = ref(true)
 const error = ref('')
+
+const estadisticasGenerales = ref({ total_jugadores: 0, total_equipos: 0, equipos_incompletos_count: 0, total_partidos: 0, equipos_incompletos_list: [] })
+const encargados = ref([])
+const showModalIncompletos = ref(false)
+
+const animacionStats = ref({ total_jugadores: 0, total_equipos: 0, equipos_incompletos: 0, total_partidos: 0 })
+
+const animarContador = (target, refKey, duration = 1500) => {
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    animacionStats.value[refKey] = Math.floor(progress * target);
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
 
 const showModalBaja = ref(false)
 const jugadorABajar = ref(null)
@@ -351,10 +495,23 @@ const cargarEquipos = async () => {
   isLoading.value = true
   try {
     const token = localStorage.getItem('deportes_token')
-    const response = await api.get('/admin/equipos', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    equipos.value = response.data
+    
+    const [resEquipos, resStats, resEncargados] = await Promise.all([
+      api.get('/admin/equipos', { headers: { Authorization: `Bearer ${token}` } }),
+      api.get('/admin/estadisticas-generales', { headers: { Authorization: `Bearer ${token}` } }),
+      api.get('/admin/encargados', { headers: { Authorization: `Bearer ${token}` } })
+    ]);
+    
+    equipos.value = resEquipos.data
+    estadisticasGenerales.value = resStats.data
+    encargados.value = resEncargados.data
+
+    // Iniciar animaciones
+    animarContador(resStats.data.total_jugadores, 'total_jugadores');
+    animarContador(resStats.data.total_equipos, 'total_equipos');
+    animarContador(resStats.data.equipos_incompletos_count, 'equipos_incompletos');
+    animarContador(resStats.data.total_partidos, 'total_partidos');
+
   } catch (err) {
     handleError(err)
   } finally {
