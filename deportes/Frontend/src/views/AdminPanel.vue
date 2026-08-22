@@ -60,7 +60,7 @@
         <div v-if="!equipoSeleccionado">
           <!-- DASHBOARD START -->
           <div class="mb-12">
-            <h1 class="text-3xl font-black italic tracking-tight mb-6">DASHBOARD</h1>
+            <h1 class="text-3xl font-black italic tracking-tight mb-6">DIRECTORIO DE EQUIPOS</h1>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               
               <!-- Total Jugadores -->
@@ -182,9 +182,8 @@
 
         <!-- Vista Detalle de Equipo -->
         <div v-else>
-          <button @click="equipoSeleccionado = null" class="mb-6 flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors">
-            <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Volver a Equipos
+          <button @click="equipoSeleccionado = null" class="mb-6 flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors bg-gray-800/50 px-4 py-2 rounded-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Regresar
           </button>
 
           <header class="mb-8">
@@ -279,7 +278,9 @@
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
-          <button @click="showModalBaja = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors">Cancelar</button>
+          <button @click="showModalBaja = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors flex items-center bg-gray-800/80">
+            <i class="fas fa-arrow-left mr-2"></i> Regresar
+          </button>
           <button @click="confirmarBaja" :disabled="!razonBaja.trim()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold transition-colors disabled:opacity-50">Confirmar baja</button>
         </div>
       </div>
@@ -288,11 +289,8 @@
     <!-- Modal Detalle -->
     <div v-if="jugadorDetalle" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" @click="jugadorDetalle = null">
       <div class="bg-[#1a1a1a] border border-gray-800 p-6 rounded-xl w-full max-w-md relative" @click.stop>
-        <button @click="jugadorDetalle = null" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
         
-        <div class="flex flex-col items-center mb-6">
+        <div class="flex flex-col items-center mb-6 mt-4">
           <div :class="['w-24 h-24 rounded-full overflow-hidden mb-4 border-2', jugadorDetalle.estado === 'inactivo' ? 'border-red-500 grayscale' : 'border-purple-500']">
             <img v-if="jugadorDetalle.foto_ruta" :src="IMAGE_BASE_URL + jugadorDetalle.foto_ruta" class="w-full h-full object-cover">
             <svg v-else class="w-full h-full text-gray-500 bg-gray-800 p-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -322,9 +320,15 @@
           </div>
         </div>
 
-        <div v-if="jugadorDetalle.estado === 'inactivo'" class="mt-4 bg-red-500/10 p-4 rounded-lg border border-red-500/30">
+        <div v-if="jugadorDetalle.estado === 'inactivo'" class="mt-4 bg-red-500/10 p-4 rounded-lg border border-red-500/30 mb-4">
           <label class="block text-[10px] font-bold text-red-400 uppercase tracking-wider mb-2">Detalles de Baja ({{ formatearFecha(jugadorDetalle.fecha_baja) }}):</label>
           <p class="text-gray-300 text-sm whitespace-pre-line">{{ jugadorDetalle.razon_baja || 'Sin motivo especificado.' }}</p>
+        </div>
+
+        <div class="flex justify-start mt-4">
+          <button @click="jugadorDetalle = null" class="flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors bg-gray-800/80 px-4 py-2 rounded-lg">
+            <i class="fas fa-arrow-left mr-2"></i> Regresar
+          </button>
         </div>
       </div>
     </div>
@@ -352,7 +356,9 @@
             </div>
           </div>
           <div class="flex justify-end gap-3 mt-6">
-            <button type="button" @click="showModalEdit = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors">Cancelar</button>
+            <button type="button" @click="showModalEdit = false" class="px-4 py-2 rounded-lg font-bold text-gray-400 hover:text-white transition-colors flex items-center bg-gray-800/80">
+              <i class="fas fa-arrow-left mr-2"></i> Regresar
+            </button>
             <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded-lg font-bold transition-colors hover:bg-purple-600">Guardar cambios</button>
           </div>
         </form>
@@ -371,7 +377,7 @@
         </div>
         <div class="p-6 max-h-[60vh] overflow-y-auto">
           <p class="text-sm text-gray-400 mb-4">Los siguientes equipos tienen menos de 10 jugadores activos registrados:</p>
-          <ul class="space-y-3">
+          <ul class="space-y-3 mb-6">
             <li v-for="eq in estadisticasGenerales.equipos_incompletos_list" :key="eq.id" class="flex items-center justify-between p-3 bg-gray-900 rounded-lg border border-gray-800">
               <div class="flex items-center gap-3">
                 <img :src="IMAGE_BASE_URL + eq.foto_ruta" @error="handleImageError" class="w-8 h-8 rounded-full object-cover">
@@ -382,6 +388,11 @@
               </span>
             </li>
           </ul>
+          <div class="flex justify-start">
+            <button @click="showModalIncompletos = false" class="flex items-center text-sm font-bold text-gray-400 hover:text-white transition-colors bg-gray-800/80 px-4 py-2 rounded-lg">
+              <i class="fas fa-arrow-left mr-2"></i> Regresar
+            </button>
+          </div>
         </div>
       </div>
     </div>
