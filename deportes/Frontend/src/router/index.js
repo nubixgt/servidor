@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import InscripcionEquipo from '../views/InscripcionEquipo.vue'
 import MiEquipo from '../views/MiEquipo.vue'
 import InscripcionJugador from '../views/InscripcionJugador.vue'
+import Estadisticas from '../views/Estadisticas.vue'
 
 const routes = [
   {
@@ -44,6 +45,22 @@ const routes = [
     name: 'AdminPanel',
     component: () => import('../views/AdminPanel.vue'),
     meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/estadisticas',
+    name: 'Estadisticas',
+    component: Estadisticas
+  },
+  {
+    path: '/registrar-partido',
+    name: 'RegistrarPartido',
+    component: () => import('../views/RegistrarPartido.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/historial-partidos',
+    name: 'HistorialPartidos',
+    component: () => import('../views/HistorialPartidos.vue')
   },
   {
     path: '/:pathMatch(.*)*',

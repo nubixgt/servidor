@@ -28,7 +28,7 @@
       </div>
 
       <!-- Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
         
         <!-- Registro Card -->
         <div class="bg-[#121212] border border-[#ccff00]/40 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-[#ccff00] hover:shadow-[0_0_30px_rgba(204,255,0,0.15)] group">
@@ -66,6 +66,24 @@
           </p>
           <router-link to="/login" class="w-full bg-transparent border border-gray-600 text-white font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-gray-800 transition-colors">
             <span>INICIAR SESIÓN</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
+          </router-link>
+        </div>
+
+        <!-- Estadisticas Card -->
+        <div class="bg-[#121212] border border-[#ccff00]/40 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-[#ccff00] hover:shadow-[0_0_30px_rgba(204,255,0,0.15)] group">
+          <div class="w-16 h-16 rounded-full border border-[#ccff00] flex items-center justify-center mb-6">
+            <svg class="w-8 h-8 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20v-6M6 20V10M18 20V4"></path>
+            </svg>
+          </div>
+          <h2 class="text-white text-xl font-bold mb-1">VER</h2>
+          <h3 class="text-[#ccff00] text-3xl font-black italic tracking-tight mb-4">ESTADÍSTICAS</h3>
+          <p class="text-gray-400 text-sm mb-8 flex-grow">
+            Consulta los rankings, goleadores y resultados de los torneos.
+          </p>
+          <router-link to="/estadisticas" class="w-full bg-[#ccff00] text-black font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-[#b3e600] transition-colors">
+            <span>VER ESTADÍSTICAS</span>
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
           </router-link>
         </div>

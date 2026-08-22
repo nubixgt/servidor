@@ -79,10 +79,10 @@
               <div>
                 <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Posición en el campo</label>
                 <div class="flex bg-[#252525] h-full">
-                  <button type="button" @click="form.posicion = 'DEF'" :class="{'bg-gray-700 text-white': form.posicion === 'DEF', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'DEF'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">DEF</button>
-                  <button type="button" @click="form.posicion = 'MED'" :class="{'bg-gray-700 text-white': form.posicion === 'MED', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'MED'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">MED</button>
-                  <button type="button" @click="form.posicion = 'DEL'" :class="{'bg-gray-700 text-white': form.posicion === 'DEL', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'DEL'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">DEL</button>
-                  <button type="button" @click="form.posicion = 'POR'" :class="{'bg-gray-700 text-white': form.posicion === 'POR', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'POR'}" class="flex-1 text-xs font-bold transition-colors">POR</button>
+                  <button type="button" @click="form.posicion = 'Defensa'" :class="{'bg-gray-700 text-white': form.posicion === 'Defensa', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'Defensa'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">DEF</button>
+                  <button type="button" @click="form.posicion = 'Mediocampo'" :class="{'bg-gray-700 text-white': form.posicion === 'Mediocampo', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'Mediocampo'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">MED</button>
+                  <button type="button" @click="form.posicion = 'Delantero'" :class="{'bg-gray-700 text-white': form.posicion === 'Delantero', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'Delantero'}" class="flex-1 border-r border-[#1e1e1e] text-xs font-bold transition-colors">DEL</button>
+                  <button type="button" @click="form.posicion = 'Portero'" :class="{'bg-gray-700 text-white': form.posicion === 'Portero', 'text-gray-400 hover:text-white hover:bg-[#303030]': form.posicion !== 'Portero'}" class="flex-1 text-xs font-bold transition-colors">POR</button>
                 </div>
               </div>
             </div>
@@ -149,7 +149,7 @@ const form = reactive({
   nombre: '',
   dpi: '',
   telefono: '',
-  posicion: 'MED',
+  posicion: 'Mediocampo',
   foto: null
 })
 

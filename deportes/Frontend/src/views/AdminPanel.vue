@@ -19,6 +19,14 @@
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           Directorio Equipos
         </button>
+        <router-link to="/registrar-partido" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold text-gray-400 hover:bg-gray-900 hover:text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          Registrar Partido
+        </router-link>
+        <router-link to="/historial-partidos" class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-bold text-gray-400 hover:bg-gray-900 hover:text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Historial Partidos
+        </router-link>
       </nav>
 
       <div class="p-4 border-t border-gray-800">

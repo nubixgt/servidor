@@ -18,6 +18,8 @@ require_once __DIR__ . '/../src/Core/Router.php';
 require_once __DIR__ . '/../src/Controllers/EquipoController.php';
 require_once __DIR__ . '/../src/Controllers/JugadorController.php';
 require_once __DIR__ . '/../src/Controllers/StatsController.php';
+require_once __DIR__ . '/../src/Controllers/PartidoController.php';
+require_once __DIR__ . '/../src/Controllers/EstadisticasController.php';
 require_once __DIR__ . '/../src/Controllers/AuthController.php';
 
 // Utils
@@ -26,6 +28,8 @@ require_once __DIR__ . '/../src/Utils/JwtUtils.php';
 // Models
 require_once __DIR__ . '/../src/Models/EquipoModel.php';
 require_once __DIR__ . '/../src/Models/JugadorModel.php';
+require_once __DIR__ . '/../src/Models/PartidoModel.php';
+require_once __DIR__ . '/../src/Models/EstadisticaModel.php';
 
 use Core\Router;
 
@@ -53,6 +57,17 @@ $router->add('GET', '/api/admin/equipos', 'AdminController', 'getEquipos');
 $router->add('GET', '/api/admin/equipos/{id}/jugadores', 'AdminController', 'getEquipoJugadores');
 
 $router->add('GET', '/api/stats', 'StatsController', 'getStats');
+
+// Partidos
+$router->add('POST', '/api/partidos', 'PartidoController', 'create');
+$router->add('GET', '/api/partidos', 'PartidoController', 'getAll');
+$router->add('GET', '/api/partidos/{id}', 'PartidoController', 'getById');
+
+// Estadisticas Rankings
+$router->add('GET', '/api/rankings/goleadores', 'EstadisticasController', 'getGoleadores');
+$router->add('GET', '/api/rankings/porteros', 'EstadisticasController', 'getPorteros');
+$router->add('GET', '/api/rankings/tarjetas-equipos', 'EstadisticasController', 'getTarjetasEquipos');
+$router->add('GET', '/api/rankings/tarjetas-jugadores', 'EstadisticasController', 'getTarjetasJugadores');
 
 // Get request URI and Method
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
