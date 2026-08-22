@@ -98,4 +98,46 @@ class PartidoController {
             Response::error('Partido no encontrado', 404);
         }
     }
+
+    public function delete($params) {
+        $headers = apache_request_headers();
+        $token = isset($headers['Authorization']) ? str_replace('Bearer ', '', $headers['Authorization']) : null;
+        
+        if (!$token) {
+            Response::error('No autorizado', 401);
+            return;
+        }
+
+        $decoded = JwtUtils::verifyToken($token);
+        if (!$decoded) {
+            Response::error('Token inválido', 401);
+            return;
+        }
+        
+        $rol = $decoded['rol'] ?? null;
+        if ($rol !== 'admin') {
+            Response::error('No autorizado. Solo los administradores pueden eliminar partidos.', 403);
+            return;
+        }
+
+        if (!isset($params['id'])) {
+            Response::error('ID no proporcionado', 400);
+            return;
+        }
+
+        $partidoModel = new PartidoModel();
+        
+        // Verificar que el partido exista
+        $partido = $partidoModel->getById($params['id']);
+        if (!$partido) {
+            Response::error('Partido no encontrado', 404);
+            return;
+        }
+
+        if ($partidoModel->delete($params['id'])) {
+            Response::json(['message' => 'Partido eliminado exitosamente']);
+        } else {
+            Response::error('Error al eliminar el partido', 500);
+        }
+    }
 }

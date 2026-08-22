@@ -24,8 +24,11 @@
       <div v-for="partido in partidos" :key="partido.id" 
            class="bg-[#121212] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ccff00]/50 transition-colors cursor-pointer"
            @click="verDetalle(partido.id)">
-        <div class="p-3 bg-gray-900/50 text-center text-xs text-gray-400 border-b border-gray-800">
-          {{ formatDate(partido.fecha) }}
+        <div class="p-3 bg-gray-900/50 flex justify-between items-center text-xs text-gray-400 border-b border-gray-800">
+          <span>{{ formatDate(partido.fecha) }}</span>
+          <button v-if="userRole === 'admin'" @click.stop="confirmDelete(partido.id)" class="text-red-500 hover:text-red-400 p-1 bg-red-500/10 rounded-full w-7 h-7 flex items-center justify-center transition-colors" title="Eliminar partido">
+            <i class="fas fa-trash-alt"></i>
+          </button>
         </div>
         <div class="p-6">
           <div class="flex items-center justify-between">
@@ -61,9 +64,14 @@
         <!-- Modal Header -->
         <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/80">
           <h2 class="text-xl font-black italic">DETALLE DEL PARTIDO</h2>
-          <button @click="partidoSeleccionado = null" class="text-gray-400 hover:text-white">
-            <i class="fas fa-times text-xl"></i>
-          </button>
+          <div class="flex items-center gap-4">
+            <button v-if="userRole === 'admin'" @click="confirmDelete(partidoSeleccionado.id)" class="text-red-500 hover:text-red-400 bg-red-500/10 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+              <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+            <button @click="partidoSeleccionado = null" class="text-gray-400 hover:text-white">
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
         </div>
         
         <!-- Modal Body -->
@@ -139,11 +147,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api, { IMAGE_BASE_URL } from '../services/api';
+import Swal from 'sweetalert2';
 
 const loading = ref(true);
 const partidos = ref([]);
 const partidoSeleccionado = ref(null);
 const defaultAvatar = 'https://ui-avatars.com/api/?name=Team&background=random';
+
+const userRole = localStorage.getItem('deportes_rol');
+const token = localStorage.getItem('deportes_token');
+
+const getAuthHeaders = () => {
+  return {
+    'Authorization': `Bearer ${token}`
+  };
+};
 
 const getFotoUrl = (ruta) => {
   if (!ruta) return defaultAvatar;
@@ -183,6 +201,45 @@ const verDetalle = async (id) => {
 const getEstadisticasEquipo = (equipoId) => {
   if (!partidoSeleccionado.value || !partidoSeleccionado.value.estadisticas) return [];
   return partidoSeleccionado.value.estadisticas.filter(e => e.equipo_id === equipoId);
+};
+
+const confirmDelete = (id) => {
+  Swal.fire({
+    title: '¿Eliminar partido?',
+    text: "Esta acción no se puede deshacer. Se eliminarán también todas las estadísticas asociadas.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#374151',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    background: '#121212',
+    color: '#ffffff'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/partidos/${id}`, { headers: getAuthHeaders() });
+        partidoSeleccionado.value = null; // Cerrar modal si está abierto
+        await fetchPartidos(); // Recargar lista
+        Swal.fire({
+          title: 'Eliminado',
+          text: 'El partido ha sido eliminado.',
+          icon: 'success',
+          background: '#121212',
+          color: '#ffffff'
+        });
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al eliminar el partido.',
+          icon: 'error',
+          background: '#121212',
+          color: '#ffffff'
+        });
+      }
+    }
+  });
 };
 
 onMounted(() => {
