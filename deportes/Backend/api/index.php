@@ -68,6 +68,8 @@ $router->add('GET', '/api/rankings/goleadores', 'EstadisticasController', 'getGo
 $router->add('GET', '/api/rankings/porteros', 'EstadisticasController', 'getPorteros');
 $router->add('GET', '/api/rankings/tarjetas-equipos', 'EstadisticasController', 'getTarjetasEquipos');
 $router->add('GET', '/api/rankings/tarjetas-jugadores', 'EstadisticasController', 'getTarjetasJugadores');
+$router->add('GET', '/api/rankings/goleadores-por-equipo', 'EstadisticasController', 'getGoleadoresPorEquipo');
+$router->add('GET', '/api/rankings/porteros-por-equipo', 'EstadisticasController', 'getPorterosPorEquipo');
 
 // Get request URI and Method
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);

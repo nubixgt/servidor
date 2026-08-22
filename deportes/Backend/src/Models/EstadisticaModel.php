@@ -101,4 +101,49 @@ class EstadisticaModel {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getTopGoleadoresPorEquipo() {
+        $query = "SELECT j.id, j.nombre, j.foto_ruta, e.id as equipo_id, e.nombre as equipo_nombre, e.foto_ruta as equipo_foto, SUM(ep.goles) as total_goles
+                  FROM " . $this->table_name . " ep
+                  JOIN jugadores j ON ep.jugador_id = j.id
+                  JOIN equipos e ON j.equipo_id = e.id
+                  GROUP BY j.id
+                  HAVING total_goles > 0
+                  ORDER BY total_goles DESC, j.nombre ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $result = [];
+        $seenTeams = [];
+        foreach($all as $row) {
+            if (!isset($seenTeams[$row['equipo_id']])) {
+                $seenTeams[$row['equipo_id']] = true;
+                $result[] = $row;
+            }
+        }
+        return $result;
+    }
+
+    public function getTopPorterosPorEquipo() {
+        $query = "SELECT j.id, j.nombre, j.foto_ruta, e.id as equipo_id, e.nombre as equipo_nombre, e.foto_ruta as equipo_foto, SUM(ep.goles_recibidos) as total_goles_recibidos, COUNT(ep.partido_id) as partidos_jugados
+                  FROM " . $this->table_name . " ep
+                  JOIN jugadores j ON ep.jugador_id = j.id
+                  JOIN equipos e ON j.equipo_id = e.id
+                  WHERE ep.jugo_como_portero = 1 OR j.posicion = 'Portero'
+                  GROUP BY j.id
+                  ORDER BY total_goles_recibidos ASC, partidos_jugados DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $result = [];
+        $seenTeams = [];
+        foreach($all as $row) {
+            if (!isset($seenTeams[$row['equipo_id']])) {
+                $seenTeams[$row['equipo_id']] = true;
+                $result[] = $row;
+            }
+        }
+        return $result;
+    }
 }

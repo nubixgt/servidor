@@ -33,4 +33,16 @@ class EstadisticasController {
         $data = $model->getTarjetasJugadores($limit);
         Response::json($data);
     }
+
+    public function getGoleadoresPorEquipo() {
+        $model = new EstadisticaModel();
+        $data = $model->getTopGoleadoresPorEquipo();
+        Response::json($data);
+    }
+
+    public function getPorterosPorEquipo() {
+        $model = new EstadisticaModel();
+        $data = $model->getTopPorterosPorEquipo();
+        Response::json($data);
+    }
 }
