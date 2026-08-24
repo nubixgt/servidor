@@ -7,6 +7,7 @@ use App\Controllers\LocationController;
 use App\Controllers\CursoController;
 use App\Controllers\ProgresoController;
 use App\Controllers\AsistenteController;
+use App\Controllers\RutaController;
 
 // Backend/api/v1/index.php
 
@@ -41,6 +42,7 @@ $router->registerController(LocationController::class);
 $router->registerController(CursoController::class);
 $router->registerController(ProgresoController::class);
 $router->registerController(AsistenteController::class);
+$router->registerController(RutaController::class);
 // $router->registerController(YourController::class);
 
 
