@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { MODULOS, INSIGNIAS } from '../data/local.js';
-import api from '../services/api.js';
+import authService from '../services/authService.js';
 
 /**
  * Store Principal de la App AgroIA
  *
- * 📌 NOTA: El login ya usa el Backend real (JWT, ver iniciarSesion()). El
- * progreso de cursos/insignias y el registro (registrar()) todavía viven
- * en localStorage — se migrarán a la API cuando tengan su endpoint.
+ * 📌 NOTA: Login y registro ya usan el Backend real (JWT, ver
+ * iniciarSesion()/registrar()). El progreso de cursos/insignias todavía
+ * vive en localStorage — se migrará a la API cuando tenga su endpoint.
  */
 export const useAppStore = defineStore('app', () => {
 
@@ -179,7 +179,7 @@ export const useAppStore = defineStore('app', () => {
   // JWT (lo usa el interceptor de services/api.js) y los datos de la cuenta.
   async function iniciarSesion(usuarioLogin, password) {
     try {
-      const { data } = await api.post('/auth/login', { usuario: usuarioLogin, password });
+      const { data } = await authService.login(usuarioLogin, password);
       const u = data.data.usuario;
 
       localStorage.setItem('token', data.data.token);
@@ -208,26 +208,17 @@ export const useAppStore = defineStore('app', () => {
     }
   }
 
-  function registrar(datos) {
-    const key = `agroia_user_${datos.nombre.toLowerCase().replace(/\s+/g, '_')}`;
-    if (localStorage.getItem(key)) {
-      return { ok: false, msg: 'Ya existe un perfil con ese nombre' };
+  // Registro real contra Backend/src/Controllers/AuthController.php. Igual
+  // que en la app móvil, crear la cuenta NO inicia sesión automáticamente:
+  // la persona vuelve a escribir usuario y contraseña en "Iniciar Sesión".
+  async function registrar(datos) {
+    try {
+      await authService.register(datos);
+      return { ok: true };
+    } catch (e) {
+      const msg = e.response?.data?.message || 'No se pudo conectar con el servidor. Intenta de nuevo.';
+      return { ok: false, msg };
     }
-    usuario.value = {
-      nombre: datos.nombre,
-      org:    datos.org    || 'Sin organización registrada',
-      muni:   datos.muni   || 'Guatemala',
-      act:    datos.act    || 'Agrícola',
-      desde:  new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric' })
-    };
-    prog.value      = {};
-    insignias.value = [];
-    abiertos.value  = [];
-    actividad.value = [];
-    config.value    = { notif: true, datos: false, recordatorio: true };
-    registrarActividad();
-    guardar();
-    return { ok: true };
   }
 
   function cerrarSesion() {

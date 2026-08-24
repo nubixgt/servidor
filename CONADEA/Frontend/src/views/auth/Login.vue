@@ -87,40 +87,85 @@
             type="text"
             placeholder="Ej. Ana María García"
             autocomplete="name"
+            :disabled="cargandoRegistro"
           />
         </div>
         <div class="campo">
-          <label for="reg-org">Asociación o cooperativa</label>
+          <label for="reg-usuario">Usuario</label>
           <input
-            id="reg-org"
-            v-model="regOrg"
+            id="reg-usuario"
+            v-model="regUsuario"
             type="text"
-            placeholder="Ej. Cooperativa El Porvenir"
+            placeholder="Ej. ana.garcia"
+            autocomplete="username"
+            :disabled="cargandoRegistro"
           />
         </div>
+        <div class="campo campo-password">
+          <label for="reg-password">Contraseña</label>
+          <div class="campo-password-wrap">
+            <input
+              id="reg-password"
+              v-model="regPassword"
+              :type="verPasswordRegistro ? 'text' : 'password'"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+              :disabled="cargandoRegistro"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              :aria-label="verPasswordRegistro ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="verPasswordRegistro = !verPasswordRegistro"
+            >
+              {{ verPasswordRegistro ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
         <div class="campo">
-          <label for="reg-muni">Municipio y departamento</label>
+          <label for="reg-telefono">Número de teléfono (WhatsApp)</label>
           <input
-            id="reg-muni"
-            v-model="regMuni"
-            type="text"
-            placeholder="Ej. Sanarate, El Progreso"
+            id="reg-telefono"
+            v-model="regTelefono"
+            type="tel"
+            placeholder="Ej. 5512-3456"
+            autocomplete="tel"
+            :disabled="cargandoRegistro"
+            @input="formatearTelefono"
           />
         </div>
         <div class="campo">
-          <label for="reg-act">Actividad principal</label>
-          <select id="reg-act" v-model="regAct" class="select-glass">
-            <option value="Agrícola">Agrícola</option>
-            <option value="Ganadera">Ganadera</option>
-            <option value="Mixta">Mixta (agrícola y ganadera)</option>
-            <option value="Organizativa">Directiva / organizativa</option>
+          <label for="reg-departamento">Departamento</label>
+          <select
+            id="reg-departamento"
+            v-model="regDepartamentoId"
+            class="select-glass"
+            :disabled="cargandoRegistro || cargandoDepartamentos"
+            @change="onCambiarDepartamento"
+          >
+            <option value="">
+              {{ cargandoDepartamentos ? 'Cargando...' : 'Selecciona tu departamento' }}
+            </option>
+            <option v-for="d in departamentos" :key="d.id" :value="d.id">{{ d.nombre }}</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="reg-municipio">Municipio</label>
+          <select
+            id="reg-municipio"
+            v-model="regMunicipioId"
+            class="select-glass"
+            :disabled="cargandoRegistro || !regDepartamentoId || cargandoMunicipios"
+          >
+            <option value="">
+              {{ !regDepartamentoId ? 'Primero elige un departamento' : (cargandoMunicipios ? 'Cargando...' : 'Selecciona tu municipio') }}
+            </option>
+            <option v-for="m in municipios" :key="m.id" :value="m.id">{{ m.nombre }}</option>
           </select>
         </div>
 
-        <p v-if="errorRegistro" class="msg-error">{{ errorRegistro }}</p>
-
-        <button class="btn btn-verde btn-ancho" @click="handleRegistro">
-          Registrarse y comenzar →
+        <button class="btn btn-verde btn-ancho" :disabled="cargandoRegistro" @click="handleRegistro">
+          {{ cargandoRegistro ? 'Cargando...' : 'Registrarse y comenzar →' }}
         </button>
       </div>
 
@@ -130,10 +175,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
 import { alertaExito, alertaError } from '../../utils/alertas.js';
+import locationService from '../../services/locationService.js';
 import logoImg from '../../assets/logo_agroia.png';
 
 const router = useRouter();
@@ -149,10 +195,61 @@ const cargandoLogin = ref(false);
 
 // Registro
 const regNombre = ref('');
-const regOrg = ref('');
-const regMuni = ref('');
-const regAct = ref('Agrícola');
-const errorRegistro = ref('');
+const regUsuario = ref('');
+const regPassword = ref('');
+const regTelefono = ref('');
+const regDepartamentoId = ref('');
+const regMunicipioId = ref('');
+const verPasswordRegistro = ref(false);
+const cargandoRegistro = ref(false);
+
+const departamentos = ref([]);
+const municipios = ref([]);
+const departamentosCargados = ref(false);
+const cargandoDepartamentos = ref(false);
+const cargandoMunicipios = ref(false);
+
+// Catálogo departamento -> municipio (Backend/src/Controllers/LocationController.php),
+// se carga la primera vez que la persona abre la pestaña de registro.
+watch(pestañaActiva, (tab) => {
+  if (tab === 'registro') cargarDepartamentos();
+});
+
+async function cargarDepartamentos() {
+  if (departamentosCargados.value || cargandoDepartamentos.value) return;
+  cargandoDepartamentos.value = true;
+  try {
+    const { data } = await locationService.listarDepartamentos();
+    departamentos.value = data.data;
+    departamentosCargados.value = true;
+  } catch (e) {
+    alertaError(e.response?.data?.message || 'No se pudieron cargar los departamentos.');
+  } finally {
+    cargandoDepartamentos.value = false;
+  }
+}
+
+async function onCambiarDepartamento() {
+  regMunicipioId.value = '';
+  municipios.value = [];
+  if (!regDepartamentoId.value) return;
+
+  cargandoMunicipios.value = true;
+  try {
+    const { data } = await locationService.listarMunicipios(regDepartamentoId.value);
+    municipios.value = data.data;
+  } catch (e) {
+    alertaError(e.response?.data?.message || 'No se pudieron cargar los municipios.');
+  } finally {
+    cargandoMunicipios.value = false;
+  }
+}
+
+// Formatea el teléfono como 0000-0000 mientras se escribe (igual que la app).
+function formatearTelefono(evento) {
+  const digitos = evento.target.value.replace(/\D/g, '').slice(0, 8);
+  regTelefono.value = digitos.length > 4 ? `${digitos.slice(0, 4)}-${digitos.slice(4)}` : digitos;
+}
 
 async function handleLogin() {
   if (cargandoLogin.value) return;
@@ -176,23 +273,67 @@ async function handleLogin() {
   }
 }
 
-function handleRegistro() {
-  const nombre = regNombre.value.trim();
-  if (!nombre) {
-    errorRegistro.value = 'El nombre completo es obligatorio.';
+function validarRegistro() {
+  if (regNombre.value.trim().length < 3) {
+    return 'El nombre completo es obligatorio.';
+  }
+  if (regUsuario.value.trim().length < 3) {
+    return 'El usuario debe tener al menos 3 caracteres.';
+  }
+  if (regPassword.value.length < 6) {
+    return 'La contraseña debe tener al menos 6 caracteres.';
+  }
+  if (!/^\d{4}-\d{4}$/.test(regTelefono.value.trim())) {
+    return 'Ingresa tu número de teléfono completo (formato 0000-0000).';
+  }
+  if (!regDepartamentoId.value) {
+    return 'Selecciona tu departamento.';
+  }
+  if (!regMunicipioId.value) {
+    return 'Selecciona tu municipio.';
+  }
+  return null;
+}
+
+function limpiarFormularioRegistro() {
+  regNombre.value = '';
+  regUsuario.value = '';
+  regPassword.value = '';
+  regTelefono.value = '';
+  regDepartamentoId.value = '';
+  regMunicipioId.value = '';
+  municipios.value = [];
+}
+
+async function handleRegistro() {
+  if (cargandoRegistro.value) return;
+
+  const error = validarRegistro();
+  if (error) {
+    alertaError(error);
     return;
   }
-  errorRegistro.value = '';
-  const resultado = store.registrar({
-    nombre,
-    org:  regOrg.value.trim(),
-    muni: regMuni.value.trim(),
-    act:  regAct.value
+
+  cargandoRegistro.value = true;
+  const resultado = await store.registrar({
+    nombreCompleto: regNombre.value.trim(),
+    usuario: regUsuario.value.trim(),
+    password: regPassword.value,
+    telefono: regTelefono.value.trim().replace('-', ''),
+    departamentoId: Number(regDepartamentoId.value),
+    municipioId: Number(regMunicipioId.value)
   });
+  cargandoRegistro.value = false;
+
   if (resultado.ok) {
-    router.push('/dashboard');
+    await alertaExito(
+      '¡Cuenta creada!',
+      'Tu registro se guardó correctamente. Ahora inicia sesión con tu usuario y contraseña.'
+    );
+    limpiarFormularioRegistro();
+    pestañaActiva.value = 'login';
   } else {
-    errorRegistro.value = resultado.msg;
+    alertaError(resultado.msg);
   }
 }
 </script>
@@ -339,16 +480,6 @@ function handleRegistro() {
   background-position: right 14px center;
   background-size: 16px;
   padding-right: 40px !important;
-}
-
-.msg-error {
-  font-size: 0.8rem;
-  color: var(--rojo);
-  margin-bottom: 8px;
-  padding: 8px 12px;
-  background: rgba(248, 113, 113, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .pie-auth {
