@@ -2,63 +2,81 @@
   <div>
     <div class="fila-seccion">
       <h2>Catálogo de cursos</h2>
-      <span style="font-size:.78rem;color:var(--texto-suave);">{{ listaFiltrada.length }} de {{ MODULOS.length }} cursos</span>
+      <span v-if="!cargando" style="font-size:.78rem;color:var(--texto-suave);">
+        {{ listaFiltrada.length }} de {{ cursos.length }} cursos
+      </span>
     </div>
     <p v-if="terminoBusqueda" style="font-size:.8rem;color:var(--texto-suave);margin-bottom:12px;">
       Resultados para «{{ terminoBusqueda }}»
     </p>
-    <div class="grid-catalogo">
+
+    <div v-if="cargando" class="vidrio">
+      <p style="font-size:.85rem;color:var(--texto-suave);">Cargando cursos...</p>
+    </div>
+
+    <div v-else-if="error" class="vidrio">
+      <p style="font-size:.85rem;color:var(--rojo);margin-bottom:12px;">{{ error }}</p>
+      <button class="btn btn-verde" @click="cargar">Reintentar</button>
+    </div>
+
+    <div v-else class="grid-catalogo">
       <button
-        v-for="m in listaFiltrada"
-        :key="m.id"
+        v-for="c in listaFiltrada"
+        :key="c.id"
         class="vidrio carta-curso"
-        @click="router.push(`/catalogo/${m.id}`)"
+        @click="abrirCurso(c)"
       >
-        <div class="portada" :style="portadaStyle(m)">
-          <span class="num">Módulo {{ m.id }}</span>
-          <span v-if="store.progDe(m.id).ok" class="listo">✓ Completado</span>
+        <div class="portada" :style="portadaStyle(c)">
+          <span class="num">{{ c.icono }} Curso</span>
+          <span v-if="aprobado(c.id)" class="listo">✓ Completado</span>
         </div>
         <div class="cuerpo-carta">
-          <h4>{{ m.t }}</h4>
-          <p class="desc">{{ m.d }}</p>
-          <div class="pista" style="margin-bottom:6px;"><div class="pista-fill" :style="{ width: store.pctModulo(m) + '%' }"></div></div>
+          <h4>{{ c.titulo }}</h4>
+          <p class="desc">{{ c.descripcion }}</p>
+          <div class="pista" style="margin-bottom:6px;"><div class="pista-fill" :style="{ width: pctCurso(c) + '%' }"></div></div>
           <div class="meta-curso">
-            <span>📖 {{ m.lecciones.length }} lecciones</span>
+            <span>📖 {{ c.total_lecciones }} lecciones</span>
             <span>📝 Evaluación</span>
             <span>🎓 Certificado</span>
           </div>
         </div>
       </button>
       <p v-if="listaFiltrada.length === 0" style="color:var(--texto-suave);">
-        No se encontraron cursos para esa búsqueda.
+        {{ cursos.length === 0 ? 'Todavía no hay cursos publicados.' : 'No se encontraron cursos para esa búsqueda.' }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted } from 'vue';
 import { useAppStore } from '../../stores/app.js';
-import { MODULOS } from '../../data/local.js';
+import { useCursosReales } from '../../composables/useCursosReales.js';
 
 const props = defineProps({ terminoBusqueda: { type: String, default: '' } });
-const router = useRouter();
 const store = useAppStore();
+const { cursos, cargando, error, cargar, pctCurso, aprobado } = useCursosReales();
+
+onMounted(cargar);
 
 const listaFiltrada = computed(() => {
   const f = props.terminoBusqueda.toLowerCase().trim();
-  if (!f) return MODULOS;
-  return MODULOS.filter(m =>
-    m.t.toLowerCase().includes(f) ||
-    m.d.toLowerCase().includes(f) ||
-    m.lecciones.some(l => l.t.toLowerCase().includes(f))
+  if (!f) return cursos.value;
+  return cursos.value.filter(
+    (c) => c.titulo.toLowerCase().includes(f) || c.descripcion.toLowerCase().includes(f)
   );
 });
 
-function portadaStyle(m) {
+function portadaStyle(c) {
   if (store.config.datos) return `background: linear-gradient(135deg, #34D399, #059669);`;
-  return `background-image: url('${m.img}'); background-size: cover; background-position: center;`;
+  return `background-image: url('${c.imagen_url}'); background-size: cover; background-position: center;`;
+}
+
+// El detalle del curso (lecciones, video, quiz) todavía no está conectado
+// al Backend — se avisa igual que el "Próximamente" de la app mientras
+// tanto (ver main_shell.dart).
+function abrirCurso(c) {
+  store.mostrarToastGlobal('🚧', 'Muy pronto', `El detalle de "${c.titulo}" estará disponible pronto.`);
 }
 </script>
 
