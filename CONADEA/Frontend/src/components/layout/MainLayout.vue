@@ -43,6 +43,9 @@
       </main>
     </div>
 
+    <!-- Asistente AgroIA (WhatsApp) -->
+    <AsistenteFlotante />
+
     <!-- Toast global -->
     <div class="toast-container" :class="{ visible: store.toastData.visible }">
       <div v-if="store.toastData.hex" class="hexagono toast-hex">
@@ -65,6 +68,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
 import Sidebar from './Sidebar.vue';
 import Topbar from './Topbar.vue';
+import AsistenteFlotante from './AsistenteFlotante.vue';
 
 const store = useAppStore();
 const route = useRoute();
