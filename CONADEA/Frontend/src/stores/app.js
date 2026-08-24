@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { MODULOS, INSIGNIAS } from '../data/local.js';
+import api from '../services/api.js';
 
 /**
  * Store Principal de la App AgroIA
  *
- * 📌 NOTA: Actualmente usa localStorage para persistencia local.
- * Cuando el Backend esté listo, las funciones guardar()/cargar() se
- * reemplazarán por llamadas al API en src/services/.
- * El store en sí PERMANECE, solo cambia la fuente de datos.
+ * 📌 NOTA: El login ya usa el Backend real (JWT, ver iniciarSesion()). El
+ * progreso de cursos/insignias y el registro (registrar()) todavía viven
+ * en localStorage — se migrarán a la API cuando tengan su endpoint.
  */
 export const useAppStore = defineStore('app', () => {
 
@@ -160,21 +160,52 @@ export const useAppStore = defineStore('app', () => {
   // AUTH - LOGIN / REGISTRO
   // ========================
 
-  function iniciarSesion(nombre) {
-    const key = `agroia_user_${nombre.toLowerCase().replace(/\s+/g, '_')}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      const data = JSON.parse(saved);
-      usuario.value    = { nombre: data.nombre, org: data.org, muni: data.muni, act: data.act, desde: data.desde };
-      prog.value       = data.prog || {};
-      insignias.value  = data.insignias || [];
-      abiertos.value   = data.abiertos || [];
-      actividad.value  = data.actividad || [];
-      config.value     = data.config || { notif: true, datos: false, recordatorio: true };
-      novVisto.value   = false;
+  // Carga (o inicializa) el progreso/insignias locales del usuario que
+  // acaba de iniciar sesión. Se mantiene aparte de los datos de la cuenta
+  // (que ahora vienen del Backend) porque el progreso de cursos todavía
+  // no tiene su propio endpoint de sincronización.
+  function cargarDatosLocales(clave) {
+    const raw = localStorage.getItem(`agroia_user_${clave}`);
+    const data = raw ? JSON.parse(raw) : null;
+    prog.value      = data?.prog || {};
+    insignias.value = data?.insignias || [];
+    abiertos.value  = data?.abiertos || [];
+    actividad.value = data?.actividad || [];
+    config.value    = data?.config || { notif: true, datos: false, recordatorio: true };
+    novVisto.value  = false;
+  }
+
+  // Login real contra Backend/src/Controllers/AuthController.php: guarda el
+  // JWT (lo usa el interceptor de services/api.js) y los datos de la cuenta.
+  async function iniciarSesion(usuarioLogin, password) {
+    try {
+      const { data } = await api.post('/auth/login', { usuario: usuarioLogin, password });
+      const u = data.data.usuario;
+
+      localStorage.setItem('token', data.data.token);
+
+      usuario.value = {
+        id: u.id,
+        usuario: u.usuario,
+        nombre: u.nombre_completo,
+        telefono: u.telefono,
+        rol: u.rol,
+        departamentoId: u.departamento_id,
+        municipioId: u.municipio_id,
+        org: 'Programa CONADEA',
+        muni: '',
+        act: '',
+        desde: new Date().toLocaleDateString('es-GT', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+      localStorage.setItem('conadea_usuario', JSON.stringify(usuario.value));
+
+      cargarDatosLocales(u.usuario);
+      registrarActividad();
       return { ok: true };
+    } catch (e) {
+      const msg = e.response?.data?.message || 'No se pudo conectar con el servidor. Intenta de nuevo.';
+      return { ok: false, msg };
     }
-    return { ok: false, msg: 'Perfil no encontrado' };
   }
 
   function registrar(datos) {
@@ -201,6 +232,8 @@ export const useAppStore = defineStore('app', () => {
 
   function cerrarSesion() {
     guardar();
+    localStorage.removeItem('token');
+    localStorage.removeItem('conadea_usuario');
     usuario.value    = null;
     prog.value       = {};
     insignias.value  = [];
@@ -211,12 +244,19 @@ export const useAppStore = defineStore('app', () => {
 
   // ========================
   // PERSISTENCIA LOCAL
-  // (Reemplazar por API cuando Backend esté listo)
+  // (progreso/insignias — la cuenta en sí ya viene del Backend vía JWT)
   // ========================
+  function claveLocal() {
+    if (!usuario.value) return null;
+    // Login real: clave estable = usuario de acceso. Registro demo (local,
+    // todavía no conectado al Backend): clave = nombre en slug, como antes.
+    return usuario.value.usuario || usuario.value.nombre.toLowerCase().replace(/\s+/g, '_');
+  }
+
   function guardar() {
-    if (!usuario.value) return;
-    const key = `agroia_user_${usuario.value.nombre.toLowerCase().replace(/\s+/g, '_')}`;
-    localStorage.setItem(key, JSON.stringify({
+    const key = claveLocal();
+    if (!key) return;
+    localStorage.setItem(`agroia_user_${key}`, JSON.stringify({
       nombre:   usuario.value.nombre,
       org:      usuario.value.org,
       muni:     usuario.value.muni,
@@ -229,6 +269,21 @@ export const useAppStore = defineStore('app', () => {
       config:   config.value
     }));
   }
+
+  // Restaura la sesión al recargar la página: si hay un JWT guardado,
+  // recupera los datos de cuenta que se guardaron junto a él en el login.
+  (function restaurarSesion() {
+    const token = localStorage.getItem('token');
+    const guardado = localStorage.getItem('conadea_usuario');
+    if (!token || !guardado) return;
+    try {
+      usuario.value = JSON.parse(guardado);
+      cargarDatosLocales(usuario.value.usuario);
+    } catch (e) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('conadea_usuario');
+    }
+  })();
 
   // ========================
   // ACCIONES DE CURSOS

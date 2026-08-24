@@ -38,21 +38,42 @@
       <!-- Panel Login -->
       <div v-if="pestañaActiva === 'login'" class="auth-panel">
         <div class="campo">
-          <label for="login-nombre">Nombre completo</label>
+          <label for="login-usuario">Usuario</label>
           <input
-            id="login-nombre"
-            v-model="loginNombre"
+            id="login-usuario"
+            v-model="loginUsuario"
             type="text"
-            placeholder="Ej. Ana María García"
-            autocomplete="name"
+            placeholder="Ej. ana.garcia"
+            autocomplete="username"
+            :disabled="cargandoLogin"
             @keyup.enter="handleLogin"
           />
         </div>
+        <div class="campo campo-password">
+          <label for="login-password">Contraseña</label>
+          <div class="campo-password-wrap">
+            <input
+              id="login-password"
+              v-model="loginPassword"
+              :type="verPassword ? 'text' : 'password'"
+              placeholder="Tu contraseña"
+              autocomplete="current-password"
+              :disabled="cargandoLogin"
+              @keyup.enter="handleLogin"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              :aria-label="verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="verPassword = !verPassword"
+            >
+              {{ verPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
 
-        <p v-if="errorLogin" class="msg-error">{{ errorLogin }}</p>
-
-        <button class="btn btn-verde btn-ancho" @click="handleLogin">
-          Iniciar Sesión →
+        <button class="btn btn-verde btn-ancho" :disabled="cargandoLogin" @click="handleLogin">
+          {{ cargandoLogin ? 'Cargando...' : 'Iniciar Sesión →' }}
         </button>
       </div>
 
@@ -112,6 +133,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
+import { alertaExito, alertaError } from '../../utils/alertas.js';
 import logoImg from '../../assets/logo_agroia.png';
 
 const router = useRouter();
@@ -120,8 +142,10 @@ const store = useAppStore();
 const pestañaActiva = ref('login');
 
 // Login
-const loginNombre = ref('');
-const errorLogin = ref('');
+const loginUsuario = ref('');
+const loginPassword = ref('');
+const verPassword = ref(false);
+const cargandoLogin = ref(false);
 
 // Registro
 const regNombre = ref('');
@@ -130,20 +154,25 @@ const regMuni = ref('');
 const regAct = ref('Agrícola');
 const errorRegistro = ref('');
 
-function handleLogin() {
-  const nombre = loginNombre.value.trim();
-  if (!nombre) {
-    errorLogin.value = 'Ingresa tu nombre completo para continuar.';
+async function handleLogin() {
+  if (cargandoLogin.value) return;
+
+  const usuario = loginUsuario.value.trim();
+  const password = loginPassword.value;
+  if (!usuario || !password) {
+    alertaError('Ingresa tu usuario y contraseña para continuar.');
     return;
   }
-  errorLogin.value = '';
-  const resultado = store.iniciarSesion(nombre);
+
+  cargandoLogin.value = true;
+  const resultado = await store.iniciarSesion(usuario, password);
+  cargandoLogin.value = false;
+
   if (resultado.ok) {
+    await alertaExito('¡Bienvenido!', 'Inicio de sesión correcto.', 900);
     router.push('/dashboard');
   } else {
-    errorLogin.value = `El perfil "${nombre}" no está registrado. ¿Quieres crear uno nuevo?`;
-    pestañaActiva.value = 'registro';
-    regNombre.value = nombre;
+    alertaError(resultado.msg);
   }
 }
 
@@ -267,6 +296,40 @@ function handleRegistro() {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+.campo-password-wrap {
+  position: relative;
+}
+
+.campo-password-wrap input {
+  padding-right: 44px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .select-glass {
