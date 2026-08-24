@@ -14,6 +14,7 @@ import CrearCurso    from '../views/admin/CrearCurso.vue';
 import MisCursos     from '../views/admin/MisCursos.vue';
 import Catalogo      from '../views/admin/Catalogo.vue';
 import DetalleCurso  from '../views/admin/DetalleCurso.vue';
+import DetalleCursoReal from '../views/admin/DetalleCursoReal.vue';
 import Rutas         from '../views/admin/Rutas.vue';
 import Calendario    from '../views/admin/Calendario.vue';
 import Novedades     from '../views/admin/Novedades.vue';
@@ -69,6 +70,16 @@ const routes = [
                 path: 'catalogo/:id',
                 name: 'AdminDetalleCurso',
                 component: DetalleCurso,
+                meta: { title: 'Detalle del Curso · AgroIA' }
+            },
+            {
+                // Curso real del Backend (GET /cursos/{id}) — separado de
+                // /catalogo/:id (catálogo de ejemplo local) porque los ids
+                // autoincrementales de la base de datos podrían coincidir
+                // por casualidad con los del catálogo mock.
+                path: 'curso/:id',
+                name: 'AdminDetalleCursoReal',
+                component: DetalleCursoReal,
                 meta: { title: 'Detalle del Curso · AgroIA' }
             },
             {

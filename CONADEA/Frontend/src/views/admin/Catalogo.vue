@@ -16,7 +16,7 @@
 
     <div v-else-if="error" class="vidrio">
       <p style="font-size:.85rem;color:var(--rojo);margin-bottom:12px;">{{ error }}</p>
-      <button class="btn btn-verde" @click="cargar">Reintentar</button>
+      <button class="btn btn-verde" @click="cursosStore.cargar()">Reintentar</button>
     </div>
 
     <div v-else class="grid-catalogo">
@@ -24,7 +24,7 @@
         v-for="c in listaFiltrada"
         :key="c.id"
         class="vidrio carta-curso"
-        @click="abrirCurso(c)"
+        @click="router.push(`/curso/${c.id}`)"
       >
         <div class="portada" :style="portadaStyle(c)">
           <span class="num">{{ c.icono }} Curso</span>
@@ -50,14 +50,19 @@
 
 <script setup>
 import { computed, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
-import { useCursosReales } from '../../composables/useCursosReales.js';
+import { useCursosStore } from '../../stores/cursos.js';
 
 const props = defineProps({ terminoBusqueda: { type: String, default: '' } });
+const router = useRouter();
 const store = useAppStore();
-const { cursos, cargando, error, cargar, pctCurso, aprobado } = useCursosReales();
+const cursosStore = useCursosStore();
+const { cursos, cargando, error } = storeToRefs(cursosStore);
+const { pctCurso, aprobado } = cursosStore;
 
-onMounted(cargar);
+onMounted(() => cursosStore.cargar());
 
 const listaFiltrada = computed(() => {
   const f = props.terminoBusqueda.toLowerCase().trim();
@@ -70,13 +75,6 @@ const listaFiltrada = computed(() => {
 function portadaStyle(c) {
   if (store.config.datos) return `background: linear-gradient(135deg, #34D399, #059669);`;
   return `background-image: url('${c.imagen_url}'); background-size: cover; background-position: center;`;
-}
-
-// El detalle del curso (lecciones, video, quiz) todavía no está conectado
-// al Backend — se avisa igual que el "Próximamente" de la app mientras
-// tanto (ver main_shell.dart).
-function abrirCurso(c) {
-  store.mostrarToastGlobal('🚧', 'Muy pronto', `El detalle de "${c.titulo}" estará disponible pronto.`);
 }
 </script>
 

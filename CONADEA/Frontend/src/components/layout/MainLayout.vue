@@ -85,6 +85,7 @@ watch(
       'AdminMisCursos':   'miscursos',
       'AdminCatalogo':    'catalogo',
       'AdminDetalleCurso':'catalogo',
+      'AdminDetalleCursoReal':'catalogo',
       'AdminRutas':       'rutas',
       'AdminCalendario':  'calendario',
       'AdminNovedades':   'novedades',

@@ -16,7 +16,7 @@
 
     <div v-else-if="error" class="vidrio">
       <p style="font-size:.85rem;color:var(--rojo);margin-bottom:12px;">{{ error }}</p>
-      <button class="btn btn-verde" @click="cargar">Reintentar</button>
+      <button class="btn btn-verde" @click="cursosStore.cargar()">Reintentar</button>
     </div>
 
     <div v-else class="vidrio">
@@ -52,13 +52,16 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
-import { useCursosReales } from '../../composables/useCursosReales.js';
+import { storeToRefs } from 'pinia';
+import { useCursosStore } from '../../stores/cursos.js';
 
 const router = useRouter();
 const store = useAppStore();
-const { cursos, cargando, error, cargar, pctCurso, aprobado, enProgreso } = useCursosReales();
+const cursosStore = useCursosStore();
+const { cursos, cargando, error } = storeToRefs(cursosStore);
+const { pctCurso, aprobado, enProgreso } = cursosStore;
 
-onMounted(cargar);
+onMounted(() => cursosStore.cargar());
 
 const completados = ref(false);
 
@@ -71,9 +74,8 @@ function miniaturaStyle(c) {
   return `background-image: url('${c.imagen_url}'); background-size: cover; background-position: center;`;
 }
 
-// El detalle del curso todavía no está conectado al Backend (ver Catalogo.vue).
 function abrirCurso(c) {
-  store.mostrarToastGlobal('🚧', 'Muy pronto', `El detalle de "${c.titulo}" estará disponible pronto.`);
+  router.push(`/curso/${c.id}`);
 }
 </script>
 
