@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-    return '/CONADEA/Backend/api/v1';
+    // Backend/src/Core/Router.php solo recorta "/CONADEA/Backend" de la URL
+    // (ver comentario en dispatch()) y compara el resto contra rutas como
+    // "/auth/login" — sin el "/api/v1". La app móvil usa la misma base
+    // (ver app_conadea/lib/core/config/api_config.dart).
+    return '/CONADEA/Backend';
 };
 
 const api = axios.create({
