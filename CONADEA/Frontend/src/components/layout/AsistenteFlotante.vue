@@ -9,7 +9,7 @@
         y recibe orientación inicial. Revisa el curso "Uso de WhatsApp AgroIA" para aprender
         a sacarle el máximo provecho.
       </p>
-      <button class="btn btn-verde btn-ancho" @click="abrirWhatsapp">
+      <button class="btn btn-verde btn-ancho btn-whatsapp" @click="abrirWhatsapp">
         Abrir WhatsApp AgroIA →
       </button>
     </div>
@@ -24,11 +24,11 @@
       <svg viewBox="0 0 32 32" class="asistente-svg" aria-hidden="true">
         <path
           d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.696 4.61 1.897 6.484L4 29l7.72-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3Z"
-          fill="currentColor"
+          fill="#FFFFFF"
         />
         <path
           d="M21.61 18.14c-.31-.155-1.83-.902-2.113-1.005-.283-.104-.489-.155-.695.155-.206.31-.797 1.005-.978 1.212-.18.206-.36.232-.669.077-.31-.155-1.307-.482-2.49-1.537-.92-.82-1.541-1.833-1.722-2.143-.18-.31-.02-.478.136-.632.14-.14.31-.361.464-.542.155-.18.206-.31.31-.516.103-.206.05-.387-.026-.542-.077-.155-.695-1.676-.953-2.296-.251-.603-.506-.522-.695-.532l-.592-.01c-.206 0-.542.077-.826.387-.284.31-1.084 1.06-1.084 2.582 0 1.523 1.11 2.994 1.264 3.2.155.206 2.185 3.336 5.294 4.677.74.32 1.317.51 1.767.653.742.236 1.418.203 1.952.123.596-.089 1.83-.748 2.088-1.47.258-.723.258-1.343.18-1.47-.076-.129-.283-.206-.593-.361Z"
-          fill="#0D2630"
+          fill="#22C55E"
         />
       </svg>
     </button>
@@ -128,6 +128,14 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickFuera));
   color: var(--texto-suave);
   line-height: 1.55;
   margin-bottom: 16px;
+}
+
+/* Texto blanco en vez del dorado/oscuro estándar de .btn-verde: en un
+   botón de WhatsApp conviene que se lea como el CTA verde+blanco
+   reconocible, sin tocar el estilo de los demás botones verdes del sitio. */
+.btn-whatsapp {
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 @media (max-width: 560px) {
