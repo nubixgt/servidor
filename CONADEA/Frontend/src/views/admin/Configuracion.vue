@@ -44,6 +44,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
+import { alertaConfirmar } from '../../utils/alertas.js';
 
 const router = useRouter();
 const store = useAppStore();
@@ -52,11 +53,17 @@ function toggle(clave) {
   store.actualizarConfig(clave, !store.config[clave]);
 }
 
-function cerrarSesion() {
-  if (confirm('¿Cerrar sesión? Tu avance quedará guardado en este dispositivo.')) {
-    store.cerrarSesion();
-    router.push('/login');
-  }
+async function cerrarSesion() {
+  const confirmar = await alertaConfirmar(
+    '¿Cerrar sesión?',
+    '¿Seguro que quieres salir de tu cuenta?',
+    'Sí, salir',
+    'No'
+  );
+  if (!confirmar) return;
+
+  store.cerrarSesion();
+  router.push('/login');
 }
 </script>
 

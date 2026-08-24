@@ -72,6 +72,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
+import { alertaConfirmar } from '../../utils/alertas.js';
 import logoImg from '../../assets/logo_agroia.png';
 
 const props = defineProps({
@@ -131,12 +132,18 @@ function navegar(id) {
   emit('cerrarMenu');
 }
 
-function handleCerrarSesion() {
-  if (confirm('¿Cerrar sesión? Tu avance quedará guardado en este dispositivo.')) {
-    store.cerrarSesion();
-    router.push('/login');
-    emit('cerrarMenu');
-  }
+async function handleCerrarSesion() {
+  const confirmar = await alertaConfirmar(
+    '¿Cerrar sesión?',
+    '¿Seguro que quieres salir de tu cuenta?',
+    'Sí, salir',
+    'No'
+  );
+  if (!confirmar) return;
+
+  store.cerrarSesion();
+  router.push('/login');
+  emit('cerrarMenu');
 }
 </script>
 
