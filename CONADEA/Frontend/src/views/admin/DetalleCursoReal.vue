@@ -221,6 +221,7 @@ async function marcarLeccion(leccion) {
   marcandoLeccion.value = leccion.id;
   try {
     await cursosStore.completarLeccion(curso.value.id, leccion.id);
+    store.registrarActividad();
     const i = curso.value.lecciones.findIndex((l) => l.id === leccion.id);
     const sig = i + 1;
     if (sig < curso.value.lecciones.length && !leccionesAbiertas.value.includes(sig)) {
@@ -274,6 +275,7 @@ async function calificar() {
   notaObtenida.value = nota;
   aprobadaEsteIntento.value = c.quiz.length > 0 && nota / c.quiz.length >= 0.6;
   quizCalificado.value = true;
+  store.registrarActividad();
 
   calificando.value = true;
   try {

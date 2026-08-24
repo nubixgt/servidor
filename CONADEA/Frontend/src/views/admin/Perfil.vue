@@ -11,13 +11,13 @@
         </div>
         <div>
           <h3>{{ store.usuario?.nombre }}</h3>
-          <p>🏢 {{ store.usuario?.org }}<br>📍 {{ store.usuario?.muni }} · {{ store.usuario?.act }}<br>📅 En el programa desde el {{ store.usuario?.desde }}</p>
+          <p>📞 {{ store.usuario?.telefono || '—' }}<br>📍 {{ lugarTexto }}<br>🎖️ Rol: {{ store.usuario?.rol || '—' }}</p>
         </div>
       </div>
       <div class="estadisticas">
-        <div class="stat-caja"><b>{{ store.pctGlobal }}%</b><small>Avance</small></div>
-        <div class="stat-caja"><b>{{ store.leccionesHechas }}/{{ store.totalLecciones }}</b><small>Lecciones</small></div>
-        <div class="stat-caja"><b>{{ store.modulosCompletos }}</b><small>Certificados</small></div>
+        <div class="stat-caja"><b>{{ pctGlobal }}%</b><small>Avance</small></div>
+        <div class="stat-caja"><b>{{ leccionesHechas }}/{{ totalLecciones }}</b><small>Lecciones</small></div>
+        <div class="stat-caja"><b>{{ certificados }}</b><small>Certificados</small></div>
         <div class="stat-caja"><b>{{ store.racha }}</b><small>Días de racha</small></div>
       </div>
     </div>
@@ -25,19 +25,24 @@
     <!-- Avance por curso -->
     <div class="vidrio">
       <div class="cab-tarjeta"><h3>Avance por curso</h3></div>
-      <table class="tabla-avance">
+
+      <p v-if="cursosStore.cargando" style="font-size:.85rem;color:var(--texto-suave);">Cargando cursos...</p>
+      <p v-else-if="cursos.length === 0" style="font-size:.85rem;color:var(--texto-suave);">
+        Todavía no hay cursos publicados.
+      </p>
+      <table v-else class="tabla-avance">
         <tbody>
-          <tr v-for="m in MODULOS" :key="m.id">
-            <td class="mod-ic">{{ m.ic }}</td>
+          <tr v-for="c in cursos" :key="c.id" class="fila-curso" @click="router.push(`/curso/${c.id}`)">
+            <td class="mod-ic">{{ c.icono }}</td>
             <td>
-              <b style="font-size:.85rem;">{{ m.t }}</b>
+              <b style="font-size:.85rem;">{{ c.titulo }}</b>
               <div class="pista" style="margin-top:5px;">
-                <div class="pista-fill" :style="{ width: store.pctModulo(m) + '%' }"></div>
+                <div class="pista-fill" :style="{ width: cursosStore.pctCurso(c) + '%' }"></div>
               </div>
             </td>
             <td class="td-right">
-              <button v-if="store.progDe(m.id).ok" class="btn-cert" @click="router.push('/certificados')">🎓 Certificado</button>
-              <span v-else style="font-size:.78rem;color:var(--texto-suave);">{{ store.pctModulo(m) }}%</span>
+              <span v-if="cursosStore.aprobado(c.id)" class="chip-aprobado">✓ Aprobado</span>
+              <span style="font-size:.78rem;color:var(--texto-suave);">{{ cursosStore.pctCurso(c) }}%</span>
             </td>
           </tr>
         </tbody>
@@ -47,13 +52,22 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { useAppStore } from '../../stores/app.js';
-import { MODULOS } from '../../data/local.js';
+import { useCursosStore } from '../../stores/cursos.js';
+import locationService from '../../services/locationService.js';
 
 const router = useRouter();
 const store = useAppStore();
+const cursosStore = useCursosStore();
+const { cursos } = storeToRefs(cursosStore);
+
+onMounted(() => {
+  cursosStore.cargar();
+  cargarUbicacion();
+});
 
 const iniciales = computed(() => {
   if (!store.usuario?.nombre) return '--';
@@ -67,6 +81,48 @@ const avatarUrl = computed(() => {
     ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
     : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80';
 });
+
+// Estadísticas reales — mismas fórmulas que
+// app_conadea/lib/data/state/progreso_controller.dart. La racha sigue
+// siendo local: ningún backend la registra todavía (ni en la app ni acá).
+const leccionesHechas = computed(() =>
+  cursos.value.reduce((s, c) => s + cursosStore.progresoDe(c.id).leccionesCompletadas.size, 0)
+);
+const totalLecciones = computed(() => cursos.value.reduce((s, c) => s + (c.total_lecciones ?? 0), 0));
+const certificados = computed(() => cursos.value.filter((c) => cursosStore.aprobado(c.id)).length);
+const pctGlobal = computed(() => {
+  if (!cursos.value.length) return 0;
+  const suma = cursos.value.reduce((s, c) => s + cursosStore.pctCurso(c), 0);
+  return Math.round(suma / cursos.value.length);
+});
+
+// Nombre real del departamento/municipio a partir de los ids que guarda el
+// login (Backend/src/Controllers/LocationController.php no tiene un
+// endpoint por id, así que se busca en el listado).
+const nombreDepartamento = ref('');
+const nombreMunicipio = ref('');
+
+const lugarTexto = computed(() => {
+  if (nombreMunicipio.value && nombreDepartamento.value) return `${nombreMunicipio.value}, ${nombreDepartamento.value}`;
+  return nombreDepartamento.value || 'Guatemala';
+});
+
+async function cargarUbicacion() {
+  const depId = store.usuario?.departamentoId;
+  if (!depId) return;
+  try {
+    const { data: depData } = await locationService.listarDepartamentos();
+    nombreDepartamento.value = depData.data.find((d) => d.id === depId)?.nombre || '';
+
+    const muniId = store.usuario?.municipioId;
+    if (muniId) {
+      const { data: muniData } = await locationService.listarMunicipios(depId);
+      nombreMunicipio.value = muniData.data.find((m) => m.id === muniId)?.nombre || '';
+    }
+  } catch (e) {
+    // Silencioso: no vale la pena bloquear el resto del perfil por esto.
+  }
+}
 </script>
 
 <style scoped>
@@ -86,6 +142,7 @@ const avatarUrl = computed(() => {
 .tabla-avance tr:last-child td { border-bottom: none; }
 .mod-ic { width: 40px; font-size: 1.25rem; }
 .td-right { text-align: right; white-space: nowrap; }
-.btn-cert { border: 1.5px solid var(--oro); border-bottom: 3px solid #B45309; color: var(--oro); font-size: 0.74rem; font-weight: 700; padding: 5px 10px 7px; border-radius: 10px; background: transparent; cursor: pointer; transition: all 0.1s; }
-.btn-cert:hover { background: var(--oro); color: #3A2A00; }
+.fila-curso { cursor: pointer; transition: background 0.15s ease; }
+.fila-curso:hover { background: rgba(255,255,255,0.04); }
+.chip-aprobado { display: inline-block; font-size: 0.7rem; font-weight: 800; color: var(--oro); background: rgba(244,197,66,0.12); border: 1px solid rgba(244,197,66,0.4); padding: 3px 8px; border-radius: 10px; margin-right: 8px; }
 </style>
