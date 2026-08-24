@@ -136,32 +136,24 @@
         </div>
         <div class="campo">
           <label for="reg-departamento">Departamento</label>
-          <select
+          <SelectorBuscador
             id="reg-departamento"
             v-model="regDepartamentoId"
-            class="select-glass"
+            :opciones="departamentos"
+            :placeholder="cargandoDepartamentos ? 'Cargando...' : 'Selecciona tu departamento'"
             :disabled="cargandoRegistro || cargandoDepartamentos"
             @change="onCambiarDepartamento"
-          >
-            <option value="">
-              {{ cargandoDepartamentos ? 'Cargando...' : 'Selecciona tu departamento' }}
-            </option>
-            <option v-for="d in departamentos" :key="d.id" :value="d.id">{{ d.nombre }}</option>
-          </select>
+          />
         </div>
         <div class="campo">
           <label for="reg-municipio">Municipio</label>
-          <select
+          <SelectorBuscador
             id="reg-municipio"
             v-model="regMunicipioId"
-            class="select-glass"
+            :opciones="municipios"
+            :placeholder="!regDepartamentoId ? 'Primero elige un departamento' : (cargandoMunicipios ? 'Cargando...' : 'Selecciona tu municipio')"
             :disabled="cargandoRegistro || !regDepartamentoId || cargandoMunicipios"
-          >
-            <option value="">
-              {{ !regDepartamentoId ? 'Primero elige un departamento' : (cargandoMunicipios ? 'Cargando...' : 'Selecciona tu municipio') }}
-            </option>
-            <option v-for="m in municipios" :key="m.id" :value="m.id">{{ m.nombre }}</option>
-          </select>
+          />
         </div>
 
         <button class="btn btn-verde btn-ancho" :disabled="cargandoRegistro" @click="handleRegistro">
@@ -180,6 +172,7 @@ import { useRouter } from 'vue-router';
 import { useAppStore } from '../../stores/app.js';
 import { alertaExito, alertaError } from '../../utils/alertas.js';
 import locationService from '../../services/locationService.js';
+import SelectorBuscador from '../../components/ui/SelectorBuscador.vue';
 import logoImg from '../../assets/logo_agroia.png';
 
 const router = useRouter();
@@ -471,15 +464,6 @@ async function handleRegistro() {
   opacity: 0.65;
   cursor: not-allowed;
   transform: none !important;
-}
-
-.select-glass {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m19 9-7 7-7-7'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 16px;
-  padding-right: 40px !important;
 }
 
 .pie-auth {
