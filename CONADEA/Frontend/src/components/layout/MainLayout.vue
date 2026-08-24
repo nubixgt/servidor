@@ -93,7 +93,8 @@ watch(
       'AdminForos':       'foros',
       'AdminAyuda':       'ayuda',
       'AdminPerfil':      'perfil',
-      'AdminConfiguracion':'config'
+      'AdminConfiguracion':'config',
+      'AdminCrearCurso':  'crearcurso'
     };
     rutaActiva.value = mapa[nombre] || 'inicio';
   },
@@ -116,7 +117,8 @@ function navegar(id) {
     'foros':        '/foros',
     'ayuda':        '/ayuda',
     'perfil':       '/perfil',
-    'config':       '/configuracion'
+    'config':       '/configuracion',
+    'crearcurso':   '/crear-curso'
   };
   if (rutas[id]) router.push(rutas[id]);
 }

@@ -10,6 +10,7 @@ import Login from '../views/auth/Login.vue';
 
 // ──── Vistas admin ────────────────────────────────────────────────────────────
 import Dashboard     from '../views/admin/Dashboard.vue';
+import CrearCurso    from '../views/admin/CrearCurso.vue';
 import MisCursos     from '../views/admin/MisCursos.vue';
 import Catalogo      from '../views/admin/Catalogo.vue';
 import DetalleCurso  from '../views/admin/DetalleCurso.vue';
@@ -123,6 +124,14 @@ const routes = [
                 name: 'AdminConfiguracion',
                 component: Configuracion,
                 meta: { title: 'Configuración · AgroIA' }
+            },
+            {
+                path: 'crear-curso',
+                name: 'AdminCrearCurso',
+                component: CrearCurso,
+                // Backend/src/Controllers/CursoController.php -> POST /cursos
+                // exige rol Administrador; el guard de abajo hace lo mismo en la web.
+                meta: { title: 'Crear curso · AgroIA', requiresAdmin: true }
             }
         ]
     }
@@ -145,6 +154,8 @@ router.beforeEach((to, from, next) => {
 
     if (to.meta.requiresAuth && !store.estaLogueado) {
         next('/login');
+    } else if (to.meta.requiresAdmin && store.usuario?.rol !== 'Administrador') {
+        next('/dashboard');
     } else if ((to.name === 'Login' || to.name === 'Home') && store.estaLogueado) {
         next('/dashboard');
     } else {

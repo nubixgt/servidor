@@ -27,6 +27,18 @@
 
       <li class="sep" role="separator"></li>
 
+      <li v-if="store.usuario?.rol === 'Administrador'">
+        <button id="m-crearcurso" :class="{ activo: rutaActiva === 'crearcurso' }" @click="navegar('crearcurso')">
+          <span class="ic">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </span>
+          Crear curso
+        </button>
+      </li>
       <li>
         <button id="m-perfil" :class="{ activo: rutaActiva === 'perfil' }" @click="navegar('perfil')">
           <span class="ic">
@@ -162,8 +174,29 @@ async function handleCerrarSesion() {
   flex-direction: column;
   overflow-y: auto;
   scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   gap: 8px;
+}
+
+/* Mismo scrollbar delgado/tema oscuro del resto del sitio (ver
+   style.css), pero declarado también aquí para que gane siempre,
+   sin depender de que la regla global no choque con nada. */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 222, 128, 0.4);
 }
 
 @media (max-width: 980px) {
