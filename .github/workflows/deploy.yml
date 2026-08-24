@@ -59,6 +59,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (CONADEA)
+        run: |
+          cd CONADEA/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
