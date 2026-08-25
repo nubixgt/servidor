@@ -47,27 +47,26 @@ class CursoService
 
         $lecciones = [];
         foreach (array_values($dto->lecciones) as $i => $leccion) {
-            $lecciones[] = new Leccion(null, 0, $i, trim($leccion['titulo'] ?? ''), trim($leccion['contenido'] ?? ''));
-        }
-
-        $quiz = [];
-        foreach (array_values($dto->quiz) as $i => $pregunta) {
-            $opciones = [];
-            foreach (array_values($pregunta['opciones'] ?? []) as $j => $opcion) {
-                $opciones[] = new OpcionQuiz(
-                    null,
-                    0,
-                    $j,
-                    trim($opcion['texto'] ?? ''),
-                    (bool) ($opcion['es_correcta'] ?? false)
-                );
+            $quiz = [];
+            foreach (array_values($leccion['quiz'] ?? []) as $j => $pregunta) {
+                $opciones = [];
+                foreach (array_values($pregunta['opciones'] ?? []) as $k => $opcion) {
+                    $opciones[] = new OpcionQuiz(
+                        null,
+                        0,
+                        $k,
+                        trim($opcion['texto'] ?? ''),
+                        (bool) ($opcion['es_correcta'] ?? false)
+                    );
+                }
+                $quiz[] = new PreguntaQuiz(null, 0, $j, trim($pregunta['pregunta'] ?? ''), $opciones);
             }
-            $quiz[] = new PreguntaQuiz(null, 0, $i, trim($pregunta['pregunta'] ?? ''), $opciones);
+            $lecciones[] = new Leccion(null, 0, $i, trim($leccion['titulo'] ?? ''), trim($leccion['contenido'] ?? ''), null, $quiz);
         }
 
         // La imagen (y los videos de lección) se guardan después de insertar
         // porque el nombre de la carpeta depende del id autoincremental.
-        $curso = new Curso(null, $dto->icono, $dto->titulo, $dto->descripcion, '', $lecciones, $quiz);
+        $curso = new Curso(null, $dto->icono, $dto->titulo, $dto->descripcion, '', $lecciones);
         [$id, $leccionIds] = $this->repository->create($curso);
 
         try {
@@ -131,29 +130,29 @@ class CursoService
             if (trim($leccion['titulo'] ?? '') === '' || trim($leccion['contenido'] ?? '') === '') {
                 throw new \Exception('Cada lección necesita título y contenido.');
             }
-        }
-        if (count($dto->quiz) < 1) {
-            throw new \Exception('Agrega al menos una pregunta al quiz.');
-        }
-        foreach ($dto->quiz as $pregunta) {
-            if (trim($pregunta['pregunta'] ?? '') === '') {
-                throw new \Exception('Cada pregunta del quiz necesita texto.');
-            }
-            $opciones = $pregunta['opciones'] ?? [];
-            if (count($opciones) < 2) {
-                throw new \Exception('Cada pregunta necesita al menos 2 opciones.');
-            }
-            $correctas = 0;
-            foreach ($opciones as $opcion) {
-                if (trim($opcion['texto'] ?? '') === '') {
-                    throw new \Exception('Todas las opciones necesitan texto.');
+            $quiz = $leccion['quiz'] ?? [];
+            if (!empty($quiz)) {
+                foreach ($quiz as $pregunta) {
+                    if (trim($pregunta['pregunta'] ?? '') === '') {
+                        throw new \Exception('Cada pregunta del quiz necesita texto.');
+                    }
+                    $opciones = $pregunta['opciones'] ?? [];
+                    if (count($opciones) < 2) {
+                        throw new \Exception('Cada pregunta necesita al menos 2 opciones.');
+                    }
+                    $correctas = 0;
+                    foreach ($opciones as $opcion) {
+                        if (trim($opcion['texto'] ?? '') === '') {
+                            throw new \Exception('Todas las opciones necesitan texto.');
+                        }
+                        if (!empty($opcion['es_correcta'])) {
+                            $correctas++;
+                        }
+                    }
+                    if ($correctas !== 1) {
+                        throw new \Exception('Cada pregunta debe tener exactamente una opción marcada como correcta.');
+                    }
                 }
-                if (!empty($opcion['es_correcta'])) {
-                    $correctas++;
-                }
-            }
-            if ($correctas !== 1) {
-                throw new \Exception('Cada pregunta debe tener exactamente una opción marcada como correcta.');
             }
         }
     }
@@ -253,18 +252,18 @@ class CursoService
                     'titulo' => $l->titulo,
                     'contenido' => $l->contenido,
                     'video_url' => $l->videoPath !== null ? UrlHelper::toAbsolute($l->videoPath) : null,
-                ],
-                $curso->lecciones
-            ),
-            'quiz' => array_map(
-                fn(PreguntaQuiz $p) => [
-                    'pregunta' => $p->pregunta,
-                    'opciones' => array_map(
-                        fn(OpcionQuiz $o) => ['texto' => $o->texto, 'es_correcta' => $o->esCorrecta],
-                        $p->opciones
+                    'quiz' => array_map(
+                        fn(PreguntaQuiz $p) => [
+                            'pregunta' => $p->pregunta,
+                            'opciones' => array_map(
+                                fn(OpcionQuiz $o) => ['texto' => $o->texto, 'es_correcta' => $o->esCorrecta],
+                                $p->opciones
+                            ),
+                        ],
+                        $l->quiz
                     ),
                 ],
-                $curso->quiz
+                $curso->lecciones
             ),
         ];
     }
