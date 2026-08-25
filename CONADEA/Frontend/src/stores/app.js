@@ -98,6 +98,9 @@ export const useAppStore = defineStore('app', () => {
     if (!prog.value[id]) {
       prog.value[id] = { lec: [], nota: null, ok: false, fecha: null };
     }
+    if (!prog.value[id].lec) {
+      prog.value[id].lec = [];
+    }
     return prog.value[id];
   }
 
