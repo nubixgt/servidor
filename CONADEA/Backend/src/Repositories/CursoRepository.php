@@ -111,7 +111,6 @@ class CursoRepository
                 $row['descripcion'],
                 $row['imagen_path'],
                 [],
-                [],
                 (int) $row['total_lecciones']
             ),
             $rows
