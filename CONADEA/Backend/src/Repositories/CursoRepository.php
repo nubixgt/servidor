@@ -41,6 +41,15 @@ class CursoRepository
                 "INSERT INTO lecciones (curso_id, orden, titulo, contenido)
                  VALUES (:curso_id, :orden, :titulo, :contenido)"
             );
+            $stmtPregunta = $this->pdo->prepare(
+                "INSERT INTO quiz_preguntas (leccion_id, orden, pregunta)
+                 VALUES (:leccion_id, :orden, :pregunta)"
+            );
+            $stmtOpcion = $this->pdo->prepare(
+                "INSERT INTO quiz_opciones (pregunta_id, orden, texto, es_correcta)
+                 VALUES (:pregunta_id, :orden, :texto, :es_correcta)"
+            );
+            
             $leccionIds = [];
             foreach ($curso->lecciones as $i => $leccion) {
                 $stmtLeccion->execute([
@@ -49,32 +58,26 @@ class CursoRepository
                     'titulo' => $leccion->titulo,
                     'contenido' => $leccion->contenido,
                 ]);
-                $leccionIds[$i] = (int) $this->pdo->lastInsertId();
-            }
-
-            $stmtPregunta = $this->pdo->prepare(
-                "INSERT INTO quiz_preguntas (curso_id, orden, pregunta)
-                 VALUES (:curso_id, :orden, :pregunta)"
-            );
-            $stmtOpcion = $this->pdo->prepare(
-                "INSERT INTO quiz_opciones (pregunta_id, orden, texto, es_correcta)
-                 VALUES (:pregunta_id, :orden, :texto, :es_correcta)"
-            );
-            foreach ($curso->quiz as $pregunta) {
-                $stmtPregunta->execute([
-                    'curso_id' => $cursoId,
-                    'orden' => $pregunta->orden,
-                    'pregunta' => $pregunta->pregunta,
-                ]);
-                $preguntaId = (int) $this->pdo->lastInsertId();
-
-                foreach ($pregunta->opciones as $opcion) {
-                    $stmtOpcion->execute([
-                        'pregunta_id' => $preguntaId,
-                        'orden' => $opcion->orden,
-                        'texto' => $opcion->texto,
-                        'es_correcta' => $opcion->esCorrecta ? 1 : 0,
+                $leccionId = (int) $this->pdo->lastInsertId();
+                $leccionIds[$i] = $leccionId;
+                
+                // Insert quiz questions for this lesson
+                foreach ($leccion->quiz as $pregunta) {
+                    $stmtPregunta->execute([
+                        'leccion_id' => $leccionId,
+                        'orden' => $pregunta->orden,
+                        'pregunta' => $pregunta->pregunta,
                     ]);
+                    $preguntaId = (int) $this->pdo->lastInsertId();
+
+                    foreach ($pregunta->opciones as $opcion) {
+                        $stmtOpcion->execute([
+                            'pregunta_id' => $preguntaId,
+                            'orden' => $opcion->orden,
+                            'texto' => $opcion->texto,
+                            'es_correcta' => $opcion->esCorrecta ? 1 : 0,
+                        ]);
+                    }
                 }
             }
 
@@ -127,7 +130,6 @@ class CursoRepository
         }
 
         $lecciones = $this->findLeccionesByCurso($id);
-        $quiz = $this->findQuizByCurso($id);
 
         return new Curso(
             (int) $row['id'],
@@ -135,8 +137,7 @@ class CursoRepository
             $row['titulo'],
             $row['descripcion'],
             $row['imagen_path'],
-            $lecciones,
-            $quiz
+            $lecciones
         );
     }
 
@@ -167,26 +168,27 @@ class CursoRepository
         $stmt->execute(['curso_id' => $cursoId]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(
-            fn($row) => new Leccion(
+        return array_map(function ($row) {
+            $quiz = $this->findQuizByLeccion((int) $row['id']);
+            return new Leccion(
                 (int) $row['id'],
                 (int) $row['curso_id'],
                 (int) $row['orden'],
                 $row['titulo'],
                 $row['contenido'],
-                $row['video_path']
-            ),
-            $rows
-        );
+                $row['video_path'],
+                $quiz
+            );
+        }, $rows);
     }
 
-    private function findQuizByCurso(int $cursoId): array
+    private function findQuizByLeccion(int $leccionId): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT id, curso_id, orden, pregunta
-             FROM quiz_preguntas WHERE curso_id = :curso_id ORDER BY orden ASC"
+            "SELECT id, leccion_id, orden, pregunta
+             FROM quiz_preguntas WHERE leccion_id = :leccion_id ORDER BY orden ASC"
         );
-        $stmt->execute(['curso_id' => $cursoId]);
+        $stmt->execute(['leccion_id' => $leccionId]);
         $preguntas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $stmtOpciones = $this->pdo->prepare(
@@ -211,7 +213,7 @@ class CursoRepository
 
             return new PreguntaQuiz(
                 (int) $row['id'],
-                (int) $row['curso_id'],
+                (int) $row['leccion_id'],
                 (int) $row['orden'],
                 $row['pregunta'],
                 $opciones

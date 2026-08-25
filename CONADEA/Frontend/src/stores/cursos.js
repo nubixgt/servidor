@@ -66,21 +66,24 @@ export const useCursosStore = defineStore('cursosReales', () => {
     return progreso.value[cursoId] || { leccionesCompletadas: new Set(), aprobado: false, nota: null, fechaAprobado: null };
   }
 
-  // Igual que ProgresoController.pctCurso: lecciones + evaluación final.
+  // Ahora el progreso es solo en base a lecciones completadas.
   function pctCurso(curso) {
     const p = progresoDe(curso.id);
-    const total = (curso.total_lecciones ?? curso.lecciones?.length ?? 0) + 1;
-    const hechas = p.leccionesCompletadas.size + (p.aprobado ? 1 : 0);
+    const total = (curso.total_lecciones ?? curso.lecciones?.length ?? 0);
+    if (total === 0) return 0;
+    const hechas = p.leccionesCompletadas.size;
     return Math.round((hechas / total) * 100);
   }
 
   function aprobado(cursoId) {
-    return progresoDe(cursoId).aprobado;
+    // Check if the user completed all lessons
+    const p = progresoDe(cursoId);
+    return false; // Not used as global property anymore, but kept for compatibility. We'll derive it from 'todasLeccionesHechas' instead when needed.
   }
 
   function enProgreso(curso) {
     const p = progresoDe(curso.id);
-    return !p.aprobado && p.leccionesCompletadas.size > 0;
+    return !todasLeccionesHechas(curso) && p.leccionesCompletadas.size > 0;
   }
 
   function todasLeccionesHechas(curso) {
@@ -89,32 +92,43 @@ export const useCursosStore = defineStore('cursosReales', () => {
   }
 
   // Optimista: marca de una vez en pantalla y revierte si el guardado falla.
-  async function completarLeccion(cursoId, leccionId) {
+  // Si mandamos nota y total, la lección solo se completará si nota/total >= 0.6.
+  async function completarLeccion(cursoId, leccionId, nota = null, total = null) {
     const p = entradaProgreso(cursoId);
-    if (p.leccionesCompletadas.has(leccionId)) return;
-    p.leccionesCompletadas.add(leccionId);
+    
+    // Si no es un quiz, hacemos optimistic update
+    if (nota === null) {
+      if (p.leccionesCompletadas.has(leccionId)) return;
+      p.leccionesCompletadas.add(leccionId);
+    }
+    
     try {
-      await progresoService.guardarLeccion(leccionId, { completada: true });
+      const payload = { completada: true };
+      if (nota !== null) {
+        payload.nota = nota;
+        payload.total = total;
+        // The backend determines 'completada' based on nota/total, so we let it decide
+        delete payload.completada;
+      }
+      
+      const { data } = await progresoService.guardarLeccion(leccionId, payload);
+      
+      // Update from backend response
+      if (data.data.completada) {
+        p.leccionesCompletadas.add(leccionId);
+      } else if (nota !== null) {
+         // Fail case
+      }
+      return data.data; // Return result to the UI so it knows if passed
     } catch (e) {
-      p.leccionesCompletadas.delete(leccionId);
+      if (nota === null) p.leccionesCompletadas.delete(leccionId);
       throw e;
     }
-  }
-
-  // Aprobado es "pegajoso" — igual que ProgresoService::guardarEvaluacion
-  // en el Backend, una vez aprobado no se puede desaprobar reintentando.
-  async function aprobarCurso(cursoId, nota, total) {
-    const { data } = await progresoService.guardarEvaluacion(cursoId, nota, total);
-    const remoto = data.data;
-    const p = entradaProgreso(cursoId);
-    p.nota = remoto.nota;
-    p.aprobado = remoto.aprobado;
-    p.fechaAprobado = remoto.fecha_aprobado;
   }
 
   return {
     cursos, cargando, cargado, error, cargar,
     progresoDe, pctCurso, aprobado, enProgreso, todasLeccionesHechas,
-    completarLeccion, aprobarCurso
+    completarLeccion
   };
 });

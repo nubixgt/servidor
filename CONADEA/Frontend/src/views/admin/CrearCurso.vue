@@ -76,38 +76,36 @@
           @change="(e) => onElegirVideo(e, leccion)"
         />
       </div>
-    </div>
-
-    <!-- Quiz -->
-    <div class="fila-seccion fila-seccion-sub">
-      <h3>Quiz final</h3>
-      <button type="button" class="btn-agregar" @click="agregarPregunta">+ Agregar</button>
-    </div>
-
-    <div v-for="(pregunta, i) in preguntas" :key="pregunta._id" class="vidrio tarjeta-item">
-      <div class="cab-item">
-        <b>Pregunta {{ i + 1 }}</b>
-        <button v-if="preguntas.length > 1" type="button" class="btn-quitar" @click="quitarPregunta(i)">🗑️</button>
-      </div>
-      <div class="campo">
-        <label>Pregunta</label>
-        <input v-model="pregunta.pregunta" type="text" placeholder="¿Cuál es...?" />
+      <div class="fila-seccion fila-seccion-sub">
+        <h4>Quiz de la lección</h4>
+        <button type="button" class="btn-agregar" @click="agregarPregunta(leccion)">+ Agregar pregunta</button>
       </div>
 
-      <label class="etiqueta-opciones">Opciones (toca ✓ para marcar la correcta)</label>
-      <div v-for="(opcion, j) in pregunta.opciones" :key="opcion._id" class="fila-opcion">
-        <button
-          type="button"
-          class="marca-correcta"
-          :class="{ activa: opcion.esCorrecta }"
-          @click="marcarCorrecta(pregunta, j)"
-        >
-          <span v-if="opcion.esCorrecta">✓</span>
-        </button>
-        <input v-model="opcion.texto" type="text" :placeholder="`Opción ${j + 1}`" />
-        <button v-if="pregunta.opciones.length > 2" type="button" class="btn-quitar-chico" @click="quitarOpcion(pregunta, j)">✕</button>
+      <div v-for="(pregunta, j) in leccion.preguntas" :key="pregunta._id" class="vidrio tarjeta-item" style="margin-left: 20px; border-color: rgba(74,222,128,0.3);">
+        <div class="cab-item">
+          <b>Pregunta {{ j + 1 }}</b>
+          <button type="button" class="btn-quitar" @click="quitarPregunta(leccion, j)">🗑️</button>
+        </div>
+        <div class="campo">
+          <label>Pregunta</label>
+          <input v-model="pregunta.pregunta" type="text" placeholder="¿Cuál es...?" />
+        </div>
+
+        <label class="etiqueta-opciones">Opciones (toca ✓ para marcar la correcta)</label>
+        <div v-for="(opcion, k) in pregunta.opciones" :key="opcion._id" class="fila-opcion">
+          <button
+            type="button"
+            class="marca-correcta"
+            :class="{ activa: opcion.esCorrecta }"
+            @click="marcarCorrecta(pregunta, k)"
+          >
+            <span v-if="opcion.esCorrecta">✓</span>
+          </button>
+          <input v-model="opcion.texto" type="text" :placeholder="`Opción ${k + 1}`" />
+          <button v-if="pregunta.opciones.length > 2" type="button" class="btn-quitar-chico" @click="quitarOpcion(pregunta, k)">✕</button>
+        </div>
+        <button type="button" class="btn-agregar-opcion" @click="agregarOpcion(pregunta)">+ Agregar opción</button>
       </div>
-      <button type="button" class="btn-agregar-opcion" @click="agregarOpcion(pregunta)">+ Agregar opción</button>
     </div>
 
     <button class="btn btn-verde btn-ancho" :disabled="guardando" @click="guardar">
@@ -128,7 +126,7 @@ let contadorIds = 0;
 const idUnico = () => contadorIds++;
 
 function nuevaLeccion() {
-  return { _id: idUnico(), titulo: '', contenido: '', video: null, _inputVideo: null };
+  return { _id: idUnico(), titulo: '', contenido: '', video: null, _inputVideo: null, preguntas: [] };
 }
 function nuevaOpcion(esCorrecta = false) {
   return { _id: idUnico(), texto: '', esCorrecta };
@@ -145,7 +143,6 @@ const previewImagen = ref('');
 const inputImagen = ref(null);
 
 const lecciones = ref([nuevaLeccion()]);
-const preguntas = ref([nuevaPregunta()]);
 const guardando = ref(false);
 
 function onElegirImagen(evento) {
@@ -168,12 +165,11 @@ function quitarLeccion(i) {
   lecciones.value.splice(i, 1);
 }
 
-function agregarPregunta() {
-  preguntas.value.push(nuevaPregunta());
+function agregarPregunta(leccion) {
+  leccion.preguntas.push(nuevaPregunta());
 }
-function quitarPregunta(i) {
-  if (preguntas.value.length <= 1) return;
-  preguntas.value.splice(i, 1);
+function quitarPregunta(leccion, i) {
+  leccion.preguntas.splice(i, 1);
 }
 function agregarOpcion(pregunta) {
   pregunta.opciones.push(nuevaOpcion());
@@ -195,14 +191,14 @@ function validar() {
     if (!l.titulo.trim() || !l.contenido.trim()) {
       return 'Completa el título y el contenido de todas las lecciones.';
     }
-  }
-  for (const p of preguntas.value) {
-    if (!p.pregunta.trim()) return 'Completa el texto de todas las preguntas del quiz.';
-    for (const o of p.opciones) {
-      if (!o.texto.trim()) return 'Completa el texto de todas las opciones del quiz.';
-    }
-    if (!p.opciones.some((o) => o.esCorrecta)) {
-      return 'Marca cuál opción es la correcta en cada pregunta del quiz.';
+    for (const p of l.preguntas) {
+      if (!p.pregunta.trim()) return 'Completa el texto de todas las preguntas del quiz.';
+      for (const o of p.opciones) {
+        if (!o.texto.trim()) return 'Completa el texto de todas las opciones del quiz.';
+      }
+      if (!p.opciones.some((o) => o.esCorrecta)) {
+        return 'Marca cuál opción es la correcta en cada pregunta del quiz.';
+      }
     }
   }
   return null;
@@ -221,11 +217,14 @@ async function guardar() {
     icono: icono.value.trim(),
     titulo: titulo.value.trim(),
     descripcion: descripcion.value.trim(),
-    lecciones: lecciones.value.map((l) => ({ titulo: l.titulo.trim(), contenido: l.contenido.trim() })),
-    quiz: preguntas.value.map((p) => ({
-      pregunta: p.pregunta.trim(),
-      opciones: p.opciones.map((o) => ({ texto: o.texto.trim(), es_correcta: o.esCorrecta }))
-    }))
+    lecciones: lecciones.value.map((l) => ({ 
+      titulo: l.titulo.trim(), 
+      contenido: l.contenido.trim(),
+      quiz: l.preguntas.map((p) => ({
+        pregunta: p.pregunta.trim(),
+        opciones: p.opciones.map((o) => ({ texto: o.texto.trim(), es_correcta: o.esCorrecta }))
+      }))
+    })),
   };
 
   const videosLecciones = {};

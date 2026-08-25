@@ -38,8 +38,9 @@
       class="leccion"
       :class="{ hecha: prog.leccionesCompletadas.has(l.id), abierta: leccionesAbiertas.includes(i) }"
     >
-      <button @click="toggleLeccion(i)">
-        <span class="check">{{ prog.leccionesCompletadas.has(l.id) ? '✓' : '' }}</span>
+      <button @click="toggleLeccion(i)" :class="{'bloq': i > 0 && !prog.leccionesCompletadas.has(curso.lecciones[i-1].id)}">
+        <span class="check" v-if="i > 0 && !prog.leccionesCompletadas.has(curso.lecciones[i-1].id)">🔒</span>
+        <span class="check" v-else>{{ prog.leccionesCompletadas.has(l.id) ? '✓' : '' }}</span>
         <span class="tit">{{ i + 1 }}. {{ l.titulo }}</span>
         <span class="flecha">›</span>
       </button>
@@ -49,71 +50,66 @@
         <p v-if="prog.leccionesCompletadas.has(l.id)" style="color:var(--verde);font-weight:700;font-size:.8rem;">
           ✓ Lección completada
         </p>
+
+        <!-- Botón para iniciar el quiz de la lección -->
+        <div v-else-if="l.quiz && l.quiz.length > 0">
+          <div v-if="!estadoQuizDe(l.id).activo">
+            <button class="btn btn-verde" @click="iniciarQuiz(l)">
+              Tomar evaluación de esta lección
+            </button>
+          </div>
+          <!-- Quiz activo -->
+          <div v-if="estadoQuizDe(l.id).activo">
+            <h4 style="margin: 16px 0 10px; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">📝 Evaluación</h4>
+            <div v-for="(q, qi) in l.quiz" :key="qi" class="pregunta">
+              <h5 style="margin-bottom:10px; font-weight: 600;">{{ qi + 1 }}. {{ q.pregunta }}</h5>
+              <button
+                v-for="(o, oi) in q.opciones"
+                :key="oi"
+                class="opcion"
+                :class="opcionClase(l.id, qi, oi)"
+                @click="elegir(l.id, qi, oi)"
+              >
+                <span class="letra">{{ letraOpcion(oi) }}.</span>
+                <span>{{ o.texto }}</span>
+              </button>
+            </div>
+            
+            <button class="btn btn-verde" style="width:100%; margin-top: 10px;" :disabled="estadoQuizDe(l.id).calificando" @click="calificar(l)" v-if="!estadoQuizDe(l.id).calificado">
+              {{ estadoQuizDe(l.id).calificando ? 'Enviando...' : 'Enviar respuestas' }}
+            </button>
+
+            <!-- Resultado -->
+            <div v-if="estadoQuizDe(l.id).calificado" class="resultado-quiz zoom-in">
+              <div class="nota">{{ estadoQuizDe(l.id).nota }}/{{ l.quiz.length }}</div>
+              <p style="font-weight:700;" :style="{ color: estadoQuizDe(l.id).aprobado ? 'var(--verde)' : 'var(--rojo)' }">
+                {{ estadoQuizDe(l.id).aprobado ? '¡Lección completada! 🎉' : 'Aún no apruebas' }}
+              </p>
+              <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">
+                {{ estadoQuizDe(l.id).aprobado
+                  ? 'Puedes avanzar a la siguiente sección.'
+                  : 'Repasa el contenido y vuelve a intentarlo. Necesitas al menos 60% de aciertos.' }}
+              </p>
+              <button v-if="!estadoQuizDe(l.id).aprobado" class="btn" @click="iniciarQuiz(l)">Intentar de nuevo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón marcar simple (si no hay quiz) -->
         <button v-else class="btn btn-verde" :disabled="marcandoLeccion === l.id" @click="marcarLeccion(l)">
           {{ marcandoLeccion === l.id ? 'Guardando...' : 'Marcar como completada' }}
         </button>
       </div>
     </div>
 
-    <!-- Evaluación -->
-    <div class="vidrio" style="margin-top:18px;">
-      <h3 style="margin-bottom:6px;">📝 Evaluación del curso</h3>
+    <!-- Evaluación y Certificado -->
+    <div class="vidrio" style="margin-top:18px;" v-if="todasLeccionesHechas">
+      <h3 style="margin-bottom:6px;">🎓 ¡Felicidades!</h3>
       <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:13px;">
-        <template v-if="prog.aprobado">
-          Evaluación aprobada con nota {{ prog.nota }}/{{ curso.quiz.length }} el {{ fechaAprobadoLegible }}.
-        </template>
-        <template v-else-if="todasLeccionesHechas">
-          Responde {{ curso.quiz.length }} preguntas. Necesitas al menos 60% de aciertos para aprobar y obtener tu certificado.
-        </template>
-        <template v-else>Completa todas las lecciones para habilitar la evaluación.</template>
+        Has completado todas las lecciones y evaluaciones de este curso.
       </p>
-
-      <!-- Estado: aprobado -->
-      <div v-if="prog.aprobado && !quizActivo">
+      <div>
         <button class="btn btn-verde" @click="mostrarCertificado">🎓 Ver mi certificado</button>
-        <button class="btn" style="margin-left:8px;" @click="iniciarQuiz">Repetir evaluación</button>
-      </div>
-
-      <!-- Botón iniciar -->
-      <div v-else-if="!quizActivo">
-        <button class="btn btn-verde" :class="{ bloq: !todasLeccionesHechas }" @click="iniciarQuiz">
-          Iniciar evaluación
-        </button>
-      </div>
-
-      <!-- Quiz activo -->
-      <div v-if="quizActivo">
-        <div v-for="(q, qi) in curso.quiz" :key="qi" class="pregunta">
-          <h4>{{ qi + 1 }}. {{ q.pregunta }}</h4>
-          <button
-            v-for="(o, oi) in q.opciones"
-            :key="oi"
-            class="opcion"
-            :class="opcionClase(qi, oi)"
-            @click="elegir(qi, oi)"
-          >
-            <span class="letra">{{ letraOpcion(oi) }}.</span>
-            <span>{{ o.texto }}</span>
-          </button>
-        </div>
-        <button class="btn btn-verde" style="width:100%;" :disabled="calificando" @click="calificar" v-if="!quizCalificado">
-          {{ calificando ? 'Enviando...' : 'Enviar respuestas' }}
-        </button>
-
-        <!-- Resultado -->
-        <div v-if="quizCalificado" class="resultado-quiz zoom-in">
-          <div class="nota">{{ notaObtenida }}/{{ curso.quiz.length }}</div>
-          <p style="font-weight:700;" :style="{ color: aprobadaEsteIntento ? 'var(--verde)' : 'var(--rojo)' }">
-            {{ aprobadaEsteIntento ? '¡Curso aprobado! 🎉' : 'Aún no apruebas' }}
-          </p>
-          <p style="font-size:.84rem;color:var(--texto-suave);margin-bottom:14px;">
-            {{ aprobadaEsteIntento
-              ? 'Tu certificado ya está disponible y tu avance quedó registrado.'
-              : 'Repasa las lecciones y vuelve a intentarlo. Necesitas al menos 60% de aciertos.' }}
-          </p>
-          <button v-if="aprobadaEsteIntento" class="btn btn-verde" @click="mostrarCertificado">🎓 Ver mi certificado</button>
-          <button v-else class="btn" @click="iniciarQuiz">Intentar de nuevo</button>
-        </div>
       </div>
     </div>
 
@@ -163,14 +159,8 @@ const error = ref('');
 
 const leccionesAbiertas = ref([]);
 const marcandoLeccion = ref(null);
-const quizActivo = ref(false);
-const quizCalificado = ref(false);
-const calificando = ref(false);
-const quizSel = ref({});
-const notaObtenida = ref(0);
-const aprobadaEsteIntento = ref(false);
+const estadosQuiz = ref({}); // { leccionId: { activo, calificado, calificando, sel: {qi: oi}, estadoOpciones: {'qi-oi':'ok'}, nota, aprobado } }
 const certVisible = ref(false);
-const opcionesEstado = ref({}); // { 'qi-oi': 'ok' | 'mal' }
 
 const prog = computed(() => cursosStore.progresoDe(Number(route.params.id)));
 const pct = computed(() => (curso.value ? cursosStore.pctCurso(curso.value) : 0));
@@ -203,15 +193,14 @@ async function cargarCurso() {
 }
 
 watch(() => route.params.id, () => {
-  quizActivo.value = false;
-  quizCalificado.value = false;
-  quizSel.value = {};
-  opcionesEstado.value = {};
+  estadosQuiz.value = {};
   leccionesAbiertas.value = [];
   cargarCurso();
 }, { immediate: true });
 
 function toggleLeccion(i) {
+  if (i > 0 && !prog.value.leccionesCompletadas.has(curso.value.lecciones[i-1].id)) return; // Locked
+
   const idx = leccionesAbiertas.value.indexOf(i);
   if (idx === -1) leccionesAbiertas.value.push(i);
   else leccionesAbiertas.value.splice(idx, 1);
@@ -234,56 +223,73 @@ async function marcarLeccion(leccion) {
   }
 }
 
-function iniciarQuiz() {
-  quizActivo.value = true;
-  quizCalificado.value = false;
-  quizSel.value = {};
-  opcionesEstado.value = {};
-  notaObtenida.value = 0;
+function estadoQuizDe(leccionId) {
+  if (!estadosQuiz.value[leccionId]) {
+    estadosQuiz.value[leccionId] = {
+      activo: false, calificado: false, calificando: false, sel: {}, estadoOpciones: {}, nota: 0, aprobado: false
+    };
+  }
+  return estadosQuiz.value[leccionId];
 }
 
-function elegir(qi, oi) {
-  if (quizCalificado.value) return;
-  quizSel.value[qi] = oi;
+function iniciarQuiz(leccion) {
+  estadosQuiz.value[leccion.id] = {
+    activo: true, calificado: false, calificando: false, sel: {}, estadoOpciones: {}, nota: 0, aprobado: false
+  };
 }
 
-function opcionClase(qi, oi) {
+function elegir(leccionId, qi, oi) {
+  const eq = estadoQuizDe(leccionId);
+  if (eq.calificado) return;
+  eq.sel[qi] = oi;
+}
+
+function opcionClase(leccionId, qi, oi) {
+  const eq = estadoQuizDe(leccionId);
   const key = `${qi}-${oi}`;
-  if (opcionesEstado.value[key]) return opcionesEstado.value[key];
-  if (quizSel.value[qi] === oi && !quizCalificado.value) return 'sel';
+  if (eq.estadoOpciones[key]) return eq.estadoOpciones[key];
+  if (eq.sel[qi] === oi && !eq.calificado) return 'sel';
   return '';
 }
 
-async function calificar() {
-  const c = curso.value;
-  if (Object.keys(quizSel.value).length < c.quiz.length) {
+async function calificar(leccion) {
+  const eq = estadoQuizDe(leccion.id);
+  if (Object.keys(eq.sel).length < leccion.quiz.length) {
     store.mostrarToastGlobal('✍️', 'Responde todas las preguntas', 'Te falta al menos una por contestar.');
     return;
   }
 
   let nota = 0;
-  c.quiz.forEach((q, qi) => {
+  leccion.quiz.forEach((q, qi) => {
     const respuesta = q.opciones.findIndex((o) => o.es_correcta);
     q.opciones.forEach((_, oi) => {
       const key = `${qi}-${oi}`;
-      if (oi === respuesta) opcionesEstado.value[key] = 'ok';
-      else if (quizSel.value[qi] === oi) opcionesEstado.value[key] = 'mal';
+      if (oi === respuesta) eq.estadoOpciones[key] = 'ok';
+      else if (eq.sel[qi] === oi) eq.estadoOpciones[key] = 'mal';
     });
-    if (quizSel.value[qi] === respuesta) nota++;
+    if (eq.sel[qi] === respuesta) nota++;
   });
 
-  notaObtenida.value = nota;
-  aprobadaEsteIntento.value = c.quiz.length > 0 && nota / c.quiz.length >= 0.6;
-  quizCalificado.value = true;
+  eq.nota = nota;
+  eq.aprobado = leccion.quiz.length > 0 && nota / leccion.quiz.length >= 0.6;
+  eq.calificado = true;
   store.registrarActividad();
 
-  calificando.value = true;
+  eq.calificando = true;
   try {
-    await cursosStore.aprobarCurso(c.id, nota, c.quiz.length);
+    const data = await cursosStore.completarLeccion(curso.value.id, leccion.id, nota, leccion.quiz.length);
+    if (data.completada) {
+      // Avanzar a la siguiente lección
+      const i = curso.value.lecciones.findIndex((l) => l.id === leccion.id);
+      const sig = i + 1;
+      if (sig < curso.value.lecciones.length && !leccionesAbiertas.value.includes(sig)) {
+        leccionesAbiertas.value.push(sig);
+      }
+    }
   } catch (e) {
     alertaError(e.response?.data?.message || 'No se pudo guardar tu evaluación. Intenta de nuevo.');
   } finally {
-    calificando.value = false;
+    eq.calificando = false;
   }
 }
 

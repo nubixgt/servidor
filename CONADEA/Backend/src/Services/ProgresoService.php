@@ -25,6 +25,7 @@ class ProgresoService
                     'curso_id' => $p->cursoId,
                     'completada' => $p->completada,
                     'segundos_video' => $p->segundosVideo,
+                    'nota' => $p->nota,
                 ],
                 $todo['lecciones']
             ),
@@ -45,7 +46,7 @@ class ProgresoService
      * null, igual que hace la app hoy con completarLeccion (solo completada)
      * y el guardado periódico de posición del video (solo segundos_video).
      */
-    public function guardarLeccion(int $usuarioId, int $leccionId, ?bool $completada, ?int $segundosVideo): array
+    public function guardarLeccion(int $usuarioId, int $leccionId, ?bool $completada, ?int $segundosVideo, ?int $nota, ?int $total): array
     {
         if (!$this->repository->leccionExiste($leccionId)) {
             throw new \Exception('Lección no encontrada.');
@@ -53,16 +54,34 @@ class ProgresoService
         if ($segundosVideo !== null && $segundosVideo < 0) {
             throw new \Exception('segundos_video no puede ser negativo.');
         }
+        if ($nota !== null && $total !== null) {
+            if ($total < 0 || $nota < 0 || $nota > $total) {
+                throw new \Exception('Nota inválida.');
+            }
+            // Approve lesson only if nota is >= 60%
+            if ($total > 0 && ($nota / $total) >= 0.6) {
+                $completada = true;
+            } else {
+                $completada = false;
+            }
+        }
 
         $cursoId = $this->repository->cursoIdDeLeccion($leccionId);
         $actual = $this->repository->obtenerLeccion($usuarioId, $leccionId);
+
+        // Si ya estaba completada, no des-completarla por un quiz fallido
+        $esCompletada = $completada ?? $actual?->completada ?? false;
+        if ($actual?->completada && $completada === false) {
+            $esCompletada = true;
+        }
 
         $nuevo = new ProgresoLeccion(
             $usuarioId,
             $leccionId,
             $cursoId,
-            $completada ?? $actual?->completada ?? false,
-            $segundosVideo ?? $actual?->segundosVideo ?? 0
+            $esCompletada,
+            $segundosVideo ?? $actual?->segundosVideo ?? 0,
+            $nota ?? $actual?->nota
         );
 
         $this->repository->upsertLeccion($nuevo);
@@ -72,42 +91,9 @@ class ProgresoService
             'curso_id' => $nuevo->cursoId,
             'completada' => $nuevo->completada,
             'segundos_video' => $nuevo->segundosVideo,
-        ];
-    }
-
-    /**
-     * Aprobado es "pegajoso": igual que ProgresoController.aprobarCurso en la
-     * app (data/state/progreso_controller.dart), una vez aprobado no se
-     * puede desaprobar reintentando el quiz, y la fecha de aprobación solo
-     * se fija la primera vez.
-     */
-    public function guardarEvaluacion(int $usuarioId, int $cursoId, int $nota, int $total): array
-    {
-        if (!$this->repository->cursoExiste($cursoId)) {
-            throw new \Exception('Curso no encontrado.');
-        }
-        if ($total < 0 || $nota < 0 || $nota > $total) {
-            throw new \Exception('Nota inválida.');
-        }
-
-        $actual = $this->repository->obtenerCurso($usuarioId, $cursoId);
-        $yaAprobado = $actual?->aprobado ?? false;
-        $aprobadoAhora = $total > 0 && ($nota / $total) >= 0.6;
-
-        $aprobado = $yaAprobado || $aprobadoAhora;
-        $fechaAprobado = $actual?->fechaAprobado ?? null;
-        if ($aprobado && !$yaAprobado) {
-            $fechaAprobado = date('Y-m-d H:i:s');
-        }
-
-        $nuevo = new ProgresoCurso($usuarioId, $cursoId, $nota, $aprobado, $fechaAprobado);
-        $this->repository->upsertCurso($nuevo);
-
-        return [
-            'curso_id' => $nuevo->cursoId,
             'nota' => $nuevo->nota,
-            'aprobado' => $nuevo->aprobado,
-            'fecha_aprobado' => $nuevo->fechaAprobado,
         ];
     }
+
+
 }

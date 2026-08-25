@@ -8,7 +8,8 @@ class ProgresoLeccion
         public int $leccionId,
         public int $cursoId,
         public bool $completada = false,
-        public int $segundosVideo = 0
+        public int $segundosVideo = 0,
+        public ?int $nota = null
     ) {
     }
 }

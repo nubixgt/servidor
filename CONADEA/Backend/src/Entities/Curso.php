@@ -5,7 +5,6 @@ class Curso
 {
     /**
      * @param Leccion[] $lecciones
-     * @param PreguntaQuiz[] $quiz
      */
     public function __construct(
         public ?int $id = null,
@@ -14,7 +13,6 @@ class Curso
         public string $descripcion = '',
         public string $imagenPath = '',
         public array $lecciones = [],
-        public array $quiz = [],
         public int $totalLecciones = 0
     ) {
     }

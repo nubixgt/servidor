@@ -22,9 +22,7 @@ class ProgresoController extends Controller
         $this->json(['status' => 'success', 'data' => $service->obtenerTodo($usuarioId)]);
     }
 
-    // body: {"completada": bool|null, "segundos_video": int|null} — ambos
-    // opcionales, para poder guardar solo el que cambió (marcar completada,
-    // o el checkpoint periódico de reproducción del video).
+    // body: {"completada": bool|null, "segundos_video": int|null, "nota": int|null, "total": int|null} — todos opcionales
     #[Route('/lecciones/{id}/progreso', 'PUT')]
     #[Authorize(['Administrador', 'Supervisor', 'Usuario'])]
     public function guardarLeccion($id)
@@ -38,29 +36,9 @@ class ProgresoController extends Controller
                 $usuarioId,
                 (int) $id,
                 array_key_exists('completada', $data) ? (bool) $data['completada'] : null,
-                array_key_exists('segundos_video', $data) ? (int) $data['segundos_video'] : null
-            );
-            $this->json(['status' => 'success', 'data' => $resultado]);
-        } catch (\Exception $e) {
-            $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);
-        }
-    }
-
-    // body: {"nota": int, "total": int}
-    #[Route('/cursos/{id}/evaluacion', 'PUT')]
-    #[Authorize(['Administrador', 'Supervisor', 'Usuario'])]
-    public function guardarEvaluacion($id)
-    {
-        $usuarioId = AuthContext::usuarioId();
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
-        $service = new ProgresoService();
-
-        try {
-            $resultado = $service->guardarEvaluacion(
-                $usuarioId,
-                (int) $id,
-                (int) ($data['nota'] ?? 0),
-                (int) ($data['total'] ?? 0)
+                array_key_exists('segundos_video', $data) ? (int) $data['segundos_video'] : null,
+                array_key_exists('nota', $data) ? (int) $data['nota'] : null,
+                array_key_exists('total', $data) ? (int) $data['total'] : null
             );
             $this->json(['status' => 'success', 'data' => $resultado]);
         } catch (\Exception $e) {
