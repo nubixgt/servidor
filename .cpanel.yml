@@ -7,3 +7,9 @@ deployment:
     - /bin/cp -R deportes/Database $DEPORTES_PATH
     - /bin/cp -R deportes/Frontend/dist/* $DEPORTES_PATH
     - /bin/cp deportes/Frontend/dist/.htaccess $DEPORTES_PATH 2>/dev/null || true
+    - export CONADEA_PATH=/home/visionwe/m.nubix.gt/CONADEA/
+    - /bin/mkdir -p $CONADEA_PATH
+    - /bin/cp -R CONADEA/Backend $CONADEA_PATH
+    - /bin/cp -R CONADEA/Database $CONADEA_PATH
+    - /bin/cp -R CONADEA/Frontend/dist/* $CONADEA_PATH
+    - /bin/cp CONADEA/Frontend/dist/.htaccess $CONADEA_PATH 2>/dev/null || true
