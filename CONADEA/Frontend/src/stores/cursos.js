@@ -88,7 +88,7 @@ export const useCursosStore = defineStore('cursosReales', () => {
 
   function todasLeccionesHechas(curso) {
     const completadas = progresoDe(curso.id).leccionesCompletadas;
-    return curso.lecciones.length > 0 && curso.lecciones.every((l) => completadas.has(l.id));
+    return (curso.lecciones || []).length > 0 && (curso.lecciones || []).every((l) => completadas.has(l.id));
   }
 
   // Optimista: marca de una vez en pantalla y revierte si el guardado falla.
