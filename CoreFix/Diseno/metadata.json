@@ -1,0 +1,6 @@
+{
+  "name": "TechFix Services",
+  "description": "Reparación y mantenimiento integral de computadoras, smartphones, televisores, consolas y software con presupuesto interactivo y seguimiento en tiempo real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
