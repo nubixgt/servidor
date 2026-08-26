@@ -1,1 +1,0 @@
-import{q as t}from"./index-BhHZddPB.js";const r={getAllClients(){return t.get("/clientes")},getClientById(e){return t.get(`/clientes/${e}`)},createClient(e){return t.post("/clientes",e)},updateClient(e,n){return t.post(`/clientes/${e}`,n)},deleteClient(e){return t.delete(`/clientes/${e}`)}};export{r as c};
