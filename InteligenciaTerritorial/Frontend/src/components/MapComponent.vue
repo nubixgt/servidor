@@ -70,8 +70,8 @@ onMounted(async () => {
 
 async function loadData() {
   const [dRes, mRes] = await Promise.all([
-    fetch('/js/deptos.json'),
-    fetch('/js/munis.json')
+    fetch('js/deptos.json'),
+    fetch('js/munis.json')
   ]);
   const dTopo = await dRes.json();
   const mTopo = await mRes.json();
