@@ -42,7 +42,8 @@ let MUNIS_GEO = null;
 const GT_CENTER = [15.5, -90.25];
 
 const deptMunis = computed(() => {
-  return store.municipios.filter(m => m.departamento === store.selectedDept);
+  if (!store.selectedDept) return [];
+  return store.municipios.filter(m => norm(m.departamento) === norm(store.selectedDept));
 });
 
 // Colores por partido

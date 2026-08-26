@@ -98,6 +98,8 @@ const store = useMunicipiosStore();
 const showToast = inject('showToast');
 const isSaving = ref(false);
 
+function norm(s) { return (s||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
+
 const formData = reactive({
   diputado_asignado: '',
   gpc: '',
@@ -105,11 +107,13 @@ const formData = reactive({
 });
 
 const currentDeptData = computed(() => {
-  return store.departamentos.find(d => d.departamento === store.selectedDept);
+  if (!store.selectedDept) return null;
+  return store.departamentos.find(d => norm(d.departamento) === norm(store.selectedDept));
 });
 
 const deptMunis = computed(() => {
-  return store.municipios.filter(m => m.departamento === store.selectedDept);
+  if (!store.selectedDept) return [];
+  return store.municipios.filter(m => norm(m.departamento) === norm(store.selectedDept));
 });
 
 watch(() => store.selectedDept, (newDept) => {
