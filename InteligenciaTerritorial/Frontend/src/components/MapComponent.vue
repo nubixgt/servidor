@@ -134,7 +134,7 @@ function drawMunis(dept) {
     features: MUNIS_GEO.features.filter(f => norm(f.properties.Departamento || f.properties.departamento) === norm(dept))
   };
 
-  const extra = store.departamentos.find(d => d.departamento === dept) || {};
+  const extra = store.departamentos.find(d => norm(d.departamento) === norm(dept)) || {};
 
   muniLayer = L.geoJSON(deptMusis, {
     style: (feature) => {
@@ -154,8 +154,15 @@ function drawMunis(dept) {
           <div class="popup-row"><span class="k">Alcalde</span><span class="v">${mData.alcalde}</span></div>
           <div class="popup-party">${mData.partido_alcalde}</div>
         ` : ''}
-        ${extra.diputado_asignado ? `<div class="popup-row" style="margin-top:6px"><span class="k">Diputado (${dept})</span><span class="v">${extra.diputado_asignado}</span></div>` : ''}
-        ${extra.gpc ? `<div class="popup-row"><span class="k">GPC (${dept})</span><span class="v">${extra.gpc}</span></div>` : ''}
+        ${extra.diputado_asignado ? `
+          <div class="popup-row" style="margin-top:6px; flex-direction:column; align-items:flex-start; gap:6px;">
+            <span class="k">Diputados (${dept})</span>
+            <div style="display:flex; flex-direction:column; width:100%; gap:4px;">
+              ${extra.diputado_asignado.split(/\\r?\\n/).filter(x => x.trim()).map(dip => `<span class="v" style="text-align:left; max-width:100%; border-left: 2px solid var(--blue); padding-left: 6px;">${dip}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${extra.gpc ? `<div class="popup-row" style="margin-top:6px"><span class="k">GPC (${dept})</span><span class="v">${extra.gpc}</span></div>` : ''}
         <div class="popup-action">Click para ver más →</div>
       `, { sticky: true, opacity: 1 });
 

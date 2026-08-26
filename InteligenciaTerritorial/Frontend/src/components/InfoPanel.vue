@@ -40,8 +40,9 @@
           <div class="field-label"><i class="fas fa-user-shield"></i> Diputados Asignados</div>
           
           <div v-if="currentDeptData.diputado_asignado" style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;">
-            <div v-for="(dip, idx) in currentDeptData.diputado_asignado.split('\\n')" :key="idx" class="muni-chip" style="padding: 8px 10px;">
+            <div v-for="(dip, idx) in currentDeptData.diputado_asignado.split(/\\r?\\n/).filter(x=>x.trim())" :key="idx" class="muni-chip" style="padding: 8px 10px; display:flex; justify-content:space-between; align-items:center;">
               <div style="font-weight:600; font-size: 13px;">{{ dip }}</div>
+              <i class="fas fa-times" style="color: var(--muted); cursor:pointer;" @click="removeDiputado(idx)" title="Eliminar diputado"></i>
             </div>
           </div>
           
@@ -188,6 +189,24 @@ const addDiputado = async () => {
     showToast('✓ Diputado añadido');
     newDiputado.value = ''; // Borrar el espacio
   }
+  isSaving.value = false;
+};
+
+const removeDiputado = async (idx) => {
+  if (!currentDeptData.value.diputado_asignado) return;
+  const list = currentDeptData.value.diputado_asignado.split(/\r?\n/).filter(x => x.trim());
+  list.splice(idx, 1);
+  const updatedList = list.join('\n');
+  
+  isSaving.value = true;
+  formData.diputado_asignado = updatedList;
+  const success = await store.saveDepartamento({
+    departamento: store.selectedDept,
+    diputado_asignado: updatedList,
+    gpc: formData.gpc,
+    notas: formData.notas
+  });
+  if (success) showToast('✓ Diputado eliminado');
   isSaving.value = false;
 };
 </script>
