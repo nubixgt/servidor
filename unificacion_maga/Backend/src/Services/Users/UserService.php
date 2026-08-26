@@ -64,6 +64,9 @@ class UserService
         if (isset($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         }
+
+        unset($data['id'], $data['created_at'], $data['ultimo_acceso']);
+
         return $this->userRepo->create($data);
     }
 
