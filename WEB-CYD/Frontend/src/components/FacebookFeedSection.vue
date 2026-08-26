@@ -4,13 +4,27 @@ import { onMounted } from "vue"
 import { Facebook, Share2, ThumbsUp, Instagram } from "lucide-vue-next"
 
 onMounted(() => {
-  if (typeof window !== 'undefined' && !window.FB) {
-    const script = document.createElement('script')
-    script.src = 'https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v18.0'
-    script.async = true
-    script.defer = true
-    script.crossOrigin = 'anonymous'
-    document.body.appendChild(script)
+  if (typeof window !== 'undefined') {
+    if (window.FB) {
+      window.FB.XFBML.parse()
+    } else {
+      window.fbAsyncInit = function() {
+        window.FB.init({
+          xfbml            : true,
+          version          : 'v18.0'
+        });
+      };
+      
+      if (!document.getElementById('facebook-jssdk')) {
+        const script = document.createElement('script')
+        script.id = 'facebook-jssdk'
+        script.src = 'https://connect.facebook.net/es_LA/sdk.js'
+        script.async = true
+        script.defer = true
+        script.crossOrigin = 'anonymous'
+        document.body.appendChild(script)
+      }
+    }
   }
 })
 </script>
