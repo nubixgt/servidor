@@ -62,8 +62,10 @@ onMounted(async () => {
   map = L.map(mapContainer.value, { zoomControl: false, attributionControl: false, minZoom: 6, maxZoom: 13 });
   map.setView(GT_CENTER, 7);
   
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19
+  // Basemap Satelital (Esri World Imagery)
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri',
+    maxZoom: 19
   }).addTo(map);
 
   await loadData();
@@ -91,7 +93,7 @@ function drawDepts() {
   if (muniLayer) { map.removeLayer(muniLayer); muniLayer = null; }
 
   deptLayer = L.geoJSON(DEPTOS_GEO, {
-    style: { fillColor: '#1d3a5c', weight: 1.5, opacity: 1, color: '#2f81f7', fillOpacity: 0.55 },
+    style: { fillColor: '#0a192f', weight: 2, opacity: 1, color: '#48d7ff', fillOpacity: 0.4 },
     onEachFeature: (feature, layer) => {
       const dept = feature.properties.Departamento || feature.properties.departamento || 'Desconocido';
       const munisCount = store.municipios.filter(m => norm(m.departamento) === norm(dept)).length;
@@ -108,7 +110,7 @@ function drawDepts() {
       `, { sticky: true, className: '', opacity: 1 });
 
       layer.on({
-        mouseover: e => e.target.setStyle({ fillColor: '#2f6fd1', fillOpacity: 0.8, weight: 2, color: '#48d7ff' }),
+        mouseover: e => e.target.setStyle({ fillColor: '#2f6fd1', fillOpacity: 0.6, weight: 3, color: '#00ffff' }),
         mouseout: e => deptLayer.resetStyle(e.target),
         click: () => store.selectDept(dept)
       });
@@ -126,7 +128,7 @@ function drawMunis(dept) {
   const feat = DEPTOS_GEO.features.find(f => norm(f.properties.Departamento || f.properties.departamento) === norm(dept));
   
   deptLayer = L.geoJSON(feat, {
-    style: { fillColor: 'transparent', weight: 2, color: '#48d7ff', fillOpacity: 0 }
+    style: { fillColor: 'transparent', weight: 3, color: '#00ffff', fillOpacity: 0 }
   }).addTo(map);
 
   const deptMusis = {
@@ -141,7 +143,7 @@ function drawMunis(dept) {
       const mName = feature.properties.Municipio || feature.properties.municipio;
       const mData = store.municipios.find(m => norm(m.municipio) === norm(mName) && norm(m.departamento) === norm(dept));
       const color = mData ? partyColor(mData.partido_alcalde) : '#1d3351';
-      return { fillColor: color, weight: 1, opacity: 1, color: 'rgba(255,255,255,0.25)', fillOpacity: 0.7 };
+      return { fillColor: color, weight: 1.5, opacity: 1, color: 'rgba(255,255,255,0.4)', fillOpacity: 0.5 };
     },
     onEachFeature: (feature, layer) => {
       const mName = feature.properties.Municipio || feature.properties.municipio;
@@ -167,7 +169,7 @@ function drawMunis(dept) {
       `, { sticky: true, opacity: 1 });
 
       layer.on({
-        mouseover: e => e.target.setStyle({ fillOpacity: 1, weight: 2, color: 'white' }),
+        mouseover: e => e.target.setStyle({ fillOpacity: 0.8, weight: 2, color: '#00ffff' }),
         mouseout: e => muniLayer.resetStyle(e.target),
         click: () => { if(mData) store.selectMuni(mData) }
       });
@@ -195,7 +197,7 @@ watch(() => store.selectedMuni, (newMuni) => {
       if (norm(fName) === norm(newMuni.municipio)) {
         map.fitBounds(layer.getBounds(), { maxZoom: 12, padding: [40, 40] });
         muniLayer.resetStyle();
-        layer.setStyle({ fillOpacity: 1, weight: 3, color: 'white' });
+        layer.setStyle({ fillOpacity: 0.8, weight: 3, color: '#00ffff' });
         layer.openTooltip();
       }
     });

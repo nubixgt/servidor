@@ -26,15 +26,56 @@
     }
 
     /* ── LAYOUT ── */
-    .app { display: grid; grid-template-columns: 260px 1fr 380px; height: 100vh; gap: 0; }
+    .app { 
+      display: flex; 
+      height: 100vh; 
+      position: relative;
+      background: var(--bg);
+    }
+
+    /* ── MAP CENTER ── */
+    .map-section { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; }
+    
+    .map-topbar { 
+      position: absolute; 
+      top: 20px; 
+      left: 320px; 
+      right: 420px; 
+      z-index: 10; 
+      display: flex; align-items: center; justify-content: space-between; 
+      padding: 12px 24px; 
+      background: rgba(10, 20, 35, 0.65); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      border-radius: 24px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+    .map-topbar h2 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    .breadcrumb span { color: white; font-weight: 600; }
+    .breadcrumb .sep { color: var(--line); }
+    .map-controls { display: flex; gap: 8px; }
+    .map-btn { width: 36px; height: 36px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all .2s; }
+    .map-btn:hover { background: var(--blue); border-color: var(--blue); transform: translateY(-2px); }
+    .back-btn { width: auto; padding: 0 16px; gap: 8px; font-size: 12px; font-family: 'Outfit',sans-serif; color: var(--cyan); border-color: rgba(72,215,255,0.3); }
+    .back-btn:hover { color: #001228; background: var(--cyan); }
+    #map { width: 100%; height: 100%; background: transparent !important; }
+    .level-badge { background: rgba(72,215,255,0.15); border: 1px solid rgba(72,215,255,0.3); color: var(--cyan); padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 
     /* ── SIDEBAR ── */
     aside {
-      background: rgba(5,13,25,.92);
-      backdrop-filter: blur(20px);
-      border-right: 1px solid var(--line);
+      position: relative;
+      z-index: 10;
+      width: 280px;
+      margin: 20px;
+      height: calc(100vh - 40px);
+      background: rgba(10, 20, 35, 0.65);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       display: flex; flex-direction: column;
-      padding: 20px 14px;
+      padding: 24px 18px;
       overflow-y: auto;
     }
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
@@ -58,32 +99,25 @@
     .dept-item.active-dept { background: rgba(47,129,247,.2); color: var(--blue2); font-weight: 600; }
     .dept-item .count { background: var(--line); border-radius: 6px; padding: 2px 7px; font-size: 10px; font-weight: 700; }
 
-    /* ── MAP CENTER ── */
-    .map-section { display: flex; flex-direction: column; background: var(--bg); position: relative; }
-    .map-topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: rgba(5,13,25,.9); border-bottom: 1px solid var(--line); backdrop-filter: blur(10px); }
-    .map-topbar h2 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
-    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-    .breadcrumb span { color: white; font-weight: 600; }
-    .breadcrumb .sep { color: var(--line); }
-    .map-controls { display: flex; gap: 6px; }
-    .map-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all .2s; }
-    .map-btn:hover { background: var(--blue); color: white; border-color: var(--blue); transform: translateY(-1px); }
-    .back-btn { width: auto; padding: 0 14px; gap: 6px; font-size: 12px; font-family: 'Outfit',sans-serif; color: var(--blue2); border-color: rgba(47,129,247,.4); }
-    .back-btn:hover { color: white; }
-    #map { flex: 1; }
-    .level-badge { background: linear-gradient(135deg, var(--blue), var(--cyan)); color: #001228; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-
     /* ── INFO PANEL ── */
     .info-panel {
-      background: rgba(5,13,25,.92);
-      backdrop-filter: blur(20px);
-      border-left: 1px solid var(--line);
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      z-index: 10;
+      width: 380px;
+      height: calc(100vh - 40px);
+      background: rgba(10, 20, 35, 0.65);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       display: flex; flex-direction: column;
       overflow-y: auto;
     }
-    .panel-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
-    .panel-header h3 { font-size: 14px; display: flex; align-items: center; gap: 8px; color: var(--blue2); }
-    .panel-body { padding: 16px 20px; flex: 1; }
+    .panel-header { padding: 24px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .panel-header h3 { font-size: 15px; display: flex; align-items: center; gap: 10px; color: var(--cyan); }
+    .panel-body { padding: 20px 24px; flex: 1; }
 
     .selected-name { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #fff, var(--blue2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
     .selected-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
@@ -116,7 +150,12 @@
     @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
     /* ── Leaflet custom ── */
-    .leaflet-container { background: #08162a !important; font-family: 'Outfit', sans-serif; }
+    .leaflet-container { background: transparent !important; font-family: 'Outfit', sans-serif; }
+    
+    /* Efecto 3D de Relieve usando sombra sobre los vectores */
+    .leaflet-overlay-pane svg {
+      filter: drop-shadow(0px 30px 15px rgba(0, 0, 0, 0.95)) drop-shadow(0px 15px 5px rgba(0, 0, 0, 0.8));
+    }
     .leaflet-control-zoom { border: none !important; }
     .leaflet-control-zoom a { background: var(--panel2) !important; color: white !important; border: 1px solid var(--line) !important; }
     .leaflet-control-zoom a:hover { background: var(--blue) !important; }
@@ -134,28 +173,29 @@
     .popup-party { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: rgba(47,129,247,.15); border: 1px solid rgba(47,129,247,.3); font-size: 11px; font-weight: 700; color: var(--blue2); }
     .popup-action { margin-top: 10px; text-align: center; color: var(--cyan); font-size: 11px; cursor: pointer; }
 
+    @media (max-width: 1000px) {
+      .map-topbar { left: 20px; right: 20px; top: 20px; flex-direction: column; gap: 10px; }
+      aside { display: none; } /* En móviles podríamos hacer un drawer, por ahora ocultamos o rediseñamos */
+    }
+
     @media (max-width: 900px) {
       body { overflow-y: auto; height: auto; }
       .app { display: flex; flex-direction: column; height: auto; min-height: 100vh; }
       
-      /* Make aside compact */
-      aside { border-right: none; border-bottom: 1px solid var(--line); padding: 15px; height: auto; max-height: none; }
-      .brand { margin-bottom: 10px; padding-bottom: 10px; }
-      .section-label { display: none; }
-      .navbtn { display: none; }
+      .map-section { position: relative; height: 60vh; min-height: 450px; order: -1; }
+      .map-topbar { position: absolute; top: 10px; left: 10px; right: 10px; padding: 10px; border-radius: 16px; }
+      #map { height: 100%; }
       
-      /* Horizontal scroll for stats */
+      aside { position: relative; width: auto; height: auto; margin: 15px; border-radius: 16px; display: block; padding: 15px; }
+      .brand { margin-bottom: 10px; padding-bottom: 10px; }
+      .section-label, .navbtn { display: none; }
+      
       .stats-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; margin-bottom: 5px; }
       .stat-mini { flex: 0 0 auto; min-width: 140px; margin: 0; }
       
-      /* Horizontal scroll for departments */
       .dept-list { display: flex; overflow-x: auto; gap: 8px; margin-top: 5px; padding-bottom: 10px; }
       .dept-item { flex: 0 0 auto; white-space: nowrap; border: 1px solid rgba(47,129,247,.2); padding: 8px 12px; }
       
-      /* Map takes significant space */
-      .map-section { height: 60vh; min-height: 450px; }
-      
-      /* Info Panel at the bottom */
-      .info-panel { border-left: none; border-top: 1px solid var(--line); height: auto; min-height: 300px; }
+      .info-panel { position: relative; right: auto; top: auto; width: auto; height: auto; margin: 0 15px 15px 15px; border-radius: 16px; min-height: 300px; }
     }
   
