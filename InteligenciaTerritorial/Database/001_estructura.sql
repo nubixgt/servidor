@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS municipios (
   municipio VARCHAR(150) NOT NULL,
   alcalde VARCHAR(200) NOT NULL,
   partido_alcalde VARCHAR(200) NOT NULL,
-  diputado_asignado VARCHAR(200),
+  diputado_asignado TEXT,
   gpc VARCHAR(200),
   notas TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

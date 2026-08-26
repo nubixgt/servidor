@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /unificacion_maga/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_URI} !^/unificacion_maga/Backend/ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /unificacion_maga/index.html [L]
+</IfModule>
