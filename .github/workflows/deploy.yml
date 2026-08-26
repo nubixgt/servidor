@@ -65,6 +65,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (InteligenciaTerritorial)
+        run: |
+          cd InteligenciaTerritorial/Frontend
+          npm install
+          npm run build
+
       - name: 🔐 Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -85,4 +91,14 @@ jobs:
             --chmod=D755,F644 \
             -e "ssh -p ${{ secrets.SSH_PORT }}" \
             ./ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}
+
+      - name: 📂 Publicar build de InteligenciaTerritorial en su raíz
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
+            set -e
+            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
+            DEPLOY_PATH="${DEPLOY_PATH%/}/"
+            IT_PATH="${DEPLOY_PATH}InteligenciaTerritorial/"
+            cp -R "${IT_PATH}Frontend/dist/." "$IT_PATH"
+          '
