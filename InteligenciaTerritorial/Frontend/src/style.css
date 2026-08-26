@@ -123,6 +123,8 @@
     .leaflet-popup-content-wrapper { background: rgba(11,23,41,.97); border: 1px solid var(--glass-border); border-radius: 14px; color: white; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
     .leaflet-popup-tip { background: rgba(11,23,41,.97); }
     .leaflet-popup-content { margin: 14px 18px; min-width: 200px; }
+    .leaflet-tooltip { background: rgba(11,23,41,.97) !important; border: 1px solid var(--glass-border) !important; border-radius: 14px !important; color: white !important; box-shadow: 0 12px 40px rgba(0,0,0,.5) !important; padding: 14px 18px !important; min-width: 150px; }
+    .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none !important; }
     .popup-name { font-size: 16px; font-weight: 800; color: white; margin-bottom: 4px; }
     .popup-dept { font-size: 11px; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .06em; }
     .popup-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 12px; }

@@ -94,12 +94,16 @@ function drawDepts() {
     style: { fillColor: '#1d3a5c', weight: 1.5, opacity: 1, color: '#2f81f7', fillOpacity: 0.55 },
     onEachFeature: (feature, layer) => {
       const dept = feature.properties.Departamento || feature.properties.departamento || 'Desconocido';
-      const munisCount = store.municipios.filter(m => m.departamento === dept).length;
+      const munisCount = store.municipios.filter(m => norm(m.departamento) === norm(dept)).length;
+      
+      const deptData = store.departamentos.find(d => norm(d.departamento) === norm(dept));
+      const dipCount = deptData && deptData.diputado_asignado ? deptData.diputado_asignado.split('\\n').filter(x => x.trim()).length : 0;
       
       layer.bindTooltip(`
         <div class="popup-name">${dept}</div>
         <div class="popup-dept">Departamento</div>
         <div class="popup-row"><span class="k">Municipios</span><span class="v">${munisCount}</span></div>
+        <div class="popup-row"><span class="k">Diputados</span><span class="v">${dipCount}</span></div>
         <div class="popup-action">Click para explorar municipios →</div>
       `, { sticky: true, className: '', opacity: 1 });
 
