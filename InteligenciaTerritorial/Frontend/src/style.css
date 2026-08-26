@@ -133,7 +133,27 @@
     .popup-action { margin-top: 10px; text-align: center; color: var(--cyan); font-size: 11px; cursor: pointer; }
 
     @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
-      aside, .info-panel { display: none; }
+      body { overflow-y: auto; }
+      .app { 
+        display: flex; 
+        flex-direction: column; 
+        height: auto; 
+        min-height: 100vh;
+      }
+      aside { 
+        border-right: none; 
+        border-bottom: 1px solid var(--line); 
+        padding: 15px; 
+        max-height: 300px;
+      }
+      .map-section { 
+        height: 60vh; 
+        min-height: 400px;
+      }
+      .info-panel { 
+        border-left: none; 
+        border-top: 1px solid var(--line);
+        flex: 1;
+      }
     }
   
