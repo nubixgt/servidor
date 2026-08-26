@@ -1,11 +1,13 @@
-const { generateWAMessageFromContent, proto } = require('@whiskeysockets/baileys');
+const { generateWAMessageFromContent } = require('@whiskeysockets/baileys');
 
 // Los mensajes de botones/listas "clásicos" de Baileys (buttonsMessage,
 // listMessage) ya casi no renderizan en WhatsApp normal (no Business API) —
 // WhatsApp los retiró para cuentas no verificadas. Lo que sí sigue
 // funcionando en la app normal es el "interactive message" con
 // nativeFlowMessage, que no tiene un helper oficial en Baileys: hay que
-// armar el proto a mano y mandarlo con relayMessage en vez de sendMessage.
+// armar el objeto a mano (WhatsApp lo descarta como "mensaje no soportado"
+// si falta el "header", aunque esté vacío) y mandarlo con relayMessage en
+// vez de sendMessage.
 async function enviarInteractivo(sock, jid, { texto, pie, botones }) {
     const mensaje = generateWAMessageFromContent(
         jid,
@@ -16,16 +18,20 @@ async function enviarInteractivo(sock, jid, { texto, pie, botones }) {
                         deviceListMetadata: {},
                         deviceListMetadataVersion: 2,
                     },
-                    interactiveMessage: proto.Message.InteractiveMessage.create({
-                        body: proto.Message.InteractiveMessage.Body.create({ text: texto }),
-                        footer: pie ? proto.Message.InteractiveMessage.Footer.create({ text: pie }) : undefined,
-                        nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                    interactiveMessage: {
+                        header: {
+                            title: '',
+                            hasMediaAttachment: false,
+                        },
+                        body: { text: texto },
+                        footer: pie ? { text: pie } : null,
+                        nativeFlowMessage: {
                             buttons: botones.map((b) => ({
                                 name: b.tipo,
                                 buttonParamsJson: JSON.stringify(b.params),
                             })),
-                        }),
-                    }),
+                        },
+                    },
                 },
             },
         },
@@ -43,7 +49,7 @@ function botonRespuestaRapida(id, textoVisible) {
 
 // Botón que abre un link en el navegador — no genera respuesta al bot.
 function botonAbrirLink(url, textoVisible) {
-    return { tipo: 'cta_url', params: { display_text: textoVisible, url } };
+    return { tipo: 'cta_url', params: { display_text: textoVisible, url, merchant_url: url } };
 }
 
 // Lista de selección única (reemplaza al viejo listMessage). WhatsApp no
