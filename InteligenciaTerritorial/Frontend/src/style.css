@@ -41,7 +41,7 @@
       top: 20px; 
       left: 320px; 
       right: 420px; 
-      z-index: 10; 
+      z-index: 2000; 
       display: flex; align-items: center; justify-content: space-between; 
       padding: 12px 24px; 
       background: rgba(10, 20, 35, 0.65); 
@@ -65,7 +65,7 @@
     /* ── SIDEBAR ── */
     aside {
       position: relative;
-      z-index: 10;
+      z-index: 2000;
       width: 280px;
       margin: 20px;
       height: calc(100vh - 40px);
@@ -104,7 +104,7 @@
       position: absolute;
       right: 20px;
       top: 20px;
-      z-index: 10;
+      z-index: 2000;
       width: 380px;
       height: calc(100vh - 40px);
       background: rgba(10, 20, 35, 0.65);

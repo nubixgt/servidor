@@ -93,7 +93,7 @@ function drawDepts() {
   if (muniLayer) { map.removeLayer(muniLayer); muniLayer = null; }
 
   deptLayer = L.geoJSON(DEPTOS_GEO, {
-    style: { fillColor: '#0a192f', weight: 2, opacity: 1, color: '#48d7ff', fillOpacity: 0.4 },
+    style: { fillColor: '#0a192f', weight: 2, opacity: 1, color: '#48d7ff', fillOpacity: 0.1 },
     onEachFeature: (feature, layer) => {
       const dept = feature.properties.Departamento || feature.properties.departamento || 'Desconocido';
       const munisCount = store.municipios.filter(m => norm(m.departamento) === norm(dept)).length;
@@ -110,7 +110,7 @@ function drawDepts() {
       `, { sticky: true, className: '', opacity: 1 });
 
       layer.on({
-        mouseover: e => e.target.setStyle({ fillColor: '#2f6fd1', fillOpacity: 0.6, weight: 3, color: '#00ffff' }),
+        mouseover: e => e.target.setStyle({ fillColor: '#2f6fd1', fillOpacity: 0.25, weight: 3, color: '#00ffff' }),
         mouseout: e => deptLayer.resetStyle(e.target),
         click: () => store.selectDept(dept)
       });
@@ -143,7 +143,7 @@ function drawMunis(dept) {
       const mName = feature.properties.Municipio || feature.properties.municipio;
       const mData = store.municipios.find(m => norm(m.municipio) === norm(mName) && norm(m.departamento) === norm(dept));
       const color = mData ? partyColor(mData.partido_alcalde) : '#1d3351';
-      return { fillColor: color, weight: 1.5, opacity: 1, color: 'rgba(255,255,255,0.4)', fillOpacity: 0.5 };
+      return { fillColor: color, weight: 1.5, opacity: 1, color: 'rgba(255,255,255,0.7)', fillOpacity: 0.15 };
     },
     onEachFeature: (feature, layer) => {
       const mName = feature.properties.Municipio || feature.properties.municipio;
@@ -169,7 +169,7 @@ function drawMunis(dept) {
       `, { sticky: true, opacity: 1 });
 
       layer.on({
-        mouseover: e => e.target.setStyle({ fillOpacity: 0.8, weight: 2, color: '#00ffff' }),
+        mouseover: e => e.target.setStyle({ fillOpacity: 0.4, weight: 2.5, color: '#00ffff' }),
         mouseout: e => muniLayer.resetStyle(e.target),
         click: () => { if(mData) store.selectMuni(mData) }
       });
@@ -197,7 +197,7 @@ watch(() => store.selectedMuni, (newMuni) => {
       if (norm(fName) === norm(newMuni.municipio)) {
         map.fitBounds(layer.getBounds(), { maxZoom: 12, padding: [40, 40] });
         muniLayer.resetStyle();
-        layer.setStyle({ fillOpacity: 0.8, weight: 3, color: '#00ffff' });
+        layer.setStyle({ fillOpacity: 0.3, weight: 4, color: '#00ffff' });
         layer.openTooltip();
       }
     });
