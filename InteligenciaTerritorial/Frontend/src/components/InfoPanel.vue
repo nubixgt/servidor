@@ -35,24 +35,50 @@
         <div class="divider"></div>
         <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Datos del Departamento</div>
 
+        <!-- DIPUTADOS -->
         <div class="field-group">
           <div class="field-label"><i class="fas fa-user-shield"></i> Diputados Asignados</div>
-          <textarea class="field-input" v-model="formData.diputado_asignado" rows="2" placeholder="Nombres de los diputados (separados por coma o salto de línea)…"></textarea>
+          
+          <div v-if="currentDeptData.diputado_asignado" style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;">
+            <div v-for="(dip, idx) in currentDeptData.diputado_asignado.split('\\n')" :key="idx" class="muni-chip" style="padding: 8px 10px;">
+              <div style="font-weight:600; font-size: 13px;">{{ dip }}</div>
+            </div>
+          </div>
+          
+          <div style="display:flex; gap:8px;">
+            <input type="text" class="field-input" v-model="newDiputado" placeholder="Escribe un nuevo diputado..." @keyup.enter="addDiputado">
+            <button class="map-btn" style="background:var(--blue); color:white; border:none; width:auto; padding: 0 15px;" @click="addDiputado" :disabled="isSaving || !newDiputado.trim()">
+              <i class="fas fa-plus"></i> Añadir
+            </button>
+          </div>
         </div>
 
-        <div class="field-group">
+        <!-- GPC -->
+        <div class="info-card" v-if="currentDeptData.gpc && !isEditingGpc" style="margin-top:20px;">
+          <div class="ic-label" style="display:flex; justify-content:space-between;">
+            <span><i class="fas fa-users-cog"></i> GPC</span>
+            <span style="cursor:pointer; color:var(--blue2);" @click="isEditingGpc = true"><i class="fas fa-edit"></i></span>
+          </div>
+          <div class="ic-value">{{ currentDeptData.gpc }}</div>
+        </div>
+        
+        <div class="field-group" v-else style="margin-top:20px;">
           <div class="field-label"><i class="fas fa-users-cog"></i> GPC (Grupo de Coordinación)</div>
-          <input type="text" class="field-input" v-model="formData.gpc" placeholder="Nombre o código GPC…">
+          <div style="display:flex; gap:8px;">
+            <input type="text" class="field-input" v-model="formData.gpc" placeholder="Nombre o código GPC…" @keyup.enter="saveGpc">
+            <button class="map-btn" style="background:var(--blue); color:white; border:none; width:auto; padding: 0 15px;" @click="saveGpc" :disabled="isSaving">
+              <i class="fas fa-save"></i>
+            </button>
+          </div>
         </div>
 
+        <!-- Notas ocultas temporalmente -->
+        <!--
         <div class="field-group">
           <div class="field-label"><i class="fas fa-sticky-note"></i> Notas del Departamento</div>
           <textarea class="field-input" v-model="formData.notas" rows="3" placeholder="Observaciones, seguimiento…"></textarea>
         </div>
-
-        <button class="save-btn" @click="save" :disabled="isSaving">
-          <i class="fas fa-save"></i> {{ isSaving ? 'Guardando...' : 'Guardar cambios del departamento' }}
-        </button>
+        -->
 
         <div class="divider"></div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600;">MUNICIPIOS (Alcaldes y Partidos)</div>
@@ -97,6 +123,8 @@ import { useMunicipiosStore } from '../stores/municipios';
 const store = useMunicipiosStore();
 const showToast = inject('showToast');
 const isSaving = ref(false);
+const isEditingGpc = ref(false);
+const newDiputado = ref('');
 
 function norm(s) { return (s||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
 
@@ -117,6 +145,8 @@ const deptMunis = computed(() => {
 });
 
 watch(() => store.selectedDept, (newDept) => {
+  isEditingGpc.value = false;
+  newDiputado.value = '';
   if (currentDeptData.value) {
     formData.diputado_asignado = currentDeptData.value.diputado_asignado || '';
     formData.gpc = currentDeptData.value.gpc || '';
@@ -124,7 +154,7 @@ watch(() => store.selectedDept, (newDept) => {
   }
 });
 
-const save = async () => {
+const saveGpc = async () => {
   isSaving.value = true;
   const success = await store.saveDepartamento({
     departamento: store.selectedDept,
@@ -133,7 +163,30 @@ const save = async () => {
     notas: formData.notas
   });
   if (success) {
-    showToast('✓ Datos guardados correctamente');
+    showToast('✓ GPC guardado');
+    isEditingGpc.value = false;
+  }
+  isSaving.value = false;
+};
+
+const addDiputado = async () => {
+  if (!newDiputado.value.trim()) return;
+  isSaving.value = true;
+  
+  const existing = currentDeptData.value.diputado_asignado || '';
+  const updatedList = existing ? existing + '\n' + newDiputado.value.trim() : newDiputado.value.trim();
+  formData.diputado_asignado = updatedList;
+
+  const success = await store.saveDepartamento({
+    departamento: store.selectedDept,
+    diputado_asignado: updatedList,
+    gpc: formData.gpc,
+    notas: formData.notas
+  });
+  
+  if (success) {
+    showToast('✓ Diputado añadido');
+    newDiputado.value = ''; // Borrar el espacio
   }
   isSaving.value = false;
 };
