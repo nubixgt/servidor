@@ -135,27 +135,27 @@
     .popup-action { margin-top: 10px; text-align: center; color: var(--cyan); font-size: 11px; cursor: pointer; }
 
     @media (max-width: 900px) {
-      body { overflow-y: auto; }
-      .app { 
-        display: flex; 
-        flex-direction: column; 
-        height: auto; 
-        min-height: 100vh;
-      }
-      aside { 
-        border-right: none; 
-        border-bottom: 1px solid var(--line); 
-        padding: 15px; 
-        max-height: 300px;
-      }
-      .map-section { 
-        height: 60vh; 
-        min-height: 400px;
-      }
-      .info-panel { 
-        border-left: none; 
-        border-top: 1px solid var(--line);
-        flex: 1;
-      }
+      body { overflow-y: auto; height: auto; }
+      .app { display: flex; flex-direction: column; height: auto; min-height: 100vh; }
+      
+      /* Make aside compact */
+      aside { border-right: none; border-bottom: 1px solid var(--line); padding: 15px; height: auto; max-height: none; }
+      .brand { margin-bottom: 10px; padding-bottom: 10px; }
+      .section-label { display: none; }
+      .navbtn { display: none; }
+      
+      /* Horizontal scroll for stats */
+      .stats-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; margin-bottom: 5px; }
+      .stat-mini { flex: 0 0 auto; min-width: 140px; margin: 0; }
+      
+      /* Horizontal scroll for departments */
+      .dept-list { display: flex; overflow-x: auto; gap: 8px; margin-top: 5px; padding-bottom: 10px; }
+      .dept-item { flex: 0 0 auto; white-space: nowrap; border: 1px solid rgba(47,129,247,.2); padding: 8px 12px; }
+      
+      /* Map takes significant space */
+      .map-section { height: 60vh; min-height: 450px; }
+      
+      /* Info Panel at the bottom */
+      .info-panel { border-left: none; border-top: 1px solid var(--line); height: auto; min-height: 300px; }
     }
   

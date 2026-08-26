@@ -12,17 +12,19 @@
     <button class="navbtn active" @click="store.selectDept(null)"><i class="fas fa-map-marked-alt"></i> Mapa Interactivo</button>
 
     <div class="section-label">Estadísticas</div>
-    <div class="stat-mini">
-      <div class="label">Municipios totales</div>
-      <div class="value">{{ store.totalMunicipios }}</div>
-    </div>
-    <div class="stat-mini">
-      <div class="label">Con diputado asignado</div>
-      <div class="value">{{ store.municipiosConDiputado }}</div>
-    </div>
-    <div class="stat-mini">
-      <div class="label">Con GPC asignado</div>
-      <div class="value">{{ store.municipiosConGPC }}</div>
+    <div class="stats-container">
+      <div class="stat-mini">
+        <div class="label">Municipios totales</div>
+        <div class="value">{{ store.totalMunicipios }}</div>
+      </div>
+      <div class="stat-mini">
+        <div class="label">Con diputado asignado</div>
+        <div class="value">{{ store.municipiosConDiputado }}</div>
+      </div>
+      <div class="stat-mini">
+        <div class="label">Con GPC asignado</div>
+        <div class="value">{{ store.municipiosConGPC }}</div>
+      </div>
     </div>
 
     <div class="section-label">Departamentos</div>
