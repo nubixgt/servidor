@@ -52,5 +52,23 @@ if ($method === 'PUT' && $path === 'departamento') {
     exit;
 }
 
+if ($method === 'PUT' && $path === 'municipio') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $id = isset($input['id']) ? $input['id'] : null;
+    $gpc = isset($input['gpc']) ? $input['gpc'] : null;
+    
+    if (!$id) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Municipio ID is required']);
+        exit;
+    }
+    
+    $stmt = $pdo->prepare("UPDATE municipios SET gpc = ? WHERE id = ?");
+    $stmt->execute([$gpc, $id]);
+    
+    echo json_encode(['success' => true, 'updated' => $stmt->rowCount()]);
+    exit;
+}
+
 http_response_code(404);
 echo json_encode(['error' => 'Not found']);
