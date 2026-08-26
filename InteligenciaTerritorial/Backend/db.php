@@ -9,8 +9,8 @@ $httpHost = $_SERVER['HTTP_HOST'] ?? '';
 // Si estamos en el servidor cPanel (producción), cambiar las credenciales
 if (strpos($httpHost, 'm.nubix.gt') !== false) {
     $dbname = 'visionwe_InteligenciaTerritorial'; 
-    $username = 'visionwe_InteligenciaTerritorial'; // Asumiendo que usarán el mismo nombre para DB y usuario, o puedes cambiarlo
-    $password = 'Guate25#'; // Asegúrate de asignar esta contraseña al usuario en cPanel
+    $username = 'visionwe_dbuser'; // Asegúrate de que el usuario de cPanel tenga permisos sobre esta DB
+    $password = 'Guate25#'; // Cambiar si es necesario
 }
 
 try {
