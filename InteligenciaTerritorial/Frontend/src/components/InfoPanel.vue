@@ -40,7 +40,7 @@
           <div class="field-label"><i class="fas fa-user-shield"></i> Diputados Asignados</div>
           
           <div v-if="currentDeptData.diputado_asignado" style="margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;">
-            <div v-for="(dip, idx) in currentDeptData.diputado_asignado.split(/\\r?\\n/).filter(x=>x.trim())" :key="idx" class="muni-chip" style="padding: 8px 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div v-for="(dip, idx) in currentDeptData.diputado_asignado.split('|').filter(x=>x.trim())" :key="idx" class="muni-chip" style="padding: 8px 10px; display:flex; justify-content:space-between; align-items:center;">
               <div style="font-weight:600; font-size: 13px;">{{ dip }}</div>
               <i class="fas fa-times" style="color: var(--muted); cursor:pointer;" @click="removeDiputado(idx)" title="Eliminar diputado"></i>
             </div>
@@ -174,8 +174,9 @@ const addDiputado = async () => {
   if (!newDiputado.value.trim()) return;
   isSaving.value = true;
   
-  const existing = currentDeptData.value.diputado_asignado || '';
-  const updatedList = existing ? existing + '\n' + newDiputado.value.trim() : newDiputado.value.trim();
+  // Convert old newlines to pipes just in case
+  const existing = (currentDeptData.value.diputado_asignado || '').replace(/\r?\n/g, '|');
+  const updatedList = existing ? existing + '|' + newDiputado.value.trim() : newDiputado.value.trim();
   formData.diputado_asignado = updatedList;
 
   const success = await store.saveDepartamento({
@@ -194,9 +195,10 @@ const addDiputado = async () => {
 
 const removeDiputado = async (idx) => {
   if (!currentDeptData.value.diputado_asignado) return;
-  const list = currentDeptData.value.diputado_asignado.split(/\r?\n/).filter(x => x.trim());
+  const existing = currentDeptData.value.diputado_asignado.replace(/\r?\n/g, '|');
+  const list = existing.split('|').filter(x => x.trim());
   list.splice(idx, 1);
-  const updatedList = list.join('\n');
+  const updatedList = list.join('|');
   
   isSaving.value = true;
   formData.diputado_asignado = updatedList;

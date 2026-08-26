@@ -97,7 +97,7 @@ function drawDepts() {
       const munisCount = store.municipios.filter(m => norm(m.departamento) === norm(dept)).length;
       
       const deptData = store.departamentos.find(d => norm(d.departamento) === norm(dept));
-      const dipCount = deptData && deptData.diputado_asignado ? deptData.diputado_asignado.split('\\n').filter(x => x.trim()).length : 0;
+      const dipCount = deptData && deptData.diputado_asignado ? deptData.diputado_asignado.replace(/\\r?\\n/g, '|').split('|').filter(x => x.trim()).length : 0;
       
       layer.bindTooltip(`
         <div class="popup-name">${dept}</div>
@@ -158,7 +158,7 @@ function drawMunis(dept) {
           <div class="popup-row" style="margin-top:6px; flex-direction:column; align-items:flex-start; gap:6px;">
             <span class="k">Diputados (${dept})</span>
             <div style="display:flex; flex-direction:column; width:100%; gap:4px;">
-              ${extra.diputado_asignado.split(/\\r?\\n/).filter(x => x.trim()).map(dip => `<span class="v" style="text-align:left; max-width:100%; border-left: 2px solid var(--blue); padding-left: 6px;">${dip}</span>`).join('')}
+              ${extra.diputado_asignado.replace(/\\r?\\n/g, '|').split('|').filter(x => x.trim()).map(dip => `<span class="v" style="text-align:left; max-width:100%; border-left: 2px solid var(--blue); padding-left: 6px;">${dip}</span>`).join('')}
             </div>
           </div>
         ` : ''}
