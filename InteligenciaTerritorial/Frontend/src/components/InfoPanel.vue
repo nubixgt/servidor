@@ -107,24 +107,6 @@
           <div class="ic-party" v-if="store.selectedMuni.partido_alcalde">{{ store.selectedMuni.partido_alcalde }}</div>
         </div>
 
-        <!-- GPC DEL MUNICIPIO -->
-        <div class="info-card" v-if="store.selectedMuni.gpc && !isEditingGpcMuni" style="margin-top:12px;">
-          <div class="ic-label" style="display:flex; justify-content:space-between;">
-            <span><i class="fas fa-users-cog"></i> GPC (Municipio)</span>
-            <span style="cursor:pointer; color:var(--blue2);" @click="isEditingGpcMuni = true"><i class="fas fa-edit"></i></span>
-          </div>
-          <div class="ic-value">{{ store.selectedMuni.gpc }}</div>
-        </div>
-        
-        <div class="field-group" v-else style="margin-top:12px;">
-          <div class="field-label"><i class="fas fa-users-cog"></i> GPC (Municipio)</div>
-          <div style="display:flex; gap:8px;">
-            <input type="text" class="field-input" v-model="formMuni.gpc" placeholder="Nombre o código GPC…" @keyup.enter="saveGpcMuni">
-            <button class="map-btn" style="background:var(--blue); color:white; border:none; width:auto; padding: 0 15px;" @click="saveGpcMuni" :disabled="isSaving">
-              <i class="fas fa-save"></i>
-            </button>
-          </div>
-        </div>
 
         <div v-if="selectedMuniDeptData" style="margin-top:20px;">
           <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Del Departamento</div>
@@ -138,9 +120,23 @@
             </div>
           </div>
           
-          <div v-if="selectedMuniDeptData.gpc" class="info-card">
-            <div class="ic-label"><i class="fas fa-users-cog"></i> GPC</div>
+          <!-- GPC DEL DEPARTAMENTO DESDE MUNICIPIO -->
+          <div class="info-card" v-if="selectedMuniDeptData.gpc && !isEditingGpc" style="margin-top:12px;">
+            <div class="ic-label" style="display:flex; justify-content:space-between;">
+              <span><i class="fas fa-users-cog"></i> GPC</span>
+              <span style="cursor:pointer; color:var(--blue2);" @click="isEditingGpc = true"><i class="fas fa-edit"></i></span>
+            </div>
             <div class="ic-value">{{ selectedMuniDeptData.gpc }}</div>
+          </div>
+          
+          <div class="field-group" v-else style="margin-top:12px;">
+            <div class="field-label"><i class="fas fa-users-cog"></i> GPC</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="field-input" v-model="formData.gpc" placeholder="Nombre o código GPC…" @keyup.enter="saveGpc">
+              <button class="map-btn" style="background:var(--blue); color:white; border:none; width:auto; padding: 0 15px;" @click="saveGpc" :disabled="isSaving">
+                <i class="fas fa-save"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -172,12 +168,6 @@ const formData = reactive({
   notas: ''
 });
 
-const formMuni = reactive({
-  gpc: ''
-});
-
-const isEditingGpcMuni = ref(false);
-
 const currentDeptData = computed(() => {
   if (!store.selectedDept) return null;
   return store.departamentos.find(d => norm(d.departamento) === norm(store.selectedDept));
@@ -204,16 +194,19 @@ watch(() => store.selectedDept, (newDept) => {
 });
 
 watch(() => store.selectedMuni, (newMuni) => {
-  isEditingGpcMuni.value = false;
-  if (newMuni) {
-    formMuni.gpc = newMuni.gpc || '';
+  isEditingGpc.value = false;
+  if (newMuni && selectedMuniDeptData.value) {
+    formData.diputado_asignado = selectedMuniDeptData.value.diputado_asignado || '';
+    formData.gpc = selectedMuniDeptData.value.gpc || '';
+    formData.notas = selectedMuniDeptData.value.notas || '';
   }
 });
 
 const saveGpc = async () => {
   isSaving.value = true;
+  const deptToSave = store.selectedDept || (store.selectedMuni ? store.selectedMuni.departamento : null);
   const success = await store.saveDepartamento({
-    departamento: store.selectedDept,
+    departamento: deptToSave,
     diputado_asignado: formData.diputado_asignado,
     gpc: formData.gpc,
     notas: formData.notas
@@ -221,19 +214,6 @@ const saveGpc = async () => {
   if (success) {
     showToast('✓ GPC guardado');
     isEditingGpc.value = false;
-  }
-  isSaving.value = false;
-};
-
-const saveGpcMuni = async () => {
-  isSaving.value = true;
-  const success = await store.saveMunicipio({
-    id: store.selectedMuni.id,
-    gpc: formMuni.gpc
-  });
-  if (success) {
-    showToast('✓ GPC del municipio guardado');
-    isEditingGpcMuni.value = false;
   }
   isSaving.value = false;
 };
