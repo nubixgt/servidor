@@ -102,7 +102,9 @@ class HorarioRepository
             WHEN 5 THEN 'J' WHEN 6 THEN 'V' WHEN 7 THEN 'S' END";
 
         $stmt = $this->pdo->query(
-            "SELECT h.usuario_id, u.telefono, u.nombre_completo, h.curso_id, c.titulo AS curso_titulo,
+            "SELECT h.usuario_id,
+                    CASE WHEN CHAR_LENGTH(u.telefono) = 8 THEN CONCAT('502', u.telefono) ELSE u.telefono END AS telefono,
+                    u.nombre_completo, h.curso_id, c.titulo AS curso_titulo,
                     h.hora, h.duracion_minutos
              FROM horarios_curso h
              JOIN usuarios u ON u.id = h.usuario_id
