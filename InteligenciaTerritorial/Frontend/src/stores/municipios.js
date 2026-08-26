@@ -19,7 +19,11 @@ export const useMunicipiosStore = defineStore('municipios', {
       this.loading = true;
       try {
         const response = await api.get('?action=departamentos');
-        this.departamentos = response.data;
+        // Asegurarnos de que siempre sea un array
+        this.departamentos = Array.isArray(response.data) ? response.data : [];
+        if (!Array.isArray(response.data)) {
+          console.error("La API no devolvió un array para departamentos:", response.data);
+        }
       } catch (error) {
         console.error('Error fetching departamentos', error);
       } finally {
@@ -30,7 +34,11 @@ export const useMunicipiosStore = defineStore('municipios', {
       this.loading = true;
       try {
         const response = await api.get('?action=municipios');
-        this.municipios = response.data;
+        // Asegurarnos de que siempre sea un array
+        this.municipios = Array.isArray(response.data) ? response.data : [];
+        if (!Array.isArray(response.data)) {
+          console.error("La API no devolvió un array para municipios:", response.data);
+        }
       } catch (error) {
         console.error('Error fetching municipios', error);
       } finally {
