@@ -93,12 +93,30 @@ jobs:
             ./ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}
 
-      - name: 📂 Publicar build de InteligenciaTerritorial en su raíz
+      # Publica automáticamente el build (dist/) de CADA proyecto en la raíz de su
+      # carpeta en el servidor. Detecta tanto el patrón "Proyecto/Frontend/dist"
+      # (el que usan casi todos los proyectos) como "Proyecto/dist" (el caso de
+      # VisarListadoSolicitudes, que no tiene subcarpeta Frontend/).
+      #
+      # Al ser dinámico, un proyecto NUEVO no necesita ningún cambio aquí: basta
+      # con agregarle su paso de "npm install && npm run build" arriba y este
+      # paso lo publica solo, sin volver a tocar este archivo.
+      - name: 📂 Publicar builds de Frontend en la raíz de cada proyecto
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
             set -e
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
             DEPLOY_PATH="${DEPLOY_PATH%/}/"
-            IT_PATH="${DEPLOY_PATH}InteligenciaTerritorial/"
-            cp -R "${IT_PATH}Frontend/dist/." "$IT_PATH"
+            cd "$DEPLOY_PATH"
+            for dist_dir in */Frontend/dist */dist; do
+              [ -f "$dist_dir/index.html" ] || continue
+              parent_dir=$(dirname "$dist_dir")
+              if [ "$(basename "$parent_dir")" = "Frontend" ]; then
+                app_dir=$(dirname "$parent_dir")
+              else
+                app_dir="$parent_dir"
+              fi
+              echo "Publicando $dist_dir -> $app_dir/"
+              cp -R "$dist_dir/." "$app_dir/"
+            done
           '
