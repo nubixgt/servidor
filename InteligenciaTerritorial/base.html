@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GT360 · Dashboard Municipal de Guatemala</title>
+<style>
+:root{
+  --bg:#07111f;--panel:#0b1729;--panel2:#101e33;--line:#1d3351;--text:#edf5ff;
+  --muted:#8ea6c2;--blue:#2f81f7;--blue2:#69a7ff;--cyan:#48d7ff;--green:#37d39a;
+  --amber:#ffca5c;--red:#ff6978;--shadow:0 18px 60px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 20% -10%,#12345d 0,transparent 32%),var(--bg);
+font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text)}
+button,input,select,textarea{font:inherit}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);background:rgba(5,13,25,.88);backdrop-filter:blur(18px);padding:22px 16px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;font-weight:900;color:#001228;box-shadow:0 8px 30px rgba(47,129,247,.35)}
+.brand b{font-size:17px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.navbtn{width:100%;border:0;color:var(--muted);background:transparent;text-align:left;padding:11px 12px;border-radius:10px;margin:3px 0;cursor:pointer}
+.navbtn:hover,.navbtn.active{background:#11253e;color:white}.side-note{position:absolute;left:16px;right:16px;bottom:18px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:11px;line-height:1.45}
+main{padding:26px;min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+h1{font-size:26px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:5px}.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.btn{border:1px solid var(--line);background:#0d1d31;color:white;padding:9px 13px;border-radius:10px;cursor:pointer}.btn:hover{border-color:#3f6595}.btn.primary{background:linear-gradient(135deg,#1d6ee9,#3298ff);border-color:#2b7cf0}.btn.danger{color:#ffb1bb}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:12px;margin-bottom:16px}.card{background:linear-gradient(180deg,rgba(17,35,59,.95),rgba(10,23,40,.95));border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:var(--shadow)}
+.card .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.card .v{font-size:25px;font-weight:800;margin-top:6px}.card .s{font-size:11px;color:var(--muted);margin-top:2px}
+.panel{background:rgba(10,23,40,.94);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.panelhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}.panelhead b{font-size:14px}.panelbody{padding:16px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr auto;gap:10px}.field{background:#071522;border:1px solid var(--line);color:white;border-radius:10px;padding:10px 11px;outline:none;width:100%}.field:focus{border-color:var(--blue)}
+.tablewrap{overflow:auto;max-height:58vh}table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}thead th{position:sticky;top:0;background:#0e2035;color:#a8bdd5;text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:2}tbody td{padding:10px;border-bottom:1px solid #142a43;vertical-align:top}tbody tr:hover{background:#0d2035}
+.tag{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#122b47;color:#9dc7ff;border:1px solid #21456c;font-size:10px}.jp{color:#b4f5df;background:#0d2b26;border-color:#175342}.muted{color:var(--muted)}
+.edit{cursor:pointer;color:#80b8ff;text-decoration:underline;text-decoration-style:dotted}.pdfbtn{padding:5px 8px;font-size:10px}.pill{font-size:10px;padding:3px 6px;border-radius:6px;background:#162f4c;color:#acd0ff}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.crossgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:8px}.crossitem{border:1px solid var(--line);border-radius:10px;padding:10px;background:#0b1a2c}.crossitem b{font-size:12px}.bar{height:6px;background:#102a44;border-radius:99px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.dialog{width:min(760px,96vw);max-height:90vh;overflow:auto;background:#0a1829;border:1px solid #294665;border-radius:18px;box-shadow:0 30px 100px #000;padding:18px}.dialog h2{margin:0 0 14px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}.label{font-size:11px;color:var(--muted);margin:5px 0}.pdfrow{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:7px}.toast{position:fixed;right:20px;bottom:20px;background:#102740;border:1px solid #315579;padding:11px 14px;border-radius:10px;display:none;z-index:50;font-size:12px}
+.notice{padding:10px 12px;background:#10233a;border:1px solid #274b75;border-radius:10px;font-size:11px;color:#b6cae1;margin-bottom:12px}.hidden{display:none!important}
+@media(max-width:1050px){.app{grid-template-columns:1fr}aside{display:none}.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:650px){main{padding:14px}.cards{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start;flex-direction:column}.actions{justify-content:flex-start}.formgrid{grid-template-columns:1fr}.full{grid-column:1}.filters{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><div class="logo">GT</div><div><b>Municipal 340</b><small>Inteligencia territorial</small></div></div>
+  <button class="navbtn active" onclick="scrollToId('dashboard')">◫ Dashboard</button>
+  <button class="navbtn" onclick="scrollToId('municipios')">⌖ Municipios</button>
+  <button class="navbtn" onclick="scrollToId('cruces')">⌁ Cruces</button>
+  <button class="navbtn" onclick="document.getElementById('csvIn').click()">⇧ Importar datos</button>
+  <button class="navbtn" onclick="exportCSV()">⇩ Exportar CSV</button>
+  <button class="navbtn" onclick="backupJSON()">⬡ Backup JSON</button>
+  <div class="side-note"><b>Nota institucional</b><br>Guatemala tiene 340 municipios. La representación legislativa es distrital, no un diputado exclusivo por municipio. El campo “Diputado asignado” sirve para tu propia relación política/operativa.</div>
+</aside>
+<main id="dashboard">
+  <div class="topbar">
+    <div><h1>Dashboard Municipal · Guatemala</h1><div class="sub">Cruces, actores, seguimiento JP y expedientes PDF por municipio</div></div>
+    <div class="actions">
+      <button class="btn" onclick="refreshMayors()">Actualizar alcaldes</button>
+      <button class="btn" onclick="document.getElementById('csvIn').click()">Importar CSV</button>
+      <button class="btn primary" onclick="newRecord()">+ Registro</button>
+    </div>
+  </div>
+  <div id="status" class="notice">Preparando base municipal…</div>
+  <div class="cards">
+    <div class="card"><div class="k">Municipios</div><div class="v" id="cTotal">0</div><div class="s">base activa</div></div>
+    <div class="card"><div class="k">Alcaldes cargados</div><div class="v" id="cMayor">0</div><div class="s">2024–2028</div></div>
+    <div class="card"><div class="k">JP llenos</div><div class="v" id="cJP">0</div><div class="s">seguimiento propio</div></div>
+    <div class="card"><div class="k">Diputado asignado</div><div class="v" id="cDip">0</div><div class="s">relación operativa</div></div>
+    <div class="card"><div class="k">PDFs</div><div class="v" id="cPDF">0</div><div class="s">expedientes locales</div></div>
+  </div>
+
+  <div class="panel" id="municipios">
+    <div class="panelhead"><b>Base municipal</b><span id="resultCount" class="muted"></span></div>
+    <div class="panelbody">
+      <div class="filters">
+        <input id="q" class="field" placeholder="Buscar municipio, alcalde, diputado, JP…" oninput="render()">
+        <select id="fDept" class="field" onchange="render()"><option value="">Todos los departamentos</option></select>
+        <select id="fMayorParty" class="field" onchange="render()"><option value="">Partido alcalde</option></select>
+        <select id="fJP" class="field" onchange="render()"><option value="">JP: todos</option><option value="yes">JP lleno</option><option value="no">JP pendiente</option></select>
+        <select id="fPDF" class="field" onchange="render()"><option value="">PDF: todos</option><option value="yes">Con PDF</option><option value="no">Sin PDF</option></select>
+        <button class="btn" onclick="clearFilters()">Limpiar</button>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table><thead><tr><th>Departamento</th><th>Municipio</th><th>Alcalde</th><th>Partido</th><th>Distrito</th><th>Diputado asignado</th><th>JP</th><th>PDF</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+    </div>
+  </div>
+
+  <div class="grid2" id="cruces">
+    <div class="panel"><div class="panelhead"><b>Cruce por departamento</b><span class="muted">resultados filtrados</span></div><div class="panelbody"><div id="crossDept" class="crossgrid"></div></div></div>
+    <div class="panel"><div class="panelhead"><b>Cruce político</b><span class="muted">alcaldías por organización</span></div><div class="panelbody"><div id="crossParty" class="crossgrid"></div></div></div>
+  </div>
+</main>
+</div>
+
+<input id="csvIn" type="file" accept=".csv,.json" class="hidden">
+<input id="restoreIn" type="file" accept=".json" class="hidden">
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
+ <div class="dialog">
+  <div style="display:flex;justify-content:space-between;gap:10px"><h2 id="mTitle">Municipio</h2><button class="btn" onclick="closeModal()">✕</button></div>
+  <div class="formgrid">
+   <div><div class="label">Departamento</div><input id="eDept" class="field"></div>
+   <div><div class="label">Municipio</div><input id="eMun" class="field"></div>
+   <div><div class="label">Alcalde</div><input id="eMayor" class="field"></div>
+   <div><div class="label">Partido / comité alcalde</div><input id="eMayorParty" class="field"></div>
+   <div><div class="label">Distrito electoral</div><input id="eDistrict" class="field"></div>
+   <div><div class="label">Diputado asignado / referente</div><input id="eDeputy" class="field"></div>
+   <div><div class="label">JP</div><input id="eJP" class="field" placeholder="Nombre / código / relación"></div>
+   <div><div class="label">Estado</div><select id="eStatus" class="field"><option>Sin clasificar</option><option>Prioridad alta</option><option>Prioridad media</option><option>Prioridad baja</option><option>Seguimiento</option></select></div>
+   <div class="full"><div class="label">Notas</div><textarea id="eNotes" class="field" rows="3"></textarea></div>
+   <div class="full">
+     <div class="label">Expedientes PDF</div>
+     <div style="display:flex;gap:8px;align-items:center"><input id="pdfIn" type="file" accept="application/pdf" multiple class="field"><button class="btn" onclick="uploadPDFs()">Subir PDF</button></div>
+     <div id="pdfList"></div>
+   </div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn primary" onclick="saveEdit()">Guardar cambios</button></div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='gt_municipal_340_v3';
+let data=JSON.parse(localStorage.getItem(KEY)||'[]'), currentId=null, pdfCounts={};
+const wikiApi='https://es.wikipedia.org/w/api.php?action=parse&page=Elecciones_municipales_de_Guatemala_de_2023&prop=text&format=json&origin=*';
+
+function uid(){return 'm'+Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function norm(s){return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
+function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function toast(t){let e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2200)}
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function districtFor(dept,mun){if(norm(dept)==='guatemala' && norm(mun).includes('guatemala')) return 'Distrito Central';return dept||''}
+
+async function refreshMayors(){
+ const st=document.getElementById('status');st.textContent='Consultando base pública de alcaldes electos 2024–2028…';
+ try{
+   const r=await fetch(wikiApi); if(!r.ok) throw new Error('HTTP '+r.status);
+   const j=await r.json(); const box=document.createElement('div'); box.innerHTML=j.parse.text['*'];
+   const headings=[...box.querySelectorAll('h4')];
+   let out=[];
+   for(const h of headings){
+     const dept=h.textContent.trim();
+     let n=h.nextElementSibling;
+     while(n && n.tagName!=='H4'){
+       if(n.tagName==='TABLE'){
+         const trs=[...n.querySelectorAll('tr')].slice(1);
+         for(const tr of trs){
+           const c=[...tr.querySelectorAll('td')].map(x=>x.textContent.replace(/\[[^\]]+\]/g,'').trim());
+           if(c.length>=5){
+             out.push({dept, municipality:c[0], mayor:c[3], mayorParty:c[4], district:districtFor(dept,c[0])});
+           }
+         }
+         break;
+       }
+       n=n.nextElementSibling;
+     }
+   }
+   // Wikipedia may render some section headings as h3/h4 depending parser; robust second pass:
+   if(out.length<300){
+     out=[];
+     for(const table of [...box.querySelectorAll('table.wikitable')]){
+       let h=table.previousElementSibling;
+       while(h && !/^H[34]$/.test(h.tagName)) h=h.previousElementSibling;
+       const dept=h?.textContent?.trim()||'';
+       const head=norm(table.querySelector('tr')?.textContent||'');
+       if(!head.includes('alcalde electo') || !dept) continue;
+       for(const tr of [...table.querySelectorAll('tr')].slice(1)){
+         const c=[...tr.querySelectorAll('td')].map(x=>x.textContent.replace(/\[[^\]]+\]/g,'').trim());
+         if(c.length>=5) out.push({dept,municipality:c[0],mayor:c[3],mayorParty:c[4],district:districtFor(dept,c[0])});
+       }
+     }
+   }
+   // merge preserving user fields
+   const existing=new Map(data.map(x=>[norm(x.dept)+'|'+norm(x.municipality),x]));
+   data=out.map(x=>{
+      const old=existing.get(norm(x.dept)+'|'+norm(x.municipality))||{};
+      return {...x,id:old.id||uid(),deputy:old.deputy||'',jp:old.jp||'',status:old.status||'Sin clasificar',notes:old.notes||''}
+   });
+   save(); await loadPdfCounts(); buildFilters(); render();
+   st.textContent=`Base cargada: ${data.length} municipios. Alcaldes: elección 2023 / período 2024–2028. Puedes editar cualquier registro.`;
+   toast('Base municipal actualizada');
+ }catch(err){
+   st.textContent='No fue posible actualizar automáticamente. Puedes importar un CSV/JSON; tus datos guardados siguen disponibles.';
+   console.error(err);
+   if(!data.length) makeFallback();
+ }
+}
+function makeFallback(){
+ const deps=['Alta Verapaz','Baja Verapaz','Chimaltenango','Chiquimula','El Progreso','Escuintla','Guatemala','Huehuetenango','Izabal','Jalapa','Jutiapa','Petén','Quetzaltenango','Quiché','Retalhuleu','Sacatepéquez','San Marcos','Santa Rosa','Sololá','Suchitepéquez','Totonicapán','Zacapa'];
+ data=Array.from({length:340},(_,i)=>({id:uid(),dept:deps[i%22],municipality:`Municipio ${String(i+1).padStart(3,'0')}`,mayor:'',mayorParty:'',district:deps[i%22],deputy:'',jp:'',status:'Sin clasificar',notes:''}));
+ save();buildFilters();render();
+}
+function filtered(){
+ const q=norm(document.getElementById('q').value),d=document.getElementById('fDept').value,p=document.getElementById('fMayorParty').value,jp=document.getElementById('fJP').value,pdf=document.getElementById('fPDF').value;
+ return data.filter(x=>{
+  const hay=norm([x.dept,x.municipality,x.mayor,x.mayorParty,x.deputy,x.jp,x.notes].join(' '));
+  if(q&&!hay.includes(q))return false;if(d&&x.dept!==d)return false;if(p&&x.mayorParty!==p)return false;
+  if(jp==='yes'&&!x.jp)return false;if(jp==='no'&&x.jp)return false;
+  const pc=pdfCounts[x.id]||0;if(pdf==='yes'&&!pc)return false;if(pdf==='no'&&pc)return false;return true;
+ })
+}
+function render(){
+ const f=filtered(),rows=document.getElementById('rows');document.getElementById('resultCount').textContent=`${f.length} resultados`;
+ rows.innerHTML=f.map(x=>`<tr>
+  <td><span class="tag">${esc(x.dept)}</span></td><td><b>${esc(x.municipality)}</b></td>
+  <td>${esc(x.mayor)||'<span class="muted">Pendiente</span>'}</td><td>${x.mayorParty?`<span class="pill">${esc(x.mayorParty)}</span>`:'—'}</td>
+  <td>${esc(x.district||x.dept)}</td><td><span class="edit" onclick="openEdit('${x.id}')">${esc(x.deputy)||'Asignar'}</span></td>
+  <td>${x.jp?`<span class="tag jp">${esc(x.jp)}</span>`:`<span class="edit" onclick="openEdit('${x.id}')">Rellenar JP</span>`}</td>
+  <td><button class="btn pdfbtn" onclick="openEdit('${x.id}')">PDF ${pdfCounts[x.id]?`(${pdfCounts[x.id]})`:''}</button></td>
+  <td><button class="btn pdfbtn" onclick="openEdit('${x.id}')">Editar</button></td></tr>`).join('');
+ updateCards(); renderCross(f)
+}
+function updateCards(){
+ document.getElementById('cTotal').textContent=data.length;
+ document.getElementById('cMayor').textContent=data.filter(x=>x.mayor).length;
+ document.getElementById('cJP').textContent=data.filter(x=>x.jp).length;
+ document.getElementById('cDip').textContent=data.filter(x=>x.deputy).length;
+ document.getElementById('cPDF').textContent=Object.values(pdfCounts).reduce((a,b)=>a+b,0);
+}
+function renderCross(f){
+ const group=(arr,key)=>arr.reduce((a,x)=>(a[x[key]||'Sin dato']=(a[x[key]||'Sin dato']||0)+1,a),{});
+ const gd=group(f,'dept'), gp=group(f,'mayorParty');
+ const mk=(g)=>{let m=Math.max(1,...Object.values(g));return Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,30).map(([k,v])=>`<div class="crossitem"><b>${esc(k)}</b><div class="muted">${v} municipio${v!==1?'s':''}</div><div class="bar"><i style="width:${v/m*100}%"></i></div></div>`).join('')};
+ document.getElementById('crossDept').innerHTML=mk(gd);document.getElementById('crossParty').innerHTML=mk(gp)
+}
+function buildFilters(){
+ const deps=[...new Set(data.map(x=>x.dept).filter(Boolean))].sort(), ps=[...new Set(data.map(x=>x.mayorParty).filter(Boolean))].sort();
+ const fd=document.getElementById('fDept'),fp=document.getElementById('fMayorParty'),dv=fd.value,pv=fp.value;
+ fd.innerHTML='<option value="">Todos los departamentos</option>'+deps.map(x=>`<option>${esc(x)}</option>`).join('');
+ fp.innerHTML='<option value="">Partido alcalde</option>'+ps.map(x=>`<option>${esc(x)}</option>`).join('');fd.value=dv;fp.value=pv
+}
+function clearFilters(){['q','fDept','fMayorParty','fJP','fPDF'].forEach(id=>document.getElementById(id).value='');render()}
+function openEdit(id){
+ const x=data.find(z=>z.id===id);if(!x)return;currentId=id;document.getElementById('mTitle').textContent=x.municipality;
+ ['Dept','Mun','Mayor','MayorParty','District','Deputy','JP','Status','Notes'].forEach(k=>{
+   const map={Dept:'dept',Mun:'municipality',Mayor:'mayor',MayorParty:'mayorParty',District:'district',Deputy:'deputy',JP:'jp',Status:'status',Notes:'notes'};
+   document.getElementById('e'+k).value=x[map[k]]||''
+ });
+ document.getElementById('modal').classList.add('show');renderPdfList()
+}
+function newRecord(){const x={id:uid(),dept:'',municipality:'Nuevo municipio/registro',mayor:'',mayorParty:'',district:'',deputy:'',jp:'',status:'Sin clasificar',notes:''};data.unshift(x);save();buildFilters();render();openEdit(x.id)}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function saveEdit(){
+ let x=data.find(z=>z.id===currentId);if(!x)return;
+ const vals={dept:'eDept',municipality:'eMun',mayor:'eMayor',mayorParty:'eMayorParty',district:'eDistrict',deputy:'eDeputy',jp:'eJP',status:'eStatus',notes:'eNotes'};
+ Object.entries(vals).forEach(([k,id])=>x[k]=document.getElementById(id).value.trim());save();buildFilters();render();closeModal();toast('Cambios guardados')
+}
+function exportCSV(){
+ const cols=['departamento','municipio','alcalde','partido_alcalde','distrito','diputado_asignado','JP','estado','notas','pdfs'];
+ const lines=[cols.join(',')].concat(data.map(x=>[x.dept,x.municipality,x.mayor,x.mayorParty,x.district,x.deputy,x.jp,x.status,x.notes,pdfCounts[x.id]||0].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
+ downloadBlob(new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'}),'guatemala_municipios_dashboard.csv')
+}
+function backupJSON(){downloadBlob(new Blob([JSON.stringify({version:3,date:new Date().toISOString(),data},null,2)],{type:'application/json'}),'guatemala_municipios_backup.json')}
+function downloadBlob(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+document.getElementById('csvIn').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;const txt=await file.text();
+ try{
+  if(file.name.endsWith('.json')){const j=JSON.parse(txt);data=(j.data||j).map(x=>({...x,id:x.id||uid()}))}
+  else{
+    const lines=txt.split(/\r?\n/).filter(Boolean), hdr=parseCSVLine(lines[0]).map(norm);
+    data=lines.slice(1).map(line=>{const v=parseCSVLine(line),o={};hdr.forEach((h,i)=>o[h]=v[i]||'');return{
+      id:uid(),dept:o.departamento||o.department||'',municipality:o.municipio||o.municipality||'',mayor:o.alcalde||'',
+      mayorParty:o.partido_alcalde||o.partido||'',district:o.distrito||o.departamento||'',deputy:o.diputado_asignado||o.diputado||'',
+      jp:o.jp||'',status:o.estado||'Sin clasificar',notes:o.notas||''
+    }})
+  }
+  save();buildFilters();render();toast(`${data.length} registros importados`)
+ }catch(err){alert('No se pudo importar: '+err.message)}e.target.value=''
+});
+function parseCSVLine(s){let a=[],v='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'&&q&&s[i+1]==='"'){v+='"';i++}else if(c==='"')q=!q;else if(c===','&&!q){a.push(v);v=''}else v+=c}a.push(v);return a}
+
+// IndexedDB PDFs
+let dbp=new Promise((res,rej)=>{let q=indexedDB.open('GT340_PDF',1);q.onupgradeneeded=()=>q.result.createObjectStore('pdf',{keyPath:'key'});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+async function allPDFs(){let db=await dbp;return new Promise((res,rej)=>{let q=db.transaction('pdf').objectStore('pdf').getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function loadPdfCounts(){pdfCounts={};for(const p of await allPDFs())pdfCounts[p.mid]=(pdfCounts[p.mid]||0)+1;updateCards()}
+async function uploadPDFs(){
+ const fs=[...document.getElementById('pdfIn').files];if(!fs.length)return toast('Selecciona uno o más PDF');
+ let db=await dbp,tx=db.transaction('pdf','readwrite'),st=tx.objectStore('pdf');
+ for(const f of fs){if(f.type!=='application/pdf')continue;st.put({key:currentId+'|'+Date.now()+'|'+Math.random(),mid:currentId,name:f.name,type:f.type,size:f.size,date:new Date().toISOString(),blob:f})}
+ await new Promise((r,j)=>{tx.oncomplete=r;tx.onerror=()=>j(tx.error)});document.getElementById('pdfIn').value='';await loadPdfCounts();renderPdfList();render();toast('PDF guardado localmente')
+}
+async function renderPdfList(){
+ const list=(await allPDFs()).filter(p=>p.mid===currentId),e=document.getElementById('pdfList');
+ e.innerHTML=list.length?list.map(p=>`<div class="pdfrow"><div><b>${esc(p.name)}</b><div class="muted">${(p.size/1024/1024).toFixed(2)} MB</div></div><div><button class="btn pdfbtn" onclick="downloadPDF('${encodeURIComponent(p.key)}')">Bajar</button> <button class="btn pdfbtn danger" onclick="deletePDF('${encodeURIComponent(p.key)}')">Eliminar</button></div></div>`).join(''):'<div class="muted" style="padding:10px 0">Sin PDFs adjuntos.</div>'
+}
+async function getPDF(key){let db=await dbp;return new Promise((res,rej)=>{let q=db.transaction('pdf').objectStore('pdf').get(key);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function downloadPDF(k){let p=await getPDF(decodeURIComponent(k));if(p)downloadBlob(p.blob,p.name)}
+async function deletePDF(k){let key=decodeURIComponent(k),db=await dbp;let tx=db.transaction('pdf','readwrite');tx.objectStore('pdf').delete(key);await new Promise(r=>tx.oncomplete=r);await loadPdfCounts();renderPdfList();render()}
+
+(async function init(){
+ await loadPdfCounts();if(data.length){buildFilters();render();document.getElementById('status').textContent=`Base local cargada: ${data.length} registros. Pulsa “Actualizar alcaldes” para refrescar la base electoral.`}
+ else refreshMayors();
+})();
+</script>
+</body>
+</html>

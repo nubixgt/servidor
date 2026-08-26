@@ -13,3 +13,9 @@ deployment:
     - /bin/cp -R CONADEA/Database $CONADEA_PATH
     - /bin/cp -R CONADEA/Frontend/dist/* $CONADEA_PATH
     - /bin/cp CONADEA/Frontend/dist/.htaccess $CONADEA_PATH 2>/dev/null || true
+    - export IT_PATH=/home/visionwe/m.nubix.gt/InteligenciaTerritorial/
+    - /bin/mkdir -p $IT_PATH
+    - /bin/cp -R InteligenciaTerritorial/Backend $IT_PATH
+    - /bin/cp -R InteligenciaTerritorial/Database $IT_PATH
+    - /bin/cp -R InteligenciaTerritorial/Frontend/dist/* $IT_PATH
+    - /bin/cp InteligenciaTerritorial/Frontend/dist/.htaccess $IT_PATH 2>/dev/null || true
