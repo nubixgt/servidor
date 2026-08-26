@@ -78,7 +78,6 @@ onMounted(() => {
               </div>
 
               <!-- Facebook Page Plugin -->
-              <div id="fb-root"></div>
               <div class="relative w-full overflow-hidden">
                 <div
                   class="fb-page w-full"
