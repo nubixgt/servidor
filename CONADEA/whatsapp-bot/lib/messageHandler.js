@@ -2,6 +2,7 @@ const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const backend = require('./backendClient');
 const menu = require('./menu');
 const { getState, setState, clearState } = require('./conversationState');
+const { enviarInteractivo, botonRespuestaRapida, botonAbrirLink } = require('./interactivo');
 
 // Evita procesar ráfagas del mismo chat demasiado rápido (mitiga el riesgo
 // de que el número sea marcado por abuso, al ser una librería no oficial).
@@ -52,6 +53,27 @@ async function procesarMensaje(sock, msg) {
     const responder = (texto) => sock.sendMessage(jid, { text: texto });
     const comando = extraerTexto(msg.message).trim().toLowerCase();
     const usuario = estadoActual.datos?.usuario;
+
+    // TEMPORAL: valida en un teléfono real si los botones interactivos de
+    // Baileys se ven como botones tocables o como texto plano, antes de
+    // reescribir todo el flujo de menú sobre este mecanismo. Quitar este
+    // bloque una vez confirmado (ver plan "Rediseño del bot de WhatsApp").
+    if (comando === 'spike-botones') {
+        await sock.sendMessage(jid, { text: 'Enviando mensaje de prueba con botones...' });
+        await enviarInteractivo(sock, jid, {
+            texto: 'Esto es una prueba de botones interactivos.',
+            pie: 'Toca uno de los botones de abajo',
+            botones: [
+                botonRespuestaRapida('spike_ok', '✅ Se ve como botón'),
+                botonAbrirLink('https://m.nubix.gt/CONADEA/Frontend', '🔗 Abrir link'),
+            ],
+        });
+        return;
+    }
+    if (comando === 'spike_ok') {
+        await responder('¡Perfecto! Los botones funcionan. 🎉');
+        return;
+    }
 
     // "menu"/"0" siempre reinician el flujo, sin importar en qué paso esté.
     if (comando === '0' || comando === 'salir') {
