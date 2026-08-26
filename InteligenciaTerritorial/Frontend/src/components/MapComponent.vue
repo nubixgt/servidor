@@ -134,13 +134,13 @@ function drawMunis(dept) {
   muniLayer = L.geoJSON(deptMusis, {
     style: (feature) => {
       const mName = feature.properties.Municipio || feature.properties.municipio;
-      const mData = store.municipios.find(m => m.municipio === mName && m.departamento === dept);
+      const mData = store.municipios.find(m => norm(m.municipio) === norm(mName) && norm(m.departamento) === norm(dept));
       const color = mData ? partyColor(mData.partido_alcalde) : '#1d3351';
       return { fillColor: color, weight: 1, opacity: 1, color: 'rgba(255,255,255,0.25)', fillOpacity: 0.7 };
     },
     onEachFeature: (feature, layer) => {
       const mName = feature.properties.Municipio || feature.properties.municipio;
-      const mData = store.municipios.find(m => m.municipio === mName && m.departamento === dept);
+      const mData = store.municipios.find(m => norm(m.municipio) === norm(mName) && norm(m.departamento) === norm(dept));
 
       layer.bindTooltip(`
         <div class="popup-name">${mName}</div>
