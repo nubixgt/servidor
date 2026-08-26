@@ -106,7 +106,7 @@ const onDeptClick = (e) => {
 
 const loadMunicipalities = async (deptCode) => {
   try {
-    const response = await fetch('/assets/vider/maps/munis.json')
+    const response = await fetch(`${import.meta.env.BASE_URL}assets/vider/maps/munis.json`)
     const topoData = await response.json()
     const key = Object.keys(topoData.objects)[0]
     const geoData = topojson.feature(topoData, topoData.objects[key])
@@ -184,7 +184,7 @@ onMounted(async () => {
   L.control.zoom({ position: 'topright' }).addTo(map)
 
   try {
-    const response = await fetch('/assets/vider/maps/deptos.json')
+    const response = await fetch(`${import.meta.env.BASE_URL}assets/vider/maps/deptos.json`)
     const topoData = await response.json()
     const key = Object.keys(topoData.objects)[0]
     const geoData = topojson.feature(topoData, topoData.objects[key])

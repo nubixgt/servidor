@@ -45,7 +45,7 @@
                 </div>
                 <div v-else-if="weather && weather.weather" class="flex items-center gap-6">
                     <div class="text-center">
-                        <img :src="`http://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`" class="w-32 h-32 mx-auto drop-shadow-md" />
+                        <img :src="`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`" class="w-32 h-32 mx-auto drop-shadow-md" />
                         <p class="text-sm font-bold text-gray-500 uppercase">{{ weather.weather[0].description }}</p>
                     </div>
                     <div>

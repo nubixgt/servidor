@@ -282,7 +282,7 @@ const centerMap = () => {
 
 const loadGuatemalaMask = async () => {
     try {
-        const resp = await fetch('/guatemala.geojson');
+        const resp = await fetch(`${import.meta.env.BASE_URL}guatemala.geojson`);
         const geojson = await resp.json();
         const guatemalaCoords = geojson.features[0].geometry.coordinates;
 
