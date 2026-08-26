@@ -10,6 +10,13 @@ use PDO;
  */
 class HorarioRepository
 {
+    // El servidor de base de datos corre en UTC, pero "hora"/"dias" que
+    // configura el usuario son hora de Guatemala (UTC-6, sin horario de
+    // verano) — UTC_TIMESTAMP() (no NOW(), que respeta el time_zone de la
+    // sesión) más CONVERT_TZ con desplazamiento fijo no necesita las tablas
+    // mysql.time_zone_name cargadas, a diferencia de usar 'America/Guatemala'.
+    private const AHORA_GT_SQL = "CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00')";
+
     private $pdo;
 
     public function __construct()
@@ -63,7 +70,7 @@ class HorarioRepository
     {
         $stmt = $this->pdo->prepare(
             'UPDATE horarios_curso
-             SET pospuesto_hasta = DATE_ADD(NOW(), INTERVAL :minutos MINUTE)
+             SET pospuesto_hasta = DATE_ADD(' . self::AHORA_GT_SQL . ', INTERVAL :minutos MINUTE)
              WHERE usuario_id = :usuario_id AND curso_id = :curso_id'
         );
         $stmt->execute(['minutos' => $minutos, 'usuario_id' => $usuarioId, 'curso_id' => $cursoId]);
@@ -89,7 +96,8 @@ class HorarioRepository
      */
     public function obtenerDebidos(): array
     {
-        $diaHoy = "CASE DAYOFWEEK(NOW())
+        $ahoraGt = self::AHORA_GT_SQL;
+        $diaHoy = "CASE DAYOFWEEK($ahoraGt)
             WHEN 1 THEN 'D' WHEN 2 THEN 'L' WHEN 3 THEN 'M' WHEN 4 THEN 'X'
             WHEN 5 THEN 'J' WHEN 6 THEN 'V' WHEN 7 THEN 'S' END";
 
@@ -100,12 +108,12 @@ class HorarioRepository
              JOIN usuarios u ON u.id = h.usuario_id
              JOIN cursos c ON c.id = h.curso_id
              WHERE h.activo = 1 AND (
-                (h.pospuesto_hasta IS NOT NULL AND h.pospuesto_hasta <= NOW())
+                (h.pospuesto_hasta IS NOT NULL AND h.pospuesto_hasta <= $ahoraGt)
                 OR (
                     h.pospuesto_hasta IS NULL
                     AND FIND_IN_SET(($diaHoy), h.dias) > 0
-                    AND ABS(TIME_TO_SEC(TIMEDIFF(CURTIME(), SUBTIME(h.hora, '00:10:00')))) <= 60
-                    AND (h.ultima_notificacion_fecha IS NULL OR h.ultima_notificacion_fecha < CURDATE())
+                    AND ABS(TIME_TO_SEC(TIMEDIFF(TIME($ahoraGt), SUBTIME(h.hora, '00:10:00')))) <= 60
+                    AND (h.ultima_notificacion_fecha IS NULL OR h.ultima_notificacion_fecha < DATE($ahoraGt))
                 )
              )"
         );
@@ -116,7 +124,7 @@ class HorarioRepository
     {
         $stmt = $this->pdo->prepare(
             'UPDATE horarios_curso
-             SET ultima_notificacion_fecha = CURDATE(), pospuesto_hasta = NULL
+             SET ultima_notificacion_fecha = DATE(' . self::AHORA_GT_SQL . '), pospuesto_hasta = NULL
              WHERE usuario_id = :usuario_id AND curso_id = :curso_id'
         );
         $stmt->execute(['usuario_id' => $usuarioId, 'curso_id' => $cursoId]);
