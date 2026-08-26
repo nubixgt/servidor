@@ -223,8 +223,8 @@ tbody tr:hover{background:#FBFCFE}
       <div class="cif" id="totalCifra">0</div>
       <div class="regla"></div>
       <div class="modo" role="group" aria-label="Criterio de conteo">
-        <button id="btnUnicos" aria-pressed="true">Expedientes vigentes</button>
-        <button id="btnTodos" aria-pressed="false">Todos los registros</button>
+        <button id="btnUnicos" aria-pressed="false">Expedientes vigentes</button>
+        <button id="btnTodos" aria-pressed="true">Todos los registros</button>
       </div>
       <div class="stats">
         <div><span>Días promedio</span><b id="statProm">—</b></div>
@@ -317,7 +317,7 @@ const ICONOS = {
 
 const $ = s => document.querySelector(s);
 let sel = 0;
-let modoVigentes = true;
+let modoVigentes = false;
 let pagina = 1, porPagina = 15, filtro = '';
 let rosco = null, sombra = null;
 
