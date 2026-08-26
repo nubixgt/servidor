@@ -2,7 +2,7 @@ import axios from 'axios';
 import router from '../router';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE || 'https://maga.nubix.gt/Backend/api/v1',
+    baseURL: import.meta.env.VITE_API_BASE || 'https://m.nubix.gt/unificacion_maga/Backend/api/v1',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

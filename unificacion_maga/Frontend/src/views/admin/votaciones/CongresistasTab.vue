@@ -183,11 +183,11 @@ const getFotoUrl = (filename) => {
     if (!filename) return null;
     if (filename.startsWith('http')) return filename;
     
-    // Obtenemos la URL del API (local o producción) y limpiamos la ruta para apuntar a la raíz del proyecto
-    const apiUrl = import.meta.env.VITE_API_BASE || 'https://maga.nubix.gt/Backend/api/v1';
-    
-    // Si la URL contiene /Backend, la cortamos ahí para tener la raíz del proyecto
-    // Ejemplo local: http://localhost/unificacion_maga/Backend/... -> http://localhost/unificacion_maga
+    // API_BASE de Vite si existe, de lo contrario fallback a la URL del backend real en este proyecto
+    const apiUrl = import.meta.env.VITE_API_BASE || 'https://m.nubix.gt/unificacion_maga/Backend/api/v1';
+
+    // Para la subida de archivos construimos la URL combinando:
+    // Ejemplo prod: https://m.nubix.gt/unificacion_maga/Backend/... -> https://m.nubix.gt/unificacion_maga
     // Ejemplo prod: https://maga.nubix.gt/Backend/... -> https://maga.nubix.gt
     const baseUrl = apiUrl.split('/Backend')[0];
     

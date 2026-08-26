@@ -71,6 +71,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (unificacion_maga)
+        run: |
+          cd unificacion_maga/Frontend
+          npm install
+          npm run build
+
 
       - name: 🔐 Setup SSH
         run: |
