@@ -71,15 +71,15 @@
                             :class="`w-full text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${filterTipo === '' ? 'bg-blue-50/50 dark:bg-blue-900/20 text-primary border border-blue-100 dark:border-blue-800/50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`">
                             <ListBulletIcon class="w-5 h-5" /> Todos
                         </button>
-                        <button @click="filterTipo = 'GRUPO DE GASTO'"
-                            :class="`w-full text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${filterTipo === 'GRUPO DE GASTO' ? 'bg-blue-50/50 dark:bg-blue-900/20 text-primary border border-blue-100 dark:border-blue-800/50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`">
+                        <button @click="filterTipo = 'GRUPO_GASTO'"
+                            :class="`w-full text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${filterTipo === 'GRUPO_GASTO' ? 'bg-blue-50/50 dark:bg-blue-900/20 text-primary border border-blue-100 dark:border-blue-800/50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`">
                             <DocumentDuplicateIcon class="w-5 h-5" /> Grupo de gasto
-                            <span v-if="filterTipo === 'GRUPO DE GASTO'" class="ml-auto bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{{ filteredData.length }}</span>
+                            <span v-if="filterTipo === 'GRUPO_GASTO'" class="ml-auto bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{{ filteredData.length }}</span>
                         </button>
-                        <button @click="filterTipo = 'FUENTE DE FINANCIAMIENTO'"
-                            :class="`w-full text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${filterTipo === 'FUENTE DE FINANCIAMIENTO' ? 'bg-blue-50/50 dark:bg-blue-900/20 text-primary border border-blue-100 dark:border-blue-800/50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`">
+                        <button @click="filterTipo = 'FUENTE_FINANCIAMIENTO'"
+                            :class="`w-full text-left px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3 transition-colors ${filterTipo === 'FUENTE_FINANCIAMIENTO' ? 'bg-blue-50/50 dark:bg-blue-900/20 text-primary border border-blue-100 dark:border-blue-800/50' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'}`">
                             <BanknotesIcon class="w-5 h-5" /> Fuente de financiamiento
-                            <span v-if="filterTipo === 'FUENTE DE FINANCIAMIENTO'" class="ml-auto bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{{ filteredData.length }}</span>
+                            <span v-if="filterTipo === 'FUENTE_FINANCIAMIENTO'" class="ml-auto bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{{ filteredData.length }}</span>
                         </button>
                     </div>
                 </div>
@@ -111,8 +111,8 @@
                             </tr>
                             <tr v-for="item in filteredData" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                                 <td class="p-4 text-left font-sans">
-                                     <span :class="`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${item.type === 'FUENTE DE FINANCIAMIENTO' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`">
-                                        {{ item.type }}
+                                     <span :class="`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${item.type === 'FUENTE_FINANCIAMIENTO' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`">
+                                        {{ item.type ? item.type.replace('_', ' ') : '' }}
                                     </span>
                                 </td>
                                 <td class="p-4 text-left font-sans font-medium text-gray-700 dark:text-gray-300">
