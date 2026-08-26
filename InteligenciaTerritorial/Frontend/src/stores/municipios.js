@@ -57,6 +57,20 @@ export const useMunicipiosStore = defineStore('municipios', {
         return false;
       }
     },
+    async saveMunicipio(muniData) {
+      try {
+        await api.put('?action=municipio', muniData);
+        await this.fetchMunicipios();
+        // Update selected muni if needed
+        if (this.selectedMuni) {
+          this.selectedMuni = this.municipios.find(m => m.id === this.selectedMuni.id);
+        }
+        return true;
+      } catch (error) {
+        console.error('Error saving municipio', error);
+        return false;
+      }
+    },
     selectDept(dept) {
       this.selectedDept = dept;
       this.selectedMuni = null;
