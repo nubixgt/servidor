@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 12-08-2026 a las 12:36:59
--- Versión del servidor: 11.4.12-MariaDB
+-- Tiempo de generación: 26-08-2026 a las 13:38:23
+-- Versión del servidor: 11.4.13-MariaDB
 -- Versión de PHP: 8.4.24
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,6 +20,30 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `visionwe_CONADEA`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `consultas_tecnicas`
+--
+
+CREATE TABLE `consultas_tecnicas` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `tipo` enum('imagen','audio','ubicacion','texto') NOT NULL,
+  `contenido` varchar(500) DEFAULT NULL,
+  `mensaje` text DEFAULT NULL,
+  `estado` enum('pendiente','atendida') NOT NULL DEFAULT 'pendiente',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `consultas_tecnicas`
+--
+
+INSERT INTO `consultas_tecnicas` (`id`, `usuario_id`, `tipo`, `contenido`, `mensaje`, `estado`, `created_at`) VALUES
+(1, 4, 'texto', NULL, '4', 'pendiente', '2026-08-21 01:09:04'),
+(2, 4, 'texto', NULL, '4', 'pendiente', '2026-08-21 01:40:28');
 
 -- --------------------------------------------------------
 
@@ -42,7 +66,9 @@ CREATE TABLE `cursos` (
 --
 
 INSERT INTO `cursos` (`id`, `icono`, `titulo`, `descripcion`, `imagen_path`, `created_at`, `updated_at`) VALUES
-(1, '📘', 'Curso 1', 'Prueba 1 para saber si se crea correctamente el curso 1', 'uploads/cursos/1/imagen.jpg', '2026-08-10 15:09:22', '2026-08-10 15:09:22');
+(1, '📘', 'Curso 1', 'Prueba 1 para saber si se crea correctamente el curso 1', 'uploads/cursos/1/imagen.jpg', '2026-08-10 15:09:22', '2026-08-10 15:09:22'),
+(2, '📘', 'muestra', 'descripción', 'uploads/cursos/2/imagen.jpg', '2026-08-20 18:08:42', '2026-08-20 18:08:42'),
+(3, '📘', 'GANADERIA SOSTENIBLE', 'El Programa de Capacitación Virtual en Ganadería Sostenible está diseñado para acompañar a productores ganaderos de Guatemala mediante un sistema sencillo, progresivo y accesible desde WhatsApp. La estructura combina contenidos técnicos, videos cortos, lecturas, preguntas de confirmación, tests digitales, actividades aplicadas en finca y asistencia técnica cuando el productor presenta una necesidad concreta.', 'uploads/cursos/3/imagen.jpg', '2026-08-21 17:35:15', '2026-08-21 17:35:15');
 
 -- --------------------------------------------------------
 
@@ -94,16 +120,20 @@ CREATE TABLE `lecciones` (
   `curso_id` int(10) UNSIGNED NOT NULL,
   `orden` smallint(5) UNSIGNED NOT NULL,
   `titulo` varchar(150) NOT NULL,
-  `contenido` text NOT NULL
+  `contenido` text NOT NULL,
+  `video_path` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `lecciones`
 --
 
-INSERT INTO `lecciones` (`id`, `curso_id`, `orden`, `titulo`, `contenido`) VALUES
-(1, 1, 0, 'Leccion 1', 'Prueba para saber si la leccion 1 funciona'),
-(2, 1, 1, 'Leccion 2', 'Prueba para saber si la leccion 2 carga correctamente');
+INSERT INTO `lecciones` (`id`, `curso_id`, `orden`, `titulo`, `contenido`, `video_path`) VALUES
+(1, 1, 0, 'Leccion 1', 'Prueba para saber si la leccion 1 funciona', NULL),
+(2, 1, 1, 'Leccion 2', 'Prueba para saber si la leccion 2 carga correctamente', NULL),
+(3, 2, 0, 'lección 1 prueba', 'ndmzm', 'uploads/cursos/2/lecciones/3/video.mp4'),
+(4, 3, 0, 'Fundamentos de la ganadería sostenible', 'Reconocer la importancia de la ganadería en Guatemala y comprender por qué es necesario transitar hacia sistemas más productivos, resilientes y responsables con el ambiente.\n\nContenidos\n• Importancia económica, social y alimentaria de la ganadería bovina.\n• Diferencias generales entre sistemas de carne, leche y doble propósito.\n• Concepto de buena práctica ganadera.\n• Relación entre productividad, bienestar animal y sostenibilidad.\n• Principales desafíos de la ganadería tradicional.', 'uploads/cursos/3/lecciones/4/video.mp4'),
+(5, 3, 1, 'Sostenibilidad, clima y uso responsable de recursos', 'Comprender la sostenibilidad como equilibrio entre productividad, rentabilidad, bienestar animal y conservación de los recursos naturales.\n\nContenidos\n• Concepto de sostenibilidad.\n• Impactos de la ganadería sobre suelo, agua, bosque y clima.\n• Resiliencia ante sequías y exceso de lluvias.\n• Reducción de emisiones y uso eficiente de recursos.\n• Responsabilidad productiva y ambiental.', 'uploads/cursos/3/lecciones/5/video.mp4');
 
 -- --------------------------------------------------------
 
@@ -466,6 +496,60 @@ INSERT INTO `municipios` (`id`, `departamento_id`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `progreso_cursos`
+--
+
+CREATE TABLE `progreso_cursos` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `nota` int(10) UNSIGNED DEFAULT NULL,
+  `aprobado` tinyint(1) NOT NULL DEFAULT 0,
+  `fecha_aprobado` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `progreso_cursos`
+--
+
+INSERT INTO `progreso_cursos` (`id`, `usuario_id`, `curso_id`, `nota`, `aprobado`, `fecha_aprobado`, `updated_at`) VALUES
+(1, 3, 2, 1, 1, '2026-08-20 18:09:42', '2026-08-20 18:09:42'),
+(2, 5, 3, 0, 0, NULL, '2026-08-21 17:53:25');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `progreso_lecciones`
+--
+
+CREATE TABLE `progreso_lecciones` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usuario_id` int(10) UNSIGNED NOT NULL,
+  `leccion_id` int(10) UNSIGNED NOT NULL,
+  `completada` tinyint(1) NOT NULL DEFAULT 0,
+  `nota` int(11) DEFAULT NULL,
+  `segundos_video` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `progreso_lecciones`
+--
+
+INSERT INTO `progreso_lecciones` (`id`, `usuario_id`, `leccion_id`, `completada`, `nota`, `segundos_video`, `updated_at`) VALUES
+(1, 3, 1, 1, NULL, 0, '2026-08-12 13:10:08'),
+(2, 3, 3, 1, NULL, 0, '2026-08-20 18:09:50'),
+(9, 3, 5, 1, NULL, 0, '2026-08-21 17:35:54'),
+(10, 3, 4, 0, NULL, 0, '2026-08-21 17:35:44'),
+(17, 5, 4, 1, NULL, 0, '2026-08-21 17:52:32'),
+(21, 5, 5, 1, NULL, 0, '2026-08-21 17:52:54'),
+(37, 2, 4, 1, NULL, 0, '2026-08-25 17:28:47'),
+(38, 2, 5, 1, NULL, 0, '2026-08-25 17:28:48');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `quiz_opciones`
 --
 
@@ -477,16 +561,6 @@ CREATE TABLE `quiz_opciones` (
   `es_correcta` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Volcado de datos para la tabla `quiz_opciones`
---
-
-INSERT INTO `quiz_opciones` (`id`, `pregunta_id`, `orden`, `texto`, `es_correcta`) VALUES
-(1, 1, 0, 'Opcion 1', 0),
-(2, 1, 1, 'Opcion 2', 0),
-(3, 1, 2, 'Opcion 3', 1),
-(4, 1, 3, 'Opcion 4', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -495,17 +569,10 @@ INSERT INTO `quiz_opciones` (`id`, `pregunta_id`, `orden`, `texto`, `es_correcta
 
 CREATE TABLE `quiz_preguntas` (
   `id` int(10) UNSIGNED NOT NULL,
-  `curso_id` int(10) UNSIGNED NOT NULL,
+  `leccion_id` int(10) UNSIGNED NOT NULL,
   `orden` smallint(5) UNSIGNED NOT NULL,
   `pregunta` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `quiz_preguntas`
---
-
-INSERT INTO `quiz_preguntas` (`id`, `curso_id`, `orden`, `pregunta`) VALUES
-(1, 1, 0, 'Preugnta 1');
 
 -- --------------------------------------------------------
 
@@ -526,6 +593,50 @@ INSERT INTO `roles` (`id`, `nombre`) VALUES
 (1, 'Administrador'),
 (2, 'Supervisor'),
 (3, 'Usuario');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `rutas_aprendizaje`
+--
+
+CREATE TABLE `rutas_aprendizaje` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `icono` varchar(10) NOT NULL,
+  `titulo` varchar(150) NOT NULL,
+  `descripcion` text NOT NULL,
+  `color` enum('esmeralda','verde','azul','oro') NOT NULL DEFAULT 'esmeralda',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `rutas_aprendizaje`
+--
+
+INSERT INTO `rutas_aprendizaje` (`id`, `icono`, `titulo`, `descripcion`, `color`, `created_at`, `updated_at`) VALUES
+(1, '🌱', 'Prueba 1', 'Prueba 1 para saber si se organiza todo correctamente y si se asigan únicamente los cursos que seleccione', 'azul', '2026-08-24 17:22:32', '2026-08-24 17:35:06');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `ruta_cursos`
+--
+
+CREATE TABLE `ruta_cursos` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `ruta_id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `orden` smallint(5) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `ruta_cursos`
+--
+
+INSERT INTO `ruta_cursos` (`id`, `ruta_id`, `curso_id`, `orden`) VALUES
+(5, 1, 3, 0),
+(6, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -553,11 +664,21 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `nombre_completo`, `usuario`, `password_hash`, `telefono`, `departamento_id`, `municipio_id`, `rol_id`, `activo`, `created_at`, `updated_at`) VALUES
 (2, 'Administrador', 'admin', '$2y$10$kJGSPv.l3jNcnsIZTzOMNO.H7CACg4D1N241uKYrMMm63NP33zeYK', '32927237', 7, 79, 3, 1, '2026-08-10 13:42:59', '2026-08-10 13:42:59'),
-(3, 'Administrador 1', 'admin1', '$2y$10$x5.RxfDH6pItx4k09RvTu.e0SSHz8n8iWRJIRJ2ucfZNZkoEy7jcq', '78942563', 7, 79, 1, 1, '2026-08-10 14:45:49', '2026-08-10 14:45:49');
+(3, 'Administrador 1', 'admin1', '$2y$10$x5.RxfDH6pItx4k09RvTu.e0SSHz8n8iWRJIRJ2ucfZNZkoEy7jcq', '78942563', 7, 79, 1, 1, '2026-08-10 14:45:49', '2026-08-10 14:45:49'),
+(4, 'pedro lo', 'plopez', '$2y$10$ck8l6DPSn.GT5l2OuPMqqO3DPycwy6HQrwDHElda1azDgZ6/JgCmi', '35768861', 7, 79, 3, 1, '2026-08-21 00:41:20', '2026-08-21 00:41:20'),
+(5, 'Hernan sarmiento', 'hsarmiento', '$2y$10$KJuQxEB2q8VezXlsKqa6E.pgqPoedrTG0FrLhoIQbTPdM/gKumEai', '30296907', 7, 79, 3, 1, '2026-08-21 17:45:15', '2026-08-21 17:45:15');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `consultas_tecnicas`
+--
+ALTER TABLE `consultas_tecnicas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_consultas_usuario` (`usuario_id`),
+  ADD KEY `idx_consultas_estado` (`estado`);
 
 --
 -- Indices de la tabla `cursos`
@@ -588,6 +709,22 @@ ALTER TABLE `municipios`
   ADD KEY `idx_municipios_departamento` (`departamento_id`);
 
 --
+-- Indices de la tabla `progreso_cursos`
+--
+ALTER TABLE `progreso_cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_progreso_curso` (`usuario_id`,`curso_id`),
+  ADD KEY `idx_progreso_cursos_curso` (`curso_id`);
+
+--
+-- Indices de la tabla `progreso_lecciones`
+--
+ALTER TABLE `progreso_lecciones`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_progreso_leccion` (`usuario_id`,`leccion_id`),
+  ADD KEY `idx_progreso_lecciones_leccion` (`leccion_id`);
+
+--
 -- Indices de la tabla `quiz_opciones`
 --
 ALTER TABLE `quiz_opciones`
@@ -599,7 +736,7 @@ ALTER TABLE `quiz_opciones`
 --
 ALTER TABLE `quiz_preguntas`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_quiz_preguntas_curso` (`curso_id`);
+  ADD KEY `idx_quiz_preguntas_leccion` (`leccion_id`);
 
 --
 -- Indices de la tabla `roles`
@@ -607,6 +744,20 @@ ALTER TABLE `quiz_preguntas`
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_roles_nombre` (`nombre`);
+
+--
+-- Indices de la tabla `rutas_aprendizaje`
+--
+ALTER TABLE `rutas_aprendizaje`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `ruta_cursos`
+--
+ALTER TABLE `ruta_cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_ruta_curso` (`ruta_id`,`curso_id`),
+  ADD KEY `idx_ruta_cursos_curso` (`curso_id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -624,10 +775,16 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `consultas_tecnicas`
+--
+ALTER TABLE `consultas_tecnicas`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `cursos`
 --
 ALTER TABLE `cursos`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `departamentos`
@@ -639,7 +796,7 @@ ALTER TABLE `departamentos`
 -- AUTO_INCREMENT de la tabla `lecciones`
 --
 ALTER TABLE `lecciones`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `municipios`
@@ -648,16 +805,28 @@ ALTER TABLE `municipios`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=341;
 
 --
+-- AUTO_INCREMENT de la tabla `progreso_cursos`
+--
+ALTER TABLE `progreso_cursos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `progreso_lecciones`
+--
+ALTER TABLE `progreso_lecciones`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+
+--
 -- AUTO_INCREMENT de la tabla `quiz_opciones`
 --
 ALTER TABLE `quiz_opciones`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `quiz_preguntas`
 --
 ALTER TABLE `quiz_preguntas`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -666,14 +835,32 @@ ALTER TABLE `roles`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `rutas_aprendizaje`
+--
+ALTER TABLE `rutas_aprendizaje`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `ruta_cursos`
+--
+ALTER TABLE `ruta_cursos`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `consultas_tecnicas`
+--
+ALTER TABLE `consultas_tecnicas`
+  ADD CONSTRAINT `fk_consultas_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `lecciones`
@@ -688,6 +875,20 @@ ALTER TABLE `municipios`
   ADD CONSTRAINT `fk_municipios_departamento` FOREIGN KEY (`departamento_id`) REFERENCES `departamentos` (`id`) ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `progreso_cursos`
+--
+ALTER TABLE `progreso_cursos`
+  ADD CONSTRAINT `fk_progreso_curso_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_progreso_curso_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `progreso_lecciones`
+--
+ALTER TABLE `progreso_lecciones`
+  ADD CONSTRAINT `fk_progreso_leccion_leccion` FOREIGN KEY (`leccion_id`) REFERENCES `lecciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_progreso_leccion_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `quiz_opciones`
 --
 ALTER TABLE `quiz_opciones`
@@ -697,7 +898,14 @@ ALTER TABLE `quiz_opciones`
 -- Filtros para la tabla `quiz_preguntas`
 --
 ALTER TABLE `quiz_preguntas`
-  ADD CONSTRAINT `fk_quiz_preguntas_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_quiz_preguntas_leccion` FOREIGN KEY (`leccion_id`) REFERENCES `lecciones` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ruta_cursos`
+--
+ALTER TABLE `ruta_cursos`
+  ADD CONSTRAINT `fk_ruta_cursos_curso` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ruta_cursos_ruta` FOREIGN KEY (`ruta_id`) REFERENCES `rutas_aprendizaje` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuarios`
