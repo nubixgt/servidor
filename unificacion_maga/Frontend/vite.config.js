@@ -23,13 +23,13 @@ export default defineConfig({
                 icons: [
                     {
                         src: 'logo-maga.png',
-                        sizes: '192x192',
+                        sizes: 'any',
                         type: 'image/png',
                         purpose: 'any'
                     },
                     {
                         src: 'logo-maga.png',
-                        sizes: '512x512',
+                        sizes: 'any',
                         type: 'image/png',
                         purpose: 'maskable'
                     }
