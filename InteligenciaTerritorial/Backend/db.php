@@ -4,12 +4,13 @@ $dbname = 'inteligencia_territorial'; // Local testing DB name
 $username = 'root';
 $password = '';
 
-// Si estamos en el servidor cPanel, cambiar las credenciales
-if (file_exists('/home/visionwe/config.php')) {
-    require_once('/home/visionwe/config.php');
+$httpHost = $_SERVER['HTTP_HOST'] ?? '';
+
+// Si estamos en el servidor cPanel (producción), cambiar las credenciales
+if (strpos($httpHost, 'm.nubix.gt') !== false) {
     $dbname = 'visionwe_InteligenciaTerritorial'; 
-    $username = 'visionwe_dbuser'; // Asegúrate de que el usuario de cPanel tenga permisos sobre esta DB
-    $password = 'Guate25#'; // Cambiar si es necesario
+    $username = 'visionwe_InteligenciaTerritorial'; // Asumiendo que usarán el mismo nombre para DB y usuario, o puedes cambiarlo
+    $password = 'Guate25#'; // Asegúrate de asignar esta contraseña al usuario en cPanel
 }
 
 try {
