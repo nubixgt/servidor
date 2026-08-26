@@ -107,6 +107,24 @@
           <div class="ic-party" v-if="store.selectedMuni.partido_alcalde">{{ store.selectedMuni.partido_alcalde }}</div>
         </div>
 
+        <div v-if="selectedMuniDeptData" style="margin-top:20px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Del Departamento</div>
+          
+          <div v-if="selectedMuniDeptData.diputado_asignado" class="info-card">
+            <div class="ic-label"><i class="fas fa-user-shield"></i> Diputados Asignados</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+              <div v-for="(dip, idx) in selectedMuniDeptData.diputado_asignado.split('|').filter(x=>x.trim())" :key="idx" style="font-size: 13px; font-weight:600; padding-left: 8px; border-left: 2px solid var(--blue);">
+                {{ dip }}
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="selectedMuniDeptData.gpc" class="info-card">
+            <div class="ic-label"><i class="fas fa-users-cog"></i> GPC</div>
+            <div class="ic-value">{{ selectedMuniDeptData.gpc }}</div>
+          </div>
+        </div>
+
         <div class="divider"></div>
         <button class="map-btn back-btn" style="width:100%;justify-content:center;padding:10px;" @click="store.selectMuni(null)">
           <i class="fas fa-arrow-left"></i> Volver al departamento
@@ -138,6 +156,11 @@ const formData = reactive({
 const currentDeptData = computed(() => {
   if (!store.selectedDept) return null;
   return store.departamentos.find(d => norm(d.departamento) === norm(store.selectedDept));
+});
+
+const selectedMuniDeptData = computed(() => {
+  if (!store.selectedMuni) return null;
+  return store.departamentos.find(d => norm(d.departamento) === norm(store.selectedMuni.departamento));
 });
 
 const deptMunis = computed(() => {
