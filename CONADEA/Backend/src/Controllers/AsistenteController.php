@@ -71,6 +71,101 @@ class AsistenteController extends Controller
         }
     }
 
+    #[Route('/asistente/cursos', 'GET')]
+    public function cursos()
+    {
+        ApiKeyGuard::check();
+        $service = new AsistenteService();
+        $this->json(['status' => 'success', 'data' => $service->cursosDisponibles()]);
+    }
+
+    #[Route('/asistente/horarios', 'GET')]
+    public function horarios()
+    {
+        ApiKeyGuard::check();
+        $service = new AsistenteService();
+        $usuario = $this->resolverUsuarioDesdeTelefono($service, $_GET['telefono'] ?? '');
+
+        $this->json(['status' => 'success', 'data' => $service->horariosDeUsuario($usuario)]);
+    }
+
+    // body: telefono, curso_id, dias ("L,M,X,V"), hora ("07:00"), duracion_minutos
+    #[Route('/asistente/horarios', 'POST')]
+    public function guardarHorario()
+    {
+        ApiKeyGuard::check();
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+        $service = new AsistenteService();
+        $usuario = $this->resolverUsuarioDesdeTelefono($service, $body['telefono'] ?? '');
+
+        try {
+            $service->guardarHorario(
+                $usuario,
+                (int) ($body['curso_id'] ?? 0),
+                (string) ($body['dias'] ?? ''),
+                (string) ($body['hora'] ?? ''),
+                (int) ($body['duracion_minutos'] ?? 15)
+            );
+            $this->json(['status' => 'success']);
+        } catch (\Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+        }
+    }
+
+    // body: telefono, curso_id, minutos
+    #[Route('/asistente/horarios/posponer', 'POST')]
+    public function posponerHorario()
+    {
+        ApiKeyGuard::check();
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+        $service = new AsistenteService();
+        $usuario = $this->resolverUsuarioDesdeTelefono($service, $body['telefono'] ?? '');
+
+        $ok = $service->posponerHorario($usuario, (int) ($body['curso_id'] ?? 0), (int) ($body['minutos'] ?? 30));
+        if (!$ok) {
+            $this->json(['status' => 'error', 'message' => 'No hay un horario configurado para ese curso'], 404);
+        }
+        $this->json(['status' => 'success']);
+    }
+
+    // body: telefono, curso_id, activo (true|false)
+    #[Route('/asistente/horarios/activo', 'POST')]
+    public function actualizarActivoHorario()
+    {
+        ApiKeyGuard::check();
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+        $service = new AsistenteService();
+        $usuario = $this->resolverUsuarioDesdeTelefono($service, $body['telefono'] ?? '');
+
+        $ok = $service->actualizarActivoHorario($usuario, (int) ($body['curso_id'] ?? 0), (bool) ($body['activo'] ?? true));
+        if (!$ok) {
+            $this->json(['status' => 'error', 'message' => 'No hay un horario configurado para ese curso'], 404);
+        }
+        $this->json(['status' => 'success']);
+    }
+
+    // Sin telefono: es whatsapp-bot preguntando qué le toca notificar a todo el mundo en este minuto.
+    #[Route('/asistente/horarios/debidos', 'GET')]
+    public function horariosDebidos()
+    {
+        ApiKeyGuard::check();
+        $service = new AsistenteService();
+        $this->json(['status' => 'success', 'data' => $service->horariosDebidos()]);
+    }
+
+    // body: telefono, curso_id
+    #[Route('/asistente/horarios/marcar-notificado', 'POST')]
+    public function marcarHorarioNotificado()
+    {
+        ApiKeyGuard::check();
+        $body = json_decode(file_get_contents('php://input'), true) ?? [];
+        $service = new AsistenteService();
+        $usuario = $this->resolverUsuarioDesdeTelefono($service, $body['telefono'] ?? '');
+
+        $service->marcarHorarioNotificado($usuario, (int) ($body['curso_id'] ?? 0));
+        $this->json(['status' => 'success']);
+    }
+
     private function resolverUsuarioDesdeTelefono(AsistenteService $service, string $telefono)
     {
         $usuario = $telefono !== '' ? $service->resolverUsuarioPorTelefono($telefono) : null;

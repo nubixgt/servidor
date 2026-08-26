@@ -3,10 +3,14 @@ namespace App\Services;
 
 use App\Repositories\AsistenteRepository;
 use App\Repositories\UsuarioRepository;
+use App\Repositories\HorarioRepository;
 use App\Entities\Usuario;
 
 class AsistenteService
 {
+    // Iniciales de día válidas en `horarios_curso.dias` (ver Database/011_horarios_curso.sql).
+    private const DIAS_VALIDOS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
     private const ARCHIVO_TAMANO_MAXIMO_BYTES = 15 * 1024 * 1024; // 15 MB
 
     private const IMAGEN_EXTENSIONES_PERMITIDAS = [
@@ -26,11 +30,13 @@ class AsistenteService
 
     private $asistenteRepository;
     private $usuarioRepository;
+    private $horarioRepository;
 
     public function __construct()
     {
         $this->asistenteRepository = new AsistenteRepository();
         $this->usuarioRepository = new UsuarioRepository();
+        $this->horarioRepository = new HorarioRepository();
     }
 
     /**
@@ -122,6 +128,64 @@ class AsistenteService
                     : 0,
             ],
         ];
+    }
+
+    public function cursosDisponibles(): array
+    {
+        return $this->horarioRepository->cursosDisponibles();
+    }
+
+    public function horariosDeUsuario(Usuario $usuario): array
+    {
+        return $this->horarioRepository->obtenerPorUsuario($usuario->id);
+    }
+
+    /** @param string $dias ej. "L,M,X,V" — se valida contra DIAS_VALIDOS */
+    public function guardarHorario(Usuario $usuario, int $cursoId, string $dias, string $hora, int $duracionMinutos): void
+    {
+        $diasNormalizados = $this->normalizarDias($dias);
+        if ($diasNormalizados === '') {
+            throw new \Exception('Los días deben ser una combinación de L, M, X, J, V, S, D.');
+        }
+        if (!preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $hora)) {
+            throw new \Exception('La hora debe tener formato HH:MM (24 horas).');
+        }
+        if ($duracionMinutos < 5 || $duracionMinutos > 180) {
+            throw new \Exception('La duración debe estar entre 5 y 180 minutos.');
+        }
+
+        $this->horarioRepository->guardar($usuario->id, $cursoId, $diasNormalizados, $hora . ':00', $duracionMinutos);
+    }
+
+    public function posponerHorario(Usuario $usuario, int $cursoId, int $minutos): bool
+    {
+        return $this->horarioRepository->posponer($usuario->id, $cursoId, $minutos);
+    }
+
+    public function actualizarActivoHorario(Usuario $usuario, int $cursoId, bool $activo): bool
+    {
+        return $this->horarioRepository->actualizarActivo($usuario->id, $cursoId, $activo);
+    }
+
+    /** Usado por whatsapp-bot/lib/recordatorios.js, no depende de un usuario puntual. */
+    public function horariosDebidos(): array
+    {
+        return $this->horarioRepository->obtenerDebidos();
+    }
+
+    public function marcarHorarioNotificado(Usuario $usuario, int $cursoId): void
+    {
+        $this->horarioRepository->marcarNotificado($usuario->id, $cursoId);
+    }
+
+    private function normalizarDias(string $dias): string
+    {
+        $letras = array_unique(array_filter(array_map(
+            fn($d) => strtoupper(trim($d)),
+            preg_split('/[,\s]+/', $dias)
+        )));
+        $validas = array_values(array_intersect($letras, self::DIAS_VALIDOS));
+        return implode(',', $validas);
     }
 
     public function registrarConsultaTexto(Usuario $usuario, string $mensaje): array

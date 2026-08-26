@@ -2,15 +2,12 @@
 
 Servicio Node.js que atiende el botón "Asistente AgroIA" de la app CONADEA por WhatsApp. Usa `@whiskeysockets/baileys`, una librería no oficial que emula WhatsApp Web — no requiere la API oficial de Meta, pero corre bajo el riesgo de que el número usado sea bloqueado por WhatsApp si se abusa del envío (por eso el bot aplica un límite básico de mensajes por chat).
 
-A diferencia de un bot que solo envía plantillas, este **recibe** los mensajes del usuario y conduce una conversación con menú:
+A diferencia de un bot que solo envía plantillas, este **recibe** los mensajes del usuario y conduce una conversación guiada por texto (WhatsApp bloquea los botones/listas interactivas para cuentas normales no verificadas como Business, así que el menú es 100% texto — ver `lib/menu.js` y `lib/messageHandler.js`):
 
-```
-1) Mis cursos              -> Backend GET /asistente/progreso
-2) Mi progreso general     -> Backend GET /asistente/progreso
-3) Consulta técnica        -> foto/audio/ubicación -> Backend POST /asistente/consultas
-4) Hablar con soporte      -> texto estático (config.js)
-0) Salir
-```
+- Si el número no está registrado, manda el link de la web (`/login`, con las pestañas de iniciar sesión y registrarse) para crear la cuenta con ese mismo número.
+- Si está registrado, el usuario escribe `horario` para configurar a qué curso, qué días, a qué hora y cuántos minutos quiere estudiar (`horarios_curso` en la base de datos, vía `Backend/src/Controllers/AsistenteController.php`).
+- `lib/recordatorios.js` revisa cada minuto (desde que la conexión abre) si a alguien le toca su aviso 10 minutos antes de la hora configurada, y lo manda por WhatsApp.
+- Comandos libres reconocidos en cualquier momento: `horario`/`cambiar` (reconfigurar), `más tarde` (pospone 30 min), `pausar avisos` / `reanudar avisos`, `continuar mi curso` (reenvía el link), `ayuda` (soporte), `0`/`salir` (reinicia la conversación).
 
 El usuario se identifica automáticamente por el número desde el que escribe (`usuarios.telefono` en la base de datos es único) — no hace falta ningún código ni token.
 
@@ -53,6 +50,6 @@ El usuario se identifica automáticamente por el número desde el que escribe (`
 
 ## Limitaciones conocidas (v1)
 
-- El estado de la conversación vive en memoria: si el proceso se reinicia, cualquier chat a medio menú vuelve a empezar en el siguiente mensaje que mande el usuario (no pierde nada grave, solo tiene que volver a elegir la opción).
-- La opción "Consulta técnica" no analiza la foto/audio con IA todavía: solo la guarda para que un técnico la revise (`consultas_tecnicas` en la base de datos).
-- Certificados, insignias, calendario y foros no están en el menú porque esas secciones de la app aún no tienen datos reales en el Backend.
+- El estado de la conversación vive en memoria: si el proceso se reinicia, cualquier chat a medio wizard de horario vuelve a empezar en el siguiente mensaje que mande el usuario (no pierde nada grave, solo tiene que volver a escribir *horario*).
+- "Consulta técnica" (foto/audio/ubicación a un técnico) y el progreso de cursos se retiraron del flujo del bot por ahora — el código de `AsistenteService`/`AsistenteRepository` para eso sigue intacto en el Backend, solo no se llama desde aquí.
+- El recordatorio revisa cada 60s (`lib/recordatorios.js`); no hay cron de sistema, así que si el proceso de Node está caído justo en el minuto exacto del aviso, ese aviso se pierde (no se reintenta después).

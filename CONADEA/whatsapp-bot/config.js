@@ -10,6 +10,12 @@ module.exports = {
     // (ej. /asistente/usuario), no la ruta física del archivo PHP.
     backendBaseUrl: 'https://m.nubix.gt/CONADEA/Backend',
 
+    // Web (Vue) de CONADEA — el .htaccess raíz sirve Frontend/dist bajo esta
+    // misma base ("base: '/CONADEA/'" en vite.config.js), no bajo /Frontend.
+    // /login tiene las dos pestañas (iniciar sesión y registrarse) en una
+    // sola vista, así que un solo link sirve para ambos casos.
+    frontendBaseUrl: 'https://m.nubix.gt/CONADEA',
+
     soporte: {
         texto: '🆘 Puedes hablar con soporte MAGA AgroIA al +502 0000-0000, de lunes a viernes de 8:00 a 16:00.\n\nTambién puedes escribir tu duda aquí mismo y te ayudamos apenas podamos.'
     },

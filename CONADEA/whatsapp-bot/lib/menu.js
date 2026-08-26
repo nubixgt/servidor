@@ -1,70 +1,121 @@
 const config = require('../config');
 
+// Letra -> nombre de día, para mostrarle al usuario (horarios_curso.dias
+// guarda solo las letras, ver Database/011_horarios_curso.sql).
+const NOMBRES_DIA = { L: 'lunes', M: 'martes', X: 'miércoles', J: 'jueves', V: 'viernes', S: 'sábado', D: 'domingo' };
+
 function primerNombre(nombreCompleto) {
     return (nombreCompleto || '').trim().split(/\s+/)[0] || 'ahí';
 }
 
-function textoBienvenida(nombreCompleto) {
-    return `Hola ${primerNombre(nombreCompleto)}. Soy tu AgroIA 🌱\n¿Cómo te gustaría que te apoye hoy?`;
+function diasLegibles(dias) {
+    return dias
+        .split(',')
+        .map((d) => NOMBRES_DIA[d] || d)
+        .join(', ');
 }
 
-function textoMenu() {
-    return (
-        '1️⃣ Mis cursos\n' +
-        '2️⃣ Mi progreso general\n' +
-        '3️⃣ Consulta técnica (cultivo/hato)\n' +
-        '4️⃣ Hablar con soporte\n\n' +
-        'Responde con el número de la opción (o *0* para salir).'
-    );
+// El horario armado en el wizard llega como "HH:MM", pero el que viene de la
+// base de datos (SELECT sobre una columna TIME) trae segundos ("HH:MM:SS").
+function horaLegible(hora) {
+    return hora.slice(0, 5);
+}
+
+function urlLogin() {
+    return `${config.frontendBaseUrl}/login`;
+}
+
+function urlCurso(cursoId) {
+    return `${config.frontendBaseUrl}/curso/${cursoId}`;
 }
 
 function textoNoRegistrado() {
     return (
         '🌱 No encontré una cuenta de CONADEA registrada con este número.\n\n' +
-        'Descarga la app CONADEA y regístrate usando este mismo número de WhatsApp para poder ayudarte por aquí.'
+        `Crea tu cuenta o inicia sesión aquí, usando este mismo número de WhatsApp: ${urlLogin()}\n\n` +
+        'Cuando termines, escríbeme de nuevo por aquí para configurar tu horario de estudio.'
     );
 }
 
-function textoCursos(nombreCompleto, progreso) {
+function textoBienvenida(nombreCompleto) {
+    return `Hola ${primerNombre(nombreCompleto)}. Soy tu AgroIA 🌱`;
+}
+
+function textoListaCursos(cursos) {
+    const lineas = cursos.map((c, i) => `${i + 1}) ${c.titulo}`).join('\n');
+    return (
+        '¿Para qué curso quieres configurar tu horario de estudio?\n\n' +
+        `${lineas}\n\n` +
+        'Responde con el *número* del curso.'
+    );
+}
+
+function textoPreguntaMinutos(cursoTitulo) {
+    return `Perfecto, *${cursoTitulo}*. ¿Cuántos minutos al día quieres dedicarle? (te recomendamos *15*)`;
+}
+
+function textoPreguntaHora() {
+    return '¿A qué hora te gustaría estudiar? Escríbela así: *7:00 am* o *19:00*.';
+}
+
+function textoPreguntaDias() {
+    return (
+        '¿Qué días? Escribe las iniciales separadas por coma:\n' +
+        'L=lunes, M=martes, X=miércoles, J=jueves, V=viernes, S=sábado, D=domingo\n\n' +
+        'Ejemplo: *L,M,X,J,V*  (o escribe *todos* para los 7 días)'
+    );
+}
+
+function textoResumenHorario({ cursoTitulo, dias, hora, duracionMinutos }) {
+    return (
+        `✅ Listo, así quedó tu rutina para *${cursoTitulo}*:\n\n` +
+        `🕐 Hora: ${hora}\n` +
+        `📅 Días: ${diasLegibles(dias)}\n` +
+        `⏱️ Duración: ${duracionMinutos} minutos\n\n` +
+        `Te voy a avisar por aquí 10 minutos antes de cada sesión. Escribe *horario* cuando quieras cambiar esto, o *ayuda* si necesitas soporte.`
+    );
+}
+
+function textoEstadoYComandos(nombreCompleto, horarios) {
     const nombre = primerNombre(nombreCompleto);
-    if (!progreso.cursos.length) {
-        return `${nombre}, todavía no tienes cursos disponibles. Revisa la app en un rato 🌱`;
+    if (!horarios.length) {
+        return `${nombre}, todavía no tienes un horario de estudio configurado. Escribe *horario* para armarlo. 🌱`;
     }
-    const etiquetas = { aprobado: '✅ Aprobado', en_progreso: '🟡 En progreso', pendiente: '⚪ Sin empezar' };
-    const lineas = progreso.cursos.map((c) => {
-        let linea = `*${c.titulo}* — ${etiquetas[c.estado]} (${c.porcentaje}%)`;
-        if (c.estado === 'en_progreso' && c.proxima_leccion) {
-            linea += `\n   ↳ Siguiente: ${c.proxima_leccion}`;
-        }
-        return linea;
-    });
-    return `${nombre}, los cursos que tienes son:\n\n` + lineas.join('\n\n');
-}
 
-function textoResumen(nombreCompleto, progreso) {
-    const nombre = primerNombre(nombreCompleto);
-    const r = progreso.resumen;
+    const lineas = horarios.map(
+        (h) => `• *${h.curso_titulo}* — ${horaLegible(h.hora)} (${diasLegibles(h.dias)}), ${h.activo ? 'activo' : 'pausado'}`
+    );
+
     return (
-        `${nombre}, así va tu progreso:\n\n` +
-        `Avance general: ${r.porcentaje_general}%\n` +
-        `✅ Aprobados: ${r.aprobados}\n` +
-        `🟡 En progreso: ${r.en_progreso}\n` +
-        `⚪ Sin empezar: ${r.pendientes}`
+        `${nombre}, este es tu horario de estudio:\n\n${lineas.join('\n')}\n\n` +
+        'Puedes escribirme:\n' +
+        '• *horario* — para configurar otro curso o cambiar la hora\n' +
+        '• *pausar avisos* / *reanudar avisos*\n' +
+        '• *ayuda* — para hablar con soporte'
     );
 }
 
-function textoPideAdjunto(nombreCompleto) {
-    const nombre = primerNombre(nombreCompleto);
+function textoRecordatorio({ cursoTitulo, hora, duracionMinutos, cursoId }) {
     return (
-        `Cuéntame qué está pasando con tu cultivo o tu hato, ${nombre} 🌱\n\n` +
-        'Envíame una *foto*, una *nota de voz* o tu *ubicación*, y si quieres agrega un mensaje explicando el problema. ' +
-        'Un técnico lo va a revisar y te responderá pronto.'
+        `⏰ Hola, en 10 minutos (${horaLegible(hora)}) toca tu sesión de *${cursoTitulo}* (${duracionMinutos} min).\n\n` +
+        `Abre tu curso aquí: ${urlCurso(cursoId)}\n\n` +
+        'También puedes responderme:\n' +
+        '• *más tarde* — te aviso de nuevo en 30 minutos\n' +
+        '• *cambiar hora* — para actualizar tu horario\n' +
+        '• *pausar avisos* — si no quieres más recordatorios de este curso'
     );
 }
 
-function textoConsultaRecibida(nombreCompleto) {
-    const nombre = primerNombre(nombreCompleto);
-    return `¡Recibido, ${nombre}! ✅ Un técnico revisará tu consulta y te responderá pronto por este mismo medio.`;
+function textoPospuesto(minutos) {
+    return `Listo, te vuelvo a avisar en ${minutos} minutos. 🌱`;
+}
+
+function textoPausado(cursoTitulo) {
+    return `Avisos pausados para *${cursoTitulo}*. Escribe *reanudar avisos* cuando quieras que te vuelva a recordar.`;
+}
+
+function textoReanudado(cursoTitulo) {
+    return `Avisos reanudados para *${cursoTitulo}*. 🌱`;
 }
 
 function textoSoporte(nombreCompleto) {
@@ -72,9 +123,24 @@ function textoSoporte(nombreCompleto) {
     return `${nombre}, así puedes contactar a soporte:\n\n${config.soporte.texto}`;
 }
 
-function textoOpcionInvalida(nombreCompleto) {
-    const nombre = primerNombre(nombreCompleto);
-    return `No entendí esa opción, ${nombre} 🤔`;
+function textoCursoInvalido() {
+    return 'Ese número no corresponde a ningún curso de la lista. Intenta de nuevo.';
+}
+
+function textoMinutosInvalidos() {
+    return 'Escribe solo el número de minutos, entre 5 y 180. Ejemplo: *15*';
+}
+
+function textoHoraInvalida() {
+    return 'No entendí esa hora. Escríbela así: *7:00 am* o *19:00*.';
+}
+
+function textoDiasInvalidos() {
+    return 'No reconocí esos días. Usa las iniciales L,M,X,J,V,S,D separadas por coma, o escribe *todos*. Ejemplo: *L,M,X,J,V*';
+}
+
+function textoSinHorarioParaComando() {
+    return 'No encontré un horario configurado todavía. Escribe *horario* para crear uno.';
 }
 
 function textoDespedida(nombreCompleto) {
@@ -88,15 +154,25 @@ function textoErrorGenerico() {
 
 module.exports = {
     primerNombre,
-    textoBienvenida,
-    textoMenu,
     textoNoRegistrado,
-    textoCursos,
-    textoResumen,
-    textoPideAdjunto,
-    textoConsultaRecibida,
+    textoBienvenida,
+    textoListaCursos,
+    textoPreguntaMinutos,
+    textoPreguntaHora,
+    textoPreguntaDias,
+    textoResumenHorario,
+    textoEstadoYComandos,
+    textoRecordatorio,
+    textoPospuesto,
+    textoPausado,
+    textoReanudado,
     textoSoporte,
-    textoOpcionInvalida,
+    textoCursoInvalido,
+    textoMinutosInvalidos,
+    textoHoraInvalida,
+    textoDiasInvalidos,
+    textoSinHorarioParaComando,
     textoDespedida,
     textoErrorGenerico,
+    urlCurso,
 };

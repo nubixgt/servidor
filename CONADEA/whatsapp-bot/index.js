@@ -12,6 +12,7 @@ const {
 
 const config = require('./config');
 const { handleIncomingMessage } = require('./lib/messageHandler');
+const recordatorios = require('./lib/recordatorios');
 
 const SESSION_DIR = path.join(__dirname, 'session');
 const logger = pino({ level: 'silent' });
@@ -111,6 +112,7 @@ async function startSocket() {
         if (connection === 'open') {
             isReady = true;
             console.log('WhatsApp conectado. Asistente AgroIA listo para recibir mensajes.');
+            recordatorios.iniciar(sock);
         }
 
         if (connection === 'close') {
