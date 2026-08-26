@@ -1,9 +1,9 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'u991565456_maga_un',
-    'username' => 'u991565456_maga_un',
-    'password' => 'NR4bWu~u7B&o',
+    'dbname' => 'visionwe_unificacion_maga',
+    'username' => 'visionwe',
+    'password' => 'Guate25#',
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
