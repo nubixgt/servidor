@@ -177,6 +177,26 @@ watch(() => store.selectedDept, (newDept) => {
   }
 });
 
+watch(() => store.selectedMuni, (newMuni) => {
+  if (newMuni && muniLayer) {
+    muniLayer.eachLayer(layer => {
+      const fName = layer.feature.properties.Municipio || layer.feature.properties.municipio;
+      if (norm(fName) === norm(newMuni.municipio)) {
+        map.fitBounds(layer.getBounds(), { maxZoom: 12, padding: [40, 40] });
+        muniLayer.resetStyle();
+        layer.setStyle({ fillOpacity: 1, weight: 3, color: 'white' });
+        layer.openTooltip();
+      }
+    });
+  } else if (!newMuni && muniLayer) {
+    muniLayer.resetStyle();
+    map.closeTooltip();
+    if (deptLayer) {
+      map.fitBounds(deptLayer.getBounds(), { padding: [30, 30], maxZoom: 11 });
+    }
+  }
+});
+
 // React to data changes from API
 watch(() => store.departamentos, () => {
   if (store.selectedDept) {

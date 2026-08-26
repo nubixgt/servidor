@@ -36,8 +36,8 @@
         <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em;">Datos del Departamento</div>
 
         <div class="field-group">
-          <div class="field-label"><i class="fas fa-user-shield"></i> Diputado Asignado</div>
-          <input type="text" class="field-input" v-model="formData.diputado_asignado" placeholder="Nombre del diputado…">
+          <div class="field-label"><i class="fas fa-user-shield"></i> Diputados Asignados</div>
+          <textarea class="field-input" v-model="formData.diputado_asignado" rows="2" placeholder="Nombres de los diputados (separados por coma o salto de línea)…"></textarea>
         </div>
 
         <div class="field-group">
