@@ -132,7 +132,10 @@ const handleLogin = async () => {
       }
     }
   } catch (err) {
-    alertaError('No se pudo iniciar sesión', err.response?.data?.error || 'Error de conexión. Intenta de nuevo.')
+    const mensaje = err.response
+      ? 'Usuario o contraseña incorrectos.'
+      : 'Error de conexión. Intenta de nuevo.'
+    alertaError('No se pudo iniciar sesión', mensaje)
   } finally {
     isLoading.value = false
   }
