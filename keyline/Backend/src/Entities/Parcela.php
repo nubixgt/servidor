@@ -20,6 +20,7 @@ class Parcela
         public $latitud = '',
         public $longitud = '',
         public $gpsPrecision = '',
+        public string $poligono = '',
         public $altitud = '',
         // Características generales
         public $areaHa = 0,

@@ -132,6 +132,11 @@
                                     <input v-model="form.gpsPrecision" type="number" min="0" step="1" readonly placeholder="Automático" class="w-full bg-white/5 border border-white/15 rounded-xl p-2 text-xs text-white/70 focus:outline-none" />
                                 </div>
                             </div>
+
+                            <div class="pt-1">
+                                <span class="text-[10px] text-white/60 uppercase font-bold block mb-1.5">Contorno de la parcela (opcional)</span>
+                                <MapaParcela v-model="form.poligono" :focus="focusPoint" @change="onPoligonoChange" />
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -371,6 +376,7 @@ import { parcelaFotoUrl } from '../../services/api';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
 import CustomSelect from '../../components/ui/CustomSelect.vue';
 import MultiSelect from '../../components/ui/MultiSelect.vue';
+import MapaParcela from '../../components/parcelas/MapaParcela.vue';
 import {
     DEPARTAMENTOS, ESTADOS_PROCESO, USOS_ACTUALES, RIESGO_EROSION, TENENCIA_TIERRA,
     MUNICIPIOS_POR_DEPARTAMENTO, BIOINDICADORES_SUELO, CLASES_TEXTURALES,
@@ -445,7 +451,7 @@ function blankForm() {
     return {
         nombreParcela: '', departamento: '', municipio: '', comunidad: '', fechaRegistro: todayISO(),
         propietario: '', telefono: '', tenenciaTierra: '', numFamiliasBeneficiadas: '',
-        latitud: '', longitud: '', altitud: '', gpsPrecision: '', areaHa: '', estado: 'Levantamiento',
+        latitud: '', longitud: '', altitud: '', gpsPrecision: '', poligono: [], areaHa: '', estado: 'Levantamiento',
         usoActual: '', cultivoPrincipal: '', claseTextural: '', claseTexturalOtro: '', pendiente: '',
         fuenteAguaPrincipal: '', fuenteAguaPrincipalOtro: '',
         fuenteAguaSecundaria: [], fuenteAguaSecundariaOtro: '',
@@ -478,6 +484,32 @@ function todayISO() {
     return new Date(now.getTime() - tz * 60000).toISOString().slice(0, 10);
 }
 
+// Contorno de la parcela dibujado en el mapa.
+const focusPoint = computed(() => (
+    form.latitud !== '' && form.longitud !== '' && Number.isFinite(Number(form.latitud))
+        ? [Number(form.latitud), Number(form.longitud)]
+        : null
+));
+
+function safeParsePoligono(str) {
+    try {
+        const arr = JSON.parse(str);
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
+
+function onPoligonoChange({ areaHa, centroid }) {
+    if (areaHa > 0) form.areaHa = Number(areaHa.toFixed(2));
+    // Solo autocompleta las coordenadas si aún no hay un punto capturado a mano/por GPS.
+    if (centroid && form.latitud === '' && form.longitud === '') {
+        form.latitud = Number(centroid[0].toFixed(6));
+        form.longitud = Number(centroid[1].toFixed(6));
+        geoStatus.value = `Ubicación derivada del contorno: ${form.latitud}, ${form.longitud}`;
+    }
+}
+
 onMounted(async () => {
     if (!editingId.value) return;
     loadingParcela.value = true;
@@ -486,15 +518,17 @@ onMounted(async () => {
         const p = data.parcela;
         parcela.value = p;
 
-        // Campos con menú normalizado: se rehidratan aparte (abajo).
-        const MENU_FIELDS = new Set([
-            'claseTextural', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria', 'limitantesUso', 'bioindicadores',
+        // Campos con formato propio (menús normalizados, contorno): se rehidratan aparte (abajo).
+        const CAMPOS_APARTE = new Set([
+            'claseTextural', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria', 'limitantesUso', 'bioindicadores', 'poligono',
         ]);
         Object.keys(form).forEach((key) => {
-            if (!MENU_FIELDS.has(key) && p[key] !== undefined && p[key] !== null) {
+            if (!CAMPOS_APARTE.has(key) && p[key] !== undefined && p[key] !== null) {
                 form[key] = p[key];
             }
         });
+
+        form.poligono = safeParsePoligono(p.poligono);
 
         const ct = deserializeSingle(p.claseTextural, CLASES_TEXTURALES, OTRO);
         form.claseTextural = ct.value;
@@ -628,6 +662,7 @@ async function submit() {
         payload.fuenteAguaSecundaria = serializeMulti(form.fuenteAguaSecundaria, form.fuenteAguaSecundariaOtro);
         payload.limitantesUso = serializeMulti(form.limitantesUso, form.limitantesUsoOtro);
         payload.bioindicadores = serializeMulti(form.bioindicadores, form.bioindicadoresOtro);
+        payload.poligono = JSON.stringify(form.poligono || []);
         ['claseTexturalOtro', 'fuenteAguaPrincipalOtro', 'fuenteAguaSecundariaOtro', 'limitantesUsoOtro', 'bioindicadoresOtro']
             .forEach((k) => delete payload[k]);
 

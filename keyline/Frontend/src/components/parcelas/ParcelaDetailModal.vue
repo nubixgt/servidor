@@ -49,6 +49,12 @@
                     </div>
                 </div>
 
+                <!-- Contorno de la parcela -->
+                <div v-if="poligonoPuntos.length" class="bg-black/30 p-3 rounded-xl border border-white/10">
+                    <span class="text-[10px] uppercase font-bold text-white/60 block mb-2">Contorno de la parcela</span>
+                    <MapaParcela :model-value="poligonoPuntos" readonly height="16rem" />
+                </div>
+
                 <!-- Identificación y responsable -->
                 <div class="bg-black/30 p-5 rounded-xl border border-white/10 space-y-3">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
@@ -163,13 +169,24 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { parcelaFotoUrl } from '../../services/api';
 import { Trees, MapPin, X, User, Compass, Mountain, CalendarClock } from '@lucide/vue';
+import MapaParcela from './MapaParcela.vue';
 
-defineProps({
+const props = defineProps({
     parcela: { type: Object, required: true },
 });
 defineEmits(['close']);
+
+const poligonoPuntos = computed(() => {
+    try {
+        const arr = JSON.parse(props.parcela.poligono || '[]');
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+});
 
 const VALIDACION_BADGE = {
     'Pendiente de revisión': 'bg-[#eab308]/15 border-[#eab308]/30 text-[#eab308]',

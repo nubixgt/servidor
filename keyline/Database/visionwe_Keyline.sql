@@ -58,6 +58,7 @@ CREATE TABLE `parcelas` (
   `latitud` decimal(10,6) DEFAULT NULL,
   `longitud` decimal(10,6) DEFAULT NULL,
   `gps_precision` decimal(10,2) DEFAULT NULL COMMENT 'Precisión GPS en metros',
+  `poligono` text DEFAULT NULL COMMENT 'Contorno de la parcela: JSON [[lat,lng], ...]',
   `altitud` decimal(10,2) DEFAULT NULL,
   `area_ha` decimal(10,2) NOT NULL DEFAULT 0.00,
   `estado` enum('Levantamiento','Diseño','Implementado','Pendiente') NOT NULL DEFAULT 'Levantamiento',
