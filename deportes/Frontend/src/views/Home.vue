@@ -1,104 +1,125 @@
 <template>
-  <div class="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-    <!-- Abstract Background -->
-    <div class="absolute inset-0 z-0 bg-black">
-      <!-- Image Background -->
-      <img :src="fondoEstadio" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity" alt="Background" />
-      
-      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#121212]/80 via-transparent to-[#050505]/90"></div>
-      <!-- Decorative elements simulating the stadium/lights -->
-      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ccff00] rounded-full mix-blend-overlay filter blur-[120px] opacity-10"></div>
-    </div>
-
-    <div class="z-10 w-full max-w-4xl flex flex-col items-center">
-      <!-- Header / Logo -->
-      <div class="mb-12 text-center">
-        <p class="text-[#ccff00] text-xs font-bold tracking-[0.3em] uppercase mb-2 flex items-center justify-center gap-4">
-          <span class="h-px w-8 bg-gray-600"></span>
-          PLATAFORMA INSTITUCIONAL
-          <span class="h-px w-8 bg-gray-600"></span>
-        </p>
-        <h1 class="text-6xl md:text-8xl font-black text-white italic tracking-tighter">
-          DEPORTES
-        </h1>
-        <p class="text-gray-400 mt-4 text-sm md:text-base max-w-md mx-auto">
-          Gestiona la información de tu equipo de fútbol de forma profesional, rápida y segura.
-        </p>
+  <div class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+    <!-- Top Nav Bar -->
+    <nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-white/10 flex justify-between items-center px-container-margin py-4 transition-all duration-300">
+      <div class="flex items-center gap-8">
+        <router-link to="/" class="text-headline-lg-mobile md:text-headline-lg font-display-lg text-primary-fixed tracking-tighter uppercase leading-none">DEPORTES</router-link>
+        <div class="hidden md:flex gap-6 items-center">
+          <router-link to="/estadisticas" class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200">Estadísticas</router-link>
+          <router-link to="/historial-partidos" class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200">Historial de Partidos</router-link>
+          <router-link to="/inscripcion-equipo" class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200">Inscribir Equipo</router-link>
+        </div>
       </div>
-
-      <!-- Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
-        
-        <!-- Registro Card -->
-        <div class="bg-[#121212] border border-[#ccff00]/40 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-[#ccff00] hover:shadow-[0_0_30px_rgba(204,255,0,0.15)] group">
-          <div class="w-16 h-16 rounded-full border border-[#ccff00] flex items-center justify-center mb-6">
-            <svg class="w-8 h-8 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <h2 class="text-white text-xl font-bold mb-1">REGISTRO DE</h2>
-          <h3 class="text-[#ccff00] text-3xl font-black italic tracking-tight mb-4">EQUIPOS</h3>
-          <p class="text-gray-400 text-sm mb-8 flex-grow">
-            Registra un nuevo equipo y forma parte de nuestra plataforma deportiva.
-          </p>
-          <router-link to="/inscripcion-equipo" class="w-full bg-[#ccff00] text-black font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-[#b3e600] transition-colors">
-            <span>REGISTRAR EQUIPO</span>
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
-          </router-link>
-        </div>
-
-        <!-- Login Card -->
-        <div class="bg-[#121212] border border-gray-800 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-gray-600 group">
-          <div class="w-16 h-16 rounded-full border border-gray-400 flex items-center justify-center mb-6">
-            <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-          </div>
-          <h2 class="text-white text-xl font-bold mb-1">INICIAR</h2>
-          <h3 class="text-white text-3xl font-black italic tracking-tight mb-4">SESIÓN</h3>
-          <p class="text-gray-400 text-sm mb-8 flex-grow">
-            Accede a tu cuenta para gestionar tu equipo y jugadores.
-          </p>
-          <router-link to="/login" class="w-full bg-transparent border border-gray-600 text-white font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-gray-800 transition-colors">
-            <span>INICIAR SESIÓN</span>
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
-          </router-link>
-        </div>
-
-        <!-- Estadisticas Card -->
-        <div class="bg-[#121212] border border-[#ccff00]/40 rounded-2xl p-8 flex flex-col items-center text-center transition-all hover:border-[#ccff00] hover:shadow-[0_0_30px_rgba(204,255,0,0.15)] group">
-          <div class="w-16 h-16 rounded-full border border-[#ccff00] flex items-center justify-center mb-6">
-            <svg class="w-8 h-8 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 20v-6M6 20V10M18 20V4"></path>
-            </svg>
-          </div>
-          <h2 class="text-white text-xl font-bold mb-1">VER</h2>
-          <h3 class="text-[#ccff00] text-3xl font-black italic tracking-tight mb-4">ESTADÍSTICAS</h3>
-          <p class="text-gray-400 text-sm mb-8 flex-grow">
-            Consulta los rankings, goleadores y resultados de los torneos.
-          </p>
-          <router-link to="/estadisticas" class="w-full bg-[#ccff00] text-black font-bold py-3 px-6 rounded-full flex justify-between items-center hover:bg-[#b3e600] transition-colors">
-            <span>VER ESTADÍSTICAS</span>
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
-          </router-link>
-        </div>
-
+      <div class="flex items-center gap-4">
+        <router-link
+          to="/login"
+          class="btn-primary px-6 py-2 rounded font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-[16px]">login</span>
+          Login
+        </router-link>
       </div>
+    </nav>
 
-      <!-- Footer tiny info -->
-      <div class="mt-16 flex items-center gap-3 text-xs text-gray-500">
-        <div class="w-6 h-8 bg-transparent border border-gray-600 rounded-t-full rounded-b-md flex items-center justify-center">
-           <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col relative pt-[80px]">
+      <!-- Hero Section -->
+      <section class="relative w-full min-h-[870px] flex flex-col justify-center px-container-margin md:px-12 lg:px-24 py-stack-lg overflow-hidden">
+        <img :src="fondoEstadio" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="" />
+        <div class="absolute inset-0 hero-bg"></div>
+
+        <div class="max-w-4xl z-10 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-white/10 mb-4">
+            <span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+            <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Liga Oficial Metropolitana</span>
+          </div>
+          <h1 class="text-headline-lg-mobile md:text-display-lg font-display-lg text-primary uppercase tracking-tighter leading-tight drop-shadow-2xl">
+            GESTIÓN DE<br />
+            <span class="text-primary-fixed">FÚTBOL AMATEUR</span>
+          </h1>
+          <p class="text-body-md font-body-md text-on-surface-variant max-w-xl md:text-lg border-l-2 border-primary-fixed pl-4 py-1">
+            Excelencia institucional y rendimiento técnico para la nueva era del deporte amateur. Sistema
+            integral para ligas, equipos y recintos deportivos de alto nivel.
+          </p>
+
+          <!-- Quick Access Bento Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter pt-stack-md mt-stack-md w-full max-w-5xl">
+            <!-- Card 1: Registrar Equipo -->
+            <router-link
+              to="/inscripcion-equipo"
+              class="glass-card-featured rounded-xl p-6 flex flex-col justify-between group h-48 neon-hover transition-all duration-300"
+            >
+              <div class="flex justify-between items-start">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed/20 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-primary-fixed">group_add</span>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors">arrow_outward</span>
+              </div>
+              <div>
+                <h3 class="text-title-md font-title-md text-primary mb-1 group-hover:text-primary-fixed transition-colors">Registrar Equipo</h3>
+                <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Inscripciones Abiertas</p>
+              </div>
+            </router-link>
+
+            <!-- Card 2: Iniciar Sesión -->
+            <router-link
+              to="/login"
+              class="glass-card rounded-xl p-6 flex flex-col justify-between group h-48 hover:border-white/30 transition-all duration-300"
+            >
+              <div class="flex justify-between items-start">
+                <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                  <span class="material-symbols-outlined text-on-surface">sports_soccer</span>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-white transition-colors">arrow_forward</span>
+              </div>
+              <div>
+                <h3 class="text-title-md font-title-md text-primary mb-1 group-hover:text-white transition-colors">Portal de Jugador</h3>
+                <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Gestión personal</p>
+              </div>
+            </router-link>
+
+            <!-- Card 3: Ver Estadísticas -->
+            <router-link
+              to="/estadisticas"
+              class="glass-card rounded-xl p-6 flex flex-col justify-between group h-48 hover:border-white/30 transition-all duration-300"
+            >
+              <div class="flex justify-between items-start">
+                <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                  <span class="material-symbols-outlined text-on-surface">bar_chart</span>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant group-hover:text-white transition-colors">arrow_forward</span>
+              </div>
+              <div>
+                <h3 class="text-title-md font-title-md text-primary mb-1 group-hover:text-white transition-colors">Ver Estadísticas</h3>
+                <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Data en tiempo real</p>
+              </div>
+            </router-link>
+          </div>
         </div>
-        <div class="text-left">
-          <p>Plataforma institucional de deportes</p>
-          <p>Gestión profesional para equipos campeones.</p>
+
+        <!-- Atmospheric Shader Overlay -->
+        <div class="absolute inset-0 pointer-events-none opacity-20 mix-blend-screen z-0">
+          <div class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-fixed/5 via-transparent to-transparent"></div>
         </div>
+      </section>
+    </main>
+
+    <!-- System Status Bar -->
+    <div class="fixed bottom-0 w-full bg-surface-container-lowest border-t border-white/5 py-2 px-container-margin z-40 hidden md:flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider backdrop-blur-md">
+      <div class="flex items-center gap-6">
+        <span class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+          Temporada Apertura 2026
+        </span>
+        <span class="w-px h-3 bg-white/10"></span>
+        <router-link to="/historial-partidos" class="flex items-center gap-2 hover:text-primary-fixed transition-colors">
+          <span class="material-symbols-outlined text-[14px]">groups</span>
+          Ver Equipos Activos
+        </router-link>
+      </div>
+      <div class="flex items-center gap-2 text-primary-fixed">
+        <span class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_8px_#C0FD46]"></span>
+        Sistema Operativo
       </div>
     </div>
   </div>
@@ -106,5 +127,4 @@
 
 <script setup>
 import fondoEstadio from '../assets/fondo-estadio.jpg'
-// Home page logic
 </script>

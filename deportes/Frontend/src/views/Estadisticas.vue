@@ -1,292 +1,327 @@
 <template>
-  <div class="p-4 md:p-8">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <h1 class="text-3xl font-black italic tracking-tight">ESTADÍSTICAS</h1>
-        <p class="text-gray-400 text-sm mt-1">Líderes y rankings del torneo</p>
+  <div class="min-h-screen flex flex-col md:flex-row bg-background text-on-background">
+    <!-- Desktop SideNav -->
+    <aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container-lowest border-r border-outline-variant/30 shadow-xl p-gutter sticky top-0 shrink-0 z-40">
+      <div class="mb-stack-lg">
+        <router-link to="/" class="text-headline-lg font-headline-lg text-primary-fixed uppercase tracking-tighter">DEPORTES</router-link>
       </div>
-      <button @click="$router.go(-1)" class="text-gray-400 hover:text-white transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>Volver
-      </button>
-    </div>
+      <nav class="flex-1 space-y-2">
+        <router-link to="/" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 rounded-lg">
+          <span class="material-symbols-outlined font-light">dashboard</span>
+          <span class="text-label-sm font-label-sm uppercase">Inicio</span>
+        </router-link>
+        <span class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg ring-1 ring-primary-fixed/50 scale-[0.98]">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+          <span class="text-label-sm font-label-sm uppercase font-bold">Estadísticas</span>
+        </span>
+        <router-link to="/historial-partidos" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 rounded-lg">
+          <span class="material-symbols-outlined font-light">sports_soccer</span>
+          <span class="text-label-sm font-label-sm uppercase">Historial</span>
+        </router-link>
+      </nav>
+      <div class="mt-auto pt-stack-md border-t border-outline-variant/30">
+        <router-link to="/login" class="w-full flex items-center justify-center gap-2 py-3 bg-transparent border border-outline-variant text-on-surface hover:border-primary-fixed hover:text-primary-fixed transition-colors rounded-lg">
+          <span class="material-symbols-outlined font-light text-sm">login</span>
+          <span class="text-label-sm font-label-sm uppercase">Login</span>
+        </router-link>
+      </div>
+    </aside>
 
-    <!-- TABS NAV -->
-    <div class="flex overflow-x-auto gap-3 pb-4 mb-8 snap-x hide-scrollbar scroll-smooth">
-      <button @click="activeTab = 'goleadoresGlobal'" :class="['shrink-0 px-6 py-3 rounded-full font-bold text-sm transition-all snap-start', activeTab === 'goleadoresGlobal' ? 'bg-[#ccff00] text-black shadow-[0_0_15px_rgba(204,255,0,0.4)]' : 'bg-[#121212] text-gray-400 border border-gray-800 hover:border-[#ccff00]/50']">
-        🏆 Goleadores Global
-      </button>
-      <button @click="activeTab = 'goleadoresEquipo'" :class="['shrink-0 px-6 py-3 rounded-full font-bold text-sm transition-all snap-start', activeTab === 'goleadoresEquipo' ? 'bg-[#ccff00] text-black shadow-[0_0_15px_rgba(204,255,0,0.4)]' : 'bg-[#121212] text-gray-400 border border-gray-800 hover:border-[#ccff00]/50']">
-        ⚽ Goleadores por Equipo
-      </button>
-      <button @click="activeTab = 'porterosGlobal'" :class="['shrink-0 px-6 py-3 rounded-full font-bold text-sm transition-all snap-start', activeTab === 'porterosGlobal' ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-[#121212] text-gray-400 border border-gray-800 hover:border-white/50']">
-        🧤 Porteros Global
-      </button>
-      <button @click="activeTab = 'porterosEquipo'" :class="['shrink-0 px-6 py-3 rounded-full font-bold text-sm transition-all snap-start', activeTab === 'porterosEquipo' ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-[#121212] text-gray-400 border border-gray-800 hover:border-white/50']">
-        🥅 Porteros por Equipo
-      </button>
-      <button @click="activeTab = 'tarjetas'" :class="['shrink-0 px-6 py-3 rounded-full font-bold text-sm transition-all snap-start', activeTab === 'tarjetas' ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-[#121212] text-gray-400 border border-gray-800 hover:border-red-500/50']">
-        🟥 Equipos con Más Tarjetas
-      </button>
-    </div>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col relative bg-background overflow-hidden">
+      <!-- Mobile Top Nav -->
+      <header class="md:hidden flex justify-between items-center px-container-margin py-4 w-full bg-background/80 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+        <button @click="$router.go(-1)" class="text-on-surface-variant hover:text-primary-fixed transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary-fixed uppercase tracking-tighter">DEPORTES</h1>
+      </header>
 
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-      <i class="fas fa-spinner fa-spin text-4xl text-[#ccff00] mb-4"></i>
-      <p class="text-gray-400 animate-pulse">Cargando estadísticas...</p>
-    </div>
-
-    <div v-else class="relative min-h-[400px]">
-      <transition name="fade" mode="out-in">
-        <div :key="activeTab">
-          
-          <!-- TAB 1: GOLEADORES GLOBAL -->
-          <section v-if="activeTab === 'goleadoresGlobal'">
-            <div class="flex items-center gap-3 mb-8">
-              <i class="fas fa-trophy text-3xl text-yellow-400"></i>
-              <h2 class="text-2xl font-black italic">TOP 5 GOLEADORES</h2>
+      <div class="flex-1 overflow-y-auto">
+        <!-- Page Header -->
+        <div class="px-container-margin py-stack-lg relative overflow-hidden">
+          <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top_right,_var(--color-primary-fixed)_0%,_transparent_50%)]"></div>
+          <div class="relative z-10 flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-display-lg font-display-lg text-white uppercase">Estadísticas</h2>
+              <p class="text-body-md font-body-md text-on-surface-variant max-w-2xl mt-4">Líderes y rankings del torneo en tiempo real.</p>
             </div>
-            
-            <!-- Podium para Top 3 -->
-            <div class="flex flex-col sm:flex-row items-end justify-center gap-4 sm:gap-6 mb-12 mt-12 px-4" v-if="goleadoresGlobal.length >= 3">
-              <!-- Plata (2) -->
-              <div class="w-full sm:w-1/3 max-w-[200px] flex flex-col items-center order-2 sm:order-1 relative">
-                <div class="absolute -top-12 w-20 h-20 rounded-full border-4 border-gray-300 overflow-hidden shadow-[0_0_20px_rgba(209,213,219,0.5)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(goleadoresGlobal[1].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="bg-gray-300 w-full h-24 sm:h-32 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-lg text-black mt-8 pt-10">
-                  <span class="text-3xl font-black text-gray-800">2</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ goleadoresGlobal[1].nombre }}</span>
-                  <span class="font-black text-lg">{{ goleadoresGlobal[1].total_goles }} <span class="text-[10px]">GOLES</span></span>
-                </div>
-              </div>
-              
-              <!-- Oro (1) -->
-              <div class="w-full sm:w-1/3 max-w-[220px] flex flex-col items-center order-1 sm:order-2 relative z-20">
-                <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-yellow-400 overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.6)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(goleadoresGlobal[0].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="absolute -top-20 text-yellow-400 text-3xl animate-bounce">👑</div>
-                <div class="bg-yellow-400 w-full h-32 sm:h-44 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-2xl text-black mt-8 pt-12">
-                  <span class="text-4xl font-black text-yellow-700">1</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ goleadoresGlobal[0].nombre }}</span>
-                  <span class="font-black text-2xl">{{ goleadoresGlobal[0].total_goles }} <span class="text-xs">GOLES</span></span>
-                </div>
-              </div>
-
-              <!-- Bronce (3) -->
-              <div class="w-full sm:w-1/3 max-w-[200px] flex flex-col items-center order-3 relative">
-                <div class="absolute -top-12 w-20 h-20 rounded-full border-4 border-amber-600 overflow-hidden shadow-[0_0_20px_rgba(217,119,6,0.5)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(goleadoresGlobal[2].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="bg-amber-600 w-full h-20 sm:h-24 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-lg text-white mt-8 pt-10">
-                  <span class="text-2xl font-black text-amber-900">3</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ goleadoresGlobal[2].nombre }}</span>
-                  <span class="font-black text-lg">{{ goleadoresGlobal[2].total_goles }} <span class="text-[10px]">GOLES</span></span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Resto del Top 5 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8" v-if="goleadoresGlobal.length > 3">
-              <div v-for="(jugador, index) in goleadoresGlobal.slice(3, 5)" :key="jugador.id"
-                   class="bg-[#121212] border border-gray-800 rounded-xl p-4 flex items-center gap-4 hover:border-[#ccff00]/30 transition-colors">
-                <div class="text-2xl font-black text-gray-700 w-8 text-center">{{ index + 4 }}</div>
-                <div class="w-14 h-14 rounded-full overflow-hidden border border-gray-700 shrink-0">
-                  <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="flex-grow min-w-0">
-                  <h4 class="font-bold text-sm truncate">{{ jugador.nombre }}</h4>
-                  <p class="text-xs text-gray-500 truncate flex items-center gap-2 mt-1">
-                    <img :src="getFotoUrl(jugador.equipo_foto)" class="w-4 h-4 rounded-full" @error="handleImageError" />
-                    {{ jugador.equipo_nombre }}
-                  </p>
-                </div>
-                <div class="text-right shrink-0 bg-gray-900 px-4 py-2 rounded-lg">
-                  <span class="text-[#ccff00] font-black text-xl">{{ jugador.total_goles }}</span>
-                  <span class="text-[10px] text-gray-500 block -mt-1">goles</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 2: GOLEADORES POR EQUIPO -->
-          <section v-if="activeTab === 'goleadoresEquipo'">
-            <div class="flex items-center gap-3 mb-8">
-              <i class="fas fa-bullseye text-3xl text-[#ccff00]"></i>
-              <h2 class="text-2xl font-black italic">MÁXIMO GOLEADOR POR EQUIPO</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              <div v-for="jugador in goleadoresPorEquipo" :key="jugador.id"
-                   class="bg-[#121212] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ccff00]/50 transition-all hover:-translate-y-1 group">
-                <div class="h-16 bg-gray-900 relative">
-                  <!-- Logo equipo fondo -->
-                  <div class="absolute inset-0 opacity-20 bg-center bg-cover blur-sm" :style="{ backgroundImage: `url(${getFotoUrl(jugador.equipo_foto)})` }"></div>
-                  <!-- Jugador Foto -->
-                  <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-[#121212] overflow-hidden z-10 bg-gray-800 shadow-lg group-hover:border-[#ccff00] transition-colors">
-                    <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                  </div>
-                </div>
-                <div class="pt-10 pb-4 px-4 text-center">
-                  <h4 class="font-bold text-md truncate">{{ jugador.nombre }}</h4>
-                  <div class="flex items-center justify-center gap-1.5 mt-1 mb-4">
-                    <img :src="getFotoUrl(jugador.equipo_foto)" class="w-3 h-3 rounded-full" @error="handleImageError" />
-                    <p class="text-xs text-gray-400 truncate">{{ jugador.equipo_nombre }}</p>
-                  </div>
-                  <div class="inline-flex items-center gap-2 bg-[#ccff00]/10 px-4 py-1.5 rounded-full border border-[#ccff00]/20">
-                    <i class="fas fa-futbol text-[#ccff00]"></i>
-                    <span class="text-[#ccff00] font-black text-xl">{{ jugador.total_goles }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 3: PORTEROS GLOBAL -->
-          <section v-if="activeTab === 'porterosGlobal'">
-            <div class="flex items-center gap-3 mb-8">
-              <i class="fas fa-shield-alt text-3xl text-white"></i>
-              <h2 class="text-2xl font-black italic">TOP 5 PORTEROS (MENOS VENCIDOS)</h2>
-            </div>
-            
-            <!-- Podium para Top 3 -->
-            <div class="flex flex-col sm:flex-row items-end justify-center gap-4 sm:gap-6 mb-12 mt-12 px-4" v-if="porterosGlobal.length >= 3">
-              <!-- Plata (2) -->
-              <div class="w-full sm:w-1/3 max-w-[200px] flex flex-col items-center order-2 sm:order-1 relative">
-                <div class="absolute -top-12 w-20 h-20 rounded-full border-4 border-gray-300 overflow-hidden shadow-[0_0_20px_rgba(209,213,219,0.5)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(porterosGlobal[1].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="bg-gray-300 w-full h-24 sm:h-32 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-lg text-black mt-8 pt-10">
-                  <span class="text-3xl font-black text-gray-800">2</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ porterosGlobal[1].nombre }}</span>
-                  <span class="font-black text-lg">{{ porterosGlobal[1].total_goles_recibidos }} <span class="text-[10px]">EN CONTRA</span></span>
-                </div>
-              </div>
-              
-              <!-- Oro (1) -->
-              <div class="w-full sm:w-1/3 max-w-[220px] flex flex-col items-center order-1 sm:order-2 relative z-20">
-                <div class="absolute -top-16 w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.6)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(porterosGlobal[0].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="absolute -top-20 text-white text-3xl animate-pulse">🧤</div>
-                <div class="bg-white w-full h-32 sm:h-44 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-2xl text-black mt-8 pt-12">
-                  <span class="text-4xl font-black text-gray-300">1</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ porterosGlobal[0].nombre }}</span>
-                  <span class="font-black text-2xl">{{ porterosGlobal[0].total_goles_recibidos }} <span class="text-xs">EN CONTRA</span></span>
-                </div>
-              </div>
-
-              <!-- Bronce (3) -->
-              <div class="w-full sm:w-1/3 max-w-[200px] flex flex-col items-center order-3 relative">
-                <div class="absolute -top-12 w-20 h-20 rounded-full border-4 border-amber-600 overflow-hidden shadow-[0_0_20px_rgba(217,119,6,0.5)] z-10 bg-[#121212]">
-                  <img :src="getFotoUrl(porterosGlobal[2].foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="bg-amber-600 w-full h-20 sm:h-24 rounded-t-lg flex flex-col items-center justify-end pb-4 shadow-lg text-white mt-8 pt-10">
-                  <span class="text-2xl font-black text-amber-900">3</span>
-                  <span class="font-bold text-sm truncate w-11/12 text-center">{{ porterosGlobal[2].nombre }}</span>
-                  <span class="font-black text-lg">{{ porterosGlobal[2].total_goles_recibidos }} <span class="text-[10px]">EN CONTRA</span></span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Resto del Top 5 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8" v-if="porterosGlobal.length > 3">
-              <div v-for="(jugador, index) in porterosGlobal.slice(3, 5)" :key="jugador.id"
-                   class="bg-[#121212] border border-gray-800 rounded-xl p-4 flex items-center gap-4 hover:border-white/30 transition-colors">
-                <div class="text-2xl font-black text-gray-700 w-8 text-center">{{ index + 4 }}</div>
-                <div class="w-14 h-14 rounded-full overflow-hidden border border-gray-700 shrink-0">
-                  <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                </div>
-                <div class="flex-grow min-w-0">
-                  <h4 class="font-bold text-sm truncate">{{ jugador.nombre }}</h4>
-                  <p class="text-xs text-gray-500 truncate flex items-center gap-2 mt-1">
-                    <img :src="getFotoUrl(jugador.equipo_foto)" class="w-4 h-4 rounded-full" @error="handleImageError" />
-                    {{ jugador.equipo_nombre }}
-                  </p>
-                </div>
-                <div class="text-right shrink-0 bg-gray-900 px-4 py-2 rounded-lg border border-gray-800">
-                  <span class="text-white font-black text-xl">{{ jugador.total_goles_recibidos }}</span>
-                  <span class="text-[10px] text-gray-500 block -mt-1">en contra</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 4: PORTEROS POR EQUIPO -->
-          <section v-if="activeTab === 'porterosEquipo'">
-            <div class="flex items-center gap-3 mb-8">
-              <i class="fas fa-hands text-3xl text-white"></i>
-              <h2 class="text-2xl font-black italic">EL MURO DE CADA EQUIPO</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              <div v-for="jugador in porterosPorEquipo" :key="jugador.id"
-                   class="bg-[#121212] border border-gray-800 rounded-2xl overflow-hidden hover:border-white/50 transition-all hover:-translate-y-1 group">
-                <div class="h-16 bg-gray-900 relative">
-                  <!-- Logo equipo fondo -->
-                  <div class="absolute inset-0 opacity-20 bg-center bg-cover blur-sm" :style="{ backgroundImage: `url(${getFotoUrl(jugador.equipo_foto)})` }"></div>
-                  <!-- Jugador Foto -->
-                  <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-[#121212] overflow-hidden z-10 bg-gray-800 shadow-lg group-hover:border-white transition-colors">
-                    <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
-                  </div>
-                </div>
-                <div class="pt-10 pb-4 px-4 text-center">
-                  <h4 class="font-bold text-md truncate">{{ jugador.nombre }}</h4>
-                  <div class="flex items-center justify-center gap-1.5 mt-1 mb-4">
-                    <img :src="getFotoUrl(jugador.equipo_foto)" class="w-3 h-3 rounded-full" @error="handleImageError" />
-                    <p class="text-xs text-gray-400 truncate">{{ jugador.equipo_nombre }}</p>
-                  </div>
-                  <div class="inline-flex items-center gap-2 bg-gray-800 px-4 py-1.5 rounded-full border border-gray-700">
-                    <i class="fas fa-shield-alt text-white"></i>
-                    <span class="text-white font-black text-xl">{{ jugador.total_goles_recibidos }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- TAB 5: TARJETAS (FAIR PLAY) -->
-          <section v-if="activeTab === 'tarjetas'">
-            <div class="flex items-center gap-3 mb-8">
-              <div class="flex gap-1"><div class="w-3 h-5 bg-yellow-400 rounded-sm"></div><div class="w-3 h-5 bg-red-500 rounded-sm"></div></div> 
-              <h2 class="text-2xl font-black italic uppercase">Equipos con Más Tarjetas</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="(equipo, index) in tarjetasEquipos" :key="equipo.id"
-                   class="bg-[#121212] border border-gray-800 rounded-2xl p-5 flex flex-col relative overflow-hidden group hover:border-red-500/30 transition-colors">
-                
-                <!-- Rank number background -->
-                <div class="absolute -right-4 -bottom-6 text-8xl font-black text-gray-900/50 z-0 select-none">
-                  {{ index + 1 }}
-                </div>
-                
-                <div class="relative z-10 flex items-center gap-4 mb-5">
-                  <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-700 bg-black shrink-0">
-                    <img :src="getFotoUrl(equipo.foto_ruta)" class="w-full h-full object-cover p-1" @error="handleImageError" />
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-lg leading-tight">{{ equipo.nombre }}</h4>
-                    <span class="text-xs text-gray-500">{{ equipo.total_tarjetas }} amonestaciones</span>
-                  </div>
-                </div>
-                
-                <div class="relative z-10 flex gap-2 w-full mt-auto">
-                  <div class="flex-1 bg-gray-900 rounded-lg p-2 flex flex-col items-center justify-center border border-gray-800">
-                    <div class="w-4 h-5 bg-yellow-400 rounded-sm mb-1 shadow-sm shadow-yellow-400/20"></div>
-                    <span class="text-sm font-bold text-gray-300">{{ equipo.total_amarillas }}</span>
-                  </div>
-                  <div class="flex-1 bg-gray-900 rounded-lg p-2 flex flex-col items-center justify-center border border-gray-800">
-                    <div class="w-4 h-5 bg-red-500 rounded-sm mb-1 shadow-sm shadow-red-500/20"></div>
-                    <span class="text-sm font-bold text-gray-300">{{ equipo.total_rojas }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          
+            <button @click="$router.go(-1)" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-primary-fixed/50 text-label-sm font-label-sm transition-colors text-on-surface bg-[#252525] shrink-0">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+              Volver
+            </button>
+          </div>
         </div>
-      </transition>
-    </div>
+
+        <!-- Filter Tabs -->
+        <div class="px-container-margin mb-stack-lg overflow-x-auto pb-4 hide-scrollbar">
+          <div class="flex gap-4 inline-flex">
+            <button @click="activeTab = 'goleadoresGlobal'" :class="['px-6 py-3 rounded-full font-bold text-label-sm transition-all flex items-center gap-2 shrink-0', activeTab === 'goleadoresGlobal' ? 'bg-primary-fixed text-on-primary-fixed shadow-[0_0_15px_rgba(185,246,63,0.3)]' : 'glass-panel text-on-surface font-semibold hover:bg-surface-variant/50']">
+              <span class="material-symbols-outlined text-[18px]">emoji_events</span> Goleadores Global
+            </button>
+            <button @click="activeTab = 'goleadoresEquipo'" :class="['px-6 py-3 rounded-full font-bold text-label-sm transition-all flex items-center gap-2 shrink-0', activeTab === 'goleadoresEquipo' ? 'bg-primary-fixed text-on-primary-fixed shadow-[0_0_15px_rgba(185,246,63,0.3)]' : 'glass-panel text-on-surface font-semibold hover:bg-surface-variant/50']">
+              <span class="material-symbols-outlined text-[18px]">sports_soccer</span> Goleadores por Equipo
+            </button>
+            <button @click="activeTab = 'porterosGlobal'" :class="['px-6 py-3 rounded-full font-bold text-label-sm transition-all flex items-center gap-2 shrink-0', activeTab === 'porterosGlobal' ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'glass-panel text-on-surface font-semibold hover:bg-surface-variant/50']">
+              <span class="material-symbols-outlined text-[18px]">sports_mma</span> Porteros Global
+            </button>
+            <button @click="activeTab = 'porterosEquipo'" :class="['px-6 py-3 rounded-full font-bold text-label-sm transition-all flex items-center gap-2 shrink-0', activeTab === 'porterosEquipo' ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'glass-panel text-on-surface font-semibold hover:bg-surface-variant/50']">
+              <span class="material-symbols-outlined text-[18px]">shield</span> Porteros por Equipo
+            </button>
+            <button @click="activeTab = 'tarjetas'" :class="['px-6 py-3 rounded-full font-bold text-label-sm transition-all flex items-center gap-2 shrink-0', activeTab === 'tarjetas' ? 'bg-error text-on-error shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'glass-panel text-on-surface font-semibold hover:bg-surface-variant/50']">
+              <span class="material-symbols-outlined text-[18px]">style</span> Equipos con Más Tarjetas
+            </button>
+          </div>
+        </div>
+
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-fixed mb-4"></div>
+          <p class="text-on-surface-variant animate-pulse">Cargando estadísticas...</p>
+        </div>
+
+        <div v-else class="relative min-h-[400px] px-container-margin pb-stack-lg">
+          <transition name="fade" mode="out-in">
+            <div :key="activeTab">
+
+              <!-- TAB 1: GOLEADORES GLOBAL -->
+              <section v-if="activeTab === 'goleadoresGlobal'">
+                <!-- Podium Top 3 -->
+                <div v-if="goleadoresGlobal.length >= 3" class="flex flex-col md:flex-row items-end justify-center gap-6 md:gap-4 mt-12 mb-12">
+                  <!-- Rank 2 -->
+                  <div class="w-full md:w-1/3 max-w-[220px] flex flex-col items-center relative order-2 md:order-1">
+                    <div class="relative w-20 h-20 mb-4 z-10">
+                      <img :src="getFotoUrl(goleadoresGlobal[1].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-surface-container" @error="handleImageError" />
+                      <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">2</div>
+                    </div>
+                    <div class="glass-panel w-full rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#C0C0C0]">
+                      <h3 class="text-title-md font-title-md text-white text-center truncate w-full">{{ goleadoresGlobal[1].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">{{ goleadoresGlobal[1].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-headline-lg font-headline-lg text-primary-fixed block">{{ goleadoresGlobal[1].total_goles }}</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Goles</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Rank 1 -->
+                  <div class="w-full md:w-1/3 max-w-[240px] flex flex-col items-center relative order-1 md:order-2">
+                    <span class="material-symbols-outlined absolute -top-10 text-[56px] text-primary-fixed opacity-40 z-0" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    <div class="relative w-28 h-28 mb-4 z-10">
+                      <img :src="getFotoUrl(goleadoresGlobal[0].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-primary-fixed shadow-[0_0_20px_rgba(185,246,63,0.4)]" @error="handleImageError" />
+                      <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-headline-lg text-lg font-bold">1</div>
+                    </div>
+                    <div class="glass-panel-active w-full rounded-t-2xl rounded-b-lg flex flex-col items-center pt-10 pb-6 px-4">
+                      <h3 class="text-headline-lg-mobile font-headline-lg-mobile text-white text-center truncate w-full">{{ goleadoresGlobal[0].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-primary-fixed mt-1 font-bold">{{ goleadoresGlobal[0].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-display-lg font-display-lg text-white block leading-none">{{ goleadoresGlobal[0].total_goles }}</span>
+                        <span class="text-[12px] text-on-surface-variant uppercase tracking-widest font-bold mt-2 block">Goles</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Rank 3 -->
+                  <div class="w-full md:w-1/3 max-w-[220px] flex flex-col items-center relative order-3">
+                    <div class="relative w-16 h-16 mb-4 z-10">
+                      <img :src="getFotoUrl(goleadoresGlobal[2].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-surface-container" @error="handleImageError" />
+                      <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">3</div>
+                    </div>
+                    <div class="glass-panel w-full rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#CD7F32]">
+                      <h3 class="text-title-md font-title-md text-white text-center truncate w-full">{{ goleadoresGlobal[2].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">{{ goleadoresGlobal[2].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-headline-lg font-headline-lg text-primary-fixed block">{{ goleadoresGlobal[2].total_goles }}</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Goles</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resto del Top 5 -->
+                <div v-if="goleadoresGlobal.length > 3" class="bg-gradient-card rounded-xl overflow-hidden p-2 max-w-4xl mx-auto">
+                  <div class="flex items-center px-4 py-3 border-b border-white/5 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">
+                    <div class="w-12 text-center">#</div>
+                    <div class="flex-1 pl-4">Jugador</div>
+                    <div class="w-32 hidden sm:block">Equipo</div>
+                    <div class="w-20 text-right pr-4">Goles</div>
+                  </div>
+                  <div class="flex flex-col gap-1 mt-2">
+                    <div v-for="(jugador, index) in goleadoresGlobal.slice(3, 5)" :key="jugador.id" class="flex items-center px-4 py-3 rounded-lg hover:bg-surface-variant/30 transition-colors group">
+                      <div class="w-12 text-center font-headline-lg-mobile text-on-surface-variant text-lg">{{ index + 4 }}</div>
+                      <div class="flex-1 pl-4 flex items-center gap-4 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10 shrink-0">
+                          <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
+                        </div>
+                        <div class="min-w-0">
+                          <div class="text-body-md font-body-md text-white font-semibold truncate">{{ jugador.nombre }}</div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant sm:hidden truncate">{{ jugador.equipo_nombre }}</div>
+                        </div>
+                      </div>
+                      <div class="w-32 hidden sm:block text-body-md text-on-surface-variant truncate">{{ jugador.equipo_nombre }}</div>
+                      <div class="w-20 text-right pr-4 font-headline-lg-mobile text-primary-fixed text-xl group-hover:text-white transition-colors">{{ jugador.total_goles }}</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 2: GOLEADORES POR EQUIPO -->
+              <section v-if="activeTab === 'goleadoresEquipo'">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                  <div v-for="jugador in goleadoresPorEquipo" :key="jugador.id" class="card-gradient border border-outline-variant/30 rounded-xl overflow-hidden hover:border-primary-fixed/50 transition-all hover:-translate-y-1 group">
+                    <div class="h-16 bg-surface-container relative">
+                      <div class="absolute inset-0 opacity-30 bg-center bg-cover blur-sm" :style="{ backgroundImage: `url(${getFotoUrl(jugador.equipo_foto)})` }"></div>
+                      <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-surface-container-lowest overflow-hidden z-10 bg-surface-container-high shadow-lg group-hover:border-primary-fixed transition-colors">
+                        <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
+                      </div>
+                    </div>
+                    <div class="pt-10 pb-4 px-4 text-center">
+                      <h4 class="text-title-md font-title-md text-on-surface truncate">{{ jugador.nombre }}</h4>
+                      <div class="flex items-center justify-center gap-1.5 mt-1 mb-4">
+                        <img :src="getFotoUrl(jugador.equipo_foto)" class="w-3 h-3 rounded-full" @error="handleImageError" />
+                        <p class="text-label-sm font-label-sm text-on-surface-variant truncate">{{ jugador.equipo_nombre }}</p>
+                      </div>
+                      <div class="inline-flex items-center gap-2 bg-primary-fixed/10 px-4 py-1.5 rounded-full border border-primary-fixed/20">
+                        <span class="material-symbols-outlined text-[16px] text-primary-fixed">sports_soccer</span>
+                        <span class="text-primary-fixed font-black text-xl">{{ jugador.total_goles }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 3: PORTEROS GLOBAL -->
+              <section v-if="activeTab === 'porterosGlobal'">
+                <div v-if="porterosGlobal.length >= 3" class="flex flex-col md:flex-row items-end justify-center gap-6 md:gap-4 mt-12 mb-12">
+                  <!-- Rank 2 -->
+                  <div class="w-full md:w-1/3 max-w-[220px] flex flex-col items-center relative order-2 md:order-1">
+                    <div class="relative w-20 h-20 mb-4 z-10">
+                      <img :src="getFotoUrl(porterosGlobal[1].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-surface-container" @error="handleImageError" />
+                      <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">2</div>
+                    </div>
+                    <div class="glass-panel w-full rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#C0C0C0]">
+                      <h3 class="text-title-md font-title-md text-white text-center truncate w-full">{{ porterosGlobal[1].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">{{ porterosGlobal[1].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-headline-lg font-headline-lg text-white block">{{ porterosGlobal[1].total_goles_recibidos }}</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">En Contra</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Rank 1 -->
+                  <div class="w-full md:w-1/3 max-w-[240px] flex flex-col items-center relative order-1 md:order-2">
+                    <span class="material-symbols-outlined absolute -top-10 text-[56px] text-white opacity-40 z-0" style="font-variation-settings: 'FILL' 1;">shield</span>
+                    <div class="relative w-28 h-28 mb-4 z-10">
+                      <img :src="getFotoUrl(porterosGlobal[0].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-white shadow-[0_0_20px_rgba(255,255,255,0.4)]" @error="handleImageError" />
+                      <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-headline-lg text-lg font-bold">1</div>
+                    </div>
+                    <div class="glass-panel w-full rounded-t-2xl rounded-b-lg flex flex-col items-center pt-10 pb-6 px-4 border border-white/30">
+                      <h3 class="text-headline-lg-mobile font-headline-lg-mobile text-white text-center truncate w-full">{{ porterosGlobal[0].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-white mt-1 font-bold">{{ porterosGlobal[0].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-display-lg font-display-lg text-white block leading-none">{{ porterosGlobal[0].total_goles_recibidos }}</span>
+                        <span class="text-[12px] text-on-surface-variant uppercase tracking-widest font-bold mt-2 block">En Contra</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Rank 3 -->
+                  <div class="w-full md:w-1/3 max-w-[220px] flex flex-col items-center relative order-3">
+                    <div class="relative w-16 h-16 mb-4 z-10">
+                      <img :src="getFotoUrl(porterosGlobal[2].foto_ruta)" class="w-full h-full object-cover rounded-full border-4 border-surface-container" @error="handleImageError" />
+                      <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">3</div>
+                    </div>
+                    <div class="glass-panel w-full rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#CD7F32]">
+                      <h3 class="text-title-md font-title-md text-white text-center truncate w-full">{{ porterosGlobal[2].nombre }}</h3>
+                      <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">{{ porterosGlobal[2].equipo_nombre }}</p>
+                      <div class="mt-4 text-center">
+                        <span class="text-headline-lg font-headline-lg text-white block">{{ porterosGlobal[2].total_goles_recibidos }}</span>
+                        <span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">En Contra</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="porterosGlobal.length > 3" class="bg-gradient-card rounded-xl overflow-hidden p-2 max-w-4xl mx-auto">
+                  <div class="flex items-center px-4 py-3 border-b border-white/5 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">
+                    <div class="w-12 text-center">#</div>
+                    <div class="flex-1 pl-4">Portero</div>
+                    <div class="w-32 hidden sm:block">Equipo</div>
+                    <div class="w-24 text-right pr-4">En Contra</div>
+                  </div>
+                  <div class="flex flex-col gap-1 mt-2">
+                    <div v-for="(jugador, index) in porterosGlobal.slice(3, 5)" :key="jugador.id" class="flex items-center px-4 py-3 rounded-lg hover:bg-surface-variant/30 transition-colors group">
+                      <div class="w-12 text-center font-headline-lg-mobile text-on-surface-variant text-lg">{{ index + 4 }}</div>
+                      <div class="flex-1 pl-4 flex items-center gap-4 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10 shrink-0">
+                          <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
+                        </div>
+                        <div class="min-w-0">
+                          <div class="text-body-md font-body-md text-white font-semibold truncate">{{ jugador.nombre }}</div>
+                          <div class="text-label-sm font-label-sm text-on-surface-variant sm:hidden truncate">{{ jugador.equipo_nombre }}</div>
+                        </div>
+                      </div>
+                      <div class="w-32 hidden sm:block text-body-md text-on-surface-variant truncate">{{ jugador.equipo_nombre }}</div>
+                      <div class="w-24 text-right pr-4 font-headline-lg-mobile text-white text-xl group-hover:text-primary-fixed transition-colors">{{ jugador.total_goles_recibidos }}</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 4: PORTEROS POR EQUIPO -->
+              <section v-if="activeTab === 'porterosEquipo'">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+                  <div v-for="jugador in porterosPorEquipo" :key="jugador.id" class="card-gradient border border-outline-variant/30 rounded-xl overflow-hidden hover:border-white/50 transition-all hover:-translate-y-1 group">
+                    <div class="h-16 bg-surface-container relative">
+                      <div class="absolute inset-0 opacity-30 bg-center bg-cover blur-sm" :style="{ backgroundImage: `url(${getFotoUrl(jugador.equipo_foto)})` }"></div>
+                      <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 border-surface-container-lowest overflow-hidden z-10 bg-surface-container-high shadow-lg group-hover:border-white transition-colors">
+                        <img :src="getFotoUrl(jugador.foto_ruta)" class="w-full h-full object-cover" @error="handleImageError" />
+                      </div>
+                    </div>
+                    <div class="pt-10 pb-4 px-4 text-center">
+                      <h4 class="text-title-md font-title-md text-on-surface truncate">{{ jugador.nombre }}</h4>
+                      <div class="flex items-center justify-center gap-1.5 mt-1 mb-4">
+                        <img :src="getFotoUrl(jugador.equipo_foto)" class="w-3 h-3 rounded-full" @error="handleImageError" />
+                        <p class="text-label-sm font-label-sm text-on-surface-variant truncate">{{ jugador.equipo_nombre }}</p>
+                      </div>
+                      <div class="inline-flex items-center gap-2 bg-surface-container-high px-4 py-1.5 rounded-full border border-outline-variant/50">
+                        <span class="material-symbols-outlined text-[16px] text-white">shield</span>
+                        <span class="text-white font-black text-xl">{{ jugador.total_goles_recibidos }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 5: TARJETAS (FAIR PLAY) -->
+              <section v-if="activeTab === 'tarjetas'">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+                  <div v-for="(equipo, index) in tarjetasEquipos" :key="equipo.id" class="card-gradient border border-outline-variant/30 rounded-xl p-5 flex flex-col relative overflow-hidden group hover:border-error/40 transition-colors">
+                    <div class="absolute -right-4 -bottom-6 text-8xl font-black text-white/5 z-0 select-none">{{ index + 1 }}</div>
+                    <div class="relative z-10 flex items-center gap-4 mb-5">
+                      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-outline-variant/50 bg-surface-container-lowest shrink-0">
+                        <img :src="getFotoUrl(equipo.foto_ruta)" class="w-full h-full object-cover p-1" @error="handleImageError" />
+                      </div>
+                      <div class="min-w-0">
+                        <h4 class="text-title-md font-title-md text-on-surface leading-tight truncate">{{ equipo.nombre }}</h4>
+                        <span class="text-label-sm font-label-sm text-on-surface-variant">{{ equipo.total_tarjetas }} amonestaciones</span>
+                      </div>
+                    </div>
+                    <div class="relative z-10 flex gap-2 w-full mt-auto">
+                      <div class="flex-1 bg-surface-container-lowest rounded-lg p-2 flex flex-col items-center justify-center border border-outline-variant/30">
+                        <div class="w-4 h-5 bg-yellow-400 rounded-sm mb-1 shadow-sm shadow-yellow-400/20"></div>
+                        <span class="text-body-md font-bold text-on-surface">{{ equipo.total_amarillas }}</span>
+                      </div>
+                      <div class="flex-1 bg-surface-container-lowest rounded-lg p-2 flex flex-col items-center justify-center border border-outline-variant/30">
+                        <div class="w-4 h-5 bg-error rounded-sm mb-1 shadow-sm shadow-error/20"></div>
+                        <span class="text-body-md font-bold text-on-surface">{{ equipo.total_rojas }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+          </transition>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 

@@ -1,160 +1,167 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-8 bg-panel min-h-[600px] shadow-2xl relative">
-      
-      <!-- Left Sidebar (Lime Green) -->
-      <div class="w-full md:w-16 bg-primary flex md:flex-col items-center justify-between py-6 px-4 md:px-0 z-10 shrink-0">
-        <div class="w-8 h-8 rounded-full border border-black flex items-center justify-center text-black">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        </div>
-        
-        <div class="hidden md:block transform -rotate-90 text-black font-bold tracking-widest text-xs whitespace-nowrap uppercase">
-          REGISTRO DE EQUIPO {{ new Date().getFullYear() }}
-        </div>
-        
-        <div class="w-px h-16 bg-black hidden md:block"></div>
-      </div>
-      
-      <!-- Form Content -->
-      <div class="flex-grow p-8 md:p-12 relative z-10">
-        <div class="mb-8">
-          <h2 class="text-primary font-bold text-xs tracking-widest mb-1 flex items-center gap-2 uppercase">
-            Pro Performance <span class="w-8 h-px bg-gray-700 block"></span>
-          </h2>
-          <h1 class="text-2xl font-black uppercase italic tracking-wide">Inscripción Técnica</h1>
-        </div>
-        
-        <form @submit.prevent="submitForm">
-          <!-- Images Upload -->
-          <div class="flex flex-col md:flex-row gap-8 mb-8">
-            <div>
-              <div class="relative w-32 mb-2">
-                <div class="w-32 h-32 border border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 overflow-hidden relative cursor-pointer" @click="triggerFileInput">
-                  <img v-if="previewUrl" :src="previewUrl" class="absolute inset-0 w-full h-full object-cover" />
-                  <svg v-else class="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                  
-                  <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg" @change="onFileChange" />
+  <div class="min-h-screen bg-background font-body-md antialiased flex flex-col">
+    <!-- TopNavBar -->
+    <header class="bg-background/80 backdrop-blur-lg flex justify-between items-center px-container-margin py-4 w-full sticky top-0 z-50 border-b border-white/10">
+      <router-link to="/" class="text-headline-lg-mobile font-display-lg text-primary-fixed tracking-tighter uppercase leading-none">DEPORTES</router-link>
+      <router-link to="/" class="text-on-surface-variant hover:text-primary-fixed transition-colors text-label-sm font-label-sm uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Volver al inicio
+      </router-link>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center p-container-margin md:p-stack-lg">
+      <div class="max-w-4xl w-full mx-auto glass-panel rounded-2xl shadow-2xl relative overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-[auto_1fr] ">
+          <!-- Left accent strip -->
+          <div class="w-full md:w-14 bg-primary-fixed flex md:flex-col items-center justify-between py-6 px-4 md:px-0 shrink-0">
+            <span class="material-symbols-outlined text-on-primary">shield</span>
+            <div class="hidden md:block transform -rotate-90 text-on-primary font-bold tracking-widest text-label-sm font-label-sm whitespace-nowrap uppercase">
+              Registro de Equipo {{ new Date().getFullYear() }}
+            </div>
+            <div class="w-px h-16 bg-on-primary/40 hidden md:block"></div>
+          </div>
+
+          <!-- Form Content -->
+          <div class="p-container-margin md:p-stack-lg">
+            <div class="mb-stack-md">
+              <h2 class="text-primary-fixed font-label-sm text-label-sm tracking-widest mb-1 flex items-center gap-2 uppercase">
+                Pro Performance <span class="w-8 h-px bg-white/20 block"></span>
+              </h2>
+              <h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg uppercase italic tracking-wide text-white">Inscripción Técnica</h1>
+            </div>
+
+            <form @submit.prevent="submitForm" class="space-y-stack-lg">
+              <!-- Images Upload -->
+              <div class="flex flex-col md:flex-row gap-gutter">
+                <div>
+                  <div class="upload-area relative w-32 h-32 rounded-lg flex flex-col items-center justify-center overflow-hidden cursor-pointer group" @click="triggerFileInput">
+                    <img v-if="previewUrl" :src="previewUrl" class="absolute inset-0 w-full h-full object-cover" />
+                    <template v-else>
+                      <span class="material-symbols-outlined text-3xl text-on-surface-variant group-hover:text-primary-fixed mb-1 transition-colors">add_photo_alternate</span>
+                      <span class="text-label-sm font-label-sm text-on-surface-variant group-hover:text-white transition-colors text-center px-2">Subir escudo</span>
+                    </template>
+                    <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg" @change="onFileChange" />
+                  </div>
+                  <h3 class="text-label-sm font-label-sm text-on-surface uppercase mt-2 mb-1 tracking-wider">Escudo del Equipo <span class="text-error">*</span></h3>
+                  <p class="text-label-sm text-on-surface-variant">Formato PNG o JPG. Máximo 5MB.</p>
                 </div>
-                
-                <button type="button" class="absolute -bottom-3 -right-3 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center hover:bg-[#aacc00] transition-colors" @click="triggerFileInput">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+
+                <div>
+                  <div class="upload-area relative w-32 h-32 rounded-lg flex flex-col items-center justify-center overflow-hidden cursor-pointer group" @click="triggerFileInputRep">
+                    <img v-if="previewUrlRep" :src="previewUrlRep" class="absolute inset-0 w-full h-full object-cover" />
+                    <template v-else>
+                      <span class="material-symbols-outlined text-3xl text-on-surface-variant group-hover:text-primary-fixed mb-1 transition-colors">person_add</span>
+                      <span class="text-label-sm font-label-sm text-on-surface-variant group-hover:text-white transition-colors text-center px-2">Foto rep.</span>
+                    </template>
+                    <input type="file" ref="fileInputRep" class="hidden" accept="image/png, image/jpeg" @change="onFileChangeRep" />
+                  </div>
+                  <h3 class="text-label-sm font-label-sm text-on-surface uppercase mt-2 mb-1 tracking-wider">Foto del Representante</h3>
+                  <p class="text-label-sm text-on-surface-variant">Opcional. Formato PNG o JPG.</p>
+                </div>
+              </div>
+
+              <!-- Team Details -->
+              <div class="glass-panel p-stack-md rounded-xl space-y-stack-md relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-background via-primary-fixed to-background opacity-50"></div>
+                <h2 class="text-title-md font-title-md text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-fixed">shield</span>
+                  Información del Equipo
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div class="flex flex-col gap-1">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Nombre del equipo <span class="text-error">*</span></label>
+                    <input v-model="form.nombre" type="text" class="input-dark w-full px-0 py-3 text-body-md font-body-md focus:ring-0" placeholder="Ej. Los Halcones" required>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Representante <span class="text-error">*</span></label>
+                    <input v-model="form.representante" type="text" class="input-dark w-full px-0 py-3 text-body-md font-body-md focus:ring-0" placeholder="Nombre completo" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Representative Details -->
+              <div class="glass-panel p-stack-md rounded-xl space-y-stack-md relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-background via-surface-variant to-background opacity-50"></div>
+                <h2 class="text-title-md font-title-md text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-fixed">badge</span>
+                  Detalles de Contacto
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div class="flex flex-col gap-1">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Teléfono (+502) <span class="text-error">*</span></label>
+                    <div class="flex items-end">
+                      <span class="text-on-surface-variant mr-2 pb-3 border-b border-white/10">+502</span>
+                      <input v-model="form.telefono" type="text" minlength="8" maxlength="8" pattern="[0-9]{8}" title="Debe contener exactamente 8 dígitos" class="input-dark w-full px-0 py-3 text-body-md font-body-md focus:ring-0" placeholder="00000000" required>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">DPI / Identificación <span class="text-error">*</span></label>
+                    <input v-model="form.dpi" type="text" minlength="13" maxlength="13" pattern="[0-9]{13}" title="Debe contener exactamente 13 dígitos" class="input-dark w-full px-0 py-3 text-body-md font-body-md focus:ring-0 tracking-widest" placeholder="13 dígitos sin espacios" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirmation -->
+              <div>
+                <h3 class="text-primary-fixed font-label-sm text-label-sm tracking-widest mb-4 flex items-center gap-2 uppercase">
+                  Confirmación Final <span class="w-16 h-px bg-white/20 block"></span>
+                </h3>
+                <div class="glass-panel rounded-lg p-4 flex items-start gap-4 cursor-pointer hover:border-white/30 transition-colors" @click="accepted = !accepted">
+                  <div class="mt-1 w-5 h-5 rounded border border-outline flex items-center justify-center shrink-0" :class="{'bg-primary-fixed border-primary-fixed text-on-primary': accepted}">
+                    <span v-if="accepted" class="material-symbols-outlined text-[16px] leading-none">check</span>
+                  </div>
+                  <p class="text-label-sm text-on-surface-variant">Acepto el reglamento institucional y el compromiso de fair play. Entiendo que los datos serán verificados con la institución oficial.</p>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex justify-end gap-6 items-center pt-2">
+                <router-link to="/" class="text-label-sm font-label-sm text-on-surface-variant hover:text-white uppercase tracking-widest">
+                  Cancelar
+                </router-link>
+                <button type="submit" :disabled="!accepted || isLoading" class="btn-primary rounded-lg py-3 px-8 font-bold text-title-md font-title-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <span v-if="isLoading">Guardando...</span>
+                  <template v-else>
+                    Guardar Equipo
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </template>
                 </button>
               </div>
-              <h3 class="text-xs font-bold text-gray-300 uppercase mb-1">Escudo del Equipo</h3>
-              <p class="text-xs text-gray-500">Formato PNG o JPG. Máximo 5MB.</p>
-            </div>
-            
-            <div>
-              <div class="relative w-32 mb-2">
-                <div class="w-32 h-32 border border-dashed border-gray-600 rounded-lg flex flex-col items-center justify-center text-gray-500 overflow-hidden relative cursor-pointer" @click="triggerFileInputRep">
-                  <img v-if="previewUrlRep" :src="previewUrlRep" class="absolute inset-0 w-full h-full object-cover" />
-                  <svg v-else class="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                  
-                  <input type="file" ref="fileInputRep" class="hidden" accept="image/png, image/jpeg" @change="onFileChangeRep" />
+
+              <div v-if="error" class="p-3 bg-error-container/20 border border-error/50 text-error text-sm rounded-lg text-center">
+                {{ error }}
+              </div>
+            </form>
+
+            <!-- Success Credentials Card -->
+            <div v-if="success" class="absolute inset-0 bg-background/95 backdrop-blur-md z-50 flex flex-col items-center justify-center p-stack-lg text-center">
+              <div class="glass-panel glow-card p-stack-lg rounded-2xl flex flex-col items-center text-center max-w-sm w-full">
+                <div class="w-16 h-16 rounded-full bg-primary-fixed/20 flex items-center justify-center mb-6">
+                  <span class="material-symbols-outlined text-4xl text-primary-fixed">check_circle</span>
                 </div>
-                
-                <button type="button" class="absolute -bottom-3 -right-3 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center hover:bg-[#aacc00] transition-colors" @click="triggerFileInputRep">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                </button>
-              </div>
-              <h3 class="text-xs font-bold text-gray-300 uppercase mb-1">Foto del Representante</h3>
-              <p class="text-xs text-gray-500">Opcional. Formato PNG o JPG.</p>
-            </div>
-          </div>
+                <h2 class="text-headline-lg-mobile font-headline-lg-mobile text-white uppercase tracking-wider mb-2">¡Equipo Registrado!</h2>
+                <p class="text-on-surface-variant text-body-md font-body-md mb-8">Guarda estas credenciales. Las necesitarás para iniciar sesión y registrar a tus jugadores.</p>
 
-          <!-- Form Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Nombre del equipo <span class="text-primary">*</span></label>
-              <input v-model="form.nombre" type="text" class="w-full bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600" placeholder="Ej. Los Halcones" required>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Representante <span class="text-primary">*</span></label>
-              <input v-model="form.representante" type="text" class="w-full bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600" placeholder="Nombre completo" required>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-300 uppercase mb-2">Teléfono <span class="text-primary">*</span></label>
-              <div class="flex">
-                <div class="bg-[#121212] border-r border-[#1e1e1e] px-4 py-3 text-sm text-gray-400 font-bold">+502</div>
-                <input v-model="form.telefono" type="text" minlength="8" maxlength="8" pattern="[0-9]{8}" title="Debe contener exactamente 8 dígitos" class="flex-grow bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600" placeholder="00000000" required>
+                <div class="w-full bg-surface-container rounded-xl p-4 border border-white/5 space-y-4 mb-8 text-left">
+                  <div>
+                    <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider block mb-1">Usuario (DPI)</span>
+                    <div class="text-white font-mono text-title-md bg-surface p-2 rounded">{{ credentials?.usuario }}</div>
+                  </div>
+                  <div>
+                    <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider block mb-1">Contraseña (Teléfono)</span>
+                    <div class="text-primary-fixed font-mono text-title-md bg-surface p-2 rounded">{{ credentials?.password }}</div>
+                  </div>
+                </div>
+
+                <router-link to="/login" class="w-full btn-primary rounded-lg py-3 px-6 font-bold text-body-md font-body-md text-center uppercase">
+                  Ir a Iniciar Sesión
+                </router-link>
               </div>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-300 uppercase mb-2">DPI / Identificación <span class="text-primary">*</span></label>
-              <input v-model="form.dpi" type="text" minlength="13" maxlength="13" pattern="[0-9]{13}" title="Debe contener exactamente 13 dígitos" class="w-full bg-[#161616] border border-transparent focus:border-primary text-white p-3 rounded-none outline-none text-sm placeholder-gray-600 tracking-widest" placeholder="13 dígitos sin espacios" required>
-            </div>
           </div>
-          
-          <div class="mb-8">
-            <h3 class="text-primary font-bold text-xs tracking-widest mb-4 flex items-center gap-2 uppercase">
-              Confirmación Final <span class="w-16 h-px bg-gray-700 block"></span>
-            </h3>
-            <div class="bg-[#161616] p-4 flex items-start gap-4 border border-transparent hover:border-gray-800 transition-colors cursor-pointer" @click="accepted = !accepted">
-              <div class="mt-1 w-5 h-5 border border-gray-600 flex items-center justify-center shrink-0" :class="{'bg-primary border-primary text-black': accepted}">
-                <svg v-if="accepted" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              <p class="text-xs text-gray-400">Acepto el reglamento institucional y el compromiso de fair play. Entiendo que los datos serán verificados con la institución oficial.</p>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex justify-end gap-6 items-center">
-            <router-link to="/" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-widest">
-              Cancelar
-            </router-link>
-            <button type="submit" :disabled="!accepted || isLoading" class="bg-primary hover:bg-[#aacc00] text-black font-bold py-3 px-8 text-sm uppercase flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-              <span v-if="isLoading">Guardando...</span>
-              <template v-else>
-                Guardar Equipo
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </template>
-            </button>
-          </div>
-          
-          <div v-if="error" class="mt-4 p-3 bg-red-900/30 border border-red-500 text-red-400 text-sm rounded-lg">
-            {{ error }}
-          </div>
-        </form>
-
-        <!-- Success Credentials Card -->
-        <div v-if="success" class="absolute inset-0 bg-[#121212] z-50 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-[#ccff00]">
-          <div class="w-20 h-20 bg-[#ccff00]/10 rounded-full flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-[#ccff00]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          </div>
-          <h2 class="text-3xl font-black text-white italic tracking-tight mb-2">¡EQUIPO REGISTRADO!</h2>
-          <p class="text-gray-400 text-sm mb-8">Guarda estas credenciales. Las necesitarás para iniciar sesión y registrar a tus jugadores.</p>
-          
-          <div class="bg-[#1e1e1e] border border-gray-700 w-full max-w-sm rounded-xl p-6 mb-8 text-left">
-            <div class="mb-4">
-              <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Usuario (DPI)</label>
-              <div class="text-white font-mono text-lg font-bold bg-[#121212] p-3 rounded border border-gray-800">{{ credentials?.usuario }}</div>
-            </div>
-            <div>
-              <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Contraseña (Teléfono)</label>
-              <div class="text-[#ccff00] font-mono text-lg font-bold bg-[#121212] p-3 rounded border border-gray-800">{{ credentials?.password }}</div>
-            </div>
-          </div>
-
-          <router-link to="/login" class="bg-[#ccff00] text-black font-bold py-4 px-12 rounded-full uppercase hover:bg-[#b3e600] transition-colors">
-            Ir a Iniciar Sesión
-          </router-link>
         </div>
       </div>
-      
-      <!-- Right Decorative Info -->
-      <div class="hidden md:flex flex-col justify-center items-center p-8 border-l border-gray-800 shrink-0 min-w-[120px]">
-        <div class="text-center mb-16">
-          <div class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-4">Latency</div>
-          <div class="w-px h-12 bg-primary/30 mx-auto mb-4"></div>
-          <div class="text-primary font-bold text-xs">12ms</div>
-        </div>
-        <div class="text-center">
-          <div class="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-4">Secure</div>
-          <svg class="w-5 h-5 text-primary mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
-        </div>
-      </div>
-      
-    </div>
+    </main>
   </div>
 </template>
 

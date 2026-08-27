@@ -1,93 +1,147 @@
 <template>
-  <div class="p-4 md:p-8">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <h1 class="text-3xl font-black italic tracking-tight">HISTORIAL DE PARTIDOS</h1>
-        <p class="text-gray-400 text-sm mt-1">Todos los resultados y estadísticas registrados</p>
+  <div class="min-h-screen flex flex-col md:flex-row bg-background text-on-background">
+    <!-- Desktop SideNav -->
+    <aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container-lowest border-r border-outline-variant/30 shadow-xl p-gutter sticky top-0 shrink-0 z-40">
+      <div class="mb-stack-lg">
+        <router-link to="/" class="text-headline-lg font-headline-lg text-primary-fixed uppercase tracking-tighter">DEPORTES</router-link>
       </div>
-      <button @click="$router.go(-1)" class="text-gray-400 hover:text-white transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>Volver
-      </button>
-    </div>
+      <nav class="flex-1 space-y-2">
+        <router-link to="/" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 rounded-lg">
+          <span class="material-symbols-outlined font-light">dashboard</span>
+          <span class="text-label-sm font-label-sm uppercase">Inicio</span>
+        </router-link>
+        <router-link to="/estadisticas" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 rounded-lg">
+          <span class="material-symbols-outlined font-light">bar_chart</span>
+          <span class="text-label-sm font-label-sm uppercase">Estadísticas</span>
+        </router-link>
+        <span class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg ring-1 ring-primary-fixed/50 scale-[0.98]">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+          <span class="text-label-sm font-label-sm uppercase font-bold">Historial</span>
+        </span>
+      </nav>
+      <div class="mt-auto pt-stack-md border-t border-outline-variant/30">
+        <router-link to="/login" class="w-full flex items-center justify-center gap-2 py-3 bg-transparent border border-outline-variant text-on-surface hover:border-primary-fixed hover:text-primary-fixed transition-colors rounded-lg">
+          <span class="material-symbols-outlined font-light text-sm">login</span>
+          <span class="text-label-sm font-label-sm uppercase">Login</span>
+        </router-link>
+      </div>
+    </aside>
 
-    <div v-if="loading" class="flex justify-center py-20">
-      <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#ccff00]"></div>
-    </div>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col max-w-full overflow-hidden">
+      <!-- Mobile Top Nav -->
+      <header class="md:hidden flex justify-between items-center px-container-margin py-4 w-full bg-background/80 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+        <button @click="$router.go(-1)" class="flex items-center gap-2 text-on-surface-variant hover:text-primary-fixed transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary-fixed tracking-tighter uppercase">DEPORTES</h1>
+      </header>
 
-    <div v-else-if="!partidos.length" class="text-center py-20 bg-[#121212] rounded-2xl border border-gray-800">
-      <i class="fas fa-calendar-times text-4xl text-gray-600 mb-4"></i>
-      <h2 class="text-xl font-bold text-gray-400">No hay partidos registrados</h2>
-      <p class="text-gray-500 mt-2">Los resultados aparecerán aquí una vez que se registren.</p>
-    </div>
-
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="partido in partidos" :key="partido.id" 
-           class="bg-[#121212] border border-gray-800 rounded-2xl overflow-hidden hover:border-[#ccff00]/50 transition-colors cursor-pointer"
-           @click="verDetalle(partido.id)">
-        <div class="p-3 bg-gray-900/50 flex justify-between items-center text-xs text-gray-400 border-b border-gray-800">
-          <span>{{ formatDate(partido.fecha) }}</span>
-          <button v-if="userRole === 'admin'" @click.stop="confirmDelete(partido.id)" class="text-red-500 hover:text-red-400 p-1 bg-red-500/10 rounded-full w-7 h-7 flex items-center justify-center transition-colors" title="Eliminar partido">
-            <i class="fas fa-trash-alt"></i>
+      <div class="px-container-margin md:px-stack-lg py-stack-lg flex-1 overflow-y-auto">
+        <div class="flex justify-between items-end mb-stack-lg">
+          <div>
+            <h2 class="text-headline-lg font-headline-lg md:text-display-lg md:font-display-lg uppercase tracking-tighter">Historial de Partidos</h2>
+            <p class="text-on-surface-variant text-body-md mt-2 max-w-xl">Revisa resultados pasados y estadísticas de jugadores de la temporada.</p>
+          </div>
+          <button @click="$router.go(-1)" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-primary-fixed/50 text-label-sm font-label-sm transition-colors text-on-surface bg-[#252525]">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Volver
           </button>
         </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between">
-            <!-- Local -->
-            <div class="flex flex-col items-center gap-2 flex-1">
-              <img :src="getFotoUrl(partido.equipo_local_foto)" class="w-16 h-16 rounded-full object-cover border border-gray-700" @error="handleImageError"/>
-              <span class="font-bold text-center text-sm truncate w-full">{{ partido.equipo_local_nombre }}</span>
-            </div>
-            
-            <!-- Marcador -->
-            <div class="px-4 text-center">
-              <div class="bg-black border border-gray-800 rounded-lg px-4 py-2 font-black text-2xl tracking-widest text-[#ccff00] shadow-inner">
-                {{ partido.goles_local }} - {{ partido.goles_visitante }}
-              </div>
-            </div>
 
-            <!-- Visitante -->
-            <div class="flex flex-col items-center gap-2 flex-1">
-              <img :src="getFotoUrl(partido.equipo_visitante_foto)" class="w-16 h-16 rounded-full object-cover border border-gray-700" @error="handleImageError"/>
-              <span class="font-bold text-center text-sm truncate w-full">{{ partido.equipo_visitante_nombre }}</span>
-            </div>
-          </div>
+        <div v-if="loading" class="flex justify-center py-20">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-fixed"></div>
         </div>
-        <div class="bg-gray-800/30 p-3 text-center text-xs text-[#ccff00] font-bold hover:bg-[#ccff00] hover:text-black transition-colors">
-          VER ESTADÍSTICAS
+
+        <div v-else-if="!partidos.length" class="text-center py-20 glass-card rounded-2xl border border-outline-variant/30">
+          <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4">event_busy</span>
+          <h2 class="text-title-md font-title-md text-on-surface-variant">No hay partidos registrados</h2>
+          <p class="text-on-surface-variant/70 text-body-md mt-2">Los resultados aparecerán aquí una vez que se registren.</p>
+        </div>
+
+        <!-- Match Grid -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-stack-md">
+          <article
+            v-for="partido in partidos"
+            :key="partido.id"
+            class="glass-card rounded-xl p-5 relative overflow-hidden group cursor-pointer neon-glow transition-all flex flex-col justify-between h-full"
+            tabindex="0"
+            @click="verDetalle(partido.id)"
+          >
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-label-sm font-label-sm text-on-surface-variant">{{ formatDate(partido.fecha) }}</span>
+              <button
+                v-if="userRole === 'admin'"
+                @click.stop="confirmDelete(partido.id)"
+                class="text-error hover:text-error p-1 bg-error/10 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
+                title="Eliminar partido"
+              >
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+              <span v-else class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors">arrow_forward</span>
+            </div>
+            <div class="flex justify-between items-center mb-6">
+              <div class="flex items-center gap-3 min-w-0">
+                <img :src="getFotoUrl(partido.equipo_local_foto)" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 shrink-0" @error="handleImageError" />
+                <span class="font-bold text-on-surface truncate">{{ partido.equipo_local_nombre }}</span>
+              </div>
+              <span class="text-title-md font-bold text-on-surface shrink-0 ml-2">{{ partido.goles_local }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-3 min-w-0">
+                <img :src="getFotoUrl(partido.equipo_visitante_foto)" class="w-10 h-10 rounded-full object-cover border border-outline-variant/50 shrink-0" @error="handleImageError" />
+                <span class="font-bold text-on-surface truncate">{{ partido.equipo_visitante_nombre }}</span>
+              </div>
+              <span class="text-title-md font-bold text-primary-fixed shrink-0 ml-2">{{ partido.goles_visitante }}</span>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/5 text-center">
+              <span class="text-[10px] text-primary-fixed uppercase tracking-widest font-bold">Ver Estadísticas</span>
+            </div>
+          </article>
         </div>
       </div>
-    </div>
+
+      <!-- Footer -->
+      <footer class="mt-auto border-t border-white/5 bg-surface-container-lowest py-stack-md px-container-margin w-full flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-title-md font-title-md text-on-surface">DEPORTES GUATEMALA</div>
+        <div class="text-label-sm font-label-sm text-on-surface-variant opacity-50">© 2026 DEPORTES GUATEMALA. TODOS LOS DERECHOS RESERVADOS.</div>
+      </footer>
+    </main>
 
     <!-- Modal Detalle -->
-    <div v-if="partidoSeleccionado" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm" @click.self="partidoSeleccionado = null">
-      <div class="bg-[#121212] border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+    <div v-if="partidoSeleccionado" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click.self="partidoSeleccionado = null">
+      <div class="glass-card w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
-        <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/80">
-          <h2 class="text-xl font-black italic">DETALLE DEL PARTIDO</h2>
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-[#1A1A1A]">
+          <h3 class="text-headline-lg font-headline-lg uppercase text-white tracking-tight">Detalle del Partido</h3>
           <div class="flex items-center gap-4">
-            <button v-if="userRole === 'admin'" @click="confirmDelete(partidoSeleccionado.id)" class="text-red-500 hover:text-red-400 bg-red-500/10 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
-              <i class="fas fa-trash-alt"></i> Eliminar
+            <button
+              v-if="userRole === 'admin'"
+              @click="confirmDelete(partidoSeleccionado.id)"
+              class="text-error hover:text-error bg-error/10 px-3 py-1.5 rounded-lg text-label-sm font-label-sm font-bold flex items-center gap-2 transition-colors uppercase"
+            >
+              <span class="material-symbols-outlined text-[18px]">delete</span> Eliminar
             </button>
-            <button @click="partidoSeleccionado = null" class="text-gray-400 hover:text-white">
-              <i class="fas fa-times text-xl"></i>
+            <button @click="partidoSeleccionado = null" class="text-on-surface-variant hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors">
+              <span class="material-symbols-outlined">close</span>
             </button>
           </div>
         </div>
-        
+
         <!-- Modal Body -->
-        <div class="p-6 overflow-y-auto">
-          <!-- Resumen Marcador -->
-          <div class="flex items-center justify-center gap-8 mb-8">
-            <div class="text-center w-1/3">
-              <img :src="getFotoUrl(partidoSeleccionado.equipo_local_foto)" class="w-20 h-20 rounded-full mx-auto mb-2 object-cover" @error="handleImageError"/>
-              <p class="font-bold text-lg">{{ partidoSeleccionado.equipo_local_nombre }}</p>
+        <div class="p-6 overflow-y-auto flex-1">
+          <div class="flex items-center justify-between mb-8 bg-[#252525] p-6 rounded-lg border border-white/5">
+            <div class="flex flex-col items-center gap-2 w-1/3">
+              <img :src="getFotoUrl(partidoSeleccionado.equipo_local_foto)" class="w-16 h-16 rounded-full object-cover" @error="handleImageError" />
+              <span class="font-bold text-center text-on-surface truncate w-full">{{ partidoSeleccionado.equipo_local_nombre }}</span>
             </div>
-            <div class="font-black text-5xl text-[#ccff00]">
-              {{ partidoSeleccionado.goles_local }} - {{ partidoSeleccionado.goles_visitante }}
+            <div class="text-center shrink-0">
+              <div class="text-display-lg font-display-lg text-primary-fixed leading-none">{{ partidoSeleccionado.goles_local }} - {{ partidoSeleccionado.goles_visitante }}</div>
+              <div class="text-label-sm font-label-sm text-on-surface-variant mt-2 uppercase">Final</div>
             </div>
-            <div class="text-center w-1/3">
-              <img :src="getFotoUrl(partidoSeleccionado.equipo_visitante_foto)" class="w-20 h-20 rounded-full mx-auto mb-2 object-cover" @error="handleImageError"/>
-              <p class="font-bold text-lg">{{ partidoSeleccionado.equipo_visitante_nombre }}</p>
+            <div class="flex flex-col items-center gap-2 w-1/3">
+              <img :src="getFotoUrl(partidoSeleccionado.equipo_visitante_foto)" class="w-16 h-16 rounded-full object-cover" @error="handleImageError" />
+              <span class="font-bold text-center text-on-surface truncate w-full">{{ partidoSeleccionado.equipo_visitante_nombre }}</span>
             </div>
           </div>
 
@@ -95,21 +149,21 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Local Stats -->
             <div>
-              <h3 class="font-bold text-[#ccff00] mb-3 border-b border-gray-800 pb-2">Estadísticas {{ partidoSeleccionado.equipo_local_nombre }}</h3>
+              <h4 class="text-title-md font-title-md text-primary-fixed mb-3 border-b border-white/5 pb-2">Estadísticas {{ partidoSeleccionado.equipo_local_nombre }}</h4>
               <div class="space-y-2">
-                <div v-for="est in getEstadisticasEquipo(partidoSeleccionado.equipo_local_id)" :key="est.id" class="bg-gray-800/30 p-3 rounded-lg flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <img :src="getFotoUrl(est.jugador_foto)" class="w-8 h-8 rounded-full" @error="handleImageError" />
-                    <div>
-                      <p class="text-sm font-bold">{{ est.jugador_nombre }}</p>
-                      <p class="text-[10px] text-gray-500">{{ est.posicion }}</p>
+                <div v-for="est in getEstadisticasEquipo(partidoSeleccionado.equipo_local_id)" :key="est.id" class="bg-[#1A1A1A] p-3 rounded-lg border border-white/5 flex items-center justify-between">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <img :src="getFotoUrl(est.jugador_foto)" class="w-8 h-8 rounded-full shrink-0" @error="handleImageError" />
+                    <div class="min-w-0">
+                      <p class="text-body-md font-bold text-on-surface truncate">{{ est.jugador_nombre }}</p>
+                      <p class="text-[10px] text-on-surface-variant">{{ est.posicion }}</p>
                     </div>
                   </div>
-                  <div class="flex gap-3 text-xs">
-                    <span v-if="est.goles > 0" title="Goles"><i class="fas fa-futbol text-[#ccff00] mr-1"></i>{{ est.goles }}</span>
-                    <span v-if="est.tarjetas_amarillas > 0" title="Amarillas"><i class="fas fa-square text-yellow-500 mr-1"></i>{{ est.tarjetas_amarillas }}</span>
-                    <span v-if="est.tarjetas_rojas > 0" title="Rojas"><i class="fas fa-square text-red-500 mr-1"></i>{{ est.tarjetas_rojas }}</span>
-                    <span v-if="est.jugo_como_portero" title="Goles Recibidos"><i class="fas fa-hands text-gray-400 mr-1"></i>-{{ est.goles_recibidos }}</span>
+                  <div class="flex gap-3 text-label-sm font-label-sm text-on-surface-variant shrink-0">
+                    <span v-if="est.goles > 0" title="Goles" class="text-primary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">sports_soccer</span>{{ est.goles }}</span>
+                    <span v-if="est.tarjetas_amarillas > 0" title="Amarillas" class="flex items-center gap-1 text-yellow-500"><span class="material-symbols-outlined text-[16px]">square</span>{{ est.tarjetas_amarillas }}</span>
+                    <span v-if="est.tarjetas_rojas > 0" title="Rojas" class="flex items-center gap-1 text-error"><span class="material-symbols-outlined text-[16px]">square</span>{{ est.tarjetas_rojas }}</span>
+                    <span v-if="est.jugo_como_portero" title="Goles Recibidos" class="flex items-center gap-1">-{{ est.goles_recibidos }}</span>
                   </div>
                 </div>
               </div>
@@ -117,27 +171,26 @@
 
             <!-- Visitante Stats -->
             <div>
-              <h3 class="font-bold text-white mb-3 border-b border-gray-800 pb-2">Estadísticas {{ partidoSeleccionado.equipo_visitante_nombre }}</h3>
+              <h4 class="text-title-md font-title-md text-on-surface mb-3 border-b border-white/5 pb-2">Estadísticas {{ partidoSeleccionado.equipo_visitante_nombre }}</h4>
               <div class="space-y-2">
-                <div v-for="est in getEstadisticasEquipo(partidoSeleccionado.equipo_visitante_id)" :key="est.id" class="bg-gray-800/30 p-3 rounded-lg flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <img :src="getFotoUrl(est.jugador_foto)" class="w-8 h-8 rounded-full" @error="handleImageError" />
-                    <div>
-                      <p class="text-sm font-bold">{{ est.jugador_nombre }}</p>
-                      <p class="text-[10px] text-gray-500">{{ est.posicion }}</p>
+                <div v-for="est in getEstadisticasEquipo(partidoSeleccionado.equipo_visitante_id)" :key="est.id" class="bg-[#1A1A1A] p-3 rounded-lg border border-white/5 flex items-center justify-between">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <img :src="getFotoUrl(est.jugador_foto)" class="w-8 h-8 rounded-full shrink-0" @error="handleImageError" />
+                    <div class="min-w-0">
+                      <p class="text-body-md font-bold text-on-surface truncate">{{ est.jugador_nombre }}</p>
+                      <p class="text-[10px] text-on-surface-variant">{{ est.posicion }}</p>
                     </div>
                   </div>
-                  <div class="flex gap-3 text-xs">
-                    <span v-if="est.goles > 0" title="Goles"><i class="fas fa-futbol text-white mr-1"></i>{{ est.goles }}</span>
-                    <span v-if="est.tarjetas_amarillas > 0" title="Amarillas"><i class="fas fa-square text-yellow-500 mr-1"></i>{{ est.tarjetas_amarillas }}</span>
-                    <span v-if="est.tarjetas_rojas > 0" title="Rojas"><i class="fas fa-square text-red-500 mr-1"></i>{{ est.tarjetas_rojas }}</span>
-                    <span v-if="est.jugo_como_portero" title="Goles Recibidos"><i class="fas fa-hands text-gray-400 mr-1"></i>-{{ est.goles_recibidos }}</span>
+                  <div class="flex gap-3 text-label-sm font-label-sm text-on-surface-variant shrink-0">
+                    <span v-if="est.goles > 0" title="Goles" class="flex items-center gap-1 text-white"><span class="material-symbols-outlined text-[16px]">sports_soccer</span>{{ est.goles }}</span>
+                    <span v-if="est.tarjetas_amarillas > 0" title="Amarillas" class="flex items-center gap-1 text-yellow-500"><span class="material-symbols-outlined text-[16px]">square</span>{{ est.tarjetas_amarillas }}</span>
+                    <span v-if="est.tarjetas_rojas > 0" title="Rojas" class="flex items-center gap-1 text-error"><span class="material-symbols-outlined text-[16px]">square</span>{{ est.tarjetas_rojas }}</span>
+                    <span v-if="est.jugo_como_portero" title="Goles Recibidos" class="flex items-center gap-1">-{{ est.goles_recibidos }}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
