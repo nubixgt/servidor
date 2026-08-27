@@ -446,53 +446,49 @@
     </div>
 
     <!-- Modal Detalle Encargado -->
-    <div v-if="encargadoDetalle" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 backdrop-blur-sm" @click="encargadoDetalle = null">
-      <div class="w-full max-w-sm relative flex flex-col items-center" @click.stop>
-        <div class="w-full flex justify-start mb-6">
-          <button @click="encargadoDetalle = null" class="flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors bg-surface-container-lowest/90 px-4 py-2 rounded-lg border border-white/10 shadow-lg">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span> Regresar
-          </button>
+    <div v-if="encargadoDetalle" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" @click="encargadoDetalle = null">
+      <div class="glass-card p-6 rounded-xl w-full max-w-md relative" @click.stop>
+        <div class="flex flex-col items-center mb-6 mt-4">
+          <div
+            :class="['w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-primary-fixed flex items-center justify-center bg-surface-container-high', encargadoDetalle.foto_representante_ruta ? 'cursor-pointer' : '']"
+            @click="encargadoDetalle.foto_representante_ruta && (fotoAmpliada = IMAGE_BASE_URL + encargadoDetalle.foto_representante_ruta)"
+          >
+            <img v-if="encargadoDetalle.foto_representante_ruta" :src="IMAGE_BASE_URL + encargadoDetalle.foto_representante_ruta" class="w-full h-full object-cover">
+            <span v-else class="material-symbols-outlined text-on-surface-variant text-[48px]">person</span>
+          </div>
+          <h3 class="font-black text-2xl uppercase tracking-tight text-center text-on-surface">{{ encargadoDetalle.representante }}</h3>
+          <span class="mt-2 inline-block px-3 py-1 text-[10px] font-bold uppercase rounded-full border bg-primary-container/10 text-primary-fixed border-primary-fixed/30">
+            Representante
+          </span>
         </div>
 
-        <!-- Premium Card -->
-        <div class="relative w-[280px] h-[420px] mx-auto rounded-xl shadow-2xl overflow-hidden text-on-surface font-serif transform transition-transform hover:scale-105" style="background: linear-gradient(135deg, #1f2410 0%, #0e0e0e 100%); border: 1px solid rgba(185,246,63,0.4); box-shadow: 0 20px 25px -5px rgba(185, 246, 63, 0.15), 0 10px 10px -5px rgba(185, 246, 63, 0.08);">
-          <!-- Top section (Foto Representante) -->
-          <div class="w-full h-[240px] absolute top-0 left-0 flex justify-center items-end" style="mask-image: linear-gradient(to bottom, black 65%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 65%, transparent 100%);">
-            <img v-if="encargadoDetalle.foto_representante_ruta" :src="IMAGE_BASE_URL + encargadoDetalle.foto_representante_ruta" class="w-full h-full object-cover object-top filter contrast-110">
-            <div v-else class="w-full h-full bg-black/30 flex items-center justify-center">
-              <span class="material-symbols-outlined text-[80px] text-white/40 mb-10">person</span>
+        <div class="space-y-3 bg-surface-container-high p-4 rounded-lg border border-white/10">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="text-xs text-on-surface-variant uppercase font-bold">Equipo</span>
+            <div class="flex items-center gap-2">
+              <img v-if="encargadoDetalle.foto_ruta" :src="IMAGE_BASE_URL + encargadoDetalle.foto_ruta" class="w-5 h-5 rounded-full object-cover border border-white/10">
+              <span v-else class="material-symbols-outlined text-[14px] text-on-surface-variant">shield</span>
+              <span class="text-sm font-bold text-primary-fixed truncate max-w-[150px]">{{ encargadoDetalle.equipo_nombre }}</span>
             </div>
           </div>
-
-          <!-- Info section -->
-          <div class="absolute bottom-5 left-0 right-0 px-4 text-center">
-            <h3 class="text-base leading-tight font-black uppercase border-b border-white/20 pb-2 mb-2 mx-2 flex items-center justify-center drop-shadow-md min-h-[40px]">{{ encargadoDetalle.representante }}</h3>
-
-            <p class="text-[10px] font-black uppercase tracking-widest text-primary-fixed mb-4 drop-shadow-md">Representante</p>
-
-            <div class="flex flex-col gap-y-2 text-[11px] font-bold px-2">
-              <div class="flex justify-between items-center bg-black/30 p-2 rounded-lg border border-white/5">
-                <span class="text-white/60 tracking-wider text-[9px]">EQUIPO</span>
-                <div class="flex items-center gap-2">
-                  <img v-if="encargadoDetalle.foto_ruta" :src="IMAGE_BASE_URL + encargadoDetalle.foto_ruta" class="w-5 h-5 rounded-full object-cover border border-primary-fixed/50 shadow-sm">
-                  <span v-else class="material-symbols-outlined text-[14px] text-on-surface-variant bg-black/50 rounded-full p-1">shield</span>
-                  <span class="text-on-surface truncate max-w-[100px]">{{ encargadoDetalle.equipo_nombre }}</span>
-                </div>
-              </div>
-              <div class="flex justify-between items-center px-2">
-                <span class="text-white/60 tracking-wider text-[9px]">DPI</span>
-                <span class="font-mono text-on-surface">{{ encargadoDetalle.dpi || 'N/A' }}</span>
-              </div>
-              <div class="flex justify-between items-center px-2">
-                <span class="text-white/60 tracking-wider text-[9px]">TELÉFONO</span>
-                <span class="text-on-surface">{{ encargadoDetalle.telefono || 'N/A' }}</span>
-              </div>
-              <div class="flex justify-between items-center px-2">
-                <span class="text-white/60 tracking-wider text-[9px]">JUGADORES ACT.</span>
-                <span class="text-on-surface">{{ encargadoDetalle.cantidad_jugadores }}</span>
-              </div>
-            </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span class="text-xs text-on-surface-variant uppercase font-bold">DPI</span>
+            <span class="text-sm font-mono text-on-surface">{{ encargadoDetalle.dpi || 'N/A' }}</span>
           </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span class="text-xs text-on-surface-variant uppercase font-bold">Teléfono</span>
+            <span class="text-sm text-on-surface">{{ encargadoDetalle.telefono || 'N/A' }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-xs text-on-surface-variant uppercase font-bold">Jugadores Activos</span>
+            <span class="text-sm font-bold text-on-surface">{{ encargadoDetalle.cantidad_jugadores }}</span>
+          </div>
+        </div>
+
+        <div class="flex justify-start mt-4">
+          <button @click="encargadoDetalle = null" class="flex items-center gap-2 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors bg-surface-container-high px-4 py-2 rounded-lg">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span> Regresar
+          </button>
         </div>
       </div>
     </div>
