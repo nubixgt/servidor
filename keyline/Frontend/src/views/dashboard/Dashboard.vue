@@ -313,8 +313,9 @@ function renderMap(puntos) {
     const center = puntos.length ? [puntos[0].lat, puntos[0].lng] : [15.5, -90.25];
     const map = L.map(mapRef.value, { scrollWheelZoom: false }).setView(center, puntos.length ? 7 : 6);
     mapInstance = map;
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18,
+    // Mapa base oscuro de Esri: gratuito y sin API key.
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri', maxZoom: 16,
     }).addTo(map);
 
     const colorFor = { Implementado: '#22c55e', 'Diseño': '#eab308', Levantamiento: '#38bdf8', Pendiente: '#ef4444' };
