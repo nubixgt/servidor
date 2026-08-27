@@ -113,11 +113,17 @@
 
           <!-- Lista de Encargados -->
           <div class="mb-stack-lg">
-            <header class="mb-stack-md">
-              <p class="text-primary-fixed text-label-sm font-label-sm tracking-widest uppercase flex items-center gap-2 mb-1">
-                <span class="w-6 h-px bg-primary-fixed"></span> Contactos
-              </p>
-              <h2 class="text-title-md font-title-md text-on-surface">Lista de Encargados</h2>
+            <header class="mb-stack-md flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+              <div>
+                <p class="text-primary-fixed text-label-sm font-label-sm tracking-widest uppercase flex items-center gap-2 mb-1">
+                  <span class="w-6 h-px bg-primary-fixed"></span> Contactos
+                </p>
+                <h2 class="text-title-md font-title-md text-on-surface">Lista de Encargados</h2>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+                <input v-model="searchEncargados" type="text" placeholder="Buscar representante o equipo..." class="w-full input-dark rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none">
+              </div>
             </header>
             <div class="glass-card rounded-xl overflow-hidden">
               <div class="overflow-x-auto">
@@ -131,10 +137,10 @@
                     </tr>
                   </thead>
                   <tbody class="text-body-md font-body-md">
-                    <tr v-if="encargados.length === 0">
-                      <td colspan="4" class="p-8 text-center text-on-surface-variant text-sm">No hay encargados registrados.</td>
+                    <tr v-if="encargadosFiltrados.length === 0">
+                      <td colspan="4" class="p-8 text-center text-on-surface-variant text-sm">No hay encargados que coincidan con la búsqueda.</td>
                     </tr>
-                    <tr v-for="enc in encargados" :key="enc.equipo_id" @click="verDetalleEncargado(enc)" class="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer">
+                    <tr v-for="enc in encargadosPaginados" :key="enc.equipo_id" @click="verDetalleEncargado(enc)" class="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer">
                       <td class="p-4">
                         <div class="flex items-center gap-3">
                           <div class="w-10 h-10 rounded-full border border-white/10 bg-surface-container-high overflow-hidden shrink-0 flex items-center justify-center">
@@ -155,37 +161,67 @@
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-
-          <!-- Equipos Registrados -->
-          <header class="mb-stack-md mt-stack-lg">
-            <p class="text-primary-fixed text-label-sm font-label-sm tracking-widest uppercase flex items-center gap-2 mb-1">
-              <span class="w-6 h-px bg-primary-fixed"></span> Directorio General
-            </p>
-            <h2 class="text-title-md font-title-md text-on-surface">Equipos Registrados</h2>
-          </header>
-
-          <div v-if="equipos.length === 0" class="text-center py-12 glass-card rounded-xl mb-stack-lg">
-            <p class="text-on-surface-variant font-bold mb-2">No se encontraron equipos.</p>
-            <p class="text-xs text-on-surface-variant/70">Asegúrate de que haya equipos registrados y que la API esté funcionando.</p>
-          </div>
-
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter mb-stack-lg">
-            <div v-for="eq in equipos" :key="eq.id" @click="verEquipo(eq.id)" class="glass-card rounded-xl p-stack-md flex items-center gap-4 hover:border-primary-fixed/50 cursor-pointer transition-colors group">
-              <div class="w-16 h-16 bg-surface-container-high border border-white/10 rounded-lg flex items-center justify-center overflow-hidden shrink-0 group-hover:border-primary-fixed/30 transition-colors">
-                <img v-if="eq.foto_ruta" :src="IMAGE_BASE_URL + eq.foto_ruta" class="w-full h-full object-cover">
-                <span v-else class="material-symbols-outlined text-on-surface-variant text-[28px]">shield</span>
-              </div>
-              <div class="overflow-hidden">
-                <h3 class="font-bold text-sm uppercase truncate text-on-surface">{{ eq.nombre }}</h3>
-                <p class="text-[10px] text-on-surface-variant mt-1 uppercase tracking-widest truncate">Rep: {{ eq.representante }}</p>
-                <div class="mt-2 inline-block px-2 py-1 bg-surface-container-high text-primary-fixed text-[10px] font-bold uppercase rounded border border-white/10">
-                  {{ eq.cantidad_jugadores || 0 }} Jugadores
+              <div v-if="totalPaginasEncargados > 1" class="flex items-center justify-between p-4 border-t border-white/10 bg-surface-container-lowest">
+                <p class="text-on-surface-variant text-xs">Página {{ paginaEncargados }} de {{ totalPaginasEncargados }} · {{ encargadosFiltrados.length }} resultado(s)</p>
+                <div class="flex gap-2">
+                  <button @click="paginaEncargados--" :disabled="paginaEncargados === 1" class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-primary-fixed disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                  </button>
+                  <button @click="paginaEncargados++" :disabled="paginaEncargados === totalPaginasEncargados" class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-primary-fixed disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Equipos Registrados -->
+          <header class="mb-stack-md mt-stack-lg flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+              <p class="text-primary-fixed text-label-sm font-label-sm tracking-widest uppercase flex items-center gap-2 mb-1">
+                <span class="w-6 h-px bg-primary-fixed"></span> Directorio General
+              </p>
+              <h2 class="text-title-md font-title-md text-on-surface">Equipos Registrados</h2>
+            </div>
+            <div class="relative w-full sm:w-64">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+              <input v-model="searchEquipos" type="text" placeholder="Buscar equipo o representante..." class="w-full input-dark rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none">
+            </div>
+          </header>
+
+          <div v-if="equiposFiltrados.length === 0" class="text-center py-12 glass-card rounded-xl mb-stack-lg">
+            <p class="text-on-surface-variant font-bold mb-2">No se encontraron equipos.</p>
+            <p class="text-xs text-on-surface-variant/70">Prueba con otro término de búsqueda.</p>
+          </div>
+
+          <template v-else>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter mb-stack-md">
+              <div v-for="eq in equiposPaginados" :key="eq.id" @click="verEquipo(eq.id)" class="glass-card rounded-xl p-stack-md flex items-center gap-4 hover:border-primary-fixed/50 cursor-pointer transition-colors group">
+                <div class="w-16 h-16 bg-surface-container-high border border-white/10 rounded-lg flex items-center justify-center overflow-hidden shrink-0 group-hover:border-primary-fixed/30 transition-colors">
+                  <img v-if="eq.foto_ruta" :src="IMAGE_BASE_URL + eq.foto_ruta" class="w-full h-full object-cover">
+                  <span v-else class="material-symbols-outlined text-on-surface-variant text-[28px]">shield</span>
+                </div>
+                <div class="overflow-hidden">
+                  <h3 class="font-bold text-sm uppercase truncate text-on-surface">{{ eq.nombre }}</h3>
+                  <p class="text-[10px] text-on-surface-variant mt-1 uppercase tracking-widest truncate">Rep: {{ eq.representante }}</p>
+                  <div class="mt-2 inline-block px-2 py-1 bg-surface-container-high text-primary-fixed text-[10px] font-bold uppercase rounded border border-white/10">
+                    {{ eq.cantidad_jugadores || 0 }} Jugadores
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="totalPaginasEquipos > 1" class="flex items-center justify-between glass-card rounded-xl p-4 mb-stack-lg">
+              <p class="text-on-surface-variant text-xs">Página {{ paginaEquipos }} de {{ totalPaginasEquipos }} · {{ equiposFiltrados.length }} resultado(s)</p>
+              <div class="flex gap-2">
+                <button @click="paginaEquipos--" :disabled="paginaEquipos === 1" class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-primary-fixed disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <button @click="paginaEquipos++" :disabled="paginaEquipos === totalPaginasEquipos" class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-primary-fixed disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </template>
         </div>
 
         <!-- Vista Detalle de Equipo -->
@@ -472,7 +508,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api, { IMAGE_BASE_URL } from '../services/api'
 
@@ -486,6 +522,48 @@ const estadisticasGenerales = ref({ total_jugadores: 0, total_equipos: 0, equipo
 const encargados = ref([])
 const showModalIncompletos = ref(false)
 const encargadoDetalle = ref(null)
+
+const POR_PAGINA = 10
+
+const searchEncargados = ref('')
+const paginaEncargados = ref(1)
+
+const encargadosFiltrados = computed(() => {
+  const q = searchEncargados.value.trim().toLowerCase()
+  if (!q) return encargados.value
+  return encargados.value.filter(e =>
+    e.representante?.toLowerCase().includes(q) || e.equipo_nombre?.toLowerCase().includes(q)
+  )
+})
+
+const totalPaginasEncargados = computed(() => Math.max(1, Math.ceil(encargadosFiltrados.value.length / POR_PAGINA)))
+
+const encargadosPaginados = computed(() => {
+  const start = (paginaEncargados.value - 1) * POR_PAGINA
+  return encargadosFiltrados.value.slice(start, start + POR_PAGINA)
+})
+
+watch(searchEncargados, () => { paginaEncargados.value = 1 })
+
+const searchEquipos = ref('')
+const paginaEquipos = ref(1)
+
+const equiposFiltrados = computed(() => {
+  const q = searchEquipos.value.trim().toLowerCase()
+  if (!q) return equipos.value
+  return equipos.value.filter(e =>
+    e.nombre?.toLowerCase().includes(q) || e.representante?.toLowerCase().includes(q)
+  )
+})
+
+const totalPaginasEquipos = computed(() => Math.max(1, Math.ceil(equiposFiltrados.value.length / POR_PAGINA)))
+
+const equiposPaginados = computed(() => {
+  const start = (paginaEquipos.value - 1) * POR_PAGINA
+  return equiposFiltrados.value.slice(start, start + POR_PAGINA)
+})
+
+watch(searchEquipos, () => { paginaEquipos.value = 1 })
 
 const animacionStats = ref({ total_jugadores: 0, total_equipos: 0, equipos_incompletos: 0, total_partidos: 0 })
 
