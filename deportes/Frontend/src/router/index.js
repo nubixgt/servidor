@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import InscripcionEquipo from '../views/InscripcionEquipo.vue'
@@ -9,6 +9,10 @@ import Estadisticas from '../views/Estadisticas.vue'
 const routes = [
   {
     path: '/',
+    redirect: '/inicio'
+  },
+  {
+    path: '/inicio',
     name: 'Home',
     component: Home
   },
@@ -64,12 +68,12 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/'
+    redirect: '/inicio'
   }
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 
