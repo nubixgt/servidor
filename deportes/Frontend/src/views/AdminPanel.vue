@@ -215,28 +215,28 @@
               No hay jugadores activos.
             </div>
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-gutter">
-              <div v-for="jugador in equipoSeleccionado.jugadores_activos" :key="jugador.id" @click="verDetalle(jugador)" class="relative w-48 h-72 mx-auto rounded-lg shadow-2xl overflow-hidden text-[#3b2800] font-serif transform transition-transform hover:scale-105 cursor-pointer group" style="background: linear-gradient(135deg, #e6c875 0%, #b28a38 100%); border: 1px solid #ffe9a6;">
-                <div class="w-full h-40 absolute top-0 left-0 flex justify-center items-end" style="mask-image: linear-gradient(to bottom, black 75%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 75%, transparent 100%);">
-                  <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-full h-full object-cover object-top filter contrast-125">
-                  <div v-else class="w-full h-full bg-black/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[48px] text-[#3b2800]/50">person</span>
+              <div v-for="jugador in equipoSeleccionado.jugadores_activos" :key="jugador.id" class="glass-card rounded-xl overflow-hidden group transition-colors hover:border-primary-fixed/50">
+                <div class="relative w-full aspect-square bg-surface-container-high overflow-hidden cursor-pointer" @click="verDetalle(jugador)">
+                  <img v-if="jugador.foto_ruta" :src="IMAGE_BASE_URL + jugador.foto_ruta" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                  <div v-else class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[48px] text-on-surface-variant">person</span>
                   </div>
                 </div>
-                <div class="absolute bottom-3 left-0 right-0 px-3 text-center">
-                  <h3 class="text-[11px] leading-tight font-black uppercase border-b border-[#3b2800]/30 pb-1 mb-2 mx-1 h-8 flex items-center justify-center">{{ jugador.nombre }}</h3>
-                  <div class="flex flex-col gap-y-1 text-[9px] font-bold px-1">
-                    <div class="flex justify-between"><span>DPI</span><span class="font-mono">{{ jugador.dpi }}</span></div>
-                    <div class="flex justify-between"><span>TELÉFONO</span><span>{{ jugador.telefono }}</span></div>
-                    <div class="flex justify-between"><span>POSICIÓN</span><span>{{ getNombrePosicion(jugador.posicion) }}</span></div>
+                <div class="p-4 cursor-pointer" @click="verDetalle(jugador)">
+                  <h3 class="text-sm font-bold uppercase text-on-surface truncate group-hover:text-primary-fixed transition-colors">{{ jugador.nombre }}</h3>
+                  <p class="text-[10px] font-label-sm text-primary-fixed uppercase tracking-widest mt-1">{{ getNombrePosicion(jugador.posicion) }}</p>
+                  <div class="mt-3 space-y-1.5 text-[11px]">
+                    <div class="flex justify-between border-b border-white/5 pb-1"><span class="text-on-surface-variant uppercase">DPI</span><span class="font-mono text-on-surface">{{ jugador.dpi }}</span></div>
+                    <div class="flex justify-between"><span class="text-on-surface-variant uppercase">Teléfono</span><span class="text-on-surface">{{ jugador.telefono }}</span></div>
                   </div>
-                  <div class="flex justify-center gap-2 mt-2 pt-2 border-t border-[#3b2800]/30 mx-1">
-                    <button @click.stop="abrirModalEdit(jugador)" class="p-1.5 hover:text-white bg-black/10 hover:bg-black/40 rounded transition-colors" title="Editar">
-                      <span class="material-symbols-outlined text-[16px]">edit</span>
-                    </button>
-                    <button @click.stop="abrirModalBaja(jugador)" class="p-1.5 hover:text-red-600 bg-black/10 hover:bg-black/40 rounded transition-colors" title="Dar de baja">
-                      <span class="material-symbols-outlined text-[16px]">person_remove</span>
-                    </button>
-                  </div>
+                </div>
+                <div class="flex justify-center gap-2 p-3 border-t border-white/10 bg-surface-container-lowest/50">
+                  <button @click.stop="abrirModalEdit(jugador)" class="p-1.5 text-on-surface-variant hover:text-primary-fixed bg-surface-container-high rounded transition-colors" title="Editar">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
+                  </button>
+                  <button @click.stop="abrirModalBaja(jugador)" class="p-1.5 text-on-surface-variant hover:text-error bg-surface-container-high rounded transition-colors" title="Dar de baja">
+                    <span class="material-symbols-outlined text-[16px]">person_remove</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -301,7 +301,10 @@
     <div v-if="jugadorDetalle" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" @click="jugadorDetalle = null">
       <div class="glass-card p-6 rounded-xl w-full max-w-md relative" @click.stop>
         <div class="flex flex-col items-center mb-6 mt-4">
-          <div :class="['w-24 h-24 rounded-full overflow-hidden mb-4 border-2 flex items-center justify-center bg-surface-container-high', jugadorDetalle.estado === 'inactivo' ? 'border-error grayscale' : 'border-primary-fixed']">
+          <div
+            :class="['w-24 h-24 rounded-full overflow-hidden mb-4 border-2 flex items-center justify-center bg-surface-container-high', jugadorDetalle.estado === 'inactivo' ? 'border-error grayscale' : 'border-primary-fixed', jugadorDetalle.foto_ruta ? 'cursor-pointer' : '']"
+            @click="jugadorDetalle.foto_ruta && (fotoAmpliada = IMAGE_BASE_URL + jugadorDetalle.foto_ruta)"
+          >
             <img v-if="jugadorDetalle.foto_ruta" :src="IMAGE_BASE_URL + jugadorDetalle.foto_ruta" class="w-full h-full object-cover">
             <span v-else class="material-symbols-outlined text-on-surface-variant text-[48px]">person</span>
           </div>
@@ -457,6 +460,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Lightbox Foto (estilo WhatsApp) -->
+    <div v-if="fotoAmpliada" class="fixed inset-0 bg-black/95 flex items-center justify-center z-[60] p-4" @click="fotoAmpliada = null">
+      <button @click="fotoAmpliada = null" class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <img :src="fotoAmpliada" class="max-w-full max-h-full rounded-lg object-contain shadow-2xl" @click.stop>
+    </div>
   </div>
 </template>
 
@@ -511,6 +522,7 @@ const editJugadorForm = ref({ id: '', nombre: '', dpi: '', foto: null, fotoUrl: 
 const editJugadorFile = ref(null)
 
 const jugadorDetalle = ref(null)
+const fotoAmpliada = ref(null)
 
 const verDetalle = (jugador) => {
   jugadorDetalle.value = jugador
