@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Inactive Players Directory</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#313030",
+                        "tertiary-container": "#e4e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#656464",
+                        "primary-fixed-dim": "#9ed81d",
+                        "inverse-primary": "#496800",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#243600",
+                        "surface-variant": "#353534",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed-variant": "#474746",
+                        "background": "#131313",
+                        "surface-bright": "#393939",
+                        "on-tertiary": "#303030",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#ffffff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed": "#e4e2e1",
+                        "on-primary-container": "#4e6e00",
+                        "surface-tint": "#9ed81d",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline-variant": "#434935",
+                        "on-error": "#690005",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "primary-container": "#b9f63f",
+                        "on-primary-fixed-variant": "#364e00",
+                        "on-primary-fixed": "#131f00",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#c3caaf",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "outline": "#8d947c",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "primary-fixed": "#b9f63f",
+                        "primary": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#474746"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "container-margin": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "40px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Anton"],
+                        "body-md": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "display-lg": ["Anton"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Anton"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-gradient {
+            background: linear-gradient(180deg, #1A1A1A 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md h-screen overflow-hidden flex flex-col md:flex-row">
+    <!-- TopNavBar (Mobile Only) -->
+    <header
+        class="md:hidden bg-background/80 backdrop-blur-lg dark:bg-background/80 text-primary-fixed dark:text-primary-fixed docked full-width top-0 z-50 border-b border-white/10 flat no shadows flex justify-between items-center px-container-margin py-4 w-full max-w-full">
+        <div class="text-display-lg font-display-lg text-primary-fixed tracking-tighter uppercase">DEPORTES</div>
+        <button class="material-symbols-outlined text-primary-fixed">menu</button>
+    </header>
+    <!-- SideNavBar (Desktop) -->
+    <aside
+        class="hidden md:flex flex-col h-full p-gutter bg-surface-container dark:bg-surface-container-lowest text-primary-fixed dark:text-primary-fixed docked left-0 h-screen w-64 border-r border-white/10 shadow-xl">
+        <div class="mb-stack-lg">
+            <div class="text-headline-lg font-headline-lg text-primary-fixed uppercase tracking-tighter mb-2">DEPORTES
+            </div>
+            <div class="flex items-center gap-3">
+                <img alt="League Admin Profile"
+                    class="w-10 h-10 rounded-full border border-primary-fixed/20 object-cover"
+                    data-alt="A small circular avatar placeholder for an admin profile picture in a dark mode interface. High contrast, subtle neon green border. Professional and clean."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5LjUZ_l-g-WqCNudEGQ1KgujoxFOmiScyMPb8xsbER-UEzczl5IYRIDRJCIqF_jogDoIWbHRs2l9uI2Q9fs7UYsKD-6I_acNw8SLFLXjTLFLl7zowGlGOAahyEJqKHv-Mns6zfqyWSKVCgDBZYU45aJlNJNvd5K-hI3Tl_HBM3sijln2hgMyERIvGKopqcBlf7XGNrSSb0aoNPngLE7_CBK8EFTMYCmhq6kkPPfIvtiTVrz1hWZR2" />
+                <div>
+                    <div class="text-title-md font-title-md text-on-surface">Admin Panel</div>
+                    <div class="text-label-sm font-label-sm text-on-surface-variant">Guatemala Region</div>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 flex flex-col gap-2">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 rounded-lg group scale-[0.98] transition-transform active:scale-95"
+                href="#">
+                <span
+                    class="material-symbols-outlined group-hover:text-primary-fixed transition-colors">dashboard</span>
+                <span class="text-label-sm font-label-sm">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 rounded-lg group scale-[0.98] transition-transform active:scale-95"
+                href="#">
+                <span
+                    class="material-symbols-outlined group-hover:text-primary-fixed transition-colors">sports_soccer</span>
+                <span class="text-label-sm font-label-sm">Live Matches</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg ring-1 ring-primary-fixed/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] transition-transform active:scale-95"
+                href="#">
+                <span class="material-symbols-outlined">groups</span>
+                <span class="text-label-sm font-label-sm font-bold">Team Manager</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 rounded-lg group scale-[0.98] transition-transform active:scale-95"
+                href="#">
+                <span class="material-symbols-outlined group-hover:text-primary-fixed transition-colors">payments</span>
+                <span class="text-label-sm font-label-sm">Financials</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 rounded-lg group scale-[0.98] transition-transform active:scale-95"
+                href="#">
+                <span class="material-symbols-outlined group-hover:text-primary-fixed transition-colors">settings</span>
+                <span class="text-label-sm font-label-sm">Settings</span>
+            </a>
+        </nav>
+        <div class="mt-auto">
+            <button
+                class="w-full bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm py-3 px-4 rounded-lg font-bold hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">add</span> Create Match
+            </button>
+        </div>
+    </aside>
+    <!-- Main Canvas -->
+    <main class="flex-1 overflow-y-auto bg-background p-container-margin md:p-stack-lg relative">
+        <header class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1
+                    class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-primary-fixed uppercase tracking-tight mb-2">
+                    Inactive Players</h1>
+                <p class="text-on-surface-variant text-body-md font-body-md">Directory of players with 'Baja' status</p>
+            </div>
+            <div class="relative w-full md:w-64">
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input
+                    class="w-full bg-[#1A1A1A] border-0 border-b border-white/10 focus:border-primary-fixed focus:ring-0 text-on-surface pl-10 py-2 transition-colors rounded-t-DEFAULT"
+                    placeholder="Search players..." type="text" />
+            </div>
+        </header>
+        <!-- Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+            <!-- Card 1 -->
+            <div class="card-gradient rounded-xl p-4 flex flex-col gap-3 group cursor-pointer hover:border-primary-fixed/50 transition-colors"
+                onclick="openModal('modal-1')">
+                <div class="flex justify-between items-start">
+                    <img alt="Player Photo"
+                        class="w-16 h-16 rounded-lg object-cover border border-white/10 grayscale group-hover:grayscale-0 transition-all"
+                        data-alt="A portrait of a male soccer player looking serious, dark lighting, athletic context, intense mood. Neon green rim light highlighting the edge of the face."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8hUJneyhgCWGrLYlWxJfxAr15hNtZp4cJI-ehEASsNvK6CsbLpAjYip_OyWRf0IHrg4UIr8Izj-wzMvCLDWQbmGeaiNH0yM3368J8hD-7E9TuX3AXnADQcZ1TuVk2txOSFqvMDvcv8xRtnzBQWRgzO_PWuwtKFqHAaxmr7ZlWoDnVdIPzB0VbsKYbgBCL-QdoR8pvm-h6Dvio_xrgDXaOQQbcu8L6k9KoOlDzLLr3JKdHsLiEPUMK" />
+                    <span
+                        class="px-2 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase tracking-wider border border-error/20 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span> Baja
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-title-md font-title-md text-on-surface mb-1">Carlos Ramirez</h3>
+                    <p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">event</span> Oct 12, 2023
+                    </p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="card-gradient rounded-xl p-4 flex flex-col gap-3 group cursor-pointer hover:border-primary-fixed/50 transition-colors"
+                onclick="openModal('modal-1')">
+                <div class="flex justify-between items-start">
+                    <img alt="Player Photo"
+                        class="w-16 h-16 rounded-lg object-cover border border-white/10 grayscale group-hover:grayscale-0 transition-all"
+                        data-alt="A portrait of a female soccer player, looking determined. Dark background, moody lighting, subtle high-contrast accents. Professional sports photography style."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8dKc4Ti3vUI-pnhz7iXbPJhe1ITjsLeTfNqeLhavZl_1lIhZYe5yHrtLoqpVROBYsRBgX7mdjhBf7mx1knwVbYtJduOADR9s6sP_X_QtRv5iVwy_K5b1Frwwj0HTi_okMZ6Av-esPsJvCMpaVkZcOV_A69g0gDwY35XOhVC0jjhLc9FzOUB8fB9J-V3SIwq07tGL8w-cRUKMouJCzKRWhnhenjSZHiweljZGsbNDe-kKddi5foeOs" />
+                    <span
+                        class="px-2 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase tracking-wider border border-error/20 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span> Baja
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-title-md font-title-md text-on-surface mb-1">Maria Gonzalez</h3>
+                    <p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">event</span> Sep 28, 2023
+                    </p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="card-gradient rounded-xl p-4 flex flex-col gap-3 group cursor-pointer hover:border-primary-fixed/50 transition-colors"
+                onclick="openModal('modal-1')">
+                <div class="flex justify-between items-start">
+                    <img alt="Player Photo"
+                        class="w-16 h-16 rounded-lg object-cover border border-white/10 grayscale group-hover:grayscale-0 transition-all"
+                        data-alt="Profile shot of a young athlete, male. Cinematic dark lighting with a single strong directional light source. Gritty, professional sports vibe."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsljXubjoma2M7--nz5zMV3lI90d26JHGbe78pyDM6KL_9LMzQoC-WCqucauloqV6MDoqv7OSdNbcWagqb_jD_WutJZJ3v8GUe2_pAXAvb_9CjBmLy1cwxVoWvkL1TosyUAYxXbF5DXzpVrFhWqJBElWdkielJnvxMLjIcfBONNCt93co0o5NZz2DuVe5l4iUvyx_90NeBiRIKQO2myVG5STa_FqTUhBQEI_zSYGzzrLlCsJ4V_Dqx" />
+                    <span
+                        class="px-2 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase tracking-wider border border-error/20 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span> Baja
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-title-md font-title-md text-on-surface mb-1">Luis Hernandez</h3>
+                    <p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">event</span> Aug 15, 2023
+                    </p>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="card-gradient rounded-xl p-4 flex flex-col gap-3 group cursor-pointer hover:border-primary-fixed/50 transition-colors"
+                onclick="openModal('modal-1')">
+                <div class="flex justify-between items-start">
+                    <img alt="Player Photo"
+                        class="w-16 h-16 rounded-lg object-cover border border-white/10 grayscale group-hover:grayscale-0 transition-all"
+                        data-alt="Headshot of a veteran soccer player, intense gaze. Deep shadows, high contrast black background. Evokes a sense of history and grit in a modern setting."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-U9zH-uyt3E2lFtviJvYivYtlZun5JQbUb3CFoZMtOezIZud7jI3pUAmlsz8UtgqxHlK-DaWfO-f3Ka8cP6o08Gk9zJkBXzATIkTjvmTJNRZMafzUqUSszUlVGeTLborPAETSnR1lAhEqFnUByPCznl2KKnc4j9Pw1LQuS962atFNWnOfNUbZBsR8HNHSKUZMrTm6NGRCf6fAYZn0PYLHwX4KYtWwP9ve38PU2RbHKfq8t0r_SLRx" />
+                    <span
+                        class="px-2 py-1 rounded-full bg-error/10 text-error text-[10px] font-bold uppercase tracking-wider border border-error/20 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span> Baja
+                    </span>
+                </div>
+                <div>
+                    <h3 class="text-title-md font-title-md text-on-surface mb-1">Jorge Silva</h3>
+                    <p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">event</span> Jul 02, 2023
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Glassmorphism Modal -->
+    <div class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4" id="modal-1">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal('modal-1')"></div>
+        <!-- Modal Content -->
+        <div class="glass-panel relative w-full max-w-md rounded-xl p-stack-md flex flex-col gap-4 shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
+            id="modal-1-content">
+            <button class="absolute top-4 right-4 text-on-surface-variant hover:text-primary-fixed transition-colors"
+                onclick="closeModal('modal-1')">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="flex items-center gap-4 mb-2">
+                <img alt="Player Photo" class="w-20 h-20 rounded-lg object-cover border border-primary-fixed/30"
+                    data-alt="A portrait of a male soccer player looking serious, dark lighting, athletic context, intense mood. Neon green rim light highlighting the edge of the face."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf0e0J9HYIaDS6HoGRPjUyk0OdWv_8YqRSguVR-oghzWHfKW5P0USf0P25AhtjUc6d5oTULCUbHajRAV_kv3MDU3H0Ygks1I11fg2PvkewKjOpLS4Bj0MQ4ILaJtw6k5gkyG-9BX4r_no1JSKccbCGLn01jRsp3sRyiTFIkrVPLl8bqxhGfqIwVXHoTxHTv3ZqBMHRM_H73YU0lvZwFMRy6FpGMC4z2jhvsXS4FPM2_JR4VZg_PpWM" />
+                <div>
+                    <h2
+                        class="text-headline-lg-mobile font-headline-lg-mobile text-on-surface uppercase tracking-tight">
+                        Carlos Ramirez</h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#252525] text-white">ID:
+                            84920</span>
+                        <span class="text-label-sm font-label-sm text-error flex items-center gap-1"><span
+                                class="material-symbols-outlined text-[14px]">warning</span> Inactive</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-[#1A1A1A]/80 rounded-lg p-4 border border-white/5">
+                <h4 class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Reason for
+                    Baja</h4>
+                <p class="text-body-md font-body-md text-on-surface leading-relaxed">
+                    Player sustained a Grade 2 ACL tear during the regional semi-finals. Medical team estimates a
+                    minimum of 6 months recovery time. Transferred to inactive roster pending medical clearance.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block mb-1">Date Applied</span>
+                    <span class="text-body-md font-body-md text-on-surface">Oct 12, 2023</span>
+                </div>
+                <div>
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block mb-1">Authorized By</span>
+                    <span class="text-body-md font-body-md text-on-surface">Dr. A. Mendez</span>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-white/10 flex justify-end gap-3">
+                <button
+                    class="px-4 py-2 rounded-lg border border-white/20 text-on-surface text-label-sm font-label-sm hover:bg-white/5 transition-colors"
+                    onclick="closeModal('modal-1')">Close</button>
+                <button
+                    class="px-4 py-2 rounded-lg bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm font-bold hover:brightness-110 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">edit</span> Edit Record
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(id + '-content');
+            modal.classList.remove('hidden');
+            // Small delay to allow display block to apply before animating opacity/scale
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            const content = document.getElementById(id + '-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

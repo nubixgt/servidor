@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Player Registration</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#313030",
+                        "tertiary-container": "#e4e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#656464",
+                        "primary-fixed-dim": "#9ed81d",
+                        "inverse-primary": "#496800",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#243600",
+                        "surface-variant": "#353534",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed-variant": "#474746",
+                        "background": "#131313",
+                        "surface-bright": "#393939",
+                        "on-tertiary": "#303030",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#ffffff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed": "#e4e2e1",
+                        "on-primary-container": "#4e6e00",
+                        "surface-tint": "#9ed81d",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline-variant": "#434935",
+                        "on-error": "#690005",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "primary-container": "#b9f63f",
+                        "on-primary-fixed-variant": "#364e00",
+                        "on-primary-fixed": "#131f00",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#c3caaf",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "outline": "#8d947c",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "primary-fixed": "#b9f63f",
+                        "primary": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#474746"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "container-margin": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "40px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Anton"],
+                        "body-md": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "display-lg": ["Anton"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Anton"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-dark {
+            background-color: #1A1A1A;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e5e2e1;
+        }
+
+        .input-dark:focus {
+            outline: none;
+            border-bottom: 1px solid #b9f63f;
+            box-shadow: 0 1px 0 0 #b9f63f;
+        }
+
+        .chip {
+            background-color: #252525;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .chip.active {
+            background-color: #b9f63f;
+            color: #131f00;
+            border-color: #b9f63f;
+            box-shadow: 0 0 10px rgba(185, 246, 63, 0.2);
+        }
+
+        .chip:hover:not(.active) {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col relative overflow-x-hidden">
+    <!-- TopNavBar -->
+    <nav
+        class="bg-background/80 backdrop-blur-lg dark:bg-background/80 text-primary-fixed dark:text-primary-fixed docked full-width top-0 z-50 border-b border-white/10 flat no shadows flex justify-between items-center px-container-margin py-4 w-full max-w-full hidden md:flex">
+        <div class="flex items-center gap-6">
+            <div class="text-display-lg font-display-lg text-primary-fixed tracking-tighter uppercase">DEPORTES</div>
+            <div class="flex gap-4 ml-8">
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200 text-label-sm font-label-sm"
+                    href="#">Leagues</a>
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200 text-label-sm font-label-sm"
+                    href="#">Teams</a>
+                <a class="text-primary-fixed font-bold border-b-2 border-primary-fixed pb-1 hover:text-primary-fixed transition-colors duration-200 text-label-sm font-label-sm opacity-80 scale-95 transition-all"
+                    href="#">Grounds</a>
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200 text-label-sm font-label-sm"
+                    href="#">Schedule</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input
+                    class="bg-surface-container rounded-full py-2 pl-10 pr-4 text-body-md font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-primary-fixed border border-white/5"
+                    placeholder="Search..." type="text" />
+            </div>
+            <button
+                class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-title-md text-title-md hover:brightness-110 transition-all">Login</button>
+        </div>
+    </nav>
+    <!-- Mobile Header -->
+    <header
+        class="md:hidden flex justify-between items-center px-container-margin py-4 bg-background/90 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
+        <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-on-background">Player Registration</h1>
+        <button class="text-on-background">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+    </header>
+    <main
+        class="flex-grow px-container-margin py-stack-md md:py-stack-lg max-w-2xl mx-auto w-full flex flex-col gap-stack-lg">
+        <!-- Registration Form -->
+        <section class="glass-panel rounded-xl p-6 md:p-8 flex flex-col gap-stack-md relative overflow-hidden">
+            <!-- Background glow accent -->
+            <div
+                class="absolute -top-20 -right-20 w-40 h-40 bg-primary-fixed rounded-full blur-[100px] opacity-20 pointer-events-none">
+            </div>
+            <div class="mb-2">
+                <h2 class="text-headline-lg font-headline-lg text-primary-fixed mb-2">JOIN THE LEAGUE</h2>
+                <p class="text-body-md font-body-md text-on-surface-variant">Complete your profile to get drafted or
+                    join an existing team roster.</p>
+            </div>
+            <!-- Photo Upload -->
+            <div class="flex flex-col gap-3 items-center mb-4">
+                <div
+                    class="relative w-28 h-28 rounded-full bg-surface-container flex items-center justify-center border-2 border-dashed border-white/20 cursor-pointer hover:border-primary-fixed transition-colors overflow-hidden group">
+                    <span
+                        class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-primary-fixed transition-colors">add_a_photo</span>
+                    <input class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" type="file" />
+                </div>
+                <span class="text-label-sm font-label-sm text-on-surface-variant">UPLOAD PROFILE PHOTO</span>
+            </div>
+            <!-- Form Fields -->
+            <form class="flex flex-col gap-6">
+                <!-- Full Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Full
+                        Name</label>
+                    <input class="input-dark w-full py-3 px-2 text-body-md font-body-md"
+                        placeholder="Enter your full name" type="text" />
+                </div>
+                <!-- DPI -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">DPI
+                        (National ID)</label>
+                    <input class="input-dark w-full py-3 px-2 text-body-md font-body-md" maxlength="15"
+                        placeholder="0000 00000 0000" type="text" />
+                    <span class="text-[10px] text-on-tertiary-container mt-1">13 digit format.</span>
+                </div>
+                <!-- Phone -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Phone
+                        Number</label>
+                    <div class="flex">
+                        <span
+                            class="bg-surface-container py-3 px-4 text-body-md font-body-md text-on-surface-variant border-b border-white/10 rounded-tl-md">+502</span>
+                        <input class="input-dark w-full py-3 px-3 text-body-md font-body-md" placeholder="XXXX XXXX"
+                            type="tel" />
+                    </div>
+                </div>
+                <!-- Position Selector -->
+                <div class="flex flex-col gap-3 mt-2">
+                    <label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Primary
+                        Position</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="chip rounded-full py-2 px-4 text-center text-label-sm font-label-sm"
+                            onclick="toggleChip(this)">DEF</div>
+                        <div class="chip rounded-full py-2 px-4 text-center text-label-sm font-label-sm active"
+                            onclick="toggleChip(this)">MED</div>
+                        <div class="chip rounded-full py-2 px-4 text-center text-label-sm font-label-sm"
+                            onclick="toggleChip(this)">DEL</div>
+                        <div class="chip rounded-full py-2 px-4 text-center text-label-sm font-label-sm"
+                            onclick="toggleChip(this)">POR</div>
+                    </div>
+                </div>
+                <!-- Submit Button -->
+                <button
+                    class="mt-8 bg-primary-fixed text-on-primary-fixed py-4 rounded-lg font-title-md text-title-md hover:bg-white hover:text-black transition-all duration-300 w-full flex items-center justify-center gap-2 group shadow-[0_0_15px_rgba(185,246,63,0.3)]"
+                    type="button">
+                    <span>REGISTER PLAYER</span>
+                    <span
+                        class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </button>
+            </form>
+        </section>
+    </main>
+    <script>
+        function toggleChip(element) {
+            // Remove active from siblings in the same grid
+            const siblings = element.parentElement.children;
+            for (let i = 0; i < siblings.length; i++) {
+                siblings[i].classList.remove('active');
+            }
+            // Add active to clicked
+            element.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Match History</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#313030",
+                        "tertiary-container": "#e4e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#656464",
+                        "primary-fixed-dim": "#9ed81d",
+                        "inverse-primary": "#496800",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#243600",
+                        "surface-variant": "#353534",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed-variant": "#474746",
+                        "background": "#131313",
+                        "surface-bright": "#393939",
+                        "on-tertiary": "#303030",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#ffffff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed": "#e4e2e1",
+                        "on-primary-container": "#4e6e00",
+                        "surface-tint": "#9ed81d",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline-variant": "#434935",
+                        "on-error": "#690005",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "primary-container": "#b9f63f",
+                        "on-primary-fixed-variant": "#364e00",
+                        "on-primary-fixed": "#131f00",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#c3caaf",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "outline": "#8d947c",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "primary-fixed": "#b9f63f",
+                        "primary": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#474746"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "container-margin": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "40px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Anton"],
+                        "body-md": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "display-lg": ["Anton"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Anton"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, #1A1A1A 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-glow:focus,
+        .neon-glow:hover {
+            box-shadow: 0 0 10px #b9f63f, inset 0 0 10px #b9f63f;
+            border-color: #b9f63f;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface h-screen flex overflow-hidden">
+    <!-- SideNavBar -->
+    <nav
+        class="hidden md:flex flex-col h-screen w-64 bg-surface-container dark:bg-surface-container-lowest border-r border-white/10 shadow-xl p-gutter z-40 relative">
+        <div class="mb-stack-lg">
+            <h1 class="text-headline-lg font-headline-lg text-primary-fixed uppercase tracking-tighter">DEPORTES</h1>
+        </div>
+        <div class="flex items-center gap-base mb-stack-md pb-stack-md border-b border-white/10">
+            <img alt="League Admin Profile" class="w-10 h-10 rounded-full object-cover border border-primary-fixed/30"
+                data-alt="A small, circular avatar portrait of a sports league administrator. The lighting is moody and professional, typical of a high-end corporate headshot, with a subtle neon green rim light on the edge of the face."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbX5a-i1ZWTQg023CyOpfPw_EVz5iqSYk1-3zq22r_ge22xqHnP7RdwVUfrR9n2fIL7d_FRxBgW9UqxdDfqkR5GB-AQovEBJRpMOauQ01ji8kFxgMNEINgWqF7e5cmskzxRHfG9on-FsxA0F1QjiQAs2GND9xh0MVdW6qQ7ApZl-IzEiQf4MGmj_KW-7Zcnru6q_POHMyloc4XOW1mhSmKp_oRJvdWNHFzmJ0X8Wb_ckysRaH313Gk" />
+            <div>
+                <p class="text-title-md font-title-md text-on-surface leading-none">Admin Panel</p>
+                <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Guatemala Region</p>
+            </div>
+        </div>
+        <ul class="flex flex-col gap-base flex-grow">
+            <li>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] hover:scale-100"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    <span class="text-label-sm font-label-sm">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container ring-1 ring-primary-fixed/50 scale-[0.98] hover:scale-100 transition-all duration-200"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]"
+                        style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+                    <span class="text-label-sm font-label-sm">Live Matches</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] hover:scale-100"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                    <span class="text-label-sm font-label-sm">Team Manager</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] hover:scale-100"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">payments</span>
+                    <span class="text-label-sm font-label-sm">Financials</span>
+                </a>
+            </li>
+            <li>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] hover:scale-100"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">settings</span>
+                    <span class="text-label-sm font-label-sm">Settings</span>
+                </a>
+            </li>
+        </ul>
+        <button
+            class="w-full mt-auto bg-primary-fixed text-on-primary-fixed py-3 rounded-lg text-label-sm font-label-sm uppercase tracking-wider hover:brightness-110 transition-all hover:-translate-y-0.5 font-bold shadow-[0_0_15px_rgba(185,246,63,0.3)]">
+            Create Match
+        </button>
+    </nav>
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto relative w-full h-full flex flex-col">
+        <!-- TopNavBar (Mobile Only) -->
+        <header
+            class="md:hidden flex justify-between items-center px-container-margin py-4 w-full bg-background/80 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+            <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary-fixed tracking-tighter uppercase">
+                DEPORTES</h1>
+            <button class="text-primary-fixed p-2 rounded-full hover:bg-white/5 transition-colors">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </header>
+        <div class="px-container-margin md:px-stack-lg py-stack-lg flex-1">
+            <div class="flex justify-between items-end mb-stack-lg">
+                <div>
+                    <h2
+                        class="text-headline-lg font-headline-lg md:text-display-lg md:font-display-lg uppercase tracking-tighter">
+                        Match History</h2>
+                    <p class="text-on-surface-variant text-body-md mt-2 max-w-xl">Review past results, player
+                        statistics, and manage records for the current season.</p>
+                </div>
+                <div class="hidden md:flex gap-4">
+                    <div class="relative group">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                        <input
+                            class="bg-[#1A1A1A] border-b border-white/10 text-on-surface pl-10 pr-4 py-2 focus:outline-none focus:border-primary-fixed focus:border-b-2 transition-colors w-64"
+                            placeholder="Search teams..." type="text" />
+                    </div>
+                    <button
+                        class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-primary-fixed/50 text-label-sm font-label-sm transition-colors text-on-surface bg-[#252525]">
+                        <span class="material-symbols-outlined text-[16px]">filter_list</span>
+                        Filter
+                    </button>
+                </div>
+            </div>
+            <!-- Bento Grid Layout for Matches -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-stack-md">
+                <!-- Featured Match Card -->
+                <article
+                    class="glass-card rounded-xl p-6 relative overflow-hidden group md:col-span-2 xl:col-span-2 cursor-pointer neon-glow transition-all"
+                    tabindex="0">
+                    <div
+                        class="absolute inset-0 bg-primary-fixed/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="absolute top-0 right-0 p-4">
+                        <span
+                            class="bg-[#252525] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Final
+                            - AET</span>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-8 h-full relative z-10">
+                        <!-- Team A -->
+                        <div class="flex flex-col items-center gap-4 flex-1">
+                            <img class="w-20 h-20 md:w-28 md:h-28 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                                data-alt="A stylized, high-contrast vector logo of a wolf head for a sports team, rendered in monochrome white against a dark background, evoking a modern esports or aggressive athletic brand."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBU6TPm_uEGgtCabyUWvxwKbbQHlYwo40pZcTySqqBO3eWz5JLAk1WT8FnTy2kHHs_awRO3kUkWkuNSB07C1eWr2lJaELn67QWGad5Cyrz67ishhnT37R6j6J7cJOEX_7qdxdjJ8EtlCAPhhla-A0s-TdsH4O7T0N28XKGzdfz-rPCn_zz_wchzJt1zgto_f4gsoVi11qr1xXvXcUn76AyDyYlb1Mrdnj_Od8F0ME_uMRc3kyBU0gy" />
+                            <h3 class="text-title-md font-title-md text-center text-white">Los Lobos</h3>
+                        </div>
+                        <!-- Score -->
+                        <div class="flex flex-col items-center justify-center flex-1">
+                            <div class="text-label-sm font-label-sm text-primary-fixed mb-2 uppercase tracking-widest">
+                                Oct 24, 2023</div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-display-lg font-display-lg font-bold text-white">3</span>
+                                <span class="text-title-md text-on-surface-variant font-bold">-</span>
+                                <span class="text-display-lg font-display-lg font-bold text-white opacity-50">2</span>
+                            </div>
+                            <button
+                                class="mt-6 flex items-center gap-2 text-primary-fixed text-label-sm font-label-sm group-hover:underline">
+                                View Details <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </button>
+                        </div>
+                        <!-- Team B -->
+                        <div class="flex flex-col items-center gap-4 flex-1 opacity-70">
+                            <img class="w-16 h-16 md:w-24 md:h-24 object-contain"
+                                data-alt="A sleek, minimalist sports team crest featuring an abstract eagle graphic. The design uses sharp geometric lines and a subtle metallic texture, set against a dark gray background, appearing professional and slightly subdued."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxsM0MgWu4YA4MndeuMfN0-UgG9SwGKswjRgw5dImXiWYVKL4QIHHZO5A2x21zBz9_i_HSO2TWvZXyBIiv4fP7JODv7Ykuh8Tt23TrUP_ufTPrPvEpMqaQxk0UaA6wTC52IhvbW0zrAYN774cD7UVC2BesXA7TqWlvMRmvVAnDvbeieIDnUaVZMbllTwAI3BQmdq4m_oyaqfKmpPiUMqziXEAJiTh0aMlRPg0yYKSPimgTDHEaBg_8" />
+                            <h3 class="text-title-md font-title-md text-center">Aguilas FC</h3>
+                        </div>
+                    </div>
+                </article>
+                <!-- Standard Match Card 1 -->
+                <article
+                    class="glass-card rounded-xl p-5 relative overflow-hidden group cursor-pointer neon-glow transition-all flex flex-col justify-between h-full"
+                    tabindex="0">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-label-sm font-label-sm text-on-surface-variant">Oct 20, 2023</span>
+                        <span
+                            class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors">more_vert</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-3">
+                            <img class="w-10 h-10 object-contain"
+                                data-alt="A simple, modern crest for a soccer team named 'City United', featuring a geometric cityscape silhouette inside a shield shape. White on dark background."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk1rIaeUtV-exE08Rzc6B-X4sLeCp4VA9MwsOw1loT5cLT824P-yLkBKnkbUKyuDVt5cjQW44E5kFktWTA7h-f5VvKcwa2pFVt4FguUVDpfIBW0jdGKPBFpNyR-jzca-f_E1CUPfaZqcmZ7Hyn1bluePZ0x1dRJnNDcLgxY6JVwzDZ5lTXk1JuPLWjAOOfT9z7C3dQvd4V2QKwk2o_awMBfKaQHgZcSYnHVcXhc3HJjxoHhdjn74of" />
+                            <span class="font-bold text-white">City Utd</span>
+                        </div>
+                        <span class="text-title-md font-bold text-white">1</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <img class="w-10 h-10 object-contain"
+                                data-alt="A bold, typography-based sports team logo reading 'KINGS' in a heavy, condensed font with a subtle crown integrated into the letter K. Rendered in bright white on black."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0KvupQclKkamxaMlpVwYaUM8j5kCDIFfAS6WD6Tk6XrRRjanj5yCPOvl27TbYrHSantek7GIFEyu3_UfTifZSwz52iF-WKpF5nc3RGHpbI11CjmUMkQvqUCB1vnwj_ZRUCp5NkLoPbegphmX5vMPROM7o75jCF32Hr466FEOYOFfLqJYxUGTstfb7TEMgAB1R0WMjp9Qu51LuSKYW_TVeaMmyuzJx-HRRBh4W1b4SDS91JITEJZW_" />
+                            <span class="font-bold text-white">Kings FC</span>
+                        </div>
+                        <span class="text-title-md font-bold text-primary-fixed">4</span>
+                    </div>
+                </article>
+                <!-- Standard Match Card 2 -->
+                <article
+                    class="glass-card rounded-xl p-5 relative overflow-hidden group cursor-pointer neon-glow transition-all flex flex-col justify-between h-full"
+                    tabindex="0">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-label-sm font-label-sm text-on-surface-variant">Oct 18, 2023</span>
+                        <span
+                            class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors">more_vert</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center gap-3 opacity-50">
+                            <img class="w-10 h-10 object-contain"
+                                data-alt="A minimalist sports icon resembling a lightning bolt intersecting a soccer ball, styled with thin white strokes on a dark background."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtyDsClsT3OKpzcTIgCeH_l2pAyEzbEQlZFzrzLvVEOW2_Nj1-eslSwIo0p6i5vt2wouKwYWOJeD8FUjbDEnQGOj7dJVGLGWmKoqtIogkFs5PQ6BXDRCSoDmA-c1NrBcO6x4rCcnKmqx__0B79V85v0DyASdfrx8KauZ25DDvRnJYgoWXX0cfvFybkmL5EfHeu8IGc202mWvG91jBoJ2_jIaEvt4CN3HsEwEKAwiT4kZsHoaOZhjum" />
+                            <span class="font-bold text-white">Storm</span>
+                        </div>
+                        <span class="text-title-md font-bold text-white opacity-50">0</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <img class="w-10 h-10 object-contain"
+                                data-alt="A highly detailed vector badge for a team named 'Spartans', featuring a classic Spartan helmet in profile, designed with sharp angles and a modern aggressive feel."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCol10BmyIEcBs_Np7nPlVcghrtUQQCAz_ekbnOXnR42xT8pgGuHUM_9FZM7ylxGbfQVJkrZGHA9z5r9_uY07HFxp-xKjzFwuYDcBVMQ0AArnAM1tOKYBFGNoGNI4uMn6plgD4X_q0VOiXZQ-56ldjb71TtM5DJrGIEiK-QJD575hY8DsWL76oPrVFkacl1HlmoZj5nw3mTdqvzkfxZ7w608Xgv7a0DWmNlSOaeCnbKJGMKbLEOdQ3V" />
+                            <span class="font-bold text-white">Spartans</span>
+                        </div>
+                        <span class="text-title-md font-bold text-white">0</span>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-white/5 text-center">
+                        <span
+                            class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Draw</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer
+            class="mt-auto border-t border-white/5 bg-surface-container-lowest py-stack-md px-container-margin w-full flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-title-md font-title-md text-on-surface">DEPORTES GUATEMALA</div>
+            <div class="flex gap-6 text-label-sm font-label-sm text-on-surface-variant">
+                <a class="hover:text-white transition-colors opacity-70 hover:opacity-100" href="#">Privacy Policy</a>
+                <a class="hover:text-white transition-colors opacity-70 hover:opacity-100" href="#">Terms of Service</a>
+                <a class="hover:text-white transition-colors opacity-70 hover:opacity-100" href="#">Contact Support</a>
+            </div>
+            <div class="text-label-sm font-label-sm text-on-surface-variant opacity-50">© 2024 DEPORTES GUATEMALA. ALL
+                RIGHTS RESERVED.</div>
+        </footer>
+    </main>
+    <!-- Modal Overlay (Hidden by default, shown for demonstration) -->
+    <!-- Add 'hidden' class to the outer div to hide -->
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity hidden"
+        id="detail-modal">
+        <div
+            class="glass-card w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[921px] overflow-hidden transform scale-100 transition-transform">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-[#1A1A1A]">
+                <h3 class="text-headline-lg font-headline-lg uppercase text-white tracking-tight">Match Details</h3>
+                <button
+                    class="text-on-surface-variant hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors"
+                    onclick="document.getElementById('detail-modal').classList.add('hidden')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <!-- Modal Content (Scrollable) -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="flex justify-between items-center mb-8 bg-[#252525] p-6 rounded-lg border border-white/5">
+                    <div class="flex flex-col items-center gap-2">
+                        <img class="w-16 h-16 object-contain"
+                            data-alt="A stylized, high-contrast vector logo of a wolf head for a sports team, rendered in monochrome white against a dark background."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4DIbLEf-xywhSEmKO76czz1KKt7Hw6jQ-trNXu6HixLHrXaEi_AjiwpoujwYisn_8VoviqNylDveGT-tdX5tYVefmKyUD1qAGRrrKygfbbbrxHFyazeGY9NYO9YjW5XC4xlS6CN0gg0uCWfRdgbznz__LW2PD7YoECKPWqL14jnhrZQ9eMhEuFcnZUR8YxezH3Q_bEY6kpmVPhF85Lm_A_3rU0e1R1uchCjYqs8zOLzlzhjjQnqjJ" />
+                        <span class="font-bold">Los Lobos</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-display-lg font-display-lg text-primary-fixed leading-none">3 - 2</div>
+                        <div class="text-label-sm font-label-sm text-on-surface-variant mt-2">FINAL (AET)</div>
+                    </div>
+                    <div class="flex flex-col items-center gap-2 opacity-50">
+                        <img class="w-16 h-16 object-contain"
+                            data-alt="A sleek, minimalist sports team crest featuring an abstract eagle graphic."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiYP1G4kog_XX2NdkTjmUsUsrCcnc2LVS312YN0Lky6jpvLK-MzJ8JUnQ6fVroDswmTjrgQLg_b9u6Xpx87VOzwCBy9Vx4CrOcowJq1aZh3k-RCC-X-fz1ysnUtpSCTmE2vf5OSBxycZcn1sAEFb6MV_CuMBHgzFk4DqPHDKZSf5OOD6Ru-ipS3cwWZeaLnOco2f9yBiV_IXnMgJfqs-A8NI97SNey04oFkPB-VJgZhiZZUVKat2F2" />
+                        <span class="font-bold">Aguilas FC</span>
+                    </div>
+                </div>
+                <h4 class="text-title-md font-title-md mb-4 text-white">Player Statistics (Los Lobos)</h4>
+                <div class="bg-[#1A1A1A] rounded-lg border border-white/5 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#252525] border-b border-white/5">
+                                <th
+                                    class="p-3 text-label-sm font-label-sm text-on-surface-variant font-bold uppercase tracking-wider">
+                                    Player</th>
+                                <th
+                                    class="p-3 text-label-sm font-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">
+                                    G</th>
+                                <th
+                                    class="p-3 text-label-sm font-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">
+                                    A</th>
+                                <th
+                                    class="p-3 text-label-sm font-label-sm text-on-surface-variant font-bold uppercase tracking-wider text-center">
+                                    Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-body-md">
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-3 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-[#353534] flex items-center justify-center text-xs font-bold text-primary-fixed">
+                                        9</div>
+                                    <span>M. Ramirez</span>
+                                </td>
+                                <td class="p-3 text-center font-bold text-white">2</td>
+                                <td class="p-3 text-center text-on-surface-variant">0</td>
+                                <td class="p-3 text-center">
+                                    <span
+                                        class="bg-primary-fixed/20 text-primary-fixed px-2 py-1 rounded text-xs font-bold">9.2</span>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-3 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-[#353534] flex items-center justify-center text-xs font-bold text-white">
+                                        10</div>
+                                    <span>C. Silva</span>
+                                </td>
+                                <td class="p-3 text-center font-bold text-white">1</td>
+                                <td class="p-3 text-center text-on-surface-variant">1</td>
+                                <td class="p-3 text-center">
+                                    <span
+                                        class="bg-primary-fixed/20 text-primary-fixed px-2 py-1 rounded text-xs font-bold">8.5</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-3 flex items-center gap-3">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-[#353534] flex items-center justify-center text-xs font-bold text-white">
+                                        4</div>
+                                    <span>J. Gomez</span>
+                                </td>
+                                <td class="p-3 text-center font-bold text-on-surface-variant">0</td>
+                                <td class="p-3 text-center text-white font-bold">2</td>
+                                <td class="p-3 text-center">
+                                    <span class="bg-white/10 text-white px-2 py-1 rounded text-xs font-bold">7.8</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Modal Footer (Admin Actions) -->
+            <div class="p-6 border-t border-white/10 bg-[#121212] flex justify-end gap-4">
+                <button
+                    class="px-6 py-2 rounded border border-error/50 text-error hover:bg-error/10 transition-colors text-label-sm font-label-sm uppercase tracking-wider font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                    Delete Record
+                </button>
+                <button
+                    class="px-6 py-2 rounded bg-surface-bright text-white hover:bg-white/20 transition-colors text-label-sm font-label-sm uppercase tracking-wider font-bold"
+                    onclick="document.getElementById('detail-modal').classList.add('hidden')">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Simple script to toggle modal for demonstration
+        document.querySelectorAll('article.glass-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.getElementById('detail-modal').classList.remove('hidden');
+            });
+            // Keyboard accessibility
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('detail-modal').classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

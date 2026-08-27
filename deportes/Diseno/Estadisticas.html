@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Public Statistics - DEPORTES GUATEMALA</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#313030",
+                        "on-secondary": "#313030",
+                        "tertiary-container": "#e4e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#656464",
+                        "primary-fixed-dim": "#9ed81d",
+                        "inverse-primary": "#496800",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary": "#243600",
+                        "surface-variant": "#353534",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-fixed-variant": "#474746",
+                        "background": "#131313",
+                        "surface-bright": "#393939",
+                        "on-tertiary": "#303030",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary": "#ffffff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed": "#e4e2e1",
+                        "on-primary-container": "#4e6e00",
+                        "surface-tint": "#9ed81d",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "outline-variant": "#434935",
+                        "on-error": "#690005",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "primary-container": "#b9f63f",
+                        "on-primary-fixed-variant": "#364e00",
+                        "on-primary-fixed": "#131f00",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "on-surface-variant": "#c3caaf",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "outline": "#8d947c",
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "primary-fixed": "#b9f63f",
+                        "primary": "#ffffff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#474746"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "container-margin": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "40px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Anton"],
+                        "body-md": ["Hanken Grotesk"],
+                        "title-md": ["Hanken Grotesk"],
+                        "display-lg": ["Anton"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-lg": ["Anton"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-panel-active {
+            background: rgba(185, 246, 63, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(185, 246, 63, 0.5);
+            box-shadow: 0 0 10px rgba(185, 246, 63, 0.2);
+        }
+
+        .bg-gradient-card {
+            background: linear-gradient(180deg, #1A1A1A 0%, #121212 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Webkit Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.on-surface-variant');
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden bg-background text-on-background">
+    <!-- Desktop SideNav -->
+    <nav
+        class="hidden md:flex flex-col h-screen w-64 bg-surface-container dark:bg-surface-container-lowest border-r border-white/10 shadow-xl fixed left-0 top-0 z-40 p-gutter">
+        <div class="mb-stack-lg">
+            <h1 class="text-headline-lg font-headline-lg text-primary-fixed uppercase tracking-tighter">DEPORTES</h1>
+            <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Guatemala Region</p>
+        </div>
+        <div class="flex-1 flex flex-col gap-2">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] active:scale-95 text-label-sm font-label-sm"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] active:scale-95 text-label-sm font-label-sm"
+                href="#">
+                <span class="material-symbols-outlined">sports_soccer</span>
+                <span>Live Matches</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container text-on-primary-container ring-1 ring-primary-fixed/50 scale-[0.98] active:scale-95 text-label-sm font-label-sm"
+                href="#">
+                <span class="material-symbols-outlined">leaderboard</span>
+                <span>League Stats</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 hover:bg-primary-container/10 transition-all duration-200 scale-[0.98] active:scale-95 text-label-sm font-label-sm"
+                href="#">
+                <span class="material-symbols-outlined">groups</span>
+                <span>Team Manager</span>
+            </a>
+        </div>
+    </nav>
+    <!-- Main Content Area -->
+    <main class="flex-1 md:ml-64 flex flex-col min-h-screen relative bg-background">
+        <!-- Mobile Top Nav -->
+        <header
+            class="md:hidden flex justify-between items-center px-container-margin py-4 w-full bg-background/80 backdrop-blur-lg border-b border-white/10 sticky top-0 z-50">
+            <h1 class="text-headline-lg-mobile font-headline-lg-mobile text-primary-fixed uppercase tracking-tighter">
+                DEPORTES</h1>
+            <button class="text-on-surface p-2">
+                <span class="material-symbols-outlined text-[24px]">menu</span>
+            </button>
+        </header>
+        <!-- Page Header -->
+        <div class="px-container-margin py-stack-lg relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20 pointer-events-none"
+                style="background-image: radial-gradient(circle at top right, theme('colors.primary-fixed') 0%, transparent 50%);">
+            </div>
+            <h2 class="text-display-lg font-display-lg text-white uppercase relative z-10">LEAGUE LEADERS</h2>
+            <p class="text-body-md font-body-md text-on-surface-variant max-w-2xl mt-4 relative z-10">Real-time
+                statistics for the current season. Discover the top performers across all divisions.</p>
+        </div>
+        <!-- Filter Tabs -->
+        <div class="px-container-margin mb-stack-lg overflow-x-auto pb-4 hide-scrollbar">
+            <div class="flex gap-4 inline-flex">
+                <button
+                    class="px-6 py-3 rounded-full bg-primary-fixed text-on-primary-fixed font-bold text-label-sm transition-all shadow-[0_0_15px_rgba(185,246,63,0.3)]">Top
+                    Scorers</button>
+                <button
+                    class="px-6 py-3 rounded-full glass-panel text-on-surface font-semibold text-label-sm hover:bg-surface-variant/50 transition-all">Goalkeepers</button>
+                <button
+                    class="px-6 py-3 rounded-full glass-panel text-on-surface font-semibold text-label-sm hover:bg-surface-variant/50 transition-all">Discipline</button>
+                <button
+                    class="px-6 py-3 rounded-full glass-panel text-on-surface font-semibold text-label-sm hover:bg-surface-variant/50 transition-all">Assists</button>
+            </div>
+        </div>
+        <!-- Podium Section (Top 3) -->
+        <section class="px-container-margin mb-stack-lg">
+            <div class="flex flex-col md:flex-row items-end justify-center gap-6 md:gap-4 h-[400px] mt-12">
+                <!-- Rank 2 -->
+                <div class="w-full md:w-1/3 flex flex-col items-center relative order-2 md:order-1 h-[80%]">
+                    <div class="relative w-24 h-24 mb-4 z-10">
+                        <img alt="Player 2"
+                            class="w-full h-full object-cover rounded-full border-4 border-surface-container"
+                            data-alt="A portrait of a male soccer player looking determined, wearing a dark blue jersey. High contrast, cinematic lighting, modern athletic aesthetic, dark background."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRu3xy5xDGZbx8D3X1wHvKex2FxHCDfdxLLojg5X449oSvtjsAus1rdLcdhUqgtXXuZw8WVTzfCNidzB6e_tEDuubG7NWAoa5-gmANlnL2aNC0FfaW1mXORBzDI10JoBZpa0EuwphU2xmPVSIW4ML84mcRpamGlpksBv4-3h9y-caPNrU3Q0EzPyuuWztsJO5L8bTBGUBWdcZ7KDtpxrUBjt1Ctwfi2EBQ132d1YnWyN3eJsS6Prf5" />
+                        <div
+                            class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">
+                            2</div>
+                    </div>
+                    <div
+                        class="glass-panel w-full flex-1 rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#C0C0C0]">
+                        <h3 class="text-title-md font-title-md text-white text-center">Mateo Silva</h3>
+                        <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Los Tigres</p>
+                        <div class="mt-auto text-center">
+                            <span class="text-headline-lg font-headline-lg text-primary-fixed block">18</span>
+                            <span
+                                class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Goals</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Rank 1 -->
+                <div class="w-full md:w-1/3 flex flex-col items-center relative order-1 md:order-2 h-full">
+                    <div class="absolute -top-10 text-primary-fixed z-0">
+                        <span
+                            class="material-symbols-outlined text-[64px] opacity-30 drop-shadow-[0_0_15px_rgba(185,246,63,0.5)]"
+                            style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    </div>
+                    <div class="relative w-32 h-32 mb-4 z-10">
+                        <img alt="Player 1"
+                            class="w-full h-full object-cover rounded-full border-4 border-primary-fixed shadow-[0_0_20px_rgba(185,246,63,0.4)]"
+                            data-alt="A striking portrait of a male soccer striker celebrating, wearing a vibrant red kit. Cinematic stadium lighting, high energy, intense focus, dark moody background with slight lens flare."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOhiKr0uCILrSpAeAiICTJHu-SnF24xKgUbv9oxpgJJnayC6QCBjodCmrgQrwbuPcI_Y47DPycTbQx5-KRjrTLbhsDZRxhxY3NdnpsXbaAjuWqCmJkRXA4zqIfQbVk2xVsfX0FeGgK8lhTE6fqq6fZtFVCMxIytGX37tGnOcre_VPXIXZBNjpc645CvaXOqZHQFUai2M81-ZmYgeRGc_xgnJzIgRJyoiP7QzfP57RqVoxcY7X1GU6M" />
+                        <div
+                            class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-headline-lg text-lg font-bold">
+                            1</div>
+                    </div>
+                    <div
+                        class="glass-panel-active w-full flex-1 rounded-t-2xl rounded-b-lg flex flex-col items-center pt-10 pb-6 px-4">
+                        <h3 class="text-headline-lg-mobile font-headline-lg-mobile text-white text-center">Carlos Ruiz
+                        </h3>
+                        <p class="text-label-sm font-label-sm text-primary-fixed mt-1 font-bold">Municipal</p>
+                        <div class="mt-auto text-center">
+                            <span class="text-display-lg font-display-lg text-white block leading-none">24</span>
+                            <span
+                                class="text-[12px] text-on-surface-variant uppercase tracking-widest font-bold mt-2 block">Goals</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Rank 3 -->
+                <div class="w-full md:w-1/3 flex flex-col items-center relative order-3 h-[70%]">
+                    <div class="relative w-20 h-20 mb-4 z-10">
+                        <img alt="Player 3"
+                            class="w-full h-full object-cover rounded-full border-4 border-surface-container"
+                            data-alt="A portrait of a young male soccer forward looking focused, wearing a white and green jersey. Modern sports aesthetic, dark cinematic lighting, high resolution."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJVHYhZHYI3-HeAAUuHOfHjChb6VM6Crt-p-hRU351N2wG8CvFt-qcFgT4VYCcfzwvVpd_lGUb3spakB2s41jlMv2lCXKWwZyi6s3P32gwipeRXYWkT_U8U1insNbBB-ctiT4judWuyEX47TES2yeTgnTR3N0lLyOODNxTM6jczB-JbZ59sRYPezmKFEReSU5Uk8nlf6OjxII5bl2upNamzTl3m-VJoPs0lZSKie7B6qCLaKo62EKi" />
+                        <div
+                            class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-surface-container-high border border-white/20 flex items-center justify-center font-headline-lg-mobile text-white text-sm">
+                            3</div>
+                    </div>
+                    <div
+                        class="glass-panel w-full flex-1 rounded-t-xl rounded-b-lg flex flex-col items-center pt-8 pb-6 px-4 border-t-4 border-t-[#CD7F32]">
+                        <h3 class="text-title-md font-title-md text-white text-center">Diego Franco</h3>
+                        <p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Antigua GFC</p>
+                        <div class="mt-auto text-center">
+                            <span class="text-headline-lg font-headline-lg text-primary-fixed block">15</span>
+                            <span
+                                class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Goals</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- List Section (Ranks 4-10) -->
+        <section class="px-container-margin mb-stack-lg flex-1">
+            <div class="bg-gradient-card rounded-xl overflow-hidden p-2">
+                <!-- List Header -->
+                <div
+                    class="flex items-center px-4 py-3 border-b border-white/5 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">
+                    <div class="w-12 text-center">Rank</div>
+                    <div class="flex-1 pl-4">Player</div>
+                    <div class="w-32 hidden sm:block">Team</div>
+                    <div class="w-20 text-right pr-4">Goals</div>
+                </div>
+                <!-- List Items -->
+                <div class="flex flex-col gap-1 mt-2">
+                    <!-- Item 4 -->
+                    <div
+                        class="flex items-center px-4 py-3 rounded-lg hover:bg-surface-variant/30 transition-colors group">
+                        <div class="w-12 text-center font-headline-lg-mobile text-on-surface-variant text-lg">4</div>
+                        <div class="flex-1 pl-4 flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10">
+                                <img class="w-full h-full object-cover"
+                                    data-alt="Small headshot of a male soccer player in a dark jersey, serious expression, high contrast lighting."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbBgFIudYng1GdjxVAeAkfKZX-6SfMkS-u1Fbh8QWfkoB022ZSgDcjuZw_hU0KMwLxIb3mzAKgXZmhG9u1WrSJMBGD7O5TzZ0Iwm5CqknemILiamcyXNyb5D2NizhfInf_m4Dq_5ohgQlwQU34wiZPSndWZU6Dwi4GOcLd0MHoAFAhvv5VncpYXO2CTLiIiSX7pV7Z1x-_PFMkEAHIOCtjvYvxSfTLLw00DO21ssbbkFpi446lnda2" />
+                            </div>
+                            <div>
+                                <div class="text-body-md font-body-md text-white font-semibold">Luis Martinez</div>
+                                <div class="text-label-sm font-label-sm text-on-surface-variant sm:hidden">Guastatoya
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-32 hidden sm:block text-body-md text-on-surface-variant">Guastatoya</div>
+                        <div
+                            class="w-20 text-right pr-4 font-headline-lg-mobile text-primary-fixed text-xl group-hover:text-white transition-colors">
+                            12</div>
+                    </div>
+                    <!-- Item 5 -->
+                    <div
+                        class="flex items-center px-4 py-3 rounded-lg hover:bg-surface-variant/30 transition-colors group">
+                        <div class="w-12 text-center font-headline-lg-mobile text-on-surface-variant text-lg">5</div>
+                        <div class="flex-1 pl-4 flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10">
+                                <img class="w-full h-full object-cover"
+                                    data-alt="Small headshot of a male soccer player in a yellow kit, shouting in celebration, cinematic stadium lighting."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhhoIDsiOTSVVZm6bZuAoTAvCUZ08QUByPp6hAF2QeK8M3BIRl7liggBjNiVPzNOv6u7NLNEbqDqN65YxJJh3Umzm0yGCb3P-rQs-1vmfdULz5MXqyQdrrQdYwpwRaT_FHxEwz_x1C2zZQFL3mRmAkVtF3bu-9GOwuLLvKL3e0ib0Hn5claMR-hfDUndY9ErU9uLUiopLOp8ebp7Xi2ljnVXKM74FBFkhDwD5deHSKTtg9UQvyyPfI" />
+                            </div>
+                            <div>
+                                <div class="text-body-md font-body-md text-white font-semibold">Juan Valenzuela</div>
+                                <div class="text-label-sm font-label-sm text-on-surface-variant sm:hidden">Xelajú MC
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-32 hidden sm:block text-body-md text-on-surface-variant">Xelajú MC</div>
+                        <div
+                            class="w-20 text-right pr-4 font-headline-lg-mobile text-primary-fixed text-xl group-hover:text-white transition-colors">
+                            11</div>
+                    </div>
+                    <!-- Item 6 -->
+                    <div
+                        class="flex items-center px-4 py-3 rounded-lg hover:bg-surface-variant/30 transition-colors group">
+                        <div class="w-12 text-center font-headline-lg-mobile text-on-surface-variant text-lg">6</div>
+                        <div class="flex-1 pl-4 flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10">
+                                <img class="w-full h-full object-cover"
+                                    data-alt="Small headshot of a male soccer player looking intense, white jersey, dark background, sharp focus."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTKeIznHVcOMutSfgEruSsdcV0u-JFFtEaZ8QrkIjXipcY91vL4CPY_vmPr5YIM8nd6FaG5h10jKDIAYINtmp1OfSfuxSAxX0ZL4F9Th-ChDCjecMyK0ZDeV7_lYI-qjeZStBJIY6dLIu6_-X_WC2HwglRLZmmdJf2LAogG5riOKLKhlOkDOzLr6zo-Vwk805D0nDdhGB9BlTKJzkENNESwYQRXTu1VzKnfVxWZ4-OdT06_dlObqB6" />
+                            </div>
+                            <div>
+                                <div class="text-body-md font-body-md text-white font-semibold">Pedro Altán</div>
+                                <div class="text-label-sm font-label-sm text-on-surface-variant sm:hidden">Cobán
+                                    Imperial</div>
+                            </div>
+                        </div>
+                        <div class="w-32 hidden sm:block text-body-md text-on-surface-variant">Cobán Imperial</div>
+                        <div
+                            class="w-20 text-right pr-4 font-headline-lg-mobile text-primary-fixed text-xl group-hover:text-white transition-colors">
+                            9</div>
+                    </div>
+                </div>
+                <div class="p-4 text-center border-t border-white/5 mt-2">
+                    <button
+                        class="text-primary-fixed font-bold text-label-sm uppercase tracking-wider hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto">
+                        View Full List
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

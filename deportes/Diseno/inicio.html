@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>DEPORTES - Gestión de Fútbol Amateur</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Hanken+Grotesk:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#303030",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-tertiary-container": "#656464",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-container": "#b9f63f",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "background": "#131313",
+                        "secondary": "#c8c6c5",
+                        "primary-fixed": "#b9f63f",
+                        "surface-bright": "#393939",
+                        "secondary-container": "#474746",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-container-highest": "#353534",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "tertiary-container": "#e4e2e1",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#9ed81d",
+                        "on-error": "#690005",
+                        "on-background": "#e5e2e1",
+                        "inverse-primary": "#496800",
+                        "on-primary-fixed": "#131f00",
+                        "primary": "#ffffff",
+                        "surface": "#131313",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#243600",
+                        "surface-container": "#201f1f",
+                        "surface-variant": "#353534",
+                        "on-primary-fixed-variant": "#364e00",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "surface-container-low": "#1c1b1b",
+                        "on-secondary": "#313030",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#4e6e00",
+                        "primary-fixed-dim": "#9ed81d",
+                        "tertiary": "#ffffff",
+                        "outline": "#8d947c",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "tertiary-fixed": "#e4e2e1",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#c3caaf",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "outline-variant": "#434935",
+                        "secondary-fixed": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin": "24px",
+                        "stack-sm": "12px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "stack-lg": "40px",
+                        "stack-md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Anton"],
+                        "headline-lg-mobile": ["Anton"],
+                        "display-lg": ["Anton"],
+                        "title-md": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "400" }],
+                        "title-md": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(18, 18, 18, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card-featured {
+            background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(18, 18, 18, 0.9) 100%);
+            background-color: rgba(192, 253, 70, 0.05);
+            /* subtle volt green tint */
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(192, 253, 70, 0.2);
+            box-shadow: 0 0 15px rgba(192, 253, 70, 0.1);
+        }
+
+        .neon-glow:focus-within,
+        .neon-hover:hover {
+            box-shadow: 0 0 12px rgba(192, 253, 70, 0.4);
+            border-color: #C0FD46;
+        }
+
+        .btn-primary {
+            background-color: #C0FD46;
+            color: #000000;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .hero-bg {
+            background: linear-gradient(to bottom, rgba(19, 19, 19, 0.3) 0%, rgba(19, 19, 19, 1) 100%),
+                url('placeholder');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+    <!-- TopNavBar (Shared Component) -->
+    <nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-white/10 flex justify-between items-center px-container-margin py-4 transition-all duration-300"
+        id="main-nav">
+        <div class="flex items-center gap-8">
+            <a class="text-display-lg font-display-lg text-primary-fixed tracking-tighter uppercase leading-none"
+                href="#">DEPORTES</a>
+            <div class="hidden md:flex gap-6 items-center">
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200"
+                    href="#">Leagues</a>
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200"
+                    href="#">Teams</a>
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200"
+                    href="#">Grounds</a>
+                <a class="text-on-surface-variant font-medium hover:text-primary-fixed transition-colors duration-200"
+                    href="#">Schedule</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="hidden md:flex items-center justify-center text-on-surface hover:text-primary-fixed transition-colors">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+            <a class="btn-primary px-6 py-2 rounded font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-2"
+                href="#">
+                <span class="material-symbols-outlined text-[16px]">login</span>
+                Login
+            </a>
+        </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow flex flex-col relative pt-[80px]">
+        <!-- Hero Section -->
+        <section
+            class="relative w-full min-h-[870px] flex flex-col justify-center px-container-margin md:px-12 lg:px-24 py-stack-lg hero-bg"
+            data-alt="A dramatic, high-contrast photograph of an amateur football match at night. A brilliantly lit green turf pitch stands out against deep, ink-trap black shadows. Intense stadium floodlights cut through a light mist, creating a cinematic, high-energy atmosphere. Players are captured in motion, blurring slightly to emphasize speed and aggression. The overall color palette is dominated by dark tones with vibrant, neon green turf accents, perfectly matching a modern, technical sports brand aesthetic.">
+            <div class="max-w-4xl z-10 space-y-6">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-white/10 mb-4">
+                    <span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span>
+                    <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Liga
+                        Oficial Metropolitana</span>
+                </div>
+                <h1
+                    class="text-headline-lg-mobile md:text-display-lg font-display-lg text-primary uppercase tracking-tighter leading-tight drop-shadow-2xl">
+                    GESTIÓN DE<br />
+                    <span class="text-primary-fixed">FÚTBOL AMATEUR</span>
+                </h1>
+                <p
+                    class="text-body-md font-body-md text-on-surface-variant max-w-xl md:text-lg border-l-2 border-primary-fixed pl-4 py-1">
+                    Excelencia institucional y rendimiento técnico para la nueva era del deporte amateur. Sistema
+                    integral para ligas, equipos y recintos deportivos de alto nivel.
+                </p>
+                <!-- Quick Access Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter pt-stack-md mt-stack-md w-full max-w-5xl">
+                    <!-- Card 1: Registrar Equipo -->
+                    <a class="glass-card-featured rounded-xl p-6 flex flex-col justify-between group h-48 neon-hover transition-all duration-300"
+                        href="#">
+                        <div class="flex justify-between items-start">
+                            <div class="w-10 h-10 rounded-full bg-primary-fixed/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary-fixed">group_add</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-fixed transition-colors">arrow_outward</span>
+                        </div>
+                        <div>
+                            <h3
+                                class="text-title-md font-title-md text-primary mb-1 group-hover:text-primary-fixed transition-colors">
+                                Registrar Equipo</h3>
+                            <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Inscripciones
+                                Abiertas</p>
+                        </div>
+                    </a>
+                    <!-- Card 2: Iniciar Sesión -->
+                    <a class="glass-card rounded-xl p-6 flex flex-col justify-between group h-48 hover:border-white/30 transition-all duration-300"
+                        href="#">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                                <span class="material-symbols-outlined text-on-surface">sports_soccer</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-white transition-colors">arrow_forward</span>
+                        </div>
+                        <div>
+                            <h3
+                                class="text-title-md font-title-md text-primary mb-1 group-hover:text-white transition-colors">
+                                Portal de Jugador</h3>
+                            <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Gestión personal
+                            </p>
+                        </div>
+                    </a>
+                    <!-- Card 3: Ver Estadísticas -->
+                    <a class="glass-card rounded-xl p-6 flex flex-col justify-between group h-48 hover:border-white/30 transition-all duration-300"
+                        href="#">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+                                <span class="material-symbols-outlined text-on-surface">bar_chart</span>
+                            </div>
+                            <span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-white transition-colors">arrow_forward</span>
+                        </div>
+                        <div>
+                            <h3
+                                class="text-title-md font-title-md text-primary mb-1 group-hover:text-white transition-colors">
+                                Ver Estadísticas</h3>
+                            <p class="text-label-sm font-label-sm text-on-surface-variant uppercase">Data en tiempo real
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- Atmospheric Shader Overlay -->
+            <div class="absolute inset-0 pointer-events-none opacity-20 mix-blend-screen z-0">
+                <!-- Placeholder for technical grid/noise texture if a shader was provided, otherwise pure CSS gradient works -->
+                <div
+                    class="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary-fixed/5 via-transparent to-transparent">
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- System Status Bar (Bottom Sticky) -->
+    <div
+        class="fixed bottom-0 w-full bg-surface-container-lowest border-t border-white/5 py-2 px-container-margin z-40 hidden md:flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider backdrop-blur-md">
+        <div class="flex items-center gap-6">
+            <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                Temporada Apertura 2024
+            </span>
+            <span class="w-px h-3 bg-white/10"></span>
+            <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[14px]">groups</span>
+                42 Equipos Activos
+            </span>
+        </div>
+        <div class="flex items-center gap-2 text-primary-fixed">
+            <span class="w-2 h-2 rounded-full bg-primary-fixed shadow-[0_0_8px_#C0FD46]"></span>
+            Sistema Operativo
+        </div>
+    </div>
+    <script>
+        // Simple scroll effect for TopNavBar
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 20) {
+                nav.classList.add('bg-background/95', 'shadow-lg');
+                nav.classList.remove('bg-background/80');
+            } else {
+                nav.classList.add('bg-background/80');
+                nav.classList.remove('bg-background/95', 'shadow-lg');
+            }
+        });
+    </script>
+</body>
+
+</html>
