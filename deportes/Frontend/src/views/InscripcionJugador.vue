@@ -64,9 +64,6 @@
           <div v-if="error" class="p-3 bg-error-container/20 border border-error/50 text-error text-sm rounded-lg">
             {{ error }}
           </div>
-          <div v-if="success" class="p-3 bg-primary-fixed/10 border border-primary-fixed/50 text-primary-fixed text-sm rounded-lg">
-            ¡Jugador registrado con éxito!
-          </div>
 
           <!-- Actions -->
           <div class="flex justify-end gap-6 items-center pt-4 border-t border-white/10">
@@ -91,13 +88,13 @@
 import { ref, reactive, onMounted } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
+import { alertaExito, alertaError } from '../utils/alertas'
 
 const router = useRouter()
 const fileInput = ref(null)
 const previewUrl = ref(null)
 const isLoading = ref(false)
 const error = ref('')
-const success = ref(false)
 
 const form = reactive({
   nombre: '',
@@ -148,8 +145,7 @@ const submitForm = async () => {
   
   isLoading.value = true
   error.value = ''
-  success.value = false
-  
+
   const formData = new FormData()
   formData.append('nombre', form.nombre)
   formData.append('dpi', form.dpi.replace(/\s/g, ''))
@@ -165,12 +161,10 @@ const submitForm = async () => {
         'Authorization': `Bearer ${token}`
       }
     })
-    success.value = true
-    setTimeout(() => {
-      router.push('/mi-equipo')
-    }, 2000)
+    await alertaExito('¡Jugador registrado!', 'El jugador se agregó correctamente a tu equipo.')
+    router.push('/mi-equipo')
   } catch (err) {
-    error.value = err.response?.data?.message || 'Error al guardar el jugador'
+    alertaError('No se pudo registrar el jugador', err.response?.data?.message || 'Ocurrió un error al guardar el jugador.')
   } finally {
     isLoading.value = false
   }

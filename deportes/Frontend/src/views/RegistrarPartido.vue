@@ -179,7 +179,7 @@
 import { ref, onMounted, computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
-import Swal from 'sweetalert2';
+import { alertaExito, alertaError, alertaAdvertencia } from '../utils/alertas';
 
 const router = useRouter();
 const token = localStorage.getItem('deportes_token');
@@ -276,7 +276,7 @@ const eliminarFila = (lista, index) => {
 const validarYGuardar = async () => {
   // 1. Validar que si es encargado, al menos uno de los equipos sea el suyo
   if (userRole !== 'admin' && form.equipo_local_id != miEquipoId && form.equipo_visitante_id != miEquipoId) {
-    Swal.fire('Atención', 'Debes seleccionar tu equipo en al menos una de las opciones.', 'warning');
+    alertaAdvertencia('Atención', 'Debes seleccionar tu equipo en al menos una de las opciones.');
     return;
   }
 
@@ -298,22 +298,12 @@ const validarYGuardar = async () => {
   });
 
   if (sumaGolesLocal !== form.goles_local) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error en goles locales',
-      text: `Los goles asignados a los jugadores del equipo local suman ${sumaGolesLocal} pero el marcador indica ${form.goles_local}. Verifica antes de guardar.`,
-      confirmButtonColor: '#ccff00'
-    });
+    alertaError('Error en goles locales', `Los goles asignados a los jugadores del equipo local suman ${sumaGolesLocal} pero el marcador indica ${form.goles_local}. Verifica antes de guardar.`);
     return;
   }
 
   if (sumaGolesVisitante !== form.goles_visitante) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error en goles visitantes',
-      text: `Los goles asignados a los jugadores del equipo visitante suman ${sumaGolesVisitante} pero el marcador indica ${form.goles_visitante}. Verifica antes de guardar.`,
-      confirmButtonColor: '#ccff00'
-    });
+    alertaError('Error en goles visitantes', `Los goles asignados a los jugadores del equipo visitante suman ${sumaGolesVisitante} pero el marcador indica ${form.goles_visitante}. Verifica antes de guardar.`);
     return;
   }
 
@@ -352,20 +342,12 @@ const validarYGuardar = async () => {
   submitting.value = true;
   try {
     await api.post(`/partidos`, payload, { headers: getAuthHeaders() });
-    
-    Swal.fire({
-      icon: 'success',
-      title: '¡Partido registrado!',
-      text: 'El partido y sus estadísticas se guardaron exitosamente.',
-      confirmButtonColor: '#ccff00',
-      background: '#121212',
-      color: '#fff'
-    }).then(() => {
-      router.push('/historial-partidos');
-    });
+
+    await alertaExito('¡Partido registrado!', 'El partido y sus estadísticas se guardaron exitosamente.');
+    router.push('/historial-partidos');
 
   } catch (e) {
-    Swal.fire('Error', e.response?.data?.error || 'Error al guardar el partido', 'error');
+    alertaError('Error', e.response?.data?.error || 'Error al guardar el partido');
   } finally {
     submitting.value = false;
   }

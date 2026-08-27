@@ -169,6 +169,7 @@
 import { ref, reactive } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
+import { alertaError } from '../utils/alertas'
 
 const router = useRouter()
 const fileInput = ref(null)
@@ -276,7 +277,7 @@ const submitForm = async () => {
     success.value = true
     credentials.value = response.data.credentials
   } catch (err) {
-    error.value = err.response?.data?.message || 'Error al guardar el equipo'
+    alertaError('No se pudo registrar el equipo', err.response?.data?.message || 'Ocurrió un error al guardar el equipo.')
   } finally {
     isLoading.value = false
   }

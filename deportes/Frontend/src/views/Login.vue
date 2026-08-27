@@ -24,11 +24,6 @@
 
           <!-- Login Form -->
           <form @submit.prevent="handleLogin" class="flex flex-col gap-stack-md">
-            <div v-if="error" class="bg-error-container/20 border border-error/50 text-error p-3 rounded-DEFAULT text-sm text-center flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">error</span>
-              {{ error }}
-            </div>
-
             <!-- Input Group: Usuario / DPI -->
             <div class="flex flex-col gap-base">
               <label class="font-label-sm text-label-sm text-on-surface uppercase" for="usuario">Usuario / DPI</label>
@@ -103,10 +98,10 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
 import fondoEstadio from '../assets/fondo-estadio.jpg'
+import { alertaExito, alertaError } from '../utils/alertas'
 
 const router = useRouter()
 const isLoading = ref(false)
-const error = ref('')
 const showPassword = ref(false)
 
 const form = reactive({
@@ -116,7 +111,6 @@ const form = reactive({
 
 const handleLogin = async () => {
   isLoading.value = true
-  error.value = ''
 
   try {
     const response = await api.post('/login', {
@@ -129,6 +123,8 @@ const handleLogin = async () => {
       localStorage.setItem('deportes_equipo', JSON.stringify(response.data.equipo))
       localStorage.setItem('deportes_rol', response.data.rol)
 
+      await alertaExito('¡Bienvenido!', 'Sesión iniciada correctamente.')
+
       if (response.data.rol === 'admin') {
         router.push('/admin')
       } else {
@@ -136,7 +132,7 @@ const handleLogin = async () => {
       }
     }
   } catch (err) {
-    error.value = err.response?.data?.error || 'Error de conexión. Intenta de nuevo.'
+    alertaError('No se pudo iniciar sesión', err.response?.data?.error || 'Error de conexión. Intenta de nuevo.')
   } finally {
     isLoading.value = false
   }

@@ -319,6 +319,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api, { IMAGE_BASE_URL } from '../services/api'
+import { alertaError, toastExito, confirmarAccion } from '../utils/alertas'
 
 const router = useRouter()
 const equipo = ref(null)
@@ -395,8 +396,9 @@ const guardarEdicionJugador = async () => {
 
     showModalEdit.value = false
     await refrescarEquipo(token)
+    toastExito('Jugador actualizado')
   } catch (err) {
-    alert('Error al editar jugador: ' + (err.response?.data?.error || err.message))
+    alertaError('No se pudo editar el jugador', err.response?.data?.error || err.message)
   }
 }
 
@@ -439,8 +441,9 @@ const guardarSubRep = async () => {
 
     showModalSubRep.value = false
     await refrescarEquipo(token)
+    toastExito('Sub representante guardado')
   } catch (err) {
-    alert('Error al guardar sub representante: ' + (err.response?.data?.error || err.message))
+    alertaError('No se pudo guardar el sub representante', err.response?.data?.error || err.message)
   }
 }
 
@@ -459,8 +462,9 @@ const confirmarBaja = async () => {
 
     showModalBaja.value = false
     await refrescarEquipo(token)
+    toastExito('Jugador dado de baja')
   } catch (err) {
-    alert('Error al dar de baja: ' + (err.response?.data?.error || err.message))
+    alertaError('No se pudo dar de baja al jugador', err.response?.data?.error || err.message)
   }
 }
 
@@ -487,7 +491,7 @@ onMounted(async () => {
     todosLosEquipos.value = resEquipos.data
   } catch (err) {
     if (err.response?.status === 401) {
-      logout()
+      cerrarSesion()
     } else {
       error.value = 'Error al cargar la información del equipo.'
     }
@@ -496,9 +500,20 @@ onMounted(async () => {
   }
 })
 
-const logout = () => {
+const cerrarSesion = () => {
   localStorage.removeItem('deportes_token')
   localStorage.removeItem('deportes_equipo')
+  localStorage.removeItem('deportes_rol')
   router.push('/')
+}
+
+const logout = async () => {
+  const result = await confirmarAccion({
+    title: '¿Cerrar sesión?',
+    text: 'Tendrás que volver a iniciar sesión para acceder a tu equipo.',
+    confirmButtonText: 'Sí, cerrar sesión'
+  })
+  if (!result.isConfirmed) return
+  cerrarSesion()
 }
 </script>

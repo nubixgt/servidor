@@ -200,7 +200,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api, { IMAGE_BASE_URL } from '../services/api';
-import Swal from 'sweetalert2';
+import { confirmarEliminar, alertaExito, alertaError } from '../utils/alertas';
 
 const loading = ref(true);
 const partidos = ref([]);
@@ -256,43 +256,23 @@ const getEstadisticasEquipo = (equipoId) => {
   return partidoSeleccionado.value.estadisticas.filter(e => e.equipo_id === equipoId);
 };
 
-const confirmDelete = (id) => {
-  Swal.fire({
+const confirmDelete = async (id) => {
+  const result = await confirmarEliminar({
     title: '¿Eliminar partido?',
-    text: "Esta acción no se puede deshacer. Se eliminarán también todas las estadísticas asociadas.",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#374151',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    background: '#121212',
-    color: '#ffffff'
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await api.post(`/partidos/${id}/eliminar`, {}, { headers: getAuthHeaders() });
-        partidoSeleccionado.value = null; // Cerrar modal si está abierto
-        await fetchPartidos(); // Recargar lista
-        Swal.fire({
-          title: 'Eliminado',
-          text: 'El partido ha sido eliminado.',
-          icon: 'success',
-          background: '#121212',
-          color: '#ffffff'
-        });
-      } catch (error) {
-        console.error(error);
-        Swal.fire({
-          title: 'Error',
-          text: 'Hubo un problema al eliminar el partido.',
-          icon: 'error',
-          background: '#121212',
-          color: '#ffffff'
-        });
-      }
-    }
+    text: 'Esta acción no se puede deshacer. Se eliminarán también todas las estadísticas asociadas.'
   });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    await api.post(`/partidos/${id}/eliminar`, {}, { headers: getAuthHeaders() });
+    partidoSeleccionado.value = null; // Cerrar modal si está abierto
+    await fetchPartidos(); // Recargar lista
+    alertaExito('Eliminado', 'El partido ha sido eliminado.');
+  } catch (error) {
+    console.error(error);
+    alertaError('Error', 'Hubo un problema al eliminar el partido.');
+  }
 };
 
 onMounted(() => {

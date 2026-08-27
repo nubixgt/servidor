@@ -511,6 +511,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api, { IMAGE_BASE_URL } from '../services/api'
+import { alertaError, toastExito, confirmarAccion } from '../utils/alertas'
 
 const router = useRouter()
 const equipos = ref([])
@@ -648,8 +649,9 @@ const guardarEdicionJugador = async () => {
 
     showModalEdit.value = false
     await verEquipo(equipoSeleccionado.value.id)
+    toastExito('Jugador actualizado')
   } catch (err) {
-    alert('Error al editar jugador: ' + (err.response?.data?.error || err.message))
+    alertaError('No se pudo editar el jugador', err.response?.data?.error || err.message)
   }
 }
 
@@ -722,16 +724,27 @@ const confirmarBaja = async () => {
 
     // Refresh equipo actual
     await verEquipo(equipoSeleccionado.value.id)
+    toastExito('Jugador dado de baja')
   } catch (err) {
-    alert('Error al dar de baja: ' + (err.response?.data?.error || err.message))
+    alertaError('No se pudo dar de baja al jugador', err.response?.data?.error || err.message)
   }
 }
 
-const logout = () => {
+const cerrarSesion = () => {
   localStorage.removeItem('deportes_token')
   localStorage.removeItem('deportes_equipo')
   localStorage.removeItem('deportes_rol')
   router.push('/')
+}
+
+const logout = async () => {
+  const result = await confirmarAccion({
+    title: '¿Cerrar sesión?',
+    text: 'Saldrás del panel de administración.',
+    confirmButtonText: 'Sí, cerrar sesión'
+  })
+  if (!result.isConfirmed) return
+  cerrarSesion()
 }
 
 const formatearFecha = (fechaString) => {
@@ -746,7 +759,7 @@ const formatearFecha = (fechaString) => {
 
 const handleError = (err) => {
   if (err.response?.status === 401 || err.response?.status === 403) {
-    logout()
+    cerrarSesion()
   } else {
     error.value = 'Error de conexión.'
   }
