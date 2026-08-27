@@ -137,12 +137,43 @@ export const MUNICIPIOS_POR_DEPARTAMENTO = {
 export const ESTADOS_PROCESO = ['Levantamiento', 'Diseño', 'Implementado', 'Pendiente'];
 export const ESTADOS_VALIDACION = ['Pendiente de revisión', 'Validado', 'Requiere corrección'];
 export const USOS_ACTUALES = ['Agrícola', 'Ganadero', 'Agroforestal', 'Forestal', 'Mixto', 'Otro'];
-export const NIVELES_AGUA = ['Alta', 'Media', 'Baja', 'Estacional'];
 export const RIESGO_EROSION = ['Alto', 'Medio', 'Bajo'];
 export const SI_NO_VACIO = ['', 'No', 'Sí'];
 export const TENENCIA_TIERRA = ['Propia', 'Arrendada', 'Comunal', 'Prestada', 'Otro'];
-export const FUENTE_AGUA = ['Río o quebrada', 'Pozo', 'Nacimiento', 'Lluvia (temporal)', 'Sistema municipal', 'Otro'];
 export const ROLES = ['tecnico', 'supervisor', 'administrador'];
+
+// --- Menús normalizados del formulario de parcela (revisión técnica 2026) ---
+
+// Bioindicadores del suelo (selección múltiple).
+// NOTA: "Peracias" no está confirmado como término técnico estandarizado; se
+// conserva porque el equipo lo usa como nombre local (posible variante de
+// "pacaya", Chamaedorea). Ajustar aquí cuando se confirme la escritura.
+export const BIOINDICADORES_SUELO = [
+    'Helechos', 'Peracias', 'Lombrices', 'Hormigas', 'Ninguno observado', 'No evaluado',
+];
+
+// Clase textural del suelo: 12 clases del sistema USDA-NRCS + "No determinado".
+export const CLASES_TEXTURALES = [
+    'Arenoso', 'Arenoso franco', 'Franco arenoso', 'Franco', 'Franco limoso', 'Limoso',
+    'Franco arcillo-arenoso', 'Franco arcilloso', 'Franco arcillo-limoso',
+    'Arcillo-arenoso', 'Arcillo-limoso', 'Arcilloso', 'No determinado',
+];
+
+// Fuente original de agua (principal y secundarias).
+export const FUENTE_AGUA_ORIGINAL = [
+    'Nacimiento o manantial', 'Río', 'Quebrada', 'Arroyo', 'Lago o laguna',
+    'Pozo artesanal', 'Pozo mecánico', 'Agua de lluvia', 'Escorrentía superficial',
+    'Canal de riego', 'Red municipal', 'Sistema comunitario', 'No existe fuente identificada',
+];
+
+// Limitante de uso de la parcela (selección múltiple).
+export const LIMITANTES_USO = [
+    'Ninguna limitante identificada', 'Talpetate o capa endurecida', 'Suelo poco profundo',
+    'Pendiente pronunciada', 'Erosión', 'Pedregosidad', 'Afloramiento rocoso', 'Compactación',
+    'Baja infiltración', 'Drenaje deficiente', 'Encharcamiento', 'Escasez de agua',
+    'Baja fertilidad', 'Salinidad', 'Acceso limitado a la parcela',
+    'Tamaño o forma irregular de la parcela', 'Restricción por tenencia de la tierra', 'No evaluado',
+];
 
 export const ROLE_LABELS = {
     tecnico: 'Técnico de campo',

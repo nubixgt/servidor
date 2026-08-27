@@ -108,7 +108,7 @@ const GRUPOS = [
     { id: 'soil', label: 'Suelo', icon: Mountain, color: 'text-[#facc15]', variables: ['Profundidad de suelo', 'Tipo / textura', 'Estructura', 'Compactación', 'Materia orgánica', 'Infiltración', 'Riesgo de erosión', 'Color', 'pH', 'Humedad'] },
     { id: 'water', label: 'Agua', icon: Droplets, color: 'text-[#38bdf8]', variables: ['Escorrentía superficial', 'Tasa de infiltración', 'Encharcamiento', 'Drenaje', 'Fuentes de agua', 'Ríos / quebradas', 'Nacimientos', 'Reservorios', 'Sistema de riego'] },
     { id: 'rainfall', label: 'Lluvia', icon: CloudRain, color: 'text-[#38bdf8]', variables: ['Lluvia anual acumulada', 'Lluvia mensual', 'Evento máximo', 'Días de lluvia', 'Fuente del dato', 'Fecha de captura'] },
-    { id: 'talpetate', label: 'Talpetate', icon: AlertOctagon, color: 'text-[#ef4444]', variables: ['Presencia', 'Profundidad', 'Espesor', 'Dureza', 'Ubicación en el perfil', 'Porcentaje estimado'] },
+    { id: 'limitantes', label: 'Limitantes de uso', icon: AlertOctagon, color: 'text-[#ef4444]', variables: ['Talpetate o capa endurecida', 'Suelo poco profundo', 'Pendiente pronunciada', 'Erosión', 'Pedregosidad', 'Compactación', 'Baja infiltración', 'Drenaje deficiente', 'Encharcamiento', 'Escasez de agua', 'Baja fertilidad', 'Salinidad'] },
     { id: 'bioindicators', label: 'Bioindicadores', icon: Sprout, color: 'text-[#4ade80]', variables: ['Lombrices', 'Insectos', 'Hongos', 'Raíces', 'Plantas nativas', 'Organismos del suelo', 'Residuo orgánico / hojarasca'] },
     { id: 'topography', label: 'Topografía', icon: Compass, color: 'text-[#4ade80]', variables: ['Elevación', 'Pendiente', 'Orientación', 'Curvas de nivel', 'Punto clave (keypoint)', 'Línea keyline', 'Cresta', 'Valle'] },
 ];
@@ -148,29 +148,27 @@ function countWhere(field, value) {
     return parcelas.value.filter((p) => (p[field] || '').toString().trim() === value).length;
 }
 
-function topBioindicadores() {
+function topTokens(field, limit = 3) {
     const counts = {};
     parcelas.value.forEach((p) => {
-        (p.bioindicadores || '').split(/[,;/]+/).map((s) => s.trim()).filter(Boolean).forEach((b) => {
+        (p[field] || '').split(/[,;/]+/).map((s) => s.trim()).filter(Boolean).forEach((b) => {
             counts[b] = (counts[b] || 0) + 1;
         });
     });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([nombre, conteo]) => ({ nombre, conteo }));
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit).map(([nombre, conteo]) => ({ nombre, conteo }));
 }
 
 const groupStats = computed(() => {
     const total = parcelas.value.length;
     const prof = avgOf('profundidadSuelo');
     const riesgo = modeOf('riesgoErosion');
-    const tipoSuelo = modeOf('tipoSuelo');
-    const nivelAgua = modeOf('agua');
-    const fuenteAgua = modeOf('fuenteAgua');
+    const claseTextural = modeOf('claseTextural');
+    const fuenteAgua = modeOf('fuenteAguaPrincipal');
     const conEncharca = countWhere('encharca', 'Sí');
     const evalEncharca = conEncharca + countWhere('encharca', 'No');
     const lluvia = avgOf('lluviaAnual');
     const fuenteLluvia = modeOf('lluviaFuente');
-    const conTalpetate = countWhere('talpetate', 'Sí');
-    const evalTalpetate = conTalpetate + countWhere('talpetate', 'No');
+    const conLimitantes = parcelas.value.filter((p) => (p.limitantesUso || '').trim()).length;
     const conBio = parcelas.value.filter((p) => (p.bioindicadores || '').trim()).length;
     const pendiente = avgOf('pendiente');
     const altitud = avgOf('altitud');
@@ -179,23 +177,23 @@ const groupStats = computed(() => {
         soil: [
             prof && `Profundidad promedio: ${prof.avg.toFixed(1)} cm (${prof.n} parcelas)`,
             riesgo && `Riesgo de erosión más común: ${riesgo.value} (${riesgo.count} parcelas)`,
-            tipoSuelo && `Tipo de suelo más común: ${tipoSuelo.value} (${tipoSuelo.count} parcelas)`,
+            claseTextural && `Clase textural más común: ${claseTextural.value} (${claseTextural.count} parcelas)`,
         ].filter(Boolean),
         water: [
-            nivelAgua && `Nivel de agua más común: ${nivelAgua.value} (${nivelAgua.count} parcelas)`,
-            fuenteAgua && `Fuente más común: ${fuenteAgua.value} (${fuenteAgua.count} parcelas)`,
+            fuenteAgua && `Fuente principal más común: ${fuenteAgua.value} (${fuenteAgua.count} parcelas)`,
             evalEncharca > 0 && `Con encharcamiento: ${conEncharca} de ${evalEncharca} evaluadas`,
         ].filter(Boolean),
         rainfall: [
             lluvia && `Lluvia anual promedio: ${fmtNum(lluvia.avg)} mm (${lluvia.n} parcelas)`,
             fuenteLluvia && `Fuente del dato más común: ${fuenteLluvia.value} (${fuenteLluvia.count} parcelas)`,
         ].filter(Boolean),
-        talpetate: [
-            evalTalpetate > 0 && `Con talpetate: ${conTalpetate} de ${evalTalpetate} evaluadas`,
+        limitantes: [
+            total > 0 && `${conLimitantes} de ${total} parcelas con limitantes de uso registradas`,
+            ...topTokens('limitantesUso').map((l) => `${l.nombre}: ${l.conteo} parcela(s)`),
         ].filter(Boolean),
         bioindicators: [
             total > 0 && `${conBio} de ${total} parcelas con bioindicadores registrados`,
-            ...topBioindicadores().map((b) => `${b.nombre}: ${b.conteo} parcela(s)`),
+            ...topTokens('bioindicadores').map((b) => `${b.nombre}: ${b.conteo} parcela(s)`),
         ].filter(Boolean),
         topography: [
             pendiente && `Pendiente promedio: ${pendiente.avg.toFixed(1)}% (${pendiente.n} parcelas)`,

@@ -55,33 +55,14 @@ class DashboardService
         }
         usort($porDepartamento, fn($a, $b) => $b['cantidad'] <=> $a['cantidad'] ?: $b['area'] <=> $a['area']);
 
-        $conTalpetate = count(array_filter($data, fn($p) => $p->talpetate === 'Sí'));
-        $sinTalpetate = count(array_filter($data, fn($p) => $p->talpetate === 'No'));
         $conEncharca = count(array_filter($data, fn($p) => $p->encharca === 'Sí'));
         $sinEncharca = count(array_filter($data, fn($p) => $p->encharca === 'No'));
+        $conLimitantes = count(array_filter($data, fn($p) => trim((string)$p->limitantesUso) !== ''));
         $profVals = array_values(array_filter(array_map(fn($p) => (float)($p->profundidadSuelo ?: 0), $data), fn($v) => $v > 0));
         $profundidadProm = $profVals ? array_sum($profVals) / count($profVals) : 0;
 
-        $bioList = [];
-        foreach ($data as $p) {
-            $partes = preg_split('/[,;\/]+/', (string)$p->bioindicadores);
-            foreach ($partes as $parte) {
-                $k = mb_strtolower(trim($parte));
-                if ($k === '') {
-                    continue;
-                }
-                $bioList[$k] = ($bioList[$k] ?? 0) + 1;
-            }
-        }
-        arsort($bioList);
-        $topBioindicadores = [];
-        $i = 0;
-        foreach ($bioList as $nombre => $conteo) {
-            if ($i++ >= 10) {
-                break;
-            }
-            $topBioindicadores[] = ['nombre' => $nombre, 'conteo' => $conteo];
-        }
+        $topBioindicadores = $this->contarTokens($data, fn($p) => $p->bioindicadores);
+        $topLimitantes = $this->contarTokens($data, fn($p) => $p->limitantesUso);
 
         $porEstadoProceso = array_map(fn($estado) => [
             'estado' => $estado,
@@ -141,8 +122,9 @@ class DashboardService
         if ($pendientesValidacion > 0) {
             $insights[] = ['tipo' => 'alert', 'texto' => "$pendientesValidacion parcela(s) están pendientes de revisión técnica por un supervisor."];
         }
-        if ($conTalpetate > 0) {
-            $insights[] = ['tipo' => 'recommendation', 'texto' => "$conTalpetate parcela(s) presentan talpetate; priorizar diagnóstico de profundidad antes de diseñar obras de infiltración."];
+        if ($conLimitantes > 0 && $topLimitantes) {
+            $principal = $topLimitantes[0];
+            $insights[] = ['tipo' => 'recommendation', 'texto' => "$conLimitantes parcela(s) reportan limitantes de uso; la más frecuente es \"{$principal['nombre']}\" ({$principal['conteo']} parcela(s))."];
         }
 
         return [
@@ -164,14 +146,48 @@ class DashboardService
             'porDepartamento' => array_values($porDepartamento),
             'porEstadoProceso' => $porEstadoProceso,
             'diagnosticoFisico' => [
-                'conTalpetate' => $conTalpetate, 'sinTalpetate' => $sinTalpetate,
+                'conLimitantes' => $conLimitantes, 'totalParcelas' => count($data),
                 'conEncharca' => $conEncharca, 'sinEncharca' => $sinEncharca,
                 'profundidadProm' => $profundidadProm, 'muestras' => count($profVals),
             ],
             'topBioindicadores' => $topBioindicadores,
+            'topLimitantes' => $topLimitantes,
             'puntosMapa' => $puntosMapa,
             'registrosRecientes' => $registrosRecientes,
         ];
+    }
+
+    /**
+     * Cuenta los valores de un campo de texto separado por comas (multi-selección)
+     * a lo largo de todas las parcelas y devuelve los 10 más frecuentes.
+     *
+     * @param Parcela[] $data
+     * @param callable  $getter fn(Parcela): string
+     * @return array<int, array{nombre: string, conteo: int}>
+     */
+    private function contarTokens(array $data, callable $getter): array
+    {
+        $conteos = [];
+        $etiquetas = [];
+        foreach ($data as $p) {
+            $partes = preg_split('/[,;\/]+/', (string)$getter($p));
+            foreach ($partes as $parte) {
+                $etiqueta = trim($parte);
+                if ($etiqueta === '') {
+                    continue;
+                }
+                $clave = mb_strtolower($etiqueta);
+                $etiquetas[$clave] ??= $etiqueta;
+                $conteos[$clave] = ($conteos[$clave] ?? 0) + 1;
+            }
+        }
+        arsort($conteos);
+
+        $top = [];
+        foreach (array_slice($conteos, 0, 10, true) as $clave => $conteo) {
+            $top[] = ['nombre' => $etiquetas[$clave], 'conteo' => $conteo];
+        }
+        return $top;
     }
 
     /** @return Parcela[] */

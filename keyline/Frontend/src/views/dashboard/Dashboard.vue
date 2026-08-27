@@ -169,12 +169,15 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                     <div class="lg:col-span-7 bg-white/10 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] p-5">
                         <h3 class="text-[15px] font-bold text-white">Diagnóstico físico del suelo</h3>
-                        <p class="text-[11px] text-white/60 mb-4">Talpetate, encharcamiento, profundidad y bioindicadores.</p>
+                        <p class="text-[11px] text-white/60 mb-4">Limitantes de uso, encharcamiento, profundidad y bioindicadores.</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <div class="bg-white/5 border border-white/15 rounded-xl p-3">
-                                <div class="flex items-center gap-1.5 text-xs text-white/60"><AlertOctagon class="w-3.5 h-3.5 text-[#ef4444]" /><span class="font-semibold text-white">Talpetate</span></div>
-                                <div class="text-xl font-bold text-white mt-1">{{ data.diagnosticoFisico.conTalpetate }}</div>
-                                <p class="text-[10px] text-white/60 mt-0.5">de {{ data.totales.parcelas }} parcelas. Sin talpetate: {{ data.diagnosticoFisico.sinTalpetate }}.</p>
+                                <div class="flex items-center gap-1.5 text-xs text-white/60"><AlertOctagon class="w-3.5 h-3.5 text-[#ef4444]" /><span class="font-semibold text-white">Limitantes de uso</span></div>
+                                <div class="text-xl font-bold text-white mt-1">{{ data.diagnosticoFisico.conLimitantes }}</div>
+                                <p class="text-[10px] text-white/60 mt-2 leading-tight" v-if="!data.topLimitantes.length">de {{ data.totales.parcelas }} parcelas.</p>
+                                <div v-else class="flex flex-wrap gap-1 mt-2">
+                                    <span v-for="l in data.topLimitantes.slice(0, 4)" :key="l.nombre" class="text-[9px] bg-[#ef4444]/15 text-[#fca5a5] border border-[#ef4444]/30 px-1.5 py-0.5 rounded-md font-medium">{{ l.nombre }}</span>
+                                </div>
                             </div>
                             <div class="bg-white/5 border border-white/15 rounded-xl p-3">
                                 <div class="flex items-center gap-1.5 text-xs text-white/60"><Droplets class="w-3.5 h-3.5 text-[#38bdf8]" /><span class="font-semibold text-white">Encharcamiento</span></div>

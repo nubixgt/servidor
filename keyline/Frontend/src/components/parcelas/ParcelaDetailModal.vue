@@ -73,9 +73,9 @@
                         <div class="space-y-2 text-xs">
                             <div class="flex justify-between"><span class="text-white/60">Uso actual del suelo:</span><span class="text-white font-medium">{{ parcela.usoActual || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Cultivo principal:</span><span class="text-white font-medium">{{ parcela.cultivoPrincipal || 'N/D' }}</span></div>
-                            <div class="flex justify-between"><span class="text-white/60">Tipo de suelo:</span><span class="text-white font-medium">{{ parcela.tipoSuelo || 'N/D' }}</span></div>
-                            <div class="flex justify-between"><span class="text-white/60">Disponibilidad de agua:</span><span class="text-white">{{ parcela.agua || 'N/D' }}</span></div>
-                            <div class="flex justify-between"><span class="text-white/60">Fuente de agua:</span><span class="text-white">{{ parcela.fuenteAgua || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Clase textural del suelo:</span><span class="text-white font-medium">{{ parcela.claseTextural || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Fuente original de agua:</span><span class="text-white">{{ parcela.fuenteAguaPrincipal || 'N/D' }}</span></div>
+                            <div class="flex justify-between"><span class="text-white/60">Fuentes secundarias de agua:</span><span class="text-white">{{ parcela.fuenteAguaSecundaria || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Sistema de riego:</span><span class="text-white">{{ parcela.sistemaRiego || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Lluvia anual:</span><span class="text-white">{{ parcela.lluviaAnual !== '' && parcela.lluviaAnual !== null ? parcela.lluviaAnual + ' mm' : 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Fuente del dato de lluvia:</span><span class="text-white">{{ parcela.lluviaFuente || 'N/D' }}</span></div>
@@ -88,7 +88,7 @@
                             <span>Diagnóstico físico del terreno</span>
                         </h3>
                         <div class="space-y-2 text-xs">
-                            <div class="flex justify-between"><span class="text-white/60">Presencia de talpetate:</span><span class="text-white font-medium">{{ parcela.talpetate || 'N/D' }}</span></div>
+                            <div><span class="text-white/60 block mb-0.5">Limitantes de uso:</span><span class="text-white font-medium">{{ parcela.limitantesUso || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Encharcamiento:</span><span class="text-[#38bdf8] font-medium">{{ parcela.encharca || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Riesgo de erosión:</span><span class="text-[#fca5a5] font-medium">{{ parcela.riesgoErosion || 'N/D' }}</span></div>
                             <div class="flex justify-between"><span class="text-white/60">Pendiente:</span><span class="text-white">{{ parcela.pendiente !== '' && parcela.pendiente !== null ? parcela.pendiente + '%' : 'N/D' }}</span></div>

@@ -166,8 +166,9 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-xs font-medium text-white/80 block mb-1">Tipo de suelo</label>
-                                <input v-model="form.tipoSuelo" placeholder="Franco, arcilloso, limoso..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                <label class="text-xs font-medium text-white/80 block mb-1">Clase textural del suelo</label>
+                                <CustomSelect v-model="form.claseTextural" :options="CLASE_TEXTURAL_OPTS" placeholder="Sin especificar" />
+                                <input v-if="form.claseTextural === OTRO" v-model="form.claseTexturalOtro" placeholder="Especifica la clase textural" class="mt-2 w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                             </div>
                             <div>
                                 <label class="text-xs font-medium text-white/80 block mb-1">Pendiente estimada (%)</label>
@@ -175,14 +176,22 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-xs font-medium text-white/80 block mb-1">Disponibilidad de agua</label>
-                                <CustomSelect v-model="form.agua" :options="NIVELES_AGUA" placeholder="Sin especificar" />
-                            </div>
-                            <div>
-                                <label class="text-xs font-medium text-white/80 block mb-1">Fuente de agua</label>
-                                <CustomSelect v-model="form.fuenteAgua" :options="[{ value: '', label: 'Sin especificar' }, ...FUENTE_AGUA]" />
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/10 space-y-3">
+                            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <Droplets class="w-4 h-4 text-[#38bdf8]" />
+                                <span>Fuente original de agua</span>
+                            </span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-xs font-medium text-white/80 block mb-1">Fuente principal</label>
+                                    <CustomSelect v-model="form.fuenteAguaPrincipal" :options="FUENTE_PRINCIPAL_OPTS" placeholder="Sin especificar" />
+                                    <input v-if="form.fuenteAguaPrincipal === OTRA" v-model="form.fuenteAguaPrincipalOtro" placeholder="Especifica la fuente principal" class="mt-2 w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-white/80 block mb-1">Fuentes secundarias</label>
+                                    <MultiSelect v-model="form.fuenteAguaSecundaria" :options="FUENTE_SECUNDARIA_OPTS" placeholder="Ninguna / selecciona..." />
+                                    <input v-if="form.fuenteAguaSecundaria.includes(OTRA)" v-model="form.fuenteAguaSecundariaOtro" placeholder="Otras fuentes (sepáralas con comas)" class="mt-2 w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                </div>
                             </div>
                         </div>
 
@@ -208,16 +217,18 @@
                                     <input v-model.number="form.profundidadSuelo" type="number" min="0" step="1" placeholder="45" class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                                 <div>
-                                    <label class="text-xs font-medium text-white/80 block mb-1">Presencia de talpetate</label>
-                                    <CustomSelect v-model="form.talpetate" :options="[{ value: '', label: 'Sin evaluar' }, 'No', 'Sí']" />
-                                </div>
-                                <div>
                                     <label class="text-xs font-medium text-white/80 block mb-1">¿Se encharca el agua?</label>
                                     <CustomSelect v-model="form.encharca" :options="[{ value: '', label: 'Sin evaluar' }, 'No', 'Sí']" />
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label class="text-xs font-medium text-white/80 block mb-1">Bioindicadores de suelo</label>
-                                    <input v-model="form.bioindicadores" placeholder="Lombrices, hormigas, hongos, hojarasca..." class="w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                    <label class="text-xs font-medium text-white/80 block mb-1">Limitante de uso</label>
+                                    <MultiSelect v-model="form.limitantesUso" :options="LIMITANTES_OPTS" placeholder="Selecciona las limitantes..." />
+                                    <input v-if="form.limitantesUso.includes(OTRA)" v-model="form.limitantesUsoOtro" placeholder="Otras limitantes (sepáralas con comas)" class="mt-2 w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="text-xs font-medium text-white/80 block mb-1">Bioindicadores del suelo</label>
+                                    <MultiSelect v-model="form.bioindicadores" :options="BIOINDICADORES_OPTS" placeholder="Selecciona los bioindicadores..." />
+                                    <input v-if="form.bioindicadores.includes(OTRO)" v-model="form.bioindicadoresOtro" placeholder="Otros bioindicadores (sepáralos con comas)" class="mt-2 w-full bg-white/5 border border-white/15 focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder:text-white/40 focus:outline-none transition-colors" />
                                 </div>
                             </div>
                         </div>
@@ -359,9 +370,11 @@ import parcelaService from '../../services/parcelaService';
 import { parcelaFotoUrl } from '../../services/api';
 import { toastSuccess, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
 import CustomSelect from '../../components/ui/CustomSelect.vue';
+import MultiSelect from '../../components/ui/MultiSelect.vue';
 import {
-    DEPARTAMENTOS, ESTADOS_PROCESO, USOS_ACTUALES, NIVELES_AGUA,
-    RIESGO_EROSION, TENENCIA_TIERRA, FUENTE_AGUA, MUNICIPIOS_POR_DEPARTAMENTO,
+    DEPARTAMENTOS, ESTADOS_PROCESO, USOS_ACTUALES, RIESGO_EROSION, TENENCIA_TIERRA,
+    MUNICIPIOS_POR_DEPARTAMENTO, BIOINDICADORES_SUELO, CLASES_TEXTURALES,
+    FUENTE_AGUA_ORIGINAL, LIMITANTES_USO,
 } from '../../constants/keyline';
 import {
     Check, MapPin, Sliders, Upload, Compass, Camera, ArrowLeft, ArrowRight,
@@ -378,6 +391,43 @@ const STEPS = [
     { key: 'intervencion', title: 'Intervención', desc: 'Prácticas y seguimiento' },
     { key: 'fotos', title: 'Fotos', desc: 'Evidencias de campo' },
 ];
+
+// Etiquetas de "Otro / especificar" para los menús normalizados.
+const OTRO = 'Otro';
+const OTRA = 'Otra';
+const CLASE_TEXTURAL_OPTS = [{ value: '', label: 'Sin especificar' }, ...CLASES_TEXTURALES, OTRO];
+const FUENTE_PRINCIPAL_OPTS = [{ value: '', label: 'Sin especificar' }, ...FUENTE_AGUA_ORIGINAL, OTRA];
+const FUENTE_SECUNDARIA_OPTS = [...FUENTE_AGUA_ORIGINAL, OTRA];
+const BIOINDICADORES_OPTS = [...BIOINDICADORES_SUELO, OTRO];
+const LIMITANTES_OPTS = [...LIMITANTES_USO, OTRA];
+
+// --- Serialización de los menús multi-valor <-> texto separado por comas ---
+function splitList(str) {
+    return String(str || '').split(/\s*[,;]\s*/).map((s) => s.trim()).filter(Boolean);
+}
+
+function serializeMulti(arr, otroText) {
+    const base = (arr || []).filter((v) => v !== OTRO && v !== OTRA);
+    return [...base, ...splitList(otroText)].join(', ');
+}
+
+function deserializeMulti(str, known) {
+    const selected = [];
+    const otros = [];
+    splitList(str).forEach((token) => {
+        const match = known.find((k) => k.toLowerCase() === token.toLowerCase());
+        if (match) selected.push(match);
+        else otros.push(token);
+    });
+    return { selected, otro: otros.join(', ') };
+}
+
+function deserializeSingle(value, known, otroFlag) {
+    if (value && !known.some((k) => k.toLowerCase() === String(value).toLowerCase())) {
+        return { value: otroFlag, otro: String(value) };
+    }
+    return { value: value || '', otro: '' };
+}
 
 const editingId = computed(() => props.id || route.params.id || null);
 const isEditing = computed(() => !!editingId.value);
@@ -396,9 +446,13 @@ function blankForm() {
         nombreParcela: '', departamento: '', municipio: '', comunidad: '', fechaRegistro: todayISO(),
         propietario: '', telefono: '', tenenciaTierra: '', numFamiliasBeneficiadas: '',
         latitud: '', longitud: '', altitud: '', gpsPrecision: '', areaHa: '', estado: 'Levantamiento',
-        usoActual: '', cultivoPrincipal: '', tipoSuelo: '', pendiente: '', agua: '', fuenteAgua: '',
-        riesgoErosion: '', sistemaRiego: '', profundidadSuelo: '', talpetate: '', encharca: '',
-        bioindicadores: '', lluviaAnual: '', lluviaFuente: '', intervenciones: '', especiesReforestacion: '',
+        usoActual: '', cultivoPrincipal: '', claseTextural: '', claseTexturalOtro: '', pendiente: '',
+        fuenteAguaPrincipal: '', fuenteAguaPrincipalOtro: '',
+        fuenteAguaSecundaria: [], fuenteAguaSecundariaOtro: '',
+        riesgoErosion: '', sistemaRiego: '', profundidadSuelo: '', encharca: '',
+        limitantesUso: [], limitantesUsoOtro: '',
+        bioindicadores: [], bioindicadoresOtro: '',
+        lluviaAnual: '', lluviaFuente: '', intervenciones: '', especiesReforestacion: '',
         fechaProximaVisita: '', consentimientoProductor: false, observaciones: '',
     };
 }
@@ -429,13 +483,40 @@ onMounted(async () => {
     loadingParcela.value = true;
     try {
         const { data } = await parcelaService.obtener(editingId.value);
-        parcela.value = data.parcela;
+        const p = data.parcela;
+        parcela.value = p;
+
+        // Campos con menú normalizado: se rehidratan aparte (abajo).
+        const MENU_FIELDS = new Set([
+            'claseTextural', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria', 'limitantesUso', 'bioindicadores',
+        ]);
         Object.keys(form).forEach((key) => {
-            if (data.parcela[key] !== undefined && data.parcela[key] !== null) {
-                form[key] = data.parcela[key];
+            if (!MENU_FIELDS.has(key) && p[key] !== undefined && p[key] !== null) {
+                form[key] = p[key];
             }
         });
-        existingFotos.value = data.parcela.fotos || [];
+
+        const ct = deserializeSingle(p.claseTextural, CLASES_TEXTURALES, OTRO);
+        form.claseTextural = ct.value;
+        form.claseTexturalOtro = ct.otro;
+
+        const fp = deserializeSingle(p.fuenteAguaPrincipal, FUENTE_AGUA_ORIGINAL, OTRA);
+        form.fuenteAguaPrincipal = fp.value;
+        form.fuenteAguaPrincipalOtro = fp.otro;
+
+        const sec = deserializeMulti(p.fuenteAguaSecundaria, FUENTE_AGUA_ORIGINAL);
+        form.fuenteAguaSecundaria = sec.otro ? [...sec.selected, OTRA] : sec.selected;
+        form.fuenteAguaSecundariaOtro = sec.otro;
+
+        const lim = deserializeMulti(p.limitantesUso, LIMITANTES_USO);
+        form.limitantesUso = lim.otro ? [...lim.selected, OTRA] : lim.selected;
+        form.limitantesUsoOtro = lim.otro;
+
+        const bio = deserializeMulti(p.bioindicadores, BIOINDICADORES_SUELO);
+        form.bioindicadores = bio.otro ? [...bio.selected, OTRO] : bio.selected;
+        form.bioindicadoresOtro = bio.otro;
+
+        existingFotos.value = p.fotos || [];
         if (form.latitud !== '' && form.longitud !== '') {
             geoStatus.value = `Ubicación guardada: ${form.latitud}, ${form.longitud}`;
         }
@@ -540,6 +621,16 @@ async function submit() {
     saving.value = true;
     try {
         const payload = { ...form };
+
+        // Menús normalizados -> texto separado por comas para la API.
+        payload.claseTextural = form.claseTextural === OTRO ? form.claseTexturalOtro.trim() : form.claseTextural;
+        payload.fuenteAguaPrincipal = form.fuenteAguaPrincipal === OTRA ? form.fuenteAguaPrincipalOtro.trim() : form.fuenteAguaPrincipal;
+        payload.fuenteAguaSecundaria = serializeMulti(form.fuenteAguaSecundaria, form.fuenteAguaSecundariaOtro);
+        payload.limitantesUso = serializeMulti(form.limitantesUso, form.limitantesUsoOtro);
+        payload.bioindicadores = serializeMulti(form.bioindicadores, form.bioindicadoresOtro);
+        ['claseTexturalOtro', 'fuenteAguaPrincipalOtro', 'fuenteAguaSecundariaOtro', 'limitantesUsoOtro', 'bioindicadoresOtro']
+            .forEach((k) => delete payload[k]);
+
         let saved;
         if (isEditing.value) {
             const { data } = await parcelaService.actualizar(editingId.value, payload);

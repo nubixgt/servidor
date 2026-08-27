@@ -31,7 +31,6 @@ class ParcelaService
             'departamento' => $query['departamento'] ?? null,
             'estado' => $query['estado'] ?? null,
             'estadoValidacion' => $query['estadoValidacion'] ?? null,
-            'talpetate' => $query['talpetate'] ?? null,
             'encharca' => $query['encharca'] ?? null,
             'desde' => $query['desde'] ?? null,
             'hasta' => $query['hasta'] ?? null,

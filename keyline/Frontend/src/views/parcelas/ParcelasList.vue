@@ -106,7 +106,7 @@
                         <div class="bg-white/10 rounded-xl p-2.5 border border-white/20 text-[11px] text-white/80 space-y-1">
                             <div class="flex justify-between">
                                 <span class="text-white/60">Suelo:</span>
-                                <span class="font-semibold text-white truncate max-w-[170px]">{{ p.tipoSuelo || 'N/D' }}</span>
+                                <span class="font-semibold text-white truncate max-w-[170px]">{{ p.claseTextural || 'N/D' }}</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-white/60">Validación:</span>
@@ -272,7 +272,7 @@ async function eliminar(p) {
 
 function exportCsv() {
     if (!parcelas.value.length) { alertError('No hay datos para exportar.'); return; }
-    const cols = ['codigo', 'nombreParcela', 'departamento', 'municipio', 'comunidad', 'propietario', 'telefono', 'areaHa', 'estado', 'estadoValidacion', 'usoActual', 'tipoSuelo', 'pendiente', 'altitud', 'agua', 'fuenteAgua', 'riesgoErosion', 'profundidadSuelo', 'talpetate', 'encharca', 'bioindicadores', 'lluviaAnual', 'lluviaFuente', 'intervenciones', 'especiesReforestacion', 'observaciones', 'tecnicoNombre', 'fechaRegistro', 'latitud', 'longitud'];
+    const cols = ['codigo', 'nombreParcela', 'departamento', 'municipio', 'comunidad', 'propietario', 'telefono', 'areaHa', 'estado', 'estadoValidacion', 'usoActual', 'claseTextural', 'pendiente', 'altitud', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria', 'riesgoErosion', 'profundidadSuelo', 'limitantesUso', 'encharca', 'bioindicadores', 'lluviaAnual', 'lluviaFuente', 'intervenciones', 'especiesReforestacion', 'observaciones', 'tecnicoNombre', 'fechaRegistro', 'latitud', 'longitud'];
     const esc = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const rows = [cols.join(',')].concat(parcelas.value.map((p) => cols.map((c) => esc(p[c])).join(',')));
     const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });

@@ -244,7 +244,7 @@ const indicadores = computed(() => {
         { label: 'Familias beneficiadas', value: r.totales.familiasBeneficiadas },
         { label: 'Validadas / pendientes', value: `${r.totales.validadas} / ${r.totales.pendientesValidacion}` },
         { label: 'Profundidad prom. de suelo', value: `${r.diagnosticoFisico.profundidadProm.toFixed(1)} cm` },
-        { label: 'Parcelas con talpetate', value: r.diagnosticoFisico.conTalpetate },
+        { label: 'Parcelas con limitantes de uso', value: r.diagnosticoFisico.conLimitantes },
         { label: 'Área acumulada', value: `${fmtNum(r.totales.areaHa)} ha` },
     ];
 });
@@ -262,7 +262,7 @@ const indicadores = computed(() => {
 
 function exportCsv() {
     if (!parcelas.value.length) { alertError('No hay datos para exportar.'); return; }
-    const cols = ['codigo', 'nombreParcela', 'departamento', 'municipio', 'comunidad', 'propietario', 'telefono', 'areaHa', 'estado', 'estadoValidacion', 'usoActual', 'tipoSuelo', 'pendiente', 'altitud', 'agua', 'fuenteAgua', 'riesgoErosion', 'profundidadSuelo', 'talpetate', 'encharca', 'bioindicadores', 'lluviaAnual', 'lluviaFuente', 'intervenciones', 'especiesReforestacion', 'observaciones', 'tecnicoNombre', 'fechaRegistro', 'latitud', 'longitud'];
+    const cols = ['codigo', 'nombreParcela', 'departamento', 'municipio', 'comunidad', 'propietario', 'telefono', 'areaHa', 'estado', 'estadoValidacion', 'usoActual', 'claseTextural', 'pendiente', 'altitud', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria', 'riesgoErosion', 'profundidadSuelo', 'limitantesUso', 'encharca', 'bioindicadores', 'lluviaAnual', 'lluviaFuente', 'intervenciones', 'especiesReforestacion', 'observaciones', 'tecnicoNombre', 'fechaRegistro', 'latitud', 'longitud'];
     const esc = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const rows = [cols.join(',')].concat(parcelas.value.map((p) => cols.map((c) => esc(p[c])).join(',')));
     downloadBlob(new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' }), `parcelas_keyline_${new Date().toISOString().slice(0, 10)}.csv`);

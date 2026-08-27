@@ -7,10 +7,10 @@ class ParcelaDTO
     public const EDITABLE_FIELDS = [
         'nombreParcela', 'departamento', 'municipio', 'comunidad', 'propietario', 'telefono', 'tenenciaTierra',
         'numFamiliasBeneficiadas', 'fechaRegistro', 'latitud', 'longitud', 'gpsPrecision', 'altitud', 'areaHa',
-        'estado', 'usoActual', 'tipoSuelo', 'pendiente', 'agua', 'fuenteAgua', 'sistemaRiego', 'riesgoErosion',
-        'cultivoPrincipal', 'profundidadSuelo', 'talpetate', 'encharca', 'bioindicadores', 'lluviaAnual',
-        'lluviaFuente', 'intervenciones', 'especiesReforestacion', 'fechaProximaVisita', 'consentimientoProductor',
-        'observaciones',
+        'estado', 'usoActual', 'claseTextural', 'pendiente', 'fuenteAguaPrincipal', 'fuenteAguaSecundaria',
+        'sistemaRiego', 'riesgoErosion', 'cultivoPrincipal', 'profundidadSuelo', 'encharca', 'limitantesUso',
+        'bioindicadores', 'lluviaAnual', 'lluviaFuente', 'intervenciones', 'especiesReforestacion',
+        'fechaProximaVisita', 'consentimientoProductor', 'observaciones',
     ];
 
     private const NUMERIC_FIELDS = [
@@ -37,7 +37,7 @@ class ParcelaDTO
                 $fields[$key] = (bool)$value;
             } elseif (in_array($key, self::NUMERIC_FIELDS, true)) {
                 $fields[$key] = self::safeNum($value);
-            } elseif (in_array($key, ['talpetate', 'encharca'], true)) {
+            } elseif ($key === 'encharca') {
                 $fields[$key] = in_array($value, ['Sí', 'No'], true) ? $value : '';
             } else {
                 $fields[$key] = is_string($value) ? trim($value) : $value;

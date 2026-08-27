@@ -29,16 +29,16 @@ class ParcelaRepository
         'areaHa' => 'area_ha',
         'estado' => 'estado',
         'usoActual' => 'uso_actual',
-        'tipoSuelo' => 'tipo_suelo',
+        'claseTextural' => 'clase_textural',
         'pendiente' => 'pendiente',
-        'agua' => 'agua',
-        'fuenteAgua' => 'fuente_agua',
+        'fuenteAguaPrincipal' => 'fuente_agua_principal',
+        'fuenteAguaSecundaria' => 'fuente_agua_secundaria',
         'sistemaRiego' => 'sistema_riego',
         'riesgoErosion' => 'riesgo_erosion',
         'cultivoPrincipal' => 'cultivo_principal',
         'profundidadSuelo' => 'profundidad_suelo',
-        'talpetate' => 'talpetate',
         'encharca' => 'encharca',
+        'limitantesUso' => 'limitantes_uso',
         'bioindicadores' => 'bioindicadores',
         'lluviaAnual' => 'lluvia_anual',
         'lluviaFuente' => 'lluvia_fuente',
@@ -57,7 +57,7 @@ class ParcelaRepository
 
     /**
      * @param array $criteria Puede incluir: tecnicoId, departamento, estado, estadoValidacion,
-     *                        talpetate, encharca, q, desde, hasta.
+     *                        encharca, q, desde, hasta.
      * @return Parcela[]
      */
     public function findByFilters(array $criteria): array
@@ -85,10 +85,6 @@ class ParcelaRepository
             $where[] = 'estado_validacion = :estadoValidacion';
             $params['estadoValidacion'] = $criteria['estadoValidacion'];
         }
-        if (!empty($criteria['talpetate'])) {
-            $where[] = 'talpetate = :talpetate';
-            $params['talpetate'] = $criteria['talpetate'];
-        }
         if (!empty($criteria['encharca'])) {
             $where[] = 'encharca = :encharca';
             $params['encharca'] = $criteria['encharca'];
@@ -102,7 +98,7 @@ class ParcelaRepository
             $params['hasta'] = $criteria['hasta'];
         }
         if (!empty($criteria['q'])) {
-            $where[] = '(nombre_parcela LIKE :q OR departamento LIKE :q OR municipio LIKE :q OR comunidad LIKE :q OR propietario LIKE :q OR tipo_suelo LIKE :q)';
+            $where[] = '(nombre_parcela LIKE :q OR departamento LIKE :q OR municipio LIKE :q OR comunidad LIKE :q OR propietario LIKE :q OR clase_textural LIKE :q)';
             $params['q'] = '%' . $criteria['q'] . '%';
         }
 
@@ -250,16 +246,16 @@ class ParcelaRepository
             areaHa: $row['area_ha'],
             estado: $row['estado'],
             usoActual: (string)$row['uso_actual'],
-            tipoSuelo: (string)$row['tipo_suelo'],
+            claseTextural: (string)$row['clase_textural'],
             pendiente: $row['pendiente'] ?? '',
-            agua: (string)$row['agua'],
-            fuenteAgua: (string)$row['fuente_agua'],
+            fuenteAguaPrincipal: (string)$row['fuente_agua_principal'],
+            fuenteAguaSecundaria: (string)$row['fuente_agua_secundaria'],
             sistemaRiego: (string)$row['sistema_riego'],
             riesgoErosion: (string)$row['riesgo_erosion'],
             cultivoPrincipal: (string)$row['cultivo_principal'],
             profundidadSuelo: $row['profundidad_suelo'] ?? '',
-            talpetate: (string)$row['talpetate'],
             encharca: (string)$row['encharca'],
+            limitantesUso: (string)$row['limitantes_uso'],
             bioindicadores: (string)$row['bioindicadores'],
             lluviaAnual: $row['lluvia_anual'] ?? '',
             lluviaFuente: (string)$row['lluvia_fuente'],
