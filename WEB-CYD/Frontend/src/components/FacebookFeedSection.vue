@@ -1,18 +1,33 @@
 <script setup>
 import { Card } from "@/components/ui/card"
-import { onMounted } from "vue"
+import { onMounted, onUnmounted, ref } from "vue"
 import { Facebook, Share2, ThumbsUp, Instagram } from "lucide-vue-next"
+import { gsap } from '@/lib/gsap.js'
+
+let fbCtx = null;
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
+    const initFB = () => {
+      if (window.FB) {
+        setTimeout(() => {
+          const fbElement = document.querySelector('.fb-page')
+          if (fbElement && fbElement.parentElement) {
+            window.FB.XFBML.parse(fbElement.parentElement)
+          }
+        }, 500)
+      }
+    }
+
     if (window.FB) {
-      window.FB.XFBML.parse()
+      initFB()
     } else {
       window.fbAsyncInit = function() {
         window.FB.init({
           xfbml            : true,
           version          : 'v18.0'
         });
+        initFB()
       };
       
       if (!document.getElementById('facebook-jssdk')) {
@@ -25,7 +40,39 @@ onMounted(() => {
         document.body.appendChild(script)
       }
     }
+
+    // GSAP Animations
+    fbCtx = gsap.context(() => {
+      gsap.from('.fb-header-anim', {
+        scrollTrigger: { trigger: '#facebook', start: 'top 80%' },
+        opacity: 0,
+        y: 30,
+        duration: 0.8,
+        ease: 'power3.out'
+      })
+
+      gsap.from('.fb-feed-anim', {
+        scrollTrigger: { trigger: '.fb-feed-anim', start: 'top 85%' },
+        opacity: 0,
+        x: -30,
+        duration: 0.8,
+        ease: 'power3.out'
+      })
+
+      gsap.from('.fb-cards-anim', {
+        scrollTrigger: { trigger: '.fb-cards-anim', start: 'top 85%' },
+        opacity: 0,
+        x: 30,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out'
+      })
+    })
   }
+})
+
+onUnmounted(() => {
+  fbCtx?.revert()
 })
 </script>
 
@@ -36,7 +83,7 @@ onMounted(() => {
     <div class="absolute bottom-0 left-0 w-64 sm:w-96 h-64 sm:h-96 bg-purple-200/30 rounded-full blur-3xl"></div>
     
     <div class="max-w-7xl mx-auto relative">
-      <div class="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-in" v-motion :initial="{ opacity: 0, y: 20 }" :visible="{ opacity: 1, y: 0 }">
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16 fb-header-anim">
         <div class="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full px-4 sm:px-6 py-2 mb-4 shadow-lg text-sm sm:text-base">
           <Facebook class="w-4 h-4 sm:w-5 sm:h-5" />
           <span class="font-bold">Síguenos en Redes Sociales</span>
@@ -50,8 +97,8 @@ onMounted(() => {
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-        <!-- Main Facebook Feed - Appears FIRST on mobile -->
-        <div class="lg:col-span-2 order-1 lg:order-2" v-motion :initial="{ opacity: 0, x: -20 }" :visible="{ opacity: 1, x: 0 }" :delay="100">
+        <!-- Main Facebook Feed -->
+        <div class="lg:col-span-2 order-1 lg:order-2 fb-feed-anim">
           <Card class="relative overflow-hidden bg-white/80 backdrop-blur-sm border-2 border-blue-200/50 shadow-2xl p-4 sm:p-6 hover:shadow-[0_0_60px_rgba(59,130,246,0.3)] transition-all duration-500">
             <div class="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
             
@@ -92,14 +139,6 @@ onMounted(() => {
                   <blockquote cite="https://www.facebook.com/CienciayDesarrollo" class="fb-xfbml-parse-ignore">
                     <a href="https://www.facebook.com/CienciayDesarrollo">Ciencia y Desarrollo</a>
                   </blockquote>
-                </div>
-                
-                <!-- Loading placeholder -->
-                <div class="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-xl pointer-events-none opacity-0 animate-pulse">
-                  <div class="text-center space-y-3">
-                    <div class="w-12 h-12 sm:w-16 sm:h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p class="text-xs sm:text-sm text-gray-600 font-medium px-4">Cargando contenido de Facebook...</p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -163,27 +202,10 @@ onMounted(() => {
               </div>
             </a>
           </div>
-
-          <!-- Social Stats -->
-          <div class="grid grid-cols-3 gap-3 sm:gap-4 mt-4 sm:mt-6">
-            <template v-for="(item, idx) in [
-              { icon: '👥', label: 'Comunidad', gradient: 'from-blue-600 to-cyan-600' },
-              { icon: '📸', label: 'Fotos y Videos', gradient: 'from-indigo-600 to-purple-600' },
-              { icon: '🎉', label: 'Eventos', gradient: 'from-purple-600 to-pink-600' }
-            ]" :key="idx">
-              <Card class="group p-3 sm:p-4 text-center bg-white/80 backdrop-blur-sm border-2 border-border/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                <div :class="`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity`"></div>
-                <div class="relative">
-                  <div class="text-2xl sm:text-3xl mb-1 sm:mb-2 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">{{item.icon}}</div>
-                  <p :class="`text-[10px] sm:text-xs font-bold bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`">{{item.label}}</p>
-                </div>
-              </Card>
-            </template>
-          </div>
         </div>
 
-        <!-- Info Cards - Appears AFTER feed on mobile -->
-        <div class="space-y-4 sm:space-y-6 order-2 lg:order-1" v-motion :initial="{ opacity: 0, x: 20 }" :visible="{ opacity: 1, x: 0 }" :delay="200">
+        <!-- Info Cards -->
+        <div class="space-y-4 sm:space-y-6 order-2 lg:order-1 fb-cards-anim">
           <Card class="group relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div class="relative">
@@ -213,8 +235,8 @@ onMounted(() => {
           <Card class="group relative overflow-hidden p-4 sm:p-6 bg-gradient-to-br from-purple-600 to-pink-600 text-white border-0 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500">
             <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div class="relative">
-              <div class="text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-                📱
+              <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
               </div>
               <h3 class="text-xl sm:text-2xl font-bold mb-2">Interactúa</h3>
               <p class="text-white/90 text-xs sm:text-sm leading-relaxed">

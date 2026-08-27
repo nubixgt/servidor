@@ -1,278 +1,319 @@
 <script setup>
-import { Card, CardContent } from "@/components/ui/card"
-import { GraduationCap, Clock, Calendar, Sparkles, Star, Award, BookOpen } from "lucide-vue-next"
-import { ref, computed } from "vue"
-import { useWindowScroll, useElementBounding } from '@vueuse/core'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap, ScrollTrigger } from '@/lib/gsap.js'
+
+const sectionRef = ref(null)
+let ctx = null
 
 const carreras = [
   {
-    categoria: "DIVERSIFICADO (Plan Diario)",
-    icon: "☀️",
-    gradient: "from-amber-500 via-orange-500 to-red-500",
-    bgGradient: "from-amber-50 via-orange-50 to-red-50",
-    darkBgGradient: "from-amber-950/30 via-orange-950/20 to-red-950/30",
+    key: 'diario',
+    categoria: 'Diversificado',
+    modalidad: 'Plan Diario',
+    accent: '#c06f2a',
+    light: '#fef8ef',
+    border: '#f0c080',
     programas: [
-      { nombre: "BACHILLERATO EN CIENCIAS Y LETRAS", duracion: "2 AÑOS", icon: "📚" },
-      { nombre: "SECRETARIADO OFICINISTA CON ORIENTACIÓN JURÍDICA", duracion: "2 AÑOS", icon: "⚖️" },
-      { nombre: "PERITO CONTADOR CON ORIENTACIÓN EN COMPUTACIÓN", duracion: "3 AÑOS", icon: "💼" },
-      { nombre: "PERITO EN ADMINISTRACIÓN DE EMPRESAS", duracion: "3 AÑOS", icon: "📊" },
-      { nombre: "MAGISTERIO EN EDUCACIÓN INFANTIL BILINGÜE INTERCULTURAL", duracion: "3 AÑOS", icon: "👶" }
-    ]
+      { nombre: 'Bachillerato en Ciencias y Letras', duracion: '2 años' },
+      { nombre: 'Secretariado Oficinista con Orientación Jurídica', duracion: '2 años' },
+      { nombre: 'Perito Contador con Orientación en Computación', duracion: '3 años' },
+      { nombre: 'Perito en Administración de Empresas', duracion: '3 años' },
+      { nombre: 'Magisterio en Educación Infantil Bilingüe Intercultural', duracion: '3 años' },
+    ],
   },
   {
-    categoria: "DIVERSIFICADO (Jornada Doble)",
-    icon: "🌙",
-    gradient: "from-blue-500 via-indigo-500 to-purple-500",
-    bgGradient: "from-blue-50 via-indigo-50 to-purple-50",
-    darkBgGradient: "from-blue-950/30 via-indigo-950/20 to-purple-950/30",
+    key: 'doble',
+    categoria: 'Diversificado',
+    modalidad: 'Jornada Doble',
+    accent: '#3a56a8',
+    light: '#f0f3fc',
+    border: '#a0b4e8',
     programas: [
-      { nombre: "BACHILLERATO EN DIBUJO TÉCNICO Y DE CONSTRUCCIÓN", duracion: "2 AÑOS", icon: "📐" },
-      { nombre: "BACHILLERATO EN CIENCIAS Y LETRAS CON ORIENTACIÓN EN DISEÑO GRÁFICO", duracion: "2 AÑOS", icon: "🎨" },
-      { 
-        nombre: "BACHILLERATO EN CIENCIAS Y LETRAS CON DIPLOMADO EN:", 
-        duracion: "2 AÑOS",
-        icon: "🎓",
-        subespecialidades: ["MEDICINA", "CRIMINOLOGÍA", "AGRONOMÍA"]
-      },
-      { nombre: "BACHILLER INDUSTRIAL Y PERITO EN MECÁNICA AUTOMOTRIZ", duracion: "3 AÑOS", icon: "🚗" },
-      { nombre: "PERITO EN ELECTRÓNICA Y DISPOSITIVOS DIGITALES", duracion: "3 AÑOS", icon: "🔌" },
-      { nombre: "PERITO EN ELECTRICIDAD INDUSTRIAL", duracion: "3 AÑOS", icon: "⚡" }
-    ]
+      { nombre: 'Bachillerato en Dibujo Técnico y de Construcción', duracion: '2 años' },
+      { nombre: 'Bachillerato en Ciencias y Letras con Orientación en Diseño Gráfico', duracion: '2 años' },
+      { nombre: 'Bachillerato en Ciencias y Letras con Diplomado en:', duracion: '2 años', sub: ['Medicina', 'Criminología', 'Agronomía'] },
+      { nombre: 'Bachiller Industrial y Perito en Mecánica Automotriz', duracion: '3 años' },
+      { nombre: 'Perito en Electrónica y Dispositivos Digitales', duracion: '3 años' },
+      { nombre: 'Perito en Electricidad Industrial', duracion: '3 años' },
+    ],
   },
   {
-    categoria: "PLAN FIN DE SEMANA",
-    icon: "📅",
-    gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-    bgGradient: "from-emerald-50 via-teal-50 to-cyan-50",
-    darkBgGradient: "from-emerald-950/30 via-teal-950/20 to-cyan-950/30",
+    key: 'fds',
+    categoria: 'Plan',
+    modalidad: 'Fin de Semana',
+    accent: '#1a7a5a',
+    light: '#eef7f3',
+    border: '#80c8a8',
     programas: [
-      { nombre: "BÁSICO NORMAL", duracion: "3 AÑOS", icon: "📖" },
-      { nombre: "BACHILLERATO EN CIENCIAS Y LETRAS POR MADUREZ", duracion: "1 AÑO (MAYORES DE 18 AÑOS)", icon: "🎯" },
-      { nombre: "PERITO CONTADOR", duracion: "3 AÑOS", icon: "🧮" },
-      { nombre: "BACHILLERATO EN COMPUTACIÓN CON ORIENTACIÓN COMERCIAL", duracion: "2 AÑOS", icon: "💻" },
-      { 
-        nombre: "BACH. EN COMPUTACIÓN CON ORIENTACIÓN COMERCIAL CON DIPLOMADO EN:", 
-        duracion: "2 AÑOS",
-        icon: "🖥️",
-        subespecialidades: ["ADMINISTRACIÓN", "ENFERMERÍA"]
-      },
-      { nombre: "SECRETARIADO Y OFICINISTA", duracion: "2 AÑOS", icon: "📝" }
-    ]
-  }
+      { nombre: 'Básico Normal', duracion: '3 años' },
+      { nombre: 'Bachillerato en Ciencias y Letras por Madurez', duracion: '1 año (mayores de 18)' },
+      { nombre: 'Perito Contador', duracion: '3 años' },
+      { nombre: 'Bachillerato en Computación con Orientación Comercial', duracion: '2 años' },
+      { nombre: 'Bach. en Computación con Orientación Comercial con Diplomado en:', duracion: '2 años', sub: ['Administración', 'Enfermería'] },
+      { nombre: 'Secretariado y Oficinista', duracion: '2 años' },
+    ],
+  },
 ]
-
-const sectionRef = ref(null)
-const { y } = useWindowScroll()
-const { top, height } = useElementBounding(sectionRef)
-
-const scrollProgress = computed(() => {
-  if (typeof window === 'undefined') return 0
-  const windowHeight = window.innerHeight
-  const sectionTop = top.value
-  const sectionHeight = height.value
-  return Math.max(0, Math.min(1, (windowHeight - sectionTop) / (windowHeight + sectionHeight / 2)))
-})
 
 const scrollToContact = () => {
   document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })
 }
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+
+    // Header
+    gsap.from('.carreras-header', {
+      opacity: 0, y: 60, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: '.carreras-header', start: 'top 80%' },
+    })
+
+    // Stats row
+    gsap.from('.carreras-stat', {
+      opacity: 0, y: 30, scale: 0.9, duration: 0.6, stagger: 0.1, ease: 'back.out(1.4)',
+      scrollTrigger: { trigger: '.carreras-stats', start: 'top 85%' },
+    })
+
+    // Grupos — aparecen uno a uno con scrub suave
+    document.querySelectorAll('.carrera-grupo').forEach((grupo, i) => {
+      gsap.from(grupo, {
+        opacity: 0,
+        y: 70,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: grupo, start: 'top 82%' },
+      })
+      // Línea de acento izquierda crece al aparecer
+      gsap.from(grupo.querySelector('.grupo-line'), {
+        scaleY: 0,
+        transformOrigin: 'top',
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: grupo, start: 'top 80%' },
+      })
+    })
+
+    // Cards de programas — stagger dentro de cada grupo
+    document.querySelectorAll('.programa-card').forEach((card) => {
+      gsap.from(card, {
+        opacity: 0,
+        x: -20,
+        duration: 0.5,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 90%' },
+      })
+    })
+
+    // CTA Entry
+    gsap.from('.carreras-cta-content', {
+      scrollTrigger: { trigger: '.carreras-cta-content', start: 'top 85%' },
+      opacity: 0,
+      y: 40,
+      duration: 0.8,
+      ease: 'power3.out'
+    })
+
+    // Jaguar Watermark Parallax
+    gsap.fromTo('.carreras-jaguar-bg',
+      { scale: 0.8, x: 20, y: 20, opacity: 0 },
+      {
+        scrollTrigger: {
+          trigger: '.carreras-cta-content',
+          start: 'top 90%',
+          end: 'bottom center',
+          scrub: 1,
+        },
+        scale: 1.1,
+        x: -10,
+        y: -10,
+        opacity: 0.08,
+        ease: 'none'
+      }
+    )
+
+    // CTA final
+    gsap.from('.carreras-cta', {
+      opacity: 0, y: 50, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: '.carreras-cta', start: 'top 85%' },
+    })
+
+  }, sectionRef.value)
+})
+
+onUnmounted(() => { ctx?.revert() })
 </script>
 
 <template>
-  <section 
-    id="carreras" 
+  <section
+    id="carreras"
     ref="sectionRef"
-    class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-green-50/30 to-white dark:from-gray-900 dark:via-green-900/10 dark:to-gray-900 relative overflow-hidden"
+    class="py-32 relative overflow-hidden cyd-section-bg"
   >
-    <!-- Background Decoration -->
-    <div class="absolute top-0 left-0 w-96 h-96 bg-green-200/20 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-yellow-200/20 rounded-full blur-3xl"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-200/10 rounded-full blur-3xl"></div>
-    
-    <div class="max-w-7xl mx-auto relative">
+    <!-- Fondo decorativo -->
+    <div class="absolute inset-0" aria-hidden="true">
+      <div
+        class="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
+        style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 7%, transparent), transparent 70%); filter: blur(80px);"
+      />
+      <div class="absolute inset-0 cyd-dots opacity-20" />
+    </div>
+
+    <div class="relative cyd-container">
+
       <!-- Header -->
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :visible="{ opacity: 1, y: 0 }"
-        class="text-center mb-16"
-      >
-        <div class="inline-flex items-center space-x-2 bg-gradient-to-r from-green-600 via-yellow-500 to-blue-600 text-white rounded-full px-6 py-2.5 mb-6 shadow-lg">
-          <GraduationCap class="w-5 h-5" />
-          <span class="font-bold">Excelencia Académica</span>
-        </div>
-        
-        <h2 class="text-4xl sm:text-6xl font-black bg-gradient-to-r from-green-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent mb-6 leading-tight">
-          Carreras Educativas
+      <div class="carreras-header text-center max-w-2xl mx-auto mb-6">
+        <span class="cyd-label mb-5 inline-block">Programas Educativos</span>
+        <h2 class="cyd-title mb-5">
+          Carreras <span class="cyd-accent">Educativas</span>
         </h2>
-        
-        <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          <span class="font-bold text-green-600">19 carreras especializadas</span> diseñadas para formar profesionales exitosos y preparados para el futuro
+        <p class="text-base lg:text-lg" style="color: hsl(var(--muted-foreground));">
+          <strong style="color: var(--cyd-forest);">19 carreras especializadas</strong>
+          en 3 modalidades — diseñadas para prepararte para el mundo profesional.
         </p>
-
-        <!-- Stats Pills -->
-        <div class="flex flex-wrap justify-center gap-3 mt-8">
-          <div class="bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border-2 border-green-200 dark:border-green-800">
-            <div class="flex items-center gap-2">
-              <Award class="w-5 h-5 text-green-600" />
-              <span class="font-bold text-foreground">19 Carreras</span>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border-2 border-yellow-200 dark:border-yellow-800">
-            <div class="flex items-center gap-2">
-              <Star class="w-5 h-5 text-yellow-600" />
-              <span class="font-bold text-foreground">3 Modalidades</span>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border-2 border-blue-200 dark:border-blue-800">
-            <div class="flex items-center gap-2">
-              <BookOpen class="w-5 h-5 text-blue-600" />
-              <span class="font-bold text-foreground">Certificación Oficial</span>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <!-- Carreras Grid -->
-      <div class="space-y-12">
+      <!-- Stats rápidos -->
+      <div class="carreras-stats flex flex-wrap justify-center gap-3 mb-20">
+        <span class="carreras-stat cyd-pill">19 Carreras</span>
+        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, var(--cyd-gold) 30%, transparent); background: color-mix(in srgb, var(--cyd-gold) 8%, transparent); color: #9a7200;">3 Modalidades</span>
+        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, #3a56a8 30%, transparent); background: color-mix(in srgb, #3a56a8 8%, transparent); color: #3a56a8;">Certificación Oficial</span>
+        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, #1a7a5a 30%, transparent); background: color-mix(in srgb, #1a7a5a 8%, transparent); color: #1a7a5a;">Avaladas por MINEDUC</span>
+      </div>
+
+      <!-- Grupos de carreras -->
+      <div class="space-y-10 mb-20">
         <div
-          v-for="(grupo, grupoIdx) in carreras"
-          :key="grupoIdx"
-          v-motion
-          :initial="{ opacity: 0, y: 40 }"
-          :visible="{ opacity: 1, y: 0 }"
-          :delay="grupoIdx * 100"
+          v-for="grupo in carreras"
+          :key="grupo.key"
+          class="carrera-grupo relative rounded-2xl overflow-hidden border will-change-transform"
+          :style="{ background: grupo.light, borderColor: grupo.border }"
         >
-          <Card 
-            :class="`relative overflow-hidden bg-gradient-to-br ${grupo.bgGradient} dark:${grupo.darkBgGradient} backdrop-blur-sm border-2 shadow-xl hover:shadow-2xl transition-all duration-500`"
-            :style="{
-              transform: `translateY(${(1 - scrollProgress) * 20}px)`,
-              opacity: 0.6 + scrollProgress * 0.4
-            }"
-          >
-            <!-- Animated Background Blobs -->
-            <div :class="`absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br ${grupo.gradient} opacity-5 rounded-full blur-3xl animate-pulse`"></div>
-            <div :class="`absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-br ${grupo.gradient} opacity-5 rounded-full blur-3xl animate-pulse animation-delay-2000`"></div>
-            
-            <CardContent class="relative p-8 lg:p-12">
-              <!-- Categoria Header -->
-              <div class="flex items-center justify-between mb-8 pb-6 border-b-2 border-border/50">
-                <div class="flex items-center gap-4">
-                  <div :class="`w-16 h-16 rounded-2xl bg-gradient-to-br ${grupo.gradient} p-4 shadow-xl flex items-center justify-center text-3xl`">
-                    {{ grupo.icon }}
-                  </div>
-                  <div>
-                    <h3 :class="`text-2xl lg:text-3xl font-black bg-gradient-to-r ${grupo.gradient} bg-clip-text text-transparent`">
-                      {{ grupo.categoria }}
-                    </h3>
-                    <p class="text-sm text-muted-foreground font-medium mt-1">
-                      {{ grupo.programas.length }} programas disponibles
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <!-- Línea de acento izquierda -->
+          <div
+            class="grupo-line absolute left-0 top-0 bottom-0 w-1 will-change-transform"
+            :style="{ background: grupo.accent }"
+          />
 
-              <!-- Programas Grid -->
-              <div class="grid md:grid-cols-2 gap-4">
+          <div class="pl-6 pr-4 sm:pl-8 sm:pr-6 py-8 lg:py-10">
+            <!-- Header del grupo -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6 pb-5" :style="{ borderBottom: `1px solid color-mix(in srgb, ${grupo.accent} 20%, transparent)` }">
+              <div>
                 <div
-                  v-for="(programa, progIdx) in grupo.programas"
-                  :key="progIdx"
-                  class="group relative hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300"
+                  class="text-[10px] sm:text-xs font-semibold tracking-[0.14em] uppercase mb-1"
+                  :style="{ color: grupo.accent }"
                 >
-                  <div class="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl p-6 border-2 border-border/50 hover:border-transparent shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <!-- Hover Gradient Effect -->
-                    <div :class="`absolute inset-0 bg-gradient-to-br ${grupo.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`"></div>
-                    
-                    <!-- Content -->
-                    <div class="relative flex items-start gap-4">
-                      <!-- Icon -->
-                      <div class="flex-shrink-0">
-                        <div :class="`w-12 h-12 rounded-xl bg-gradient-to-br ${grupo.gradient} p-3 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 flex items-center justify-center text-xl`">
-                          {{ programa.icon }}
-                        </div>
-                      </div>
-                      
-                      <!-- Info -->
-                      <div class="flex-1 min-w-0">
-                        <h4 class="font-bold text-base lg:text-lg text-foreground mb-2 leading-tight">
-                          {{ programa.nombre }}
-                        </h4>
-                        
-                        <!-- Subespecialidades -->
-                        <div v-if="programa.subespecialidades" class="mb-3 pl-4 border-l-2 border-border/50">
-                          <div v-for="(sub, subIdx) in programa.subespecialidades" :key="subIdx" class="flex items-center gap-2 mb-1">
-                            <div class="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-green-600 to-blue-600"></div>
-                            <span class="text-sm font-semibold text-muted-foreground">{{ sub }}</span>
-                          </div>
-                        </div>
-                        
-                        <!-- Duracion Badge -->
-                        <div class="flex items-center gap-2">
-                          <Clock class="w-4 h-4 text-muted-foreground" />
-                          <span :class="`text-sm font-bold bg-gradient-to-r ${grupo.gradient} bg-clip-text text-transparent`">
-                            {{ programa.duracion }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                  {{ grupo.categoria }}
+                </div>
+                <h3
+                  class="text-xl sm:text-2xl lg:text-3xl font-black"
+                  style="font-family: var(--font-display); letter-spacing: -0.03em; color: var(--cyd-dark);"
+                >
+                  {{ grupo.modalidad }}
+                </h3>
+              </div>
+              <div
+                class="shrink-0 text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded-full"
+                :style="{
+                  background: `color-mix(in srgb, ${grupo.accent} 12%, transparent)`,
+                  color: grupo.accent,
+                }"
+              >
+                {{ grupo.programas.length }} programas
+              </div>
+            </div>
 
-                    <!-- Corner Accent -->
-                    <div :class="`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${grupo.gradient} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-300`"></div>
-                  </div>
+            <!-- Grid de programas -->
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div
+                v-for="(prog, idx) in grupo.programas"
+                :key="idx"
+                class="programa-card group relative bg-white rounded-xl border p-4 sm:p-5 transition-all duration-300 will-change-transform cursor-default"
+                :style="{ borderColor: `color-mix(in srgb, ${grupo.accent} 18%, transparent)` }"
+                @mouseenter="(e) => { e.currentTarget.style.borderColor = grupo.accent; e.currentTarget.style.boxShadow = `0 8px 30px color-mix(in srgb, ${grupo.accent} 12%, transparent)` }"
+                @mouseleave="(e) => { e.currentTarget.style.borderColor = `color-mix(in srgb, ${grupo.accent} 18%, transparent)`; e.currentTarget.style.boxShadow = 'none' }"
+              >
+                <!-- Nombre -->
+                <h4
+                  class="text-xs sm:text-sm font-semibold mb-2 leading-snug"
+                  style="color: var(--cyd-dark); letter-spacing: -0.01em;"
+                >
+                  {{ prog.nombre }}
+                </h4>
+
+                <!-- Subespecialidades -->
+                <ul v-if="prog.sub" class="mb-2 pl-3 space-y-0.5" :style="{ borderLeft: `2px solid color-mix(in srgb, ${grupo.accent} 30%, transparent)` }">
+                  <li
+                    v-for="sub in prog.sub"
+                    :key="sub"
+                    class="text-[10px] sm:text-xs flex items-center gap-1.5"
+                    style="color: hsl(var(--muted-foreground));"
+                  >
+                    <span class="w-1 h-1 rounded-full shrink-0" :style="{ background: grupo.accent }" />
+                    {{ sub }}
+                  </li>
+                </ul>
+
+                <!-- Duración -->
+                <div class="flex items-center gap-1.5 mt-1">
+                  <!-- Reloj SVG propio -->
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" :style="{ color: grupo.accent }">
+                    <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M6 3.5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span
+                    class="text-[10px] sm:text-xs font-bold uppercase tracking-wider"
+                    :style="{ color: grupo.accent }"
+                  >
+                    {{ prog.duracion }}
+                  </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Call to Action -->
-      <div 
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :visible="{ opacity: 1, y: 0 }"
-        :delay="300"
-        class="mt-16 text-center"
+      <!-- CTA -->
+      <div class="carreras-cta relative rounded-2xl overflow-hidden p-6 sm:p-10 lg:p-14 text-center will-change-transform"
+        style="background: linear-gradient(135deg, var(--cyd-forest) 0%, var(--cyd-green) 60%, color-mix(in srgb, var(--cyd-gold) 40%, var(--cyd-green)) 100%);"
       >
-        <Card class="relative overflow-hidden bg-gradient-to-r from-green-600 via-yellow-500 to-blue-600 text-white border-0 shadow-2xl">
-          <!-- Animated Background -->
-          <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 animate-pulse"></div>
-          
-          <CardContent class="relative p-8 lg:p-12">
-            <div class="max-w-3xl mx-auto text-center">
-              <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md rounded-full px-5 py-2 mb-6">
-                <Sparkles class="w-5 h-5" />
-                <span class="font-bold">¡Inscripciones Abiertas 2025!</span>
-              </div>
-              
-              <h3 class="text-3xl lg:text-4xl font-black mb-4">
-                ¿Listo para tu Futuro Profesional?
-              </h3>
-              
-              <p class="text-lg lg:text-xl opacity-95 mb-8 leading-relaxed">
-                Únete a una institución con <span class="font-bold underline decoration-white/50">más de 33 años de experiencia</span> formando profesionales exitosos
-              </p>
-              
-              <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  @click="scrollToContact"
-                  class="bg-white text-green-600 font-bold px-8 py-4 rounded-full shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <GraduationCap class="w-5 h-5" />
-                  Solicitar Información
-                </button>
-                
-                <button
-                  @click="scrollToContact"
-                  class="bg-white/20 backdrop-blur-md text-white font-bold px-8 py-4 rounded-full border-2 border-white/50 hover:bg-white/30 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <Calendar class="w-5 h-5" />
-                  Agendar Visita
-                </button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <!-- Textura de puntos inversa -->
+        <div class="absolute inset-0 cyd-dots opacity-[0.08]" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);" />
+
+        <!-- Jaguar watermark animado -->
+        <div class="carreras-jaguar-bg absolute bottom-0 right-0 w-64 h-64 lg:w-80 lg:h-80 opacity-5 pointer-events-none origin-bottom-right" aria-hidden="true">
+          <div class="w-full h-full" style="background: url('https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=400&height=400&resize=contain') right bottom / contain no-repeat;" />
+        </div>
+
+        <div class="carreras-cta-content relative max-w-2xl mx-auto">
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase text-white/60 mb-4">Inscripciones 2026</div>
+          <h3
+            class="text-3xl lg:text-4xl font-black text-white mb-4 leading-tight"
+            style="font-family: var(--font-display); letter-spacing: -0.03em;"
+          >
+            ¿Listo para tu Futuro Profesional?
+          </h3>
+          <p class="text-white/80 text-base mb-8 max-w-lg mx-auto">
+            Únete a una institución con más de <strong class="text-white">33 años</strong> formando profesionales exitosos en Guatemala.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              @click="scrollToContact"
+              class="px-8 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:-translate-y-1"
+              style="background: white; color: var(--cyd-forest); box-shadow: 0 8px 30px rgba(0,0,0,0.2);"
+              @mouseenter="(e) => e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.3)'"
+              @mouseleave="(e) => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)'"
+            >
+              Solicitar Información
+            </button>
+            <button
+              @click="scrollToContact"
+              class="px-8 py-3.5 rounded-full font-semibold text-sm text-white border border-white/30 transition-all duration-300 hover:bg-white/15 hover:-translate-y-1"
+            >
+              Agendar Visita
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>

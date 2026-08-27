@@ -1,292 +1,432 @@
 <script setup>
-import { ref } from 'vue'
-import { Award, Users, Target, Heart, BookOpen, Shield, Building2, Microscope, Computer, Library, Sparkles, Rocket, TrendingUp, Trophy } from 'lucide-vue-next'
-import { Card } from '@/components/ui/card'
-import { useWindowScroll, useElementBounding } from '@vueuse/core'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap, ScrollTrigger } from '@/lib/gsap.js'
+
+const sectionRef = ref(null)
+
+let ctx = null
 
 const timeline = [
-  { 
-    year: '1992', 
-    title: 'Fundación', 
-    description: 'Inicio del Colegio CYD en Salama, Baja Verapaz con la visión de formar estudiantes con ciencia y disciplina',
-    icon: Sparkles,
-    color: 'from-green-600 to-emerald-500'
+  {
+    year: '1992',
+    title: 'Fundación',
+    description: 'Inicio del Colegio CYD en Salamá, Baja Verapaz con la visión de formar estudiantes con ciencia y disciplina.',
+    color: 'var(--cyd-forest)',
+    side: 'left',
   },
-  { 
-    year: '2005', 
-    title: 'Expansión', 
-    description: 'Apertura de nuevas secciones educativas y laboratorios especializados para ciencias',
-    icon: TrendingUp,
-    color: 'from-blue-600 to-cyan-500'
+  {
+    year: '2005',
+    title: 'Expansión',
+    description: 'Apertura de nuevas secciones educativas y laboratorios especializados para ciencias y tecnología.',
+    color: '#4d6cc4',
+    side: 'right',
   },
-  { 
-    year: '2015', 
-    title: 'Modernización', 
-    description: 'Implementación de tecnología educativa avanzada, laboratorios IMAC y plataformas digitales',
-    icon: Rocket,
-    color: 'from-purple-600 to-pink-500'
+  {
+    year: '2015',
+    title: 'Modernización',
+    description: 'Implementación de tecnología educativa avanzada, laboratorios IMAC y plataformas digitales.',
+    color: 'var(--cyd-gold)',
+    side: 'left',
   },
-  { 
-    year: '2025', 
-    title: 'Excelencia Continua', 
-    description: '33 años de trayectoria, más de 15,000 estudiantes formados y 19 carreras educativas disponibles',
-    icon: Trophy,
-    color: 'from-yellow-500 to-orange-500'
-  }
+  {
+    year: '2025',
+    title: 'Excelencia Continua',
+    description: '33 años de trayectoria, más de 15,000 estudiantes formados y 19 carreras educativas disponibles.',
+    color: 'var(--cyd-green)',
+    side: 'right',
+  },
 ]
 
 const valores = [
   {
-    icon: Target,
     title: 'Disciplina',
-    description: 'Formamos estudiantes responsables y comprometidos',
-    gradient: 'from-blue-500 to-cyan-500'
+    description: 'Formamos estudiantes responsables y comprometidos con su futuro.',
+    letter: 'D',
+    color: '#4d6cc4',
   },
   {
-    icon: BookOpen,
     title: 'Ciencia',
-    description: 'Educación basada en el conocimiento y la innovación',
-    gradient: 'from-green-500 to-emerald-500'
+    description: 'Educación basada en el conocimiento y la innovación constante.',
+    letter: 'C',
+    color: 'var(--cyd-forest)',
   },
   {
-    icon: Heart,
     title: 'Valores',
-    description: 'Respeto, honestidad e integridad en todo momento',
-    gradient: 'from-pink-500 to-rose-500'
+    description: 'Respeto, honestidad e integridad en todo momento y lugar.',
+    letter: 'V',
+    color: '#c26b6b',
   },
   {
-    icon: Shield,
     title: 'Excelencia',
-    description: 'Compromiso con la calidad educativa superior',
-    gradient: 'from-purple-500 to-indigo-500'
-  }
+    description: 'Compromiso firme con la calidad educativa de nivel superior.',
+    letter: 'E',
+    color: 'var(--cyd-gold)',
+  },
 ]
 
-const instalaciones = [
-  {
-    icon: Building2,
-    title: 'Edificios Modernos',
-    description: 'Aulas amplias, ventiladas y equipadas con tecnología de punta',
-    gradient: 'from-blue-500 to-indigo-600'
-  },
-  {
-    icon: Microscope,
-    title: 'Laboratorios',
-    description: 'Espacios equipados para ciencias, computación y experimentos',
-    gradient: 'from-green-500 to-emerald-600'
-  },
-  {
-    icon: Computer,
-    title: 'Tecnología Avanzada',
-    description: 'Computadoras, proyectores y herramientas digitales en cada aula',
-    gradient: 'from-purple-500 to-pink-600'
-  },
-  {
-    icon: Library,
-    title: 'Biblioteca Digital',
-    description: 'Recursos educativos modernos y acceso a información actualizada',
-    gradient: 'from-orange-500 to-red-600'
-  }
+const logros = [
+  { number: '33', suffix: '', unit: 'Años', label: 'de Trayectoria', color: 'var(--cyd-forest)' },
+  { number: '15', suffix: 'K+', unit: 'Egresados', label: 'Exitosos', color: 'var(--cyd-gold)' },
+  { number: '19', suffix: '', unit: 'Carreras', label: 'Educativas', color: '#4d6cc4' },
 ]
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+
+    // Header
+    gsap.from('.about-header', {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.about-header', start: 'top 80%' },
+    })
+
+    // Misión texto
+    gsap.from('.about-mission-text', {
+      opacity: 0,
+      x: -50,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.about-mission-text', start: 'top 80%' },
+    })
+
+    // Jaguar saltando
+    gsap.from('.about-jaguar', {
+      opacity: 0,
+      x: 50,
+      scale: 0.9,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: '.about-jaguar', start: 'top 80%' },
+    })
+
+    // Valores cards — stagger
+    gsap.from('.valor-card', {
+      opacity: 0,
+      y: 40,
+      scale: 0.9,
+      duration: 0.7,
+      stagger: 0.12,
+      ease: 'back.out(1.4)',
+      scrollTrigger: { trigger: '.valores-grid', start: 'top 80%' },
+    })
+
+    // Timeline — animar línea y cards
+    const timelineCards = document.querySelectorAll('.timeline-card')
+    timelineCards.forEach((card, i) => {
+      gsap.from(card, {
+        opacity: 0,
+        x: i % 2 === 0 ? -60 : 60,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 82%',
+        },
+      })
+    })
+
+    // Línea del timeline — dibujarse
+    gsap.from('.timeline-line', {
+      scaleY: 0,
+      transformOrigin: 'top center',
+      duration: 1.5,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '.timeline-section',
+        start: 'top 70%',
+        end: 'bottom 30%',
+        scrub: 1,
+      },
+    })
+
+    // Logros — contador + animación
+    const logroEls = document.querySelectorAll('.logro-number')
+    logroEls.forEach((el) => {
+      const end = parseInt(el.dataset.end)
+      const suffix = el.dataset.suffix || ''
+      gsap.from(el, {
+        opacity: 0,
+        y: 30,
+        duration: 0.7,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          onEnter: () => {
+            const obj = { val: 0 }
+            gsap.to(obj, {
+              val: end,
+              duration: 1.8,
+              ease: 'power2.out',
+              onUpdate: () => {
+                el.textContent = Math.round(obj.val) + suffix
+              },
+            })
+          },
+        },
+      })
+    })
+
+  }, sectionRef.value)
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 </script>
 
 <template>
-  <section id="nosotros" class="py-20 sm:py-32 relative overflow-hidden">
-    <!-- Background -->
-    <div class="absolute inset-0 bg-gradient-to-b from-background via-yellow-50/30 to-background dark:via-yellow-950/10"></div>
-    
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <section
+    id="nosotros"
+    ref="sectionRef"
+    class="py-32 relative overflow-hidden"
+  >
+    <!-- Fondo -->
+    <div class="absolute inset-0" aria-hidden="true">
+      <div
+        class="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full"
+        style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 6%, transparent), transparent 70%); filter: blur(80px);"
+      />
+      <div class="absolute inset-0 cyd-dots opacity-25" />
+    </div>
+
+    <div class="relative cyd-container">
+
       <!-- Header -->
-      <div class="text-center max-w-3xl mx-auto mb-16" v-motion :initial="{ opacity: 0, y: 20 }" :visible="{ opacity: 1, y: 0 }" :delay="100">
-        <h2 class="text-3xl sm:text-5xl font-bold mb-4">
-          Sobre <span class="bg-gradient-to-r from-green-600 to-yellow-500 bg-clip-text text-transparent">Nosotros</span>
+      <div class="about-header text-center max-w-2xl mx-auto mb-24">
+        <span class="cyd-label mb-5 inline-block">Nuestra Historia</span>
+        <h2 class="cyd-title mb-5">
+          Sobre <span class="cyd-accent">Nosotros</span>
         </h2>
-        <p class="text-lg text-muted-foreground">
-          Desde 1992, 33 años formando líderes con ciencia y disciplina en Salama, Baja Verapaz
+        <p class="text-base lg:text-lg" style="color: hsl(var(--muted-foreground));">
+          Desde 1992, 33 años formando líderes con ciencia y disciplina en Salamá, Baja Verapaz.
         </p>
       </div>
 
-      <!-- Mission & Mascot -->
-      <div class="grid lg:grid-cols-2 gap-12 items-center mb-20">
-        <div class="space-y-6" v-motion :initial="{ opacity: 0, x: -20 }" :visible="{ opacity: 1, x: 0 }" :delay="200">
-          <h3 class="text-3xl font-bold">Nuestra Misión</h3>
-          <p class="text-lg text-muted-foreground leading-relaxed">
-            El <span class="font-semibold text-green-600">Colegio Particular Mixto CYD</span> se dedica a formar estudiantes integrales mediante una educación de calidad que combina <span class="font-semibold text-yellow-600">ciencia y disciplina</span>.
+      <!-- Misión + Jaguar -->
+      <div class="grid lg:grid-cols-2 gap-16 items-center mb-28">
+
+        <div class="about-mission-text space-y-6">
+          <h3
+            class="text-3xl font-bold"
+            style="font-family: var(--font-display); letter-spacing: -0.025em; color: var(--cyd-dark);"
+          >
+            Nuestra Misión
+          </h3>
+          <p class="text-base leading-relaxed" style="color: hsl(var(--muted-foreground));">
+            El <strong style="color: var(--cyd-forest);">Colegio Particular Mixto CYD</strong>
+            se dedica a formar estudiantes integrales mediante una educación de calidad que combina
+            <strong style="color: var(--cyd-gold);">ciencia y disciplina</strong>.
           </p>
-          <p class="text-lg text-muted-foreground leading-relaxed">
-            Con <span class="font-semibold text-blue-600">19 carreras educativas</span> y más de <span class="font-semibold text-green-600">15,000 estudiantes formados</span>, contamos con instalaciones modernas e innovadoras que facilitan el aprendizaje y preparamos a nuestros estudiantes para enfrentar los retos del futuro con valores sólidos, pensamiento crítico y un compromiso firme con la excelencia.
+          <p class="text-base leading-relaxed" style="color: hsl(var(--muted-foreground));">
+            Con <strong style="color: #4d6cc4;">19 carreras educativas</strong> y más de
+            <strong style="color: var(--cyd-forest);">15,000 estudiantes formados</strong>,
+            contamos con instalaciones modernas que facilitan el aprendizaje y preparamos a nuestros
+            estudiantes para el futuro con valores sólidos y pensamiento crítico.
           </p>
-          <div class="flex flex-wrap gap-4 pt-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-2 h-2 rounded-full bg-green-600"></div>
-              <span class="text-sm font-medium">33 Años de Trayectoria</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-2 h-2 rounded-full bg-yellow-600"></div>
-              <span class="text-sm font-medium">19 Carreras Educativas</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="w-2 h-2 rounded-full bg-blue-600"></div>
-              <span class="text-sm font-medium">+15,000 Estudiantes</span>
-            </div>
+
+          <!-- Pills de datos -->
+          <div class="flex flex-wrap gap-2.5 pt-2">
+            <span class="cyd-pill">33 Años de Trayectoria</span>
+            <span class="cyd-pill" style="border-color: color-mix(in srgb, var(--cyd-gold) 30%, transparent); background: color-mix(in srgb, var(--cyd-gold) 8%, transparent); color: #9a7200;">19 Carreras Educativas</span>
+            <span class="cyd-pill" style="border-color: color-mix(in srgb, #4d6cc4 30%, transparent); background: color-mix(in srgb, #4d6cc4 8%, transparent); color: #3a56a8;">+15,000 Estudiantes</span>
           </div>
         </div>
-        
-        <div class="flex justify-center" v-motion :initial="{ opacity: 0, x: 20 }" :visible="{ opacity: 1, x: 0 }" :delay="300">
-          <div class="relative w-80 h-80">
+
+        <div class="about-jaguar flex justify-center">
+          <div
+            class="relative w-72 h-72 lg:w-[380px] lg:h-[380px] jaguar-container"
+            @mousemove="(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left - rect.width / 2;
+              const y = e.clientY - rect.top - rect.height / 2;
+              const target = e.currentTarget.querySelector('img');
+              if(target) {
+                gsap.to(target, {
+                  rotateX: (-y / rect.height) * 25,
+                  rotateY: (x / rect.width) * 25,
+                  x: (x / rect.width) * 15,
+                  y: (y / rect.height) * 15,
+                  transformPerspective: 1000,
+                  duration: 0.6,
+                  ease: 'power2.out'
+                });
+              }
+            }"
+            @mouseleave="(e) => {
+              const target = e.currentTarget.querySelector('img');
+              if(target) {
+                gsap.to(target, {
+                  rotateX: 0, rotateY: 0, x: 0, y: 0,
+                  duration: 1, ease: 'elastic.out(1, 0.4)'
+                });
+              }
+            }"
+          >
+            <!-- Halo -->
+            <div
+              class="absolute inset-[-20px] rounded-full"
+              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 10%, transparent), transparent 70%);"
+            />
             <img
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/jaguar-saltando-1761938986560.png?width=8000&height=8000&resize=contain"
-              alt="Jaguar CYD - Mascota del Colegio"
-              class="absolute inset-0 object-contain w-full h-full drop-shadow-2xl hover:scale-110 transition-transform duration-500"
+              alt="Jaguar saltando — Mascota del Colegio CYD"
+              class="relative z-10 w-full h-full object-contain drop-shadow-2xl animate-float will-change-transform cursor-pointer"
+              style="filter: drop-shadow(0 20px 50px color-mix(in srgb, var(--cyd-dark) 25%, transparent));"
             />
           </div>
         </div>
       </div>
 
-      <!-- Values Grid -->
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-        <Card 
-          v-for="(valor, index) in valores" 
-          :key="index"
-          v-motion
-          :initial="{ opacity: 0, y: 20 }"
-          :visible="{ opacity: 1, y: 0 }"
-          :delay="100 * index"
-          class="group p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-border/50"
-        >
-          <div :class="`w-16 h-16 rounded-2xl bg-gradient-to-br ${valor.gradient} p-4 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`">
-            <component :is="valor.icon" class="w-full h-full text-white" />
-          </div>
-          <h3 class="text-lg font-bold mb-2">{{ valor.title }}</h3>
-          <p class="text-sm text-muted-foreground">{{ valor.description }}</p>
-        </Card>
-      </div>
-
-      <!-- Modern Facilities Section -->
-      <div class="mb-20">
-        <div class="text-center mb-12">
-          <h3 class="text-3xl font-bold mb-4">
-            Instalaciones <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Modernas e Innovadoras</span>
-          </h3>
-          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Espacios diseñados para potenciar el aprendizaje y desarrollo integral de nuestros estudiantes
-          </p>
-        </div>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card 
-            v-for="(instalacion, index) in instalaciones" 
-            :key="index"
-            v-motion
-            :initial="{ opacity: 0, y: 20 }"
-            :visible="{ opacity: 1, y: 0 }"
-            :delay="100 * index"
-            class="group relative p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-border/50 overflow-hidden"
+      <!-- Valores -->
+      <div class="mb-28">
+        <div class="text-center mb-14">
+          <span class="cyd-label mb-4 inline-block">Nuestros Pilares</span>
+          <h3
+            class="text-3xl font-bold"
+            style="font-family: var(--font-display); letter-spacing: -0.025em; color: var(--cyd-dark);"
           >
-            <div :class="`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${instalacion.gradient} rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-500`"></div>
-            
-            <div class="relative">
-              <div :class="`w-16 h-16 rounded-2xl bg-gradient-to-br ${instalacion.gradient} p-4 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`">
-                <component :is="instalacion.icon" class="w-full h-full text-white" />
-              </div>
-              <h3 class="text-lg font-bold mb-2">{{ instalacion.title }}</h3>
-              <p class="text-sm text-muted-foreground">{{ instalacion.description }}</p>
+            Valores que nos <span class="cyd-accent">definen</span>
+          </h3>
+        </div>
+
+        <div class="valores-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div
+            v-for="(valor, i) in valores"
+            :key="i"
+            class="valor-card group cyd-card p-7 text-center will-change-transform"
+          >
+            <!-- Letra grande decorativa -->
+            <div
+              class="text-7xl font-black leading-none mb-4 select-none transition-transform duration-500 group-hover:scale-110"
+              :style="{
+                fontFamily: 'var(--font-display)',
+                color: `color-mix(in srgb, ${valor.color} 15%, transparent)`,
+              }"
+            >
+              {{ valor.letter }}
             </div>
-          </Card>
+
+            <h4
+              class="text-lg font-bold mb-2"
+              :style="{ color: valor.color }"
+            >
+              {{ valor.title }}
+            </h4>
+            <p class="text-sm leading-relaxed" style="color: hsl(var(--muted-foreground));">
+              {{ valor.description }}
+            </p>
+
+            <div
+              class="cyd-divider mx-auto mt-5 transition-all duration-500 group-hover:w-full"
+              :style="{ background: `linear-gradient(90deg, ${valor.color}, color-mix(in srgb, ${valor.color} 50%, var(--cyd-gold)))` }"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Enhanced Timeline -->
-      <div class="mb-20">
+      <!-- Timeline -->
+      <div class="timeline-section mb-28">
         <div class="text-center mb-16">
-          <h3 class="text-3xl sm:text-4xl font-bold mb-4">
-            Nuestra <span class="bg-gradient-to-r from-green-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent">Historia</span>
+          <span class="cyd-label mb-4 inline-block">Cronología</span>
+          <h3
+            class="text-3xl font-bold"
+            style="font-family: var(--font-display); letter-spacing: -0.025em; color: var(--cyd-dark);"
+          >
+            Nuestra <span class="cyd-accent">Historia</span>
           </h3>
-          <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Un recorrido por los momentos más importantes de nuestra trayectoria educativa
-          </p>
         </div>
-        
-        <div class="relative max-w-6xl mx-auto">
-          <!-- Central Timeline Line -->
-          <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-green-600 via-yellow-500 to-orange-600 hidden lg:block transform -translate-x-1/2 shadow-lg"></div>
-          
-          <div class="space-y-12">
-            <div v-for="(item, index) in timeline" :key="index" :class="`relative flex items-center ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} flex-col`">
-              <!-- Content Card -->
-              <div :class="`w-full lg:w-5/12 ${index % 2 === 0 ? 'lg:pr-12' : 'lg:pl-12'}`">
-                <Card 
-                  v-motion
-                  :initial="{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }"
-                  :visible="{ opacity: 1, x: 0 }"
-                  class="group p-6 sm:p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-border/50 hover:shadow-2xl transition-all duration-500 hover:scale-105 relative overflow-hidden"
+
+        <div class="relative max-w-4xl mx-auto">
+          <!-- Línea central vertical -->
+          <div
+            class="timeline-line absolute left-1/2 top-0 bottom-0 w-[2px] will-change-transform hidden lg:block"
+            style="
+              transform-origin: top center;
+              background: linear-gradient(180deg, var(--cyd-forest), var(--cyd-gold) 50%, var(--cyd-green));
+              transform: translateX(-50%);
+            "
+            aria-hidden="true"
+          />
+
+          <div class="space-y-10">
+            <div
+              v-for="(item, i) in timeline"
+              :key="i"
+              :class="[
+                'timeline-card relative flex flex-col lg:flex-row items-center will-change-transform',
+                i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
+              ]"
+            >
+              <!-- Contenido -->
+              <div :class="['w-full lg:w-[46%]', i % 2 === 0 ? 'lg:pr-12 lg:text-right' : 'lg:pl-12']">
+                <div
+                  class="cyd-card p-7 group hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
                 >
-                  <!-- Gradient overlay on hover -->
-                  <div :class="`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`"></div>
-                  
-                  <div class="relative z-10">
-                    <!-- Year Badge -->
-                    <div :class="`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${item.color} text-white font-bold text-xl sm:text-2xl mb-4 shadow-lg`">
-                      {{ item.year }}
-                    </div>
-                    
-                    <!-- Title with Icon -->
-                    <div class="flex items-center gap-3 mb-3">
-                      <div :class="`w-10 h-10 rounded-xl bg-gradient-to-br ${item.color} p-2 shadow-md group-hover:scale-110 transition-transform duration-300`">
-                        <component :is="item.icon" class="w-full h-full text-white" />
-                      </div>
-                      <h4 class="text-xl sm:text-2xl font-bold">{{ item.title }}</h4>
-                    </div>
-                    
-                    <!-- Description -->
-                    <p class="text-muted-foreground text-base leading-relaxed">
-                      {{ item.description }}
-                    </p>
+                  <!-- Año -->
+                  <div
+                    class="text-5xl font-black mb-1 leading-none"
+                    :style="{ color: item.color, fontFamily: 'var(--font-display)', letterSpacing: '-0.04em' }"
+                  >
+                    {{ item.year }}
                   </div>
-                </Card>
-              </div>
-              
-              <!-- Center Circle -->
-              <div class="absolute left-1/2 transform -translate-x-1/2 hidden lg:flex items-center justify-center">
-                <div :class="`w-16 h-16 rounded-full bg-gradient-to-br ${item.color} border-4 border-background shadow-2xl flex items-center justify-center group-hover:scale-125 transition-transform duration-500 z-10`">
-                  <component :is="item.icon" class="w-8 h-8 text-white" />
+
+                  <h4
+                    class="text-xl font-bold mb-2"
+                    style="font-family: var(--font-display); color: var(--cyd-dark);"
+                  >
+                    {{ item.title }}
+                  </h4>
+                  <p class="text-sm leading-relaxed" style="color: hsl(var(--muted-foreground));">
+                    {{ item.description }}
+                  </p>
                 </div>
               </div>
-              
-              <!-- Empty space for alternating layout -->
-              <div class="hidden lg:block w-5/12"></div>
+
+              <!-- Punto central -->
+              <div class="hidden lg:flex w-[8%] justify-center relative z-10">
+                <div
+                  class="w-5 h-5 rounded-full border-4 border-white shadow-md"
+                  :style="{ background: item.color }"
+                />
+              </div>
+
+              <!-- Espacio vacío lado opuesto -->
+              <div class="hidden lg:block w-[46%]" />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Achievements -->
-      <div class="text-center">
-        <h3 class="text-2xl font-bold mb-8">Nuestros Logros</h3>
-        <div class="grid md:grid-cols-3 gap-6">
-          <Card class="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-border/50 hover:shadow-xl transition-shadow" v-motion :initial="{ opacity: 0, y: 20 }" :visible="{ opacity: 1, y: 0 }">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-600 to-emerald-600 mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <Award class="w-8 h-8 text-white" />
-            </div>
-            <h4 class="font-bold mb-2">33 Años de Excelencia</h4>
-            <p class="text-sm text-muted-foreground">Más de tres décadas formando líderes</p>
-          </Card>
-          <Card class="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-border/50 hover:shadow-xl transition-shadow" v-motion :initial="{ opacity: 0, y: 20 }" :visible="{ opacity: 1, y: 0 }" :delay="100">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <Users class="w-8 h-8 text-white" />
-            </div>
-            <h4 class="font-bold mb-2">+15,000 Estudiantes</h4>
-            <p class="text-sm text-muted-foreground">Miles de graduados exitosos</p>
-          </Card>
-          <Card class="p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-border/50 hover:shadow-xl transition-shadow" v-motion :initial="{ opacity: 0, y: 20 }" :visible="{ opacity: 1, y: 0 }" :delay="200">
-            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-cyan-600 mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <Target class="w-8 h-8 text-white" />
-            </div>
-            <h4 class="font-bold mb-2">19 Carreras Educativas</h4>
-            <p class="text-sm text-muted-foreground">Diversidad de opciones académicas</p>
-          </Card>
+      <!-- Logros numéricos -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <div
+          v-for="(logro, i) in logros"
+          :key="i"
+          class="cyd-card p-10 text-center"
+        >
+          <div
+            class="logro-number text-5xl lg:text-6xl font-black mb-1 leading-none will-change-transform"
+            :data-end="logro.number"
+            :data-suffix="logro.suffix"
+            :style="{ color: logro.color, fontFamily: 'var(--font-display)', letterSpacing: '-0.04em' }"
+          >0</div>
+          <div
+            class="text-base font-semibold mb-0.5"
+            style="color: var(--cyd-dark);"
+          >{{ logro.unit }}</div>
+          <div class="text-sm" style="color: hsl(var(--muted-foreground));">
+            {{ logro.label }}
+          </div>
+          <div
+            class="cyd-divider mx-auto mt-4"
+            :style="{ background: `linear-gradient(90deg, ${logro.color}, color-mix(in srgb, ${logro.color} 50%, var(--cyd-gold)))` }"
+          />
         </div>
       </div>
+
     </div>
   </section>
 </template>

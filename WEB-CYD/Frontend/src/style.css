@@ -1,70 +1,387 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+/* ============================================================
+   WEB-CYD — Sistema de Diseño
+   Colegio Particular Mixto Ciencia y Desarrollo
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Tokens de Color CYD ────────────────────────────────── */
+:root {
+  /* Paleta CYD */
+  --cyd-forest:     #1a5c2a;
+  --cyd-green:      #2d8a45;
+  --cyd-lime:       #4ead63;
+  --cyd-gold:       #d4a017;
+  --cyd-amber:      #e8b84b;
+  --cyd-cream:      #faf7f0;
+  --cyd-dark:       #0f1a12;
+  --cyd-charcoal:   #1c2b20;
+  --cyd-mist:       #e8f0ea;
+
+  /* Sistema shadcn */
+  --background:     0 0% 99%;
+  --foreground:     140 25% 8%;
+  --card:           0 0% 100%;
+  --card-foreground:140 25% 8%;
+  --popover:        0 0% 100%;
+  --popover-foreground: 140 25% 8%;
+  --primary:        140 40% 25%;
+  --primary-foreground: 0 0% 98%;
+  --secondary:      140 15% 96%;
+  --secondary-foreground: 140 25% 15%;
+  --muted:          140 10% 95%;
+  --muted-foreground: 140 10% 45%;
+  --accent:         44 75% 55%;
+  --accent-foreground: 140 30% 10%;
+  --destructive:    0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border:         140 15% 88%;
+  --input:          140 15% 88%;
+  --ring:           140 40% 40%;
+  --radius:         0.5rem;
+
+  /* Tipografía */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Espaciado de sección */
+  --section-pad: clamp(5rem, 10vw, 8rem);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
 @layer base {
-  :root {
-    --background: 1 0 0;
-    --foreground: 0.145 0 0;
-    --card: 1 0 0;
-    --card-foreground: 0.145 0 0;
-    --popover: 1 0 0;
-    --popover-foreground: 0.145 0 0;
-    --primary: 0.205 0 0;
-    --primary-foreground: 0.985 0 0;
-    --secondary: 0.97 0 0;
-    --secondary-foreground: 0.205 0 0;
-    --muted: 0.97 0 0;
-    --muted-foreground: 0.556 0 0;
-    --accent: 0.97 0 0;
-    --accent-foreground: 0.205 0 0;
-    --destructive: 0.577 0.245 27.325;
-    --destructive-foreground: 0.985 0 0;
-    --border: 0.922 0 0;
-    --input: 0.922 0 0;
-    --ring: 0.708 0 0;
-    --radius: 0.625rem;
+  *, *::before, *::after {
+    @apply border-border;
+    box-sizing: border-box;
   }
- 
-  .dark {
-    --background: 0.145 0 0;
-    --foreground: 0.985 0 0;
-    --card: 0.205 0 0;
-    --card-foreground: 0.985 0 0;
-    --popover: 0.205 0 0;
-    --popover-foreground: 0.985 0 0;
-    --primary: 0.922 0 0;
-    --primary-foreground: 0.205 0 0;
-    --secondary: 0.269 0 0;
-    --secondary-foreground: 0.985 0 0;
-    --muted: 0.269 0 0;
-    --muted-foreground: 0.708 0 0;
-    --accent: 0.269 0 0;
-    --accent-foreground: 0.985 0 0;
-    --destructive: 0.704 0.191 22.216;
-    --destructive-foreground: 0.985 0 0;
-    --border: 1 0 0 / 10%;
-    --input: 1 0 0 / 15%;
-    --ring: 0.556 0 0;
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+/* ── Cursor personalizado ────────────────────────────────── */
+* {
+  /* Mantendremos el cursor nativo pero el spotlight de effects.js hará el trabajo premium */
+}
+
+/* ── Componentes CYD ────────────────────────────────────── */
+@layer components {
+
+  /* Contenedor estándar */
+  .cyd-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+
+  /* Etiqueta de sección */
+  .cyd-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cyd-green);
+    display: inline-block;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--cyd-green) 30%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cyd-green) 6%, transparent);
   }
-  html {
-    scroll-behavior: smooth;
+
+  /* Título de sección */
+  .cyd-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--cyd-dark);
   }
-  .bg-grid-pattern {
-    background-image: linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 50px 50px;
+
+  /* Acento dorado en títulos */
+  .cyd-accent {
+    background: linear-gradient(135deg, var(--cyd-forest) 0%, var(--cyd-gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
+
+  /* Card base CYD */
+  .cyd-card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(45,138,69,0.12);
+    border-radius: 1.25rem;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+                box-shadow 0.4s ease;
+  }
+
+  .cyd-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(26,92,42,0.14);
+  }
+
+  .cyd-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2.2rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    color: #fff;
+    background: linear-gradient(135deg, var(--cyd-forest) 0%, var(--cyd-green) 100%);
+    border-radius: 999px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(45, 138, 69, 0.25), 
+                inset 0 1px 0 rgba(255,255,255,0.2);
+    cursor: pointer;
+  }
+
+  .cyd-btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--cyd-green) 0%, var(--cyd-lime) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Animación de brillo rotatorio en el borde o fondo */
+  .cyd-btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+  }
+
+  .cyd-btn-primary:hover {
+    box-shadow: 0 10px 30px rgba(45, 138, 69, 0.4),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .cyd-btn-primary:hover::before { opacity: 1; }
+  .cyd-btn-primary:hover::after {
+    opacity: 1;
+    transform: scale(1);
+    animation: btn-glow-spin 3s linear infinite;
+  }
+
+  .cyd-btn-primary span { position: relative; z-index: 2; }
+  .cyd-btn-primary svg { position: relative; z-index: 2; }
+
+  @keyframes btn-glow-spin {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(360deg) scale(1); }
+  }
+
+  /* Botón secundario CYD */
+  .cyd-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2.2rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--cyd-forest);
+    background: transparent;
+    border: 1.5px solid var(--cyd-green);
+    border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .cyd-btn-outline:hover {
+    color: #fff;
+    background: var(--cyd-green);
+    border-color: var(--cyd-green);
+    box-shadow: 0 6px 24px rgba(26,92,42,0.22);
+  }
+
+  /* Número estadístico grande */
+  .cyd-stat-number {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--cyd-forest), var(--cyd-gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Divider orgánico */
+  .cyd-divider {
+    width: 3rem;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyd-green), var(--cyd-gold));
+    border-radius: 999px;
+  }
+
+  /* Pill de info */
+  .cyd-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: color-mix(in srgb, var(--cyd-green) 10%, transparent);
+    color: var(--cyd-forest);
+    border: 1px solid color-mix(in srgb, var(--cyd-green) 25%, transparent);
+  }
+}
+
+/* ── Utilidades ────────────────────────────────────────── */
+@layer utilities {
+
+  /* Texturas de fondo premium */
+  .cyd-dots {
+    background-image: radial-gradient(color-mix(in srgb, var(--cyd-green) 40%, transparent) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  
+  .cyd-grid {
+    background-image: 
+      linear-gradient(color-mix(in srgb, var(--cyd-green) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--cyd-green) 8%, transparent) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 10%, transparent 80%);
+  }
+
+  /* Línea de ruido para fondos */
+  .cyd-noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Texto con balance */
+  .text-balance { text-wrap: balance; }
+
+  /* Gradiente de sección */
+  .cyd-section-bg {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--background)) 0%,
+      color-mix(in srgb, var(--cyd-mist) 60%, transparent) 50%,
+      hsl(var(--background)) 100%
+    );
+  }
+
+  /* Overflow para parallax */
+  .parallax-container { overflow: hidden; }
+
+  /* Clip reveal */
+  .clip-hidden { clip-path: inset(100% 0 0 0); }
+  .clip-visible { clip-path: inset(0% 0 0 0); }
+
+  /* GSAP will-change hints */
+  .gsap-ready {
+    will-change: transform, opacity;
+  }
+
+  /* Input focus ring CYD */
+  .cyd-input {
+    @apply w-full bg-white/70 border border-green-200 rounded-xl px-4 py-3 text-sm;
+    font-family: var(--font-body);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .cyd-input:focus {
+    border-color: var(--cyd-green);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyd-green) 15%, transparent);
+  }
+
+  .cyd-input::placeholder {
+    color: #9ca3af;
+  }
+}
+
+/* ── Animaciones CSS base ────────────────────────────────── */
+@keyframes cyd-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-12px) rotate(1deg); }
+  66%       { transform: translateY(-6px) rotate(-1deg); }
+}
+
+@keyframes cyd-glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px color-mix(in srgb, var(--cyd-green) 20%, transparent); }
+  50%       { box-shadow: 0 0 50px color-mix(in srgb, var(--cyd-green) 40%, transparent); }
+}
+
+@keyframes cyd-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes cyd-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes nav-slide-down {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.animate-float      { animation: cyd-float 6s ease-in-out infinite; }
+.animate-glow-pulse { animation: cyd-glow-pulse 3s ease-in-out infinite; }
+.animate-spin-slow  { animation: cyd-spin-slow 20s linear infinite; }
+
+/* ── Scrollbar CYD ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: hsl(var(--background)); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cyd-green), var(--cyd-gold));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--cyd-forest); }
+
+/* ── Selección de texto ─────────────────────────────────── */
+::selection {
+  background: color-mix(in srgb, var(--cyd-green) 25%, transparent);
+  color: var(--cyd-forest);
 }

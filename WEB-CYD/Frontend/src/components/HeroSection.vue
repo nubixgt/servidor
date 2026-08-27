@@ -1,308 +1,552 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useWindowScroll } from '@vueuse/core'
-import { ArrowRight, BookOpen, Trophy, Users, Sparkles } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { gsap, ScrollTrigger } from '@/lib/gsap.js'
 
-const { y } = useWindowScroll()
-const scrollYProgress = computed(() => {
-  // Simple heuristic: 0 to 1 based on first 1000px of scroll
-  return Math.min(Math.max(y.value / 1000, 0), 1)
-})
+const heroRef = ref(null)
+const bgLayerRef = ref(null)
+const jaguarRef = ref(null)
+const titleRef = ref(null)
+const subtitleRef = ref(null)
+const statsRef = ref(null)
+const ctaRef = ref(null)
+const orbRef1 = ref(null)
+const orbRef2 = ref(null)
 
-// Parallax computations
-const bgY = computed(() => `${scrollYProgress.value * 50}%`)
-const bgOpacity = computed(() => 1 - scrollYProgress.value)
-
-const textY = computed(() => `${scrollYProgress.value * -150}%`)
-const textScale = computed(() => 1 - (scrollYProgress.value * 0.3))
-const textRotate = computed(() => `${scrollYProgress.value * -10}deg`)
-
-const buttonY = computed(() => `${scrollYProgress.value * -100}%`)
-
-const jaguarY = computed(() => `${scrollYProgress.value * -80}%`)
-const jaguarX = computed(() => `${scrollYProgress.value * 10}%`)
-const jaguarOpacity = computed(() => 1 - scrollYProgress.value * 1.5)
+let ctx = null
 
 const scrollToSection = (id) => {
-  const element = document.getElementById(id)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-  }
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
+
+const handleJaguarEnter = () => {
+  if (!jaguarRef.value) return
+  gsap.to(jaguarRef.value, {
+    scale: 1.15,
+    y: -30,
+    rotation: 4,
+    duration: 0.4,
+    ease: 'back.out(2)',
+  })
+}
+
+const handleJaguarLeave = () => {
+  if (!jaguarRef.value) return
+  gsap.to(jaguarRef.value, {
+    scale: 1,
+    y: 0,
+    rotation: 0,
+    duration: 0.7,
+    ease: 'elastic.out(1, 0.4)',
+  })
+}
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+    // ── Animación inicial ─────────────────────────────────
+    const tl = gsap.timeline({ delay: 0.1 })
+
+    // Label
+    tl.from('.hero-label', {
+      opacity: 0,
+      y: 20,
+      duration: 0.7,
+      ease: 'power3.out',
+    })
+
+    // Título palabra por palabra
+    tl.from('.hero-word', {
+      opacity: 0,
+      y: 40,
+      rotateX: -30,
+      duration: 0.7,
+      stagger: 0.1,
+      ease: 'power3.out',
+    }, '-=0.3')
+
+    // Subtítulo
+    tl.from('.hero-subtitle', {
+      opacity: 0,
+      y: 24,
+      duration: 0.7,
+      ease: 'power3.out',
+    }, '-=0.3')
+
+    // Stats cards
+    tl.from('.hero-stat', {
+      opacity: 0,
+      y: 30,
+      scale: 0.92,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: 'back.out(1.4)',
+    }, '-=0.2')
+
+    // CTAs
+    tl.from('.hero-cta', {
+      opacity: 0,
+      y: 20,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: 'power3.out',
+    }, '-=0.3')
+
+    // Jaguar
+    tl.from(jaguarRef.value, {
+      opacity: 0,
+      x: 60,
+      scale: 0.9,
+      duration: 1,
+      ease: 'power3.out',
+    }, 0.2)
+
+    // ── Parallax con ScrollTrigger ────────────────────────
+    // Fondo
+    gsap.to(bgLayerRef.value, {
+      yPercent: 35,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.2,
+      },
+    })
+
+    // Jaguar - parallax más lento
+    gsap.to(jaguarRef.value, {
+      yPercent: -25,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.8,
+      },
+    })
+
+    // Texto - parallax rápido (sube antes)
+    gsap.to(titleRef.value, {
+      yPercent: -40,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: '40% top',
+        scrub: 1,
+      },
+    })
+
+    gsap.to(subtitleRef.value, {
+      yPercent: -30,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: '35% top',
+        scrub: 1.2,
+      },
+    })
+
+    gsap.to(statsRef.value, {
+      yPercent: -20,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: '5% top',
+        end: '45% top',
+        scrub: 0.8,
+      },
+    })
+
+    gsap.to(ctaRef.value, {
+      yPercent: -15,
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: '10% top',
+        end: '40% top',
+        scrub: 0.9,
+      },
+    })
+
+    // Orbs flotantes con parallax suave
+    gsap.to(orbRef1.value, {
+      yPercent: 40,
+      xPercent: -8,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 2,
+      },
+    })
+    
+    // Animación flotante continua para orbes (mejorando el fondo de inicio)
+    gsap.to(orbRef1.value, {
+      y: 40, x: -30, rotation: 10,
+      duration: 6, ease: 'sine.inOut',
+      yoyo: true, repeat: -1
+    })
+
+    gsap.to(orbRef2.value, {
+      yPercent: -30,
+      xPercent: 10,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 2.5,
+      },
+    })
+
+    gsap.to(orbRef2.value, {
+      y: -50, x: 40, rotation: -15,
+      duration: 7, ease: 'sine.inOut',
+      yoyo: true, repeat: -1, delay: 1
+    })
+
+    // Scroll indicator fade
+    gsap.to('.hero-scroll-indicator', {
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top top',
+        end: '15% top',
+        scrub: 1,
+      },
+    })
+
+  }, heroRef.value)
+})
+
+onUnmounted(() => {
+  ctx?.revert()
+})
 </script>
 
 <template>
-  <section id="inicio" class="relative min-h-[150vh] flex items-center justify-center overflow-hidden pt-20">
-    <!-- Animated Background -->
+  <section
+    id="inicio"
+    ref="heroRef"
+    class="relative min-h-[100vh] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pb-20"
+    style="padding-top: 72px;"
+  >
+    <!-- Fondo con parallax -->
     <div
-      :style="{ transform: `translateY(${bgY})`, opacity: bgOpacity }"
-      class="absolute inset-0 bg-gradient-to-br from-green-50 via-yellow-50 to-blue-50 dark:from-gray-900 dark:via-green-900/20 dark:to-yellow-900/20 transition-all duration-75"
+      ref="bgLayerRef"
+      class="absolute inset-0 will-change-transform"
+      style="z-index: 0;"
     >
-      <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      <!-- Gradiente base -->
+      <div
+        class="absolute inset-0"
+        style="background: linear-gradient(135deg, #f0f7f1 0%, #faf8f0 35%, #ffffff 60%, #eef5f0 100%);"
+      />
+
+      <!-- Textura de cuadrícula de ingeniería CYD (Efecto premium) -->
+      <div class="absolute inset-0 cyd-grid opacity-70" />
+      
+      <!-- Viñeta suave para enfocar el centro -->
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="background: radial-gradient(circle at center, transparent 40%, rgba(240, 247, 241, 0.4) 100%);"
+      />
+
+
+
+      <!-- Orb 1 -->
+      <div
+        ref="orbRef1"
+        class="absolute top-[15%] left-[8%] w-[380px] h-[380px] rounded-full will-change-transform"
+        style="background: radial-gradient(circle at center, color-mix(in srgb, var(--cyd-green) 18%, transparent), transparent 70%); filter: blur(40px);"
+      />
+
+      <!-- Orb 2 -->
+      <div
+        ref="orbRef2"
+        class="absolute bottom-[25%] right-[5%] w-[440px] h-[440px] rounded-full will-change-transform"
+        style="background: radial-gradient(circle at center, color-mix(in srgb, var(--cyd-gold) 16%, transparent), transparent 70%); filter: blur(50px);"
+      />
     </div>
 
-    <!-- Animated Floating Elements with Enhanced Parallax -->
-    <div
-      :style="{ transform: `translateY(${scrollYProgress * 250}%) scale(${1 + scrollYProgress * 0.5})` }"
-      class="absolute top-20 left-10 w-72 h-72 bg-green-500/20 rounded-full blur-3xl animate-pulse transition-all duration-75"
-    />
+    <!-- Contenido principal -->
+    <div class="relative z-10 cyd-container py-10 lg:py-16 w-full">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
 
-    <div
-      :style="{ transform: `translateY(${scrollYProgress * -200}%) scale(${1 + scrollYProgress})` }"
-      class="absolute bottom-20 right-10 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl animate-pulse animation-delay-2000 transition-all duration-75"
-    />
+        <!-- Columna izquierda -->
+        <div class="space-y-8">
 
-    <div
-      :style="{ transform: `translate(-50%, -50%) scale(${1 + scrollYProgress * 2})`, opacity: Math.max(0, 0.3 - scrollYProgress * 0.5) }"
-      class="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse animation-delay-4000 transition-all duration-75"
-    />
-
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
-        <!-- Left Content with Enhanced Scroll Animations -->
-        <div
-          v-motion
-          :initial="{ opacity: 0, y: 50 }"
-          :enter="{ opacity: 1, y: 0, transition: { duration: 800 } }"
-          :style="{
-            transform: `translateY(${textY}) scale(${textScale}) rotate(${textRotate})`,
-            filter: `blur(${scrollYProgress * 10}px)`
-          }"
-          class="space-y-8 text-center lg:text-left transition-all duration-75"
-        >
-          <!-- Badge -->
-          <div
-            v-motion
-            :initial="{ opacity: 0, y: -20 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 600 } }"
-            class="inline-flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-green-200 dark:border-green-800 rounded-full px-4 py-2"
-          >
-            <Sparkles class="w-4 h-4 text-yellow-500" />
-            <span class="text-sm font-medium">Formando líderes desde 1992</span>
+          <!-- Label -->
+          <div class="hero-label">
+            <span class="cyd-label">Formando líderes desde 1992</span>
           </div>
 
-          <!-- Main Heading -->
+          <!-- Título -->
           <h1
-            v-motion
-            :initial="{ opacity: 0, y: 20 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 600, delay: 200 } }"
-            style="transform-style: preserve-3d; perspective: 1000px;"
-            class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight"
+            ref="titleRef"
+            class="will-change-transform"
+            style="perspective: 1000px;"
           >
-            <span
-              :style="{ transform: `translateY(${scrollYProgress * -30}%) scale(${1 + scrollYProgress * 0.1})` }"
-              class="block mb-2 transition-all duration-75"
-            >
-              Educación de
+            <span class="block overflow-hidden mb-1">
+              <span
+                class="hero-word block cyd-title"
+                style="display: inline-block;"
+              >
+                Educación de
+              </span>
             </span>
-            <span
-              :style="{
-                transform: `translateY(${scrollYProgress * -60}%) scale(${1 + scrollYProgress * 0.2}) rotateX(${scrollYProgress * 10}deg)`
-              }"
-              class="block bg-gradient-to-r from-green-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent transition-all duration-75"
-            >
-              Excelencia
+            <span class="block overflow-hidden mb-1">
+              <span
+                class="hero-word block cyd-title cyd-accent"
+                style="display: inline-block;"
+              >
+                Excelencia
+              </span>
+            </span>
+            <span class="block overflow-hidden">
+              <span
+                class="hero-word block cyd-title"
+                style="display: inline-block; font-size: clamp(1.4rem, 3vw, 2.4rem); font-weight: 400; color: hsl(var(--muted-foreground));"
+              >
+                Colegio CYD — Salamá, B.V.
+              </span>
             </span>
           </h1>
 
-          <!-- Subtitle -->
+          <!-- Subtítulo -->
           <p
-            v-motion
-            :initial="{ opacity: 0, y: 20 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 600, delay: 400 } }"
-            :style="{
-              transform: `translateY(${scrollYProgress * 20}%)`,
-              opacity: Math.max(0, 1 - scrollYProgress * 2)
-            }"
-            class="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 transition-all duration-75"
+            ref="subtitleRef"
+            class="hero-subtitle text-base lg:text-lg leading-relaxed max-w-lg will-change-transform"
+            style="color: hsl(var(--muted-foreground));"
           >
-            Colegio Particular Mixto con <span class="font-semibold text-green-600">instalaciones modernas e innovadoras</span>, dedicado a formar estudiantes con <span class="font-semibold text-yellow-600">ciencia y disciplina</span>.
+            Colegio Particular Mixto con instalaciones modernas e innovadoras,
+            dedicado a formar estudiantes con
+            <strong style="color: var(--cyd-forest); font-weight: 600;">ciencia y disciplina</strong>
+            para el mundo del mañana.
           </p>
 
           <!-- Stats -->
-          <div
-            v-motion
-            :initial="{ opacity: 0, y: 20 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 600, delay: 600 } }"
-            :style="{
-              transform: `translateY(${scrollYProgress * 200}%) scale(${1 - scrollYProgress * 0.1})`,
-              opacity: Math.max(0, 1 - scrollYProgress * 2)
-            }"
-            class="grid grid-cols-2 sm:grid-cols-3 gap-6 transition-all duration-75"
-          >
+          <div ref="statsRef" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 will-change-transform">
+
             <!-- Stat 1 -->
             <div
-              :style="{
-                transform: `translateY(${scrollYProgress * 50}%) rotateY(${scrollYProgress * 15}deg)`
-              }"
-              class="group relative p-6 rounded-3xl bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 backdrop-blur-xl border-2 border-green-200/50 dark:border-green-700/50 cursor-pointer shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition-all duration-500 overflow-hidden"
+              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-default"
+              @click="scrollToSection('nosotros')"
             >
-              <div class="absolute inset-0 bg-gradient-to-br from-green-400/0 via-emerald-400/20 to-green-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              <div class="relative z-10">
-                <div class="text-4xl sm:text-5xl font-black bg-gradient-to-br from-green-600 via-emerald-600 to-teal-700 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">+33</div>
-                <div class="text-sm font-semibold text-foreground/80 group-hover:text-foreground transition-colors">Años de Excelencia</div>
-                <div class="mt-3 h-1 w-12 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 group-hover:w-full transition-all duration-500"></div>
-              </div>
+              <div
+                class="text-2xl lg:text-4xl font-black leading-none mb-1 cyd-stat-number"
+              >+33</div>
+              <div
+                class="text-[10px] sm:text-xs font-medium leading-tight"
+                style="color: hsl(var(--muted-foreground));"
+              >Años de<br>Excelencia</div>
+              <div class="cyd-divider mx-auto mt-2 sm:mt-3" />
             </div>
 
             <!-- Stat 2 -->
             <div
-              :style="{
-                transform: `translateY(${scrollYProgress * 80}%) rotateY(${scrollYProgress * -15}deg)`
-              }"
-              class="group relative p-6 rounded-3xl bg-gradient-to-br from-yellow-500/20 via-orange-500/20 to-amber-500/20 backdrop-blur-xl border-4 border-yellow-400/70 dark:border-yellow-600/70 cursor-pointer shadow-2xl hover:shadow-3xl hover:-translate-y-2 hover:scale-105 transition-all duration-500 overflow-hidden ring-4 ring-yellow-300/30 dark:ring-yellow-700/30"
+              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-default"
+              style="border-color: color-mix(in srgb, var(--cyd-gold) 35%, transparent);
+                     box-shadow: 0 4px 20px color-mix(in srgb, var(--cyd-gold) 12%, transparent);"
             >
-              <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 via-orange-400/40 to-yellow-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              <div class="absolute inset-0 bg-yellow-500/10 animate-pulse"></div>
-              <div class="absolute top-2 right-2 text-yellow-400 text-2xl">⭐</div>
-              <div class="absolute bottom-2 left-2 text-orange-400 text-xl">✨</div>
-              <div class="relative z-10">
-                <div class="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-br from-yellow-600 via-orange-600 to-amber-700 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300 whitespace-nowrap drop-shadow-lg w-32 h-[47px]">15,000+</div>
-                <div class="text-sm font-bold text-foreground group-hover:text-foreground transition-colors">Egresados Exitosos</div>
-                <div class="mt-3 h-1.5 w-12 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 group-hover:w-full transition-all duration-500 shadow-lg"></div>
-              </div>
+              <div
+                class="text-2xl lg:text-3xl font-black leading-none mb-1 cyd-stat-number"
+              >15K+</div>
+              <div
+                class="text-[10px] sm:text-xs font-medium leading-tight"
+                style="color: hsl(var(--muted-foreground));"
+              >Egresados<br>Exitosos</div>
+              <div
+                class="cyd-divider mx-auto mt-2 sm:mt-3"
+                style="background: linear-gradient(90deg, var(--cyd-gold), var(--cyd-amber));"
+              />
             </div>
 
             <!-- Stat 3 -->
             <div
-              :style="{
-                transform: `translateY(${scrollYProgress * 110}%) rotateY(${scrollYProgress * 20}deg)`
-              }"
+              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-pointer col-span-2 sm:col-span-1"
               @click="scrollToSection('carreras')"
-              class="group relative p-6 rounded-3xl bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-indigo-500/10 backdrop-blur-xl border-2 border-blue-200/50 dark:border-blue-700/50 cursor-pointer shadow-xl hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition-all duration-500 overflow-hidden"
             >
-              <div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 via-cyan-400/20 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              <div class="relative z-10">
-                <div class="text-4xl sm:text-5xl font-black bg-gradient-to-br from-blue-600 via-cyan-600 to-indigo-700 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">19</div>
-                <div class="text-sm font-semibold text-foreground/80 group-hover:text-foreground transition-colors">Carreras Educativas</div>
-                <div class="mt-3 h-1 w-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 group-hover:w-full transition-all duration-500"></div>
-              </div>
+              <div
+                class="text-2xl lg:text-4xl font-black leading-none mb-1 cyd-stat-number"
+              >19</div>
+              <div
+                class="text-[10px] sm:text-xs font-medium leading-tight"
+                style="color: hsl(var(--muted-foreground));"
+              >Carreras<br>Educativas</div>
+              <div class="cyd-divider mx-auto mt-2 sm:mt-3" />
             </div>
           </div>
 
-          <!-- CTA Buttons -->
-          <div
-            v-motion
-            :initial="{ opacity: 0, y: 20 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 600, delay: 800 } }"
-            :style="{
-              transform: `translateY(${buttonY})`,
-            }"
-            class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start transition-all duration-75"
-          >
-            <div class="hover:scale-105 hover:-rotate-2 transition-transform active:scale-95">
-              <Button
-                @click="scrollToSection('niveles')"
-                size="lg"
-                class="relative bg-gradient-to-r from-green-600 to-yellow-500 hover:from-green-700 hover:to-yellow-600 text-white px-8 py-6 text-lg rounded-full group shadow-xl hover:shadow-2xl transition-all overflow-hidden border-0"
-              >
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                <span class="relative z-10 flex items-center">
-                  Conocer Niveles
-                  <ArrowRight class="ml-2 group-hover:translate-x-1 transition-transform" :size="20" />
-                </span>
-              </Button>
-            </div>
+          <!-- CTAs -->
+          <div ref="ctaRef" class="flex flex-col sm:flex-row gap-3 will-change-transform">
+            <button
+              class="hero-cta cyd-btn-primary group"
+              @click="scrollToSection('niveles')"
+            >
+              <span>Conocer Niveles</span>
+              <svg class="transition-transform duration-300 group-hover:translate-x-1.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="position:relative;z-index:1;">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
 
-            <div class="hover:scale-105 hover:rotate-2 transition-transform active:scale-95">
-              <Button
-                @click="scrollToSection('contacto')"
-                size="lg"
-                class="relative group px-8 py-6 text-lg rounded-full backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border-2 border-green-500/50 hover:border-green-500 shadow-xl hover:shadow-2xl transition-all overflow-hidden"
-              >
-                <div class="absolute inset-0 bg-gradient-to-r from-green-500/10 via-yellow-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div class="absolute inset-0 rounded-full bg-gradient-to-r from-green-500 via-yellow-500 to-green-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
-                <span class="relative z-10 flex items-center font-semibold bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">
-                  <BookOpen class="mr-2" :size="20" />
-                  Inscripciones 2026
-                </span>
-              </Button>
-            </div>
+            <button
+              class="hero-cta cyd-btn-outline group"
+              @click="scrollToSection('contacto')"
+            >
+              <span>Inscripciones 2026</span>
+              <svg class="opacity-0 -ml-4 transition-all duration-300 group-hover:opacity-100 group-hover:ml-0" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
 
-        <!-- Right Content -->
-        <div class="relative min-h-[600px] lg:min-h-[700px]">
+        <!-- Columna derecha — Jaguar + Decoración -->
+        <div class="relative flex items-center justify-center min-h-[520px] lg:min-h-[640px]">
+
+          <!-- Premium Glowing Aura detrás del Jaguar -->
+          <div
+            class="absolute w-[450px] h-[450px] lg:w-[550px] lg:h-[550px] rounded-full"
+            style="
+              background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 15%, transparent) 0%, transparent 70%);
+              filter: blur(40px);
+              animation: cyd-pulse-glow 8s ease-in-out infinite alternate;
+            "
+            aria-hidden="true"
+          />
+
+          <!-- Círculo interior elegante -->
+          <div
+            class="absolute w-[340px] h-[340px] lg:w-[420px] lg:h-[420px] rounded-full"
+            style="
+              background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 12%, transparent) 0%, transparent 65%);
+              filter: blur(30px);
+              animation: cyd-pulse-glow 6s ease-in-out infinite alternate-reverse;
+            "
+            aria-hidden="true"
+          />
+
           <!-- Jaguar -->
           <div
-            :style="{
-              transform: `translate(${jaguarX}, ${jaguarY}) scale(${1 - scrollYProgress * 0.1})`,
-              opacity: jaguarOpacity
+            class="relative z-10 w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container"
+            @mousemove="(e) => {
+              if(!jaguarRef) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left - rect.width / 2;
+              const y = e.clientY - rect.top - rect.height / 2;
+              gsap.to(jaguarRef, {
+                rotateX: (-y / rect.height) * 30,
+                rotateY: (x / rect.width) * 30,
+                x: (x / rect.width) * 20,
+                y: (y / rect.height) * 20,
+                transformPerspective: 1000,
+                duration: 0.6,
+                ease: 'power2.out'
+              });
             }"
-            class="absolute inset-0 flex items-center justify-center transition-all duration-75"
+            @mouseleave="() => {
+              if(!jaguarRef) return;
+              gsap.to(jaguarRef, {
+                rotateX: 0, rotateY: 0, x: 0, y: 0,
+                duration: 1, ease: 'elastic.out(1, 0.4)'
+              });
+            }"
           >
-            <div class="relative w-80 h-80 lg:w-[450px] lg:h-[450px]">
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-green-400/30 via-yellow-400/30 to-blue-400/20 rounded-full blur-3xl animate-pulse"
-              />
-              <img
-                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"
-                alt="Jaguar CYD"
-                class="absolute inset-0 object-contain w-full h-full drop-shadow-2xl"
-              />
+            <img
+              ref="jaguarRef"
+              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"
+              alt="Jaguar — Mascota Colegio CYD"
+              class="w-full h-full object-contain cursor-pointer will-change-transform"
+              style="filter: drop-shadow(0 20px 60px color-mix(in srgb, var(--cyd-dark) 30%, transparent));"
+            />
+          </div>
+
+          <!-- Badge flotante — Excelencia -->
+          <div
+            class="absolute top-12 right-0 lg:-right-4 cyd-card px-4 py-3 flex items-center gap-3"
+            style="animation: cyd-float 5s ease-in-out infinite; animation-delay: -1s;"
+          >
+            <div
+              class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style="background: linear-gradient(135deg, var(--cyd-forest), var(--cyd-green));"
+            >
+              <!-- Estrella SVG propio -->
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 1l1.8 4H14l-3.4 2.8 1.3 4.2L8 9.4l-3.9 2.6 1.3-4.2L2 5h4.2L8 1z" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold" style="color: var(--cyd-dark);">Excelencia Académica</div>
+              <div class="text-[10px]" style="color: hsl(var(--muted-foreground));">+33 años formando líderes</div>
             </div>
           </div>
 
-          <!-- Interactive Cards -->
+          <!-- Badge flotante — Carreras -->
           <div
-            v-motion
-            :initial="{ opacity: 0, y: 40 }"
-            :enter="{ opacity: 1, y: 0, transition: { duration: 800, delay: 1000 } }"
-            class="absolute -bottom-8 left-0 right-0 grid grid-cols-2 gap-4 z-20"
+            class="absolute bottom-20 left-0 lg:-left-4 cyd-card px-4 py-3 flex items-center gap-3"
+            style="animation: cyd-float 5.5s ease-in-out infinite; animation-delay: -2.5s;"
           >
-            <!-- Card 1 -->
-            <div class="group p-6 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-white cursor-pointer shadow-xl hover:shadow-2xl transition-all hover:scale-110 hover:-rotate-3 hover:-translate-y-2 active:scale-95">
-              <Trophy class="w-10 h-10 mb-3 group-hover:rotate-12 group-hover:scale-110 transition-transform" />
-              <h3 class="font-bold text-lg mb-1">Excelencia</h3>
-              <p class="text-sm opacity-90">Académica y deportiva</p>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="group p-6 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 text-white cursor-pointer shadow-xl hover:shadow-2xl transition-all hover:scale-110 hover:rotate-3 hover:-translate-y-2 active:scale-95">
-              <BookOpen class="w-10 h-10 mb-3 group-hover:scale-125 transition-transform" />
-              <h3 class="font-bold text-lg mb-1">Educación</h3>
-              <p class="text-sm opacity-90">Integral y moderna</p>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="group p-6 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white cursor-pointer shadow-xl hover:shadow-2xl transition-all hover:scale-110 hover:rotate-3 hover:-translate-y-2 active:scale-95">
-              <Users class="w-10 h-10 mb-3 group-hover:scale-125 transition-transform" />
-              <h3 class="font-bold text-lg mb-1">Comunidad</h3>
-              <p class="text-sm opacity-90">Valores y respeto</p>
-            </div>
-
-            <!-- Card 4 -->
             <div
-              @click="scrollToSection('facebook')"
-              class="group p-6 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 text-white cursor-pointer shadow-xl hover:shadow-2xl transition-all hover:scale-110 hover:-rotate-3 hover:-translate-y-2 active:scale-95 flex flex-col items-center justify-center"
+              class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              style="background: linear-gradient(135deg, var(--cyd-gold), var(--cyd-amber));"
             >
-              <div class="relative w-16 h-16 mb-2">
-                <img
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/LOGO-2020-1761860820111.png?width=200&height=200&resize=contain"
-                  alt="Logo CYD"
-                  class="absolute inset-0 object-contain w-full h-full group-hover:rotate-6 group-hover:scale-110 transition-transform brightness-0 invert"
-                />
-              </div>
-              <h3 class="font-bold text-lg mb-1">Redes Sociales</h3>
-              <p class="text-sm opacity-90">Síguenos</p>
+              <!-- Libro SVG propio -->
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="2" y="2" width="8" height="12" rx="1" stroke="white" stroke-width="1.5"/>
+                <path d="M6 5h2M6 7.5h4M6 10h3" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M10 2v12" stroke="white" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold" style="color: var(--cyd-dark);">19 Carreras</div>
+              <div class="text-[10px]" style="color: hsl(var(--muted-foreground));">Educativas disponibles</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scroll Indicator -->
+    <!-- Scroll indicator -->
     <div
-      :style="{ opacity: Math.max(0, 1 - scrollYProgress * 3) }"
-      class="absolute bottom-8 left-1/2 -translate-x-1/2 transition-all duration-75"
+      class="hero-scroll-indicator absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      style="z-index: 10;"
     >
-      <div class="w-6 h-10 rounded-full border-2 border-green-600/40 flex items-start justify-center p-2 animate-bounce">
-        <div class="w-1 h-3 bg-green-600/60 rounded-full" />
+      <span class="text-[10px] tracking-[0.2em] uppercase" style="color: hsl(var(--muted-foreground));">Scroll</span>
+      <div
+        class="w-[1px] h-10 rounded-full overflow-hidden"
+        style="background: color-mix(in srgb, var(--cyd-green) 20%, transparent);"
+      >
+        <div
+          class="w-full rounded-full"
+          style="
+            height: 40%;
+            background: var(--cyd-green);
+            animation: scroll-line 1.8s ease-in-out infinite;
+          "
+        />
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+@keyframes cyd-pulse-glow {
+  0% { transform: scale(1) translate(0px, 0px); opacity: 0.8; }
+  50% { transform: scale(1.05) translate(10px, -15px); opacity: 1; }
+  100% { transform: scale(0.95) translate(-10px, 10px); opacity: 0.8; }
+}
+
+@keyframes scroll-line {
+  0%   { transform: translateY(-100%); }
+  50%  { transform: translateY(150%); }
+  100% { transform: translateY(-100%); }
+}
+</style>
