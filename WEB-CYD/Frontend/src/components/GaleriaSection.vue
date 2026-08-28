@@ -146,13 +146,13 @@ onUnmounted(() => { ctx?.revert() })
       </div>
 
       <!-- Grid tipo magazine — 6 celdas con tamaños variados -->
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div
           v-for="(item, i) in galeriaItems"
           :key="item.key"
-          class="gal-item group relative rounded-2xl overflow-hidden cursor-pointer will-change-transform"
+          class="gal-item group relative rounded-2xl overflow-hidden cursor-pointer will-change-transform aspect-[4/3] sm:aspect-video"
           :class="[
-            i === 0 ? 'lg:row-span-2 aspect-[3/4] lg:aspect-auto' : 'aspect-video',
+            i === 0 ? 'lg:row-span-2 lg:aspect-auto' : '',
           ]"
           style="min-height: 220px;"
           @mouseenter="hoveredIndex = i"

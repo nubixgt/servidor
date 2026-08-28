@@ -99,106 +99,126 @@ onMounted(() => {
       ease: 'power3.out',
     }, 0.2)
 
-    // ── Parallax con ScrollTrigger ────────────────────────
-    // Fondo
-    gsap.to(bgLayerRef.value, {
-      yPercent: 35,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 1.2,
-      },
-    })
-
-    // Jaguar - parallax más lento
-    gsap.to(jaguarRef.value, {
-      yPercent: -25,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 1.8,
-      },
-    })
-
-    // Texto - parallax rápido (sube antes)
-    gsap.to(titleRef.value, {
-      yPercent: -40,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: '40% top',
-        scrub: 1,
-      },
-    })
-
-    gsap.to(subtitleRef.value, {
-      yPercent: -30,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: '35% top',
-        scrub: 1.2,
-      },
-    })
-
-    gsap.to(statsRef.value, {
-      yPercent: -20,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: '5% top',
-        end: '45% top',
-        scrub: 0.8,
-      },
-    })
-
-    gsap.to(ctaRef.value, {
-      yPercent: -15,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: '10% top',
-        end: '40% top',
-        scrub: 0.9,
-      },
-    })
-
-    // Orbs flotantes con parallax suave
-    gsap.to(orbRef1.value, {
-      yPercent: 40,
-      xPercent: -8,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 2,
-      },
-    })
+    // ── Parallax con ScrollTrigger (Solo Desktop) ────────────────────────
+    let mm = gsap.matchMedia()
     
-    // Animación flotante continua para orbes (mejorando el fondo de inicio)
+    mm.add("(min-width: 1024px)", () => {
+      // Fondo
+      gsap.to(bgLayerRef.value, {
+        yPercent: 35,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.2,
+        },
+      })
+
+      // Jaguar - parallax más lento
+      gsap.to(jaguarRef.value, {
+        yPercent: -25,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.8,
+        },
+      })
+
+      // Texto - parallax rápido
+      gsap.to(titleRef.value, {
+        yPercent: -40,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: '40% top',
+          scrub: 1,
+        },
+      })
+
+      gsap.to(subtitleRef.value, {
+        yPercent: -30,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: '35% top',
+          scrub: 1.2,
+        },
+      })
+
+      gsap.to(statsRef.value, {
+        yPercent: -20,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: '5% top',
+          end: '45% top',
+          scrub: 0.8,
+        },
+      })
+
+      gsap.to(ctaRef.value, {
+        yPercent: -15,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: '10% top',
+          end: '40% top',
+          scrub: 0.9,
+        },
+      })
+
+      // Orbs flotantes con parallax suave
+      gsap.to(orbRef1.value, {
+        yPercent: 40,
+        xPercent: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2,
+        },
+      })
+
+      gsap.to(orbRef2.value, {
+        yPercent: -30,
+        xPercent: 10,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 2.5,
+        },
+      })
+
+      // Scroll indicator fade
+      gsap.to('.hero-scroll-indicator', {
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.value,
+          start: 'top top',
+          end: '15% top',
+          scrub: 1,
+        },
+      })
+    })
+
+    // Animación flotante continua para orbes (Todas las pantallas)
     gsap.to(orbRef1.value, {
       y: 40, x: -30, rotation: 10,
       duration: 6, ease: 'sine.inOut',
       yoyo: true, repeat: -1
-    })
-
-    gsap.to(orbRef2.value, {
-      yPercent: -30,
-      xPercent: 10,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 2.5,
-      },
     })
 
     gsap.to(orbRef2.value, {
@@ -207,17 +227,7 @@ onMounted(() => {
       yoyo: true, repeat: -1, delay: 1
     })
 
-    // Scroll indicator fade
-    gsap.to('.hero-scroll-indicator', {
-      opacity: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top top',
-        end: '15% top',
-        scrub: 1,
-      },
-    })
+    // Animación flotante continua para orbes (Todas las pantallas)
 
   }, heroRef.value)
 })
@@ -231,8 +241,7 @@ onUnmounted(() => {
   <section
     id="inicio"
     ref="heroRef"
-    class="relative min-h-[100svh] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pb-10 lg:pb-20"
-    style="padding-top: 72px;"
+    class="relative min-h-[auto] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pt-28 pb-10 lg:pt-[72px] lg:pb-20"
   >
     <!-- Fondo con parallax -->
     <div
