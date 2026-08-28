@@ -14,6 +14,18 @@ const orbRef2 = ref(null)
 
 let ctx = null
 
+// Generación de partículas mágicas para el Jaguar
+const particles = Array.from({ length: 20 }).map((_, i) => ({
+  id: i,
+  size: Math.random() * 8 + 4, // Entre 4 y 12px
+  x: Math.random() * 100,      // Posición X %
+  y: Math.random() * 100,      // Posición Y %
+  color: Math.random() > 0.5 ? 'var(--cyd-gold)' : 'var(--cyd-green)',
+  delay: Math.random() * 4,    // Retraso aleatorio
+  duration: Math.random() * 3 + 3, // Duración entre 3s y 6s
+  tx: (Math.random() * 60 - 30) + 'px', // Desplazamiento X aleatorio
+}))
+
 const scrollToSection = (id) => {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
@@ -435,6 +447,27 @@ onUnmounted(() => {
             aria-hidden="true"
           />
 
+          <!-- Partículas Mágicas Flotantes -->
+          <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+            <div class="relative w-[260px] h-[260px] lg:w-[420px] lg:h-[420px]">
+              <div
+                v-for="p in particles"
+                :key="p.id"
+                class="absolute rounded-full"
+                :style="{
+                  width: p.size + 'px',
+                  height: p.size + 'px',
+                  left: p.x + '%',
+                  top: p.y + '%',
+                  background: p.color,
+                  boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+                  animation: `cyd-particle-float ${p.duration}s ease-in-out infinite ${p.delay}s`,
+                  '--tx': p.tx
+                }"
+              />
+            </div>
+          </div>
+
           <!-- Jaguar -->
           <div
             class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container"
@@ -549,5 +582,12 @@ onUnmounted(() => {
   0%   { transform: translateY(-100%); }
   50%  { transform: translateY(150%); }
   100% { transform: translateY(-100%); }
+}
+
+@keyframes cyd-particle-float {
+  0% { transform: translate(0, 40px) scale(0.1); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.6; }
+  100% { transform: translate(var(--tx), -100px) scale(1.5); opacity: 0; }
 }
 </style>
