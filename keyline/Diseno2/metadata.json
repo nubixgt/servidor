@@ -1,6 +1,0 @@
-{
-  "name": "KeylineGT - Agro-Monitoring",
-  "description": "Plataforma avanzada de monitoreo agrícola geoespacial, inventario de parcelas y análisis de suelo en Guatemala.",
-  "requestFramePermissions": ["geolocation"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
