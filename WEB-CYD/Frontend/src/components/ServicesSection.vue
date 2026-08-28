@@ -90,7 +90,7 @@ onMounted(() => {
       },
     })
 
-    // Materias — aparecen en cascada
+    // Materias — aparecen en cascada y luego flotan suavemente
     gsap.from('.materia-pill', {
       opacity: 0,
       scale: 0.8,
@@ -100,6 +100,20 @@ onMounted(() => {
       scrollTrigger: {
         trigger: '.materias-row',
         start: 'top 85%',
+        onEnter: () => {
+          // Iniciar animación flotante después de aparecer
+          gsap.to('.materia-pill', {
+            y: -6,
+            duration: 1.5,
+            stagger: {
+              each: 0.1,
+              repeat: -1,
+              yoyo: true
+            },
+            ease: 'sine.inOut',
+            delay: 0.5
+          })
+        }
       },
     })
 
@@ -118,10 +132,10 @@ onMounted(() => {
     const pills = document.querySelectorAll('.materia-pill')
     pills.forEach((pill) => {
       pill.addEventListener('mouseenter', () => {
-        gsap.to(pill, { scale: 1.1, y: -4, rotation: Math.random() * 4 - 2, duration: 0.3, ease: 'back.out(2)' })
+        gsap.to(pill, { scale: 1.1, rotation: Math.random() * 4 - 2, duration: 0.3, ease: 'back.out(2)', overwrite: 'auto' })
       })
       pill.addEventListener('mouseleave', () => {
-        gsap.to(pill, { scale: 1, y: 0, rotation: 0, duration: 0.4, ease: 'power2.out' })
+        gsap.to(pill, { scale: 1, rotation: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' })
       })
     })
 

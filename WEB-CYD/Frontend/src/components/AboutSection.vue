@@ -112,6 +112,22 @@ onMounted(() => {
       scrollTrigger: { trigger: '.valores-grid', start: 'top 80%' },
     })
 
+    // Halo del Jaguar (Círculo expansivo con ScrollTrigger)
+    gsap.fromTo('.jaguar-halo', 
+      { scale: 0.2, opacity: 0 },
+      {
+        scale: 1.8,
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.about-jaguar',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        }
+      }
+    )
+
     // Timeline — animar línea y cards
     const timelineCards = document.querySelectorAll('.timeline-card')
     timelineCards.forEach((card, i) => {
@@ -265,10 +281,10 @@ onUnmounted(() => {
               }
             }"
           >
-            <!-- Halo -->
+            <!-- Halo animado con scroll -->
             <div
-              class="absolute inset-[-20px] rounded-full"
-              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 10%, transparent), transparent 70%);"
+              class="jaguar-halo absolute inset-[-40px] rounded-full will-change-transform"
+              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 15%, transparent), transparent 70%);"
             />
             <img
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/jaguar-saltando-1761938986560.png?width=8000&height=8000&resize=contain"
