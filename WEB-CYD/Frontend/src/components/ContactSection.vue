@@ -72,12 +72,12 @@ onMounted(() => {
       scrollTrigger: { trigger: '.contact-header', start: 'top 80%' },
     })
     gsap.from('.contact-info-card', {
-      opacity: 0, x: -40, duration: 0.7, stagger: 0.1, ease: 'power3.out',
-      scrollTrigger: { trigger: '.contact-info-list', start: 'top 80%' },
+      opacity: 0, y: 30, duration: 0.7, stagger: 0.1, ease: 'power3.out',
+      scrollTrigger: { trigger: '.contact-info-list', start: 'top 85%' },
     })
     gsap.from('.contact-form-wrap', {
-      opacity: 0, x: 40, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: '.contact-form-wrap', start: 'top 80%' },
+      opacity: 0, y: 30, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: '.contact-form-wrap', start: 'top 85%' },
     })
   }, sectionRef.value)
 })
@@ -135,7 +135,7 @@ onUnmounted(() => { ctx?.revert() })
                 :style="{ background: `color-mix(in srgb, ${info.accent} 12%, transparent)`, color: info.accent }"
                 v-html="info.svg"
               />
-              <div>
+              <div class="min-w-0 flex-1">
                 <div
                   class="text-xs font-semibold tracking-wider uppercase mb-1"
                   :style="{ color: info.accent }"
@@ -143,8 +143,8 @@ onUnmounted(() => { ctx?.revert() })
                   {{ info.label }}
                 </div>
                 <p
-                  class="text-sm leading-relaxed whitespace-pre-line"
-                  style="color: hsl(var(--foreground));"
+                  class="text-sm leading-relaxed whitespace-pre-line break-words"
+                  style="color: hsl(var(--foreground)); word-break: break-word;"
                 >
                   {{ info.value }}
                 </p>
