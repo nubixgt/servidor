@@ -1,12 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-// Views
-import Login from '../views/auth/Login.vue';
-import Dashboard from '../views/admin/Dashboard.vue';
-
-// Layouts
-import MainLayout from '../components/layout/MainLayout.vue';
-
 const routes = [
     {
         path: '/',
@@ -17,22 +10,34 @@ const routes = [
     {
         path: '/login',
         name: 'Login',
-        component: Login,
+        component: () => import('../views/auth/Login.vue'),
         meta: { requiresAuth: false }
     },
     {
         path: '/',
-        component: MainLayout,
+        component: () => import('../components/layout/MainLayout.vue'),
         meta: { requiresAuth: true },
         children: [
-            { path: 'dashboard', name: 'Dashboard', component: Dashboard },
+            { path: 'dashboard', name: 'Dashboard', component: () => import('../views/admin/Dashboard.vue') },
         ]
     }
 ];
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (to.hash) {
+            return {
+                el: to.hash,
+                behavior: 'smooth',
+            }
+        }
+        if (savedPosition) {
+            return savedPosition;
+        }
+        return { top: 0, behavior: 'smooth' };
+    }
 });
 
 // Basic Guard Placeholder
