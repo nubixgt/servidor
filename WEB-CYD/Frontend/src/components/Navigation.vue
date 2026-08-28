@@ -52,7 +52,7 @@ const handleLogoClick = () => {
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 40
-  const sections = ['inicio', 'tecnologia', 'niveles', 'actividades', 'nosotros', 'galeria', 'contacto']
+  const sections = ['inicio', 'niveles', 'tecnologia', 'actividades', 'nosotros', 'galeria', 'contacto']
   for (const id of sections.slice().reverse()) {
     const el = document.getElementById(id)
     if (el && window.scrollY >= el.offsetTop - 120) {
@@ -114,8 +114,8 @@ const scrollToSection = (id) => {
 
 const menuItems = [
   { id: 'inicio',      label: 'Inicio' },
-  { id: 'tecnologia',  label: 'Tecnología' },
   { id: 'niveles',     label: 'Niveles' },
+  { id: 'tecnologia',  label: 'Tecnología' },
   { id: 'actividades', label: 'Actividades' },
   { id: 'nosotros',    label: 'Nosotros' },
   { id: 'galeria',     label: 'Galería' },

@@ -26,6 +26,30 @@ const particles = Array.from({ length: 20 }).map((_, i) => ({
   tx: (Math.random() * 60 - 30) + 'px', // Desplazamiento X aleatorio
 }))
 
+// Mensajes de la mascota
+const showBubble = ref(false)
+const currentMessage = ref('')
+const bubbleTimer = ref(null)
+
+const messages = [
+  "¡Bienvenidos a la familia CYD! 🐾",
+  "¡Inscripciones abiertas 2026! ✨",
+  "¿Listo para el éxito? 🚀",
+  "¡Ciencia y Disciplina! 📚",
+  "¡Únete a nuestra manada! 🐆"
+]
+
+const handleJaguarInteract = () => {
+  if (showBubble.value) return;
+  currentMessage.value = messages[Math.floor(Math.random() * messages.length)]
+  showBubble.value = true
+  
+  if (bubbleTimer.value) clearTimeout(bubbleTimer.value)
+  bubbleTimer.value = setTimeout(() => {
+    showBubble.value = false
+  }, 4000)
+}
+
 const scrollToSection = (id) => {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
@@ -509,8 +533,33 @@ onUnmounted(() => {
 
           <!-- Jaguar -->
           <div
-            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container pointer-events-none"
+            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container cursor-pointer"
+            style="pointer-events: auto;"
+            @mouseenter="handleJaguarInteract"
+            @click="handleJaguarInteract"
           >
+            <!-- Burbuja de chat interactiva -->
+            <Transition
+              enter-active-class="transition-all duration-400 ease-out origin-bottom-right"
+              enter-from-class="opacity-0 scale-50 translate-y-4"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-300 ease-in origin-bottom-right"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-50 translate-y-4"
+            >
+              <div
+                v-if="showBubble"
+                class="absolute -top-6 sm:-top-8 -left-10 sm:-left-16 z-50 bg-white px-4 py-3 rounded-2xl rounded-br-sm shadow-2xl border border-green-50 max-w-[180px] sm:max-w-[220px]"
+                style="pointer-events: none;"
+              >
+                <p class="text-sm sm:text-base font-bold text-slate-800 leading-tight text-center" style="font-family: var(--font-display);">
+                  {{ currentMessage }}
+                </p>
+                <!-- Triángulo de la burbuja -->
+                <div class="absolute -bottom-2 right-6 w-4 h-4 bg-white transform rotate-45 border-b border-r border-green-50"></div>
+              </div>
+            </Transition>
+
             <img
               ref="jaguarRef"
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"

@@ -19,8 +19,8 @@ import WhatsAppButton from '@/components/WhatsAppButton.vue'
     <main>
       <HeroSection />
       <ServicesSection />
-      <CarrerasSection />
       <TecnologiaSection />
+      <CarrerasSection />
       <ActividadesSection />
       <AboutSection />
       <GaleriaSection />
