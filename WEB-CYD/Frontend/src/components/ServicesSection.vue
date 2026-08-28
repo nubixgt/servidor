@@ -137,7 +137,7 @@ onUnmounted(() => {
   <section
     id="niveles"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden cyd-section-bg"
+    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
   >
     <!-- Decoración de fondo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -154,7 +154,7 @@ onUnmounted(() => {
     <div class="relative cyd-container">
 
       <!-- Header -->
-      <div ref="headerRef" class="text-center mb-20 max-w-2xl mx-auto">
+      <div ref="headerRef" class="text-center mb-12 lg:mb-20 max-w-2xl mx-auto">
         <span class="cyd-label mb-5 inline-block">Niveles Educativos</span>
         <h2 class="cyd-title mb-5">
           Nuestros <span class="cyd-accent">Niveles</span>
@@ -166,7 +166,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Grid de niveles -->
-      <div class="niveles-grid grid md:grid-cols-2 gap-6 mb-20">
+      <div class="niveles-grid grid md:grid-cols-2 gap-4 sm:gap-6 mb-12 lg:mb-20">
         <article
           v-for="nivel in niveles"
           :key="nivel.key"
@@ -181,7 +181,7 @@ onUnmounted(() => {
             :style="{ background: nivel.accent }"
           />
 
-          <div class="p-8">
+          <div class="p-6 sm:p-8">
             <!-- Número + edad -->
             <div class="flex items-start justify-between mb-6">
               <span

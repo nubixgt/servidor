@@ -89,7 +89,7 @@ onUnmounted(() => { ctx?.revert() })
   <section
     id="contacto"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden cyd-section-bg"
+    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
   >
     <!-- Fondo decorativo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -102,7 +102,7 @@ onUnmounted(() => { ctx?.revert() })
     <div class="relative cyd-container">
 
       <!-- Header -->
-      <div class="contact-header text-center max-w-2xl mx-auto mb-20">
+      <div class="contact-header text-center max-w-2xl mx-auto mb-12 lg:mb-20">
         <span class="cyd-label mb-5 inline-block">Contáctanos</span>
         <h2 class="cyd-title mb-5">
           Únete a nuestra <span class="cyd-accent">Familia</span>
@@ -112,7 +112,7 @@ onUnmounted(() => { ctx?.revert() })
         </p>
       </div>
 
-      <div class="grid lg:grid-cols-2 gap-12 items-start">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-12 items-start">
 
         <!-- Info de contacto -->
         <div>
@@ -123,7 +123,7 @@ onUnmounted(() => { ctx?.revert() })
             Información de Contacto
           </h3>
 
-          <div class="contact-info-list space-y-4">
+          <div class="contact-info-list space-y-3 lg:space-y-4">
             <div
               v-for="(info, i) in contactInfo"
               :key="i"
@@ -173,7 +173,7 @@ onUnmounted(() => { ctx?.revert() })
         </div>
 
         <!-- Formulario -->
-        <div class="contact-form-wrap cyd-card p-8 lg:p-10">
+        <div class="contact-form-wrap cyd-card p-6 sm:p-8 lg:p-10">
           <h3
             class="text-2xl font-bold mb-7"
             style="font-family: var(--font-display); color: var(--cyd-dark); letter-spacing: -0.025em;"
@@ -215,7 +215,7 @@ onUnmounted(() => { ctx?.revert() })
               />
             </div>
 
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="grid sm:grid-cols-2 gap-3 lg:gap-4">
               <div>
                 <label class="block text-xs font-semibold mb-2 uppercase tracking-wider" style="color: var(--cyd-forest);">
                   Email *

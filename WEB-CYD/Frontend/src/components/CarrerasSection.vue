@@ -147,7 +147,7 @@ onUnmounted(() => { ctx?.revert() })
   <section
     id="carreras"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden cyd-section-bg"
+    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
   >
     <!-- Fondo decorativo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -173,7 +173,7 @@ onUnmounted(() => { ctx?.revert() })
       </div>
 
       <!-- Stats rápidos -->
-      <div class="carreras-stats flex flex-wrap justify-center gap-3 mb-20">
+      <div class="carreras-stats flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 lg:mb-20">
         <span class="carreras-stat cyd-pill">19 Carreras</span>
         <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, var(--cyd-gold) 30%, transparent); background: color-mix(in srgb, var(--cyd-gold) 8%, transparent); color: #9a7200;">3 Modalidades</span>
         <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, #3a56a8 30%, transparent); background: color-mix(in srgb, #3a56a8 8%, transparent); color: #3a56a8;">Certificación Oficial</span>
@@ -181,7 +181,7 @@ onUnmounted(() => { ctx?.revert() })
       </div>
 
       <!-- Grupos de carreras -->
-      <div class="space-y-10 mb-20">
+      <div class="space-y-6 lg:space-y-10 mb-12 lg:mb-20">
         <div
           v-for="grupo in carreras"
           :key="grupo.key"
@@ -223,7 +223,7 @@ onUnmounted(() => { ctx?.revert() })
             </div>
 
             <!-- Grid de programas -->
-            <div class="grid sm:grid-cols-2 gap-3">
+            <div class="grid sm:grid-cols-2 gap-2 sm:gap-3">
               <div
                 v-for="(prog, idx) in grupo.programas"
                 :key="idx"

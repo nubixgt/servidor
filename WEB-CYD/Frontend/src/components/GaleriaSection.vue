@@ -121,7 +121,7 @@ onUnmounted(() => { ctx?.revert() })
   <section
     id="galeria"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden cyd-section-bg"
+    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
   >
     <!-- Fondo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -135,7 +135,7 @@ onUnmounted(() => { ctx?.revert() })
     <div class="relative cyd-container">
 
       <!-- Header -->
-      <div class="gal-header text-center max-w-2xl mx-auto mb-20">
+      <div class="gal-header text-center max-w-2xl mx-auto mb-12 lg:mb-20">
         <span class="cyd-label mb-5 inline-block">Momentos CYD</span>
         <h2 class="cyd-title mb-5">
           Nuestra <span class="cyd-accent">Galería</span>

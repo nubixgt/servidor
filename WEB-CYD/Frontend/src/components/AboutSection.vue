@@ -181,7 +181,7 @@ onUnmounted(() => {
   <section
     id="nosotros"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden"
+    class="py-16 lg:py-32 relative overflow-hidden"
   >
     <!-- Fondo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -195,7 +195,7 @@ onUnmounted(() => {
     <div class="relative cyd-container">
 
       <!-- Header -->
-      <div class="about-header text-center max-w-2xl mx-auto mb-24">
+      <div class="about-header text-center max-w-2xl mx-auto mb-14 lg:mb-24">
         <span class="cyd-label mb-5 inline-block">Nuestra Historia</span>
         <h2 class="cyd-title mb-5">
           Sobre <span class="cyd-accent">Nosotros</span>
@@ -206,7 +206,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Misión + Jaguar -->
-      <div class="grid lg:grid-cols-2 gap-16 items-center mb-28">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-16 lg:mb-28">
 
         <div class="about-mission-text space-y-6">
           <h3
@@ -281,8 +281,8 @@ onUnmounted(() => {
       </div>
 
       <!-- Valores -->
-      <div class="mb-28">
-        <div class="text-center mb-14">
+      <div class="mb-16 lg:mb-28">
+        <div class="text-center mb-10 lg:mb-14">
           <span class="cyd-label mb-4 inline-block">Nuestros Pilares</span>
           <h3
             class="text-3xl font-bold"
@@ -328,8 +328,8 @@ onUnmounted(() => {
       </div>
 
       <!-- Timeline -->
-      <div class="timeline-section mb-28">
-        <div class="text-center mb-16">
+      <div class="timeline-section mb-16 lg:mb-28">
+        <div class="text-center mb-10 lg:mb-16">
           <span class="cyd-label mb-4 inline-block">Cronología</span>
           <h3
             class="text-3xl font-bold"
@@ -351,7 +351,7 @@ onUnmounted(() => {
             aria-hidden="true"
           />
 
-          <div class="space-y-10">
+          <div class="space-y-6 lg:space-y-10">
             <div
               v-for="(item, i) in timeline"
               :key="i"

@@ -177,7 +177,7 @@ onUnmounted(() => {
   <section
     id="tecnologia"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden"
+    class="py-16 lg:py-32 relative overflow-hidden"
     style="background: linear-gradient(180deg, hsl(var(--background)) 0%, color-mix(in srgb, #3a56a8 4%, transparent) 50%, hsl(var(--background)) 100%);"
   >
     <!-- Fondo -->
@@ -192,7 +192,7 @@ onUnmounted(() => {
     <div class="relative cyd-container">
 
       <!-- ── Header ── -->
-      <div class="tec-header text-center max-w-2xl mx-auto mb-24">
+      <div class="tec-header text-center max-w-2xl mx-auto mb-12 lg:mb-24">
         <span class="cyd-label mb-5 inline-block">Innovación Educativa</span>
         <h2 class="cyd-title mb-5">
           Tecnología de <span class="cyd-accent">Vanguardia</span>
@@ -204,8 +204,8 @@ onUnmounted(() => {
       </div>
 
       <!-- ── Laboratorio MAC ── -->
-      <div class="tec-lab-section mb-28">
-        <div class="tec-lab-wrap grid lg:grid-cols-3 gap-6">
+      <div class="tec-lab-section mb-16 lg:mb-28">
+        <div class="tec-lab-wrap grid lg:grid-cols-3 gap-5 lg:gap-6">
 
           <!-- Carousel -->
           <div class="tec-carousel-wrap lg:col-span-2 space-y-4">
@@ -384,7 +384,7 @@ onUnmounted(() => {
       </div>
 
       <!-- ── APP CYD ── -->
-      <div class="tec-app-section mb-28 rounded-2xl overflow-hidden relative"
+      <div class="tec-app-section mb-16 lg:mb-28 rounded-2xl overflow-hidden relative"
         style="background: linear-gradient(135deg, #2c1a6e 0%, #4a2da8 40%, #7c3fa8 100%);"
       >
         <div class="absolute inset-0 cyd-dots opacity-[0.06]" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);" aria-hidden="true" />
@@ -506,8 +506,8 @@ onUnmounted(() => {
       </div>
 
       <!-- ── Laboratorios especializados ── -->
-      <div class="mb-20">
-        <div class="text-center mb-14">
+      <div class="mb-12 lg:mb-20">
+        <div class="text-center mb-10 lg:mb-14">
           <span class="cyd-label mb-4 inline-block">Infraestructura</span>
           <h3
             class="text-3xl font-bold"
@@ -517,7 +517,7 @@ onUnmounted(() => {
           </h3>
         </div>
 
-        <div class="tec-labs-grid grid lg:grid-cols-2 gap-6">
+        <div class="tec-labs-grid grid lg:grid-cols-2 gap-4 lg:gap-6">
           <div
             v-for="lab in laboratorios"
             :key="lab.title"

@@ -174,7 +174,7 @@ onUnmounted(() => { ctx?.revert() })
   <section
     id="actividades"
     ref="sectionRef"
-    class="py-32 relative overflow-hidden cyd-section-bg"
+    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
   >
     <!-- Fondo decorativo -->
     <div class="absolute inset-0" aria-hidden="true">
@@ -188,7 +188,7 @@ onUnmounted(() => { ctx?.revert() })
     <div class="relative cyd-container">
 
       <!-- Header -->
-      <div class="act-header text-center max-w-2xl mx-auto mb-20">
+      <div class="act-header text-center max-w-2xl mx-auto mb-12 lg:mb-20">
         <span class="cyd-label mb-5 inline-block">Vida Escolar</span>
         <h2 class="cyd-title mb-5">
           Actividades <span class="cyd-accent">Extracurriculares</span>
@@ -199,7 +199,7 @@ onUnmounted(() => { ctx?.revert() })
       </div>
 
       <!-- Grid de actividades -->
-      <div class="act-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
+      <div class="act-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-12 lg:mb-20">
         <div
           v-for="(act, i) in actividades"
           :key="act.key"
@@ -252,7 +252,7 @@ onUnmounted(() => { ctx?.revert() })
       </div>
 
       <!-- CTA strip horizontal premium -->
-      <div class="act-cta rounded-2xl p-8 lg:p-10 border will-change-transform" style="background: hsl(var(--background)); border-color: color-mix(in srgb, var(--cyd-green) 20%, transparent);">
+      <div class="act-cta rounded-2xl p-6 sm:p-8 lg:p-10 border will-change-transform" style="background: hsl(var(--background)); border-color: color-mix(in srgb, var(--cyd-green) 20%, transparent);">
         <div class="grid md:grid-cols-3 gap-6 items-center">
           <div class="md:col-span-2">
             <div class="text-xs font-semibold tracking-[0.18em] uppercase mb-2" style="color: var(--cyd-green);">
