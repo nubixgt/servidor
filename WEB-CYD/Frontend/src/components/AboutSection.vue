@@ -91,15 +91,22 @@ onMounted(() => {
       scrollTrigger: { trigger: '.about-mission-text', start: 'top 80%' },
     })
 
-    // Jaguar saltando
-    gsap.from('.about-jaguar', {
-      opacity: 0,
-      x: 50,
-      scale: 0.9,
-      duration: 1,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: '.about-jaguar', start: 'top 80%' },
+    // Jaguar - Animación combinada de Parado a Saltando
+    const tlJaguar = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.about-jaguar',
+        start: 'top 85%',
+        end: 'top 30%',
+        scrub: 1, // Suavizado para que se vea como animación
+      }
     })
+
+    tlJaguar.to('.jaguar-stand', { opacity: 0, scale: 0.8, y: 20, duration: 1, ease: 'power1.inOut' }, 0)
+    tlJaguar.fromTo('.jaguar-jump', 
+      { opacity: 0, y: 40, scale: 0.9, rotation: -5 }, 
+      { opacity: 1, y: -50, scale: 1.15, rotation: 0, duration: 1, ease: 'power1.inOut' }, 
+      0
+    )
 
     // Valores cards — stagger
     gsap.from('.valor-card', {
@@ -253,45 +260,51 @@ onUnmounted(() => {
 
         <div class="about-jaguar flex justify-center">
           <div
-            class="relative w-72 h-72 lg:w-[380px] lg:h-[380px] jaguar-container"
+            class="relative w-72 h-72 lg:w-[380px] lg:h-[380px] jaguar-container perspective-1000"
             @mousemove="(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const x = e.clientX - rect.left - rect.width / 2;
               const y = e.clientY - rect.top - rect.height / 2;
-              const target = e.currentTarget.querySelector('img');
-              if(target) {
-                gsap.to(target, {
-                  rotateX: (-y / rect.height) * 25,
-                  rotateY: (x / rect.width) * 25,
-                  x: (x / rect.width) * 15,
-                  y: (y / rect.height) * 15,
-                  transformPerspective: 1000,
-                  duration: 0.6,
-                  ease: 'power2.out'
-                });
-              }
+              gsap.to('.jaguar-3d-wrapper', {
+                rotateX: (-y / rect.height) * 20,
+                rotateY: (x / rect.width) * 20,
+                x: (x / rect.width) * 10,
+                y: (y / rect.height) * 10,
+                duration: 0.6,
+                ease: 'power2.out'
+              });
             }"
-            @mouseleave="(e) => {
-              const target = e.currentTarget.querySelector('img');
-              if(target) {
-                gsap.to(target, {
-                  rotateX: 0, rotateY: 0, x: 0, y: 0,
-                  duration: 1, ease: 'elastic.out(1, 0.4)'
-                });
-              }
+            @mouseleave="() => {
+              gsap.to('.jaguar-3d-wrapper', {
+                rotateX: 0, rotateY: 0, x: 0, y: 0,
+                duration: 1, ease: 'elastic.out(1, 0.4)'
+              });
             }"
           >
-            <!-- Halo animado con scroll -->
+            <!-- Halo animado con scroll (más visible) -->
             <div
-              class="jaguar-halo absolute inset-[-40px] rounded-full will-change-transform"
-              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 15%, transparent), transparent 70%);"
+              class="jaguar-halo absolute inset-[-60px] rounded-full will-change-transform"
+              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 45%, transparent), transparent 70%);"
             />
-            <img
-              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/jaguar-saltando-1761938986560.png?width=8000&height=8000&resize=contain"
-              alt="Jaguar saltando — Mascota del Colegio CYD"
-              class="relative z-10 w-full h-full object-contain drop-shadow-2xl animate-float will-change-transform cursor-pointer"
-              style="filter: drop-shadow(0 20px 50px color-mix(in srgb, var(--cyd-dark) 25%, transparent));"
-            />
+            
+            <!-- Wrapper 3D para evitar conflicto con ScrollTrigger -->
+            <div class="jaguar-3d-wrapper absolute inset-0 w-full h-full will-change-transform" style="transform-style: preserve-3d;">
+              <!-- Jaguar Parado -->
+              <img
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"
+                alt="Jaguar Parado"
+                class="jaguar-stand absolute inset-0 z-10 w-full h-full object-contain drop-shadow-2xl will-change-transform"
+                style="filter: drop-shadow(0 20px 50px color-mix(in srgb, var(--cyd-dark) 30%, transparent));"
+              />
+              
+              <!-- Jaguar Saltando -->
+              <img
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/jaguar-saltando-1761938986560.png?width=8000&height=8000&resize=contain"
+                alt="Jaguar Saltando"
+                class="jaguar-jump absolute inset-0 z-20 w-full h-full object-contain drop-shadow-2xl will-change-transform opacity-0"
+                style="filter: drop-shadow(0 20px 50px color-mix(in srgb, var(--cyd-dark) 30%, transparent));"
+              />
+            </div>
           </div>
         </div>
       </div>
