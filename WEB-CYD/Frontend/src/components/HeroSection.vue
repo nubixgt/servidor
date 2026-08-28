@@ -130,7 +130,6 @@ onMounted(() => {
       // Texto - parallax rápido
       gsap.to(titleRef.value, {
         yPercent: -40,
-        opacity: 0,
         ease: 'none',
         scrollTrigger: {
           trigger: heroRef.value,
@@ -142,7 +141,6 @@ onMounted(() => {
 
       gsap.to(subtitleRef.value, {
         yPercent: -30,
-        opacity: 0,
         ease: 'none',
         scrollTrigger: {
           trigger: heroRef.value,
@@ -154,7 +152,6 @@ onMounted(() => {
 
       gsap.to(statsRef.value, {
         yPercent: -20,
-        opacity: 0,
         ease: 'none',
         scrollTrigger: {
           trigger: heroRef.value,
@@ -166,7 +163,6 @@ onMounted(() => {
 
       gsap.to(ctaRef.value, {
         yPercent: -15,
-        opacity: 0,
         ease: 'none',
         scrollTrigger: {
           trigger: heroRef.value,

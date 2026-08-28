@@ -8,38 +8,8 @@ let fbCtx = null;
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    const initFB = () => {
-      if (window.FB) {
-        setTimeout(() => {
-          const fbElement = document.querySelector('.fb-page')
-          if (fbElement && fbElement.parentElement) {
-            window.FB.XFBML.parse(fbElement.parentElement)
-          }
-        }, 500)
-      }
-    }
-
-    if (window.FB) {
-      initFB()
-    } else {
-      window.fbAsyncInit = function() {
-        window.FB.init({
-          xfbml            : true,
-          version          : 'v18.0'
-        });
-        initFB()
-      };
-      
-      if (!document.getElementById('facebook-jssdk')) {
-        const script = document.createElement('script')
-        script.id = 'facebook-jssdk'
-        script.src = 'https://connect.facebook.net/es_LA/sdk.js'
-        script.async = true
-        script.defer = true
-        script.crossOrigin = 'anonymous'
-        document.body.appendChild(script)
-      }
-    }
+    // No necesitamos el SDK de JS de Facebook porque usaremos el iframe
+    // para evitar los errores masivos en la consola.
 
     // GSAP Animations
     fbCtx = gsap.context(() => {
@@ -126,20 +96,16 @@ onUnmounted(() => {
 
               <!-- Facebook Page Plugin -->
               <div class="relative w-full overflow-hidden">
-                <div
-                  class="fb-page w-full"
-                  data-href="https://www.facebook.com/CienciayDesarrollo"
-                  data-tabs="timeline"
-                  data-width="500"
-                  data-height="700"
-                  data-small-header="false"
-                  data-adapt-container-width="true"
-                  data-hide-cover="false"
-                  data-show-facepile="true">
-                  <blockquote cite="https://www.facebook.com/CienciayDesarrollo" class="fb-xfbml-parse-ignore">
-                    <a href="https://www.facebook.com/CienciayDesarrollo">Ciencia y Desarrollo</a>
-                  </blockquote>
-                </div>
+                <iframe
+                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FCienciayDesarrollo&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+                  width="100%"
+                  height="700"
+                  style="border:none;overflow:hidden;min-width:300px;"
+                  scrolling="no"
+                  frameborder="0"
+                  allowfullscreen="true"
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                </iframe>
               </div>
             </div>
           </Card>
