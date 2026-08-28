@@ -82,7 +82,7 @@ onUnmounted(() => {
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
 
         <!-- Logo + Descripción -->
-        <div class="space-y-5">
+        <div class="footer-col space-y-5">
           <div class="flex items-center gap-3">
             <div class="relative w-12 h-12 shrink-0">
               <div
@@ -198,7 +198,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Enlaces Rápidos -->
-        <div>
+        <div class="footer-col">
           <h4
             class="text-sm font-semibold mb-5 uppercase tracking-[0.12em]"
             style="color: var(--cyd-lime);"
@@ -225,7 +225,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Niveles -->
-        <div>
+        <div class="footer-col">
           <h4
             class="text-sm font-semibold mb-5 uppercase tracking-[0.12em]"
             style="color: var(--cyd-lime);"
@@ -247,7 +247,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Contacto -->
-        <div>
+        <div class="footer-col">
           <h4
             class="text-sm font-semibold mb-5 uppercase tracking-[0.12em]"
             style="color: var(--cyd-lime);"
