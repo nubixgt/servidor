@@ -1,1 +1,0 @@
-import{a as s}from"./index-CyWoPQhl.js";const n={async getInspecciones(){return(await s.get("/visar/inspecciones")).data},async getLicencias(){return(await s.get("/visar/licencias")).data}};export{n as V};

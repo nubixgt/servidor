@@ -195,34 +195,21 @@ const router = createRouter({
 // ─── Navigation Guard ──────────────────────────────────────────────────────
 // Valida autenticación Y expiración del token en cada cambio de ruta
 router.beforeEach((to, from, next) => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    // ⚠️ MODO DESARROLLO: Login deshabilitado, acceso automático como Admin
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('token', 'dev.bypass.token');
+    localStorage.setItem('user', JSON.stringify({
+        id: 1,
+        nombre: 'Administrador (Dev)',
+        email: 'admin@maga.gob.gt',
+        rol: 'admin'
+    }));
 
-    if (!to.meta.requiresAuth) {
-        // Ruta pública: si ya está autenticado con token válido, redirigir al dashboard
-        if (isAuthenticated && to.path === '/login') {
-            const token = localStorage.getItem('token');
-            if (token && !isTokenExpired(token)) {
-                return next('/admin/dashboard');
-            }
-        }
-        return next();
+    if (to.path === '/login') {
+        return next('/admin/dashboard');
     }
-
-    // Ruta protegida: verificar autenticación y expiración
-    if (!isAuthenticated) {
-        return next('/login');
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token || isTokenExpired(token)) {
-        // Token expirado → limpiar y redirigir
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('isAuthenticated');
-        return next({ path: '/login', query: { expired: '1' } });
-    }
-
-    next();
+    
+    return next();
 });
 
 // Helper: retorna true si el token JWT ya venció

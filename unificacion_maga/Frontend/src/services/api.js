@@ -41,9 +41,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     response => response,
     error => {
-        if (error.response?.status === 401) {
-            clearSession();
-        }
+        // ⚠️ MODO DESARROLLO: Redirección 401 deshabilitada temporalmente
+        // if (error.response?.status === 401) {
+        //     clearSession();
+        // }
         return Promise.reject(error);
     }
 );
