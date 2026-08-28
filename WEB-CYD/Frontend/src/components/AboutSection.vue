@@ -284,7 +284,7 @@ onUnmounted(() => {
             <!-- Círculo bien definido animado con scroll -->
             <div
               class="jaguar-halo absolute inset-[-30px] rounded-full will-change-transform"
-              style="background: color-mix(in srgb, var(--cyd-green) 15%, transparent); border: 2px solid color-mix(in srgb, var(--cyd-green) 30%, transparent);"
+              style="background: color-mix(in srgb, var(--cyd-green) 35%, transparent); border: 3px solid color-mix(in srgb, var(--cyd-green) 70%, transparent);"
             />
             
             <!-- Wrapper 3D para evitar conflicto con ScrollTrigger -->
