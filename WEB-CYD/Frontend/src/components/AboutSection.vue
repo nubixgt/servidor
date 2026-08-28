@@ -281,10 +281,27 @@ onUnmounted(() => {
               });
             }"
           >
-            <!-- Círculo bien definido animado con scroll -->
+            <!-- Círculo estético Premium (Glassmorphism + Anillo Científico) -->
             <div
-              class="jaguar-halo absolute inset-[-30px] rounded-full will-change-transform"
-              style="background: color-mix(in srgb, var(--cyd-green) 35%, transparent); border: 3px solid color-mix(in srgb, var(--cyd-green) 70%, transparent);"
+              class="jaguar-halo absolute inset-[-30px] rounded-full will-change-transform flex items-center justify-center"
+              style="
+                background: linear-gradient(135deg, color-mix(in srgb, var(--cyd-green) 25%, transparent) 0%, color-mix(in srgb, var(--cyd-green) 5%, transparent) 100%);
+                backdrop-filter: blur(12px);
+                border: 1.5px solid color-mix(in srgb, var(--cyd-green) 40%, transparent);
+                box-shadow: inset 0 0 40px color-mix(in srgb, var(--cyd-green) 15%, transparent), 0 20px 50px rgba(26,92,42,0.1);
+              "
+            >
+              <!-- Toque de luz interior -->
+              <div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--cyd-gold) 15%, transparent), transparent 60%);"></div>
+            </div>
+            
+            <!-- Anillo punteado decorativo que rota suavemente (Estilo técnico/ciencia) -->
+            <div
+              class="jaguar-halo absolute inset-[-45px] rounded-full will-change-transform pointer-events-none"
+              style="
+                border: 1px dashed color-mix(in srgb, var(--cyd-green) 40%, transparent);
+                animation: cyd-spin-slow 30s linear infinite;
+              "
             />
             
             <!-- Wrapper 3D para evitar conflicto con ScrollTrigger -->
