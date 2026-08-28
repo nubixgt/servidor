@@ -281,10 +281,10 @@ onUnmounted(() => {
               });
             }"
           >
-            <!-- Halo animado con scroll (más visible) -->
+            <!-- Círculo bien definido animado con scroll -->
             <div
-              class="jaguar-halo absolute inset-[-60px] rounded-full will-change-transform"
-              style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 45%, transparent), transparent 70%);"
+              class="jaguar-halo absolute inset-[-30px] rounded-full will-change-transform"
+              style="background: color-mix(in srgb, var(--cyd-green) 15%, transparent); border: 2px solid color-mix(in srgb, var(--cyd-green) 30%, transparent);"
             />
             
             <!-- Wrapper 3D para evitar conflicto con ScrollTrigger -->
