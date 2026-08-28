@@ -423,11 +423,50 @@ onUnmounted(() => {
         </div>
 
         <!-- Columna derecha — Jaguar + Decoración -->
-        <div class="relative flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[640px] mt-6 lg:mt-0">
+        <div 
+          class="relative flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[640px] mt-6 lg:mt-0"
+          @mousemove="(e) => {
+            if(!jaguarRef) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Jaguar 3D Parallax
+            gsap.to(jaguarRef, {
+              rotateX: (-y / rect.height) * 30,
+              rotateY: (x / rect.width) * 30,
+              x: (x / rect.width) * 30,
+              y: (y / rect.height) * 30,
+              transformPerspective: 1000,
+              duration: 0.6,
+              ease: 'power2.out'
+            });
+
+            // Particles Parallax (Opposite direction + scale)
+            gsap.to('.particles-wrapper', {
+              x: (-x / rect.width) * 60,
+              y: (-y / rect.height) * 60,
+              scale: 1 + (Math.abs(x) + Math.abs(y)) / 3000, // Slight scale up based on distance
+              duration: 0.8,
+              ease: 'power2.out'
+            });
+          }"
+          @mouseleave="() => {
+            if(!jaguarRef) return;
+            gsap.to(jaguarRef, {
+              rotateX: 0, rotateY: 0, x: 0, y: 0,
+              duration: 1, ease: 'elastic.out(1, 0.4)'
+            });
+            gsap.to('.particles-wrapper', {
+              x: 0, y: 0, scale: 1,
+              duration: 1, ease: 'elastic.out(1, 0.4)'
+            });
+          }"
+        >
 
           <!-- Premium Glowing Aura detrás del Jaguar -->
           <div
-            class="absolute w-[280px] h-[280px] lg:w-[550px] lg:h-[550px] rounded-full"
+            class="absolute w-[280px] h-[280px] lg:w-[550px] lg:h-[550px] rounded-full pointer-events-none"
             style="
               background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 15%, transparent) 0%, transparent 70%);
               filter: blur(40px);
@@ -438,7 +477,7 @@ onUnmounted(() => {
 
           <!-- Círculo interior elegante -->
           <div
-            class="absolute w-[220px] h-[220px] lg:w-[420px] lg:h-[420px] rounded-full"
+            class="absolute w-[220px] h-[220px] lg:w-[420px] lg:h-[420px] rounded-full pointer-events-none"
             style="
               background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 12%, transparent) 0%, transparent 65%);
               filter: blur(30px);
@@ -449,7 +488,7 @@ onUnmounted(() => {
 
           <!-- Partículas Mágicas Flotantes -->
           <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            <div class="relative w-[260px] h-[260px] lg:w-[420px] lg:h-[420px]">
+            <div class="particles-wrapper relative w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] will-change-transform">
               <div
                 v-for="p in particles"
                 :key="p.id"
@@ -470,35 +509,13 @@ onUnmounted(() => {
 
           <!-- Jaguar -->
           <div
-            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container"
-            @mousemove="(e) => {
-              if(!jaguarRef) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = e.clientX - rect.left - rect.width / 2;
-              const y = e.clientY - rect.top - rect.height / 2;
-              gsap.to(jaguarRef, {
-                rotateX: (-y / rect.height) * 30,
-                rotateY: (x / rect.width) * 30,
-                x: (x / rect.width) * 20,
-                y: (y / rect.height) * 20,
-                transformPerspective: 1000,
-                duration: 0.6,
-                ease: 'power2.out'
-              });
-            }"
-            @mouseleave="() => {
-              if(!jaguarRef) return;
-              gsap.to(jaguarRef, {
-                rotateX: 0, rotateY: 0, x: 0, y: 0,
-                duration: 1, ease: 'elastic.out(1, 0.4)'
-              });
-            }"
+            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container pointer-events-none"
           >
             <img
               ref="jaguarRef"
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"
               alt="Jaguar — Mascota Colegio CYD"
-              class="w-full h-full object-contain cursor-pointer will-change-transform"
+              class="w-full h-full object-contain will-change-transform"
               style="filter: drop-shadow(0 20px 60px color-mix(in srgb, var(--cyd-dark) 30%, transparent));"
             />
           </div>
@@ -586,8 +603,9 @@ onUnmounted(() => {
 
 @keyframes cyd-particle-float {
   0% { transform: translate(0, 40px) scale(0.1); opacity: 0; }
-  20% { opacity: 0.8; }
-  80% { opacity: 0.6; }
-  100% { transform: translate(var(--tx), -100px) scale(1.5); opacity: 0; }
+  25% { opacity: 0.8; transform: translate(calc(var(--tx) * 0.3), 10px) scale(1.6); }
+  50% { opacity: 1; transform: translate(calc(var(--tx) * 0.6), -20px) scale(0.5); }
+  75% { opacity: 0.8; transform: translate(calc(var(--tx) * 0.9), -50px) scale(2); }
+  100% { transform: translate(var(--tx), -100px) scale(0.1); opacity: 0; }
 }
 </style>
