@@ -235,7 +235,7 @@ onUnmounted(() => {
   <section
     id="inicio"
     ref="heroRef"
-    class="relative min-h-[100vh] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pb-20"
+    class="relative min-h-[100svh] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pb-10 lg:pb-20"
     style="padding-top: 72px;"
   >
     <!-- Fondo con parallax -->
@@ -277,11 +277,11 @@ onUnmounted(() => {
     </div>
 
     <!-- Contenido principal -->
-    <div class="relative z-10 cyd-container py-10 lg:py-16 w-full">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <div class="relative z-10 cyd-container py-6 lg:py-16 w-full">
+      <div class="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center">
 
         <!-- Columna izquierda -->
-        <div class="space-y-8">
+        <div class="space-y-5 lg:space-y-8">
 
           <!-- Label -->
           <div class="hero-label">
@@ -410,11 +410,11 @@ onUnmounted(() => {
         </div>
 
         <!-- Columna derecha — Jaguar + Decoración -->
-        <div class="relative flex items-center justify-center min-h-[520px] lg:min-h-[640px]">
+        <div class="relative flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[640px] mt-6 lg:mt-0">
 
           <!-- Premium Glowing Aura detrás del Jaguar -->
           <div
-            class="absolute w-[450px] h-[450px] lg:w-[550px] lg:h-[550px] rounded-full"
+            class="absolute w-[280px] h-[280px] lg:w-[550px] lg:h-[550px] rounded-full"
             style="
               background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 15%, transparent) 0%, transparent 70%);
               filter: blur(40px);
@@ -425,7 +425,7 @@ onUnmounted(() => {
 
           <!-- Círculo interior elegante -->
           <div
-            class="absolute w-[340px] h-[340px] lg:w-[420px] lg:h-[420px] rounded-full"
+            class="absolute w-[220px] h-[220px] lg:w-[420px] lg:h-[420px] rounded-full"
             style="
               background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 12%, transparent) 0%, transparent 65%);
               filter: blur(30px);
@@ -436,7 +436,7 @@ onUnmounted(() => {
 
           <!-- Jaguar -->
           <div
-            class="relative z-10 w-[300px] h-[300px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container"
+            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container"
             @mousemove="(e) => {
               if(!jaguarRef) return;
               const rect = e.currentTarget.getBoundingClientRect();
@@ -471,7 +471,7 @@ onUnmounted(() => {
 
           <!-- Badge flotante — Excelencia -->
           <div
-            class="absolute top-12 right-0 lg:-right-4 cyd-card px-4 py-3 flex items-center gap-3"
+            class="absolute top-4 sm:top-12 right-0 lg:-right-4 cyd-card px-3 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3"
             style="animation: cyd-float 5s ease-in-out infinite; animation-delay: -1s;"
           >
             <div
@@ -491,7 +491,7 @@ onUnmounted(() => {
 
           <!-- Badge flotante — Carreras -->
           <div
-            class="absolute bottom-20 left-0 lg:-left-4 cyd-card px-4 py-3 flex items-center gap-3"
+            class="absolute bottom-4 sm:bottom-20 left-0 lg:-left-4 cyd-card px-3 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3"
             style="animation: cyd-float 5.5s ease-in-out infinite; animation-delay: -2.5s;"
           >
             <div
