@@ -96,7 +96,13 @@ async function manejarSinRegistrar(telefono, jid, responder) {
     }
 
     if (!usuario) {
-        await responder(menu.textoNoRegistrado());
+        let tecnico = null;
+        try {
+            tecnico = await backend.consultarDirectorioTecnico(telefono);
+        } catch (err) {
+            console.error('Error consultando directorio de técnicos:', err);
+        }
+        await responder(tecnico ? menu.textoNoRegistradoTecnico(tecnico.nombre) : menu.textoNoRegistrado());
         clearState(jid);
         return;
     }

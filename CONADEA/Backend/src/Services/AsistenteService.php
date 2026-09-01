@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Repositories\AsistenteRepository;
 use App\Repositories\UsuarioRepository;
 use App\Repositories\HorarioRepository;
+use App\Repositories\DirectorioTecnicoRepository;
 use App\Entities\Usuario;
 
 class AsistenteService
@@ -31,12 +32,14 @@ class AsistenteService
     private $asistenteRepository;
     private $usuarioRepository;
     private $horarioRepository;
+    private $directorioTecnicoRepository;
 
     public function __construct()
     {
         $this->asistenteRepository = new AsistenteRepository();
         $this->usuarioRepository = new UsuarioRepository();
         $this->horarioRepository = new HorarioRepository();
+        $this->directorioTecnicoRepository = new DirectorioTecnicoRepository();
     }
 
     /**
@@ -44,7 +47,7 @@ class AsistenteService
      * los usuarios pudieron registrarse en la app con el número local de
      * 8 dígitos. Se prueba en orden: tal cual, sin "502" y con "502".
      */
-    public function resolverUsuarioPorTelefono(string $telefonoCrudo): ?Usuario
+    private function candidatosTelefono(string $telefonoCrudo): array
     {
         $digitos = preg_replace('/\D/', '', $telefonoCrudo) ?? '';
         $candidatos = [$digitos];
@@ -56,10 +59,32 @@ class AsistenteService
             $candidatos[] = '502' . $digitos;
         }
 
-        foreach (array_unique($candidatos) as $candidato) {
+        return array_unique($candidatos);
+    }
+
+    public function resolverUsuarioPorTelefono(string $telefonoCrudo): ?Usuario
+    {
+        foreach ($this->candidatosTelefono($telefonoCrudo) as $candidato) {
             $usuario = $this->usuarioRepository->findByTelefono($candidato);
             if ($usuario !== null) {
                 return $usuario;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Para números que aún no tienen cuenta en `usuarios`: si el número está
+     * en el directorio de técnicos, devuelve ['nombre' => ...] para saludarlo
+     * por su nombre. null si no está en el directorio.
+     */
+    public function buscarTecnicoEnDirectorio(string $telefonoCrudo): ?array
+    {
+        foreach ($this->candidatosTelefono($telefonoCrudo) as $candidato) {
+            $tecnico = $this->directorioTecnicoRepository->findByTelefono($candidato);
+            if ($tecnico !== null) {
+                return $tecnico;
             }
         }
 

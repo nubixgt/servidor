@@ -37,6 +37,16 @@ function textoNoRegistrado() {
     );
 }
 
+// Igual que textoNoRegistrado(), pero para números que están en el directorio
+// de técnicos (Database/012_directorio_tecnicos.sql) y aún no tienen cuenta.
+function textoNoRegistradoTecnico(nombre) {
+    return (
+        `🌱 Hola ${primerNombre(nombre)} de CONADEA. Te saluda AgroIA. No encontré algún usuario registrado con este número.\n\n` +
+        `Crea tu cuenta o inicia sesión aquí, usando este mismo número de WhatsApp: ${urlLogin()}\n\n` +
+        'Cuando termines, escríbeme de nuevo por aquí para configurar tu horario de estudio.'
+    );
+}
+
 function textoBienvenida(nombreCompleto) {
     return `Hola ${primerNombre(nombreCompleto)}. Soy tu AgroIA 🌱`;
 }
@@ -155,6 +165,7 @@ function textoErrorGenerico() {
 module.exports = {
     primerNombre,
     textoNoRegistrado,
+    textoNoRegistradoTecnico,
     textoBienvenida,
     textoListaCursos,
     textoPreguntaMinutos,

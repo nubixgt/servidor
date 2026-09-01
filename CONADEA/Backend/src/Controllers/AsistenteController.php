@@ -31,6 +31,25 @@ class AsistenteController extends Controller
         $this->json(['status' => 'success', 'data' => $service->usuarioComoArray($usuario)]);
     }
 
+    // Consultado por el bot sólo cuando /asistente/usuario devolvió 404, para
+    // decidir si saluda al técnico por su nombre (ver Database/012_directorio_tecnicos.sql).
+    #[Route('/asistente/directorio', 'GET')]
+    public function resolverDirectorio()
+    {
+        ApiKeyGuard::check();
+        $telefono = $_GET['telefono'] ?? '';
+        if ($telefono === '') {
+            $this->json(['status' => 'error', 'message' => 'telefono es requerido'], 400);
+        }
+
+        $tecnico = (new AsistenteService())->buscarTecnicoEnDirectorio($telefono);
+        if ($tecnico === null) {
+            $this->json(['status' => 'error', 'message' => 'Técnico no encontrado en el directorio'], 404);
+        }
+
+        $this->json(['status' => 'success', 'data' => $tecnico]);
+    }
+
     #[Route('/asistente/progreso', 'GET')]
     public function progreso()
     {

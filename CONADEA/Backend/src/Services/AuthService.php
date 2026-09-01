@@ -12,7 +12,10 @@ use App\Utils\JwtUtils;
 
 class AuthService
 {
-    private const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 días
+    // La sesión se mantiene hasta que el usuario pulse "Cerrar sesión"; no hay
+    // cierre automático por tiempo. Se deja un horizonte de 10 años como límite
+    // de seguridad del token.
+    private const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 365 * 10; // 10 años
 
     private $usuarioRepository;
     private $rolRepository;

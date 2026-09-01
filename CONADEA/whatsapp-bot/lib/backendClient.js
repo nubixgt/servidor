@@ -38,6 +38,16 @@ async function resolverUsuario(telefono) {
     }
 }
 
+/** @returns {Promise<{nombre:string}|null>} nombre del técnico, o null si el número no está en el directorio */
+async function consultarDirectorioTecnico(telefono) {
+    try {
+        return await get(`/asistente/directorio?telefono=${encodeURIComponent(telefono)}`);
+    } catch (err) {
+        if (err.status === 404) return null;
+        throw err;
+    }
+}
+
 /** @returns {Promise<Array<{id:number, titulo:string}>>} */
 async function cursosDisponibles() {
     return get('/asistente/cursos');
@@ -71,6 +81,7 @@ async function marcarNotificado({ telefono, cursoId }) {
 
 module.exports = {
     resolverUsuario,
+    consultarDirectorioTecnico,
     cursosDisponibles,
     obtenerHorarios,
     guardarHorario,
