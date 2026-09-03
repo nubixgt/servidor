@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary":"#ffffff","outline-variant":"#c4c9ac","surface-variant":"#e1e3e4","secondary-fixed":"#dae2fd","on-primary":"#ffffff","on-tertiary":"#ffffff","secondary-fixed-dim":"#bec6e0","surface-container-high":"#e7e8e9","primary-fixed-dim":"#abd600","surface-tint":"#506600","on-surface":"#191c1d","secondary":"#565e74","inverse-primary":"#abd600","tertiary":"#416900","on-secondary-container":"#5c647a","on-primary-fixed":"#161e00","tertiary-container":"#c2ff75","on-error-container":"#93000a","on-secondary-fixed-variant":"#3f465c","on-surface-variant":"#444933","secondary-container":"#dae2fd","inverse-surface":"#2e3132","surface":"#f8f9fa","tertiary-fixed-dim":"#91db2a","on-tertiary-fixed":"#102000","on-error":"#ffffff","primary-fixed":"#c3f400","surface-container-low":"#f3f4f5","on-secondary-fixed":"#131b2e","primary-container":"#ccff00","surface-dim":"#d9dadb","error":"#ba1a1a","surface-bright":"#f8f9fa","on-primary-container":"#5b7300","primary":"#506600","background":"#f8f9fa","surface-container-lowest":"#ffffff","error-container":"#ffdad6","inverse-on-surface":"#f0f1f2","surface-container":"#edeeef","on-tertiary-container":"#4a7700","on-background":"#191c1d","outline":"#747a60","on-tertiary-fixed-variant":"#304f00","tertiary-fixed":"#acf847","on-primary-fixed-variant":"#3c4d00","surface-container-highest":"#e1e3e4"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"space-lg":"1.5rem","space-2xl":"3rem","space-xl":"2rem","container-max":"1280px","space-xs":"0.5rem","gutter-mobile":"1rem","space-2xs":"0.25rem","space-md":"1rem","space-3xl":"4.5rem","space-sm":"0.75rem","gutter-desktop":"1.5rem"},fontFamily:{"headline-lg":["oswald"],"label-meta":["plusJakartaSans"],"headline-md":["oswald"],"display-hero":["oswald"],"body-lg":["plusJakartaSans"],"stat-display":["oswald"],"headline-xl":["oswald"],"label-pill":["plusJakartaSans"],"body-md":["plusJakartaSans"],"display-hero-mobile":["oswald"],"body-sm":["plusJakartaSans"]},fontSize:{"headline-lg":["28px",{lineHeight:"34px",letterSpacing:"0em",fontWeight:"600"}],"label-meta":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"600"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"0em",fontWeight:"600"}],"display-hero":["56px",{lineHeight:"60px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],"stat-display":["48px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-xl":["36px",{lineHeight:"42px",letterSpacing:"-0.01em",fontWeight:"700"}],"label-pill":["13px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"700"}],"body-md":["15px",{lineHeight:"22px",fontWeight:"400"}],"display-hero-mobile":["40px",{lineHeight:"44px",letterSpacing:"-0.01em",fontWeight:"700"}],"body-sm":["13px",{lineHeight:"18px",fontWeight:"500"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-fixed"><header class="fixed top-0 left-0 right-0 w-full z-50 shadow-[0_4px_20px_rgba(0,0,0,0.2)]"><div class="bg-inverse-surface text-inverse-on-surface"><div class="h-20 max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md shrink-0"><img alt="Logotipo deportivo moderno para la Liga de Baloncesto Sanarateca con un balón de básquet geométrico estilizado y acentos verde lima neón.. Brand logo. - Primary color: #ccff00 - Font: oswald - Mode: light - Roundness: rounded-full" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Xv8L0vyRlJOaFZXrnCfVfunZ3l9D93mEX7a1EO3dfW_DVDtqmtV1f0g7pC6ddFqPSk4a41Z8G8I1OFN-c_lSp9mW7u9hA5DVHEedqtAAdY_B1Fs807ysoGXRosum1l5HT-gQq-4erm7ksSE6G9rCz3i4IuKoZRJFEGyL6C4uhoF2RzeA5d2XHL5o5rxVvRa_hVInprbcG1j8AVWMZKNA8YWhCFykJTbeY2u6-afswVhMyxvadcRzUVV2w"/><div class="flex flex-col"><span class="font-headline-md text-headline-md uppercase tracking-tight text-surface-bright leading-none">Sanarateca</span><span class="font-label-meta text-label-meta uppercase text-primary-fixed-dim font-bold tracking-wider">Liga Oficial</span></div><span class="hidden sm:inline-flex items-center px-space-xs py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta tracking-wider uppercase font-bold shadow-[0_0_12px_rgba(204,255,0,0.35)]">Panel Admin / Gestión</span></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary-container font-semibold after:scale-x-100"><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="resumen" href="#">Resumen</a><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="gestion-equipos" href="#">Gestión Equipos</a><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="gestion-jugadores" href="#">Gestión Jugadores</a><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="gestion-partidos" href="#">Gestión Partidos</a><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="gestion-estadisticas" href="#">Gestión Estadísticas</a><a class="relative py-space-xs font-label-pill text-label-pill uppercase text-surface-container-high transition-colors hover:text-surface-bright after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-container after:scale-x-0 after:transition-transform" data-path="gestion-novedades" href="#">Gestión Novedades</a></nav><div class="flex items-center gap-space-sm shrink-0"><button class="hidden sm:inline-flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase font-bold tracking-wide shadow-[0_8px_20px_-4px_rgba(204,255,0,0.4)] transition-transform active:scale-95" type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span>Nuevo Registro</span></button><button aria-label="Notificaciones" class="relative w-10 h-10 rounded-full bg-secondary/30 text-surface-bright flex items-center justify-center transition-colors hover:bg-secondary/50" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-primary-container ring-2 ring-inverse-surface"></span></button><div class="flex items-center gap-space-xs pl-space-xs"><div class="hidden md:flex flex-col text-right"><span class="font-label-pill text-label-pill text-surface-bright leading-tight">Comisionado Liga</span><span class="font-label-meta text-label-meta text-primary-fixed-dim uppercase font-bold tracking-wider">Admin</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></div><div class="bg-surface-container-highest text-on-surface-variant shadow-[0_1px_4px_rgba(0,0,0,0.03)]"><div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-2xs flex flex-wrap items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs font-label-meta text-label-meta uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span><span class="text-on-surface font-semibold">Consola Administrativa</span><span class="text-outline">/</span><span class="text-secondary">Estado: En Vivo</span></div><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-2xs rounded-full bg-surface-container-lowest px-space-sm py-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-[16px] text-secondary">calendar_today</span><span class="font-label-meta text-label-meta font-bold text-on-surface uppercase">Temporada 2025</span><button aria-label="Cambiar Temporada" class="flex items-center text-secondary hover:text-on-surface" type="button"><span class="material-symbols-outlined text-[16px]">expand_more</span></button></div></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-lg"><div class="flex flex-col w-full">
+<!-- Toast Notification Dynamic Container -->
+<div class="fixed bottom-6 right-6 z-50 flex flex-col gap-space-xs pointer-events-none" id="toast-container"></div>
+<!-- SECTION 1: HEADER & CONTROL DE METRICAS -->
+<div class="relative w-full rounded-lg bg-surface-container-lowest p-space-md lg:p-space-xl shadow-md overflow-hidden">
+<!-- Ambient glowing backdrop element -->
+<div class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-primary-container/20 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-12 bottom-0 w-64 h-64 rounded-full bg-secondary-container/30 blur-2xl pointer-events-none"></div>
+<div class="relative flex flex-col gap-space-lg">
+<!-- Upper Action Bar: Title, Live Status & Quick Global Triggers -->
+<div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs mb-space-2xs">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta font-bold uppercase tracking-wider shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-1.5 animate-ping"></span>
+              Sincronización en Vivo
+            </span>
+<span class="text-secondary font-label-meta text-label-meta uppercase">Mesa Técnica FEBAL / Servidor Central</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface uppercase tracking-tight">
+            Gestión y Edición de Estadísticas Oficiales
+          </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl">
+            Edite en tiempo real los registros acumulados de la temporada regular, audite box scores y aplique sanciones o bonificaciones directas al standing general.
+          </p>
+</div>
+<!-- Master Global Control CTAs -->
+<div class="flex flex-wrap items-center gap-space-xs shrink-0">
+<button class="group flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors shadow-sm" id="btn-export" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary group-hover:text-on-surface">table_view</span>
+<span class="font-label-pill text-label-pill uppercase">Exportar FIBA (Excel)</span>
+</button>
+<button class="group flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-inverse-surface text-inverse-on-surface hover:bg-secondary transition-colors shadow-sm" id="btn-recalculate" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary-container animate-spin-reverse group-hover:rotate-180 transition-transform">sync</span>
+<span class="font-label-pill text-label-pill uppercase">Recalcular Tablas</span>
+</button>
+<button class="flex items-center gap-space-2xs px-space-lg py-space-xs rounded-full bg-primary-container text-on-primary-fixed hover:brightness-105 active:scale-95 transition-all shadow-[0_8px_20px_-4px_rgba(204,255,0,0.5)]" id="btn-save-all" type="button">
+<span class="material-symbols-outlined text-[20px] font-bold">verified</span>
+<span class="font-label-pill text-label-pill uppercase font-bold tracking-wide">Guardar Todo</span>
+</button>
+</div>
+</div>
+<!-- Segmented Mode Selectors & Quick Filters Toolbar -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md pt-space-sm bg-surface-container-low rounded-DEFAULT p-space-sm">
+<!-- View Mode Segmented Controls -->
+<div class="flex items-center p-1 bg-surface-container rounded-full shrink-0">
+<button class="flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase font-bold shadow-sm transition-all" id="tab-players" type="button">
+<span class="material-symbols-outlined text-[16px]">sports_basketball</span>
+<span>Estadísticas por Jugador</span>
+</button>
+<button class="flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase font-bold transition-all" id="tab-teams" type="button">
+<span class="material-symbols-outlined text-[16px]">shield</span>
+<span>Posiciones &amp; Franquicias</span>
+</button>
+</div>
+<!-- Interactive Filters Strip -->
+<div class="flex flex-wrap items-center gap-space-xs grow justify-end">
+<!-- Search Box Input -->
+<div class="relative min-w-[220px] grow sm:grow-0">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
+<input class="w-full pl-9 pr-4 py-space-2xs bg-surface-container-lowest text-on-surface rounded-full font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-bright shadow-sm" id="search-player" placeholder="Buscar dorsal o atleta..." type="text"/>
+</div>
+<!-- Franquicia Dropdown -->
+<div class="flex items-center gap-space-2xs bg-surface-container-lowest px-space-sm py-space-2xs rounded-full shadow-sm">
+<span class="font-label-meta text-label-meta text-secondary uppercase font-semibold">Club:</span>
+<select class="bg-transparent font-label-pill text-label-pill text-on-surface uppercase font-bold focus:outline-none cursor-pointer" id="filter-team">
+<option value="all">Todas las Franquicias (8)</option>
+<option value="Toros">Toros de Sanarate</option>
+<option value="Halcones">Halcones de Sansare</option>
+<option value="Jaguares">Jaguares del Progreso</option>
+<option value="Centauros">Centauros Guastatoya</option>
+</select>
+</div>
+<!-- Jornada Dropdown -->
+<div class="flex items-center gap-space-2xs bg-surface-container-lowest px-space-sm py-space-2xs rounded-full shadow-sm">
+<span class="font-label-meta text-label-meta text-secondary uppercase font-semibold">Corte:</span>
+<select class="bg-transparent font-label-pill text-label-pill text-on-surface uppercase font-bold focus:outline-none cursor-pointer">
+<option value="j12">Jornada 12 (Acumulado Total)</option>
+<option value="j11">Jornada 11</option>
+<option value="playoffs">Playoffs 2025</option>
+</select>
+</div>
+<!-- Posicion Dropdown -->
+<div class="flex items-center gap-space-2xs bg-surface-container-lowest px-space-sm py-space-2xs rounded-full shadow-sm">
+<span class="font-label-meta text-label-meta text-secondary uppercase font-semibold">Pos:</span>
+<select class="bg-transparent font-label-pill text-label-pill text-on-surface uppercase font-bold focus:outline-none cursor-pointer" id="filter-pos">
+<option value="all">Todas</option>
+<option value="BASE">Base (PG)</option>
+<option value="ESCOLTA">Escolta (SG)</option>
+<option value="ALERO">Alero (SF)</option>
+<option value="ALA-PIVOT">Ala-Pívot (PF)</option>
+<option value="PIVOT">Pívot (C)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: EDITABLE INLINE DATA GRID (JUGADORES) -->
+<div class="w-full mt-space-lg flex flex-col gap-space-sm" id="section-player-grid">
+<!-- Grid Control Subheading & Active Edits Indicator -->
+<div class="flex flex-wrap items-center justify-between px-space-xs gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">edit_note</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface tracking-tight">Plantilla Oficial de Métricas Individuales</span>
+<span class="hidden px-space-xs py-0.5 rounded-full bg-error-container text-on-error-container font-label-meta text-label-meta font-bold uppercase animate-pulse" id="badge-unsaved">
+          Cambios sin sincronizar
+        </span>
+</div>
+<div class="flex items-center gap-space-md font-label-meta text-label-meta text-secondary uppercase">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span> Campo Modificable</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-surface-container-highest"></span> Cálculo Auto (FIBA EFF)</span>
+</div>
+</div>
+<!-- Data Table Container with ambient depth -->
+<div class="w-full bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse min-w-[1080px]">
+<thead>
+<tr class="bg-surface-container text-on-surface font-headline-md text-[13px] uppercase tracking-wider">
+<th class="py-space-sm px-space-md text-left">Atleta / Dorsal</th>
+<th class="py-space-sm px-space-xs text-left">Equipo</th>
+<th class="py-space-sm px-space-xs text-center">PJ</th>
+<th class="py-space-sm px-space-xs text-center bg-surface-container-high/40">PTS / PPG</th>
+<th class="py-space-sm px-space-xs text-center">REB / RPG</th>
+<th class="py-space-sm px-space-xs text-center bg-surface-container-high/40">AST / APG</th>
+<th class="py-space-sm px-space-xs text-center">3PT (C/I - %)</th>
+<th class="py-space-sm px-space-xs text-center">TL (%)</th>
+<th class="py-space-sm px-space-xs text-center">FAL (P/T)</th>
+<th class="py-space-sm px-space-xs text-center bg-primary-container/20 text-on-primary-fixed">EFF FIBA</th>
+<th class="py-space-sm px-space-md text-center">Acciones Fila</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-sm text-body-sm text-on-surface" id="player-table-body">
+<!-- ROW 1: Carlos Mendoza -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-player-id="101" data-pos="BASE" data-team="Toros">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Close up dramatic athletic portrait of a focused Hispanic basketball guard with intense gaze and sweat, black jersey, neon yellow rim light, crisp studio photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBepvvY1Y02u4xi7eEzG63ieiimvVMxZJRvR_N4J-r2oc-luYzUl7xfS4Jl-Yihow_jMvtpzeFcfhJHcC5_3EmdbYn4kyuWEBCqH09Yy0yk1NHpR3ayarfljJ2NuCFg32c_oXdJDjlnOblzx0R9--T9SHf_S_i02NQWpItGlvfY993nqpNp-TwZ572yW0lMwi5rbjdxUw5Jw2GAroJdqHFJ75wRCuwJUMRKKzv4RTYD9wFwvD0AhapGXg"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-headline-md text-[16px] leading-tight text-on-surface truncate">Carlos Mendoza</span>
+<span class="font-label-meta text-label-meta text-primary font-bold">#7</span>
+</div>
+<span class="font-label-meta text-label-meta text-secondary uppercase">Base (PG) · 1.84m</span>
+</div>
+</div>
+</td>
+<td class="py-space-sm px-space-xs">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta font-bold text-on-surface uppercase">
+                  Toros
+                </span>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pj-input w-12 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" max="30" min="0" type="number" value="12"/>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="pts-input w-16 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="288"/>
+<span class="ppg-val font-label-meta text-label-meta text-secondary font-bold min-w-[36px]">24.0</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="reb-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" min="0" type="number" value="62"/>
+<span class="rpg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">5.1</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="ast-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="98"/>
+<span class="apg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">8.2</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="t3m-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="38"/>
+<span class="text-outline">/</span>
+<input class="t3a-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="84"/>
+<span class="pct3-val font-label-meta text-label-meta text-primary font-bold ml-1">45.2%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="ftm-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="50"/>
+<span class="text-outline">/</span>
+<input class="fta-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="58"/>
+<span class="ftpct-val font-label-meta text-label-meta text-secondary font-bold ml-1">86.2%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="fls-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-on-surface font-semibold" title="Faltas Personales" type="number" value="26"/>
+<span class="text-outline">|</span>
+<input class="tec-input w-8 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-error font-semibold" title="Faltas Técnicas" type="number" value="1"/>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10">
+<span class="eff-val font-headline-md text-[18px] text-primary font-bold">26.8</span>
+</td>
+<td class="py-space-sm px-space-md text-center">
+<div class="flex items-center justify-center gap-1">
+<button class="btn-row-save w-8 h-8 rounded-full bg-primary-container text-on-primary-fixed hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-sm" title="Guardar cambios de fila" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+<button class="btn-row-reset w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-on-surface flex items-center justify-center transition-all" title="Deshacer cambios" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-primary flex items-center justify-center transition-all" title="Desglose por partido (Box Score)" type="button">
+<span class="material-symbols-outlined text-[16px]">history_toggle_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 2: Javier 'Tanque' Ruano -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-player-id="102" data-pos="PIVOT" data-team="Halcones">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Muscular basketball center athlete looking powerful during pre-game focus, dark athletic jersey with lime trim, soft arena bokeh background, professional sports portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBidTfdaG7yu7Lc5YJ2AlEawOyO_ADjwE6iQ12qrgWmm1fS4Rg-WPHARFJNbazC8CrQgzlLebiEg1cALv7uF719Yl6quhO8gHbpUZP--lTvf8i2wYVO3lB0eGfaam5mSzqKoWzn7v80PxBkyak_aKW5sUY1B1lbMs5VvgoPC3yW9ITW0JA03l_mEAdrLrXQXfVhiDTDyVJmyNwfnAhI8xNrvYNm_8lw-g7WqHhl3Gw8B_oO-rRWEbBsGw"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-headline-md text-[16px] leading-tight text-on-surface truncate">Javier Ruano</span>
+<span class="font-label-meta text-label-meta text-primary font-bold">#33</span>
+</div>
+<span class="font-label-meta text-label-meta text-secondary uppercase">Pívot (C) · 2.05m</span>
+</div>
+</div>
+</td>
+<td class="py-space-sm px-space-xs">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-meta text-label-meta font-bold uppercase">
+                  Halcones
+                </span>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pj-input w-12 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" max="30" min="0" type="number" value="12"/>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="pts-input w-16 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="234"/>
+<span class="ppg-val font-label-meta text-label-meta text-secondary font-bold min-w-[36px]">19.5</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="reb-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" min="0" type="number" value="148"/>
+<span class="rpg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">12.3</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="ast-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="28"/>
+<span class="apg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">2.3</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="t3m-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="2"/>
+<span class="text-outline">/</span>
+<input class="t3a-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="9"/>
+<span class="pct3-val font-label-meta text-label-meta text-secondary font-bold ml-1">22.2%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="ftm-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="42"/>
+<span class="text-outline">/</span>
+<input class="fta-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="65"/>
+<span class="ftpct-val font-label-meta text-label-meta text-secondary font-bold ml-1">64.6%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="fls-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-on-surface font-semibold" title="Faltas Personales" type="number" value="38"/>
+<span class="text-outline">|</span>
+<input class="tec-input w-8 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-error font-semibold" title="Faltas Técnicas" type="number" value="3"/>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10">
+<span class="eff-val font-headline-md text-[18px] text-primary font-bold">25.4</span>
+</td>
+<td class="py-space-sm px-space-md text-center">
+<div class="flex items-center justify-center gap-1">
+<button class="btn-row-save w-8 h-8 rounded-full bg-primary-container text-on-primary-fixed hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-sm" title="Guardar cambios de fila" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+<button class="btn-row-reset w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-on-surface flex items-center justify-center transition-all" title="Deshacer cambios" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-primary flex items-center justify-center transition-all" title="Desglose por partido (Box Score)" type="button">
+<span class="material-symbols-outlined text-[16px]">history_toggle_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 3: Mateo Morales -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-player-id="103" data-pos="ALERO" data-team="Jaguares">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Athletic young forward basketball player headshot with determined energetic facial expression, high contrast lighting, black warm-up hoodie, professional league roster photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC2o4g7NWwQVRoNFxEijuB-PPHapn35-wAdm4DmrH_BQzq0mJK1fdWeCRvvaZlGrbcGbHml1TKw4XeE3IUQj5_vOuAvSUzafO9LPR0pa6Q_qnqh7bHU1UuqaXwKs6Fb1s2jYrzui5EyfddPkLYUrictW1nXqKg6Y6iNonfKm-tUCS6T6jMZQfQaX1uqCnKhFV-Iu4JQ-zGrkm_p0Dc6LKhyLSG1fITCQb1YCWs-c_Kiqp7Bg3f6Lz9MA"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-headline-md text-[16px] leading-tight text-on-surface truncate">Mateo Morales</span>
+<span class="font-label-meta text-label-meta text-primary font-bold">#23</span>
+</div>
+<span class="font-label-meta text-label-meta text-secondary uppercase">Alero (SF) · 1.96m</span>
+</div>
+</div>
+</td>
+<td class="py-space-sm px-space-xs">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta font-bold text-on-surface uppercase">
+                  Jaguares
+                </span>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pj-input w-12 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" max="30" min="0" type="number" value="11"/>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="pts-input w-16 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="255"/>
+<span class="ppg-val font-label-meta text-label-meta text-secondary font-bold min-w-[36px]">23.1</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="reb-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" min="0" type="number" value="79"/>
+<span class="rpg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">7.2</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="ast-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="44"/>
+<span class="apg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">4.0</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="t3m-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="28"/>
+<span class="text-outline">/</span>
+<input class="t3a-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="71"/>
+<span class="pct3-val font-label-meta text-label-meta text-primary font-bold ml-1">39.4%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="ftm-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="41"/>
+<span class="text-outline">/</span>
+<input class="fta-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="49"/>
+<span class="ftpct-val font-label-meta text-label-meta text-secondary font-bold ml-1">83.6%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="fls-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-on-surface font-semibold" title="Faltas Personales" type="number" value="21"/>
+<span class="text-outline">|</span>
+<input class="tec-input w-8 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-error font-semibold" title="Faltas Técnicas" type="number" value="0"/>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10">
+<span class="eff-val font-headline-md text-[18px] text-primary font-bold">22.9</span>
+</td>
+<td class="py-space-sm px-space-md text-center">
+<div class="flex items-center justify-center gap-1">
+<button class="btn-row-save w-8 h-8 rounded-full bg-primary-container text-on-primary-fixed hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-sm" title="Guardar cambios de fila" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+<button class="btn-row-reset w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-on-surface flex items-center justify-center transition-all" title="Deshacer cambios" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-primary flex items-center justify-center transition-all" title="Desglose por partido (Box Score)" type="button">
+<span class="material-symbols-outlined text-[16px]">history_toggle_off</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ROW 4: David 'Flecha' Estrada -->
+<tr class="hover:bg-surface-container-low/60 transition-colors" data-player-id="104" data-pos="ESCOLTA" data-team="Centauros">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Dynamic portrait of sharp-shooting guard smiling confidently with basketball gear, dramatic side spotlight, professional studio backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlL6Z496KtcgXEqszqn8nwD7Xn1PncRd01SMT7VeNon7l98_ILJiFHyxGkBOwvjbs9wJMkWiQzL2hmwWlhzBDgsKCh5-YYKxRToIa0oTdt9bOZuvFGlof20fwv4-T7X1MSTPtIIBYUB4f8sHoASA0ubFNYy8GO_zo557sU29NhICMFbBAzohBJdhFK66D5BkV4XBirtZ7Z6E367-OTwKRJjtpjZ4qI73TVnLopjsi1luQn_6LLLz1tpg"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-headline-md text-[16px] leading-tight text-on-surface truncate">David Estrada</span>
+<span class="font-label-meta text-label-meta text-primary font-bold">#11</span>
+</div>
+<span class="font-label-meta text-label-meta text-secondary uppercase">Escolta (SG) · 1.89m</span>
+</div>
+</div>
+</td>
+<td class="py-space-sm px-space-xs">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta font-bold text-on-surface uppercase">
+                  Centauros
+                </span>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pj-input w-12 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" max="30" min="0" type="number" value="12"/>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="pts-input w-16 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="218"/>
+<span class="ppg-val font-label-meta text-label-meta text-secondary font-bold min-w-[36px]">18.1</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="reb-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:bg-surface-bright focus:outline-none font-bold text-on-surface transition-all" min="0" type="number" value="48"/>
+<span class="rpg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">4.0</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-surface-container-high/20">
+<div class="flex items-center justify-center gap-1">
+<input class="ast-input w-14 text-center py-1 rounded-DEFAULT bg-surface-container-lowest focus:bg-surface-bright focus:outline-none font-bold text-on-surface shadow-sm transition-all" min="0" type="number" value="62"/>
+<span class="apg-val font-label-meta text-label-meta text-secondary font-bold min-w-[30px]">5.1</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="t3m-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="35"/>
+<span class="text-outline">/</span>
+<input class="t3a-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="91"/>
+<span class="pct3-val font-label-meta text-label-meta text-primary font-bold ml-1">38.4%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-0.5">
+<input class="ftm-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="31"/>
+<span class="text-outline">/</span>
+<input class="fta-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none font-bold text-on-surface" type="number" value="37"/>
+<span class="ftpct-val font-label-meta text-label-meta text-secondary font-bold ml-1">83.7%</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<div class="flex items-center justify-center gap-1">
+<input class="fls-input w-10 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-on-surface font-semibold" title="Faltas Personales" type="number" value="18"/>
+<span class="text-outline">|</span>
+<input class="tec-input w-8 text-center py-1 rounded-DEFAULT bg-surface-container-low focus:outline-none text-error font-semibold" title="Faltas Técnicas" type="number" value="0"/>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10">
+<span class="eff-val font-headline-md text-[18px] text-primary font-bold">19.4</span>
+</td>
+<td class="py-space-sm px-space-md text-center">
+<div class="flex items-center justify-center gap-1">
+<button class="btn-row-save w-8 h-8 rounded-full bg-primary-container text-on-primary-fixed hover:scale-105 active:scale-95 flex items-center justify-center transition-all shadow-sm" title="Guardar cambios de fila" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</button>
+<button class="btn-row-reset w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-on-surface flex items-center justify-center transition-all" title="Deshacer cambios" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-secondary hover:text-primary flex items-center justify-center transition-all" title="Desglose por partido (Box Score)" type="button">
+<span class="material-symbols-outlined text-[16px]">history_toggle_off</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Utility Strip -->
+<div class="p-space-sm bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-space-xs text-secondary font-label-meta text-label-meta">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">info</span>
+          Fórmula de Valoración: (PTS + REB + AST + STL + BLK) - ((TCA - TCC) + (TLA - TLC) + TOV)
+        </span>
+<span class="uppercase tracking-wider">Mostrando 4 atletas filtrados de 72 registrados</span>
+</div>
+</div>
+</div>
+<!-- SECTION 3: AJUSTE RÁPIDO DE TABLA DE POSICIONES & SANCIONES -->
+<div class="w-full mt-space-2xl flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-space-xs">
+<div>
+<span class="font-label-meta text-label-meta text-primary font-bold uppercase tracking-widest">Modulación de Clasificación</span>
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface leading-tight">
+          Ajuste Rápido de Tabla de Posiciones y Puntuación Federada
+        </h2>
+</div>
+<span class="px-space-sm py-1 rounded-full bg-surface-container text-secondary font-label-meta text-label-meta uppercase">
+        Reglamento Oficial: Ganado +2 pts · Perdido +1 pt · Forfeit 0 pts
+      </span>
+</div>
+<!-- Mini Editable Standings Grid & League Sanctions Module -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Standings Table (8 Cols) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface font-headline-md text-[12px] uppercase">
+<th class="py-space-xs px-space-md">Pos / Club</th>
+<th class="py-space-xs px-space-xs text-center">PJ</th>
+<th class="py-space-xs px-space-xs text-center">G - P</th>
+<th class="py-space-xs px-space-xs text-center">PF (Favor)</th>
+<th class="py-space-xs px-space-xs text-center">PC (Contra)</th>
+<th class="py-space-xs px-space-xs text-center">DIF</th>
+<th class="py-space-xs px-space-xs text-center">Racha</th>
+<th class="py-space-xs px-space-xs text-center bg-primary-container/20 text-on-primary-fixed">PTS Liga</th>
+<th class="py-space-xs px-space-xs text-center bg-error-container/20 text-error">Sanción</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-body-sm text-body-sm text-on-surface" id="standings-table-body">
+<!-- Team 1 -->
+<tr class="hover:bg-surface-container-low/50" data-team="Toros">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed font-headline-md text-[14px] flex items-center justify-center font-bold">1</span>
+<span class="font-headline-md text-[15px] uppercase font-bold text-on-surface">Toros de Sanarate</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center font-bold">12</td>
+<td class="py-space-sm px-space-xs text-center font-bold text-tertiary">11 - 1</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pf-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="1042"/>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pc-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="890"/>
+</td>
+<td class="py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-tertiary dif-val">+152</td>
+<td class="py-space-sm px-space-xs text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-meta text-label-meta font-bold">7G</span>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10 font-headline-md text-[16px] font-bold text-primary">
+                  23
+                </td>
+<td class="py-space-sm px-space-xs text-center bg-error-container/10">
+<input class="w-10 text-center py-1 rounded bg-surface-container-low text-error font-bold text-[13px] focus:outline-none" max="0" min="-10" type="number" value="0"/>
+</td>
+</tr>
+<!-- Team 2 -->
+<tr class="hover:bg-surface-container-low/50" data-team="Halcones">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-headline-md text-[14px] flex items-center justify-center font-bold">2</span>
+<span class="font-headline-md text-[15px] uppercase font-bold text-on-surface">Halcones Sansare</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center font-bold">12</td>
+<td class="py-space-sm px-space-xs text-center font-bold text-tertiary">9 - 3</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pf-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="988"/>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pc-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="915"/>
+</td>
+<td class="py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-tertiary dif-val">+73</td>
+<td class="py-space-sm px-space-xs text-center">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary-container font-label-meta text-label-meta font-bold">3G</span>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10 font-headline-md text-[16px] font-bold text-primary">
+                  21
+                </td>
+<td class="py-space-sm px-space-xs text-center bg-error-container/10">
+<input class="w-10 text-center py-1 rounded bg-surface-container-low text-error font-bold text-[13px] focus:outline-none" max="0" min="-10" type="number" value="0"/>
+</td>
+</tr>
+<!-- Team 3 -->
+<tr class="hover:bg-surface-container-low/50" data-team="Jaguares">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-headline-md text-[14px] flex items-center justify-center font-bold">3</span>
+<span class="font-headline-md text-[15px] uppercase font-bold text-on-surface">Jaguares del Progreso</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center font-bold">12</td>
+<td class="py-space-sm px-space-xs text-center font-bold text-on-surface-variant">7 - 5</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pf-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="940"/>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pc-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="920"/>
+</td>
+<td class="py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-tertiary dif-val">+20</td>
+<td class="py-space-sm px-space-xs text-center">
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-meta text-label-meta font-bold">1P</span>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10 font-headline-md text-[16px] font-bold text-primary">
+                  19
+                </td>
+<td class="py-space-sm px-space-xs text-center bg-error-container/10">
+<input class="w-10 text-center py-1 rounded bg-surface-container-low text-error font-bold text-[13px] focus:outline-none" max="0" min="-10" type="number" value="0"/>
+</td>
+</tr>
+<!-- Team 4 (With Penalty point) -->
+<tr class="hover:bg-surface-container-low/50" data-team="Centauros">
+<td class="py-space-sm px-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-headline-md text-[14px] flex items-center justify-center font-bold">4</span>
+<span class="font-headline-md text-[15px] uppercase font-bold text-on-surface">Centauros Guastatoya</span>
+</div>
+</td>
+<td class="py-space-sm px-space-xs text-center font-bold">12</td>
+<td class="py-space-sm px-space-xs text-center font-bold text-on-surface-variant">5 - 7</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pf-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="870"/>
+</td>
+<td class="py-space-sm px-space-xs text-center">
+<input class="pc-input w-16 text-center py-1 rounded bg-surface-container-low text-on-surface font-bold text-[13px] focus:outline-none" type="number" value="945"/>
+</td>
+<td class="py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-error dif-val">-75</td>
+<td class="py-space-sm px-space-xs text-center">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-meta text-label-meta font-bold">2P</span>
+</td>
+<td class="py-space-sm px-space-xs text-center bg-primary-container/10 font-headline-md text-[16px] font-bold text-primary">
+                  16
+                </td>
+<td class="py-space-sm px-space-xs text-center bg-error-container/10">
+<input class="w-10 text-center py-1 rounded bg-surface-container-low text-error font-bold text-[13px] focus:outline-none" max="0" min="-10" title="Sanción disciplinaria administrativa aplicada por la FEBAL" type="number" value="-1"/>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Quick Resolution Side Panel (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- Visual Stat Overview Card -->
+<div class="p-space-lg rounded-lg bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase text-secondary font-bold">Líderes de Anotación Colectiva</span>
+<span class="material-symbols-outlined text-primary text-[20px]">bar_chart</span>
+</div>
+<!-- Inline Sparkline / Mini Bar Chart SVG -->
+<div class="w-full pt-space-xs">
+<div class="flex items-end justify-between gap-2 h-24 px-2">
+<div class="flex flex-col items-center gap-1 w-1/4 h-full justify-end group">
+<span class="font-label-meta text-[10px] text-secondary group-hover:text-primary font-bold">86.8</span>
+<div class="w-full bg-primary-container rounded-t-DEFAULT h-[88%] transition-all"></div>
+<span class="font-label-meta text-[10px] uppercase font-bold text-on-surface">TOR</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-1/4 h-full justify-end group">
+<span class="font-label-meta text-[10px] text-secondary group-hover:text-primary font-bold">82.3</span>
+<div class="w-full bg-inverse-surface rounded-t-DEFAULT h-[78%] transition-all"></div>
+<span class="font-label-meta text-[10px] uppercase font-bold text-on-surface">HAL</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-1/4 h-full justify-end group">
+<span class="font-label-meta text-[10px] text-secondary group-hover:text-primary font-bold">78.3</span>
+<div class="w-full bg-secondary-fixed-dim rounded-t-DEFAULT h-[68%] transition-all"></div>
+<span class="font-label-meta text-[10px] uppercase font-bold text-on-surface">JAG</span>
+</div>
+<div class="flex flex-col items-center gap-1 w-1/4 h-full justify-end group">
+<span class="font-label-meta text-[10px] text-secondary group-hover:text-primary font-bold">72.5</span>
+<div class="w-full bg-surface-container-highest rounded-t-DEFAULT h-[55%] transition-all"></div>
+<span class="font-label-meta text-[10px] uppercase font-bold text-on-surface">CEN</span>
+</div>
+</div>
+</div>
+<div class="pt-space-xs mt-space-2xs">
+<button class="w-full py-space-xs rounded-full bg-surface-container text-on-surface font-label-pill text-label-pill uppercase font-bold hover:bg-surface-variant transition-colors text-center" type="button">
+              Ver Auditoría Histórica de Puntos
+            </button>
+</div>
+</div>
+<!-- Sanctions & Appeals Note -->
+<div class="p-space-md rounded-lg bg-surface-container-high/40 flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">gavel</span>
+<div class="flex flex-col">
+<span class="font-label-pill text-label-pill font-bold text-on-surface uppercase">Avisos Disciplinarios</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+              Centauros mantiene una deducción de -1 PT por no acreditación de árbitro de mesa en la Jornada 8. Cualquier apelación debe resolverse antes del cierre de planilla oficial.
+            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- BANNER DE ADVERTENCIA & CONFIRMACIÓN -->
+<div class="mt-space-md p-space-md lg:p-space-lg rounded-lg bg-inverse-surface text-inverse-on-surface flex flex-col sm:flex-row items-center justify-between gap-space-md shadow-xl">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center shrink-0 shadow-[0_0_16px_rgba(204,255,0,0.4)]">
+<span class="material-symbols-outlined text-on-primary-fixed text-[24px]">cloud_sync</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md uppercase text-surface-bright leading-tight">
+            Impacto Directo en Tiempo Real
+          </span>
+<p class="font-body-sm text-body-sm text-surface-container-highest max-w-xl">
+            Los cambios guardados impactan inmediatamente las tablas públicas del portal web, las alertas de la app móvil y las estadísticas históricas de los scouts federados.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 w-full sm:w-auto justify-end">
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-highest/20 hover:bg-surface-container-highest/30 text-surface-bright font-label-pill text-label-pill uppercase transition-colors" id="btn-discard" type="button">
+          Descartar Modificaciones
+        </button>
+<button class="flex items-center gap-space-2xs px-space-lg py-space-xs rounded-full bg-primary-container text-on-primary-fixed hover:brightness-110 active:scale-95 transition-all shadow-[0_8px_20px_-4px_rgba(204,255,0,0.5)]" id="btn-save-bottom" type="button">
+<span class="material-symbols-outlined text-[18px] font-bold">publish</span>
+<span class="font-label-pill text-label-pill uppercase font-bold tracking-wide">Publicar Cambios</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Interactive State
+    let hasUnsavedChanges = false;
+    const unsavedBadge = document.getElementById('badge-unsaved');
+    const toastContainer = document.getElementById('toast-container');
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+      toast.className = `pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-full text-sm font-semibold shadow-lg transition-all duration-300 transform translate-y-4 opacity-0 ${
+        isSuccess ? 'bg-primary-container text-on-primary-fixed' : 'bg-surface-container-highest text-on-surface'
+      }`;
+      toast.innerHTML = `
+        <span class="material-symbols-outlined text-[18px]">${isSuccess ? 'check_circle' : 'info'}</span>
+        <span>${message}</span>
+      `;
+      toastContainer.appendChild(toast);
+      
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function markAsDirty() {
+      if (!hasUnsavedChanges) {
+        hasUnsavedChanges = true;
+        if (unsavedBadge) unsavedBadge.classList.remove('hidden');
+      }
+    }
+
+    function markAsClean() {
+      hasUnsavedChanges = false;
+      if (unsavedBadge) unsavedBadge.classList.add('hidden');
+    }
+
+    // Auto calculate PPG, RPG, APG, and 3PT% on input change
+    const rows = document.querySelectorAll('#player-table-body tr');
+    rows.forEach(row => {
+      const pjInput = row.querySelector('.pj-input');
+      const ptsInput = row.querySelector('.pts-input');
+      const rebInput = row.querySelector('.reb-input');
+      const astInput = row.querySelector('.ast-input');
+      const t3mInput = row.querySelector('.t3m-input');
+      const t3aInput = row.querySelector('.t3a-input');
+      const ftmInput = row.querySelector('.ftm-input');
+      const ftaInput = row.querySelector('.fta-input');
+
+      const ppgVal = row.querySelector('.ppg-val');
+      const rpgVal = row.querySelector('.rpg-val');
+      const apgVal = row.querySelector('.apg-val');
+      const pct3Val = row.querySelector('.pct3-val');
+      const ftpctVal = row.querySelector('.ftpct-val');
+      const effVal = row.querySelector('.eff-val');
+
+      function recalculateRow() {
+        markAsDirty();
+        const pj = Math.max(1, parseFloat(pjInput?.value) || 1);
+        const pts = parseFloat(ptsInput?.value) || 0;
+        const reb = parseFloat(rebInput?.value) || 0;
+        const ast = parseFloat(astInput?.value) || 0;
+        const t3m = parseFloat(t3mInput?.value) || 0;
+        const t3a = Math.max(1, parseFloat(t3aInput?.value) || 1);
+        const ftm = parseFloat(ftmInput?.value) || 0;
+        const fta = Math.max(1, parseFloat(ftaInput?.value) || 1);
+
+        if (ppgVal) ppgVal.textContent = (pts / pj).toFixed(1);
+        if (rpgVal) rpgVal.textContent = (reb / pj).toFixed(1);
+        if (apgVal) apgVal.textContent = (ast / pj).toFixed(1);
+        if (pct3Val) pct3Val.textContent = ((t3m / t3a) * 100).toFixed(1) + '%';
+        if (ftpctVal) ftpctVal.textContent = ((ftm / fta) * 100).toFixed(1) + '%';
+
+        // Approximate EFF = (PTS + REB + AST) / PJ
+        if (effVal) {
+          const eff = ((pts + reb + ast) / pj).toFixed(1);
+          effVal.textContent = eff;
+        }
+      }
+
+      const inputs = [pjInput, ptsInput, rebInput, astInput, t3mInput, t3aInput, ftmInput, ftaInput];
+      inputs.forEach(inp => {
+        if (inp) {
+          inp.addEventListener('input', recalculateRow);
+        }
+      });
+
+      // Row Save Button
+      const btnSave = row.querySelector('.btn-row-save');
+      if (btnSave) {
+        btnSave.addEventListener('click', () => {
+          btnSave.classList.add('scale-125');
+          setTimeout(() => btnSave.classList.remove('scale-125'), 200);
+          showToast(`Registro de atleta guardado exitosamente`);
+        });
+      }
+
+      // Row Reset Button
+      const btnReset = row.querySelector('.btn-row-reset');
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          showToast(`Valores originales restablecidos`);
+        });
+      }
+    });
+
+    // Standings calculation of Points Difference (DIF = PF - PC)
+    const standingRows = document.querySelectorAll('#standings-table-body tr');
+    standingRows.forEach(row => {
+      const pfInput = row.querySelector('.pf-input');
+      const pcInput = row.querySelector('.pc-input');
+      const difVal = row.querySelector('.dif-val');
+
+      function updateDif() {
+        markAsDirty();
+        const pf = parseInt(pfInput?.value) || 0;
+        const pc = parseInt(pcInput?.value) || 0;
+        const diff = pf - pc;
+        if (difVal) {
+          difVal.textContent = (diff >= 0 ? '+' : '') + diff;
+          if (diff >= 0) {
+            difVal.className = 'py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-tertiary dif-val';
+          } else {
+            difVal.className = 'py-space-sm px-space-xs text-center font-headline-md text-[14px] font-bold text-error dif-val';
+          }
+        }
+      }
+
+      if (pfInput) pfInput.addEventListener('input', updateDif);
+      if (pcInput) pcInput.addEventListener('input', updateDif);
+    });
+
+    // Global Save Triggers
+    const btnSaveAll = document.getElementById('btn-save-all');
+    const btnSaveBottom = document.getElementById('btn-save-bottom');
+    function saveEverything() {
+      markAsClean();
+      showToast('¡Todas las métricas y la tabla general han sido publicadas en vivo!');
+    }
+    if (btnSaveAll) btnSaveAll.addEventListener('click', saveEverything);
+    if (btnSaveBottom) btnSaveBottom.addEventListener('click', saveEverything);
+
+    // Discard Button
+    const btnDiscard = document.getElementById('btn-discard');
+    if (btnDiscard) {
+      btnDiscard.addEventListener('click', () => {
+        markAsClean();
+        showToast('Modificaciones no guardadas descartadas', 'neutral');
+      });
+    }
+
+    // Recalculate CTA
+    const btnRecalculate = document.getElementById('btn-recalculate');
+    if (btnRecalculate) {
+      btnRecalculate.addEventListener('click', () => {
+        showToast('Recalculando fórmulas FIBA, desempates y promedios...');
+      });
+    }
+
+    // Export FIBA CTA
+    const btnExport = document.getElementById('btn-export');
+    if (btnExport) {
+      btnExport.addEventListener('click', () => {
+        showToast('Generando reporte en formato FIBA Excel (XLSX)...');
+      });
+    }
+
+    // Filtering: Search & Team Selector
+    const searchInput = document.getElementById('search-player');
+    const filterTeam = document.getElementById('filter-team');
+    const filterPos = document.getElementById('filter-pos');
+
+    function applyFilters() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      const team = filterTeam?.value || 'all';
+      const pos = filterPos?.value || 'all';
+
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        const rTeam = r.getAttribute('data-team');
+        const rPos = r.getAttribute('data-pos');
+
+        const matchQ = !q || text.includes(q);
+        const matchTeam = (team === 'all') || (rTeam === team);
+        const matchPos = (pos === 'all') || (rPos === pos);
+
+        if (matchQ && matchTeam && matchPos) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (filterTeam) filterTeam.addEventListener('change', applyFilters);
+    if (filterPos) filterPos.addEventListener('change', applyFilters);
+
+    // Segmented Mode Switcher (Visual Toggle)
+    const tabPlayers = document.getElementById('tab-players');
+    const tabTeams = document.getElementById('tab-teams');
+
+    if (tabPlayers && tabTeams) {
+      tabPlayers.addEventListener('click', () => {
+        tabPlayers.className = "flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase font-bold shadow-sm transition-all";
+        tabTeams.className = "flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase font-bold transition-all";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      tabTeams.addEventListener('click', () => {
+        tabTeams.className = "flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase font-bold shadow-sm transition-all";
+        tabPlayers.className = "flex items-center gap-space-2xs px-space-md py-space-2xs rounded-full text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase font-bold transition-all";
+        const standingSection = document.getElementById('standings-table-body');
+        if (standingSection) {
+          standingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
+  })();
+</script></div></main><footer class="w-full bg-surface-container-low mt-auto py-space-xl"><div class="max-w-container-max mx-auto px-gutter-mobile lg:px-gutter-desktop flex flex-col md:flex-row items-center justify-between gap-space-lg"><div class="flex flex-col items-center md:items-start"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md uppercase text-on-surface leading-none">Liga Sanarateca</span><span class="font-label-meta text-label-meta px-space-2xs py-0.5 rounded-full bg-surface-container text-secondary font-bold uppercase">Admin Core v2.5</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mt-space-2xs">Plataforma de gestión de torneos, plantillas y actas de juego oficiales.</p></div><div class="flex flex-wrap items-center justify-center gap-space-lg font-label-pill text-label-pill text-on-surface-variant"><a class="hover:text-primary transition-colors" href="#">Auditoría de Actas</a><a class="hover:text-primary transition-colors" href="#">Exportar Reportes</a><a class="hover:text-primary transition-colors" href="#">Reglamento FEBAL</a><a class="hover:text-primary transition-colors" href="#">Mesa Técnica</a><a class="hover:text-primary transition-colors" href="#">Soporte IT</a></div><div class="font-label-meta text-label-meta text-on-surface-variant text-center md:text-right"><p>© 2025 Liga de Baloncesto Sanarateca.</p><p class="text-outline">Todos los derechos reservados.</p></div></div></footer></body></html>
