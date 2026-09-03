@@ -80,7 +80,10 @@
           </div>
 
           <div class="flex items-center gap-space-md mb-space-lg">
-            <div class="w-16 h-16 rounded-full bg-inverse-surface flex items-center justify-center shadow-md flex-shrink-0 overflow-hidden p-1.5">
+            <div
+              class="w-16 h-16 rounded-full bg-inverse-surface flex items-center justify-center shadow-md flex-shrink-0 overflow-hidden p-1.5 border-4"
+              :style="{ borderColor: team.color_hex || 'rgba(204,255,0,0.35)' }"
+            >
               <img v-if="team.logo_ruta" :src="assetUrl(team.logo_ruta)" alt="" class="w-full h-full object-contain" />
               <span v-else class="material-symbols-outlined text-[32px] text-primary-container">shield</span>
             </div>

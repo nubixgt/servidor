@@ -89,11 +89,18 @@
         :key="team.id"
         class="bg-surface-container-lowest rounded-xl p-space-lg shadow-[0_10px_30px_-4px_rgba(15,23,42,0.05)] flex flex-col justify-between relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-xl"
       >
+        <div
+          class="absolute top-0 left-0 h-full w-1.5"
+          :style="{ backgroundColor: team.color_hex || 'transparent' }"
+        ></div>
         <div class="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-primary-container/20 via-transparent to-transparent rounded-bl-full pointer-events-none"></div>
         <div>
           <div class="flex items-start justify-between gap-space-xs mb-space-md">
             <div class="flex items-center gap-space-sm min-w-0">
-              <div class="w-16 h-16 rounded-full bg-inverse-surface flex items-center justify-center shadow-md p-1.5 shrink-0 ring-4 ring-primary-container/30 overflow-hidden">
+              <div
+                class="w-16 h-16 rounded-full bg-inverse-surface flex items-center justify-center shadow-md p-1.5 shrink-0 overflow-hidden border-4"
+                :style="{ borderColor: team.color_hex || 'rgba(204,255,0,0.35)' }"
+              >
                 <img v-if="team.logo_ruta" :src="assetUrl(team.logo_ruta)" alt="" class="w-full h-full object-contain" />
                 <span v-else class="material-symbols-outlined text-primary-container text-[28px]">shield</span>
               </div>
