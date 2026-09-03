@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-surface flex flex-col md:flex-row">
-    <!-- Sidebar de Administración -->
-    <aside class="w-full md:w-64 bg-inverse-surface text-surface flex flex-col shrink-0">
+  <div class="min-h-screen md:h-screen md:overflow-hidden bg-surface flex flex-col md:flex-row">
+    <!-- Sidebar de Administración (fija en escritorio) -->
+    <aside class="w-full md:w-64 md:h-screen md:overflow-y-auto bg-inverse-surface text-surface flex flex-col shrink-0">
       <!-- Header de la marca Admin -->
       <div class="p-space-lg flex items-center gap-space-md border-b border-surface-variant/10">
         <img :src="logoUrl" alt="Logo Liga Sanarateca" class="w-10 h-10 object-contain" />
@@ -47,9 +47,9 @@
     </aside>
 
     <!-- Contenido Admin -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <main class="flex-1 flex flex-col min-w-0 md:h-screen">
       <!-- Topbar Admin -->
-      <header class="bg-surface-container-lowest border-b border-surface-container-high px-space-lg py-space-md flex items-center justify-between gap-space-md">
+      <header class="shrink-0 bg-surface-container-lowest border-b border-surface-container-high px-space-lg py-space-md flex items-center justify-between gap-space-md">
         <div class="flex items-center gap-space-xs font-label-meta text-label-meta uppercase tracking-wider text-on-surface-variant">
           <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
           <span class="text-on-surface font-semibold">Consola Administrativa</span>
