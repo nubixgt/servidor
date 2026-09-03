@@ -77,11 +77,13 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import { useConfirm } from '../../composables/useConfirm';
 import logoUrl from '../../assets/images/logo.png';
 
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
+const { confirm } = useConfirm();
 
 const navItems = [
   { to: '/admin', label: 'Resumen', icon: 'dashboard', exact: true },
@@ -105,8 +107,16 @@ const initials = computed(() => {
     .join('');
 });
 
-function onLogout() {
+async function onLogout() {
+  const ok = await confirm({
+    title: '¿Cerrar sesión?',
+    text: 'Se cerrará tu sesión de administrador.',
+    confirmText: 'Sí, cerrar sesión',
+    cancelText: 'Cancelar',
+    icon: 'question'
+  });
+  if (!ok) return;
   auth.logout();
-  router.push('/login');
+  router.push({ path: '/login', query: { logout: '1' } });
 }
 </script>

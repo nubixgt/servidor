@@ -111,17 +111,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
-import { useToast } from '../../composables/useToast';
 import { useAlert } from '../../composables/useAlert';
 import logoUrl from '../../assets/images/logo.png';
 
 const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
-const toast = useToast();
 const alert = useAlert();
 
 const usuario = ref('');
@@ -129,6 +127,13 @@ const password = ref('');
 const showPassword = ref(false);
 const loading = ref(false);
 const errorMsg = ref('');
+
+onMounted(() => {
+  if (route.query.logout) {
+    alert.flash('Sesión cerrada', 'Cerraste sesión correctamente.');
+    router.replace({ path: '/login', query: {} });
+  }
+});
 
 const handleLogin = async () => {
   if (!usuario.value.trim() || !password.value) {
@@ -140,7 +145,7 @@ const handleLogin = async () => {
   errorMsg.value = '';
   try {
     const user = await auth.login({ usuario: usuario.value, password: password.value });
-    toast.success(`Bienvenido, ${user?.nombre || 'Administrador'}`);
+    await alert.flash('Ingreso correcto', `Bienvenido, ${user?.nombre || 'Administrador'}`);
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin';
     router.push(redirect);
   } catch (err) {

@@ -30,6 +30,16 @@ export function useAlert() {
                 text,
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#506600'
+            }),
+        /** Éxito breve, centrado y con cierre automático (sin botón). */
+        flash: (title, text = '', timer = 1600) =>
+            Swal.fire({
+                icon: 'success',
+                title,
+                text,
+                showConfirmButton: false,
+                timer,
+                timerProgressBar: true
             })
     };
 }
