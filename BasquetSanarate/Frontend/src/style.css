@@ -1,10 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-    font-family: 'Inter', sans-serif;
-    @apply bg-slate-50 text-slate-600;
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    @apply bg-surface text-on-surface;
+  }
+}
+
+@layer components {
+  /* Controles reutilizables para los formularios de los modales admin */
+  .form-label {
+    @apply font-label-pill text-label-pill uppercase text-on-surface font-bold;
+  }
+  .form-input {
+    @apply w-full px-space-md py-space-xs rounded-full bg-surface-container-lowest text-on-surface
+           font-body-md text-body-md shadow-sm outline-none placeholder:text-outline
+           focus:ring-2 focus:ring-primary-container;
+  }
+  .form-select {
+    @apply form-input appearance-none pr-10;
+  }
+  .btn-ghost {
+    @apply px-space-lg py-space-xs rounded-full bg-surface-container-high text-on-surface
+           hover:bg-surface-variant font-label-pill text-label-pill uppercase font-semibold transition-colors;
+  }
+  .btn-primary {
+    @apply px-space-xl py-space-xs rounded-full bg-primary-container text-on-primary-fixed
+           hover:bg-primary-fixed font-label-pill text-label-pill uppercase font-bold tracking-wide
+           shadow-[0_8px_24px_-4px_rgba(204,255,0,0.5)] transition-transform active:scale-95
+           disabled:opacity-60 disabled:pointer-events-none;
+  }
 }

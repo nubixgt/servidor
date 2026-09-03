@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import PublicLayout from '../components/layout/PublicLayout.vue';
 import AdminLayout from '../components/layout/AdminLayout.vue';
 
-// Views
+// Vistas públicas
 import Home from '../views/public/Home.vue';
 import Equipos from '../views/public/Equipos.vue';
 import Jugadores from '../views/public/Jugadores.vue';
@@ -12,10 +12,10 @@ import Partidos from '../views/public/Partidos.vue';
 import Estadisticas from '../views/public/Estadisticas.vue';
 import Novedades from '../views/public/Novedades.vue';
 import Login from '../views/auth/Login.vue';
-import Dashboard from '../views/admin/Dashboard.vue';
+import { useAuthStore } from '../stores/auth';
 
 const routes = [
-  // Rutas Públicas (Bajo PublicLayout)
+  // Rutas Públicas (bajo PublicLayout)
   {
     path: '/',
     component: PublicLayout,
@@ -29,28 +29,33 @@ const routes = [
     ]
   },
 
-  // Ruta de Autenticación
+  // Autenticación
   {
     path: '/login',
     name: 'Login',
     component: Login
   },
 
-  // Rutas Administrativas (Bajo AdminLayout)
+  // Panel de administración (bajo AdminLayout, requiere sesión admin)
   {
-    path: '/',
+    path: '/admin',
     component: AdminLayout,
     meta: { requiresAuth: true },
     children: [
-      { path: 'dashboard', name: 'Dashboard', component: Dashboard }
+      { path: '', name: 'AdminResumen', component: () => import('../views/admin/Resumen.vue') },
+      { path: 'equipos', name: 'AdminEquipos', component: () => import('../views/admin/Equipos.vue') },
+      { path: 'jugadores', name: 'AdminJugadores', component: () => import('../views/admin/Jugadores.vue') },
+      { path: 'partidos', name: 'AdminPartidos', component: () => import('../views/admin/Partidos.vue') },
+      { path: 'estadisticas', name: 'AdminEstadisticas', component: () => import('../views/admin/Estadisticas.vue') },
+      { path: 'novedades', name: 'AdminNovedades', component: () => import('../views/admin/Novedades.vue') }
     ]
   },
 
-  // Redirección para cualquier ruta desconocida hacia inicio
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/'
-  }
+  // Compatibilidad con el enlace viejo
+  { path: '/dashboard', redirect: '/admin' },
+
+  // Cualquier otra ruta -> inicio
+  { path: '/:pathMatch(.*)*', redirect: '/' }
 ];
 
 const router = createRouter({
@@ -61,5 +66,19 @@ const router = createRouter({
   }
 });
 
-export default router;
+router.beforeEach((to) => {
+  const auth = useAuthStore();
 
+  if (to.meta.requiresAuth) {
+    if (!auth.isAuthenticated || !auth.isAdmin) {
+      auth.logout();
+      return { name: 'Login', query: { redirect: to.fullPath } };
+    }
+  }
+
+  if (to.name === 'Login' && auth.isAuthenticated && auth.isAdmin) {
+    return { path: '/admin' };
+  }
+});
+
+export default router;

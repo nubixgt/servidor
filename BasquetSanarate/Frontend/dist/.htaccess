@@ -1,6 +1,10 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /BasquetSanarate/
+
+  # No tocar el Backend (API + uploads) — lo maneja Backend/.htaccess
+  RewriteRule ^Backend/ - [L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
