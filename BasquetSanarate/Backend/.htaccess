@@ -1,5 +1,14 @@
 RewriteEngine On
 
+# Pasar el header Authorization a PHP (hosting compartido suele quitarlo)
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+<IfModule mod_cgi.c>
+    CGIPassAuth On
+</IfModule>
+<IfModule mod_fcgid.c>
+    CGIPassAuth On
+</IfModule>
+
 # Handle Preflight OPTIONS requests for CORS (if server config allows it, otherwise handle in PHP)
 RewriteCond %{REQUEST_METHOD} OPTIONS
 RewriteRule ^(.*)$ api/v1/index.php [L,QSA]

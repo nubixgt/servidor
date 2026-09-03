@@ -3,7 +3,7 @@ namespace App\Utils;
 
 class JwtUtils
 {
-    private static $secret = 'YOUR_SECRET_KEY_CHANGE_ME'; // In production, use ENV
+    private static $secret = 'BasquetSanarate_2025_9f3c1a7e5b204d88ac6e0f21d7b4c9a3';
     private static $algo = 'HS256';
 
     public static function generate($payload)
@@ -30,11 +30,53 @@ class JwtUtils
         $validSignature = hash_hmac('sha256', $header . "." . $payload, self::$secret, true);
         $base64UrlSignature = self::base64UrlEncode($validSignature);
 
-        if ($base64UrlSignature === $signature) {
+        if (hash_equals($base64UrlSignature, $signature)) {
             return json_decode(self::base64UrlDecode($payload), true);
         }
 
         return false;
+    }
+
+    /**
+     * Extrae el token "Bearer" de la petición.
+     *
+     * En hosting compartido el header Authorization suele no llegar a PHP por
+     * getallheaders(); por eso se revisan también las variables de $_SERVER que
+     * deja el pass-through de .htaccess (SetEnvIf / CGIPassAuth).
+     */
+    public static function bearerToken(): ?string
+    {
+        $header = null;
+
+        if (function_exists('getallheaders')) {
+            foreach (getallheaders() as $key => $value) {
+                if (strcasecmp($key, 'Authorization') === 0) {
+                    $header = $value;
+                    break;
+                }
+            }
+        }
+
+        if (!$header && function_exists('apache_request_headers')) {
+            foreach (apache_request_headers() as $key => $value) {
+                if (strcasecmp($key, 'Authorization') === 0) {
+                    $header = $value;
+                    break;
+                }
+            }
+        }
+
+        if (!$header) {
+            $header = $_SERVER['HTTP_AUTHORIZATION']
+                ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+                ?? '';
+        }
+
+        if ($header && preg_match('/Bearer\s+(\S+)/i', $header, $m)) {
+            return $m[1];
+        }
+
+        return null;
     }
 
     private static function base64UrlEncode($data)

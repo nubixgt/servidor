@@ -1,7 +1,13 @@
 <?php
 // imports
 use App\Core\Router;
-use App\Controllers\ExampleController;
+use App\Controllers\AuthController;
+use App\Controllers\DashboardController;
+use App\Controllers\EquipoController;
+use App\Controllers\JugadorController;
+use App\Controllers\PartidoController;
+use App\Controllers\EstadisticaController;
+use App\Controllers\NovedadController;
 
 // Backend/api/v1/index.php
 
@@ -10,6 +16,16 @@ use App\Controllers\ExampleController;
 ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
+
+// Servidor embebido (php -S): servir archivos estáticos reales (uploads, etc.)
+// directamente. En producción de esto se encarga Apache.
+if (php_sapi_name() === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $file = __DIR__ . '/../../' . ltrim($path, '/');
+    if ($path !== '/' && is_file($file)) {
+        return false;
+    }
+}
 
 require_once __DIR__ . '/../../autoload.php';
 
@@ -29,10 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // 4. Initialize Router
 $router = new Router();
 
-// 5. Register Controllers manually 
-$router->registerController(ExampleController::class);
-// $router->registerController(YourController::class);
-
+// 5. Register Controllers manually
+$router->registerController(AuthController::class);
+$router->registerController(DashboardController::class);
+$router->registerController(EquipoController::class);
+$router->registerController(JugadorController::class);
+$router->registerController(PartidoController::class);
+$router->registerController(EstadisticaController::class);
+$router->registerController(NovedadController::class);
 
 // 6. Dispatch
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

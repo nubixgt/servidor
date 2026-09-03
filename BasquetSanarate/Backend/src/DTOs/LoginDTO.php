@@ -1,19 +1,19 @@
 <?php
 namespace App\DTOs;
 
-class ExampleDTO
+class LoginDTO
 {
     public function __construct(
-        public string $name,
-        public string $description
+        public string $usuario,
+        public string $password
     ) {
     }
 
     public static function fromRequest(array $data): self
     {
         return new self(
-            $data['name'] ?? '',
-            $data['description'] ?? ''
+            trim($data['usuario'] ?? ''),
+            (string) ($data['password'] ?? '')
         );
     }
 }

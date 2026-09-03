@@ -1,9 +1,9 @@
 <?php
 return [
     'host' => 'localhost',
-    'dbname' => 'your_database_name',
-    'username' => 'root',
-    'password' => '',
+    'dbname' => 'visionwe_BasquetSanarate',
+    'username' => 'visionwe',
+    'password' => 'Guate25#',
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

@@ -23,21 +23,26 @@ class Router
         // Simple URI matching for now (ignores query params in matching logic)
         $uri = strtok($uri, '?');
 
-        // Strip the base path if we are running in a subdirectory
-        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /project/api/v1/index.php
-        $scriptDir = dirname($scriptName);     // e.g., /project/api/v1
-
-        // Normalize slashes
-        $scriptDir = str_replace('\\', '/', $scriptDir);
-
-        // If URI starts with scriptDir, remove it
-        if ($scriptDir !== '/' && strpos($uri, $scriptDir) === 0) {
-            $uri = substr($uri, strlen($scriptDir));
+        // Todas las rutas viven bajo .../api/v1/ — nos quedamos con lo que sigue
+        // a ese segmento. Funciona igual en producción (subdirectorio + rewrite)
+        // y con el servidor embebido `php -S ... api/v1/index.php`.
+        if (($pos = strpos($uri, '/api/v1')) !== false) {
+            $uri = substr($uri, $pos + strlen('/api/v1'));
+        } else {
+            // Fallback: recortar el directorio del script (p. ej. `php -S host:port index.php`)
+            $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+            if ($scriptDir !== '/' && $scriptDir !== '.' && strpos($uri, $scriptDir) === 0) {
+                $uri = substr($uri, strlen($scriptDir));
+            }
         }
 
         // Ensure URI starts with /
         if ($uri === '' || $uri[0] !== '/') {
             $uri = '/' . $uri;
+        }
+        // Quitar barra final salvo raíz
+        if ($uri !== '/' && substr($uri, -1) === '/') {
+            $uri = rtrim($uri, '/');
         }
 
         foreach ($this->controllers as $controllerClass) {
@@ -121,16 +126,14 @@ class Router
 
     private function validateToken()
     {
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? '';
+        $token = JwtUtils::bearerToken();
 
-        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        if (!$token) {
             http_response_code(401);
             echo json_encode(["status" => "error", "message" => "Unauthorized: Missing Bearer Token"]);
             exit;
         }
 
-        $token = $matches[1];
         $payload = JwtUtils::validate($token);
 
         if (!$payload) {
