@@ -411,34 +411,6 @@
         </div>
       </div>
     </section>
-
-    <!-- CALL TO ACTION / INSCRIPCIONES -->
-    <section class="w-full py-space-2xl px-gutter-mobile md:px-gutter-desktop">
-      <div class="max-w-[1280px] mx-auto bg-inverse-surface rounded-xl p-space-xl md:p-space-2xl text-surface relative overflow-hidden">
-        <div class="absolute right-0 top-0 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="relative z-10 max-w-2xl flex flex-col gap-space-md">
-          <div class="inline-flex items-center gap-space-xs text-primary-container font-label-meta text-label-meta uppercase tracking-widest">
-            <span class="material-symbols-outlined text-[18px]">campaign</span>
-            Inscripciones y Fanatics Club
-          </div>
-          <h2 class="font-display-hero text-headline-xl md:text-display-hero uppercase tracking-tight leading-none text-surface">
-            ¿Listo para ser parte de la <span class="text-primary-container">Sanarateca</span>?
-          </h2>
-          <p class="font-body-lg text-body-lg text-surface-dim">
-            Inscribe a tu equipo comunal o regístrate como aficionado para recibir alertas en vivo de los partidos, estadísticas detalladas de tus atletas favoritos y acceso exclusivo a las finales.
-          </p>
-          <div class="pt-space-sm flex flex-col sm:flex-row items-stretch sm:items-center gap-space-md">
-            <div class="flex-1 bg-surface-variant/10 rounded-full px-space-md py-space-2xs flex items-center gap-space-xs">
-              <span class="material-symbols-outlined text-surface-dim text-[20px]">mail</span>
-              <input class="bg-transparent border-none outline-none text-surface placeholder:text-surface-dim text-body-sm w-full py-space-2xs" placeholder="Ingresa tu correo electrónico..." type="email"/>
-            </div>
-            <button class="rounded-full bg-primary-container text-on-primary-fixed px-space-xl py-space-md font-label-pill text-label-pill uppercase shadow-[0_4px_16px_rgba(204,255,0,0.35)] hover:scale-105 transition-all shrink-0">
-              Unirse Ahora
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
