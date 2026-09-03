@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Liga de Baloncesto Sanarateca</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#5c647a","surface-container-highest":"#e1e3e4","on-error-container":"#93000a","on-surface":"#191c1d","on-secondary-fixed-variant":"#3f465c","on-secondary":"#ffffff","surface-variant":"#e1e3e4","tertiary-fixed":"#acf847","inverse-primary":"#abd600","on-primary-fixed-variant":"#3c4d00","surface":"#f8f9fa","tertiary-fixed-dim":"#91db2a","on-tertiary":"#ffffff","surface-container-low":"#f3f4f5","inverse-surface":"#2e3132","primary-fixed":"#c3f400","on-error":"#ffffff","secondary":"#565e74","outline-variant":"#c4c9ac","surface-container-high":"#e7e8e9","background":"#f8f9fa","on-tertiary-container":"#4a7700","tertiary":"#416900","surface-dim":"#d9dadb","error-container":"#ffdad6","on-tertiary-fixed-variant":"#304f00","on-background":"#191c1d","inverse-on-surface":"#f0f1f2","tertiary-container":"#c2ff75","on-primary-container":"#5b7300","secondary-fixed-dim":"#bec6e0","surface-tint":"#506600","on-secondary-fixed":"#131b2e","on-primary-fixed":"#161e00","error":"#ba1a1a","secondary-container":"#dae2fd","surface-container-lowest":"#ffffff","primary-fixed-dim":"#abd600","surface-container":"#edeeef","outline":"#747a60","on-primary":"#ffffff","secondary-fixed":"#dae2fd","surface-bright":"#f8f9fa","on-tertiary-fixed":"#102000","primary":"#506600","primary-container":"#ccff00","on-surface-variant":"#444933"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},spacing:{"space-2xs":"0.25rem","space-sm":"0.75rem","space-2xl":"3rem","space-lg":"1.5rem","gutter-mobile":"1rem","gutter-desktop":"1.5rem","space-3xl":"4.5rem","space-xl":"2rem","space-xs":"0.5rem","space-md":"1rem","container-max":"1280px"},fontFamily:{"label-meta":["Plus Jakarta Sans","sans-serif"],"headline-xl":["Oswald","sans-serif"],"display-hero":["Oswald","sans-serif"],"body-md":["Plus Jakarta Sans","sans-serif"],"body-sm":["Plus Jakarta Sans","sans-serif"],"headline-md":["Oswald","sans-serif"],"body-lg":["Plus Jakarta Sans","sans-serif"],"stat-display":["Oswald","sans-serif"],"display-hero-mobile":["Oswald","sans-serif"],"label-pill":["Plus Jakarta Sans","sans-serif"],"headline-lg":["Oswald","sans-serif"]},fontSize:{"label-meta":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],"headline-xl":["36px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"60px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["15px",{"lineHeight":"22px","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"500"}],"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"0em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"stat-display":["48px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"display-hero-mobile":["40px",{"lineHeight":"44px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-pill":["13px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"34px","letterSpacing":"0em","fontWeight":"600"}]}}}};</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-inverse-surface/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.25)]"><div class="h-20 max-w-[1280px] mx-auto px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-space-md"><img alt="Logo Liga de Baloncesto Sanarateca" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U-59pkzj6cCpqFcRcGFQCIW1Ck_6PnJE29D6S2SSvyloqP3lnf-mWkJlgMSRFVEdPIzVyzOX7YJzJp94NCTmWITymduNPv-qdtlFphND0hDSo-BrJ8GlM4TEwxg7VgGOtlWB4BSzncr1ie4tkWXFeS8cPBkPll0L79LZVhHrTMm_x4EXZrSTM6JvjEK71vemY8DWY3CXctN95l_Z0JIUHF3W7dPX5KHz-BfAIIj876aBHlLOeUEpQ861w"/><div class="flex flex-col"><span class="font-headline-md text-headline-md uppercase tracking-wider text-surface leading-none">Sanarateca</span><span class="font-label-meta text-label-meta text-primary-container tracking-widest uppercase">Liga de Baloncesto</span></div></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary-container font-semibold after:scale-x-100"><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="inicio" href="#">Inicio</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="dashboard" href="#">Dashboard</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="equipos" href="#">Equipos</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="jugadores" href="#">Jugadores</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="partidos" href="#">Partidos</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="estadisticas" href="#">Estadísticas</a><a aria-current="page" class="relative uppercase transition-colors duration-200 py-space-xs text-primary-container font-semibold after:scale-x-100" data-path="novedades" href="#">Novedades</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-fixed px-space-lg py-space-xs font-label-pill text-label-pill uppercase shadow-[0_4px_16px_rgba(204,255,0,0.35)] hover:shadow-[0_6px_24px_rgba(204,255,0,0.55)] hover:scale-105 transition-all duration-200" data-path="login" href="#">Entrar</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-inner"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Dynamic Typographic Ambient Header & Sub-Bar -->
+<section class="relative w-full max-w-[1280px] mx-auto px-gutter-desktop pt-space-xl pb-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="space-y-space-2xs">
+<div class="flex items-center gap-space-xs">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-meta text-label-meta uppercase tracking-widest text-primary">Boletín Oficial &amp; Sala de Prensa</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl uppercase text-on-surface tracking-tight leading-none">
+          Novedades <span class="text-secondary">&amp; Comunicados</span>
+</h1>
+</div>
+<!-- Quick Filter Pills: Inspired by the segmented pill deck from reference -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-space-2xs">
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase shadow-sm transition-all duration-200">
+          Todos
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container-high text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase transition-all duration-200">
+          Playoffs
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container-high text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase transition-all duration-200">
+          Comisión Técnica
+        </button>
+<button class="filter-pill px-space-md py-space-xs rounded-full bg-surface-container-high text-secondary hover:text-on-surface font-label-pill text-label-pill uppercase transition-all duration-200">
+          Comunidad &amp; Clínicas
+        </button>
+</div>
+</div>
+</section>
+<!-- Main Hero Article (Central Card Aesthetic with Large Athlete Cutout / Photo) -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-desktop pb-space-2xl">
+<div class="relative bg-surface-container-lowest rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+<!-- Watermark Background Branding -->
+<div class="absolute -right-8 -top-12 select-none pointer-events-none opacity-[0.03] text-[260px] font-display-hero uppercase leading-none font-bold text-on-surface">
+        BASKET
+      </div>
+<div class="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[460px]">
+<!-- Left: Image Canvas with overlapping float elements -->
+<div class="relative lg:col-span-7 overflow-hidden bg-surface-container min-h-[320px] lg:min-h-full">
+<img class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700" data-alt="Dynamic shot of a focused basketball player in athletic white jersey with bold numbers clutching official game ball under dramatic sports arena lights, soft warm highlights, athletic grit, high contrast sportswear editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5c_WtXbngmZth0OuuzU9Qisi2EumOqSRJa-sbqhR-wMpwR4VaHCaKrYsDtGLJyjGiXry3a8FZ394Y2TqlHh4j3ThnxBEefC3bJRoY6qi7OaOPKWwLLH8z2Q93VaYmn4b_TS_6LrzTokFXaZBx15KYhakV-Rn3pzWXoIPtKKqIU1ZPQxl3e41l-u844idHASmZLXpM71JyHe9R-uslSapBc3Ig7HytmZUjyjtCe0IkRUMlcp_jcc-QFQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent lg:hidden"></div>
+<!-- Category Floating Pill in Top-Left (Reference-matched 'New' Pill) -->
+<div class="absolute top-space-md left-space-md flex items-center gap-space-xs">
+<span class="px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase tracking-wider shadow-md">
+              Destacado • Torneo 2025
+            </span>
+<span class="px-space-sm py-space-xs rounded-full bg-inverse-surface/90 text-surface font-label-meta text-label-meta uppercase tracking-wider backdrop-blur-sm">
+              Comunicado #42
+            </span>
+</div>
+<!-- Bottom micro-stats overlay on picture (Mobile/Tablet view) -->
+<div class="absolute bottom-space-md left-space-md flex items-center gap-space-sm bg-inverse-surface/85 backdrop-blur-md px-space-md py-space-xs rounded-full text-surface text-body-sm font-body-sm shadow-md">
+<span class="material-symbols-outlined text-primary-container text-[18px]">calendar_month</span>
+<span>22 Febrero 2025</span>
+<span class="w-1 h-1 rounded-full bg-primary-container"></span>
+<span class="material-symbols-outlined text-primary-container text-[18px]">schedule</span>
+<span>4 min de lectura</span>
+</div>
+</div>
+<!-- Right: Editorial Content -->
+<div class="lg:col-span-5 p-space-lg lg:p-space-2xl flex flex-col justify-between">
+<div class="space-y-space-md">
+<div class="flex items-center gap-space-xs text-secondary font-label-meta text-label-meta uppercase">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span>Comisión Técnica Federada Sanarate</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl uppercase text-on-surface leading-[1.08] tracking-tight">
+              Definidas las llaves para los Playoffs 2025: Horarios y sedes oficiales confirmadas
+            </h2>
+<p class="text-secondary font-body-md text-body-md leading-relaxed">
+              Tras 18 jornadas de intensa competencia de temporada regular, la Liga Mayor Sanarateca oficializa los cruces definitivos al título. Toros del Norte y Halcones lideran como cabezas de serie para la ronda de eliminación directa en el Gimnasio Municipal.
+            </p>
+<!-- Stat Highlight Boxes (Matched from Reference Card Tiles) -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col justify-center">
+<span class="font-stat-display text-stat-display text-on-surface leading-none">08</span>
+<span class="font-label-meta text-label-meta uppercase text-secondary mt-space-2xs">Equipos Clasificados</span>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col justify-center">
+<span class="font-stat-display text-stat-display text-primary leading-none">03</span>
+<span class="font-label-meta text-label-meta uppercase text-secondary mt-space-2xs">Rondas de Playoff</span>
+</div>
+</div>
+</div>
+<!-- Action Footbar -->
+<div class="pt-space-lg flex items-center justify-between">
+<a class="inline-flex items-center gap-space-xs px-space-xl py-space-sm rounded-full bg-inverse-surface text-surface hover:bg-primary-container hover:text-on-primary-fixed font-label-pill text-label-pill uppercase transition-all duration-300 shadow-md group" href="#">
+<span>Leer Circular Completa</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<div class="flex items-center gap-space-2xs">
+<button class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary hover:text-on-surface transition-colors" title="Guardar nota">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary hover:text-on-surface transition-colors" title="Compartir">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Announcements Ticker -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-desktop pb-space-2xl">
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col md:flex-row items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md min-w-0">
+<span class="px-space-md py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase whitespace-nowrap">
+          Alerta Oficial
+        </span>
+<p class="font-body-sm text-body-sm text-on-surface truncate">
+<strong class="uppercase font-semibold">Congresillo Extraordinario:</strong> Jueves 27 a las 19:30 hrs en Salón Municipal para ratificación de rosters de postemporada.
+        </p>
+</div>
+<a class="inline-flex items-center gap-space-2xs text-primary font-label-pill text-label-pill uppercase whitespace-nowrap hover:underline" href="#">
+<span>Ver Agenda</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- 3-Column News & Disciplinary Grid -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-desktop pb-space-3xl">
+<div class="flex items-center justify-between mb-space-lg">
+<div class="space-y-space-2xs">
+<span class="font-label-meta text-label-meta uppercase tracking-wider text-secondary">Actualidad Deportiva</span>
+<h3 class="font-headline-lg text-headline-lg uppercase text-on-surface">Artículos &amp; Resoluciones Recientes</h3>
+</div>
+<span class="font-label-meta text-label-meta uppercase text-secondary">6 Noticias Disponibles</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+<!-- Card 1: Disciplinary Board -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Referees whistle hanging from uniform, dramatic sports court sideline scene, ambient gym lights, official rulebook and basketball on wooden polished parquet floor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3yR2Ye9skQF7WKyB5rsxwdSZ0MuOk80bwhdnWAv--gWMGQ3BeIqK34a46O-0iX4ldfLgoYe_ZKZKtcCgZLUjdES3K69w5ApWDHLXVxfgWZbr4RZBGRaCbBWOj1yC3o04MvhlYystejPtXeqqUnr3W-8SwbRsLyff-AK4Gk_64_7AbzwqSqiXqsGSPqpEbZLPAfGkef5BCdMpfW5Vr4OucmEQkNfP9VsIQjnd_KjxjyBgQ4RHHUXXkWg"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-inverse-surface/90 text-surface font-label-meta text-label-meta uppercase">
+            Comisión Disciplinaria
+          </span>
+<span class="absolute bottom-space-sm right-space-sm px-space-sm py-space-2xs rounded-full bg-surface-container-lowest/90 text-on-surface font-label-meta text-label-meta">
+            Resolución #18
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>20 Feb 2025</span>
+<span>•</span>
+<span>3 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              Acta de Sanciones Jornada 18: Fallos y Amonestaciones Técnicas
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              Revisión de videos de incidentes en el encuentro Jaguares vs Leones. Se determinan una suspensión por acumulación de faltas antideportivas y multas reglamentarias.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Lic. R. Méndez</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 2: Youth Clinic & Community -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Young basketball players practicing drills and dribbling on community outdoor asphalt court with neon markings, coach demonstrating passing technique under sunny sky in Guatemala." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgq37zbFj_xIoJknYmN01KSCLrazQuy2jSKLU-zvbbdBVGkQOk8gWm_Cc1DQ_0a8xaRAF5eD2_zBjfGHPdtj7P7erg_qaD53qqaNCDgO0E4jywU_JZtuXltwygTtY63wvel2hVYSmQdX51XLb--Ck1SQtQuGk_vLk167TvLD0khWEYWjDSCWrAgolIQP0RF_hgmdMvptkpnOJp0v7R6Wp1gEebjJ93BhTj_NH_PuBIkTnL2__C4N2vPQ"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-tertiary-container text-on-tertiary-container font-label-meta text-label-meta uppercase font-bold">
+            Clínica Infantil
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>18 Feb 2025</span>
+<span>•</span>
+<span>5 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              Campamento Semillero Basket 2025: Abiertas las Inscripciones Sub-13
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              La Liga Sanarateca lanza programa gratuito de formación táctica para niños y niñas del municipio, con apoyo de exjugadores de la Selección Nacional.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Dir. Juventud y Deporte</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 3: Municipal Selection Showcase -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Basketball team huddle in blue and neon uniforms cheering with hands stacked together in center circle, high emotion athletic brotherhood, indoor championship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBAYy39ZTVQ20We1WpoUCFAJWC1NAX8ICz7Bts_Pnk0jMowSUPTa5xy6AV-3ts9LWyBi1bAhcS-hOgRBjD8dBI1znLzoLq9T4jr01tFG8oz4FtzGyD-HZ1YgoKz9C7-FTyUi9KyVdtJhV0z1w7KkXk7w89V8U1GIeUEUMLJUS4TqqxiRTjaGJbNz6iDxsITvRQSClgN5YtP4GwPOGgEP-xjrRfMqQyzPGNKYDeS7Ny2Z3VyF8NxDINXw"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-secondary-container text-on-secondary-fixed font-label-meta text-label-meta uppercase font-bold">
+            Selección Municipal
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>16 Feb 2025</span>
+<span>•</span>
+<span>2 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              Convocatoria Oficial: Roster Preliminar para el Torneo Intermunicipal de Oriente
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              Quince jugadores destacados de la Liga Local han sido preseleccionados para representar a Sanarate en el certamen regional de Chiquimula en marzo.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Coach Estuardo Morales</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 4: Equipment & Facility Upgrades -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern high-tech basketball glass backboard and orange rim with tension springs, crisp spotlights shining down, dark athletic gym background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf6j_DwBVK58s7bQQTq4pJ1mGi7M-N361hC-NBb4jqgP-Oyk1ODJ9YHIVp5_BMq5kgDlgJQe7hpelbGO5SPl6ujzeB4qrrR-xbMkGfT8Qnk8Qt-Jj4PFWopZu3s1pRkWIWwDaEpQz0Q-YG4PLH2-9uGI4cQ7Le-NexUYT8ooTjhHz0mDjBXpDp7UTVgR-CY8rselrMaiTaIz9ASS7ygN9yKnIW8Vx4E8hofgiQBrUMmx7wzi_lEwmHLg"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-surface-container-high text-on-surface font-label-meta text-label-meta uppercase">
+            Infraestructura
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>12 Feb 2025</span>
+<span>•</span>
+<span>3 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              Inauguración del Nuevo Tablero Electrónico LED en la Duela Central
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              Gracias a la alianza con patrocinadores oficiales, el Coliseo Municipal de Sanarate cuenta ahora con cronometraje digital de 24 segundos certificado FIBA.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Junta Directiva</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 5: Season Leader Feature -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Basketball guard shooting a high floating 3-point jumper in mid-air over defender, dynamic motion blur, athletic intensity, lime volt and black team colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzTzMxxCy9oi6SEW5qQwbyseUbqZNdElHAll-x64Zq2GH0GUxFIiakreOOWAWIvgZyAc2x47VRrSvTM9HAUv_SfHQvY9LnScQw2mcDPTaDKAHV9R6dNTDoEBVZz51BjVzgNqZehKw2kco7Ms4Js71c8N4oRRf7DGmidw5wyp708DYg7pOwifMAaJewPTUweSn3XK8yeRjKqRspR_f2DZMvaNEnd-XZ_2Ke3klz4HEVlpBVVxSfRT6u2Q"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta uppercase font-bold">
+            Entrevista Exclusiva
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>10 Feb 2025</span>
+<span>•</span>
+<span>6 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              'Nuestra meta no es solo la final, es dejar un legado': Carlos Girón
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              El máximo encestador de la fase regular analiza el gran momento de Halcones Sanarate y cómo afrontan su duelo de semifinal ante Piratas.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Prensa Deportiva</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Card 6: All-Star Game Voting -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-lg transition-all duration-300 group">
+<div class="relative w-full h-56 rounded-lg overflow-hidden bg-surface-container mb-space-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of a basketball resting on the rim of the net ready to drop in, moody dramatic lighting with neon green rim glow, athletic precision sports visual." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4iVNG40e5jeJ3eiIY3Xe6z6sskCRWkKH2hZiXvQ9zX_pCbZqLAxFlMWBLb4maswkAbz5ka2XnAxVKGzaUTemC5Kicl2q8Iv9fdUjgrKRHFoDebR6oQdyBIhqW5Zi3s3h69PyPzrqg30VPv_kPjLtem1motGfXEJ5WIzOQ04cTHbh3qDny-Rnt_NfyTRwo0dQ4N5_Q_YBFx5Cd7iTdzrSEiqNF4qMWSkgGyTMzS9T7I5s3vLs4w_VSVw"/>
+<span class="absolute top-space-sm left-space-sm px-space-sm py-space-2xs rounded-full bg-inverse-surface/90 text-surface font-label-meta text-label-meta uppercase">
+            Votación de Fanáticos
+          </span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span>08 Feb 2025</span>
+<span>•</span>
+<span>2 min</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-tight">
+              Elige a tus Titulares para el Juego de las Estrellas Sanarate 2025
+            </h4>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-3">
+              Se abre el portal de votación digital para armar los quintetos de la Zona Norte contra Zona Sur. Conoce los nominados en cada posición.
+            </p>
+</div>
+<div class="pt-space-md mt-space-md flex items-center justify-between">
+<span class="font-label-meta text-label-meta text-secondary">Por: Comité Organizador</span>
+<a class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary-container group-hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Dual Split Section: Document Center & WhatsApp/Newsletter Subscription -->
+<section class="w-full max-w-[1280px] mx-auto px-gutter-desktop pb-space-2xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-stretch">
+<!-- Official PDF Resolutions Download Center -->
+<div class="lg:col-span-6 bg-surface-container-lowest rounded-xl p-space-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<div class="space-y-space-2xs">
+<span class="font-label-meta text-label-meta uppercase text-primary tracking-wider">Transparencia &amp; Reglamentos</span>
+<h3 class="font-headline-md text-headline-md uppercase text-on-surface">Circulares Oficiales en PDF</h3>
+</div>
+<span class="material-symbols-outlined text-secondary text-[28px]">folder_shared</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mb-space-lg">
+            Descargue directamente las circulares técnicas, actas disciplinarias y reglamentos validados por la Federación Departamental.
+          </p>
+<!-- Document List -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="truncate">
+<h5 class="font-label-pill text-label-pill text-on-surface truncate">Circular-Playoffs-2025-Reglamento.pdf</h5>
+<span class="font-label-meta text-label-meta text-secondary">2.4 MB • 22 Feb 2025</span>
+</div>
+</div>
+<a class="flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container-highest hover:bg-inverse-surface hover:text-surface text-on-surface font-label-meta text-label-meta uppercase transition-colors" download="" href="#">
+<span>Descargar</span>
+<span class="material-symbols-outlined text-[16px]">download</span>
+</a>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="truncate">
+<h5 class="font-label-pill text-label-pill text-on-surface truncate">Acta-Disciplinaria-Sesion-18.pdf</h5>
+<span class="font-label-meta text-label-meta text-secondary">1.1 MB • 20 Feb 2025</span>
+</div>
+</div>
+<a class="flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container-highest hover:bg-inverse-surface hover:text-surface text-on-surface font-label-meta text-label-meta uppercase transition-colors" download="" href="#">
+<span>Descargar</span>
+<span class="material-symbols-outlined text-[16px]">download</span>
+</a>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="truncate">
+<h5 class="font-label-pill text-label-pill text-on-surface truncate">Estatutos-Liga-Sanarateca-Edicion-2025.pdf</h5>
+<span class="font-label-meta text-label-meta text-secondary">4.8 MB • 15 Ene 2025</span>
+</div>
+</div>
+<a class="flex items-center gap-space-2xs px-space-md py-space-xs rounded-full bg-surface-container-highest hover:bg-inverse-surface hover:text-surface text-on-surface font-label-meta text-label-meta uppercase transition-colors" download="" href="#">
+<span>Descargar</span>
+<span class="material-symbols-outlined text-[16px]">download</span>
+</a>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-md flex items-center gap-space-2xs text-secondary font-label-meta text-label-meta">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>Archivos certificados con firma electrónica de la Junta Directiva.</span>
+</div>
+</div>
+<!-- High Energy Newsletter & Community WhatsApp Channel Subscription -->
+<div class="lg:col-span-6 bg-inverse-surface text-surface rounded-xl p-space-xl shadow-md flex flex-col justify-between relative overflow-hidden">
+<!-- Subtle Athletic Accent Glow -->
+<div class="absolute -right-16 -bottom-16 w-64 h-64 rounded-full bg-primary-container/10 filter blur-3xl pointer-events-none"></div>
+<div>
+<div class="flex items-center gap-space-xs mb-space-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-label-meta text-label-meta text-primary-container uppercase tracking-widest">Canal Directo</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg uppercase text-surface mb-space-xs">
+            Recibe Marcadores y Convocatorias al Instante
+          </h3>
+<p class="font-body-sm text-body-sm text-surface-dim mb-space-lg leading-relaxed">
+            Únete a la comunidad de más de 1,400 fanáticos, delegados y atletas que reciben las actas arbitrales, fotos exclusivas y alertas de último minuto vía WhatsApp o correo.
+          </p>
+<!-- Input Group Form -->
+<form class="space-y-space-sm" id="newsletter-form" onsubmit="event.preventDefault(); document.getElementById('sub-success').classList.remove('hidden');">
+<div class="flex flex-col sm:flex-row gap-space-xs">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-secondary text-[20px]">mail</span>
+<input class="w-full bg-surface rounded-full py-space-sm pl-12 pr-space-md text-on-surface font-body-sm text-body-sm placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-primary-container" placeholder="Tu correo electrónico o teléfono" required="" type="email"/>
+</div>
+<button class="px-space-xl py-space-sm rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase hover:scale-105 active:scale-95 transition-all shadow-[0_4px_16px_rgba(204,255,0,0.35)] whitespace-nowrap" type="submit">
+                Suscribirme
+              </button>
+</div>
+<div class="hidden p-space-sm rounded bg-primary-container/20 text-primary-container text-body-sm font-body-sm flex items-center gap-space-xs" id="sub-success">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>¡Listo! Te enviaremos el enlace de confirmación al instante.</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs text-surface-dim font-label-meta text-label-meta">
+<label class="flex items-center gap-space-2xs cursor-pointer">
+<input checked="" class="accent-primary-container rounded" type="checkbox"/>
+<span>Alertas por WhatsApp</span>
+</label>
+<label class="flex items-center gap-space-2xs cursor-pointer">
+<input checked="" class="accent-primary-container rounded" type="checkbox"/>
+<span>Boletín Semanal de Resultados</span>
+</label>
+</div>
+</form>
+</div>
+<!-- Social Proof Chips -->
+<div class="pt-space-xl flex items-center justify-between">
+<div class="flex items-center -space-x-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary text-[12px] font-bold">SM</div>
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-surface text-[12px] font-bold">TG</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-fixed text-[12px] font-bold">HS</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface text-[10px] font-bold">+1.4k</div>
+</div>
+<a class="inline-flex items-center gap-space-2xs text-primary-container font-label-pill text-label-pill uppercase hover:underline" href="#">
+<span>Abrir Canal WhatsApp</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Tag Filtering Script -->
+<script>
+    document.querySelectorAll('.filter-pill').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(btn => {
+          btn.classList.remove('bg-primary-container', 'text-on-primary-fixed');
+          btn.classList.add('bg-surface-container-high', 'text-secondary');
+        });
+        button.classList.add('bg-primary-container', 'text-on-primary-fixed');
+        button.classList.remove('bg-surface-container-high', 'text-secondary');
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-inverse-surface text-surface-dim mt-space-3xl"><div class="max-w-[1280px] mx-auto px-gutter-desktop pt-space-3xl pb-space-2xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-2xl mb-space-2xl"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><div class="w-3 h-3 rounded-full bg-primary-container"></div><span class="font-headline-lg text-headline-lg uppercase text-surface tracking-wider">Sanarateca</span></div><p class="text-surface-dim font-body-sm text-body-sm leading-relaxed">La cúspide del baloncesto regional amateur y semiprofesional en Sanarate. Impulsando el talento, la disciplina y la pasión deportiva de nuestra comunidad.</p><div class="flex items-center gap-space-sm pt-space-xs"><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">share</span></span><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">public</span></span><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">forum</span></span></div></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Navegación Rápida</h3><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm"><li><a class="hover:text-primary-container transition-colors" data-path="equipos" href="#">Tabla de Posiciones Oficial</a></li><li><a class="hover:text-primary-container transition-colors" data-path="partidos" href="#">Calendario &amp; Fixture</a></li><li><a class="hover:text-primary-container transition-colors" data-path="jugadores" href="#">Líderes de Anotación</a></li><li><a class="hover:text-primary-container transition-colors" data-path="estadisticas" href="#">Reglamento de Torneo</a></li><li><a class="hover:text-primary-container transition-colors" data-path="novedades" href="#">Sala de Prensa &amp; Comunicados</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Posiciones Destacadas</h3><div class="flex flex-col gap-space-xs font-body-sm text-body-sm"><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">1. Toros del Norte</span><span class="text-primary-container font-headline-md text-headline-md">14-1</span></div><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">2. Halcones Sanarate</span><span class="text-surface-dim font-headline-md text-headline-md">12-3</span></div><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">3. Jaguares Oriente</span><span class="text-surface-dim font-headline-md text-headline-md">10-5</span></div></div></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Patrocinadores Oficiales</h3><div class="grid grid-cols-2 gap-space-xs font-label-pill text-label-pill"><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Volt Energy</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Sanarate Gas</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Coperativa Oriente</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">GuateSport Pro</div></div></div></div><div class="pt-space-xl flex flex-col sm:flex-row items-center justify-between gap-space-md text-surface-variant font-label-meta text-label-meta"><p>© 2025 Liga de Baloncesto Sanarateca. Todos los derechos reservados.</p><div class="flex items-center gap-space-lg"><span class="cursor-pointer hover:text-surface transition-colors">Términos de Competencia</span><span class="cursor-pointer hover:text-surface transition-colors">Privacidad y Atletas</span><span class="cursor-pointer hover:text-surface transition-colors">Comisión Técnica</span></div></div></div></footer></body></html>

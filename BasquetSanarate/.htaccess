@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /BasquetSanarate/
+
+    # 1. Enrutamiento del API / Backend
+    # No reescribir peticiones al Backend
+    RewriteRule ^Backend/(.*)$ - [L]
+
+    # 2. Archivos Estáticos (Frontend)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/BasquetSanarate/Frontend/dist/$1 -f
+    RewriteRule ^(.*)$ Frontend/dist/$1 [L]
+
+    # 3. Fallback de SPA (Vue Router)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . Frontend/dist/index.html [L]
+
+    # Ruta raíz
+    RewriteRule ^$ Frontend/dist/index.html [L]
+</IfModule>

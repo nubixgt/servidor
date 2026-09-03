@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Liga de Baloncesto Sanarateca</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-container":"#5c647a","surface-container-highest":"#e1e3e4","on-error-container":"#93000a","on-surface":"#191c1d","on-secondary-fixed-variant":"#3f465c","on-secondary":"#ffffff","surface-variant":"#e1e3e4","tertiary-fixed":"#acf847","inverse-primary":"#abd600","on-primary-fixed-variant":"#3c4d00","surface":"#f8f9fa","tertiary-fixed-dim":"#91db2a","on-tertiary":"#ffffff","surface-container-low":"#f3f4f5","inverse-surface":"#2e3132","primary-fixed":"#c3f400","on-error":"#ffffff","secondary":"#565e74","outline-variant":"#c4c9ac","surface-container-high":"#e7e8e9","background":"#f8f9fa","on-tertiary-container":"#4a7700","tertiary":"#416900","surface-dim":"#d9dadb","error-container":"#ffdad6","on-tertiary-fixed-variant":"#304f00","on-background":"#191c1d","inverse-on-surface":"#f0f1f2","tertiary-container":"#c2ff75","on-primary-container":"#5b7300","secondary-fixed-dim":"#bec6e0","surface-tint":"#506600","on-secondary-fixed":"#131b2e","on-primary-fixed":"#161e00","error":"#ba1a1a","secondary-container":"#dae2fd","surface-container-lowest":"#ffffff","primary-fixed-dim":"#abd600","surface-container":"#edeeef","outline":"#747a60","on-primary":"#ffffff","secondary-fixed":"#dae2fd","surface-bright":"#f8f9fa","on-tertiary-fixed":"#102000","primary":"#506600","primary-container":"#ccff00","on-surface-variant":"#444933"},borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},spacing:{"space-2xs":"0.25rem","space-sm":"0.75rem","space-2xl":"3rem","space-lg":"1.5rem","gutter-mobile":"1rem","gutter-desktop":"1.5rem","space-3xl":"4.5rem","space-xl":"2rem","space-xs":"0.5rem","space-md":"1rem","container-max":"1280px"},fontFamily:{"label-meta":["Plus Jakarta Sans","sans-serif"],"headline-xl":["Oswald","sans-serif"],"display-hero":["Oswald","sans-serif"],"body-md":["Plus Jakarta Sans","sans-serif"],"body-sm":["Plus Jakarta Sans","sans-serif"],"headline-md":["Oswald","sans-serif"],"body-lg":["Plus Jakarta Sans","sans-serif"],"stat-display":["Oswald","sans-serif"],"display-hero-mobile":["Oswald","sans-serif"],"label-pill":["Plus Jakarta Sans","sans-serif"],"headline-lg":["Oswald","sans-serif"]},fontSize:{"label-meta":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],"headline-xl":["36px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"60px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["15px",{"lineHeight":"22px","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"18px","fontWeight":"500"}],"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"0em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"stat-display":["48px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"700"}],"display-hero-mobile":["40px",{"lineHeight":"44px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-pill":["13px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"34px","letterSpacing":"0em","fontWeight":"600"}]}}}};</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-inverse-surface/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.25)]"><div class="h-20 max-w-[1280px] mx-auto px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-space-md"><img alt="Logo Liga de Baloncesto Sanarateca" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U-59pkzj6cCpqFcRcGFQCIW1Ck_6PnJE29D6S2SSvyloqP3lnf-mWkJlgMSRFVEdPIzVyzOX7YJzJp94NCTmWITymduNPv-qdtlFphND0hDSo-BrJ8GlM4TEwxg7VgGOtlWB4BSzncr1ie4tkWXFeS8cPBkPll0L79LZVhHrTMm_x4EXZrSTM6JvjEK71vemY8DWY3CXctN95l_Z0JIUHF3W7dPX5KHz-BfAIIj876aBHlLOeUEpQ861w"/><div class="flex flex-col"><span class="font-headline-md text-headline-md uppercase tracking-wider text-surface leading-none">Sanarateca</span><span class="font-label-meta text-label-meta text-primary-container tracking-widest uppercase">Liga de Baloncesto</span></div></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary-container font-semibold after:scale-x-100"><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="inicio" href="#">Inicio</a><a aria-current="page" class="relative uppercase transition-colors duration-200 py-space-xs text-primary-container font-semibold after:scale-x-100" data-path="dashboard" href="#">Dashboard</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="equipos" href="#">Equipos</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="jugadores" href="#">Jugadores</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="partidos" href="#">Partidos</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="estadisticas" href="#">Estadísticas</a><a class="relative text-surface-dim hover:text-surface font-label-pill text-label-pill uppercase transition-colors duration-200 py-space-xs" data-path="novedades" href="#">Novedades</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center rounded-full bg-primary-container text-on-primary-fixed px-space-lg py-space-xs font-label-pill text-label-pill uppercase shadow-[0_4px_16px_rgba(204,255,0,0.35)] hover:shadow-[0_6px_24px_rgba(204,255,0,0.55)] hover:scale-105 transition-all duration-200" data-path="login" href="#">Entrar</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-inner"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<div class="w-full max-w-[1280px] mx-auto px-gutter-desktop py-space-xl flex flex-col gap-space-2xl">
+<!-- DASHBOARD TOP BAR / CONTROLS -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-on-primary-fixed animate-ping"></span>
+            Liga Oficial Sanarate
+          </span>
+<span class="text-secondary font-label-meta text-label-meta uppercase">Edición Apertura/Clausura</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl uppercase text-on-surface tracking-tight">Panel General de la Temporada</h1>
+<div class="flex items-center gap-space-sm">
+<label class="sr-only" for="seasonSelect">Seleccionar Temporada</label>
+<div class="relative inline-flex items-center">
+<select class="appearance-none bg-surface-container-low text-on-surface font-label-pill text-label-pill py-space-xs pl-space-md pr-space-xl rounded-full focus:outline-none cursor-pointer hover:bg-surface-container transition-colors shadow-sm" id="seasonSelect">
+<option selected="" value="c2025">Temporada Clausura 2025</option>
+<option value="a2024">Temporada Apertura 2024</option>
+<option value="c2024">Temporada Clausura 2024</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2.5 text-secondary text-[20px]">expand_more</span>
+</div>
+<span class="text-secondary font-body-sm text-body-sm">Fase Regular • Jornada 8 de 14</span>
+</div>
+</div>
+<!-- EXPORT ACTIONS & QUICK CONTROLS -->
+<div class="flex items-center gap-space-xs flex-wrap sm:flex-nowrap">
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-pill text-label-pill uppercase shadow-sm transition-all duration-150 active:scale-95" id="printBtn" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>Imprimir PDF</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-pill text-label-pill uppercase shadow-sm transition-all duration-150 active:scale-95" id="excelBtn">
+<span class="material-symbols-outlined text-[18px] text-primary">table_view</span>
+<span>Bajar a Excel</span>
+</button>
+<a class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase shadow-[0_4px_16px_rgba(204,255,0,0.35)] hover:shadow-[0_6px_22px_rgba(204,255,0,0.5)] transition-all duration-150 active:scale-95" data-path="partidos" href="#">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Programar Partido</span>
+</a>
+</div>
+</div>
+<!-- METRICS RIBBON (Bento-style 4 Cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Metric 1: Partidos Jugados -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="text-secondary font-label-pill text-label-pill uppercase">Partidos Jugados</span>
+<div class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">sports_basketball</span>
+</div>
+</div>
+<div class="my-space-sm">
+<div class="flex items-baseline gap-space-2xs">
+<span class="font-stat-display text-stat-display text-on-surface leading-none">34</span>
+<span class="font-headline-md text-headline-md text-secondary">/ 50</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<span class="text-secondary font-label-meta text-label-meta">68% completado del torneo</span>
+</div>
+<!-- Metric 2: Puntos Promedio -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="text-secondary font-label-pill text-label-pill uppercase">Puntos x Partido</span>
+<div class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+</div>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-stat-display text-stat-display text-on-surface leading-none">78.4</span>
+<span class="inline-flex items-center text-primary font-label-meta text-label-meta">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +3.2%
+          </span>
+</div>
+<span class="text-secondary font-label-meta text-label-meta">Eficiencia ofensiva global</span>
+</div>
+<!-- Metric 3: Asistencia -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="text-secondary font-label-pill text-label-pill uppercase">Asistencia Total</span>
+<div class="w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+</div>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-stat-display text-stat-display text-on-surface leading-none">3,420</span>
+<span class="text-secondary font-body-sm text-body-sm">fans</span>
+</div>
+<span class="text-secondary font-label-meta text-label-meta">Gimnasio Municipal Sanarate</span>
+</div>
+<!-- Metric 4: Triples Líder -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="text-secondary font-label-pill text-label-pill uppercase">Líder Triples</span>
+<div class="w-9 h-9 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+</div>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-xs">
+<span class="font-stat-display text-stat-display text-on-surface leading-none">46</span>
+<span class="text-secondary font-label-meta text-label-meta uppercase">E. Monroy (#11)</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-meta text-label-meta">
+<span>Toros de Sanarate</span>
+<span class="text-primary font-semibold">41.8% 3P</span>
+</div>
+</div>
+</div>
+<!-- MAIN BODY: 2-COLUMN SPLIT (Live & Results + Right Panel News/Leaders) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+<!-- LEFT SECTION: MATCHES (Col 8) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- SECTION: PARTIDO EN VIVO (HERO CARD) -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg uppercase text-on-surface">Partido en Vivo</span>
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-error"></span>
+</span>
+</div>
+<span class="text-secondary font-label-meta text-label-meta uppercase tracking-wider">Corte al Instante</span>
+</div>
+<!-- Highlight Live Game Card -->
+<div class="relative bg-surface-container-lowest rounded-xl p-space-lg sm:p-space-xl shadow-md overflow-hidden">
+<!-- Neon Accent Background Flare -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-lg relative z-10">
+<!-- Card Header -->
+<div class="flex items-center justify-between flex-wrap gap-space-xs">
+<div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase shadow-sm">
+<span class="material-symbols-outlined text-[16px] animate-pulse">timer</span>
+<span>EN VIVO • 4TO CUARTO</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary font-label-meta text-label-meta uppercase">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Duela Principal Sanarate</span>
+</div>
+</div>
+<!-- Digital Scoreboard Matchup -->
+<div class="grid grid-cols-7 items-center gap-space-2xs sm:gap-space-sm text-center py-space-xs">
+<!-- Team 1 -->
+<div class="col-span-3 flex flex-col items-center gap-space-xs">
+<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-surface-container-low flex items-center justify-center p-space-xs shadow-inner">
+<img class="w-full h-full object-contain" data-alt="Athletic sports logo badge of Toros de Sanarate, aggressive bull emblem with volt lime and charcoal styling on white circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4SeRgjMPfBBIQqneF05vH7BhHyWvAlyjR1joUZxRgbFPfzaqHrmjc950EnQWULU3-3R5Z8Y9265ugP-55x-sE5yY5Uk77PTwenj2q4VeY9gCQYCHU9CZ1cZTo_YSiub6fDznIZ4gFp0whI1-YrfgW_lTv4BkWTPNEpFn-Gamz__SDrycA_ZuPK5skeYMZPSypqsCN7uHMQBlIxmgOY8kkuwXULXb_L1vYPuLBYec7dsFkM8PEDj2R4Q"/>
+</div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Toros de Sanarate</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">82</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta text-secondary uppercase">Local • 14-1</span>
+</div>
+<!-- Match Time / Center Status -->
+<div class="col-span-1 flex flex-col items-center justify-center gap-space-2xs">
+<div class="px-space-sm py-space-2xs rounded-full bg-inverse-surface text-surface-bright font-headline-md text-headline-md tracking-wider">
+                    02:45
+                  </div>
+<span class="font-label-meta text-label-meta text-secondary uppercase">Q4</span>
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="font-bold text-[11px]">VS</span>
+</div>
+</div>
+<!-- Team 2 -->
+<div class="col-span-3 flex flex-col items-center gap-space-xs">
+<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-surface-container-low flex items-center justify-center p-space-xs shadow-inner">
+<img class="w-full h-full object-contain" data-alt="Athletic aggressive cobra snake logo emblem for Cobras de Jalapa sports basketball club on white round disc badge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdGfq8LbNpEAdQDoqXMU6BGhiQ3bxbvGenFhRRzfiuiSsx1VJ4gT9xuEddw8kOHHPXeLdiKY3C7DQ8lqSMy2yq18Z_sG9Hlhqk5vV0GIHYwwa6t1RtXwuMmAd5bzuzQbPUksH6VqKG4AGnXq_0qgPLoWapalHsGLEfwGqV43Y0n0BU9D97huMpHqWficsl2_Jm4vuUsVacpz6CA84M5NhDWCUNjocPriKoVwz54gT4WyVb3Zt-CViEFg"/>
+</div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Cobras de Jalapa</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">79</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta text-secondary uppercase">Visita • 11-4</span>
+</div>
+</div>
+<!-- Possession Bar & Team Fouls Tracker -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-secondary font-label-meta text-label-meta uppercase">
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-semibold text-on-surface">Faltas: 3</span>
+</div>
+<span class="text-primary font-bold">Posesión de Balón: Toros</span>
+<div class="flex items-center gap-1">
+<span class="font-semibold text-on-surface">Faltas: 4 (Bonus)</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full flex overflow-hidden">
+<div class="bg-primary-container h-full" style="width: 55%;"></div>
+<div class="bg-surface-dim h-full" style="width: 45%;"></div>
+</div>
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pt-1">
+<span>Última jugada: Triple anotado por #7 K. Alonzo (Cobras)</span>
+<span class="text-on-surface font-semibold font-label-meta text-label-meta uppercase">Reloj de tiro: 14s</span>
+</div>
+</div>
+<!-- Live Game Quick Nav CTA -->
+<div class="flex items-center justify-between pt-space-xs flex-wrap gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span class="font-body-sm text-body-sm text-secondary">Transmisión oficial de radio en vivo vía Facebook Liga Sanarateca</span>
+</div>
+<a class="inline-flex items-center gap-space-xs text-primary font-label-pill text-label-pill uppercase hover:text-on-surface transition-colors" data-path="partidos" href="#">
+<span>Ver Planilla Completa</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION: ÚLTIMOS RESULTADOS (Clean Reference Cards) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface">Últimos Resultados</h2>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-secondary font-label-meta text-label-meta uppercase">Oficiales</span>
+</div>
+<!-- Pill Filters -->
+<div class="flex items-center gap-space-2xs overflow-x-auto py-1">
+<button class="px-space-sm py-1 rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase transition-colors">Jornada 7</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container text-secondary hover:bg-surface-container-high font-label-pill text-label-pill uppercase transition-colors">Jornada 6</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container text-secondary hover:bg-surface-container-high font-label-pill text-label-pill uppercase transition-colors">Ver Todo</button>
+</div>
+</div>
+<!-- Match List (3 Clean Matches in reference style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Result Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase text-secondary">Viernes • 19:30 hrs</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta text-on-surface-variant uppercase">Finalizado</span>
+</div>
+<!-- Teams & Scores -->
+<div class="flex items-center justify-between py-space-xs">
+<!-- Team 1 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-primary">
+                    HKS
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Halcones</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">88</span>
+</div>
+<!-- Mid Badge -->
+<div class="w-1/5 flex flex-col items-center">
+<span class="w-8 h-8 rounded-full bg-surface-container text-secondary flex items-center justify-center font-bold text-[11px]">
+                    VS
+                  </span>
+</div>
+<!-- Team 2 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-secondary">
+                    JAG
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Jaguares</span>
+<span class="font-stat-display text-stat-display text-secondary leading-none">74</span>
+</div>
+</div>
+<!-- Top Performer sub-bar -->
+<div class="pt-space-xs bg-surface-container-low/60 rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">star</span>
+<span class="font-body-sm text-body-sm text-secondary">MVP: <strong class="text-on-surface">M. Quiñónez</strong> (27 pts, 9 reb)</span>
+</div>
+<span class="font-label-meta text-label-meta text-primary font-bold uppercase">HKS +14</span>
+</div>
+</div>
+<!-- Result Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase text-secondary">Sábado • 18:00 hrs</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta text-on-surface-variant uppercase">Finalizado</span>
+</div>
+<!-- Teams & Scores -->
+<div class="flex items-center justify-between py-space-xs">
+<!-- Team 1 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-secondary">
+                    GLA
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Gladiadores</span>
+<span class="font-stat-display text-stat-display text-secondary leading-none">65</span>
+</div>
+<!-- Mid Badge -->
+<div class="w-1/5 flex flex-col items-center">
+<span class="w-8 h-8 rounded-full bg-surface-container text-secondary flex items-center justify-center font-bold text-[11px]">
+                    VS
+                  </span>
+</div>
+<!-- Team 2 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-primary">
+                    LOB
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Lobos Sanarate</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">72</span>
+</div>
+</div>
+<!-- Top Performer sub-bar -->
+<div class="pt-space-xs bg-surface-container-low/60 rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">star</span>
+<span class="font-body-sm text-body-sm text-secondary">MVP: <strong class="text-on-surface">D. Morales</strong> (21 pts, 6 ast)</span>
+</div>
+<span class="font-label-meta text-label-meta text-primary font-bold uppercase">LOB +7</span>
+</div>
+</div>
+<!-- Result Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase text-secondary">Domingo • 16:30 hrs</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container font-label-meta text-label-meta text-on-surface-variant uppercase">Finalizado</span>
+</div>
+<!-- Teams & Scores -->
+<div class="flex items-center justify-between py-space-xs">
+<!-- Team 1 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-primary">
+                    AST
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Astros B.C.</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">91</span>
+</div>
+<!-- Mid Badge -->
+<div class="w-1/5 flex flex-col items-center">
+<span class="w-8 h-8 rounded-full bg-surface-container text-secondary flex items-center justify-center font-bold text-[11px]">
+                    VS
+                  </span>
+</div>
+<!-- Team 2 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-secondary">
+                    TIT
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Titanes Sanarate</span>
+<span class="font-stat-display text-stat-display text-secondary leading-none">85</span>
+</div>
+</div>
+<!-- Top Performer sub-bar -->
+<div class="pt-space-xs bg-surface-container-low/60 rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">star</span>
+<span class="font-body-sm text-body-sm text-secondary">MVP: <strong class="text-on-surface">J. Estrada</strong> (34 pts, 8 reb)</span>
+</div>
+<span class="font-label-meta text-label-meta text-primary font-bold uppercase">AST +6</span>
+</div>
+</div>
+<!-- Result Card 4 (Overtime Match) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-meta text-label-meta uppercase text-secondary">Domingo • 20:00 hrs</span>
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta uppercase font-bold">Tiempo Extra (OT)</span>
+</div>
+<!-- Teams & Scores -->
+<div class="flex items-center justify-between py-space-xs">
+<!-- Team 1 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-primary">
+                    TOR
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Toros del Norte</span>
+<span class="font-stat-display text-stat-display text-on-surface leading-none">99</span>
+</div>
+<!-- Mid Badge -->
+<div class="w-1/5 flex flex-col items-center">
+<span class="w-8 h-8 rounded-full bg-surface-container text-secondary flex items-center justify-center font-bold text-[11px]">
+                    VS
+                  </span>
+</div>
+<!-- Team 2 -->
+<div class="flex flex-col items-center gap-1 w-2/5 text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center font-headline-md text-headline-md uppercase text-secondary">
+                    RAY
+                  </div>
+<span class="font-headline-md text-headline-md uppercase text-on-surface line-clamp-1">Rayos Central</span>
+<span class="font-stat-display text-stat-display text-secondary leading-none">96</span>
+</div>
+</div>
+<!-- Top Performer sub-bar -->
+<div class="pt-space-xs bg-surface-container-low/60 rounded-lg p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">star</span>
+<span class="font-body-sm text-body-sm text-secondary">MVP: <strong class="text-on-surface">C. Chacón</strong> (29 pts, 12 reb)</span>
+</div>
+<span class="font-label-meta text-label-meta text-primary font-bold uppercase">TOR +3</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SECTION: NOVEDADES RECIENTES & PROFILES (Col 4) -->
+<div class="lg:col-span-4 flex flex-col gap-space-xl">
+<!-- FEATURED ATHLETE CUTOUT CARD (Inspiration from reference screen 3) -->
+<div class="bg-gradient-to-b from-surface-container-low to-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col relative overflow-hidden">
+<div class="flex items-center justify-between z-10">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-meta text-label-meta uppercase">
+              Jugador del Mes
+            </span>
+<span class="text-secondary font-headline-md text-headline-md">#33</span>
+</div>
+<!-- Cutout Player Visual Representation -->
+<div class="relative w-full h-56 mt-space-xs flex items-end justify-center">
+<!-- Typographic Watermark behind athlete -->
+<span class="absolute inset-0 flex items-center justify-center font-display-hero text-display-hero uppercase text-on-surface/[0.04] pointer-events-none select-none tracking-tighter">
+              MVP
+            </span>
+<img class="relative z-10 h-full w-auto object-contain" data-alt="Athletic professional male basketball player holding basketball with confident expression in clean white team jersey, sports studio portrait, high contrast sportswear aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHqDkNRURSp6Gp7WElHlWdKpjl5OKzDFsxeZX70F1rKAr9Wbgi7W_4CJckAVHCkS4yUKYy2eKrqTtN05I4cCfvB2ZD8fSFfsVeWcfGzWky_LK-9nspBiR_xCa6YXSmZPT6BMJhwN92imjrHIbVhCkxVHCjliT9a1gIxJdFVSFicKC9NV4SXsG67NSXRIiidjbMN0auAoY5oj-0-OfhUSyngbuMezD06Ef9tRK_6Jy1k5dLAyvG-rHvSw"/>
+</div>
+<div class="flex flex-col gap-space-2xs mt-space-sm z-10">
+<span class="text-secondary font-label-meta text-label-meta uppercase">Halcones Sanarate • Alero</span>
+<h3 class="font-headline-lg text-headline-lg uppercase text-on-surface leading-tight">Mateo Kiatipis</h3>
+</div>
+<!-- Athlete Mini Stats Grid (Exact reference style) -->
+<div class="grid grid-cols-2 gap-space-xs mt-space-md z-10">
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="text-secondary font-label-meta text-label-meta uppercase">Win Rate</span>
+<span class="font-headline-lg text-headline-lg text-on-surface mt-0.5">84%</span>
+<span class="text-secondary font-body-sm text-body-sm text-[11px] mt-1">11V - 2D con titular</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm flex flex-col">
+<span class="text-secondary font-label-meta text-label-meta uppercase">3-Point Acc.</span>
+<span class="font-headline-lg text-headline-lg text-on-surface mt-0.5">48%</span>
+<span class="text-secondary font-body-sm text-body-sm text-[11px] mt-1">Peligro perimetral</span>
+</div>
+</div>
+</div>
+<!-- SECTION: NOVEDADES RECIENTES (Compact Cards with Neon 'Nuevo' Badges) -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-xs">
+<h2 class="font-headline-lg text-headline-lg uppercase text-on-surface">Novedades Recientes</h2>
+<a class="text-primary font-label-pill text-label-pill uppercase hover:text-on-surface transition-colors" data-path="novedades" href="#">Ver Blog</a>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- News Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col gap-space-xs cursor-pointer group">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill text-[11px] uppercase">
+                  Nuevo
+                </span>
+<span class="text-secondary font-label-meta text-label-meta">Hace 2 horas</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-snug">
+                Definidas las llaves oficiales para el Playoff 2025
+              </h4>
+<p class="text-secondary font-body-sm text-body-sm line-clamp-2">
+                La Comisión Técnica de la Liga Sanarateca oficializó el calendario de cuartos de final a disputarse este próximo sábado.
+              </p>
+<div class="flex items-center gap-space-xs pt-space-2xs text-secondary font-label-meta text-label-meta uppercase">
+<span class="material-symbols-outlined text-[14px]">person</span>
+<span>Comisión de Prensa</span>
+</div>
+</article>
+<!-- News Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col gap-space-xs cursor-pointer group">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill text-[11px] uppercase">
+                  Nuevo
+                </span>
+<span class="text-secondary font-label-meta text-label-meta">Ayer</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-snug">
+                Clínica de Baloncesto Menor con Entrenadores Nacionales
+              </h4>
+<p class="text-secondary font-body-sm text-body-sm line-clamp-2">
+                Más de 120 jóvenes participaron en el campamento formativo celebrado en las canchas techadas del Barrio El Centro.
+              </p>
+<div class="flex items-center gap-space-xs pt-space-2xs text-secondary font-label-meta text-label-meta uppercase">
+<span class="material-symbols-outlined text-[14px]">school</span>
+<span>Academia Sanarate</span>
+</div>
+</article>
+<!-- News Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex flex-col gap-space-xs cursor-pointer group">
+<div class="flex items-center justify-between">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-secondary font-label-pill text-label-pill text-[11px] uppercase">
+                  Boletín
+                </span>
+<span class="text-secondary font-label-meta text-label-meta">18 Feb</span>
+</div>
+<h4 class="font-headline-md text-headline-md uppercase text-on-surface group-hover:text-primary transition-colors leading-snug">
+                Reglamento disciplinario para barras visitantes
+              </h4>
+<p class="text-secondary font-body-sm text-body-sm line-clamp-2">
+                Conoce las medidas de seguridad y protocolo de ingreso al gimnasio para garantizar un ambiente 100% familiar.
+              </p>
+<div class="flex items-center gap-space-xs pt-space-2xs text-secondary font-label-meta text-label-meta uppercase">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+<span>Tribunal de Honor</span>
+</div>
+</article>
+</div>
+</div>
+<!-- QUICK ACCESS BANNER -->
+<div class="bg-inverse-surface text-surface rounded-xl p-space-lg shadow-md flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center gap-space-xs text-primary-container">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+<span class="font-headline-md text-headline-md uppercase">Mesa de Control</span>
+</div>
+<p class="text-surface-dim font-body-sm text-body-sm">
+            ¿Reportes de arbitraje o reclamos técnicos de actas? Envía tu informe antes de las 48 horas post partido.
+          </p>
+<button class="mt-space-2xs inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary-fixed font-label-pill text-label-pill uppercase shadow-md hover:scale-105 transition-all">
+            Descargar Formato de Acta
+          </button>
+</div>
+</div>
+</div>
+<!-- TABLE PREVIEW OF TOP 5 STANDINGS (Quick Reference Strip) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between flex-wrap gap-space-xs">
+<div>
+<h3 class="font-headline-lg text-headline-lg uppercase text-on-surface">Tabla General Clasificatoria (Top 5)</h3>
+<p class="text-secondary font-body-sm text-body-sm">Primeros cuatro equipos aseguran boleto directo a semifinales</p>
+</div>
+<a class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-label-pill text-label-pill uppercase transition-colors" data-path="equipos" href="#">
+<span>Ver Tabla Completa</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-md text-body-md border-collapse">
+<thead>
+<tr class="text-secondary font-label-meta text-label-meta uppercase border-b border-surface-container">
+<th class="py-space-xs px-space-sm text-center">Pos</th>
+<th class="py-space-xs px-space-sm">Equipo</th>
+<th class="py-space-xs px-space-sm text-center">PJ</th>
+<th class="py-space-xs px-space-sm text-center">PG</th>
+<th class="py-space-xs px-space-sm text-center">PP</th>
+<th class="py-space-xs px-space-sm text-center">PF</th>
+<th class="py-space-xs px-space-sm text-center">PC</th>
+<th class="py-space-xs px-space-sm text-center">DIF</th>
+<th class="py-space-xs px-space-sm text-center">PTS</th>
+<th class="py-space-xs px-space-sm text-center">Racha</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low font-body-sm text-body-sm">
+<!-- Pos 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-sm px-space-sm text-center font-bold text-primary">01</td>
+<td class="py-space-sm px-space-sm flex items-center gap-space-xs">
+<span class="w-7 h-7 rounded-full bg-primary-container text-on-primary-fixed flex items-center justify-center font-bold text-[11px]">T</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface">Toros de Sanarate</span>
+</td>
+<td class="py-space-sm px-space-sm text-center font-semibold">15</td>
+<td class="py-space-sm px-space-sm text-center text-on-surface">14</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,240</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,020</td>
+<td class="py-space-sm px-space-sm text-center text-primary font-semibold">+220</td>
+<td class="py-space-sm px-space-sm text-center font-headline-md text-headline-md text-on-surface">29</td>
+<td class="py-space-sm px-space-sm text-center">
+<span class="px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-bold text-[10px]">7G</span>
+</td>
+</tr>
+<!-- Pos 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-sm px-space-sm text-center font-bold text-secondary">02</td>
+<td class="py-space-sm px-space-sm flex items-center gap-space-xs">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-[11px]">H</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface">Halcones Sanarate</span>
+</td>
+<td class="py-space-sm px-space-sm text-center font-semibold">15</td>
+<td class="py-space-sm px-space-sm text-center text-on-surface">12</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">3</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,180</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,060</td>
+<td class="py-space-sm px-space-sm text-center text-primary font-semibold">+120</td>
+<td class="py-space-sm px-space-sm text-center font-headline-md text-headline-md text-on-surface">27</td>
+<td class="py-space-sm px-space-sm text-center">
+<span class="px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-bold text-[10px]">3G</span>
+</td>
+</tr>
+<!-- Pos 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-sm px-space-sm text-center font-bold text-secondary">03</td>
+<td class="py-space-sm px-space-sm flex items-center gap-space-xs">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-[11px]">C</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface">Cobras de Jalapa</span>
+</td>
+<td class="py-space-sm px-space-sm text-center font-semibold">15</td>
+<td class="py-space-sm px-space-sm text-center text-on-surface">11</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">4</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,110</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,050</td>
+<td class="py-space-sm px-space-sm text-center text-primary font-semibold">+60</td>
+<td class="py-space-sm px-space-sm text-center font-headline-md text-headline-md text-on-surface">26</td>
+<td class="py-space-sm px-space-sm text-center">
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container text-secondary font-bold text-[10px]">1P</span>
+</td>
+</tr>
+<!-- Pos 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-sm px-space-sm text-center font-bold text-secondary">04</td>
+<td class="py-space-sm px-space-sm flex items-center gap-space-xs">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-[11px]">J</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface">Jaguares Oriente</span>
+</td>
+<td class="py-space-sm px-space-sm text-center font-semibold">15</td>
+<td class="py-space-sm px-space-sm text-center text-on-surface">10</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">5</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,090</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,070</td>
+<td class="py-space-sm px-space-sm text-center text-primary font-semibold">+20</td>
+<td class="py-space-sm px-space-sm text-center font-headline-md text-headline-md text-on-surface">25</td>
+<td class="py-space-sm px-space-sm text-center">
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container text-secondary font-bold text-[10px]">2P</span>
+</td>
+</tr>
+<!-- Pos 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-space-sm px-space-sm text-center font-bold text-secondary">05</td>
+<td class="py-space-sm px-space-sm flex items-center gap-space-xs">
+<span class="w-7 h-7 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-[11px]">L</span>
+<span class="font-headline-md text-headline-md uppercase text-on-surface">Lobos Sanarate</span>
+</td>
+<td class="py-space-sm px-space-sm text-center font-semibold">15</td>
+<td class="py-space-sm px-space-sm text-center text-on-surface">8</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">7</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,030</td>
+<td class="py-space-sm px-space-sm text-center text-secondary">1,045</td>
+<td class="py-space-sm px-space-sm text-center text-error font-semibold">-15</td>
+<td class="py-space-sm px-space-sm text-center font-headline-md text-headline-md text-on-surface">23</td>
+<td class="py-space-sm px-space-sm text-center">
+<span class="px-space-xs py-0.5 rounded-full bg-primary-container text-on-primary-fixed font-bold text-[10px]">2G</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Excel Export mock notification
+      const excelBtn = document.getElementById('excelBtn');
+      if (excelBtn) {
+        excelBtn.addEventListener('click', () => {
+          const originalText = excelBtn.innerHTML;
+          excelBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Generando...</span>';
+          setTimeout(() => {
+            excelBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-primary">check</span><span>Descargado</span>';
+            setTimeout(() => {
+              excelBtn.innerHTML = originalText;
+            }, 2000);
+          }, 800);
+        });
+      }
+
+      // Season selector event listener
+      const seasonSelect = document.getElementById('seasonSelect');
+      if (seasonSelect) {
+        seasonSelect.addEventListener('change', (e) => {
+          const banner = document.createElement('div');
+          banner.className = 'fixed bottom-6 right-6 bg-inverse-surface text-surface px-space-md py-space-xs rounded-full shadow-xl font-body-sm text-body-sm z-50 transition-all';
+          banner.textContent = `Cargando datos: ${e.target.options[e.target.selectedIndex].text}...`;
+          document.body.appendChild(banner);
+          setTimeout(() => {
+            banner.remove();
+          }, 1500);
+        });
+      }
+    });
+  </script>
+</div></main><footer class="w-full bg-inverse-surface text-surface-dim mt-space-3xl"><div class="max-w-[1280px] mx-auto px-gutter-desktop pt-space-3xl pb-space-2xl"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-2xl mb-space-2xl"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><div class="w-3 h-3 rounded-full bg-primary-container"></div><span class="font-headline-lg text-headline-lg uppercase text-surface tracking-wider">Sanarateca</span></div><p class="text-surface-dim font-body-sm text-body-sm leading-relaxed">La cúspide del baloncesto regional amateur y semiprofesional en Sanarate. Impulsando el talento, la disciplina y la pasión deportiva de nuestra comunidad.</p><div class="flex items-center gap-space-sm pt-space-xs"><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">share</span></span><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">public</span></span><span class="w-9 h-9 rounded-full bg-surface-variant/10 text-primary-container flex items-center justify-center font-label-meta text-label-meta hover:bg-primary-container hover:text-on-primary-fixed transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">forum</span></span></div></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Navegación Rápida</h3><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm"><li><a class="hover:text-primary-container transition-colors" data-path="equipos" href="#">Tabla de Posiciones Oficial</a></li><li><a class="hover:text-primary-container transition-colors" data-path="partidos" href="#">Calendario &amp; Fixture</a></li><li><a class="hover:text-primary-container transition-colors" data-path="jugadores" href="#">Líderes de Anotación</a></li><li><a class="hover:text-primary-container transition-colors" data-path="estadisticas" href="#">Reglamento de Torneo</a></li><li><a class="hover:text-primary-container transition-colors" data-path="novedades" href="#">Sala de Prensa &amp; Comunicados</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Posiciones Destacadas</h3><div class="flex flex-col gap-space-xs font-body-sm text-body-sm"><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">1. Toros del Norte</span><span class="text-primary-container font-headline-md text-headline-md">14-1</span></div><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">2. Halcones Sanarate</span><span class="text-surface-dim font-headline-md text-headline-md">12-3</span></div><div class="flex items-center justify-between py-space-2xs bg-surface-variant/5 px-space-sm rounded"><span class="text-surface font-semibold">3. Jaguares Oriente</span><span class="text-surface-dim font-headline-md text-headline-md">10-5</span></div></div></div><div class="flex flex-col gap-space-sm"><h3 class="font-headline-md text-headline-md uppercase text-surface tracking-wide mb-space-xs">Patrocinadores Oficiales</h3><div class="grid grid-cols-2 gap-space-xs font-label-pill text-label-pill"><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Volt Energy</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Sanarate Gas</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">Coperativa Oriente</div><div class="p-space-sm bg-surface-variant/10 rounded flex items-center justify-center text-center text-surface-dim font-semibold uppercase tracking-wider">GuateSport Pro</div></div></div></div><div class="pt-space-xl flex flex-col sm:flex-row items-center justify-between gap-space-md text-surface-variant font-label-meta text-label-meta"><p>© 2025 Liga de Baloncesto Sanarateca. Todos los derechos reservados.</p><div class="flex items-center gap-space-lg"><span class="cursor-pointer hover:text-surface transition-colors">Términos de Competencia</span><span class="cursor-pointer hover:text-surface transition-colors">Privacidad y Atletas</span><span class="cursor-pointer hover:text-surface transition-colors">Comisión Técnica</span></div></div></div></footer></body></html>
