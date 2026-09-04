@@ -83,6 +83,13 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (WEB-CYD)
+        run: |
+          cd WEB-CYD/Frontend
+          npm install
+          npm run build
+
+
 
       - name: 🔐 Setup SSH
         run: |
