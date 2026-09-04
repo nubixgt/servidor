@@ -30,10 +30,10 @@ onUnmounted(() => { ctx?.revert() })
       >
         <!-- Imagen de fondo del laboratorio MAC -->
         <img
-          src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
+          src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
           alt="Laboratorio MAC"
           class="absolute inset-0 w-full h-full object-cover"
-          style="object-position: center 30%;"
+          style="object-position: center 40%;"
         />
         <!-- Overlay verde oscuro del mockup -->
         <div

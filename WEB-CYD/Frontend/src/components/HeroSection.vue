@@ -89,14 +89,14 @@ onUnmounted(() => { ctx?.revert() })
     >
       <!-- Imagen de fondo del colegio (cielo, edificio) -->
       <img
-        src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+        src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
         alt=""
         aria-hidden="true"
         class="w-full h-full object-cover object-center"
-        style="filter: brightness(1.05) saturate(0.9);"
+        style="filter: brightness(1.1) saturate(0.85);"
       />
       <!-- Overlay para legibilidad del texto -->
-      <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(220,240,225,0.88) 0%, rgba(210,238,230,0.75) 45%, rgba(180,220,210,0.30) 100%);"></div>
+      <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(230,248,238,0.92) 0%, rgba(220,242,235,0.80) 45%, rgba(180,225,210,0.25) 100%);"></div>
     </div>
 
     <!-- ── CONTENIDO PRINCIPAL ───────────────────────── -->
