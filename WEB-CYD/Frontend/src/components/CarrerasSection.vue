@@ -1,320 +1,184 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { gsap, ScrollTrigger } from '@/lib/gsap.js'
+import { gsap } from '@/lib/gsap.js'
+import { MonitorPlay, FlaskConical, Stethoscope, Bot, ChevronRight, ChevronLeft } from 'lucide-vue-next'
 
 const sectionRef = ref(null)
+const carouselRef = ref(null)
 let ctx = null
+let autoScrollInterval = null
 
 const carreras = [
   {
-    key: 'diario',
-    categoria: 'Diversificado',
-    modalidad: 'Plan Diario',
-    accent: '#c06f2a',
-    light: '#fef8ef',
-    border: '#f0c080',
-    programas: [
-      { nombre: 'Bachillerato en Ciencias y Letras', duracion: '2 años' },
-      { nombre: 'Secretariado Oficinista con Orientación Jurídica', duracion: '2 años' },
-      { nombre: 'Perito Contador con Orientación en Computación', duracion: '3 años' },
-      { nombre: 'Perito en Administración de Empresas', duracion: '3 años' },
-      { nombre: 'Magisterio en Educación Infantil Bilingüe Intercultural', duracion: '3 años' },
-    ],
+    title: 'Computación y Programación',
+    icon: MonitorPlay,
+    bg: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
   },
   {
-    key: 'doble',
-    categoria: 'Diversificado',
-    modalidad: 'Jornada Doble',
-    accent: '#3a56a8',
-    light: '#f0f3fc',
-    border: '#a0b4e8',
-    programas: [
-      { nombre: 'Bachillerato en Dibujo Técnico y de Construcción', duracion: '2 años' },
-      { nombre: 'Bachillerato en Ciencias y Letras con Orientación en Diseño Gráfico', duracion: '2 años' },
-      { nombre: 'Bachillerato en Ciencias y Letras con Diplomado en:', duracion: '2 años', sub: ['Medicina', 'Criminología', 'Agronomía'] },
-      { nombre: 'Bachiller Industrial y Perito en Mecánica Automotriz', duracion: '3 años' },
-      { nombre: 'Perito en Electrónica y Dispositivos Digitales', duracion: '3 años' },
-      { nombre: 'Perito en Electricidad Industrial', duracion: '3 años' },
-    ],
+    title: 'Perito en Química Biológica',
+    icon: FlaskConical,
+    bg: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
   },
   {
-    key: 'fds',
-    categoria: 'Plan',
-    modalidad: 'Fin de Semana',
-    accent: '#1a7a5a',
-    light: '#eef7f3',
-    border: '#80c8a8',
-    programas: [
-      { nombre: 'Básico Normal', duracion: '3 años' },
-      { nombre: 'Bachillerato en Ciencias y Letras por Madurez', duracion: '1 año (mayores de 18)' },
-      { nombre: 'Perito Contador', duracion: '3 años' },
-      { nombre: 'Bachillerato en Computación con Orientación Comercial', duracion: '2 años' },
-      { nombre: 'Bach. en Computación con Orientación Comercial con Diplomado en:', duracion: '2 años', sub: ['Administración', 'Enfermería'] },
-      { nombre: 'Secretariado y Oficinista', duracion: '2 años' },
-    ],
+    title: 'Perito en Ciencias de la Salud',
+    icon: Stethoscope,
+    bg: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
   },
+  {
+    title: 'Robótica e Inteligencia Artificial',
+    icon: Bot,
+    bg: 'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+  }
 ]
 
-const scrollToContact = () => {
-  document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })
+const scrollCarousel = (direction) => {
+  if (carouselRef.value) {
+    const scrollAmount = 240; // width of card + gap
+    carouselRef.value.scrollBy({
+      left: direction === 'right' ? scrollAmount : -scrollAmount,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const startAutoScroll = () => {
+  stopAutoScroll();
+  autoScrollInterval = setInterval(() => {
+    if (carouselRef.value) {
+      const el = carouselRef.value;
+      // Si llega al final, regresa al inicio suavemente
+      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollCarousel('right');
+      }
+    }
+  }, 2500);
+}
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval) {
+    clearInterval(autoScrollInterval);
+    autoScrollInterval = null;
+  }
 }
 
 onMounted(() => {
   ctx = gsap.context(() => {
-
-    // Header
-    gsap.from('.carreras-header', {
-      opacity: 0, y: 60, duration: 1, ease: 'power3.out',
-      scrollTrigger: { trigger: '.carreras-header', start: 'top 80%' },
+    gsap.from('.oferta-left > *', {
+      scrollTrigger: { trigger: sectionRef.value, start: 'top 78%' },
+      y: 28, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out'
     })
-
-    // Stats row
-    gsap.from('.carreras-stat', {
-      opacity: 0, y: 30, scale: 0.9, duration: 0.6, stagger: 0.1, ease: 'back.out(1.4)',
-      scrollTrigger: { trigger: '.carreras-stats', start: 'top 85%' },
+    gsap.from('.carrera-card', {
+      scrollTrigger: { trigger: sectionRef.value, start: 'top 80%' },
+      x: 60, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out'
     })
-
-    // Grupos — aparecen uno a uno con scrub suave
-    document.querySelectorAll('.carrera-grupo').forEach((grupo, i) => {
-      gsap.from(grupo, {
-        opacity: 0,
-        y: 70,
-        duration: 0.9,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: grupo, start: 'top 82%' },
-      })
-      // Línea de acento izquierda crece al aparecer
-      gsap.from(grupo.querySelector('.grupo-line'), {
-        scaleY: 0,
-        transformOrigin: 'top',
-        duration: 0.8,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: grupo, start: 'top 80%' },
-      })
-    })
-
-    // Cards de programas — stagger dentro de cada grupo
-    document.querySelectorAll('.programa-card').forEach((card) => {
-      gsap.from(card, {
-        opacity: 0,
-        x: -20,
-        duration: 0.5,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: card, start: 'top 90%' },
-      })
-    })
-
-    // CTA Entry
-    gsap.from('.carreras-cta-content', {
-      scrollTrigger: { trigger: '.carreras-cta-content', start: 'top 85%' },
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: 'power3.out'
-    })
-
-    // Jaguar Watermark Parallax
-    gsap.fromTo('.carreras-jaguar-bg',
-      { scale: 0.8, x: 20, y: 20, opacity: 0 },
-      {
-        scrollTrigger: {
-          trigger: '.carreras-cta-content',
-          start: 'top 90%',
-          end: 'bottom center',
-          scrub: 1,
-        },
-        scale: 1.1,
-        x: -10,
-        y: -10,
-        opacity: 0.08,
-        ease: 'none'
-      }
-    )
-
-    // CTA final
-    gsap.from('.carreras-cta', {
-      opacity: 0, y: 50, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: '.carreras-cta', start: 'top 85%' },
-    })
-
   }, sectionRef.value)
+  startAutoScroll()
 })
 
-onUnmounted(() => { ctx?.revert() })
+onUnmounted(() => { 
+  ctx?.revert()
+  stopAutoScroll()
+})
 </script>
 
 <template>
-  <section
-    id="carreras"
-    ref="sectionRef"
-    class="py-16 lg:py-32 relative overflow-hidden cyd-section-bg"
-  >
-    <!-- Fondo decorativo -->
-    <div class="absolute inset-0" aria-hidden="true">
-      <div
-        class="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
-        style="background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 7%, transparent), transparent 70%); filter: blur(80px);"
-      />
-      <div class="absolute inset-0 cyd-dots opacity-20" />
-    </div>
+  <section ref="sectionRef" id="oferta" class="py-12 lg:py-20 bg-white overflow-hidden">
+    <div class="cyd-container">
+      <div class="flex flex-col lg:flex-row gap-10 lg:gap-8 items-start lg:items-center">
 
-    <div class="relative cyd-container">
+        <!-- LEFT: Texto -->
+        <div class="oferta-left lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col gap-5">
+          <span class="text-[0.7rem] font-extrabold tracking-[0.22em] text-green-700 uppercase">NUESTRA OFERTA ACADÉMICA</span>
+          
+          <h2 class="font-black leading-tight text-slate-800" style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);">
+            Descubre <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(90deg, #164627, #4ade80);">tu futuro</span>
+          </h2>
 
-      <!-- Header -->
-      <div class="carreras-header text-center max-w-2xl mx-auto mb-6">
-        <span class="cyd-label mb-5 inline-block">Programas Educativos</span>
-        <h2 class="cyd-title mb-5">
-          Carreras <span class="cyd-accent">Educativas</span>
-        </h2>
-        <p class="text-base lg:text-lg" style="color: hsl(var(--muted-foreground));">
-          <strong style="color: var(--cyd-forest);">19 carreras especializadas</strong>
-          en 3 modalidades — diseñadas para prepararte para el mundo profesional.
-        </p>
-      </div>
+          <p class="text-slate-500 font-medium leading-relaxed">
+            Contamos con 19 carreras que te preparan para los desafíos del mundo actual.
+          </p>
 
-      <!-- Stats rápidos -->
-      <div class="carreras-stats flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 lg:mb-20">
-        <span class="carreras-stat cyd-pill">19 Carreras</span>
-        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, var(--cyd-gold) 30%, transparent); background: color-mix(in srgb, var(--cyd-gold) 8%, transparent); color: #9a7200;">3 Modalidades</span>
-        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, #3a56a8 30%, transparent); background: color-mix(in srgb, #3a56a8 8%, transparent); color: #3a56a8;">Certificación Oficial</span>
-        <span class="carreras-stat cyd-pill" style="border-color: color-mix(in srgb, #1a7a5a 30%, transparent); background: color-mix(in srgb, #1a7a5a 8%, transparent); color: #1a7a5a;">Avaladas por MINEDUC</span>
-      </div>
+          <button
+            class="w-fit flex items-center gap-3 text-white font-semibold rounded-full transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+            style="background: linear-gradient(90deg, #22c55e, #16a34a); padding: 0.75rem 1.4rem; font-size: 0.875rem;"
+          >
+            <span>Ver todas las carreras</span>
+            <span class="w-6 h-6 bg-white/25 rounded-full flex items-center justify-center">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </button>
+        </div>
 
-      <!-- Grupos de carreras -->
-      <div class="space-y-6 lg:space-y-10 mb-12 lg:mb-20">
-        <div
-          v-for="grupo in carreras"
-          :key="grupo.key"
-          class="carrera-grupo relative rounded-2xl overflow-hidden border will-change-transform"
-          :style="{ background: grupo.light, borderColor: grupo.border }"
+        <!-- RIGHT: Carrusel de tarjetas -->
+        <div 
+          class="relative flex-1 min-w-0 flex items-center"
+          @mouseenter="stopAutoScroll"
+          @mouseleave="startAutoScroll"
+          @touchstart="stopAutoScroll"
+          @touchend="startAutoScroll"
         >
-          <!-- Línea de acento izquierda -->
-          <div
-            class="grupo-line absolute left-0 top-0 bottom-0 w-1 will-change-transform"
-            :style="{ background: grupo.accent }"
-          />
+          
+          <!-- Botón Scroll Izquierda (opcional, oculto en mobile) -->
+          <button 
+            @click="scrollCarousel('left')"
+            class="hidden lg:flex absolute -left-5 z-20 w-10 h-10 bg-white rounded-full shadow-lg items-center justify-center text-green-700 hover:bg-green-50 transition-colors border border-slate-100"
+          >
+            <ChevronLeft class="w-5 h-5" />
+          </button>
 
-          <div class="pl-6 pr-4 sm:pl-8 sm:pr-6 py-8 lg:py-10">
-            <!-- Header del grupo -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-6 pb-5" :style="{ borderBottom: `1px solid color-mix(in srgb, ${grupo.accent} 20%, transparent)` }">
-              <div>
+          <!-- Carrusel Contenedor -->
+          <div 
+            ref="carouselRef"
+            class="flex gap-4 overflow-x-auto pb-4 pt-4 snap-x snap-mandatory hide-scrollbar -mr-4 pr-4 sm:-mr-6 sm:pr-6 lg:mr-0 lg:pr-0 w-full"
+            style="scroll-behavior: smooth;"
+          >
+            <div
+              v-for="(c, i) in carreras"
+              :key="i"
+              class="carrera-card relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group snap-start shadow-md hover:shadow-xl transition-shadow"
+              style="width: 220px; height: 340px;"
+            >
+              <!-- Imagen de fondo -->
+              <img
+                :src="c.bg"
+                :alt="c.title"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <!-- Overlay -->
+              <div class="absolute inset-0 bg-gradient-to-b from-slate-900/10 via-slate-900/40 to-slate-900/90 transition-opacity duration-300 group-hover:opacity-90"></div>
+
+              <!-- Contenido -->
+              <div class="absolute inset-0 flex flex-col justify-end p-5 z-10">
                 <div
-                  class="text-[10px] sm:text-xs font-semibold tracking-[0.14em] uppercase mb-1"
-                  :style="{ color: grupo.accent }"
+                  class="w-12 h-12 rounded-full mb-3 flex items-center justify-center transition-all duration-300 group-hover:bg-green-500 group-hover:scale-110 shadow-lg"
+                  style="background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);"
                 >
-                  {{ grupo.categoria }}
+                  <component :is="c.icon" class="w-6 h-6 text-white" stroke-width="2" />
                 </div>
-                <h3
-                  class="text-xl sm:text-2xl lg:text-3xl font-black"
-                  style="font-family: var(--font-display); letter-spacing: -0.03em; color: var(--cyd-dark);"
-                >
-                  {{ grupo.modalidad }}
+                <h3 class="text-white font-bold leading-snug transition-transform duration-300 group-hover:-translate-y-1" style="font-family: var(--font-display); font-size: 1.1rem;">
+                  {{ c.title }}
                 </h3>
               </div>
-              <div
-                class="shrink-0 text-[10px] sm:text-xs font-medium px-3 py-1.5 rounded-full"
-                :style="{
-                  background: `color-mix(in srgb, ${grupo.accent} 12%, transparent)`,
-                  color: grupo.accent,
-                }"
-              >
-                {{ grupo.programas.length }} programas
-              </div>
-            </div>
-
-            <!-- Grid de programas -->
-            <div class="grid sm:grid-cols-2 gap-2 sm:gap-3">
-              <div
-                v-for="(prog, idx) in grupo.programas"
-                :key="idx"
-                class="programa-card group relative bg-white rounded-xl border p-4 sm:p-5 transition-all duration-300 will-change-transform cursor-default"
-                :style="{ borderColor: `color-mix(in srgb, ${grupo.accent} 18%, transparent)` }"
-                @mouseenter="(e) => { e.currentTarget.style.borderColor = grupo.accent; e.currentTarget.style.boxShadow = `0 8px 30px color-mix(in srgb, ${grupo.accent} 12%, transparent)` }"
-                @mouseleave="(e) => { e.currentTarget.style.borderColor = `color-mix(in srgb, ${grupo.accent} 18%, transparent)`; e.currentTarget.style.boxShadow = 'none' }"
-              >
-                <!-- Nombre -->
-                <h4
-                  class="text-xs sm:text-sm font-semibold mb-2 leading-snug"
-                  style="color: var(--cyd-dark); letter-spacing: -0.01em;"
-                >
-                  {{ prog.nombre }}
-                </h4>
-
-                <!-- Subespecialidades -->
-                <ul v-if="prog.sub" class="mb-2 pl-3 space-y-0.5" :style="{ borderLeft: `2px solid color-mix(in srgb, ${grupo.accent} 30%, transparent)` }">
-                  <li
-                    v-for="sub in prog.sub"
-                    :key="sub"
-                    class="text-[10px] sm:text-xs flex items-center gap-1.5"
-                    style="color: hsl(var(--muted-foreground));"
-                  >
-                    <span class="w-1 h-1 rounded-full shrink-0" :style="{ background: grupo.accent }" />
-                    {{ sub }}
-                  </li>
-                </ul>
-
-                <!-- Duración -->
-                <div class="flex items-center gap-1.5 mt-1">
-                  <!-- Reloj SVG propio -->
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" :style="{ color: grupo.accent }">
-                    <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/>
-                    <path d="M6 3.5v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span
-                    class="text-[10px] sm:text-xs font-bold uppercase tracking-wider"
-                    :style="{ color: grupo.accent }"
-                  >
-                    {{ prog.duracion }}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- CTA -->
-      <div class="carreras-cta relative rounded-2xl overflow-hidden p-6 sm:p-10 lg:p-14 text-center will-change-transform"
-        style="background: linear-gradient(135deg, var(--cyd-forest) 0%, var(--cyd-green) 60%, color-mix(in srgb, var(--cyd-gold) 40%, var(--cyd-green)) 100%);"
-      >
-        <!-- Textura de puntos inversa -->
-        <div class="absolute inset-0 cyd-dots opacity-[0.08]" style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);" />
-
-        <!-- Jaguar watermark animado -->
-        <div class="carreras-jaguar-bg absolute bottom-0 right-0 w-64 h-64 lg:w-80 lg:h-80 opacity-5 pointer-events-none origin-bottom-right" aria-hidden="true">
-          <div class="w-full h-full" style="background: url('https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=400&height=400&resize=contain') right bottom / contain no-repeat;" />
-        </div>
-
-        <div class="carreras-cta-content relative max-w-2xl mx-auto">
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase text-white/60 mb-4">Inscripciones 2026</div>
-          <h3
-            class="text-3xl lg:text-4xl font-black text-white mb-4 leading-tight"
-            style="font-family: var(--font-display); letter-spacing: -0.03em;"
+          <!-- Botón Scroll Derecha -->
+          <button 
+            @click="scrollCarousel('right')"
+            class="hidden lg:flex absolute -right-5 z-20 w-10 h-10 bg-white rounded-full shadow-lg items-center justify-center text-green-700 hover:bg-green-50 transition-colors border border-slate-100"
           >
-            ¿Listo para tu Futuro Profesional?
-          </h3>
-          <p class="text-white/80 text-base mb-8 max-w-lg mx-auto">
-            Únete a una institución con más de <strong class="text-white">33 años</strong> formando profesionales exitosos en Guatemala.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              @click="scrollToContact"
-              class="px-8 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 hover:-translate-y-1"
-              style="background: white; color: var(--cyd-forest); box-shadow: 0 8px 30px rgba(0,0,0,0.2);"
-              @mouseenter="(e) => e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.3)'"
-              @mouseleave="(e) => e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.2)'"
-            >
-              Solicitar Información
-            </button>
-            <button
-              @click="scrollToContact"
-              class="px-8 py-3.5 rounded-full font-semibold text-sm text-white border border-white/30 transition-all duration-300 hover:bg-white/15 hover:-translate-y-1"
-            >
-              Agendar Visita
-            </button>
-          </div>
+            <ChevronRight class="w-5 h-5" />
+          </button>
         </div>
+
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+</style>

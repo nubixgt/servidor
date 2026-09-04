@@ -1,660 +1,247 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { gsap, ScrollTrigger } from '@/lib/gsap.js'
+import { gsap } from '@/lib/gsap.js'
 
 const heroRef = ref(null)
 const bgLayerRef = ref(null)
 const jaguarRef = ref(null)
-const titleRef = ref(null)
-const subtitleRef = ref(null)
-const statsRef = ref(null)
-const ctaRef = ref(null)
-const orbRef1 = ref(null)
-const orbRef2 = ref(null)
-
+const badgeRef = ref(null)
 let ctx = null
 
-// Generación de partículas mágicas para el Jaguar
-const particles = Array.from({ length: 20 }).map((_, i) => ({
-  id: i,
-  size: Math.random() * 8 + 4, // Entre 4 y 12px
-  x: Math.random() * 100,      // Posición X %
-  y: Math.random() * 100,      // Posición Y %
-  color: Math.random() > 0.5 ? 'var(--cyd-gold)' : 'var(--cyd-green)',
-  delay: Math.random() * 4,    // Retraso aleatorio
-  duration: Math.random() * 3 + 3, // Duración entre 3s y 6s
-  tx: (Math.random() * 60 - 30) + 'px', // Desplazamiento X aleatorio
-}))
-
-// Mensajes de la mascota
 const showBubble = ref(false)
 const currentMessage = ref('')
 const bubbleTimer = ref(null)
 
 const messages = [
   "¡Bienvenidos a la familia CYD! 🐾",
-  "¡Inscripciones abiertas 2026! ✨",
-  "¿Listo para el éxito? 🚀",
-  "¡Ciencia y Disciplina! 📚",
-  "¡Únete a nuestra manada! 🐆"
+  "¡Inscripciones abiertas! ✨",
+  "Formando líderes 🚀",
+  "¡Ciencia y Disciplina! 📚"
 ]
 
 const handleJaguarInteract = () => {
-  if (showBubble.value) return;
+  if (showBubble.value) return
   currentMessage.value = messages[Math.floor(Math.random() * messages.length)]
   showBubble.value = true
-  
   if (bubbleTimer.value) clearTimeout(bubbleTimer.value)
-  bubbleTimer.value = setTimeout(() => {
-    showBubble.value = false
-  }, 4000)
+  bubbleTimer.value = setTimeout(() => { showBubble.value = false }, 4000)
 }
 
 const scrollToSection = (id) => {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
-const handleJaguarEnter = () => {
-  if (!jaguarRef.value) return
-  gsap.to(jaguarRef.value, {
-    scale: 1.15,
-    y: -30,
-    rotation: 4,
-    duration: 0.4,
-    ease: 'back.out(2)',
-  })
-}
-
-const handleJaguarLeave = () => {
-  if (!jaguarRef.value) return
-  gsap.to(jaguarRef.value, {
-    scale: 1,
-    y: 0,
-    rotation: 0,
-    duration: 0.7,
-    ease: 'elastic.out(1, 0.4)',
-  })
-}
-
 onMounted(() => {
   ctx = gsap.context(() => {
-    // ── Animación inicial ─────────────────────────────────
+    // Animaciones de entrada
     const tl = gsap.timeline({ delay: 0.1 })
+    tl.from('.hero-label', { opacity: 0, y: 16, duration: 0.5, ease: 'power3.out' })
+      .from('.hero-title-line', { opacity: 0, y: 24, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-subtitle', { opacity: 0, y: 16, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-cta-btn', { opacity: 0, y: 16, duration: 0.5, stagger: 0.08, ease: 'power3.out' }, '-=0.3')
+      .from('.hero-social', { opacity: 0, y: 16, duration: 0.5, ease: 'power3.out' }, '-=0.2')
+      .from(jaguarRef.value, { opacity: 0, x: 40, scale: 0.95, duration: 0.9, ease: 'power3.out' }, 0.2)
+      .from(badgeRef.value, { opacity: 0, y: 20, scale: 0.85, duration: 0.7, ease: 'back.out(1.5)' }, 0.6)
 
-    // Label
-    tl.from('.hero-label', {
-      opacity: 0,
-      y: 20,
-      duration: 0.7,
-      ease: 'power3.out',
+    // Badge float continuo
+    gsap.to(badgeRef.value, {
+      y: -12, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 1.2
     })
 
-    // Título palabra por palabra
-    tl.from('.hero-word', {
-      opacity: 0,
-      y: 40,
-      rotateX: -30,
-      duration: 0.7,
-      stagger: 0.1,
-      ease: 'power3.out',
-    }, '-=0.3')
-
-    // Subtítulo
-    tl.from('.hero-subtitle', {
-      opacity: 0,
-      y: 24,
-      duration: 0.7,
-      ease: 'power3.out',
-    }, '-=0.3')
-
-    // Stats cards
-    tl.from('.hero-stat', {
-      opacity: 0,
-      y: 30,
-      scale: 0.92,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'back.out(1.4)',
-    }, '-=0.2')
-
-    // CTAs
-    tl.from('.hero-cta', {
-      opacity: 0,
-      y: 20,
-      duration: 0.6,
-      stagger: 0.12,
-      ease: 'power3.out',
-    }, '-=0.3')
-
-    // Jaguar
-    tl.from(jaguarRef.value, {
-      opacity: 0,
-      x: 60,
-      scale: 0.9,
-      duration: 1,
-      ease: 'power3.out',
-    }, 0.2)
-
-    // ── Parallax con ScrollTrigger (Solo Desktop) ────────────────────────
-    let mm = gsap.matchMedia()
-    
-    mm.add("(min-width: 1024px)", () => {
-      // Fondo
+    // Parallax solo desktop
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 1024px)', () => {
       gsap.to(bgLayerRef.value, {
-        yPercent: 35,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1.2,
-        },
+        yPercent: 25, ease: 'none',
+        scrollTrigger: { trigger: heroRef.value, start: 'top top', end: 'bottom top', scrub: 1.2 }
       })
-
-      // Jaguar - parallax más lento
       gsap.to(jaguarRef.value, {
-        yPercent: -25,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1.8,
-        },
+        yPercent: -12, ease: 'none',
+        scrollTrigger: { trigger: heroRef.value, start: 'top top', end: 'bottom top', scrub: 1.8 }
       })
-
-      // Texto - parallax rápido
-      gsap.to(titleRef.value, {
-        yPercent: -40,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: '40% top',
-          scrub: 1,
-        },
+      gsap.to(badgeRef.value, {
+        yPercent: -30, ease: 'none',
+        scrollTrigger: { trigger: heroRef.value, start: 'top top', end: 'bottom top', scrub: 2.2 }
       })
-
-      gsap.to(subtitleRef.value, {
-        yPercent: -30,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: '35% top',
-          scrub: 1.2,
-        },
-      })
-
-      gsap.to(statsRef.value, {
-        yPercent: -20,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: '5% top',
-          end: '45% top',
-          scrub: 0.8,
-        },
-      })
-
-      gsap.to(ctaRef.value, {
-        yPercent: -15,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: '10% top',
-          end: '40% top',
-          scrub: 0.9,
-        },
-      })
-
-      // Orbs flotantes con parallax suave
-      gsap.to(orbRef1.value, {
-        yPercent: 40,
-        xPercent: -8,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 2,
-        },
-      })
-
-      gsap.to(orbRef2.value, {
-        yPercent: -30,
-        xPercent: 10,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 2.5,
-        },
-      })
-
-      // Scroll indicator fade
-      gsap.to('.hero-scroll-indicator', {
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: heroRef.value,
-          start: 'top top',
-          end: '15% top',
-          scrub: 1,
-        },
+      gsap.to('.hero-text-content', {
+        yPercent: -20, ease: 'none',
+        scrollTrigger: { trigger: heroRef.value, start: 'top top', end: 'bottom top', scrub: 1 }
       })
     })
-
-    // Animación flotante continua para orbes (Todas las pantallas)
-    gsap.to(orbRef1.value, {
-      y: 40, x: -30, rotation: 10,
-      duration: 6, ease: 'sine.inOut',
-      yoyo: true, repeat: -1
-    })
-
-    gsap.to(orbRef2.value, {
-      y: -50, x: 40, rotation: -15,
-      duration: 7, ease: 'sine.inOut',
-      yoyo: true, repeat: -1, delay: 1
-    })
-
-    // Animación flotante continua para orbes (Todas las pantallas)
-
   }, heroRef.value)
 })
 
-onUnmounted(() => {
-  ctx?.revert()
-})
+onUnmounted(() => { ctx?.revert() })
 </script>
 
 <template>
   <section
     id="inicio"
     ref="heroRef"
-    class="relative min-h-[auto] lg:min-h-[110vh] flex flex-col justify-center overflow-hidden pt-28 pb-10 lg:pt-[72px] lg:pb-20"
+    class="relative overflow-hidden"
+    style="min-height: 100svh; padding-top: 72px;"
   >
-    <!-- Fondo con parallax -->
+    <!-- ── FONDO CON PARALLAX ─────────────────────────── -->
     <div
       ref="bgLayerRef"
-      class="absolute inset-0 will-change-transform"
-      style="z-index: 0;"
+      class="absolute inset-0 z-0 will-change-transform"
+      style="top: -10%; height: 120%;"
     >
-      <!-- Gradiente base -->
-      <div
-        class="absolute inset-0"
-        style="background: linear-gradient(135deg, #f0f7f1 0%, #faf8f0 35%, #ffffff 60%, #eef5f0 100%);"
+      <!-- Imagen de fondo del colegio (cielo, edificio) -->
+      <img
+        src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+        alt=""
+        aria-hidden="true"
+        class="w-full h-full object-cover object-center"
+        style="filter: brightness(1.05) saturate(0.9);"
       />
-
-      <!-- Textura de cuadrícula de ingeniería CYD (Efecto premium) -->
-      <div class="absolute inset-0 cyd-grid opacity-70" />
-      
-      <!-- Viñeta suave para enfocar el centro -->
-      <div
-        class="absolute inset-0 pointer-events-none"
-        style="background: radial-gradient(circle at center, transparent 40%, rgba(240, 247, 241, 0.4) 100%);"
-      />
-
-
-
-      <!-- Orb 1 -->
-      <div
-        ref="orbRef1"
-        class="absolute top-[15%] left-[8%] w-[380px] h-[380px] rounded-full will-change-transform"
-        style="background: radial-gradient(circle at center, color-mix(in srgb, var(--cyd-green) 18%, transparent), transparent 70%); filter: blur(40px);"
-      />
-
-      <!-- Orb 2 -->
-      <div
-        ref="orbRef2"
-        class="absolute bottom-[25%] right-[5%] w-[440px] h-[440px] rounded-full will-change-transform"
-        style="background: radial-gradient(circle at center, color-mix(in srgb, var(--cyd-gold) 16%, transparent), transparent 70%); filter: blur(50px);"
-      />
+      <!-- Overlay para legibilidad del texto -->
+      <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(220,240,225,0.88) 0%, rgba(210,238,230,0.75) 45%, rgba(180,220,210,0.30) 100%);"></div>
     </div>
 
-    <!-- Contenido principal -->
-    <div class="relative z-10 cyd-container py-6 lg:py-16 w-full">
-      <div class="grid lg:grid-cols-2 gap-6 lg:gap-16 items-center">
+    <!-- ── CONTENIDO PRINCIPAL ───────────────────────── -->
+    <div class="relative z-10 cyd-container w-full py-8 lg:py-0">
+      <div class="grid lg:grid-cols-2 gap-4 items-center min-h-[calc(100svh-72px)]">
 
-        <!-- Columna izquierda -->
-        <div class="space-y-5 lg:space-y-8">
+        <!-- COLUMNA IZQUIERDA ─ Texto -->
+        <div class="hero-text-content flex flex-col justify-center gap-4 lg:gap-5 py-6 lg:py-12 will-change-transform">
 
           <!-- Label -->
           <div class="hero-label">
-            <span class="cyd-label">Formando líderes desde 1992</span>
+            <span class="inline-block text-[0.65rem] font-extrabold tracking-[0.2em] text-green-800 uppercase bg-green-100/70 backdrop-blur-sm px-3 py-1.5 rounded-full border border-green-200/80">
+              CIENCIA Y DISCIPLINA
+            </span>
           </div>
 
-          <!-- Título -->
+          <!-- Título grande -->
           <h1
-            ref="titleRef"
-            class="will-change-transform"
-            style="perspective: 1000px;"
+            class="font-black leading-[1.04] tracking-tight text-slate-900"
+            style="font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 5rem);"
           >
-            <span class="block overflow-hidden mb-1">
-              <span
-                class="hero-word block cyd-title"
-                style="display: inline-block;"
-              >
-                Educación de
-              </span>
+            <span class="block hero-title-line">Formamos hoy</span>
+            <span class="block hero-title-line">
+              a los&nbsp;<span class="text-transparent bg-clip-text" style="background-image: linear-gradient(90deg, #d97706, #f59e0b);">líderes</span>&nbsp;del
             </span>
-            <span class="block overflow-hidden mb-1">
-              <span
-                class="hero-word block cyd-title cyd-accent"
-                style="display: inline-block;"
-              >
-                Excelencia
-              </span>
-            </span>
-            <span class="block overflow-hidden">
-              <span
-                class="hero-word block cyd-title"
-                style="display: inline-block; font-size: clamp(1.4rem, 3vw, 2.4rem); font-weight: 400; color: hsl(var(--muted-foreground));"
-              >
-                Colegio CYD — Salamá, B.V.
-              </span>
-            </span>
+            <span class="block hero-title-line">mañana</span>
           </h1>
 
           <!-- Subtítulo -->
-          <p
-            ref="subtitleRef"
-            class="hero-subtitle text-base lg:text-lg leading-relaxed max-w-lg will-change-transform"
-            style="color: hsl(var(--muted-foreground));"
-          >
-            Colegio Particular Mixto con instalaciones modernas e innovadoras,
-            dedicado a formar estudiantes con
-            <strong style="color: var(--cyd-forest); font-weight: 600;">ciencia y disciplina</strong>
-            para el mundo del mañana.
+          <p class="hero-subtitle text-slate-600 font-medium leading-relaxed max-w-[440px]" style="font-size: clamp(0.95rem, 1.5vw, 1.1rem);">
+            Educación integral, innovadora y tecnológica para transformar tu futuro y el de nuestra comunidad.
           </p>
 
-          <!-- Stats -->
-          <div ref="statsRef" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 will-change-transform">
-
-            <!-- Stat 1 -->
-            <div
-              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-default"
-              @click="scrollToSection('nosotros')"
-            >
-              <div
-                class="text-2xl lg:text-4xl font-black leading-none mb-1 cyd-stat-number"
-              >+33</div>
-              <div
-                class="text-[10px] sm:text-xs font-medium leading-tight"
-                style="color: hsl(var(--muted-foreground));"
-              >Años de<br>Excelencia</div>
-              <div class="cyd-divider mx-auto mt-2 sm:mt-3" />
-            </div>
-
-            <!-- Stat 2 -->
-            <div
-              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-default"
-              style="border-color: color-mix(in srgb, var(--cyd-gold) 35%, transparent);
-                     box-shadow: 0 4px 20px color-mix(in srgb, var(--cyd-gold) 12%, transparent);"
-            >
-              <div
-                class="text-2xl lg:text-3xl font-black leading-none mb-1 cyd-stat-number"
-              >15K+</div>
-              <div
-                class="text-[10px] sm:text-xs font-medium leading-tight"
-                style="color: hsl(var(--muted-foreground));"
-              >Egresados<br>Exitosos</div>
-              <div
-                class="cyd-divider mx-auto mt-2 sm:mt-3"
-                style="background: linear-gradient(90deg, var(--cyd-gold), var(--cyd-amber));"
-              />
-            </div>
-
-            <!-- Stat 3 -->
-            <div
-              class="hero-stat cyd-card p-4 sm:p-5 text-center cursor-pointer col-span-2 sm:col-span-1"
-              @click="scrollToSection('carreras')"
-            >
-              <div
-                class="text-2xl lg:text-4xl font-black leading-none mb-1 cyd-stat-number"
-              >19</div>
-              <div
-                class="text-[10px] sm:text-xs font-medium leading-tight"
-                style="color: hsl(var(--muted-foreground));"
-              >Carreras<br>Educativas</div>
-              <div class="cyd-divider mx-auto mt-2 sm:mt-3" />
-            </div>
-          </div>
-
           <!-- CTAs -->
-          <div ref="ctaRef" class="flex flex-col sm:flex-row gap-3 will-change-transform">
+          <div class="flex flex-wrap gap-3">
             <button
-              class="hero-cta cyd-btn-primary group"
-              @click="scrollToSection('niveles')"
+              class="hero-cta-btn group flex items-center gap-3 text-white font-semibold rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
+              style="background: linear-gradient(90deg, #164627, #1e5c33); padding: 0.85rem 1.5rem; font-size: 0.9rem;"
+              @click="scrollToSection('oferta')"
             >
-              <span>Conocer Niveles</span>
-              <svg class="transition-transform duration-300 group-hover:translate-x-1.5" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="position:relative;z-index:1;">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span>Conoce nuestro colegio</span>
+              <span class="w-6 h-6 bg-white/25 rounded-full flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+              </span>
             </button>
 
             <button
-              class="hero-cta cyd-btn-outline group"
+              class="hero-cta-btn group flex items-center gap-3 text-slate-700 font-semibold rounded-full transition-all hover:-translate-y-0.5 active:scale-95"
+              style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.7); padding: 0.85rem 1.5rem; font-size: 0.9rem;"
               @click="scrollToSection('contacto')"
             >
-              <span>Inscripciones 2026</span>
-              <svg class="opacity-0 -ml-4 transition-all duration-300 group-hover:opacity-100 group-hover:ml-0" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg class="w-4 h-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
+              <span>Agenda tu visita</span>
             </button>
+          </div>
+
+          <!-- Social Pill -->
+          <div class="hero-social inline-flex items-center gap-3 w-fit rounded-full px-4 py-2.5" style="background: rgba(255,255,255,0.65); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.7);">
+            <span class="text-[0.7rem] font-extrabold text-slate-500 uppercase tracking-widest whitespace-nowrap">Síguenos en:</span>
+            <div class="flex items-center gap-3 text-slate-700">
+              <a href="#" aria-label="Facebook" class="hover:text-green-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+              </a>
+              <a href="#" aria-label="Instagram" class="hover:text-green-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
+              <a href="#" aria-label="YouTube" class="hover:text-green-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.083 0 12 0 12s0 3.917.501 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.917 24 12 24 12s0-3.917-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+              <a href="#" aria-label="TikTok" class="hover:text-green-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- Columna derecha — Jaguar + Decoración -->
-        <div 
-          class="relative flex items-center justify-center min-h-[300px] sm:min-h-[400px] lg:min-h-[640px] mt-6 lg:mt-0"
-          @mousemove="(e) => {
-            if(!jaguarRef) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            // Jaguar 3D Parallax
-            gsap.to(jaguarRef, {
-              rotateX: (-y / rect.height) * 30,
-              rotateY: (x / rect.width) * 30,
-              x: (x / rect.width) * 30,
-              y: (y / rect.height) * 30,
-              transformPerspective: 1000,
-              duration: 0.6,
-              ease: 'power2.out'
-            });
+        <!-- COLUMNA DERECHA ─ Jaguar + Badge -->
+        <div class="relative flex items-end justify-center lg:justify-end min-h-[300px] lg:min-h-[calc(100svh-72px)] pointer-events-none">
 
-            // Particles Parallax (Opposite direction + scale)
-            gsap.to('.particles-wrapper', {
-              x: (-x / rect.width) * 60,
-              y: (-y / rect.height) * 60,
-              scale: 1 + (Math.abs(x) + Math.abs(y)) / 3000, // Slight scale up based on distance
-              duration: 0.8,
-              ease: 'power2.out'
-            });
-          }"
-          @mouseleave="() => {
-            if(!jaguarRef) return;
-            gsap.to(jaguarRef, {
-              rotateX: 0, rotateY: 0, x: 0, y: 0,
-              duration: 1, ease: 'elastic.out(1, 0.4)'
-            });
-            gsap.to('.particles-wrapper', {
-              x: 0, y: 0, scale: 1,
-              duration: 1, ease: 'elastic.out(1, 0.4)'
-            });
-          }"
-        >
-
-          <!-- Premium Glowing Aura detrás del Jaguar -->
+          <!-- Jaguar interactivo -->
           <div
-            class="absolute w-[280px] h-[280px] lg:w-[550px] lg:h-[550px] rounded-full pointer-events-none"
-            style="
-              background: radial-gradient(circle, color-mix(in srgb, var(--cyd-gold) 15%, transparent) 0%, transparent 70%);
-              filter: blur(40px);
-              animation: cyd-pulse-glow 8s ease-in-out infinite alternate;
-            "
-            aria-hidden="true"
-          />
-
-          <!-- Círculo interior elegante -->
-          <div
-            class="absolute w-[220px] h-[220px] lg:w-[420px] lg:h-[420px] rounded-full pointer-events-none"
-            style="
-              background: radial-gradient(circle, color-mix(in srgb, var(--cyd-green) 12%, transparent) 0%, transparent 65%);
-              filter: blur(30px);
-              animation: cyd-pulse-glow 6s ease-in-out infinite alternate-reverse;
-            "
-            aria-hidden="true"
-          />
-
-          <!-- Partículas Mágicas Flotantes -->
-          <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-            <div class="particles-wrapper relative w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] will-change-transform">
-              <div
-                v-for="p in particles"
-                :key="p.id"
-                class="absolute rounded-full"
-                :style="{
-                  width: p.size + 'px',
-                  height: p.size + 'px',
-                  left: p.x + '%',
-                  top: p.y + '%',
-                  background: p.color,
-                  boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
-                  animation: `cyd-particle-float ${p.duration}s ease-in-out infinite ${p.delay}s`,
-                  '--tx': p.tx
-                }"
-              />
-            </div>
-          </div>
-
-          <!-- Jaguar -->
-          <div
-            class="relative z-10 w-[260px] h-[260px] lg:w-[420px] lg:h-[420px] animate-float jaguar-container cursor-pointer"
-            style="pointer-events: auto;"
-            @mouseenter="handleJaguarInteract"
+            class="relative z-10 pointer-events-auto cursor-pointer"
+            style="width: min(90%, 520px); max-width: 520px;"
             @click="handleJaguarInteract"
+            @mouseenter="handleJaguarInteract"
           >
-            <!-- Burbuja de chat interactiva -->
+            <!-- Burbuja de dialogo -->
             <Transition
-              enter-active-class="transition-all duration-400 ease-out origin-bottom-right"
-              enter-from-class="opacity-0 scale-50 translate-y-4"
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="opacity-0 scale-75 -translate-y-2"
               enter-to-class="opacity-100 scale-100 translate-y-0"
-              leave-active-class="transition-all duration-300 ease-in origin-bottom-right"
+              leave-active-class="transition-all duration-200 ease-in"
               leave-from-class="opacity-100 scale-100 translate-y-0"
-              leave-to-class="opacity-0 scale-50 translate-y-4"
+              leave-to-class="opacity-0 scale-75 -translate-y-2"
             >
               <div
                 v-if="showBubble"
-                class="absolute -top-6 sm:-top-8 -left-10 sm:-left-16 z-50 bg-white px-4 py-3 rounded-2xl rounded-br-sm shadow-2xl border border-green-50 max-w-[180px] sm:max-w-[220px]"
-                style="pointer-events: none;"
+                class="absolute z-30 bg-white rounded-2xl rounded-br-sm px-4 py-3 shadow-2xl border border-slate-100 max-w-[200px]"
+                style="top: 15%; right: 90%;"
               >
-                <p class="text-sm sm:text-base font-bold text-slate-800 leading-tight text-center" style="font-family: var(--font-display);">
-                  {{ currentMessage }}
-                </p>
-                <!-- Triángulo de la burbuja -->
-                <div class="absolute -bottom-2 right-6 w-4 h-4 bg-white transform rotate-45 border-b border-r border-green-50"></div>
+                <p class="text-sm font-bold text-slate-800 leading-tight text-center">{{ currentMessage }}</p>
+                <div class="absolute -bottom-2 right-5 w-4 h-4 bg-white rotate-45 border-b border-r border-slate-100"></div>
               </div>
             </Transition>
 
             <img
               ref="jaguarRef"
-              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png?width=8000&height=8000&resize=contain"
-              alt="Jaguar — Mascota Colegio CYD"
-              class="w-full h-full object-contain will-change-transform"
-              style="filter: drop-shadow(0 20px 60px color-mix(in srgb, var(--cyd-dark) 30%, transparent));"
+              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Jaguarcin-3-cuartos-1761938045002.png"
+              alt="Jaguar mascota del Colegio CYD"
+              class="w-full h-auto object-contain will-change-transform"
+              style="filter: drop-shadow(0 24px 48px rgba(22,70,39,0.18));"
             />
           </div>
 
-          <!-- Badge flotante — Excelencia -->
+          <!-- Badge "30 años" Glassmorphism -->
           <div
-            class="absolute top-4 sm:top-12 right-0 lg:-right-4 cyd-card px-3 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3"
-            style="animation: cyd-float 5s ease-in-out infinite; animation-delay: -1s;"
+            ref="badgeRef"
+            class="absolute z-20 pointer-events-none will-change-transform flex flex-col items-center text-center p-5 rounded-3xl"
+            style="
+              top: 28%;
+              right: 2%;
+              min-width: 148px;
+              background: rgba(255,255,255,0.65);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1px solid rgba(255,255,255,0.85);
+              box-shadow: 0 8px 32px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9);
+            "
           >
-            <div
-              class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-              style="background: linear-gradient(135deg, var(--cyd-forest), var(--cyd-green));"
-            >
-              <!-- Estrella SVG propio -->
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M8 1l1.8 4H14l-3.4 2.8 1.3 4.2L8 9.4l-3.9 2.6 1.3-4.2L2 5h4.2L8 1z" fill="white"/>
-              </svg>
-            </div>
-            <div>
-              <div class="text-xs font-semibold" style="color: var(--cyd-dark);">Excelencia Académica</div>
-              <div class="text-[10px]" style="color: hsl(var(--muted-foreground));">+33 años formando líderes</div>
-            </div>
-          </div>
-
-          <!-- Badge flotante — Carreras -->
-          <div
-            class="absolute bottom-4 sm:bottom-20 left-0 lg:-left-4 cyd-card px-3 py-2 sm:px-4 sm:py-3 flex items-center gap-2 sm:gap-3"
-            style="animation: cyd-float 5.5s ease-in-out infinite; animation-delay: -2.5s;"
-          >
-            <div
-              class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-              style="background: linear-gradient(135deg, var(--cyd-gold), var(--cyd-amber));"
-            >
-              <!-- Libro SVG propio -->
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect x="2" y="2" width="8" height="12" rx="1" stroke="white" stroke-width="1.5"/>
-                <path d="M6 5h2M6 7.5h4M6 10h3" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
-                <path d="M10 2v12" stroke="white" stroke-width="1.5"/>
-              </svg>
-            </div>
-            <div>
-              <div class="text-xs font-semibold" style="color: var(--cyd-dark);">19 Carreras</div>
-              <div class="text-[10px]" style="color: hsl(var(--muted-foreground));">Educativas disponibles</div>
+            <span class="text-[0.6rem] font-extrabold text-slate-500 uppercase tracking-widest">Más de</span>
+            <span class="font-black text-green-800 leading-none my-0.5" style="font-size: 3.5rem; font-family: var(--font-display);">30</span>
+            <span class="text-lg font-bold text-green-700 leading-none">años</span>
+            <span class="text-[0.68rem] text-slate-500 leading-snug font-medium mt-1">educando con<br>excelencia</span>
+            <div class="mt-3 w-11 h-11 bg-white rounded-full shadow-md flex items-center justify-center">
+              <img src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/LOGO-2020-1761860820111.png" alt="Logo CYD" class="w-8 h-8 object-contain" />
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Scroll indicator -->
-    <div
-      class="hero-scroll-indicator absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-      style="z-index: 10;"
-    >
-      <span class="text-[10px] tracking-[0.2em] uppercase" style="color: hsl(var(--muted-foreground));">Scroll</span>
-      <div
-        class="w-[1px] h-10 rounded-full overflow-hidden"
-        style="background: color-mix(in srgb, var(--cyd-green) 20%, transparent);"
-      >
-        <div
-          class="w-full rounded-full"
-          style="
-            height: 40%;
-            background: var(--cyd-green);
-            animation: scroll-line 1.8s ease-in-out infinite;
-          "
-        />
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-@keyframes cyd-pulse-glow {
-  0% { transform: scale(1) translate(0px, 0px); opacity: 0.8; }
-  50% { transform: scale(1.05) translate(10px, -15px); opacity: 1; }
-  100% { transform: scale(0.95) translate(-10px, 10px); opacity: 0.8; }
-}
-
-@keyframes scroll-line {
-  0%   { transform: translateY(-100%); }
-  50%  { transform: translateY(150%); }
-  100% { transform: translateY(-100%); }
-}
-
-@keyframes cyd-particle-float {
-  0% { transform: translate(0, 40px) scale(0.1); opacity: 0; }
-  25% { opacity: 0.8; transform: translate(calc(var(--tx) * 0.3), 10px) scale(1.6); }
-  50% { opacity: 1; transform: translate(calc(var(--tx) * 0.6), -20px) scale(0.5); }
-  75% { opacity: 0.8; transform: translate(calc(var(--tx) * 0.9), -50px) scale(2); }
-  100% { transform: translate(var(--tx), -100px) scale(0.1); opacity: 0; }
-}
 </style>

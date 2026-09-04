@@ -1,31 +1,32 @@
 <script setup>
 import Navigation from '@/components/Navigation.vue'
 import HeroSection from '@/components/HeroSection.vue'
-import AboutSection from '@/components/AboutSection.vue'
-import ServicesSection from '@/components/ServicesSection.vue'
+import StatsBar from '@/components/StatsBar.vue'
 import CarrerasSection from '@/components/CarrerasSection.vue'
 import TecnologiaSection from '@/components/TecnologiaSection.vue'
 import ActividadesSection from '@/components/ActividadesSection.vue'
-import GaleriaSection from '@/components/GaleriaSection.vue'
-import FacebookFeedSection from '@/components/FacebookFeedSection.vue'
-import ContactSection from '@/components/ContactSection.vue'
+import AppPromoSection from '@/components/AppPromoSection.vue'
 import Footer from '@/components/Footer.vue'
 import WhatsAppButton from '@/components/WhatsAppButton.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen bg-white">
     <Navigation />
     <main>
+      <!-- Hero -->
       <HeroSection />
-      <ServicesSection />
-      <TecnologiaSection />
+
+      <!-- Stats Bar justo debajo del Hero, con padding y bg propio -->
+      <div class="bg-[#f8fafc] py-6 lg:py-8">
+        <StatsBar />
+      </div>
+
+      <!-- Secciones en orden del mockup -->
       <CarrerasSection />
+      <TecnologiaSection />
       <ActividadesSection />
-      <AboutSection />
-      <GaleriaSection />
-      <FacebookFeedSection />
-      <ContactSection />
+      <AppPromoSection />
     </main>
     <Footer />
     <WhatsAppButton />
@@ -33,5 +34,4 @@ import WhatsAppButton from '@/components/WhatsAppButton.vue'
 </template>
 
 <style>
-/* Any global adjustments could go here, but mostly handled in style.css */
 </style>

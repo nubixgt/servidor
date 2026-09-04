@@ -114,11 +114,11 @@ const scrollToSection = (id) => {
 
 const menuItems = [
   { id: 'inicio',      label: 'Inicio' },
-  { id: 'niveles',     label: 'Niveles' },
-  { id: 'tecnologia',  label: 'Tecnología' },
-  { id: 'actividades', label: 'Actividades' },
   { id: 'nosotros',    label: 'Nosotros' },
-  { id: 'galeria',     label: 'Galería' },
+  { id: 'oferta',      label: 'Oferta Académica', hasDropdown: true },
+  { id: 'admisiones',  label: 'Admisiones' },
+  { id: 'vida',        label: 'Vida Estudiantil', hasDropdown: true },
+  { id: 'servicios',   label: 'Servicios', hasDropdown: true },
   { id: 'contacto',    label: 'Contacto' },
 ]
 </script>
@@ -200,12 +200,15 @@ const menuItems = [
             v-for="item in menuItems"
             :key="item.id"
             @click="scrollToSection(item.id)"
-            class="cyd-nav-item relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg group"
+            class="cyd-nav-item relative px-3 py-2 text-[0.85rem] font-medium transition-colors duration-200 rounded-lg group flex items-center gap-1"
             :style="{
               color: activeSection === item.id ? 'var(--cyd-forest)' : 'hsl(var(--muted-foreground))'
             }"
           >
             <span class="relative z-10">{{ item.label }}</span>
+            <svg v-if="item.hasDropdown" class="w-3.5 h-3.5 opacity-60 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
 
             <!-- Indicador activo -->
             <span
@@ -227,10 +230,14 @@ const menuItems = [
         <!-- CTA Desktop -->
         <div class="hidden lg:block cyd-nav-cta">
           <button
-            @click="scrollToSection('contacto')"
-            class="cyd-btn-primary text-sm"
+            @click="scrollToSection('app')"
+            class="px-5 py-2.5 rounded-full flex items-center gap-2 text-white font-medium text-sm shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+            style="background: linear-gradient(90deg, #164627, #1E5C33);"
           >
-            <span>Inscripciones 2026</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span>APP CYD</span>
           </button>
         </div>
 
@@ -296,10 +303,14 @@ const menuItems = [
           </div>
           <div class="px-1">
             <button
-              @click="scrollToSection('contacto')"
-              class="cyd-btn-primary w-full justify-center"
+              @click="scrollToSection('app')"
+              class="w-full justify-center px-5 py-2.5 rounded-full flex items-center gap-2 text-white font-medium text-sm shadow-md"
+              style="background: linear-gradient(90deg, #164627, #1E5C33);"
             >
-              <span>Inscripciones 2026</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span>APP CYD</span>
             </button>
           </div>
         </div>
