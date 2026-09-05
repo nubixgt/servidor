@@ -21,7 +21,7 @@ class ConcreteTripRepository
                        CONCAT(per.nombres, ' ', per.apellidos) as piloto_nombre 
                 FROM concrete_trips ct
                 LEFT JOIN projects p ON ct.proyecto_id = p.id
-                LEFT JOIN vehicles v ON ct.vehiculo_id = v.id
+                LEFT JOIN heavy_transport v ON ct.vehiculo_id = v.id
                 LEFT JOIN personnel per ON ct.piloto_id = per.id
                 ORDER BY ct.id DESC";
         $stmt = $this->pdo->query($sql);

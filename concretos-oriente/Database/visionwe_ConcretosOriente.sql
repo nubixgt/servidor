@@ -192,7 +192,7 @@ INSERT INTO `clients` (`id`, `company_name`, `ruc`, `status`, `contact_name`, `e
 CREATE TABLE `concrete_trips` (
   `id` int(11) NOT NULL,
   `proyecto_id` int(11) NOT NULL,
-  `vehiculo_id` int(11) NOT NULL,
+  `vehiculo_id` int(11) UNSIGNED NOT NULL,
   `piloto_id` int(10) UNSIGNED NOT NULL,
   `m3_arena` decimal(10,2) DEFAULT NULL,
   `m3_piedrin` decimal(10,2) DEFAULT NULL,
@@ -1915,7 +1915,7 @@ ALTER TABLE `budget_items`
 --
 ALTER TABLE `concrete_trips`
   ADD CONSTRAINT `concrete_trips_ibfk_1` FOREIGN KEY (`proyecto_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `concrete_trips_ibfk_2` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehicles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `concrete_trips_ibfk_2` FOREIGN KEY (`vehiculo_id`) REFERENCES `heavy_transport` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `concrete_trips_ibfk_3` FOREIGN KEY (`piloto_id`) REFERENCES `personnel` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `concrete_trips_ibfk_4` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 

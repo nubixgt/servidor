@@ -109,10 +109,10 @@
 
                 <!-- Placa -->
                 <div>
-                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Vehículo (Placa)</label>
+                  <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-2">Transporte Pesado (Placa)</label>
                   <select v-model="formStep1.vehiculo_id" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-primary transition-all font-bold">
                     <option value="" disabled>Seleccione...</option>
-                    <!-- Filter only operative vehicles -->
+                    <!-- Solo unidades de transporte pesado operativas -->
                     <option v-for="v in operativeVehicles" :key="v.id" :value="v.id">{{ v.placa }} - {{ v.marca }}</option>
                   </select>
                 </div>
@@ -433,7 +433,9 @@ const pendingPilot = computed(() => trips.value.filter(t => parseInt(t.estado) =
 const pendingPlacement = computed(() => trips.value.filter(t => parseInt(t.estado) === 3));
 const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado) === 4));
 
-const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'En Funcionamiento' || v.estatus === 'Nuevo'));
+// El despacho de concreto se hace con las unidades de Transporte Pesado (tabla heavy_transport),
+// cuyo campo de estado es `estado` con enum ('Nuevo','En Funcionamiento','Inactivo').
+const operativeVehicles = computed(() => vehicles.value.filter(v => v.estado === 'En Funcionamiento' || v.estado === 'Nuevo'));
 
 
 onMounted(() => {
@@ -452,7 +454,7 @@ const fetchProjects = async () => {
 
 const fetchVehicles = async () => {
   try {
-    const res = await api.get('/vehicles');
+    const res = await api.get('/heavy-transport');
     if (res.data.success === true || res.data.status === 'success') {
       vehicles.value = res.data.data;
     }
