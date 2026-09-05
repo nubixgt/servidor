@@ -433,7 +433,7 @@ const pendingPilot = computed(() => trips.value.filter(t => parseInt(t.estado) =
 const pendingPlacement = computed(() => trips.value.filter(t => parseInt(t.estado) === 3));
 const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado) === 4));
 
-const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'active' || v.estatus === 'Operativo'));
+const operativeVehicles = computed(() => vehicles.value.filter(v => v.estatus === 'En Funcionamiento' || v.estatus === 'Nuevo'));
 
 
 onMounted(() => {
