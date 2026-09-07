@@ -350,6 +350,33 @@
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
+              <!-- Estado Civil -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Estado Civil</label>
+                <select v-model="formData.estado_civil" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
+                  <option value="">Seleccionar...</option>
+                  <option value="Soltero(a)">Soltero(a)</option>
+                  <option value="Casado(a)">Casado(a)</option>
+                  <option value="Unido(a)">Unido(a)</option>
+                  <option value="Divorciado(a)">Divorciado(a)</option>
+                  <option value="Viudo(a)">Viudo(a)</option>
+                </select>
+              </div>
+
+              <!-- Departamento de Nacimiento -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Departamento de Nacimiento</label>
+                <input v-model="formData.depto_nacimiento" type="text" placeholder="Ej. El Progreso"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Municipio de Nacimiento -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Municipio de Nacimiento</label>
+                <input v-model="formData.muni_nacimiento" type="text" placeholder="Ej. Sanarate"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
               <!-- Cantidad de Hijos -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Cantidad de Hijos</label>
@@ -602,6 +629,16 @@
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Fecha de Nacimiento</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.fecha_nacimiento ? formatDate(selectedEmp.fecha_nacimiento) : 'No registrada' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Estado Civil</p>
+              <p class="text-base font-semibold text-white/90">{{ selectedEmp.estado_civil || 'No registrado' }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Lugar de Nacimiento</p>
+              <p class="text-base font-semibold text-white/90">
+                {{ [selectedEmp.muni_nacimiento, selectedEmp.depto_nacimiento].filter(Boolean).join(', ') || 'No registrado' }}
+              </p>
             </div>
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Cantidad de Hijos</p>
@@ -1075,6 +1112,9 @@ const formData = ref({
   cantidad_hijos:     '',
   nivel_academico:    '',
   fecha_nacimiento:   '',
+  depto_nacimiento:   '',
+  muni_nacimiento:    '',
+  estado_civil:       '',
   igss:               null,
   igss_numero:        '',
   fecha_contratacion: '',
@@ -1310,6 +1350,9 @@ const openEditModal = (emp) => {
     cantidad_hijos:     emp.cantidad_hijos     !== null && emp.cantidad_hijos !== undefined ? emp.cantidad_hijos : '',
     nivel_academico:    emp.nivel_academico    || '',
     fecha_nacimiento:   emp.fecha_nacimiento   || '',
+    depto_nacimiento:   emp.depto_nacimiento   || '',
+    muni_nacimiento:    emp.muni_nacimiento    || '',
+    estado_civil:       emp.estado_civil       || '',
     igss:               emp.igss !== null && emp.igss !== undefined ? parseInt(emp.igss) : null,
     igss_numero:        emp.igss_numero        || '',
     fecha_contratacion: emp.fecha_contratacion || '',
@@ -1415,6 +1458,19 @@ const consultarRenap = async (isManual = false) => {
         }
       }
 
+      // Departamento y Municipio de Nacimiento
+      if (person.DEPTO_NACIMIENTO) {
+        formData.value.depto_nacimiento = person.DEPTO_NACIMIENTO;
+      }
+      if (person.MUNI_NACIMIENTO) {
+        formData.value.muni_nacimiento = person.MUNI_NACIMIENTO;
+      }
+
+      // Estado Civil
+      if (person.ESTADO_CIVIL) {
+        formData.value.estado_civil = mapEstadoCivil(person.ESTADO_CIVIL);
+      }
+
       // Dirección / Vecindad
       if (person.VECINDAD && !formData.value.direccion) {
         formData.value.direccion = person.VECINDAD;
@@ -1463,6 +1519,17 @@ const consultarRenap = async (isManual = false) => {
   }
 };
 
+const mapEstadoCivil = (code) => {
+  if (!code) return '';
+  const c = code.trim().toUpperCase();
+  if (c === 'S' || c === 'SOLTERO' || c === 'SOLTERA') return 'Soltero(a)';
+  if (c === 'C' || c === 'CASADO' || c === 'CASADA') return 'Casado(a)';
+  if (c === 'U' || c === 'UNIDO' || c === 'UNIDA' || c === 'UNION') return 'Unido(a)';
+  if (c === 'D' || c === 'DIVORCIADO' || c === 'DIVORCIADA') return 'Divorciado(a)';
+  if (c === 'V' || c === 'VIUDO' || c === 'VIUDA') return 'Viudo(a)';
+  return code;
+};
+
 const closeModal = () => {
   showModal.value = false;
   resetForm();
@@ -1490,6 +1557,9 @@ const resetForm = () => {
     cantidad_hijos:     '',
     nivel_academico:    '',
     fecha_nacimiento:   '',
+    depto_nacimiento:   '',
+    muni_nacimiento:    '',
+    estado_civil:       '',
     igss:               null,
     igss_numero:        '',
     fecha_contratacion: '',
@@ -1669,6 +1739,9 @@ const submitForm = async () => {
   data.append('cantidad_hijos',     formData.value.cantidad_hijos !== '' ? formData.value.cantidad_hijos : '');
   data.append('nivel_academico',    formData.value.nivel_academico    || '');
   data.append('fecha_nacimiento',   formData.value.fecha_nacimiento   || '');
+  data.append('depto_nacimiento',   formData.value.depto_nacimiento   || '');
+  data.append('muni_nacimiento',    formData.value.muni_nacimiento    || '');
+  data.append('estado_civil',       formData.value.estado_civil       || '');
   data.append('igss',               formData.value.igss !== null ? formData.value.igss : '');
   data.append('igss_numero',        formData.value.igss === 1 ? (formData.value.igss_numero || '') : '');
   data.append('fecha_contratacion', formData.value.fecha_contratacion);

@@ -99,6 +99,9 @@ class PersonnelController extends Controller
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
+                'depto_nacimiento'   => trim($_POST['depto_nacimiento'] ?? '') ?: null,
+                'muni_nacimiento'    => trim($_POST['muni_nacimiento']  ?? '') ?: null,
+                'estado_civil'       => trim($_POST['estado_civil']     ?? '') ?: null,
                 'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
                                         ? (int)$_POST['igss'] : null,
                 'igss_numero'        => trim($_POST['igss_numero'] ?? '') ?: null,
@@ -159,6 +162,9 @@ class PersonnelController extends Controller
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
+                'depto_nacimiento'   => trim($_POST['depto_nacimiento'] ?? '') ?: null,
+                'muni_nacimiento'    => trim($_POST['muni_nacimiento']  ?? '') ?: null,
+                'estado_civil'       => trim($_POST['estado_civil']     ?? '') ?: null,
                 'igss'               => (isset($_POST['igss']) && $_POST['igss'] !== '')
                                         ? (int)$_POST['igss'] : null,
                 'igss_numero'        => trim($_POST['igss_numero'] ?? '') ?: null,

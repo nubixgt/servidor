@@ -12,6 +12,32 @@ class PersonnelRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $existingColumns = [];
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM personnel");
+            if ($stmt) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $existingColumns[] = strtolower($row['Field']);
+                }
+            }
+
+            if (!in_array('depto_nacimiento', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `depto_nacimiento` VARCHAR(100) DEFAULT NULL AFTER `fecha_nacimiento`");
+            }
+            if (!in_array('muni_nacimiento', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `muni_nacimiento` VARCHAR(100) DEFAULT NULL AFTER `depto_nacimiento`");
+            }
+            if (!in_array('estado_civil', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `estado_civil` VARCHAR(50) DEFAULT NULL AFTER `muni_nacimiento`");
+            }
+        } catch (Exception $e) {
+            error_log('Error en auto-migración personnel: ' . $e->getMessage());
+        }
     }
 
     public function getPDO(): PDO
@@ -47,14 +73,16 @@ class PersonnelRepository
                     (tipo_empleado, nombres, apellidos, dpi, nit, telefono, direccion,
                      puesto, tipo_planilla, salario_base, tarifa_hora_extra,
                      diario_viaticos, contacto_nombres, contacto_numero,
-                     cantidad_hijos, nivel_academico, fecha_nacimiento, igss, igss_numero,
+                     cantidad_hijos, nivel_academico, fecha_nacimiento, depto_nacimiento, muni_nacimiento, estado_civil,
+                     igss, igss_numero,
                      fecha_contratacion, fecha_baja,
                      numero_cuenta, nombre_banco, proyecto_id)
                 VALUES
                     (:tipo_empleado, :nombres, :apellidos, :dpi, :nit, :telefono, :direccion,
                      :puesto, :tipo_planilla, :salario_base, :tarifa_hora_extra,
                      :diario_viaticos, :contacto_nombres, :contacto_numero,
-                     :cantidad_hijos, :nivel_academico, :fecha_nacimiento, :igss, :igss_numero,
+                     :cantidad_hijos, :nivel_academico, :fecha_nacimiento, :depto_nacimiento, :muni_nacimiento, :estado_civil,
+                     :igss, :igss_numero,
                      :fecha_contratacion, :fecha_baja,
                      :numero_cuenta, :nombre_banco, :proyecto_id)";
 
@@ -77,6 +105,9 @@ class PersonnelRepository
             'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
             'nivel_academico'    => $data['nivel_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
+            'depto_nacimiento'   => $data['depto_nacimiento'] ?? null,
+            'muni_nacimiento'    => $data['muni_nacimiento'] ?? null,
+            'estado_civil'       => $data['estado_civil'] ?? null,
             'igss'               => $data['igss'] ?? null,
             'igss_numero'        => $data['igss_numero'] ?? null,
             'fecha_contratacion' => $data['fecha_contratacion'],
@@ -109,6 +140,9 @@ class PersonnelRepository
                     cantidad_hijos     = :cantidad_hijos,
                     nivel_academico    = :nivel_academico,
                     fecha_nacimiento   = :fecha_nacimiento,
+                    depto_nacimiento   = :depto_nacimiento,
+                    muni_nacimiento    = :muni_nacimiento,
+                    estado_civil       = :estado_civil,
                     igss               = :igss,
                     igss_numero        = :igss_numero,
                     fecha_contratacion = :fecha_contratacion,
@@ -137,6 +171,9 @@ class PersonnelRepository
             'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
             'nivel_academico'    => $data['nivel_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
+            'depto_nacimiento'   => $data['depto_nacimiento'] ?? null,
+            'muni_nacimiento'    => $data['muni_nacimiento'] ?? null,
+            'estado_civil'       => $data['estado_civil'] ?? null,
             'igss'               => $data['igss'] ?? null,
             'igss_numero'        => $data['igss_numero'] ?? null,
             'fecha_contratacion' => $data['fecha_contratacion'],
