@@ -272,6 +272,49 @@
                 </select>
               </div>
 
+              <!-- DPI (Movido antes de Nombres y Apellidos) -->
+              <div class="space-y-2 md:col-span-2">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold text-white/50 uppercase tracking-wider">DPI (13 dígitos) <span class="text-tertiary">*</span></label>
+                  <span v-if="loadingRenap" class="text-xs font-semibold text-primary flex items-center gap-1.5 animate-pulse">
+                    <svg class="animate-spin h-3.5 w-3.5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Consultando RENAP...
+                  </span>
+                  <span v-else-if="renapSuccess" class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <CheckCircleIcon class="w-3.5 h-3.5" />
+                    Autocompletado con RENAP
+                  </span>
+                </div>
+                <div class="relative flex items-center">
+                  <input
+                    v-model="formData.dpi"
+                    @input="onDpiInput"
+                    type="text"
+                    required
+                    placeholder="0000 00000 0000"
+                    maxlength="15"
+                    class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all pr-28 font-mono tracking-wider"
+                  />
+                  <button
+                    type="button"
+                    @click="consultarRenap(true)"
+                    :disabled="loadingRenap || getDpiClean().length !== 13"
+                    class="absolute right-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    title="Consultar datos en RENAP"
+                  >
+                    <svg v-if="loadingRenap" class="animate-spin h-3 w-3 text-primary" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <MagnifyingGlassIcon v-else class="w-3.5 h-3.5" />
+                    <span>Consultar</span>
+                  </button>
+                </div>
+              </div>
+
               <!-- Nombres -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nombres <span class="text-tertiary">*</span></label>
@@ -283,13 +326,6 @@
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Apellidos <span class="text-tertiary">*</span></label>
                 <input v-model="formData.apellidos" type="text" required placeholder="Ej. Pérez García"
-                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
-              </div>
-
-              <!-- DPI -->
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">DPI <span class="text-tertiary">*</span></label>
-                <input v-model="formData.dpi" @input="formatDpi" type="text" required placeholder="0000 00000 0000" maxlength="15"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
@@ -887,7 +923,8 @@ import { ref, onMounted, computed, watch } from 'vue';
 import {
   UsersIcon, CheckCircleIcon, BriefcaseIcon, BuildingOfficeIcon,
   PlusIcon, XMarkIcon, EyeIcon, PencilIcon, TrashIcon,
-  ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon
+  ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -1287,12 +1324,154 @@ const openEditModal = (emp) => {
   showModal.value = true;
 };
 
+const loadingRenap = ref(false);
+const renapSuccess = ref(false);
+let renapDebounceTimeout = null;
+
+const getDpiClean = () => {
+  return (formData.value.dpi || '').replace(/\D/g, '').slice(0, 13);
+};
+
+const onDpiInput = (e) => {
+  formatDpi(e);
+  renapSuccess.value = false;
+  const cui = getDpiClean();
+
+  if (renapDebounceTimeout) clearTimeout(renapDebounceTimeout);
+
+  if (cui.length === 13) {
+    renapDebounceTimeout = setTimeout(() => {
+      consultarRenap(false);
+    }, 400);
+  }
+};
+
+const consultarRenap = async (isManual = false) => {
+  const cui = getDpiClean();
+  if (cui.length !== 13) {
+    if (isManual) {
+      Swal.fire({
+        ...swalBase,
+        title: 'DPI Incompleto',
+        text: 'El número de DPI debe contener exactamente 13 dígitos.',
+        icon: 'warning'
+      });
+    }
+    return;
+  }
+
+  loadingRenap.value = true;
+  renapSuccess.value = false;
+
+  try {
+    let result = null;
+
+    // 1. Intentamos primero vía directa a la API de RENAP
+    try {
+      const res = await fetch(`http://159.203.113.174/renap.php?cui=${cui}`);
+      if (res.ok) {
+        result = await res.json();
+      }
+    } catch (directErr) {
+      console.warn('Direct RENAP fetch failed, falling back to backend endpoint...', directErr);
+    }
+
+    // 2. Si falló la llamada directa (CORS o Mixed Content), usamos el endpoint backend
+    if (!result || !result.ok) {
+      try {
+        const res = await fetch(`${BASE_URL}/personnel/renap/${cui}`);
+        if (res.ok) {
+          result = await res.json();
+        }
+      } catch (backendErr) {
+        console.error('Backend RENAP fetch failed:', backendErr);
+      }
+    }
+
+    if (result && result.ok && result.data && result.data.data && result.data.data.length > 0) {
+      const person = result.data.data[0];
+
+      // Nombres
+      const nombresParts = [person.PRIMER_NOMBRE, person.SEGUNDO_NOMBRE, person.TERCER_NOMBRE].filter(Boolean);
+      if (nombresParts.length > 0) {
+        formData.value.nombres = nombresParts.join(' ');
+      }
+
+      // Apellidos
+      const apellidosParts = [person.PRIMER_APELLIDO, person.SEGUNDO_APELLIDO].filter(Boolean);
+      if (person.APELLIDO_CASADA) {
+        apellidosParts.push('DE ' + person.APELLIDO_CASADA);
+      }
+      if (apellidosParts.length > 0) {
+        formData.value.apellidos = apellidosParts.join(' ');
+      }
+
+      // Fecha de Nacimiento (API retorna DD/MM/YYYY)
+      if (person.FECHA_NACIMIENTO) {
+        const parts = person.FECHA_NACIMIENTO.split('/');
+        if (parts.length === 3) {
+          const [d, m, y] = parts;
+          formData.value.fecha_nacimiento = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
+      }
+
+      // Dirección / Vecindad
+      if (person.VECINDAD && !formData.value.direccion) {
+        formData.value.direccion = person.VECINDAD;
+      }
+
+      renapSuccess.value = true;
+
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#0f172a',
+        color: '#fff',
+        customClass: {
+          popup: 'border border-white/10 rounded-2xl shadow-xl'
+        }
+      });
+      Toast.fire({
+        icon: 'success',
+        title: '¡Datos de RENAP autocompletados!'
+      });
+    } else {
+      if (isManual) {
+        Swal.fire({
+          ...swalBase,
+          title: 'No encontrado',
+          text: result?.data?.mensaje || result?.mensaje || 'No se encontraron datos para el DPI ingresado.',
+          icon: 'info'
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error al consultar RENAP:', err);
+    if (isManual) {
+      Swal.fire({
+        ...swalBase,
+        title: 'Error de Consulta',
+        text: 'Ocurrió un error al consultar el servicio de RENAP.',
+        icon: 'error'
+      });
+    }
+  } finally {
+    loadingRenap.value = false;
+  }
+};
+
 const closeModal = () => {
   showModal.value = false;
   resetForm();
 };
 
 const resetForm = () => {
+  loadingRenap.value = false;
+  renapSuccess.value = false;
+  if (renapDebounceTimeout) clearTimeout(renapDebounceTimeout);
   formData.value = {
     tipo_empleado:      '',
     nombres:            '',

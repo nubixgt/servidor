@@ -34,6 +34,40 @@ class PersonnelController extends Controller
     }
 
     // ----------------------------------------------------------------
+    // GET /personnel/renap/{cui}  — consultar RENAP
+    // ----------------------------------------------------------------
+    #[Route('/personnel/renap/{cui}', 'GET')]
+    public function renap($cui)
+    {
+        try {
+            $cleanCui = preg_replace('/\D/', '', $cui);
+            if (strlen($cleanCui) !== 13) {
+                $this->json(['status' => 'error', 'message' => 'El CUI debe tener 13 dígitos'], 400);
+                return;
+            }
+
+            $url = "http://159.203.113.174/renap.php?cui=" . urlencode($cleanCui);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($response === false || $httpCode !== 200) {
+                $this->json(['status' => 'error', 'message' => 'No se pudo consultar el servicio de RENAP'], 502);
+                return;
+            }
+
+            $data = json_decode($response, true);
+            $this->json($data);
+        } catch (Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    // ----------------------------------------------------------------
     // POST /personnel  — crear nuevo empleado
     // ----------------------------------------------------------------
     #[Route('/personnel', 'POST')]
