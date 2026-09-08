@@ -296,8 +296,8 @@
 
                 </div>
 
-                <!-- Foto Factura de este producto -->
-                <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+                <!-- Foto Factura de este producto y Desglose -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/5">
                   <div class="flex items-center gap-2">
                     <label class="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase text-white/70 transition-all">
                       <CameraIcon class="w-3.5 h-3.5 text-primary" />
@@ -306,6 +306,58 @@
                     </label>
                     <span v-if="itemPhotoPreviews[idx]" class="text-[9px] font-bold text-emerald-400">✓ Factura cargada</span>
                     <a v-else-if="item.foto_factura" :href="photoUrl(item.foto_factura)" target="_blank" class="text-[9px] font-bold text-primary underline">Ver factura actual</a>
+                  </div>
+
+                  <!-- Botón Desplegar Detalle -->
+                  <button @click="toggleDetalle(item)" type="button"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all"
+                    :class="item.mostrar_detalle ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10'">
+                    <ListBulletIcon class="w-3.5 h-3.5" />
+                    <span>{{ item.mostrar_detalle ? 'Ocultar Desglose' : 'Detallar Productos' }}</span>
+                    <span v-if="item.detalles && item.detalles.length > 0" class="px-1.5 py-0.2 text-[8px] bg-primary text-white rounded-full font-bold ml-0.5">
+                      {{ item.detalles.length }}
+                    </span>
+                    <ChevronUpIcon v-if="item.mostrar_detalle" class="w-3 h-3 ml-0.5" />
+                    <ChevronDownIcon v-else class="w-3 h-3 ml-0.5" />
+                  </button>
+                </div>
+
+                <!-- Sub-tabla Desplegable: Listado Detallado de Productos y Montos -->
+                <div v-if="item.mostrar_detalle" class="mt-3 pt-3 border-t border-white/5 bg-slate-950/40 rounded-xl p-4 space-y-3 border border-white/5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">
+                      <ListBulletIcon class="w-3.5 h-3.5" /> Desglose de Productos / Repuestos de esta Factura
+                    </span>
+                    <button @click="addSubItem(item)" type="button"
+                      class="flex items-center gap-1 px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all">
+                      <PlusIcon class="w-3 h-3" /> + Agregar Ítem al Desglose
+                    </button>
+                  </div>
+
+                  <div v-if="!item.detalles || item.detalles.length === 0" class="text-[10px] text-white/30 italic py-2 text-center">
+                    Haz clic en "+ Agregar Ítem al Desglose" para detallar los productos o repuestos.
+                  </div>
+
+                  <div v-for="(sub, sIdx) in item.detalles" :key="sIdx" class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center bg-white/[0.02] p-2 rounded-lg border border-white/5">
+                    <div class="md:col-span-7 space-y-0.5">
+                      <label class="text-[7px] font-black text-white/30 uppercase tracking-widest">Producto / Repuesto</label>
+                      <input v-model="sub.producto" type="text" placeholder="Ej. Filtro de Aceite LF16015"
+                        class="w-full h-8 px-3 rounded-lg glass-input border-white/5 focus:border-primary transition-all text-xs font-medium text-white" />
+                    </div>
+                    <div class="md:col-span-4 space-y-0.5">
+                      <label class="text-[7px] font-black text-white/30 uppercase tracking-widest">Monto</label>
+                      <div class="relative">
+                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
+                        <input v-model="sub.monto" @input="updateParentMonto(item)" type="number" min="0" step="0.01" placeholder="0.00"
+                          class="w-full h-8 pl-6 pr-2 rounded-lg glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-emerald-400" />
+                      </div>
+                    </div>
+                    <div class="md:col-span-1 flex justify-end items-end pt-3">
+                      <button @click="removeSubItem(item, sIdx)" type="button"
+                        class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg border border-rose-500/20 transition-all shrink-0">
+                        <TrashIcon class="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -559,9 +611,9 @@
                   <CubeIcon class="w-3.5 h-3.5" /> Repuestos y Productos ({{ detailItems.length }})
                 </h5>
                 <div v-if="detailItems.length === 0" class="text-white/25 text-xs py-2">Sin productos registrados.</div>
-                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div class="space-y-3 max-h-72 overflow-y-auto pr-1">
                   <div v-for="(item, i) in detailItems" :key="i"
-                    class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-1">
+                    class="bg-white/5 p-3.5 rounded-xl border border-white/5 space-y-2">
                     <div class="flex items-center justify-between text-xs">
                       <span class="font-bold text-white/90">{{ item.producto }}</span>
                       <span class="font-black text-emerald-400">Q {{ Number(item.monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
@@ -569,6 +621,18 @@
                     <div class="flex items-center justify-between text-[10px] text-white/40">
                       <span>{{ item.proveedor_nombre || 'Sin proveedor' }}</span>
                       <a v-if="item.foto_factura" :href="photoUrl(item.foto_factura)" target="_blank" class="text-primary underline">Ver Factura</a>
+                    </div>
+                    <!-- Desglose de sub-productos si existe -->
+                    <div v-if="parseSubDetalles(item.detalles_json).length > 0"
+                      class="pt-2 mt-2 border-t border-white/5 bg-slate-950/40 p-2.5 rounded-lg space-y-1">
+                      <span class="text-[8px] font-black text-primary uppercase tracking-widest block">
+                        Desglose de productos / repuestos ({{ parseSubDetalles(item.detalles_json).length }}):
+                      </span>
+                      <div v-for="(sub, sIdx) in parseSubDetalles(item.detalles_json)" :key="sIdx"
+                        class="flex justify-between items-center text-[11px] text-white/70 pl-2 py-0.5 border-b border-white/5 last:border-0">
+                        <span>• {{ sub.producto }}</span>
+                        <span class="font-mono text-emerald-300 font-bold">Q {{ Number(sub.monto || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -614,7 +678,8 @@ import Swal from 'sweetalert2';
 import {
   PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
   CameraIcon, XMarkIcon, WrenchScrewdriverIcon, InformationCircleIcon,
-  BanknotesIcon, CalendarDaysIcon, CubeIcon, BellAlertIcon, DocumentTextIcon
+  BanknotesIcon, CalendarDaysIcon, CubeIcon, BellAlertIcon, DocumentTextIcon,
+  ChevronDownIcon, ChevronUpIcon, ListBulletIcon
 } from '@heroicons/vue/24/outline';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
@@ -737,12 +802,56 @@ const toast = (msg, icon = 'success') => Swal.fire({
   background: '#0f172a', color: '#ffffff'
 });
 
-// ── Items dinámicos ────────────────────────────────────────────────────────
-const addItem = () => items.value.push({ producto: '', monto: '', proveedor_id: '', foto_factura: '' });
+// ── Items dinámicos & Desglose ──────────────────────────────────────────────
+const addItem = () => items.value.push({
+  producto: '',
+  monto: '',
+  proveedor_id: '',
+  foto_factura: '',
+  mostrar_detalle: false,
+  detalles: []
+});
+
 const removeItem = (idx) => {
   items.value.splice(idx, 1);
   delete itemPhotoFiles.value[idx];
   delete itemPhotoPreviews.value[idx];
+};
+
+const toggleDetalle = (item) => {
+  item.mostrar_detalle = !item.mostrar_detalle;
+  if (item.mostrar_detalle && (!item.detalles || item.detalles.length === 0)) {
+    item.detalles = [{ producto: '', monto: '' }];
+  }
+};
+
+const addSubItem = (item) => {
+  if (!item.detalles) item.detalles = [];
+  item.detalles.push({ producto: '', monto: '' });
+  item.mostrar_detalle = true;
+};
+
+const removeSubItem = (item, sIdx) => {
+  item.detalles.splice(sIdx, 1);
+  updateParentMonto(item);
+};
+
+const updateParentMonto = (item) => {
+  if (!item.detalles || item.detalles.length === 0) return;
+  const sum = item.detalles.reduce((acc, sub) => acc + (parseFloat(sub.monto) || 0), 0);
+  if (sum > 0) {
+    item.monto = sum.toFixed(2);
+  }
+};
+
+const parseSubDetalles = (detallesJson) => {
+  if (!detallesJson) return [];
+  try {
+    const res = typeof detallesJson === 'string' ? JSON.parse(detallesJson) : detallesJson;
+    return Array.isArray(res) ? res : [];
+  } catch (e) {
+    return [];
+  }
 };
 
 const onItemPhotoChange = (e, idx) => {
@@ -890,12 +999,17 @@ const startEdit = async (r) => {
   };
 
   const fetchedItems = await fetchItems(r.id);
-  items.value = fetchedItems.map(i => ({
-    producto:     i.producto,
-    monto:        i.monto,
-    proveedor_id: i.proveedor_id || '',
-    foto_factura: i.foto_factura || ''
-  }));
+  items.value = fetchedItems.map(i => {
+    const subList = parseSubDetalles(i.detalles_json);
+    return {
+      producto:        i.producto,
+      monto:           i.monto,
+      proveedor_id:    i.proveedor_id || '',
+      foto_factura:    i.foto_factura || '',
+      mostrar_detalle: subList.length > 0,
+      detalles:        subList
+    };
+  });
   itemPhotoFiles.value = {};
   itemPhotoPreviews.value = {};
 
@@ -925,7 +1039,17 @@ const submitForm = async () => {
     const fd    = new FormData();
     Object.entries(form.value).forEach(([k, v]) => fd.append(k, v ?? ''));
 
-    fd.append('items_json', JSON.stringify(items.value.filter(i => i.producto)));
+    const itemsToSave = items.value
+      .filter(i => i.producto)
+      .map(i => ({
+        producto:     i.producto,
+        monto:        i.monto,
+        proveedor_id: i.proveedor_id || null,
+        foto_factura: i.foto_factura || null,
+        detalles:     (i.detalles || []).filter(d => d.producto)
+      }));
+
+    fd.append('items_json', JSON.stringify(itemsToSave));
 
     // Append item invoice photos
     Object.entries(itemPhotoFiles.value).forEach(([idx, file]) => {

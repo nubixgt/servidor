@@ -56,12 +56,20 @@ class MechanicRecordService
                     $fotoFactura = $item['foto_factura'];
                 }
 
+                $detallesJson = null;
+                if (!empty($item['detalles']) && is_array($item['detalles'])) {
+                    $detallesJson = json_encode($item['detalles']);
+                } elseif (!empty($item['detalles_json'])) {
+                    $detallesJson = is_string($item['detalles_json']) ? $item['detalles_json'] : json_encode($item['detalles_json']);
+                }
+
                 $this->repo->createItem(
                     $id,
                     $item['producto'],
                     (float) $item['monto'],
                     !empty($item['proveedor_id']) ? (int) $item['proveedor_id'] : null,
-                    $fotoFactura
+                    $fotoFactura,
+                    $detallesJson
                 );
             }
 
@@ -104,12 +112,20 @@ class MechanicRecordService
                     $fotoFactura = $item['foto_factura'];
                 }
 
+                $detallesJson = null;
+                if (!empty($item['detalles']) && is_array($item['detalles'])) {
+                    $detallesJson = json_encode($item['detalles']);
+                } elseif (!empty($item['detalles_json'])) {
+                    $detallesJson = is_string($item['detalles_json']) ? $item['detalles_json'] : json_encode($item['detalles_json']);
+                }
+
                 $this->repo->createItem(
                     $id,
                     $item['producto'],
                     (float) $item['monto'],
                     !empty($item['proveedor_id']) ? (int) $item['proveedor_id'] : null,
-                    $fotoFactura
+                    $fotoFactura,
+                    $detallesJson
                 );
             }
 

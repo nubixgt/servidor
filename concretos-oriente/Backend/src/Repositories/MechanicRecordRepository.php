@@ -50,6 +50,9 @@ class MechanicRecordRepository
             if (!in_array('foto_factura', $itemCols)) {
                 $this->pdo->exec("ALTER TABLE mechanic_record_items ADD COLUMN foto_factura VARCHAR(255) NULL");
             }
+            if (!in_array('detalles_json', $itemCols)) {
+                $this->pdo->exec("ALTER TABLE mechanic_record_items ADD COLUMN detalles_json TEXT NULL");
+            }
         } catch (\Throwable $e) {
             // ignore
         }
@@ -150,17 +153,18 @@ class MechanicRecordRepository
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function createItem(int $recordId, string $producto, float $monto, ?int $proveedorId = null, ?string $fotoFactura = null): void
+    public function createItem(int $recordId, string $producto, float $monto, ?int $proveedorId = null, ?string $fotoFactura = null, ?string $detallesJson = null): void
     {
         $this->pdo->prepare(
-            "INSERT INTO mechanic_record_items (mechanic_record_id, producto, monto, proveedor_id, foto_factura)
-             VALUES (:rid, :producto, :monto, :proveedor_id, :foto_factura)"
+            "INSERT INTO mechanic_record_items (mechanic_record_id, producto, monto, proveedor_id, foto_factura, detalles_json)
+             VALUES (:rid, :producto, :monto, :proveedor_id, :foto_factura, :detalles_json)"
         )->execute([
-            'rid'          => $recordId,
-            'producto'     => $producto,
-            'monto'        => $monto,
-            'proveedor_id' => $proveedorId ?: null,
-            'foto_factura' => $fotoFactura ?: null
+            'rid'           => $recordId,
+            'producto'      => $producto,
+            'monto'         => $monto,
+            'proveedor_id'  => $proveedorId ?: null,
+            'foto_factura'  => $fotoFactura ?: null,
+            'detalles_json' => $detallesJson ?: null
         ]);
     }
 
