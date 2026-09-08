@@ -66,16 +66,16 @@ class MachineryController extends Controller
                 'created_by'            => $this->getUser()['id'] ?? null,
             ];
 
-            $fileData = $_FILES['foto'] ?? null;
             $seguroDoc = $_FILES['seguro_contrato_adjunto'] ?? null;
 
-            $result = $this->machineryService->createMachinery($data, $fileData, $seguroDoc);
+            $result = $this->machineryService->createMachinery($data, $_FILES, $seguroDoc);
 
             $this->json([
-                'status'    => 'success',
-                'message'   => 'Maquinaria registrada correctamente',
-                'id'        => $result['id'],
-                'foto_path' => $result['foto_path']
+                'status'     => 'success',
+                'message'    => 'Maquinaria registrada correctamente',
+                'id'         => $result['id'],
+                'foto_path'  => $result['foto_path'],
+                'fotos_json' => $result['fotos_json'] ?? null
             ], 201);
 
         } catch (Exception $e) {
@@ -119,15 +119,15 @@ class MachineryController extends Controller
                                             ? $_POST['fecha_adquisicion'] : null,
             ];
 
-            $fileData = $_FILES['foto'] ?? null;
             $seguroDoc = $_FILES['seguro_contrato_adjunto'] ?? null;
 
-            $result = $this->machineryService->updateMachinery((int)$id, $data, $fileData, $seguroDoc);
+            $result = $this->machineryService->updateMachinery((int)$id, $data, $_FILES, $seguroDoc);
 
             $this->json([
-                'status'    => 'success',
-                'message'   => 'Maquinaria actualizada correctamente',
-                'foto_path' => $result['foto_path']
+                'status'     => 'success',
+                'message'    => 'Maquinaria actualizada correctamente',
+                'foto_path'  => $result['foto_path'],
+                'fotos_json' => $result['fotos_json'] ?? null
             ]);
 
         } catch (Exception $e) {

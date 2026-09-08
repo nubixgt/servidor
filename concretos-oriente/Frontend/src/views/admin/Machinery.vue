@@ -366,8 +366,6 @@
                     <option value="Sapo">Sapo</option>
                     <option value="Generador Eléctrico">Generador Eléctrico</option>
                     <option value="Luces">Luces</option>
-                    <option value="Equipo Menor">Equipo Menor</option>
-                    <option value="Otra">Otra</option>
                   </template>
                   <template v-else>
                     <option value="Retro">Retro</option>
@@ -375,8 +373,6 @@
                     <option value="Excavadora">Excavadora</option>
                     <option value="Cargador frontal">Cargador frontal</option>
                     <option value="Rodo">Rodo</option>
-                    <option value="Maquinaria Pesada">Maquinaria Pesada</option>
-                    <option value="Otra">Otra</option>
                   </template>
                 </select>
               </div>
@@ -620,27 +616,68 @@
         <!-- Right: Photo Upload, Live Preview, and Submit buttons -->
         <div class="lg:col-span-4 space-y-6">
 
-          <!-- Foto Preview & Upload -->
+          <!-- Foto Preview & Upload (Multiple Photos) -->
           <section class="glass-card p-6 rounded-3xl border border-white/5">
-            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
-              <CameraIcon class="w-4 h-4" /> Registro Fotográfico
-            </h3>
-            <div class="relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center group">
-              <img 
-                v-if="photoPreview || (isEditingMachine && formMachine.foto_path)" 
-                :src="photoPreview || getPhotoUrl(formMachine.foto_path)"
-                class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity z-0" 
-              />
-              <div 
-                class="z-10 flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all"
-                :class="(photoPreview || (isEditingMachine && formMachine.foto_path)) ? 'bg-slate-950/70 backdrop-blur-md opacity-0 group-hover:opacity-100' : ''"
-              >
-                <CameraIcon class="w-6 h-6 text-white/40 group-hover:text-primary transition-colors" />
-                <p class="text-[9px] font-black text-white/50 uppercase tracking-widest leading-tight">
-                  {{ (photoPreview || formMachine.foto_path) ? 'Cambiar Fotografía' : 'Subir Fotografía del Equipo' }}
-                </p>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <CameraIcon class="w-4 h-4" /> Registro Fotográfico
+              </h3>
+              <span v-if="selectedPhotoFiles.length > 0" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg">
+                {{ selectedPhotoFiles.length }} seleccionada(s)
+              </span>
+              <span v-else-if="existingPhotos.length > 0 && isEditingMachine" class="text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-lg">
+                {{ existingPhotos.length }} guardada(s)
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <!-- Upload Box -->
+              <label class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center p-4">
+                <div class="flex flex-col items-center gap-2 transition-all">
+                  <div class="p-3 bg-primary/10 rounded-2xl text-primary group-hover:scale-110 transition-transform">
+                    <CameraIcon class="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p class="text-[11px] font-black text-white/80 uppercase tracking-wider">
+                      Adjuntar Fotografías
+                    </p>
+                    <p class="text-[8px] font-bold text-white/30 uppercase tracking-widest mt-0.5">
+                      Haz clic para seleccionar múltiples imágenes (JPG, PNG, WEBP)
+                    </p>
+                  </div>
+                </div>
+                <input type="file" multiple accept="image/*" @change="handleMultipleFilesChange" class="hidden" />
+              </label>
+
+              <!-- Previews de fotos nuevas -->
+              <div v-if="photoPreviews.length > 0" class="space-y-2">
+                <p class="text-[9px] font-black uppercase tracking-widest text-white/30">Nuevas Fotos a Subir:</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <div v-for="(preview, idx) in photoPreviews" :key="idx" class="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-slate-950/60 shadow-lg">
+                    <img :src="preview" class="w-full h-full object-cover" />
+                    <button type="button" @click.stop="removeSelectedPhoto(idx)"
+                      class="absolute top-1 right-1 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-lg opacity-80 group-hover:opacity-100 transition-all shadow-md">
+                      <XMarkIcon class="w-3.5 h-3.5" />
+                    </button>
+                    <span class="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/70 text-[7px] font-black text-white rounded">
+                      #{{ idx + 1 }}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <input type="file" accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
+
+              <!-- Fotos existentes si está editando -->
+              <div v-else-if="existingPhotos.length > 0 && isEditingMachine" class="space-y-2">
+                <p class="text-[9px] font-black uppercase tracking-widest text-white/30">Fotos Actuales:</p>
+                <div class="grid grid-cols-3 gap-2">
+                  <div v-for="(path, idx) in existingPhotos" :key="idx" class="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-slate-950/60">
+                    <img :src="getPhotoUrl(path)" class="w-full h-full object-cover" />
+                    <span class="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/70 text-[7px] font-black text-white rounded">
+                      #{{ idx + 1 }}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -797,16 +834,32 @@
             <XMarkIcon class="w-5 h-5" />
           </button>
 
-          <!-- Left: Media -->
-          <div class="lg:w-1/2 relative bg-black/40 min-h-[260px]">
-            <img v-if="selectedMachine.foto_path" :src="getPhotoUrl(selectedMachine.foto_path)" class="w-full h-full object-cover" :alt="selectedMachine.modelo" />
-            <div v-else class="w-full h-full flex items-center justify-center text-white/20"><WrenchScrewdriverIcon class="w-24 h-24" /></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-            <div class="absolute bottom-8 left-8 right-8">
-              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1 block">{{ selectedMachine.codigo_interno }}</span>
-              <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">{{ selectedMachine.marca }}</h2>
-              <h3 class="text-xl font-bold text-white/80 uppercase mt-1">{{ selectedMachine.modelo }}</h3>
-              <p class="text-white/40 font-bold uppercase tracking-widest text-xs mt-1">{{ selectedMachine.categoria }}</p>
+          <!-- Left: Media & Gallery -->
+          <div class="lg:w-1/2 relative bg-black/40 min-h-[300px] flex flex-col justify-between">
+            <div class="relative w-full h-[280px] bg-black/60 overflow-hidden">
+              <img v-if="activeModalPhoto" :src="getPhotoUrl(activeModalPhoto)" class="w-full h-full object-cover" :alt="selectedMachine.modelo" />
+              <div v-else class="w-full h-full flex items-center justify-center text-white/20"><WrenchScrewdriverIcon class="w-24 h-24" /></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+              
+              <div class="absolute bottom-4 left-6 right-6">
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1 block">{{ selectedMachine.codigo_interno }}</span>
+                <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">{{ selectedMachine.marca }}</h2>
+                <h3 class="text-xl font-bold text-white/80 uppercase mt-1">{{ selectedMachine.modelo }}</h3>
+                <p class="text-white/40 font-bold uppercase tracking-widest text-xs mt-1">{{ selectedMachine.categoria }}</p>
+              </div>
+            </div>
+
+            <!-- Gallery Strip if multiple photos -->
+            <div v-if="selectedMachinePhotos.length > 1" class="p-3 bg-slate-950/80 border-t border-white/5 flex gap-2 overflow-x-auto">
+              <button 
+                v-for="(photo, pIdx) in selectedMachinePhotos" 
+                :key="pIdx"
+                type="button"
+                @click="selectedModalPhotoIndex = pIdx"
+                :class="['relative h-14 w-14 rounded-xl overflow-hidden border-2 transition-all shrink-0', selectedModalPhotoIndex === pIdx ? 'border-primary scale-105 shadow-lg shadow-primary/30' : 'border-white/10 opacity-60 hover:opacity-100']"
+              >
+                <img :src="getPhotoUrl(photo)" class="w-full h-full object-cover" />
+              </button>
             </div>
           </div>
 
@@ -1057,8 +1110,35 @@ watch([searchLog, filterLogProject], () => {
   currentLogPage.value = 1;
 });
 
+const selectedPhotoFiles = ref([]);
+const photoPreviews = ref([]);
+const existingPhotos = ref([]);
+const selectedModalPhotoIndex = ref(0);
+
 const selectedMachine = ref(null);
 const selectedLog = ref(null);
+
+const selectedMachinePhotos = computed(() => {
+  if (!selectedMachine.value) return [];
+  const m = selectedMachine.value;
+  if (m.fotos_json) {
+    try {
+      const parsed = JSON.parse(m.fotos_json);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {}
+  }
+  return m.foto_path ? [m.foto_path] : [];
+});
+
+const activeModalPhoto = computed(() => {
+  const photos = selectedMachinePhotos.value;
+  if (photos.length === 0) return null;
+  return photos[selectedModalPhotoIndex.value] || photos[0];
+});
+
+watch(selectedMachine, () => {
+  selectedModalPhotoIndex.value = 0;
+});
 
 const selectedMachineMaintenanceLogs = computed(() => {
   if (!selectedMachine.value) return [];
@@ -1214,7 +1294,21 @@ const openEditMachine = (m) => {
     foto_path: m.foto_path || '',
     seguro_contrato_adjunto: null 
   };
-  photoPreview.value = '';
+  
+  existingPhotos.value = [];
+  if (m.fotos_json) {
+    try {
+      const parsed = JSON.parse(m.fotos_json);
+      if (Array.isArray(parsed)) existingPhotos.value = parsed;
+    } catch (e) {}
+  }
+  if (existingPhotos.value.length === 0 && m.foto_path) {
+    existingPhotos.value = [m.foto_path];
+  }
+
+  selectedPhotoFiles.value = [];
+  photoPreviews.value = [];
+
   isEditingMachine.value = true;
   editingMachineId.value = m.id;
   activeTab.value = 'register';
@@ -1246,14 +1340,25 @@ const resetMachineForm = () => {
     foto_path: '',
     seguro_contrato_adjunto: null
   };
-  photoPreview.value = '';
+  selectedPhotoFiles.value = [];
+  photoPreviews.value = [];
+  existingPhotos.value = [];
 };
 
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    formMachine.value.foto = file;
-    photoPreview.value = URL.createObjectURL(file);
+const handleMultipleFilesChange = (e) => {
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
+  files.forEach(file => {
+    selectedPhotoFiles.value.push(file);
+    photoPreviews.value.push(URL.createObjectURL(file));
+  });
+};
+
+const removeSelectedPhoto = (idx) => {
+  selectedPhotoFiles.value.splice(idx, 1);
+  if (photoPreviews.value[idx]) {
+    URL.revokeObjectURL(photoPreviews.value[idx]);
+    photoPreviews.value.splice(idx, 1);
   }
 };
 
@@ -1299,6 +1404,15 @@ const submitMachine = async () => {
       fd.append(key, formMachine.value[key]);
     }
   });
+
+  // Multiple photos append
+  selectedPhotoFiles.value.forEach((file, index) => {
+    fd.append(`foto_${index}`, file);
+    fd.append('fotos[]', file);
+  });
+  if (selectedPhotoFiles.value.length === 1) {
+    fd.append('foto', selectedPhotoFiles.value[0]);
+  }
 
   try {
     const url = isEditingMachine.value ? `${BASE_URL}/machinery/${editingMachineId.value}` : `${BASE_URL}/machinery`;

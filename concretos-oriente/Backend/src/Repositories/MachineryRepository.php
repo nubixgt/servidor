@@ -57,6 +57,9 @@ class MachineryRepository
             if (!in_array('seguro_contrato_adjunto_path', $existingColumns)) {
                 try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_contrato_adjunto_path` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
             }
+            if (!in_array('fotos_json', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `fotos_json` LONGTEXT NULL AFTER `foto_path`"); } catch (\Throwable $e) {}
+            }
         } catch (\Throwable $e) {
             error_log("Error in MachineryRepository::ensureColumnsExist: " . $e->getMessage());
         }
@@ -202,7 +205,7 @@ class MachineryRepository
     {
         $sets = [];
         $params = ['id' => $id];
-        foreach (['foto_path', 'seguro_contrato_adjunto_path'] as $field) {
+        foreach (['foto_path', 'fotos_json', 'seguro_contrato_adjunto_path'] as $field) {
             if (array_key_exists($field, $paths)) {
                 $sets[] = "$field = :$field";
                 $params[$field] = $paths[$field];

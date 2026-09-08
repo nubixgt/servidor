@@ -21,7 +21,7 @@ class MachineryService
         return $this->machineryRepository->findAllWithDetails($user);
     }
 
-    public function createMachinery(array $data, ?array $fileData, ?array $seguroDoc = null): array
+    public function createMachinery(array $data, ?array $filesData = null, ?array $seguroDoc = null): array
     {
         $this->validateMachineryData($data);
 
@@ -30,14 +30,12 @@ class MachineryService
 
         try {
             $newId = $this->machineryRepository->create($data);
-            $foto_path = null;
 
             $paths = [];
-            if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
-                $foto_path = $this->handlePhotoUpload($newId, $fileData);
-                if ($foto_path) {
-                    $paths['foto_path'] = $foto_path;
-                }
+            $photos = $this->handleMultiplePhotosUpload($newId, $filesData ?? []);
+            if (!empty($photos)) {
+                $paths['foto_path'] = $photos[0];
+                $paths['fotos_json'] = json_encode($photos);
             }
 
             if ($seguroDoc && $seguroDoc['error'] === UPLOAD_ERR_OK) {
@@ -55,7 +53,8 @@ class MachineryService
 
             return [
                 'id' => $newId,
-                'foto_path' => $foto_path
+                'foto_path' => $paths['foto_path'] ?? null,
+                'fotos_json' => $paths['fotos_json'] ?? null
             ];
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -63,7 +62,7 @@ class MachineryService
         }
     }
 
-    public function updateMachinery(int $id, array $data, ?array $fileData, ?array $seguroDoc = null): array
+    public function updateMachinery(int $id, array $data, ?array $filesData = null, ?array $seguroDoc = null): array
     {
         $maquina = $this->machineryRepository->findById($id);
         if (!$maquina) {
@@ -77,15 +76,12 @@ class MachineryService
 
         try {
             $this->machineryRepository->update($id, $data);
-            $foto_path = $maquina['foto_path'];
 
             $paths = [];
-            if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
-                $new_foto_path = $this->handlePhotoUpload($id, $fileData, true);
-                if ($new_foto_path) {
-                    $foto_path = $new_foto_path;
-                    $paths['foto_path'] = $foto_path;
-                }
+            $newPhotos = $this->handleMultiplePhotosUpload($id, $filesData ?? []);
+            if (!empty($newPhotos)) {
+                $paths['foto_path'] = $newPhotos[0];
+                $paths['fotos_json'] = json_encode($newPhotos);
             }
 
             if ($seguroDoc && $seguroDoc['error'] === UPLOAD_ERR_OK) {
@@ -102,7 +98,9 @@ class MachineryService
             $pdo->commit();
 
             return [
-                'foto_path' => $foto_path
+                'id' => $id,
+                'foto_path' => $paths['foto_path'] ?? $maquina['foto_path'],
+                'fotos_json' => $paths['fotos_json'] ?? ($maquina['fotos_json'] ?? null)
             ];
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -194,6 +192,59 @@ class MachineryService
         ) {
             throw new Exception('Los campos máquina, fecha, horómetro inicial y final son obligatorios.', 400);
         }
+    }
+
+    private function handleMultiplePhotosUpload(int $id, array $filesData): array
+    {
+        $uploadDir = __DIR__ . '/../../Uploads/Machinery/' . $id . '/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $savedPaths = [];
+        $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+        // 1. If $_FILES['fotos'] is an array of files (from <input multiple name="fotos[]" />)
+        if (isset($filesData['fotos']) && is_array($filesData['fotos']['name'])) {
+            $count = count($filesData['fotos']['name']);
+            for ($i = 0; $i < $count; $i++) {
+                if ($filesData['fotos']['error'][$i] === UPLOAD_ERR_OK) {
+                    $ext = strtolower(pathinfo($filesData['fotos']['name'][$i], PATHINFO_EXTENSION));
+                    if (in_array($ext, $allowed)) {
+                        $filename = 'foto_' . time() . '_' . $i . '.' . $ext;
+                        if (move_uploaded_file($filesData['fotos']['tmp_name'][$i], $uploadDir . $filename)) {
+                            $savedPaths[] = 'Uploads/Machinery/' . $id . '/' . $filename;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. If single file $_FILES['foto']
+        if (isset($filesData['foto']) && is_array($filesData['foto']) && !is_array($filesData['foto']['name']) && $filesData['foto']['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($filesData['foto']['name'], PATHINFO_EXTENSION));
+            if (in_array($ext, $allowed)) {
+                $filename = 'foto_' . time() . '_0.' . $ext;
+                if (move_uploaded_file($filesData['foto']['tmp_name'], $uploadDir . $filename)) {
+                    $savedPaths[] = 'Uploads/Machinery/' . $id . '/' . $filename;
+                }
+            }
+        }
+
+        // 3. Any key like 'foto_0', 'foto_1', ...
+        foreach ($filesData as $key => $file) {
+            if (str_starts_with($key, 'foto_') && isset($file['error']) && $file['error'] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                if (in_array($ext, $allowed)) {
+                    $filename = $key . '_' . time() . '.' . $ext;
+                    if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+                        $savedPaths[] = 'Uploads/Machinery/' . $id . '/' . $filename;
+                    }
+                }
+            }
+        }
+
+        return $savedPaths;
     }
 
     private function handlePhotoUpload(int $id, array $fileData, bool $cleanOld = false): ?string
