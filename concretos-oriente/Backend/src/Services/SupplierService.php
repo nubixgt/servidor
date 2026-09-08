@@ -21,6 +21,16 @@ class SupplierService
         return $this->supplierRepository->findAll();
     }
 
+    public function getSupplierHistory(int $id): array
+    {
+        $supplier = $this->supplierRepository->findById($id);
+        if (!$supplier) {
+            throw new Exception('Proveedor no encontrado.', 404);
+        }
+        $history = $this->supplierRepository->getMonthlyHistory($id);
+        return array_merge(['proveedor' => $supplier], $history);
+    }
+
     public function createSupplier(array $data): void
     {
         $this->validateSupplierData($data);

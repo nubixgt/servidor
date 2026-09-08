@@ -30,6 +30,22 @@ class SupplierController extends Controller
     }
 
     // ----------------------------------------------------------------
+    // GET /suppliers/{id}/history
+    // ----------------------------------------------------------------
+    #[Route('/suppliers/{id}/history', 'GET')]
+    public function history($id)
+    {
+        try {
+            $data = $this->supplierService->getSupplierHistory((int)$id);
+            $this->json(['status' => 'success', 'data' => $data]);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
+        }
+    }
+
+    // ----------------------------------------------------------------
     // POST /suppliers
     // ----------------------------------------------------------------
     #[Route('/suppliers', 'POST')]
