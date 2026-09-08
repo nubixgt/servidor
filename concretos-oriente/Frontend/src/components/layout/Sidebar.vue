@@ -130,7 +130,8 @@ import {
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
-  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon
+  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';
 
@@ -144,7 +145,14 @@ const openSubmenu = ref(null);
 
 const allNavItemsArr = [
   { id: "dashboard", label: "Panel Principal", icon: Squares2X2Icon, roles: ["admin", "supervisor", "tecnico"] },
-  { id: "personnel", label: "RRHH", icon: UsersIcon, roles: ["admin"] },
+  {
+    type: 'group', id: 'rrhh', label: 'RRHH', icon: UsersIcon, roles: ['admin'],
+    children: [
+      { id: "personnel", label: "Gestión Personal", icon: UsersIcon, roles: ["admin"] },
+      { id: "rrhh-planillas", label: "Planilla", icon: BanknotesIcon, roles: ["admin"] },
+      { id: "rrhh-incidencias", label: "Incidencias", icon: ExclamationTriangleIcon, roles: ["admin"] },
+    ]
+  },
   {
     type: 'group', id: 'transporte', label: 'Transporte', icon: TruckIcon, roles: ['admin', 'supervisor'],
     children: [
