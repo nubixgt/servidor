@@ -21,6 +21,21 @@ class HeavyTransportRepository
             if (!in_array('kilometraje', $cols)) {
                 $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN kilometraje INT DEFAULT 0 AFTER precio");
             }
+            if (!in_array('seguro_aseguradora', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_aseguradora VARCHAR(150) NULL");
+            }
+            if (!in_array('seguro_contacto_nombre', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_contacto_nombre VARCHAR(150) NULL");
+            }
+            if (!in_array('seguro_contacto_telefono', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_contacto_telefono VARCHAR(50) NULL");
+            }
+            if (!in_array('seguro_poliza', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_poliza VARCHAR(100) NULL");
+            }
+            if (!in_array('seguro_contrato_adjunto_path', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_contrato_adjunto_path VARCHAR(255) NULL");
+            }
         } catch (\Exception $e) {
             // Table might not exist yet or permission issues
         }
@@ -55,23 +70,29 @@ class HeavyTransportRepository
     {
         $sql = "INSERT INTO heavy_transport
                     (placa, tipo_transporte, tipo_seguro, ubicacion, estado,
-                     precio, kilometraje, marca, modelo, piloto_id)
+                     precio, kilometraje, marca, modelo, piloto_id,
+                     seguro_aseguradora, seguro_contacto_nombre, seguro_contacto_telefono, seguro_poliza)
                 VALUES
                     (:placa, :tipo_transporte, :tipo_seguro, :ubicacion, :estado,
-                     :precio, :kilometraje, :marca, :modelo, :piloto_id)";
+                     :precio, :kilometraje, :marca, :modelo, :piloto_id,
+                     :seguro_aseguradora, :seguro_contacto_nombre, :seguro_contacto_telefono, :seguro_poliza)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'placa'           => $data['placa'],
-            'tipo_transporte' => $data['tipo_transporte'],
-            'tipo_seguro'     => $data['tipo_seguro'] ?: null,
-            'ubicacion'       => $data['ubicacion'] ?: null,
-            'estado'          => $data['estado'] ?? 'Nuevo',
-            'precio'          => $data['precio'] ?: null,
-            'kilometraje'     => $data['kilometraje'] ?? 0,
-            'marca'           => $data['marca'],
-            'modelo'          => $data['modelo'],
-            'piloto_id'       => $data['piloto_id'] ?: null,
+            'placa'                    => $data['placa'],
+            'tipo_transporte'          => $data['tipo_transporte'],
+            'tipo_seguro'              => $data['tipo_seguro'] ?: null,
+            'ubicacion'                => $data['ubicacion'] ?: null,
+            'estado'                   => $data['estado'] ?? 'Nuevo',
+            'precio'                   => $data['precio'] ?: null,
+            'kilometraje'              => $data['kilometraje'] ?? 0,
+            'marca'                    => $data['marca'],
+            'modelo'                   => $data['modelo'],
+            'piloto_id'                => $data['piloto_id'] ?: null,
+            'seguro_aseguradora'       => $data['seguro_aseguradora'] ?? null,
+            'seguro_contacto_nombre'   => $data['seguro_contacto_nombre'] ?? null,
+            'seguro_contacto_telefono' => $data['seguro_contacto_telefono'] ?? null,
+            'seguro_poliza'            => $data['seguro_poliza'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -80,30 +101,38 @@ class HeavyTransportRepository
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE heavy_transport SET
-                    placa           = :placa,
-                    tipo_transporte = :tipo_transporte,
-                    tipo_seguro     = :tipo_seguro,
-                    ubicacion       = :ubicacion,
-                    estado          = :estado,
-                    precio          = :precio,
-                    kilometraje     = :kilometraje,
-                    marca           = :marca,
-                    modelo          = :modelo,
-                    piloto_id       = :piloto_id
+                    placa                    = :placa,
+                    tipo_transporte          = :tipo_transporte,
+                    tipo_seguro              = :tipo_seguro,
+                    ubicacion                = :ubicacion,
+                    estado                   = :estado,
+                    precio                   = :precio,
+                    kilometraje              = :kilometraje,
+                    marca                    = :marca,
+                    modelo                   = :modelo,
+                    piloto_id                = :piloto_id,
+                    seguro_aseguradora       = :seguro_aseguradora,
+                    seguro_contacto_nombre   = :seguro_contacto_nombre,
+                    seguro_contacto_telefono = :seguro_contacto_telefono,
+                    seguro_poliza            = :seguro_poliza
                 WHERE id = :id";
 
         $this->pdo->prepare($sql)->execute([
-            'id'              => $id,
-            'placa'           => $data['placa'],
-            'tipo_transporte' => $data['tipo_transporte'],
-            'tipo_seguro'     => $data['tipo_seguro'] ?: null,
-            'ubicacion'       => $data['ubicacion'] ?: null,
-            'estado'          => $data['estado'] ?? 'Nuevo',
-            'precio'          => $data['precio'] ?: null,
-            'kilometraje'     => $data['kilometraje'] ?? 0,
-            'marca'           => $data['marca'],
-            'modelo'          => $data['modelo'],
-            'piloto_id'       => $data['piloto_id'] ?: null,
+            'id'                       => $id,
+            'placa'                    => $data['placa'],
+            'tipo_transporte'          => $data['tipo_transporte'],
+            'tipo_seguro'              => $data['tipo_seguro'] ?: null,
+            'ubicacion'                => $data['ubicacion'] ?: null,
+            'estado'                   => $data['estado'] ?? 'Nuevo',
+            'precio'                   => $data['precio'] ?: null,
+            'kilometraje'              => $data['kilometraje'] ?? 0,
+            'marca'                    => $data['marca'],
+            'modelo'                   => $data['modelo'],
+            'piloto_id'                => $data['piloto_id'] ?: null,
+            'seguro_aseguradora'       => $data['seguro_aseguradora'] ?? null,
+            'seguro_contacto_nombre'   => $data['seguro_contacto_nombre'] ?? null,
+            'seguro_contacto_telefono' => $data['seguro_contacto_telefono'] ?? null,
+            'seguro_poliza'            => $data['seguro_poliza'] ?? null,
         ]);
     }
 
@@ -122,6 +151,21 @@ class HeavyTransportRepository
         if (empty($updates)) return;
 
         $sql = "UPDATE heavy_transport SET " . implode(', ', $updates) . " WHERE id = :id";
+        $this->pdo->prepare($sql)->execute($params);
+    }
+
+    public function updateDocumentPaths(int $id, array $paths): void
+    {
+        if (empty($paths)) return;
+
+        $sets = [];
+        $params = ['id' => $id];
+        foreach ($paths as $col => $val) {
+            $sets[] = "{$col} = :{$col}";
+            $params[$col] = $val;
+        }
+
+        $sql = "UPDATE heavy_transport SET " . implode(', ', $sets) . " WHERE id = :id";
         $this->pdo->prepare($sql)->execute($params);
     }
 

@@ -121,8 +121,8 @@
               <span class="px-2 py-0.5 bg-primary/10 border border-primary/20 rounded text-[9px] font-black text-primary uppercase tracking-widest">
                 {{ u.tipo_transporte }}
               </span>
-              <span v-if="u.tipo_seguro" class="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/50 uppercase tracking-widest">
-                {{ u.tipo_seguro }}
+              <span v-if="u.seguro_aseguradora || u.tipo_seguro" class="px-2 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded text-[9px] font-black text-sky-400 uppercase tracking-widest">
+                {{ u.seguro_aseguradora || u.tipo_seguro }}
               </span>
             </div>
           </div>
@@ -265,7 +265,7 @@
               </div>
 
               <!-- Kilometraje -->
-              <div class="space-y-2 md:col-span-2">
+              <div class="space-y-2">
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Kilometraje de Registro</label>
                 <div class="relative">
                   <input v-model="form.kilometraje" type="number" min="0" placeholder="0"
@@ -276,7 +276,65 @@
             </div>
           </section>
 
-          <!-- Sección 2: Piloto Asignado -->
+          <!-- Sección 2: Datos del Seguro -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <ShieldCheckIcon class="w-4 h-4" /> Datos del Seguro
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Empresa / Aseguradora -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Empresa / Aseguradora</label>
+                <input v-model="form.seguro_aseguradora" type="text" placeholder="Ej. Seguros G&T, El Roble, Mapfre..."
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <!-- Tipo de Seguro / Cobertura -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Cobertura / Tipo</label>
+                <select v-model="form.tipo_seguro"
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
+                  <option value="">Sin seguro / No aplica</option>
+                  <option value="Full Cover">Full Cover</option>
+                  <option value="Danos a Terceros">Daños a Terceros</option>
+                  <option value="Responsabilidad Civil">Responsabilidad Civil</option>
+                </select>
+              </div>
+
+              <!-- Persona de Contacto -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Persona de Contacto</label>
+                <input v-model="form.seguro_contacto_nombre" type="text" placeholder="Nombre del asesor o agente"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <!-- Teléfono de Contacto -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Teléfono de Contacto</label>
+                <input v-model="form.seguro_contacto_telefono" type="text" placeholder="+502 0000-0000"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <!-- No. de Póliza -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">No. de Póliza</label>
+                <input v-model="form.seguro_poliza" type="text" placeholder="POL-123456"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <!-- Contrato Seguro Adjunto -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest flex items-center justify-between">
+                  <span>Póliza / Contrato (PDF o Imagen)</span>
+                  <span v-if="editingId && currentInsuranceDocPath" class="text-emerald-400 font-bold normal-case">Ya adjuntado</span>
+                </label>
+                <input @change="onInsuranceDocChange" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  class="w-full text-xs text-white/60 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-xl p-2" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección 3: Piloto Asignado -->
           <section class="glass-card p-8 rounded-3xl border border-white/5">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
               <UserIcon class="w-4 h-4" /> Piloto Asignado
@@ -335,6 +393,10 @@
                   <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Estado</span>
                   <span class="font-black text-white/90 text-[10px]">{{ form.estado }}</span>
                 </div>
+                <div v-if="form.seguro_aseguradora || form.tipo_seguro" class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Seguro</span>
+                  <span class="font-black text-sky-200 text-[10px]">{{ form.seguro_aseguradora || form.tipo_seguro }}</span>
+                </div>
                 <div v-if="form.precio" class="flex justify-between">
                   <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Precio</span>
                   <span class="font-black text-white/90 text-[10px]">Q {{ Number(form.precio).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
@@ -363,7 +425,7 @@
     <Transition name="modal">
       <div v-if="showDetailsModal && selectedUnit" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div @click="showDetailsModal = false" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"></div>
-        <div class="relative w-full max-w-3xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white z-10">
+        <div class="relative w-full max-w-4xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white z-10">
           <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
             <h4 class="text-lg font-black italic uppercase flex items-center gap-2">
               <TruckIcon class="w-5 h-5 text-primary" /> {{ selectedUnit.placa }}
@@ -374,20 +436,62 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Info -->
-            <div class="space-y-4">
-              <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                <InformationCircleIcon class="w-4 h-4" /> Información
-              </h3>
-              <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
-                <div v-for="field in detailFields" :key="field.label">
-                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">{{ field.label }}</span>
-                  <span class="text-sm font-black text-white uppercase">{{ field.value }}</span>
+            <!-- Columna Izquierda: Información General + Seguro -->
+            <div class="space-y-6">
+              <!-- Info General -->
+              <div class="space-y-3">
+                <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <InformationCircleIcon class="w-4 h-4" /> Información General
+                </h3>
+                <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
+                  <div v-for="field in detailFields" :key="field.label">
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">{{ field.label }}</span>
+                    <span class="text-sm font-black text-white uppercase">{{ field.value }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Datos del Seguro -->
+              <div class="space-y-3">
+                <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <ShieldCheckIcon class="w-4 h-4" /> Datos del Seguro
+                </h3>
+                <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Aseguradora</span>
+                    <span class="text-sm font-bold text-white">{{ selectedUnit.seguro_aseguradora || 'No registrada' }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Tipo / Cobertura</span>
+                    <span class="text-sm font-bold text-white">{{ selectedUnit.tipo_seguro || 'No especificada' }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">No. de Póliza</span>
+                    <span class="text-sm font-bold text-white">{{ selectedUnit.seguro_poliza || '—' }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Persona de Contacto</span>
+                    <span class="text-sm font-bold text-white">{{ selectedUnit.seguro_contacto_nombre || 'No registrado' }}</span>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Teléfono de Contacto</span>
+                    <span class="text-sm font-bold text-white">{{ selectedUnit.seguro_contacto_telefono || 'No registrado' }}</span>
+                  </div>
+                  <div class="pt-2 border-t border-white/5">
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-1">Póliza / Contrato Adjunto</span>
+                    <a v-if="selectedUnit.seguro_contrato_adjunto_path"
+                      :href="photoUrl(selectedUnit.seguro_contrato_adjunto_path)"
+                      target="_blank"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/20 text-primary border border-primary/30 text-xs font-bold hover:bg-primary/30 transition-all">
+                      <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" /> Abrir Documento
+                    </a>
+                    <span v-else class="text-xs text-white/40 italic">No adjunto</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Fotos 2x2 -->
+            <!-- Columna Derecha: Fotos 2x2 -->
             <div class="space-y-4">
               <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
                 <CameraIcon class="w-4 h-4" /> Fotografías
@@ -418,7 +522,7 @@ import { ref, computed, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import {
   TruckIcon, PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
-  UserIcon, CameraIcon, XMarkIcon,
+  UserIcon, CameraIcon, XMarkIcon, ShieldCheckIcon, ArrowTopRightOnSquareIcon,
   CheckCircleIcon, SparklesIcon, ExclamationTriangleIcon,
   InformationCircleIcon
 } from '@heroicons/vue/24/outline';
@@ -432,10 +536,13 @@ const statusFilter = ref('all');
 const units        = ref([]);
 const personnel    = ref([]);
 const editingId    = ref(null);
+const currentInsuranceDocPath = ref('');
+let   insuranceDocFile        = null;
 
 const form = ref({
   placa: '', tipo_transporte: '', tipo_seguro: '', ubicacion: '',
-  estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: ''
+  estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
+  seguro_aseguradora: '', seguro_contacto_nombre: '', seguro_contacto_telefono: '', seguro_poliza: ''
 });
 
 const photoFields = [
@@ -483,7 +590,6 @@ const detailFields = computed(() => {
   return [
     { label: 'Marca y Modelo',       value: `${u.marca} ${u.modelo}` },
     { label: 'Tipo de Transporte',   value: u.tipo_transporte || '—' },
-    { label: 'Tipo de Seguro',       value: u.tipo_seguro || '—'     },
     { label: 'Ubicación',            value: u.ubicacion || '—'       },
     { label: 'Estado',               value: u.estado                  },
     { label: 'Precio',               value: u.precio ? `Q ${Number(u.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
@@ -536,7 +642,13 @@ onMounted(() => { fetchUnits(); fetchPersonnel(); });
 // ── Form ───────────────────────────────────────────────────────────────────
 const resetForm = () => {
   editingId.value = null;
-  form.value = { placa: '', tipo_transporte: '', tipo_seguro: '', ubicacion: '', estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '' };
+  form.value = {
+    placa: '', tipo_transporte: '', tipo_seguro: '', ubicacion: '',
+    estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
+    seguro_aseguradora: '', seguro_contacto_nombre: '', seguro_contacto_telefono: '', seguro_poliza: ''
+  };
+  currentInsuranceDocPath.value = '';
+  insuranceDocFile = null;
   photoPreviews.value = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
   photoFiles = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
 };
@@ -549,8 +661,14 @@ const startEdit = (u) => {
     placa: u.placa, tipo_transporte: u.tipo_transporte, tipo_seguro: u.tipo_seguro || '',
     ubicacion: u.ubicacion || '', estado: u.estado, precio: u.precio || '',
     kilometraje: u.kilometraje, marca: u.marca, modelo: u.modelo,
-    piloto_id: u.piloto_id || ''
+    piloto_id: u.piloto_id || '',
+    seguro_aseguradora: u.seguro_aseguradora || '',
+    seguro_contacto_nombre: u.seguro_contacto_nombre || '',
+    seguro_contacto_telefono: u.seguro_contacto_telefono || '',
+    seguro_poliza: u.seguro_poliza || ''
   };
+  currentInsuranceDocPath.value = u.seguro_contrato_adjunto_path || '';
+  insuranceDocFile = null;
   photoFiles = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
   photoPreviews.value = {
     foto_delantera: u.foto_delantera ? photoUrl(u.foto_delantera) : null,
@@ -569,6 +687,11 @@ const onPhotoChange = (e, key) => {
   photoPreviews.value[key] = URL.createObjectURL(file);
 };
 
+const onInsuranceDocChange = (e) => {
+  const file = e.target.files?.[0];
+  if (file) insuranceDocFile = file;
+};
+
 const submitForm = async () => {
   if (!form.value.placa.trim() || !form.value.tipo_transporte || !form.value.marca.trim() || !form.value.modelo.trim()) {
     toast('Completa los campos obligatorios.', 'warning');
@@ -583,6 +706,9 @@ const submitForm = async () => {
     photoFields.forEach(({ key }) => {
       if (photoFiles[key]) fd.append(key, photoFiles[key]);
     });
+    if (insuranceDocFile) {
+      fd.append('seguro_contrato_adjunto', insuranceDocFile);
+    }
 
     const url = editingId.value
       ? `${BASE_URL}/heavy-transport/update/${editingId.value}`

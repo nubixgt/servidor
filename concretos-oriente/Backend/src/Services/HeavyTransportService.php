@@ -90,14 +90,57 @@ class HeavyTransportService
         if (!empty($photos)) {
             $this->repo->updatePhotos($id, $photos);
         }
+
+        // Insurance contract upload
+        if (isset($files['seguro_contrato_adjunto']) && $files['seguro_contrato_adjunto']['error'] === UPLOAD_ERR_OK) {
+            $docPath = $this->handleDocUpload($id, $files['seguro_contrato_adjunto'], 'contrato_seguro');
+            if ($docPath) {
+                $this->repo->updateDocumentPaths($id, ['seguro_contrato_adjunto_path' => $docPath]);
+            }
+        }
+    }
+
+    private function handleDocUpload(int $id, array $fileData, string $prefix): ?string
+    {
+        $uploadDir = __DIR__ . '/../../Uploads/HeavyTransport/' . $id . '/docs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $fileTmpPath   = $fileData['tmp_name'];
+        $fileExtension = strtolower(pathinfo($fileData['name'], PATHINFO_EXTENSION));
+        $allowed       = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+
+        if (in_array($fileExtension, $allowed)) {
+            $newFileName = $prefix . '_' . time() . '.' . $fileExtension;
+            $destPath    = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                return 'Uploads/HeavyTransport/' . $id . '/docs/' . $newFileName;
+            }
+        }
+        return null;
     }
 
     private function deletePhotoFolder(int $id): void
     {
         $dir = __DIR__ . '/../../Uploads/HeavyTransport/' . $id . '/';
         if (is_dir($dir)) {
-            foreach (glob($dir . '*') as $file) {
-                if (is_file($file)) unlink($file);
+            $this->rrmdir($dir);
+        }
+    }
+
+    private function rrmdir(string $dir): void
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir . DIRECTORY_SEPARATOR . $object) && !is_link($dir . "/" . $object))
+                        $this->rrmdir($dir . DIRECTORY_SEPARATOR . $object);
+                    else
+                        unlink($dir . DIRECTORY_SEPARATOR . $object);
+                }
             }
             rmdir($dir);
         }
