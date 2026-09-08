@@ -51,7 +51,11 @@
           class="p-8 md:p-10 cursor-pointer transition-all hover:bg-white/[0.03] group relative flex flex-col justify-between space-y-6"
         >
           <!-- Actions Top Right -->
-          <div class="absolute top-6 right-6 flex gap-2 z-10">
+          <div class="absolute top-6 right-6 flex items-center gap-2 z-10">
+            <button @click.stop="openHistoryModal(c)" title="Historial Financiero" class="px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-xl text-primary border border-primary/20 transition-all flex items-center gap-1 text-[10px] font-bold">
+              <ChartBarIcon class="w-3.5 h-3.5"/>
+              <span class="hidden sm:inline">Historial</span>
+            </button>
             <button @click.stop="openEditContractor(c)" title="Editar" class="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/40 hover:text-white transition-all">
               <PencilIcon class="w-4 h-4"/>
             </button>
@@ -160,7 +164,10 @@
               </div>
             </div>
             
-            <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
+            <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+              <button @click="openHistoryModal(selectedContractor)" class="px-5 py-3.5 rounded-2xl bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 font-black text-xs uppercase tracking-widest flex items-center gap-2 transition-all">
+                <ChartBarIcon class="w-4 h-4" /> Historial Financiero
+              </button>
               <button @click="openAssignModal" class="glass-button-primary text-white py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl hover:scale-105 transition-all">
                 <PlusIcon class="w-4 h-4" /> Asignar a Proyecto
               </button>
@@ -345,23 +352,42 @@
             </div>
           </div>
 
-          <!-- Persona a Cargo (Dropdown de Personal) -->
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-              <ShieldCheckIcon class="w-4 h-4" />
-              Persona a Cargo (Supervisor / Encargado Interno)
-            </label>
-            <select
-              v-model="formContractor.encargado_id"
-              @change="onEncargadoChange"
-              class="w-full bg-black/30 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-cyan-400/60 transition-all appearance-none"
-            >
-              <option :value="null">-- Sin persona a cargo asignada --</option>
-              <option v-for="p in personnelList" :key="p.id" :value="p.id">
-                {{ p.nombres }} {{ p.apellidos }} ({{ p.puesto || 'Colaborador' }})
-              </option>
-            </select>
-            <p class="text-[11px] text-white/30 font-medium">Seleccione el colaborador interno responsable de coordinar y supervisar a este subcontratista.</p>
+          <!-- Personas a Cargo (Manual + Múltiples) -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheckIcon class="w-4 h-4" />
+                Personas a Cargo (Supervisores / Encargados)
+              </label>
+              <button
+                type="button"
+                @click="addPersonaCargo"
+                class="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <PlusIcon class="w-3.5 h-3.5" /> Añadir Persona
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              <div v-for="(p, idx) in formContractor.personas_a_cargo" :key="idx" class="flex items-center gap-2">
+                <input
+                  v-model="formContractor.personas_a_cargo[idx]"
+                  type="text"
+                  placeholder="Nombre completo del supervisor o persona a cargo"
+                  class="flex-1 bg-black/30 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-sm focus:outline-none focus:border-cyan-400/60 transition-all"
+                />
+                <button
+                  v-if="formContractor.personas_a_cargo.length > 1"
+                  type="button"
+                  @click="removePersonaCargo(idx)"
+                  class="p-3 bg-white/5 hover:bg-rose-500/20 rounded-2xl text-white/40 hover:text-rose-400 border border-white/5 transition-all cursor-pointer"
+                  title="Eliminar"
+                >
+                  <TrashIcon class="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <p class="text-[11px] text-white/30 font-medium">Escriba manualmente las personas internas o supervisores a cargo de coordinar este subcontratista.</p>
           </div>
 
           <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
@@ -418,6 +444,168 @@
         </form>
       </div>
     </div>
+
+    <!-- MODAL HISTORIAL MENSUAL DE MONTOS Y PAGOS -->
+    <transition name="fade">
+      <div v-if="showHistoryModal && historyContractor" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+        <div @click="showHistoryModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"></div>
+        <div class="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto custom-scrollbar glass-card rounded-[40px] md:rounded-[56px] p-6 md:p-10 border border-white/10 shadow-2xl z-10 text-white space-y-6">
+          
+          <!-- Header Modal -->
+          <div class="flex items-center justify-between border-b border-white/10 pb-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-white/10 shrink-0">
+                <ChartBarIcon class="w-7 h-7" />
+              </div>
+              <div>
+                <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white">{{ historyContractor.empresa || historyContractor.nombre }}</h3>
+                <p class="text-xs font-bold text-primary tracking-widest uppercase">
+                  {{ historyContractor.representante ? 'Rep: ' + historyContractor.representante + ' · ' : '' }}Historial de Pagos por Mes
+                </p>
+              </div>
+            </div>
+            <button @click="showHistoryModal = false" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
+              <XMarkIcon class="w-6 h-6" />
+            </button>
+          </div>
+
+          <!-- Loading state -->
+          <div v-if="loadingHistory" class="py-16 text-center text-white/40 font-bold">
+            Cargando historial de pagos...
+          </div>
+
+          <!-- History content -->
+          <template v-else>
+            <!-- KPI Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <span class="text-[8px] font-black text-white/40 uppercase tracking-widest block">Total Pagado Histórico</span>
+                <span class="text-2xl font-black text-emerald-400 italic">Q {{ Number(historyData.total_general || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+              </div>
+              <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <span class="text-[8px] font-black text-white/40 uppercase tracking-widest block">Pagos Este Mes</span>
+                <span class="text-2xl font-black text-primary italic">Q {{ Number(historyData.total_este_mes || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+              </div>
+              <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <span class="text-[8px] font-black text-white/40 uppercase tracking-widest block">Pagos Este Año</span>
+                <span class="text-2xl font-black text-amber-400 italic">Q {{ Number(historyData.total_este_ano || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+              </div>
+              <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <span class="text-[8px] font-black text-white/40 uppercase tracking-widest block">Total Movimientos</span>
+                <span class="text-2xl font-black text-white italic">{{ historyData.transacciones_count || 0 }}</span>
+              </div>
+            </div>
+
+            <!-- Filtros de Año y Mes -->
+            <div class="bg-black/30 p-4 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <CalendarDaysIcon class="w-4 h-4" /> Desglose por Período
+                </h4>
+                <span v-if="historyYearFilter !== 'all' || historyMonthFilter !== 'all'" class="px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                  Total Filtrado: Q {{ filteredTotalMonto.toLocaleString('en-US', { minimumFractionDigits: 2 }) }} ({{ filteredTotalTransactions }} pagos)
+                </span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <!-- Filtro Año -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-black text-white/40 uppercase tracking-wider">Año:</span>
+                  <select v-model="historyYearFilter" class="bg-slate-950/90 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-primary">
+                    <option value="all">Todos los años</option>
+                    <option v-for="y in availableHistoryYears" :key="y" :value="y">{{ y }}</option>
+                  </select>
+                </div>
+
+                <!-- Filtro Mes -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-black text-white/40 uppercase tracking-wider">Mes:</span>
+                  <select v-model="historyMonthFilter" class="bg-slate-950/90 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-primary">
+                    <option v-for="m in monthsList" :key="m.value" :value="m.value">{{ m.label }}</option>
+                  </select>
+                </div>
+
+                <!-- Reset button -->
+                <button
+                  v-if="historyYearFilter !== 'all' || historyMonthFilter !== 'all'"
+                  @click="historyYearFilter = 'all'; historyMonthFilter = 'all';"
+                  class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all"
+                >
+                  Limpiar Filtros
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-if="filteredMonthlyHistory.length === 0" class="py-12 text-center text-white/30 text-xs font-bold uppercase tracking-widest border-2 border-dashed border-white/5 rounded-3xl">
+              No hay pagos ni egresos registrados para este subcontratista en el período seleccionado.
+            </div>
+
+            <!-- List of months (Accordion cards) -->
+            <div class="space-y-4">
+              <div v-for="m in filteredMonthlyHistory" :key="m.mes" class="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden transition-all">
+                <!-- Month header clickable -->
+                <div @click="toggleMonthExpand(m.mes)" class="p-5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-xs">
+                      {{ m.mes.split('-')[1] }}
+                    </div>
+                    <div>
+                      <h5 class="text-sm font-black uppercase text-white tracking-wide">{{ m.mes_nombre }}</h5>
+                      <span class="text-[10px] font-bold text-white/40">{{ m.count }} pago(s) registrado(s)</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-4">
+                    <div class="text-right">
+                      <span class="text-[8px] font-black text-white/30 uppercase tracking-widest block">Total Mes</span>
+                      <span class="text-lg font-black text-emerald-400 italic">Q {{ Number(m.total).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                    </div>
+                    <ChevronUpIcon v-if="expandedMonths[m.mes]" class="w-5 h-5 text-white/40" />
+                    <ChevronDownIcon v-else class="w-5 h-5 text-white/40" />
+                  </div>
+                </div>
+
+                <!-- Expanded Transactions Table -->
+                <div v-if="expandedMonths[m.mes]" class="px-5 pb-5 pt-2 border-t border-white/5 bg-slate-950/40">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                      <thead>
+                        <tr class="text-[8px] font-black text-white/30 uppercase tracking-widest border-b border-white/5">
+                          <th class="py-2.5 px-3">Fecha</th>
+                          <th class="py-2.5 px-3">Proyecto</th>
+                          <th class="py-2.5 px-3">Cheque / Cuenta</th>
+                          <th class="py-2.5 px-3">Descripción / Concepto</th>
+                          <th class="py-2.5 px-3 text-right">Monto Pagado (Q)</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-white/5">
+                        <tr v-for="(t, tIdx) in m.transacciones" :key="tIdx" class="hover:bg-white/5 transition-colors">
+                          <td class="py-2.5 px-3 font-mono text-white/80 whitespace-nowrap">{{ formatDate(t.fecha) }}</td>
+                          <td class="py-2.5 px-3 font-bold text-primary max-w-[200px] truncate" :title="t.proyecto_nombre">
+                            {{ t.proyecto_nombre || 'Sin proyecto asignado' }}
+                          </td>
+                          <td class="py-2.5 px-3 text-white/60 font-mono">
+                            {{ t.numero_cheque ? 'Cheque #' + t.numero_cheque : (t.cuenta_origen || '-') }}
+                          </td>
+                          <td class="py-2.5 px-3 text-white/70 max-w-[260px] truncate" :title="t.descripcion">
+                            {{ t.descripcion || 'Sin descripción' }}
+                          </td>
+                          <td class="py-2.5 px-3 text-right font-mono font-black text-emerald-400 whitespace-nowrap">
+                            Q {{ Number(t.monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -425,7 +613,8 @@
 import { ref, computed, onMounted } from 'vue';
 import {
   BuildingOffice2Icon, PhoneIcon, PlusIcon, MagnifyingGlassIcon,
-  XMarkIcon, PencilIcon, TrashIcon, UserIcon, ShieldCheckIcon, FolderIcon
+  XMarkIcon, PencilIcon, TrashIcon, UserIcon, ShieldCheckIcon, FolderIcon,
+  ChartBarIcon, CalendarDaysIcon, ChevronUpIcon, ChevronDownIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -506,13 +695,42 @@ const formContractor = ref({
   empresa: '',
   representante: '',
   telefono: '',
-  encargado_id: null,
-  encargado_nombre: ''
+  personas_a_cargo: ['']
 });
 
-const onEncargadoChange = () => {
-  const p = personnelList.value.find(item => item.id === formContractor.value.encargado_id);
-  formContractor.value.encargado_nombre = p ? `${p.nombres} ${p.apellidos}` : '';
+// Historial Mensual State
+const showHistoryModal = ref(false);
+const historyContractor = ref(null);
+const historyData = ref({ total_general: 0, total_este_mes: 0, total_este_ano: 0, transacciones_count: 0, meses: [], transacciones: [] });
+const loadingHistory = ref(false);
+const historyYearFilter = ref('all');
+const historyMonthFilter = ref('all');
+const expandedMonths = ref({});
+
+const monthsList = [
+  { value: 'all', label: 'Todos los meses' },
+  { value: '01', label: '01 - Enero' },
+  { value: '02', label: '02 - Febrero' },
+  { value: '03', label: '03 - Marzo' },
+  { value: '04', label: '04 - Abril' },
+  { value: '05', label: '05 - Mayo' },
+  { value: '06', label: '06 - Junio' },
+  { value: '07', label: '07 - Julio' },
+  { value: '08', label: '08 - Agosto' },
+  { value: '09', label: '09 - Septiembre' },
+  { value: '10', label: '10 - Octubre' },
+  { value: '11', label: '11 - Noviembre' },
+  { value: '12', label: '12 - Diciembre' },
+];
+
+const addPersonaCargo = () => {
+  formContractor.value.personas_a_cargo.push('');
+};
+
+const removePersonaCargo = (idx) => {
+  if (formContractor.value.personas_a_cargo.length > 1) {
+    formContractor.value.personas_a_cargo.splice(idx, 1);
+  }
 };
 
 const openContractorModal = () => {
@@ -521,8 +739,7 @@ const openContractorModal = () => {
     empresa: '',
     representante: '',
     telefono: '',
-    encargado_id: null,
-    encargado_nombre: ''
+    personas_a_cargo: ['']
   };
   showContractorModal.value = true;
 };
@@ -530,12 +747,13 @@ const openContractorModal = () => {
 const openEditContractor = (c) => {
   isEditing.value = true;
   editContractorId.value = c.id;
+  const rawEncargados = (c.encargado_asignado || c.encargado_nombre || '').trim();
+  const list = rawEncargados ? rawEncargados.split(',').map(s => s.trim()).filter(Boolean) : [];
   formContractor.value = {
     empresa: c.empresa || c.nombre || '',
     representante: c.representante || '',
     telefono: c.telefono || '',
-    encargado_id: c.encargado_id ? Number(c.encargado_id) : null,
-    encargado_nombre: c.encargado_asignado || c.encargado_nombre || ''
+    personas_a_cargo: list.length > 0 ? list : ['']
   };
   showContractorModal.value = true;
 };
@@ -553,11 +771,9 @@ const submitContractor = async () => {
   fd.append('nombre', formContractor.value.empresa.trim());
   if (formContractor.value.representante) fd.append('representante', formContractor.value.representante.trim());
   if (formContractor.value.telefono) fd.append('telefono', formContractor.value.telefono.trim());
-  if (formContractor.value.encargado_id) {
-    fd.append('encargado_id', formContractor.value.encargado_id);
-    const p = personnelList.value.find(item => item.id === formContractor.value.encargado_id);
-    if (p) fd.append('encargado_nombre', `${p.nombres} ${p.apellidos}`);
-  }
+  
+  const personas = formContractor.value.personas_a_cargo.map(s => s.trim()).filter(Boolean);
+  fd.append('encargado_nombre', personas.join(', '));
 
   try {
     const url = isEditing.value ? `${BASE_URL}/contractors/${editContractorId.value}` : `${BASE_URL}/contractors`;
@@ -575,6 +791,58 @@ const submitContractor = async () => {
   }
   isSubmitting.value = false;
 };
+
+// HISTORIAL MENSUAL METHODS
+const openHistoryModal = async (c) => {
+  historyContractor.value = c;
+  showHistoryModal.value = true;
+  loadingHistory.value = true;
+  historyYearFilter.value = 'all';
+  historyMonthFilter.value = 'all';
+  expandedMonths.value = {};
+
+  try {
+    const res = await fetch(`${BASE_URL}/contractors/${c.id}/history`);
+    const json = await res.json();
+    if (json.status === 'success') {
+      historyData.value = json.data || { total_general: 0, total_este_mes: 0, total_este_ano: 0, transacciones_count: 0, meses: [], transacciones: [] };
+      if (historyData.value.meses && historyData.value.meses.length > 0) {
+        expandedMonths.value[historyData.value.meses[0].mes] = true;
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  loadingHistory.value = false;
+};
+
+const toggleMonthExpand = (mes) => {
+  expandedMonths.value[mes] = !expandedMonths.value[mes];
+};
+
+const availableHistoryYears = computed(() => {
+  if (!historyData.value.meses) return [];
+  const years = new Set(historyData.value.meses.map(m => m.ano));
+  return Array.from(years).sort((a, b) => b - a);
+});
+
+const filteredMonthlyHistory = computed(() => {
+  if (!historyData.value.meses) return [];
+  return historyData.value.meses.filter(m => {
+    const matchYear = historyYearFilter.value === 'all' || m.ano === parseInt(historyYearFilter.value);
+    const monthPart = m.mes.split('-')[1];
+    const matchMonth = historyMonthFilter.value === 'all' || monthPart === historyMonthFilter.value;
+    return matchYear && matchMonth;
+  });
+});
+
+const filteredTotalMonto = computed(() => {
+  return filteredMonthlyHistory.value.reduce((sum, m) => sum + Number(m.total || 0), 0);
+});
+
+const filteredTotalTransactions = computed(() => {
+  return filteredMonthlyHistory.value.reduce((sum, m) => sum + Number(m.count || 0), 0);
+});
 
 const deleteContractor = async (id) => {
   const { isConfirmed } = await Swal.fire({

@@ -106,6 +106,17 @@ class ContractorService
         $this->contractorRepository->removeAssignment($contractorId, $projectId);
     }
 
+    public function getMonthlyHistory(int $contractorId): array
+    {
+        $contractor = $this->contractorRepository->findById($contractorId);
+        if (!$contractor) {
+            throw new Exception('Subcontratista no encontrado.', 404);
+        }
+
+        $history = $this->contractorRepository->getMonthlyHistory($contractorId);
+        return array_merge(['subcontratista' => $contractor], $history);
+    }
+
     private function buildProjectSummary(int $projectId, string $proyectoNombre, float $montoContratado, array $pagos, ?int $projectContractorId): array
     {
         $totalPagado = array_reduce($pagos, fn($carry, $p) => $carry + (float) $p['monto'], 0.0);

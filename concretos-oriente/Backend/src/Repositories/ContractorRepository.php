@@ -29,7 +29,9 @@ class ContractorRepository
                 $this->pdo->exec("ALTER TABLE contractors ADD COLUMN encargado_id INT NULL");
             }
             if (!in_array('encargado_nombre', $cols)) {
-                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN encargado_nombre VARCHAR(255) NULL");
+                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN encargado_nombre TEXT NULL");
+            } else {
+                $this->pdo->exec("ALTER TABLE contractors MODIFY COLUMN encargado_nombre TEXT NULL");
             }
         } catch (\Throwable $e) {
             // ignore
@@ -41,7 +43,7 @@ class ContractorRepository
         $sql = "SELECT c.*,
                        COALESCE(c.empresa, c.nombre) AS empresa,
                        c.representante,
-                       COALESCE(CONCAT(p.nombres, ' ', p.apellidos), c.encargado_nombre) AS encargado_asignado,
+                       COALESCE(NULLIF(c.encargado_nombre, ''), CONCAT(p.nombres, ' ', p.apellidos)) AS encargado_asignado,
                        p.puesto AS encargado_puesto,
                        (
                            SELECT COUNT(DISTINCT pc.project_id) FROM project_contractors pc WHERE pc.contractor_id = c.id
@@ -50,7 +52,7 @@ class ContractorRepository
                            SELECT COALESCE(SUM(pc.monto_contratado), 0) FROM project_contractors pc WHERE pc.contractor_id = c.id
                        ) AS total_contratado,
                        (
-                           SELECT COALESCE(SUM(e.monto), 0) FROM expenses e WHERE e.contratista_id = c.id AND e.tipo_egreso = 'Contratista'
+                           SELECT COALESCE(SUM(e.monto), 0) FROM expenses e WHERE e.contratista_id = c.id AND (e.tipo_egreso = 'Contratista' OR e.tipo_egreso = 'Subcontratista' OR e.contratista_id IS NOT NULL)
                        ) AS total_pagado
                 FROM contractors c
                 LEFT JOIN personnel p ON p.id = c.encargado_id
@@ -63,7 +65,7 @@ class ContractorRepository
         $stmt = $this->pdo->prepare("
             SELECT c.*,
                    COALESCE(c.empresa, c.nombre) AS empresa,
-                   COALESCE(CONCAT(p.nombres, ' ', p.apellidos), c.encargado_nombre) AS encargado_asignado,
+                   COALESCE(NULLIF(c.encargado_nombre, ''), CONCAT(p.nombres, ' ', p.apellidos)) AS encargado_asignado,
                    p.puesto AS encargado_puesto
             FROM contractors c
             LEFT JOIN personnel p ON p.id = c.encargado_id
@@ -174,5 +176,84 @@ class ContractorRepository
             'contractor_id' => $contractorId,
             'project_id'    => $projectId
         ]);
+    }
+
+    public function getMonthlyHistory(int $contractorId): array
+    {
+        // 1. Fetch expenses (payments made to this contractor)
+        $sql = "SELECT e.id, e.fecha_egreso as fecha, e.monto, e.descripcion, e.numero_cheque, e.cuenta_origen, e.proyecto_id,
+                       p.nombre as proyecto_nombre, 'Pago / Egreso' as tipo, e.id as referencia_id
+                FROM expenses e
+                LEFT JOIN projects p ON e.proyecto_id = p.id
+                WHERE (e.contratista_id = :contractor_id OR e.beneficiario_id = :contractor_id2)
+                ORDER BY e.fecha_egreso DESC, e.id DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'contractor_id'  => $contractorId,
+            'contractor_id2' => $contractorId
+        ]);
+        $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Group by YYYY-MM
+        $monthlyMap = [];
+        $totalGeneral = 0.0;
+        $currentMonth = date('Y-m');
+        $currentYear = date('Y');
+        $totalEsteMes = 0.0;
+        $totalEsteAno = 0.0;
+
+        $mesesNombres = [
+            '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril',
+            '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto',
+            '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
+        ];
+
+        foreach ($transactions as $t) {
+            $monto = (float)($t['monto'] ?? 0);
+            $totalGeneral += $monto;
+
+            $fecha = $t['fecha'] ?? '';
+            $ym = substr($fecha, 0, 7);
+            $y = substr($fecha, 0, 4);
+            $m = substr($fecha, 5, 2);
+
+            if ($ym === $currentMonth) {
+                $totalEsteMes += $monto;
+            }
+            if ($y === $currentYear) {
+                $totalEsteAno += $monto;
+            }
+
+            if (!empty($ym)) {
+                if (!isset($monthlyMap[$ym])) {
+                    $monthLabel = ($mesesNombres[$m] ?? $m) . ' ' . $y;
+                    $monthlyMap[$ym] = [
+                        'mes'            => $ym,
+                        'mes_nombre'     => $monthLabel,
+                        'ano'            => (int)$y,
+                        'total'          => 0.0,
+                        'count'          => 0,
+                        'transacciones'  => []
+                    ];
+                }
+                $monthlyMap[$ym]['total'] += $monto;
+                $monthlyMap[$ym]['count']++;
+                $monthlyMap[$ym]['transacciones'][] = $t;
+            }
+        }
+
+        // Convert monthly map to list sorted by mes DESC
+        krsort($monthlyMap);
+        $meses = array_values($monthlyMap);
+
+        return [
+            'total_general'       => $totalGeneral,
+            'total_este_mes'      => $totalEsteMes,
+            'total_este_ano'      => $totalEsteAno,
+            'transacciones_count' => count($transactions),
+            'meses'               => $meses,
+            'transacciones'       => $transactions
+        ];
     }
 }

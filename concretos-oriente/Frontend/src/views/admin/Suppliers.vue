@@ -350,17 +350,43 @@
               </div>
             </div>
 
-            <!-- Filtro de Año -->
-            <div class="flex items-center justify-between pt-2">
-              <h4 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                <CalendarDaysIcon class="w-4 h-4" /> Desglose Mensual
-              </h4>
+            <!-- Filtros de Año y Mes -->
+            <div class="bg-black/30 p-4 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black text-white/30 uppercase tracking-wider">Filtrar Año:</span>
-                <select v-model="historyYearFilter" class="bg-slate-950/80 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-primary">
-                  <option value="all">Todos los años</option>
-                  <option v-for="y in availableHistoryYears" :key="y" :value="y">{{ y }}</option>
-                </select>
+                <h4 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <CalendarDaysIcon class="w-4 h-4" /> Desglose por Período
+                </h4>
+                <span v-if="historyYearFilter !== 'all' || historyMonthFilter !== 'all'" class="px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                  Total Filtrado: Q {{ filteredTotalMonto.toLocaleString('en-US', { minimumFractionDigits: 2 }) }} ({{ filteredTotalTransactions }} movs)
+                </span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <!-- Filtro Año -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-black text-white/40 uppercase tracking-wider">Año:</span>
+                  <select v-model="historyYearFilter" class="bg-slate-950/90 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-primary">
+                    <option value="all">Todos los años</option>
+                    <option v-for="y in availableHistoryYears" :key="y" :value="y">{{ y }}</option>
+                  </select>
+                </div>
+
+                <!-- Filtro Mes -->
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] font-black text-white/40 uppercase tracking-wider">Mes:</span>
+                  <select v-model="historyMonthFilter" class="bg-slate-950/90 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-primary">
+                    <option v-for="m in monthsList" :key="m.value" :value="m.value">{{ m.label }}</option>
+                  </select>
+                </div>
+
+                <!-- Reset button -->
+                <button
+                  v-if="historyYearFilter !== 'all' || historyMonthFilter !== 'all'"
+                  @click="historyYearFilter = 'all'; historyMonthFilter = 'all';"
+                  class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all"
+                >
+                  Limpiar Filtros
+                </button>
               </div>
             </div>
 
@@ -569,7 +595,24 @@ const historySupplier = ref(null);
 const historyData = ref({ total_general: 0, total_este_mes: 0, total_este_ano: 0, transacciones_count: 0, meses: [], transacciones: [] });
 const loadingHistory = ref(false);
 const historyYearFilter = ref('all');
+const historyMonthFilter = ref('all');
 const expandedMonths = ref({});
+
+const monthsList = [
+  { value: 'all', label: 'Todos los meses' },
+  { value: '01', label: '01 - Enero' },
+  { value: '02', label: '02 - Febrero' },
+  { value: '03', label: '03 - Marzo' },
+  { value: '04', label: '04 - Abril' },
+  { value: '05', label: '05 - Mayo' },
+  { value: '06', label: '06 - Junio' },
+  { value: '07', label: '07 - Julio' },
+  { value: '08', label: '08 - Agosto' },
+  { value: '09', label: '09 - Septiembre' },
+  { value: '10', label: '10 - Octubre' },
+  { value: '11', label: '11 - Noviembre' },
+  { value: '12', label: '12 - Diciembre' },
+];
 
 const fetchSuppliers = async () => {
   loading.value = true;
@@ -719,6 +762,7 @@ const openHistoryModal = async (sup) => {
   showHistoryModal.value = true;
   loadingHistory.value = true;
   historyYearFilter.value = 'all';
+  historyMonthFilter.value = 'all';
   expandedMonths.value = {};
 
   try {
@@ -749,8 +793,20 @@ const availableHistoryYears = computed(() => {
 
 const filteredMonthlyHistory = computed(() => {
   if (!historyData.value.meses) return [];
-  if (historyYearFilter.value === 'all') return historyData.value.meses;
-  return historyData.value.meses.filter(m => m.ano === parseInt(historyYearFilter.value));
+  return historyData.value.meses.filter(m => {
+    const matchYear = historyYearFilter.value === 'all' || m.ano === parseInt(historyYearFilter.value);
+    const monthPart = m.mes.split('-')[1];
+    const matchMonth = historyMonthFilter.value === 'all' || monthPart === historyMonthFilter.value;
+    return matchYear && matchMonth;
+  });
+});
+
+const filteredTotalMonto = computed(() => {
+  return filteredMonthlyHistory.value.reduce((sum, m) => sum + Number(m.total || 0), 0);
+});
+
+const filteredTotalTransactions = computed(() => {
+  return filteredMonthlyHistory.value.reduce((sum, m) => sum + Number(m.count || 0), 0);
 });
 
 // PURCHASE ORDER MODAL
