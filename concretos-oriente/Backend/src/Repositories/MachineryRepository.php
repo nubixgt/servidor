@@ -23,39 +23,41 @@ class MachineryRepository
     private function ensureColumnsExist(): void
     {
         try {
+            $existingColumns = [];
             $stmt = $this->pdo->query("SHOW COLUMNS FROM machinery");
-            $columns = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $columns[] = strtolower($row['Field']);
+            if ($stmt) {
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $existingColumns[] = strtolower($row['Field']);
+                }
             }
 
-            $alters = [];
-            if (!in_array('clasificacion_tipo', $columns)) {
-                $alters[] = "ADD COLUMN clasificacion_tipo VARCHAR(50) DEFAULT 'Pesada'";
-            }
-            if (!in_array('no_factura', $columns)) {
-                $alters[] = "ADD COLUMN no_factura VARCHAR(100) NULL";
-            }
-            if (!in_array('fecha_servicio', $columns)) {
-                $alters[] = "ADD COLUMN fecha_servicio DATE NULL";
-            }
-            if (!in_array('seguro_contacto_nombre', $columns)) {
-                $alters[] = "ADD COLUMN seguro_contacto_nombre VARCHAR(255) NULL";
-            }
-            if (!in_array('seguro_contacto_telefono', $columns)) {
-                $alters[] = "ADD COLUMN seguro_contacto_telefono VARCHAR(50) NULL";
-            }
-            if (!in_array('seguro_aseguradora', $columns)) {
-                $alters[] = "ADD COLUMN seguro_aseguradora VARCHAR(255) NULL";
-            }
-            if (!in_array('seguro_contrato_adjunto_path', $columns)) {
-                $alters[] = "ADD COLUMN seguro_contrato_adjunto_path VARCHAR(255) NULL";
-            }
+            // Ensure categoria is VARCHAR(100) instead of restricted ENUM
+            try {
+                $this->pdo->exec("ALTER TABLE `machinery` MODIFY COLUMN `categoria` VARCHAR(100) NOT NULL");
+            } catch (\Throwable $e) {}
 
-            if (!empty($alters)) {
-                $this->pdo->exec("ALTER TABLE machinery " . implode(', ', $alters));
+            if (!in_array('clasificacion_tipo', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `clasificacion_tipo` VARCHAR(50) DEFAULT 'Pesada'"); } catch (\Throwable $e) {}
             }
-        } catch (\Exception $e) {
+            if (!in_array('no_factura', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `no_factura` VARCHAR(100) NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('fecha_servicio', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `fecha_servicio` DATE NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('seguro_contacto_nombre', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_contacto_nombre` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('seguro_contacto_telefono', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_contacto_telefono` VARCHAR(50) NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('seguro_aseguradora', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_aseguradora` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('seguro_contrato_adjunto_path', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_contrato_adjunto_path` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+            }
+        } catch (\Throwable $e) {
             error_log("Error in MachineryRepository::ensureColumnsExist: " . $e->getMessage());
         }
     }

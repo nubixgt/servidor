@@ -25,8 +25,8 @@ class MachineryLogRepository
                 return [];
             }
             $inQuery = implode(',', array_fill(0, count($proyectos), '?'));
-            $whereClause = "WHERE m.proyecto_id IN ($inQuery)";
-            $params = $proyectos;
+            $whereClause = "WHERE (ml.proyecto_id IN ($inQuery) OR m.proyecto_id IN ($inQuery))";
+            $params = array_merge($proyectos, $proyectos);
         }
 
         $sql = "SELECT
