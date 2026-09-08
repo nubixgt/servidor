@@ -329,7 +329,45 @@
             </div>
           </section>
 
-          <!-- Sección 3: Piloto Asignado -->
+          <!-- Sección 3: Documentos del Vehículo (Adjuntar) -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <DocumentTextIcon class="w-4 h-4" /> Documentos del Vehículo (Adjuntos)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <!-- Calcomanía -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest flex items-center justify-between">
+                  <span>Calcomanía</span>
+                  <span v-if="editingId && currentDocPaths.calcomania_adjunto_path" class="text-emerald-400 font-bold normal-case text-[10px]">Cargada</span>
+                </label>
+                <input @change="onDocChange($event, 'calcomania_adjunto')" type="file" accept=".pdf,.png,.jpg,.jpeg"
+                  class="w-full text-xs text-white/60 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-xl p-1.5" />
+              </div>
+
+              <!-- Título de Propiedad -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest flex items-center justify-between">
+                  <span>Título de Propiedad</span>
+                  <span v-if="editingId && currentDocPaths.titulo_propiedad_adjunto_path" class="text-emerald-400 font-bold normal-case text-[10px]">Cargado</span>
+                </label>
+                <input @change="onDocChange($event, 'titulo_propiedad_adjunto')" type="file" accept=".pdf,.png,.jpg,.jpeg"
+                  class="w-full text-xs text-white/60 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-xl p-1.5" />
+              </div>
+
+              <!-- Tarjeta de Circulación -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest flex items-center justify-between">
+                  <span>Tarjeta de Circulación</span>
+                  <span v-if="editingId && currentDocPaths.tarjeta_circulacion_adjunto_path" class="text-emerald-400 font-bold normal-case text-[10px]">Cargada</span>
+                </label>
+                <input @change="onDocChange($event, 'tarjeta_circulacion_adjunto')" type="file" accept=".pdf,.png,.jpg,.jpeg"
+                  class="w-full text-xs text-white/60 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-xl p-1.5" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección 4: Piloto Asignado -->
           <section class="glass-card p-8 rounded-3xl border border-white/5">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
               <UserIcon class="w-4 h-4" /> Piloto Asignado
@@ -513,6 +551,78 @@
                 </div>
               </div>
             </div>
+
+            <!-- Fila Completa: Expediente Digital / Documentos Adjuntos -->
+            <div class="border-t border-white/5 pt-6 space-y-4">
+              <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <DocumentTextIcon class="w-4 h-4" /> Expediente Digital / Documentos Adjuntos
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <!-- Contrato Seguro -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[9px] text-white/40 uppercase font-bold tracking-wider block">Contrato Seguro</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedUnit.seguro_contrato_adjunto_path ? 'Disponible' : 'No adjunto' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedUnit.seguro_contrato_adjunto_path"
+                    :href="getDocumentUrl(selectedUnit.seguro_contrato_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/20 text-primary border border-primary/30 text-xs font-bold hover:bg-primary/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" /> Abrir
+                  </a>
+                </div>
+
+                <!-- Calcomanía -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[9px] text-white/40 uppercase font-bold tracking-wider block">Calcomanía</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedUnit.calcomania_adjunto_path ? 'Disponible' : 'No adjunta' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedUnit.calcomania_adjunto_path"
+                    :href="getDocumentUrl(selectedUnit.calcomania_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 text-xs font-bold hover:bg-emerald-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" /> Abrir
+                  </a>
+                </div>
+
+                <!-- Título de Propiedad -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[9px] text-white/40 uppercase font-bold tracking-wider block">Título de Propiedad</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedUnit.titulo_propiedad_adjunto_path ? 'Disponible' : 'No adjunto' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedUnit.titulo_propiedad_adjunto_path"
+                    :href="getDocumentUrl(selectedUnit.titulo_propiedad_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-400/30 text-xs font-bold hover:bg-indigo-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" /> Abrir
+                  </a>
+                </div>
+
+                <!-- Tarjeta de Circulación -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[9px] text-white/40 uppercase font-bold tracking-wider block">Tarjeta Circulación</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedUnit.tarjeta_circulacion_adjunto_path ? 'Disponible' : 'No adjunta' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedUnit.tarjeta_circulacion_adjunto_path"
+                    :href="getDocumentUrl(selectedUnit.tarjeta_circulacion_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-400/30 text-xs font-bold hover:bg-amber-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" /> Abrir
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -547,7 +657,7 @@ import Swal from 'sweetalert2';
 import {
   TruckIcon, PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
   UserIcon, CameraIcon, XMarkIcon, ShieldCheckIcon, ArrowTopRightOnSquareIcon,
-  CheckCircleIcon, SparklesIcon, ExclamationTriangleIcon,
+  CheckCircleIcon, SparklesIcon, ExclamationTriangleIcon, DocumentTextIcon,
   InformationCircleIcon
 } from '@heroicons/vue/24/outline';
 
@@ -562,6 +672,22 @@ const personnel    = ref([]);
 const editingId    = ref(null);
 const currentInsuranceDocPath = ref('');
 let   insuranceDocFile        = null;
+
+const currentDocPaths = ref({
+  calcomania_adjunto_path: null,
+  titulo_propiedad_adjunto_path: null,
+  tarjeta_circulacion_adjunto_path: null,
+});
+let docFiles = {
+  calcomania_adjunto: null,
+  titulo_propiedad_adjunto: null,
+  tarjeta_circulacion_adjunto: null,
+};
+
+const onDocChange = (e, field) => {
+  const file = e.target.files?.[0];
+  if (file) docFiles[field] = file;
+};
 
 // Lightbox modal state
 const previewImage = ref(null);
@@ -678,6 +804,12 @@ const fetchPersonnel = async () => {
 onMounted(() => { fetchUnits(); fetchPersonnel(); });
 
 // ── Form ───────────────────────────────────────────────────────────────────
+const getDocumentUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
+};
+
 const resetForm = () => {
   editingId.value = null;
   form.value = {
@@ -687,6 +819,16 @@ const resetForm = () => {
   };
   currentInsuranceDocPath.value = '';
   insuranceDocFile = null;
+  currentDocPaths.value = {
+    calcomania_adjunto_path: null,
+    titulo_propiedad_adjunto_path: null,
+    tarjeta_circulacion_adjunto_path: null,
+  };
+  docFiles = {
+    calcomania_adjunto: null,
+    titulo_propiedad_adjunto: null,
+    tarjeta_circulacion_adjunto: null,
+  };
   photoPreviews.value = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
   photoFiles = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
 };
@@ -707,6 +849,16 @@ const startEdit = (u) => {
   };
   currentInsuranceDocPath.value = u.seguro_contrato_adjunto_path || '';
   insuranceDocFile = null;
+  currentDocPaths.value = {
+    calcomania_adjunto_path: u.calcomania_adjunto_path || null,
+    titulo_propiedad_adjunto_path: u.titulo_propiedad_adjunto_path || null,
+    tarjeta_circulacion_adjunto_path: u.tarjeta_circulacion_adjunto_path || null,
+  };
+  docFiles = {
+    calcomania_adjunto: null,
+    titulo_propiedad_adjunto: null,
+    tarjeta_circulacion_adjunto: null,
+  };
   photoFiles = { foto_delantera: null, foto_trasera: null, foto_lateral1: null, foto_lateral2: null };
   photoPreviews.value = {
     foto_delantera: u.foto_delantera ? photoUrl(u.foto_delantera) : null,
@@ -747,6 +899,9 @@ const submitForm = async () => {
     if (insuranceDocFile) {
       fd.append('seguro_contrato_adjunto', insuranceDocFile);
     }
+    Object.entries(docFiles).forEach(([k, file]) => {
+      if (file) fd.append(k, file);
+    });
 
     const url = editingId.value
       ? `${BASE_URL}/heavy-transport/update/${editingId.value}`

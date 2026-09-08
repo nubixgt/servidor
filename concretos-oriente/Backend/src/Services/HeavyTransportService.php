@@ -91,12 +91,26 @@ class HeavyTransportService
             $this->repo->updatePhotos($id, $photos);
         }
 
-        // Insurance contract upload
-        if (isset($files['seguro_contrato_adjunto']) && $files['seguro_contrato_adjunto']['error'] === UPLOAD_ERR_OK) {
-            $docPath = $this->handleDocUpload($id, $files['seguro_contrato_adjunto'], 'contrato_seguro');
-            if ($docPath) {
-                $this->repo->updateDocumentPaths($id, ['seguro_contrato_adjunto_path' => $docPath]);
+        // Document uploads (Seguro, Calcomanía, Título, Tarjeta)
+        $docFields = [
+            'seguro_contrato_adjunto'     => 'seguro_contrato_adjunto_path',
+            'calcomania_adjunto'          => 'calcomania_adjunto_path',
+            'titulo_propiedad_adjunto'    => 'titulo_propiedad_adjunto_path',
+            'tarjeta_circulacion_adjunto' => 'tarjeta_circulacion_adjunto_path',
+        ];
+
+        $docUpdates = [];
+        foreach ($docFields as $inputKey => $colName) {
+            if (isset($files[$inputKey]) && $files[$inputKey]['error'] === UPLOAD_ERR_OK) {
+                $path = $this->handleDocUpload($id, $files[$inputKey], $inputKey);
+                if ($path) {
+                    $docUpdates[$colName] = $path;
+                }
             }
+        }
+
+        if (!empty($docUpdates)) {
+            $this->repo->updateDocumentPaths($id, $docUpdates);
         }
     }
 

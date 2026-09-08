@@ -36,6 +36,15 @@ class HeavyTransportRepository
             if (!in_array('seguro_contrato_adjunto_path', $cols)) {
                 $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN seguro_contrato_adjunto_path VARCHAR(255) NULL");
             }
+            if (!in_array('calcomania_adjunto_path', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN calcomania_adjunto_path VARCHAR(255) NULL");
+            }
+            if (!in_array('titulo_propiedad_adjunto_path', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN titulo_propiedad_adjunto_path VARCHAR(255) NULL");
+            }
+            if (!in_array('tarjeta_circulacion_adjunto_path', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN tarjeta_circulacion_adjunto_path VARCHAR(255) NULL");
+            }
         } catch (\Exception $e) {
             // Table might not exist yet or permission issues
         }
