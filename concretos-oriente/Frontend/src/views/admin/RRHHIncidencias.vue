@@ -111,11 +111,11 @@
               <td class="py-5 px-8">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-2xl bg-amber-500/20 flex items-center justify-center font-bold text-amber-400 text-sm flex-shrink-0">
-                    {{ (inc.nombres || 'E')[0] }}{{ (inc.apellidos || '')[0] }}
+                    {{ getCollaboratorInitials(inc) }}
                   </div>
                   <div>
-                    <p class="font-bold text-white text-sm leading-tight">{{ inc.nombres }} {{ inc.apellidos }}</p>
-                    <p class="text-xs text-white/40 mt-0.5">{{ inc.puesto || 'Colaborador' }}</p>
+                    <p class="font-bold text-white text-sm leading-tight">{{ getCollaboratorName(inc) }}</p>
+                    <p class="text-xs text-white/40 mt-0.5">{{ getCollaboratorPosition(inc) }}</p>
                   </div>
                 </div>
               </td>
@@ -339,8 +339,8 @@
               <span :class="['px-3 py-1 rounded-xl text-xs font-bold border inline-block mb-1', getMotivoBadge(selectedIncident.motivo)]">
                 {{ selectedIncident.motivo }}
               </span>
-              <h3 class="text-xl font-black italic uppercase text-white">{{ selectedIncident.nombres }} {{ selectedIncident.apellidos }}</h3>
-              <p class="text-xs text-white/50">{{ selectedIncident.puesto }} • Fecha: {{ formatDate(selectedIncident.fecha) }}</p>
+              <h3 class="text-xl font-black italic uppercase text-white">{{ getCollaboratorName(selectedIncident) }}</h3>
+              <p class="text-xs text-white/50">{{ getCollaboratorPosition(selectedIncident) }} • Fecha: {{ formatDate(selectedIncident.fecha) }}</p>
             </div>
             <button @click="selectedIncident = null" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
               <XMarkIcon class="w-5 h-5" />
@@ -451,8 +451,13 @@ const stats = computed(() => {
 // Filtered & Paginated
 const filteredIncidents = computed(() => {
   return incidents.value.filter(i => {
-    const q = searchQuery.value.toLowerCase();
-    const matchSearch = (i.nombres && i.nombres.toLowerCase().includes(q)) ||
+    const q = searchQuery.value.toLowerCase().trim();
+    const fullName = getCollaboratorName(i).toLowerCase();
+    const puesto = getCollaboratorPosition(i).toLowerCase();
+    const matchSearch = !q ||
+                        fullName.includes(q) ||
+                        puesto.includes(q) ||
+                        (i.nombres && i.nombres.toLowerCase().includes(q)) ||
                         (i.apellidos && i.apellidos.toLowerCase().includes(q)) ||
                         (i.texto && i.texto.toLowerCase().includes(q)) ||
                         (i.motivo && i.motivo.toLowerCase().includes(q));
@@ -616,6 +621,31 @@ const getMotivoBadge = (motivo) => {
     'Suspensión': 'bg-red-500/20 text-red-300 border-red-500/40 font-black',
   };
   return map[motivo] || 'bg-white/10 text-white/70 border-white/10';
+};
+
+const getCollaboratorName = (inc) => {
+  if (!inc) return 'Colaborador';
+  const full = `${inc.nombres || ''} ${inc.apellidos || ''}`.trim();
+  if (full) return full;
+  if (inc.empleado_nombre && inc.empleado_nombre.trim()) return inc.empleado_nombre.trim();
+  return 'Colaborador';
+};
+
+const getCollaboratorInitials = (inc) => {
+  if (!inc) return 'E';
+  if (inc.nombres && inc.nombres.trim()) {
+    return ((inc.nombres.trim()[0] || '') + ((inc.apellidos && inc.apellidos.trim()[0]) || '')).toUpperCase() || 'E';
+  }
+  if (inc.empleado_nombre && inc.empleado_nombre.trim()) {
+    const parts = inc.empleado_nombre.trim().split(/\s+/);
+    return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || 'E';
+  }
+  return 'E';
+};
+
+const getCollaboratorPosition = (inc) => {
+  if (!inc) return 'Colaborador';
+  return inc.puesto || inc.empleado_puesto || 'Colaborador';
 };
 
 const formatDate = (val) => {

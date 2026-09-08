@@ -30,11 +30,15 @@ class IncidentRepository
     {
         $sql = "SELECT
                     i.*,
-                    CONCAT(p.nombres, ' ', p.apellidos) AS empleado_nombre,
-                    p.puesto AS empleado_puesto,
+                    p.nombres,
+                    p.apellidos,
+                    p.puesto,
+                    p.foto_path,
+                    TRIM(CONCAT(COALESCE(p.nombres, ''), ' ', COALESCE(p.apellidos, ''))) AS empleado_nombre,
+                    COALESCE(p.puesto, 'Colaborador') AS empleado_puesto,
                     p.foto_path AS empleado_foto
                 FROM employee_incidents i
-                JOIN personnel p ON p.id = i.personnel_id
+                LEFT JOIN personnel p ON p.id = i.personnel_id
                 ORDER BY i.fecha DESC, i.id DESC";
 
         $stmt = $this->pdo->query($sql);
@@ -43,7 +47,18 @@ class IncidentRepository
 
     public function findById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM employee_incidents WHERE id = :id");
+        $stmt = $this->pdo->prepare("SELECT
+                    i.*,
+                    p.nombres,
+                    p.apellidos,
+                    p.puesto,
+                    p.foto_path,
+                    TRIM(CONCAT(COALESCE(p.nombres, ''), ' ', COALESCE(p.apellidos, ''))) AS empleado_nombre,
+                    COALESCE(p.puesto, 'Colaborador') AS empleado_puesto,
+                    p.foto_path AS empleado_foto
+                FROM employee_incidents i
+                LEFT JOIN personnel p ON p.id = i.personnel_id
+                WHERE i.id = :id");
         $stmt->execute(['id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
