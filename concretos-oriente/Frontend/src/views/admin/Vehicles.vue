@@ -22,7 +22,7 @@
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-primary flex items-start justify-between">
         <div class="flex flex-col justify-between h-full w-full">
           <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Total Vehículos</span>
@@ -38,27 +38,14 @@
 
       <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-emerald-500/50 flex items-start justify-between">
         <div class="flex flex-col justify-between h-full w-full">
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">En Funcionamiento</span>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Activos</span>
           <div class="mt-3">
-            <h3 class="text-4xl font-black italic text-emerald-400 tracking-tighter">{{ stats.enFuncionamiento }}</h3>
+            <h3 class="text-4xl font-black italic text-emerald-400 tracking-tighter">{{ stats.activo }}</h3>
             <p class="text-[10px] font-bold text-emerald-400/60 uppercase tracking-wider mt-1">Operativas</p>
           </div>
         </div>
         <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 shrink-0">
           <CheckCircleIcon class="w-5 h-5" />
-        </div>
-      </div>
-
-      <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-blue-500/50 flex items-start justify-between">
-        <div class="flex flex-col justify-between h-full w-full">
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Nuevas</span>
-          <div class="mt-3">
-            <h3 class="text-4xl font-black italic text-blue-400 tracking-tighter">{{ stats.nuevo }}</h3>
-            <p class="text-[10px] font-bold text-blue-400/60 uppercase tracking-wider mt-1">Recién ingresadas</p>
-          </div>
-        </div>
-        <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-blue-400 shrink-0">
-          <SparklesIcon class="w-5 h-5" />
         </div>
       </div>
 
@@ -227,8 +214,7 @@
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Estado <span class="text-rose-400">*</span></label>
                 <select v-model="form.estatus" required
                   class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
-                  <option value="Nuevo">Nuevo</option>
-                  <option value="En Funcionamiento">En Funcionamiento</option>
+                  <option value="Activo">Activo</option>
                   <option value="Inactivo">Inactivo</option>
                 </select>
               </div>
@@ -462,8 +448,7 @@
                 <label class="text-[10px] font-black text-white/30 uppercase tracking-widest">Estado</label>
                 <select v-model="logForm.estatus_vehiculo"
                   class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-xs font-black text-white focus:outline-none focus:border-primary uppercase">
-                  <option value="Nuevo">Nuevo</option>
-                  <option value="En Funcionamiento">En Funcionamiento</option>
+                  <option value="Activo">Activo</option>
                   <option value="Inactivo">Inactivo</option>
                 </select>
               </div>
@@ -697,20 +682,21 @@ let   docFiles      = { seguro_contrato_adjunto: null, calcomania_adjunto: null,
 
 // Bitácora modal
 const showLogModal = ref(false);
-const logForm = ref({ vehiculo_id: '', piloto_id: '', estatus_vehiculo: 'En Funcionamiento', envio_servicio: '', reportar_averia: '', observaciones: '' });
+const logForm = ref({ vehiculo_id: '', piloto_id: '', estatus_vehiculo: 'Activo', envio_servicio: '', reportar_averia: '', observaciones: '' });
 
 // Detalles modal
 const showDetailsModal  = ref(false);
 const selectedVehicle   = ref(null);
 
 const statusOptions = [
-  { value: 'all',              label: 'Todos'            },
-  { value: 'En Funcionamiento', label: 'En Funcionamiento' },
-  { value: 'Nuevo',            label: 'Nuevo'            },
-  { value: 'Inactivo',         label: 'Inactivo'         },
+  { value: 'all',      label: 'Todos'    },
+  { value: 'Activo',   label: 'Activos'  },
+  { value: 'Inactivo', label: 'Inactivos' },
 ];
 
 // ── Computed ───────────────────────────────────────────────────────────────
+const isActivo = (estatus) => estatus === 'Activo' || estatus === 'En Funcionamiento' || estatus === 'Nuevo';
+
 const filteredVehicles = computed(() => {
   const q = searchTerm.value.toLowerCase();
   return vehicles.value.filter(v => {
@@ -718,15 +704,16 @@ const filteredVehicles = computed(() => {
                       v.marca?.toLowerCase().includes(q) ||
                       v.modelo?.toLowerCase().includes(q);
     if (statusFilter.value === 'all') return matchText;
+    if (statusFilter.value === 'Activo') return matchText && isActivo(v.estatus);
+    if (statusFilter.value === 'Inactivo') return matchText && v.estatus === 'Inactivo';
     return matchText && v.estatus === statusFilter.value;
   });
 });
 
 const stats = computed(() => ({
-  total:            vehicles.value.length,
-  enFuncionamiento: vehicles.value.filter(v => v.estatus === 'En Funcionamiento').length,
-  nuevo:            vehicles.value.filter(v => v.estatus === 'Nuevo').length,
-  inactivo:         vehicles.value.filter(v => v.estatus === 'Inactivo').length,
+  total:    vehicles.value.length,
+  activo:   vehicles.value.filter(v => isActivo(v.estatus)).length,
+  inactivo: vehicles.value.filter(v => v.estatus === 'Inactivo').length,
 }));
 
 const detailFields = computed(() => {
@@ -736,7 +723,7 @@ const detailFields = computed(() => {
     { label: 'Marca y Modelo',  value: `${v.marca} ${v.modelo}` },
     { label: 'Tipo de Vehículo', value: v.tipo_vehiculo || '—'  },
     { label: 'Ubicación',        value: v.ubicacion    || '—'  },
-    { label: 'Estado',           value: v.estatus               },
+    { label: 'Estado',           value: isActivo(v.estatus) ? 'Activo' : 'Inactivo' },
     { label: 'Precio',           value: v.precio ? `Q ${Number(v.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
     { label: 'Kilometraje',      value: `${Number(v.kilometraje).toLocaleString()} km` },
     { label: 'Piloto',           value: v.piloto_nombre || 'Sin asignar' },
@@ -745,9 +732,8 @@ const detailFields = computed(() => {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const estatusBadge = (estatus) => {
-  if (estatus === 'En Funcionamiento') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-  if (estatus === 'Nuevo')            return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-  if (estatus === 'Inactivo')         return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+  if (isActivo(estatus)) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+  if (estatus === 'Inactivo') return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
   return 'bg-white/5 text-white/40 border-white/10';
 };
 
@@ -800,7 +786,7 @@ const resetForm = () => {
     seguro_contacto_telefono: '',
     seguro_aseguradora: '',
     ubicacion: '',
-    estatus: 'Nuevo',
+    estatus: 'Activo',
     precio: '',
     kilometraje: '',
     marca: '',
@@ -830,7 +816,7 @@ const startEdit = (v) => {
     seguro_contacto_telefono: v.seguro_contacto_telefono || '',
     seguro_aseguradora: v.seguro_aseguradora || '',
     ubicacion: v.ubicacion || '',
-    estatus: v.estatus,
+    estatus: isActivo(v.estatus) ? 'Activo' : 'Inactivo',
     precio: v.precio || '',
     kilometraje: v.kilometraje,
     marca: v.marca,
@@ -948,7 +934,7 @@ watch(() => logForm.value.vehiculo_id, (id) => {
   const v = vehicles.value.find(v => String(v.id) === String(id));
   if (v) {
     logForm.value.piloto_id        = v.piloto_id ? String(v.piloto_id) : '';
-    logForm.value.estatus_vehiculo = v.estatus || 'En Funcionamiento';
+    logForm.value.estatus_vehiculo = isActivo(v.estatus) ? 'Activo' : 'Inactivo';
   }
 });
 

@@ -96,8 +96,6 @@
           <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[160px]">
             <option value="">Todos los Estados</option>
             <option value="Activo">Activo</option>
-            <option value="En Mantenimiento">En Mantenimiento</option>
-            <option value="En Reparación">En Reparación</option>
             <option value="Inactivo">Inactivo</option>
           </select>
         </div>
@@ -397,8 +395,6 @@
                   class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
                 >
                   <option value="Activo">Activo</option>
-                  <option value="En Mantenimiento">En Mantenimiento</option>
-                  <option value="En Reparación">En Reparación</option>
                   <option value="Inactivo">Inactivo</option>
                 </select>
               </div>
@@ -1082,7 +1078,9 @@ const filteredMachinery = computed(() => {
                         (m.no_factura && m.no_factura.toLowerCase().includes(searchVal)) ||
                         (m.placa && m.placa.toLowerCase().includes(searchVal));
     const matchType = filterType.value === "" || (m.clasificacion_tipo || 'Pesada') === filterType.value;
-    const matchStatus = filterStatus.value === "" || m.estado === filterStatus.value;
+    const isAct = (s) => s === 'Activo' || s === 'En Funcionamiento' || s === 'Nuevo';
+    const matchStatus = filterStatus.value === "" ||
+      (filterStatus.value === 'Activo' ? isAct(m.estado) : !isAct(m.estado));
     return matchSearch && matchType && matchStatus;
   });
 });
@@ -1193,15 +1191,16 @@ const formLog = ref({
 
 // KPIs Metrics
 const metrics = computed(() => {
-  const activas = machinery.value.filter(m => m.estado === 'Activo').length;
+  const isAct = (s) => s === 'Activo' || s === 'En Funcionamiento' || s === 'Nuevo';
+  const activas = machinery.value.filter(m => isAct(m.estado)).length;
+  const inactivas = machinery.value.filter(m => !isAct(m.estado)).length;
   const total = machinery.value.length;
   const pct = total > 0 ? Math.round((activas / total) * 100) : 0;
-  const mtto = machinery.value.filter(m => m.estado === 'En Mantenimiento' || m.estado === 'En Reparación').length;
 
   return [
     { label: "Total Maquinaria", value: total.toString(), trend: "Total equipos", icon: WrenchScrewdriverIcon, color: "text-primary" },
     { label: "Operativas / Activas", value: `${activas} / ${total}`, percentage: pct, color: "text-primary" },
-    { label: "En Mantenimiento", value: mtto.toString(), trend: "Atención requerida", icon: ExclamationTriangleIcon, color: "text-amber-400" },
+    { label: "Inactivas", value: inactivas.toString(), trend: "Fuera de servicio", icon: ExclamationTriangleIcon, color: "text-rose-400" },
     { label: "Bitácoras Registradas", value: logs.value.length.toString(), trend: "Total histórico", icon: ListBulletIcon, color: "text-sky-400" },
   ];
 });
@@ -1512,13 +1511,8 @@ const deleteLog = async (id) => {
 // Utils
 // ----------------------------------------------------------------
 const getStatusColor = (status) => {
-  const colors = {
-    'Activo': 'bg-emerald-500 text-emerald-400',
-    'En Mantenimiento': 'bg-amber-500 text-amber-400',
-    'En Reparación': 'bg-rose-500 text-rose-400',
-    'Inactivo': 'bg-slate-500 text-slate-400'
-  };
-  return colors[status] || 'bg-white text-white';
+  const isAct = status === 'Activo' || status === 'En Funcionamiento' || status === 'Nuevo';
+  return isAct ? 'bg-emerald-500 text-emerald-400' : 'bg-rose-500 text-rose-400';
 };
 
 const getPhotoUrl = (path) => {

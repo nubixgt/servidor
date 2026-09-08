@@ -20,8 +20,8 @@
       </div>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- KPI Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-primary flex items-start justify-between">
         <div class="flex flex-col justify-between h-full w-full">
           <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Total Unidades</span>
@@ -37,9 +37,9 @@
 
       <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-emerald-500/50 flex items-start justify-between">
         <div class="flex flex-col justify-between h-full w-full">
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">En Funcionamiento</span>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Activos</span>
           <div class="mt-3">
-            <h3 class="text-4xl font-black italic text-emerald-400 tracking-tighter">{{ stats.enFuncionamiento }}</h3>
+            <h3 class="text-4xl font-black italic text-emerald-400 tracking-tighter">{{ stats.activo }}</h3>
             <p class="text-[10px] font-bold text-emerald-400/60 uppercase tracking-wider mt-1">Operativas</p>
           </div>
         </div>
@@ -48,22 +48,9 @@
         </div>
       </div>
 
-      <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-blue-500/50 flex items-start justify-between">
-        <div class="flex flex-col justify-between h-full w-full">
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Nuevas</span>
-          <div class="mt-3">
-            <h3 class="text-4xl font-black italic text-blue-400 tracking-tighter">{{ stats.nuevo }}</h3>
-            <p class="text-[10px] font-bold text-blue-400/60 uppercase tracking-wider mt-1">Recién ingresadas</p>
-          </div>
-        </div>
-        <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-blue-400 shrink-0">
-          <SparklesIcon class="w-5 h-5" />
-        </div>
-      </div>
-
       <div class="glass-card p-6 rounded-3xl border border-white/5 border-l-4 border-rose-500/50 flex items-start justify-between">
         <div class="flex flex-col justify-between h-full w-full">
-          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Inactivas</span>
+          <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Inactivos</span>
           <div class="mt-3">
             <h3 class="text-4xl font-black italic text-rose-400 tracking-tighter">{{ stats.inactivo }}</h3>
             <p class="text-[10px] font-bold text-rose-400/60 uppercase tracking-wider mt-1">Fuera de servicio</p>
@@ -248,8 +235,7 @@
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Estado <span class="text-rose-400">*</span></label>
                 <select v-model="form.estado" required
                   class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
-                  <option value="Nuevo">Nuevo</option>
-                  <option value="En Funcionamiento">En Funcionamiento</option>
+                  <option value="Activo">Activo</option>
                   <option value="Inactivo">Inactivo</option>
                 </select>
               </div>
@@ -541,7 +527,7 @@ let   insuranceDocFile        = null;
 
 const form = ref({
   placa: '', tipo_transporte: '', tipo_seguro: '', ubicacion: '',
-  estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
+  estado: 'Activo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
   seguro_aseguradora: '', seguro_contacto_nombre: '', seguro_contacto_telefono: '', seguro_poliza: ''
 });
 
@@ -559,13 +545,14 @@ const showDetailsModal = ref(false);
 const selectedUnit     = ref(null);
 
 const statusOptions = [
-  { value: 'all',               label: 'Todos'            },
-  { value: 'En Funcionamiento', label: 'En Funcionamiento' },
-  { value: 'Nuevo',             label: 'Nuevo'            },
-  { value: 'Inactivo',          label: 'Inactivo'         },
+  { value: 'all',      label: 'Todos'    },
+  { value: 'Activo',   label: 'Activos'  },
+  { value: 'Inactivo', label: 'Inactivos' },
 ];
 
 // ── Computed ───────────────────────────────────────────────────────────────
+const isActivo = (estado) => estado === 'Activo' || estado === 'En Funcionamiento' || estado === 'Nuevo';
+
 const filteredList = computed(() => {
   const q = searchTerm.value.toLowerCase();
   return units.value.filter(u => {
@@ -573,15 +560,16 @@ const filteredList = computed(() => {
                       u.marca?.toLowerCase().includes(q) ||
                       u.modelo?.toLowerCase().includes(q);
     if (statusFilter.value === 'all') return matchText;
+    if (statusFilter.value === 'Activo') return matchText && isActivo(u.estado);
+    if (statusFilter.value === 'Inactivo') return matchText && u.estado === 'Inactivo';
     return matchText && u.estado === statusFilter.value;
   });
 });
 
 const stats = computed(() => ({
-  total:            units.value.length,
-  enFuncionamiento: units.value.filter(u => u.estado === 'En Funcionamiento').length,
-  nuevo:            units.value.filter(u => u.estado === 'Nuevo').length,
-  inactivo:         units.value.filter(u => u.estado === 'Inactivo').length,
+  total:    units.value.length,
+  activo:   units.value.filter(u => isActivo(u.estado)).length,
+  inactivo: units.value.filter(u => u.estado === 'Inactivo').length,
 }));
 
 const detailFields = computed(() => {
@@ -591,7 +579,7 @@ const detailFields = computed(() => {
     { label: 'Marca y Modelo',       value: `${u.marca} ${u.modelo}` },
     { label: 'Tipo de Transporte',   value: u.tipo_transporte || '—' },
     { label: 'Ubicación',            value: u.ubicacion || '—'       },
-    { label: 'Estado',               value: u.estado                  },
+    { label: 'Estado',               value: isActivo(u.estado) ? 'Activo' : 'Inactivo' },
     { label: 'Precio',               value: u.precio ? `Q ${Number(u.precio).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
     { label: 'Kilometraje',          value: `${Number(u.kilometraje).toLocaleString()} km` },
     { label: 'Piloto',               value: u.piloto_nombre || 'Sin asignar' },
@@ -600,9 +588,8 @@ const detailFields = computed(() => {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const estadoBadge = (estado) => {
-  if (estado === 'En Funcionamiento') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-  if (estado === 'Nuevo')             return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-  if (estado === 'Inactivo')          return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+  if (isActivo(estado)) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+  if (estado === 'Inactivo') return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
   return 'bg-white/5 text-white/40 border-white/10';
 };
 
@@ -644,7 +631,7 @@ const resetForm = () => {
   editingId.value = null;
   form.value = {
     placa: '', tipo_transporte: '', tipo_seguro: '', ubicacion: '',
-    estado: 'Nuevo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
+    estado: 'Activo', precio: '', kilometraje: '', marca: '', modelo: '', piloto_id: '',
     seguro_aseguradora: '', seguro_contacto_nombre: '', seguro_contacto_telefono: '', seguro_poliza: ''
   };
   currentInsuranceDocPath.value = '';
@@ -659,7 +646,7 @@ const startEdit = (u) => {
   editingId.value = u.id;
   form.value = {
     placa: u.placa, tipo_transporte: u.tipo_transporte, tipo_seguro: u.tipo_seguro || '',
-    ubicacion: u.ubicacion || '', estado: u.estado, precio: u.precio || '',
+    ubicacion: u.ubicacion || '', estado: isActivo(u.estado) ? 'Activo' : 'Inactivo', precio: u.precio || '',
     kilometraje: u.kilometraje, marca: u.marca, modelo: u.modelo,
     piloto_id: u.piloto_id || '',
     seguro_aseguradora: u.seguro_aseguradora || '',

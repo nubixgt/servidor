@@ -136,7 +136,7 @@ class VehicleRepository
             'marca'                    => $data['marca'],
             'modelo'                   => $data['modelo'],
             'piloto_id'                => $data['piloto_id'] ?: null,
-            'estatus'                  => $data['estatus'] ?? 'Nuevo',
+            'estatus'                  => $data['estatus'] ?? 'Activo',
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -175,7 +175,7 @@ class VehicleRepository
             'marca'                    => $data['marca'],
             'modelo'                   => $data['modelo'],
             'piloto_id'                => $data['piloto_id'] ?: null,
-            'estatus'                  => $data['estatus'] ?? 'Nuevo',
+            'estatus'                  => $data['estatus'] ?? 'Activo',
         ]);
     }
 

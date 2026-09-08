@@ -435,7 +435,7 @@ const completedTrips = computed(() => trips.value.filter(t => parseInt(t.estado)
 
 // El despacho de concreto se hace con las unidades de Transporte Pesado (tabla heavy_transport),
 // cuyo campo de estado es `estado` con enum ('Nuevo','En Funcionamiento','Inactivo').
-const operativeVehicles = computed(() => vehicles.value.filter(v => v.estado === 'En Funcionamiento' || v.estado === 'Nuevo'));
+const operativeVehicles = computed(() => vehicles.value.filter(v => v.estado === 'Activo' || v.estado === 'En Funcionamiento' || v.estado === 'Nuevo' || v.estatus === 'Activo' || v.estatus === 'En Funcionamiento' || v.estatus === 'Nuevo'));
 
 
 onMounted(() => {

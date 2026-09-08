@@ -83,7 +83,7 @@ class HeavyTransportRepository
             'tipo_transporte'          => $data['tipo_transporte'],
             'tipo_seguro'              => $data['tipo_seguro'] ?: null,
             'ubicacion'                => $data['ubicacion'] ?: null,
-            'estado'                   => $data['estado'] ?? 'Nuevo',
+            'estado'                   => $data['estado'] ?? 'Activo',
             'precio'                   => $data['precio'] ?: null,
             'kilometraje'              => $data['kilometraje'] ?? 0,
             'marca'                    => $data['marca'],
