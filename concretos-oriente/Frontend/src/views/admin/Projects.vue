@@ -228,7 +228,7 @@
                     <span>Q {{ formatCurrency(proj.presupuesto) }}</span>
                   </div>
                 </div>
-                <button class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary transition-all flex items-center justify-center group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+                <button @click.stop="openProjectDetails(proj)" class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary transition-all flex items-center justify-center group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]" title="Ver detalles del proyecto">
                   <ChevronRightIcon class="w-6 h-6 text-white group-hover:text-white" />
                 </button>
               </div>
@@ -243,10 +243,10 @@
       <div v-if="selectedProject" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
         <div
           @click="closeProjectDetails"
-          class="absolute inset-0 bg-black/90 backdrop-blur-md"
+          class="absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
         ></div>
 
-        <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] transform scale-100 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] z-10">
           <div class="absolute top-6 right-6 z-10 flex gap-3">
             <button
               @click="openEditModal(selectedProject)"
@@ -565,8 +565,8 @@
     <!-- Modal: Ampliación de Presupuesto -->
     <transition name="fade">
       <div v-if="showExtensionModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-        <div @click="showExtensionModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-lg glass-card rounded-[32px] p-8 border border-white/10 shadow-2xl z-10" data-aos="zoom-in-up" data-aos-duration="600">
+        <div @click="showExtensionModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"></div>
+        <div class="relative w-full max-w-lg glass-card rounded-[32px] p-8 border border-white/10 shadow-2xl z-10">
           <h3 class="text-xl font-black text-white italic uppercase tracking-tighter mb-6">Ampliación de Presupuesto</h3>
           <form @submit.prevent="submitExtension" class="space-y-5">
             <div>
@@ -611,9 +611,9 @@
     <!-- Modal Formulario Proyecto -->
     <transition name="fade">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal"></div>
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" @click="closeModal"></div>
 
-        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[40px] p-6 md:p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.6)]" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[40px] p-6 md:p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
           <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
             <h3 class="text-3xl font-black text-white italic uppercase tracking-tight">{{ isEditing ? 'Editar Proyecto' : 'Registrar Nuevo Proyecto' }}</h3>
             <button @click="closeModal" class="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-white/50 hover:text-white">
