@@ -136,30 +136,6 @@ class MachineryController extends Controller
             $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
         }
     }
-                'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
-                                            ? (int)$_POST['proyecto_id'] : null,
-                'costo_adquisicion'     => (isset($_POST['costo_adquisicion']) && $_POST['costo_adquisicion'] !== '')
-                                            ? $_POST['costo_adquisicion'] : null,
-                'fecha_adquisicion'     => (isset($_POST['fecha_adquisicion']) && $_POST['fecha_adquisicion'] !== '')
-                                            ? $_POST['fecha_adquisicion'] : null,
-            ];
-
-            $fileData = $_FILES['foto'] ?? null;
-
-            $result = $this->machineryService->updateMachinery((int)$id, $data, $fileData);
-
-            $this->json([
-                'status'    => 'success',
-                'message'   => 'Maquinaria actualizada correctamente',
-                'foto_path' => $result['foto_path']
-            ]);
-
-        } catch (Exception $e) {
-            $code = $e->getCode() ?: 500;
-            $code = $code >= 400 && $code < 600 ? $code : 500;
-            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
-        }
-    }
 
     // ----------------------------------------------------------------
     // DELETE /machinery/{id}
