@@ -2,76 +2,46 @@
   <div class="pt-20 pb-16 px-4 md:px-8 max-w-[1600px] mx-auto space-y-8 text-white min-h-screen">
 
     <!-- 1. Header Banner Industrial / Bancos -->
-    <div class="relative overflow-hidden rounded-[36px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] min-h-[170px] md:min-h-[200px] flex items-center bg-slate-950" data-aos="fade-down" data-aos-duration="800">
+    <div class="relative overflow-hidden rounded-[32px] border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.6)] bg-slate-950 w-full" data-aos="fade-down" data-aos-duration="800">
       
-      <!-- Background Header Image -->
-      <img :src="bancosHeaderImg" alt="Bancos Encabezado" class="absolute inset-0 w-full h-full object-cover object-left md:object-center pointer-events-none select-none opacity-90" />
+      <!-- Crisp Banner Artwork -->
+      <img :src="bancosHeaderImg" alt="Bancos Concretos del Oriente" class="w-full h-auto min-h-[160px] md:min-h-[220px] object-cover object-center pointer-events-none select-none" />
       
-      <!-- Gradient Overlays for optimal contrast and text legibility -->
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-slate-950/70 pointer-events-none"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 pointer-events-none"></div>
+      <!-- Subtle top-right overlay for live dynamic controls -->
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/20 pointer-events-none"></div>
 
-      <div class="relative z-10 w-full p-6 md:p-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
-        
-        <!-- Left Title & Subtitle with Glowing Icon -->
-        <div class="flex items-center gap-5">
-          <div class="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-gradient-to-br from-primary/40 to-blue-600/50 backdrop-blur-md border border-primary/50 flex items-center justify-center shadow-[0_0_35px_rgba(99,102,241,0.5)] shrink-0">
-            <BuildingLibraryIcon class="w-8 h-8 md:w-10 md:h-10 text-white" />
+      <!-- Floating Controls on Top-Right of Banner -->
+      <div class="absolute top-4 right-4 md:top-6 md:right-6 z-10 flex flex-wrap items-center justify-end gap-3">
+        <!-- Date / Weather Widget -->
+        <div class="bg-black/70 backdrop-blur-xl border border-white/15 rounded-2xl px-4 py-2.5 flex items-center gap-3 shadow-2xl">
+          <div class="p-1.5 bg-amber-500/20 rounded-xl border border-amber-500/30 text-amber-400">
+            <SunIcon class="w-4 h-4 animate-spin-slow" />
           </div>
-          <div>
-            <div class="flex items-center gap-3">
-              <h1 class="text-3xl md:text-5xl font-black text-white italic uppercase tracking-tighter drop-shadow-lg">BANCOS</h1>
-              <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/30 backdrop-blur-md text-white border border-primary/40 shadow-lg">
-                Finanzas Corporativas
-              </span>
-            </div>
-            <p class="text-white/80 text-xs md:text-sm font-semibold mt-1 drop-shadow-md">Gestión y control de cuentas bancarias de la empresa</p>
+          <div class="text-left">
+            <p class="text-[11px] font-black text-white uppercase tracking-wider capitalize leading-tight">{{ currentDateFormatted }}</p>
+            <p class="text-[9px] text-white/70 font-bold">Sanarate, El Progreso • 28°C Despejado</p>
           </div>
         </div>
 
-        <!-- Center Motto -->
-        <div class="hidden 2xl:flex flex-col items-center justify-center px-8 border-x border-white/15 text-center max-w-sm">
-          <p class="text-sm font-bold text-white italic leading-relaxed drop-shadow-md">
-            "Solidez financiera para seguir construyendo el mañana"
-          </p>
-          <span class="text-[10px] uppercase font-black tracking-widest text-cyan-300 mt-1">Concretos y Agregados de Oriente</span>
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+          <button
+            @click="openCreateAccountModal"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 hover:from-primary-dark hover:to-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_rgba(99,102,241,0.7)] transition-all cursor-pointer backdrop-blur-sm"
+          >
+            <PlusIcon class="w-4 h-4" />
+            <span>Nueva Cuenta</span>
+          </button>
+          <button
+            @click="openTransferModal()"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black/70 hover:bg-black/90 backdrop-blur-md text-white font-black text-xs uppercase tracking-wider border border-white/15 shadow-xl hover:shadow-white/10 transition-all cursor-pointer"
+          >
+            <ArrowsRightLeftIcon class="w-4 h-4 text-cyan-400" />
+            <span>Transferencia</span>
+          </button>
         </div>
-
-        <!-- Right Side: Weather/Date Card & Action Buttons -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full xl:w-auto justify-end">
-          
-          <!-- Date / Weather Widget -->
-          <div class="bg-black/60 backdrop-blur-xl border border-white/15 rounded-2xl p-3.5 flex items-center gap-3.5 shadow-2xl w-full sm:w-auto">
-            <div class="p-2.5 bg-amber-500/20 rounded-xl border border-amber-500/30 text-amber-400 shadow-md">
-              <SunIcon class="w-5 h-5 animate-spin-slow" />
-            </div>
-            <div class="text-left">
-              <p class="text-[11px] font-black text-white uppercase tracking-wider capitalize">{{ currentDateFormatted }}</p>
-              <p class="text-[10px] text-white/70 font-medium">Sanarate, El Progreso • 28°C Despejado</p>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-            <button
-              @click="openCreateAccountModal"
-              class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 hover:from-primary-dark hover:to-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(99,102,241,0.5)] hover:shadow-[0_0_35px_rgba(99,102,241,0.7)] transition-all cursor-pointer backdrop-blur-sm"
-            >
-              <PlusIcon class="w-4 h-4" />
-              <span>Nueva Cuenta Bancaria</span>
-            </button>
-            <button
-              @click="openTransferModal()"
-              class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white font-black text-xs uppercase tracking-wider border border-white/15 shadow-xl hover:shadow-white/10 transition-all cursor-pointer"
-            >
-              <ArrowsRightLeftIcon class="w-4 h-4 text-cyan-400" />
-              <span>Transferencia</span>
-            </button>
-          </div>
-
-        </div>
-
       </div>
+
     </div>
 
     <!-- 2. KPI Top Stats Cards (4 Columns) -->
@@ -207,23 +177,23 @@
           <div class="relative z-10">
             <div class="flex items-start justify-between gap-3 mb-4">
               <!-- Bank Emblem / Logo -->
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 flex-1 min-w-0">
                 <div
-                  class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm shadow-md border border-white/10"
+                  class="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-xs shadow-md border border-white/10 shrink-0"
                   :style="`background: ${getBankTheme(acc.nombre_banco).badgeBg}; color: ${getBankTheme(acc.nombre_banco).textColor};`"
                 >
-                  <span class="text-xs uppercase font-mono tracking-tighter">{{ getBankTheme(acc.nombre_banco).shortName }}</span>
+                  <span class="font-mono tracking-tighter">{{ getBankTheme(acc.nombre_banco).shortName }}</span>
                 </div>
-                <div>
-                  <h4 class="text-sm font-black text-white uppercase tracking-tight leading-tight line-clamp-1">
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-sm font-black text-white uppercase tracking-tight leading-tight truncate" :title="acc.nombre_banco">
                     {{ acc.nombre_banco }}
                   </h4>
-                  <p class="text-[11px] font-mono text-white/50 tracking-wider mt-0.5">{{ acc.numero_cuenta }}</p>
+                  <p class="text-[11px] font-mono text-white/50 tracking-wider mt-0.5 truncate">{{ acc.numero_cuenta }}</p>
                 </div>
               </div>
 
               <!-- Account Type Pill -->
-              <span class="text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-white/10 text-white/80 border border-white/10">
+              <span class="text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-white/10 text-white/80 border border-white/10 shrink-0">
                 {{ acc.tipo_cuenta || 'Monetaria' }}
               </span>
             </div>
