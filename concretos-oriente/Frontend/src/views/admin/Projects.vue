@@ -239,12 +239,13 @@
     </transition>
 
     <!-- Modal Detalles del Proyecto -->
-    <transition name="fade">
-      <div v-if="selectedProject" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
-        <div
-          @click="closeProjectDetails"
-          class="absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
-        ></div>
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="selectedProject" class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6">
+          <div
+            @click="closeProjectDetails"
+            class="absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
+          ></div>
 
         <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] z-10">
           <div class="absolute top-6 right-6 z-10 flex gap-3">
@@ -561,47 +562,50 @@
         </div>
       </div>
     </transition>
+    </Teleport>
 
     <!-- Modal: Ampliación de Presupuesto -->
-    <transition name="fade">
-      <div v-if="showExtensionModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-        <div @click="showExtensionModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"></div>
-        <div class="relative w-full max-w-lg glass-card rounded-[32px] p-8 border border-white/10 shadow-2xl z-10">
-          <h3 class="text-xl font-black text-white italic uppercase tracking-tighter mb-6">Ampliación de Presupuesto</h3>
-          <form @submit.prevent="submitExtension" class="space-y-5">
-            <div>
-              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Monto (Q) *</label>
-              <input type="text" :value="getDisplayValue(extensionForm.monto)" @input="e => updateCurrencyField(extensionForm, 'monto', e)" required placeholder="Q 0.00"
-                class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Tipo de Ampliación *</label>
-              <select v-model="extensionForm.tipo_ampliacion" required
-                class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all">
-                <option value="" disabled>Seleccione...</option>
-                <option value="Trabajo Extra">Trabajo Extra</option>
-                <option value="Orden de Cambio">Orden de Cambio</option>
-                <option value="Trabajo Suplementario">Trabajo Suplementario</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Adjuntar Documentos (máx. 3, opcional)</label>
-              <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" @change="handleExtensionFiles"
-                class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
-              <div v-if="extensionForm.documentos.length > 0" class="flex flex-wrap gap-2 mt-2">
-                <span v-for="(f, i) in extensionForm.documentos" :key="i" class="text-[10px] font-bold bg-white/5 text-white/60 px-3 py-1 rounded-lg truncate max-w-[180px]">{{ f.name }}</span>
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showExtensionModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div @click="showExtensionModal = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"></div>
+          <div class="relative w-full max-w-lg glass-card rounded-[32px] p-8 border border-white/10 shadow-2xl z-10">
+            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter mb-6">Ampliación de Presupuesto</h3>
+            <form @submit.prevent="submitExtension" class="space-y-5">
+              <div>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Monto (Q) *</label>
+                <input type="text" :value="getDisplayValue(extensionForm.monto)" @input="e => updateCurrencyField(extensionForm, 'monto', e)" required placeholder="Q 0.00"
+                  class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all" />
               </div>
-            </div>
-            <div class="flex justify-end gap-3 pt-2 border-t border-white/5">
-              <button type="button" @click="showExtensionModal = false" class="px-6 py-3 rounded-xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
-              <button type="submit" :disabled="isSubmittingExtension" class="glass-button-primary text-white py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-widest disabled:opacity-50 transition-all">
-                {{ isSubmittingExtension ? 'Guardando...' : 'Registrar' }}
-              </button>
-            </div>
-          </form>
+              <div>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Tipo de Ampliación *</label>
+                <select v-model="extensionForm.tipo_ampliacion" required
+                  class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold focus:outline-none focus:border-primary transition-all">
+                  <option value="" disabled>Seleccione...</option>
+                  <option value="Trabajo Extra">Trabajo Extra</option>
+                  <option value="Orden de Cambio">Orden de Cambio</option>
+                  <option value="Trabajo Suplementario">Trabajo Suplementario</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Adjuntar Documentos (máx. 3, opcional)</label>
+                <input type="file" multiple accept=".pdf,.jpg,.jpeg,.png" @change="handleExtensionFiles"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
+                <div v-if="extensionForm.documentos.length > 0" class="flex flex-wrap gap-2 mt-2">
+                  <span v-for="(f, i) in extensionForm.documentos" :key="i" class="text-[10px] font-bold bg-white/5 text-white/60 px-3 py-1 rounded-lg truncate max-w-[180px]">{{ f.name }}</span>
+                </div>
+              </div>
+              <div class="flex justify-end gap-3 pt-2 border-t border-white/5">
+                <button type="button" @click="showExtensionModal = false" class="px-6 py-3 rounded-xl font-bold text-white/50 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
+                <button type="submit" :disabled="isSubmittingExtension" class="glass-button-primary text-white py-3 px-8 rounded-xl font-bold text-sm uppercase tracking-widest disabled:opacity-50 transition-all">
+                  {{ isSubmittingExtension ? 'Guardando...' : 'Registrar' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </Teleport>
 
     <!-- Botón Añadir Proyecto -->
     <button @click="openModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 h-14 w-14 md:h-20 md:w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
@@ -609,8 +613,9 @@
     </button>
 
     <!-- Modal Formulario Proyecto -->
-    <transition name="fade">
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" @click="closeModal"></div>
 
         <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-[40px] p-6 md:p-10 relative z-10 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
@@ -914,6 +919,7 @@
         </div>
       </div>
     </transition>
+    </Teleport>
 
   </div>
 </template>
@@ -953,6 +959,10 @@ const filterPresupuestoMax = ref('');
 const filterFechaDesde = ref('');
 const filterFechaHasta = ref('');
 const selectedProject = ref(null);
+const budgetExtensions = ref([]);
+const showExtensionModal = ref(false);
+const isSubmittingExtension = ref(false);
+const extensionForm = ref({ monto: '', tipo_ampliacion: '', documentos: [] });
 const showModal = ref(false);
 const isSubmitting = ref(false);
 const isEditing = ref(false);
@@ -960,6 +970,43 @@ const editingId = ref(null);
 const mapFullscreen = ref(false);
 const copiedLocation = ref(false);
 const copiedMapsUrl = ref(false);
+
+const getDisplayValue = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const str = String(val);
+  const parts = str.split('.');
+  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.length > 1 ? `Q ${numPart}.${parts[1]}` : `Q ${numPart}`;
+};
+
+const updateCurrencyField = (obj, key, event) => {
+  let raw = event.target.value.replace(/[^0-9.]/g, '');
+  const parts = raw.split('.');
+  if (parts.length > 2) raw = parts[0] + '.' + parts.slice(1).join('');
+  obj[key] = raw === '' ? '' : raw;
+  event.target.value = getDisplayValue(raw);
+};
+
+const fetchBudgetExtensions = async (projectId) => {
+  if (!projectId) {
+    budgetExtensions.value = [];
+    return;
+  }
+  try {
+    const res = await fetch(`${BASE_URL}/projects/${projectId}/budget-extensions`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    const data = await res.json();
+    if (data && data.status === 'success') {
+      budgetExtensions.value = data.data || [];
+    } else {
+      budgetExtensions.value = [];
+    }
+  } catch (e) {
+    console.error('Error fetching budget extensions:', e);
+    budgetExtensions.value = [];
+  }
+};
 
 const getProjectMapsUrl = (proj) => {
   if (!proj) return '';
@@ -1277,14 +1324,24 @@ const getStatusColor = (status) => {
 };
 
 const formatCurrency = (value) => {
-  if (!value) return '0.00';
-  return parseFloat(value).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (value === null || value === undefined || value === '') return '0.00';
+  const num = typeof value === 'number' ? value : parseFloat(String(value).replace(/,/g, ''));
+  if (isNaN(num)) return '0.00';
+  return num.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const formatDate = (value) => {
   if (!value) return null;
-  const [year, month, day] = value.split('-');
-  return `${day}/${month}/${year}`;
+  try {
+    const str = String(value).split(' ')[0];
+    const parts = str.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return str;
+  } catch {
+    return value;
+  }
 };
 
 const getPhotoUrl = (proj) => {
@@ -1294,17 +1351,21 @@ const getPhotoUrl = (proj) => {
 };
 
 const getClienteName = (id) => {
-  const found = CLIENTES.value.find(c => c.id == id);
-  return found ? found.company_name : '—';
+  if (!id) return '—';
+  const found = CLIENTES.value?.find(c => c.id == id);
+  return found ? (found.company_name || found.nombre || '—') : '—';
 };
 
 const getManagerName = (id) => {
-  const found = users.value.find(u => u.id == id);
-  return found ? found.nombre : '—';
+  if (!id) return '—';
+  const found = users.value?.find(u => u.id == id);
+  return found ? (found.nombre || found.name || '—') : '—';
 };
 
 const parseContacts = (raw) => {
   if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'object') return [raw];
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -1315,6 +1376,7 @@ const parseContacts = (raw) => {
 
 const parseJson = (raw) => {
   if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
   try {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -1324,7 +1386,11 @@ const parseJson = (raw) => {
 };
 
 const openProjectDetails = (proj) => {
-  selectedProject.value = proj;
+  if (!proj) return;
+  selectedProject.value = { ...proj };
+  if (proj.id) {
+    fetchBudgetExtensions(proj.id);
+  }
 };
 
 const closeProjectDetails = () => {
