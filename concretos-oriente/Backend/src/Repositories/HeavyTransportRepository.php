@@ -11,6 +11,19 @@ class HeavyTransportRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $cols = $this->pdo->query("SHOW COLUMNS FROM heavy_transport")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('kilometraje', $cols)) {
+                $this->pdo->exec("ALTER TABLE heavy_transport ADD COLUMN kilometraje INT DEFAULT 0 AFTER precio");
+            }
+        } catch (\Exception $e) {
+            // Table might not exist yet or permission issues
+        }
     }
 
     public function getPDO(): PDO

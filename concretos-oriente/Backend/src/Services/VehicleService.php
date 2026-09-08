@@ -30,7 +30,7 @@ class VehicleService
 
         try {
             $vehicleId = $this->vehicleRepo->create($data);
-            $this->handlePhotoUploads($vehicleId, $files);
+            $this->handlePhotoAndDocUploads($vehicleId, $files);
             $this->vehicleRepo->getPDO()->commit();
             return ['success' => true, 'id' => $vehicleId, 'message' => 'Vehículo registrado correctamente.'];
         } catch (Exception $e) {
@@ -45,7 +45,7 @@ class VehicleService
 
         try {
             $this->vehicleRepo->update($id, $data);
-            $this->handlePhotoUploads($id, $files);
+            $this->handlePhotoAndDocUploads($id, $files);
             $this->vehicleRepo->getPDO()->commit();
             return ['success' => true, 'message' => 'Vehículo actualizado correctamente.'];
         } catch (Exception $e) {
@@ -60,21 +60,30 @@ class VehicleService
         return ['success' => true, 'message' => 'Vehículo eliminado correctamente.'];
     }
 
-    private function handlePhotoUploads(int $vehicleId, array $files): void
+    private function handlePhotoAndDocUploads(int $vehicleId, array $files): void
     {
         $uploader = new Uploader('Uploads/Vehicles/' . $vehicleId);
-        $photos   = [];
+        $updates  = [];
 
-        $fields = ['foto_delantera', 'foto_trasera', 'foto_lateral1', 'foto_lateral2'];
+        $fields = [
+            'foto_delantera'             => 'foto_delantera',
+            'foto_trasera'               => 'foto_trasera',
+            'foto_lateral1'              => 'foto_lateral1',
+            'foto_lateral2'              => 'foto_lateral2',
+            'seguro_contrato_adjunto'    => 'seguro_contrato_adjunto_path',
+            'calcomania_adjunto'         => 'calcomania_adjunto_path',
+            'titulo_propiedad_adjunto'   => 'titulo_propiedad_adjunto_path',
+            'tarjeta_circulacion_adjunto'=> 'tarjeta_circulacion_adjunto_path',
+        ];
 
-        foreach ($fields as $field) {
-            if (isset($files[$field]) && $files[$field]['error'] === UPLOAD_ERR_OK) {
-                $photos[$field] = $uploader->upload($files[$field], $field);
+        foreach ($fields as $inputKey => $dbCol) {
+            if (isset($files[$inputKey]) && $files[$inputKey]['error'] === UPLOAD_ERR_OK) {
+                $updates[$dbCol] = $uploader->upload($files[$inputKey], $inputKey);
             }
         }
 
-        if (!empty($photos)) {
-            $this->vehicleRepo->updatePhotos($vehicleId, $photos);
+        if (!empty($updates)) {
+            $this->vehicleRepo->updatePhotos($vehicleId, $updates);
         }
     }
 }

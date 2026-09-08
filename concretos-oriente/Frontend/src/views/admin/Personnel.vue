@@ -548,16 +548,19 @@
                 <p class="text-sm text-white/60 line-clamp-2">{{ inc.motivo }}</p>
               </td>
               <td class="px-8 py-5 text-center">
-                <a
-                  v-if="inc.adjunto_path"
-                  :href="getDocumentUrl(inc.adjunto_path)"
-                  target="_blank"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-bold hover:bg-amber-400/20 transition-all"
-                  title="Ver documento adjunto"
-                >
-                  <PaperClipIcon class="w-3.5 h-3.5" />
-                  Ver Adjunto
-                </a>
+                <div v-if="getIncidentAdjuntosList(inc.adjunto_path).length > 0" class="flex flex-wrap gap-1.5 justify-center">
+                  <a
+                    v-for="(path, idx) in getIncidentAdjuntosList(inc.adjunto_path)"
+                    :key="idx"
+                    :href="getDocumentUrl(path)"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-bold hover:bg-amber-400/20 transition-all"
+                    :title="`Ver evidencia #${idx + 1}`"
+                  >
+                    <PaperClipIcon class="w-3.5 h-3.5" />
+                    <span>Doc {{ idx + 1 }}</span>
+                  </a>
+                </div>
                 <span v-else class="text-xs text-white/20">—</span>
               </td>
               <td class="px-8 py-5">
@@ -1652,14 +1655,20 @@
               class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all resize-none"></textarea>
           </div>
 
-          <!-- Adjuntar Foto / Documento -->
+          <!-- Adjuntar Foto / Documento Múltiples -->
           <div class="space-y-2">
-            <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
-              <PaperClipIcon class="w-4 h-4 text-amber-400" />
-              Adjuntar Foto o Documento (PDF, Imagen)
-            </label>
-            <input @change="handleIncidentFileChange" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                <PaperClipIcon class="w-4 h-4 text-amber-400" />
+                Adjuntar Evidencias (Fotos o Documentos)
+              </label>
+              <span v-if="incidentForm.adjuntos && incidentForm.adjuntos.length > 0" class="text-xs font-bold text-amber-400">
+                {{ incidentForm.adjuntos.length }} archivo{{ incidentForm.adjuntos.length !== 1 ? 's' : '' }}
+              </span>
+            </div>
+            <input @change="handleIncidentFileChange" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.doc,.docx,.webp"
               class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-400/20 file:text-amber-400 hover:file:bg-amber-400/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+            <p class="text-[11px] text-white/30">Puedes seleccionar uno o varios archivos a la vez (PNG, JPG, PDF, Word).</p>
           </div>
 
           <div class="pt-2 flex justify-end gap-4 border-t border-white/5">
@@ -1796,7 +1805,7 @@ const incidentForm = ref({
   texto: '',
   fecha: '',
   motivo: '',
-  adjunto: null
+  adjuntos: []
 });
 
 // Form data planilla (Espacio de Planilla)
@@ -2248,7 +2257,7 @@ const openIncidentModal = () => {
     texto: '',
     fecha: new Date().toISOString().split('T')[0],
     motivo: '',
-    adjunto: null
+    adjuntos: []
   };
   showIncidentModal.value = true;
 };
@@ -2258,8 +2267,21 @@ const closeIncidentModal = () => {
 };
 
 const handleIncidentFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) incidentForm.value.adjunto = file;
+  const files = Array.from(e.target.files);
+  incidentForm.value.adjuntos = files;
+};
+
+const getIncidentAdjuntosList = (adjuntoPath) => {
+  if (!adjuntoPath) return [];
+  try {
+    if (typeof adjuntoPath === 'string' && (adjuntoPath.startsWith('[') || adjuntoPath.startsWith('{'))) {
+      const parsed = JSON.parse(adjuntoPath);
+      if (Array.isArray(parsed)) return parsed;
+    }
+    return [adjuntoPath];
+  } catch {
+    return [adjuntoPath];
+  }
 };
 
 const submitIncident = async () => {
@@ -2270,8 +2292,10 @@ const submitIncident = async () => {
     fd.append('texto',        incidentForm.value.texto);
     fd.append('fecha',        incidentForm.value.fecha);
     fd.append('motivo',       incidentForm.value.motivo);
-    if (incidentForm.value.adjunto) {
-      fd.append('adjunto', incidentForm.value.adjunto);
+    if (incidentForm.value.adjuntos && incidentForm.value.adjuntos.length > 0) {
+      incidentForm.value.adjuntos.forEach((file) => {
+        fd.append('adjuntos[]', file);
+      });
     }
 
     const res    = await fetch(`${BASE_URL}/incidents`, { method: 'POST', body: fd });

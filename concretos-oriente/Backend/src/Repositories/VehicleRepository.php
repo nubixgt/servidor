@@ -11,11 +11,52 @@ class VehicleRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
     }
 
     public function getPDO(): PDO
     {
         return $this->pdo;
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM vehicles");
+            $columns = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $columns[] = strtolower($row['Field']);
+            }
+
+            $alters = [];
+            if (!in_array('seguro_contacto_nombre', $columns)) {
+                $alters[] = "ADD COLUMN seguro_contacto_nombre VARCHAR(255) NULL";
+            }
+            if (!in_array('seguro_contacto_telefono', $columns)) {
+                $alters[] = "ADD COLUMN seguro_contacto_telefono VARCHAR(50) NULL";
+            }
+            if (!in_array('seguro_aseguradora', $columns)) {
+                $alters[] = "ADD COLUMN seguro_aseguradora VARCHAR(255) NULL";
+            }
+            if (!in_array('seguro_contrato_adjunto_path', $columns)) {
+                $alters[] = "ADD COLUMN seguro_contrato_adjunto_path VARCHAR(255) NULL";
+            }
+            if (!in_array('calcomania_adjunto_path', $columns)) {
+                $alters[] = "ADD COLUMN calcomania_adjunto_path VARCHAR(255) NULL";
+            }
+            if (!in_array('titulo_propiedad_adjunto_path', $columns)) {
+                $alters[] = "ADD COLUMN titulo_propiedad_adjunto_path VARCHAR(255) NULL";
+            }
+            if (!in_array('tarjeta_circulacion_adjunto_path', $columns)) {
+                $alters[] = "ADD COLUMN tarjeta_circulacion_adjunto_path VARCHAR(255) NULL";
+            }
+
+            if (!empty($alters)) {
+                $this->pdo->exec("ALTER TABLE vehicles " . implode(', ', $alters));
+            }
+        } catch (\Exception $e) {
+            error_log("Error in VehicleRepository::ensureColumnsExist: " . $e->getMessage());
+        }
     }
 
     public function findAllWithDetails(): array
@@ -75,24 +116,27 @@ class VehicleRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO vehicles
-                    (placa, tipo_vehiculo, tipo_seguro, ubicacion, precio,
-                     kilometraje, marca, modelo, piloto_id, estatus)
+                    (placa, tipo_vehiculo, tipo_seguro, seguro_contacto_nombre, seguro_contacto_telefono,
+                     seguro_aseguradora, ubicacion, precio, kilometraje, marca, modelo, piloto_id, estatus)
                 VALUES
-                    (:placa, :tipo_vehiculo, :tipo_seguro, :ubicacion, :precio,
-                     :kilometraje, :marca, :modelo, :piloto_id, :estatus)";
+                    (:placa, :tipo_vehiculo, :tipo_seguro, :seguro_contacto_nombre, :seguro_contacto_telefono,
+                     :seguro_aseguradora, :ubicacion, :precio, :kilometraje, :marca, :modelo, :piloto_id, :estatus)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'placa'         => $data['placa'],
-            'tipo_vehiculo' => $data['tipo_vehiculo'],
-            'tipo_seguro'   => $data['tipo_seguro'] ?: null,
-            'ubicacion'     => $data['ubicacion'] ?: null,
-            'precio'        => $data['precio'] ?: null,
-            'kilometraje'   => $data['kilometraje'] ?? 0,
-            'marca'         => $data['marca'],
-            'modelo'        => $data['modelo'],
-            'piloto_id'     => $data['piloto_id'] ?: null,
-            'estatus'       => $data['estatus'] ?? 'Nuevo',
+            'placa'                    => $data['placa'],
+            'tipo_vehiculo'            => $data['tipo_vehiculo'],
+            'tipo_seguro'              => $data['tipo_seguro'] ?: null,
+            'seguro_contacto_nombre'   => $data['seguro_contacto_nombre'] ?? null,
+            'seguro_contacto_telefono' => $data['seguro_contacto_telefono'] ?? null,
+            'seguro_aseguradora'       => $data['seguro_aseguradora'] ?? null,
+            'ubicacion'                => $data['ubicacion'] ?: null,
+            'precio'                   => $data['precio'] ?: null,
+            'kilometraje'              => $data['kilometraje'] ?? 0,
+            'marca'                    => $data['marca'],
+            'modelo'                   => $data['modelo'],
+            'piloto_id'                => $data['piloto_id'] ?: null,
+            'estatus'                  => $data['estatus'] ?? 'Nuevo',
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -101,31 +145,37 @@ class VehicleRepository
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE vehicles SET
-                    placa         = :placa,
-                    tipo_vehiculo = :tipo_vehiculo,
-                    tipo_seguro   = :tipo_seguro,
-                    ubicacion     = :ubicacion,
-                    precio        = :precio,
-                    kilometraje   = :kilometraje,
-                    marca         = :marca,
-                    modelo        = :modelo,
-                    piloto_id     = :piloto_id,
-                    estatus       = :estatus
+                    placa                    = :placa,
+                    tipo_vehiculo            = :tipo_vehiculo,
+                    tipo_seguro              = :tipo_seguro,
+                    seguro_contacto_nombre   = :seguro_contacto_nombre,
+                    seguro_contacto_telefono = :seguro_contacto_telefono,
+                    seguro_aseguradora       = :seguro_aseguradora,
+                    ubicacion                = :ubicacion,
+                    precio                   = :precio,
+                    kilometraje              = :kilometraje,
+                    marca                    = :marca,
+                    modelo                   = :modelo,
+                    piloto_id                = :piloto_id,
+                    estatus                  = :estatus
                 WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'id'            => $id,
-            'placa'         => $data['placa'],
-            'tipo_vehiculo' => $data['tipo_vehiculo'],
-            'tipo_seguro'   => $data['tipo_seguro'] ?: null,
-            'ubicacion'     => $data['ubicacion'] ?: null,
-            'precio'        => $data['precio'] ?: null,
-            'kilometraje'   => $data['kilometraje'] ?? 0,
-            'marca'         => $data['marca'],
-            'modelo'        => $data['modelo'],
-            'piloto_id'     => $data['piloto_id'] ?: null,
-            'estatus'       => $data['estatus'] ?? 'Nuevo',
+            'id'                       => $id,
+            'placa'                    => $data['placa'],
+            'tipo_vehiculo'            => $data['tipo_vehiculo'],
+            'tipo_seguro'              => $data['tipo_seguro'] ?: null,
+            'seguro_contacto_nombre'   => $data['seguro_contacto_nombre'] ?? null,
+            'seguro_contacto_telefono' => $data['seguro_contacto_telefono'] ?? null,
+            'seguro_aseguradora'       => $data['seguro_aseguradora'] ?? null,
+            'ubicacion'                => $data['ubicacion'] ?: null,
+            'precio'                   => $data['precio'] ?: null,
+            'kilometraje'              => $data['kilometraje'] ?? 0,
+            'marca'                    => $data['marca'],
+            'modelo'                   => $data['modelo'],
+            'piloto_id'                => $data['piloto_id'] ?: null,
+            'estatus'                  => $data['estatus'] ?? 'Nuevo',
         ]);
     }
 
@@ -134,7 +184,13 @@ class VehicleRepository
         $updates = [];
         $params  = ['id' => $id];
 
-        foreach (['foto_delantera', 'foto_trasera', 'foto_lateral1', 'foto_lateral2'] as $field) {
+        $fields = [
+            'foto_delantera', 'foto_trasera', 'foto_lateral1', 'foto_lateral2',
+            'seguro_contrato_adjunto_path', 'calcomania_adjunto_path',
+            'titulo_propiedad_adjunto_path', 'tarjeta_circulacion_adjunto_path'
+        ];
+
+        foreach ($fields as $field) {
             if (isset($photos[$field]) && $photos[$field] !== null) {
                 $updates[]       = "{$field} = :{$field}";
                 $params[$field]  = $photos[$field];

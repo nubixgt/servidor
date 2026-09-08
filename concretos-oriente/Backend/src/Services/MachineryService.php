@@ -21,7 +21,7 @@ class MachineryService
         return $this->machineryRepository->findAllWithDetails($user);
     }
 
-    public function createMachinery(array $data, ?array $fileData): array
+    public function createMachinery(array $data, ?array $fileData, ?array $seguroDoc = null): array
     {
         $this->validateMachineryData($data);
 
@@ -32,11 +32,23 @@ class MachineryService
             $newId = $this->machineryRepository->create($data);
             $foto_path = null;
 
+            $paths = [];
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $foto_path = $this->handlePhotoUpload($newId, $fileData);
                 if ($foto_path) {
-                    $this->machineryRepository->updatePhotoPath($newId, $foto_path);
+                    $paths['foto_path'] = $foto_path;
                 }
+            }
+
+            if ($seguroDoc && $seguroDoc['error'] === UPLOAD_ERR_OK) {
+                $doc_path = $this->handleDocUpload($newId, $seguroDoc, 'contrato_seguro');
+                if ($doc_path) {
+                    $paths['seguro_contrato_adjunto_path'] = $doc_path;
+                }
+            }
+
+            if (!empty($paths)) {
+                $this->machineryRepository->updateDocumentPaths($newId, $paths);
             }
 
             $pdo->commit();
@@ -51,7 +63,7 @@ class MachineryService
         }
     }
 
-    public function updateMachinery(int $id, array $data, ?array $fileData): array
+    public function updateMachinery(int $id, array $data, ?array $fileData, ?array $seguroDoc = null): array
     {
         $maquina = $this->machineryRepository->findById($id);
         if (!$maquina) {
@@ -67,12 +79,24 @@ class MachineryService
             $this->machineryRepository->update($id, $data);
             $foto_path = $maquina['foto_path'];
 
+            $paths = [];
             if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
                 $new_foto_path = $this->handlePhotoUpload($id, $fileData, true);
                 if ($new_foto_path) {
                     $foto_path = $new_foto_path;
-                    $this->machineryRepository->updatePhotoPath($id, $foto_path);
+                    $paths['foto_path'] = $foto_path;
                 }
+            }
+
+            if ($seguroDoc && $seguroDoc['error'] === UPLOAD_ERR_OK) {
+                $doc_path = $this->handleDocUpload($id, $seguroDoc, 'contrato_seguro');
+                if ($doc_path) {
+                    $paths['seguro_contrato_adjunto_path'] = $doc_path;
+                }
+            }
+
+            if (!empty($paths)) {
+                $this->machineryRepository->updateDocumentPaths($id, $paths);
             }
 
             $pdo->commit();
@@ -202,16 +226,49 @@ class MachineryService
         return null;
     }
 
+    private function handleDocUpload(int $id, array $fileData, string $prefix): ?string
+    {
+        $uploadDir = __DIR__ . '/../../Uploads/Machinery/' . $id . '/docs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $fileTmpPath = $fileData['tmp_name'];
+        $fileExtension = strtolower(pathinfo($fileData['name'], PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'];
+
+        if (in_array($fileExtension, $allowed)) {
+            $newFileName = $prefix . '_' . time() . '.' . $fileExtension;
+            $destPath = $uploadDir . $newFileName;
+
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                return 'Uploads/Machinery/' . $id . '/docs/' . $newFileName;
+            }
+        }
+        return null;
+    }
+
     private function deletePhotoFolder(int $id): void
     {
         $uploadDir = __DIR__ . '/../../Uploads/Machinery/' . $id . '/';
         if (is_dir($uploadDir)) {
-            foreach (glob($uploadDir . '*') as $file) {
-                if (is_file($file)) {
-                    unlink($file);
+            $this->rrmdir($uploadDir);
+        }
+    }
+
+    private function rrmdir(string $dir): void
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir . DIRECTORY_SEPARATOR . $object) && !is_link($dir . "/" . $object))
+                        $this->rrmdir($dir . DIRECTORY_SEPARATOR . $object);
+                    else
+                        unlink($dir . DIRECTORY_SEPARATOR . $object);
                 }
             }
-            rmdir($uploadDir);
+            rmdir($dir);
         }
     }
 }

@@ -148,7 +148,12 @@
               <div class="flex justify-between items-start mb-8">
                 <div class="cursor-pointer" @click="selectedMachine = m">
                   <h4 class="text-2xl font-bold text-white tracking-tight">{{ m.marca }} {{ m.modelo }}</h4>
-                  <p class="text-sm font-semibold text-white/40 mt-1 uppercase tracking-widest">{{ m.categoria }} • {{ m.codigo_interno }}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span :class="m.clasificacion_tipo === 'Liviana' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-primary/20 text-primary border-primary/30'" class="px-2 py-0.5 text-[9px] font-black uppercase rounded-md border tracking-wider">
+                      {{ m.clasificacion_tipo || 'Pesada' }}
+                    </span>
+                    <p class="text-xs font-semibold text-white/40 uppercase tracking-widest">{{ m.categoria }} • {{ m.codigo_interno }}</p>
+                  </div>
                 </div>
                 
                 <!-- Acciones dropdown (simplificado como botones inline por ahora) -->
@@ -281,26 +286,69 @@
         </div>
 
         <form @submit.prevent="submitMachine" class="space-y-8">
+          <!-- Clasificación Inicial -->
+          <div>
+            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Tipo de Maquinaria <span class="text-tertiary">*</span></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button 
+                type="button" 
+                @click="formMachine.clasificacion_tipo = 'Pesada'"
+                :class="formMachine.clasificacion_tipo === 'Pesada' ? 'bg-primary/20 border-primary text-white shadow-lg shadow-primary/20 ring-1 ring-primary/50' : 'bg-black/20 border-white/10 text-white/50 hover:border-white/20'"
+                class="flex items-center justify-center gap-3 p-4 rounded-2xl border font-bold text-sm transition-all"
+              >
+                <WrenchScrewdriverIcon class="w-5 h-5 text-primary" />
+                Maquinaria Pesada (Con Seguro)
+              </button>
+              <button 
+                type="button" 
+                @click="formMachine.clasificacion_tipo = 'Liviana'"
+                :class="formMachine.clasificacion_tipo === 'Liviana' ? 'bg-amber-500/20 border-amber-500 text-white shadow-lg shadow-amber-500/20 ring-1 ring-amber-500/50' : 'bg-black/20 border-white/10 text-white/50 hover:border-white/20'"
+                class="flex items-center justify-center gap-3 p-4 rounded-2xl border font-bold text-sm transition-all"
+              >
+                <ClockIcon class="w-5 h-5 text-amber-400" />
+                Maquinaria Liviana (Sin Seguro)
+              </button>
+            </div>
+          </div>
+
           <!-- Datos Principales -->
           <div>
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Información del Equipo</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               
               <div class="space-y-2 lg:col-span-1">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Categoría <span class="text-tertiary">*</span></label>
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo / Categoría <span class="text-tertiary">*</span></label>
                 <select v-model="formMachine.categoria" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                   <option value="" disabled>Seleccionar...</option>
-                  <option value="Maquinaria Pesada">Maquinaria Pesada</option>
-                  <option value="Maquinaria Especial">Maquinaria Especial</option>
-                  <option value="Vehículo">Vehículo</option>
-                  <option value="Transporte Pesado">Transporte Pesado</option>
-                  <option value="Equipo Menor">Equipo Menor</option>
+                  <template v-if="formMachine.clasificacion_tipo === 'Liviana'">
+                    <option value="Rotomartillo">Rotomartillo</option>
+                    <option value="Bailarina">Bailarina</option>
+                    <option value="Sapo">Sapo</option>
+                    <option value="Generador Eléctrico">Generador Eléctrico</option>
+                    <option value="Luces">Luces</option>
+                    <option value="Equipo Menor">Equipo Menor</option>
+                    <option value="Otra">Otra</option>
+                  </template>
+                  <template v-else>
+                    <option value="Retro">Retro</option>
+                    <option value="Patrol">Patrol</option>
+                    <option value="Excavadora">Excavadora</option>
+                    <option value="Cargador frontal">Cargador frontal</option>
+                    <option value="Rodo">Rodo</option>
+                    <option value="Maquinaria Pesada">Maquinaria Pesada</option>
+                    <option value="Otra">Otra</option>
+                  </template>
                 </select>
               </div>
 
               <div class="space-y-2 lg:col-span-1">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código Interno <span class="text-tertiary">*</span></label>
                 <input v-model="formMachine.codigo_interno" type="text" required placeholder="Ej. EX-042" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              </div>
+
+              <div class="space-y-2 lg:col-span-1">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">No. de Factura</label>
+                <input v-model="formMachine.no_factura" type="text" placeholder="Ej. FAC-00921" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
               </div>
 
               <div class="space-y-2 lg:col-span-1">
@@ -348,11 +396,45 @@
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro (hrs) <span class="text-tertiary">*</span></label>
                 <input v-model="formMachine.horometro_actual" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
               </div>
+
+              <div v-if="formMachine.clasificacion_tipo === 'Liviana'" class="space-y-2">
+                <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <CalendarIcon class="w-4 h-4" />
+                  Fecha de Servicio <span class="text-tertiary">*</span>
+                </label>
+                <input v-model="formMachine.fecha_servicio" type="date" :required="formMachine.clasificacion_tipo === 'Liviana'" class="w-full bg-black/20 border border-amber-500/40 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-400" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos del Seguro (Solo para Maquinaria Pesada) -->
+          <div v-if="formMachine.clasificacion_tipo === 'Pesada'" class="border-t border-white/10 pt-6">
+            <div class="flex items-center gap-2 mb-4">
+              <ShieldCheckIcon class="w-5 h-5 text-primary" />
+              <p class="text-xs font-bold text-white/70 uppercase tracking-[0.25em]">Datos del Seguro</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Empresa / Aseguradora</label>
+                <input v-model="formMachine.seguro_aseguradora" type="text" placeholder="Ej. Seguros G&T, El Roble" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Persona de Contacto</label>
+                <input v-model="formMachine.seguro_contacto_nombre" type="text" placeholder="Nombre del asesor" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
+                <input v-model="formMachine.seguro_contacto_telefono" type="text" placeholder="Ej. +502 2222-3333" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              </div>
+              <div class="space-y-2 lg:col-span-3">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Contrato de Seguro (Adjuntar PDF/Imagen)</label>
+                <input @change="handleInsuranceDocChange" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+              </div>
             </div>
           </div>
 
           <!-- Asignaciones y Compra -->
-          <div>
+          <div class="border-t border-white/10 pt-6">
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Asignaciones y Adquisición</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               
@@ -530,12 +612,34 @@
               <!-- Technical Specs -->
               <div>
                 <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
-                  <div class="w-8 h-[1px] bg-white/10"></div> Detalles Técnicos
+                  <div class="w-8 h-[1px] bg-white/10"></div> Detalles Técnicos y Clasificación
                 </h5>
                 <div class="grid grid-cols-2 gap-4">
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Tipo</p><p class="text-sm font-bold text-white"><span :class="selectedMachine.clasificacion_tipo === 'Liviana' ? 'text-amber-300' : 'text-primary'">{{ selectedMachine.clasificacion_tipo || 'Pesada' }}</span></p></div>
+                  <div v-if="selectedMachine.clasificacion_tipo === 'Liviana'"><p class="text-[9px] text-amber-400 uppercase tracking-widest">Fecha de Servicio</p><p class="text-sm font-bold text-amber-300">{{ formatDate(selectedMachine.fecha_servicio) || 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">No. Factura</p><p class="text-sm font-bold text-white">{{ selectedMachine.no_factura || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Año</p><p class="text-sm font-bold text-white">{{ selectedMachine.anio_fabricacion || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Serie</p><p class="text-sm font-bold text-white">{{ selectedMachine.numero_serie || 'N/A' }}</p></div>
                   <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Placa</p><p class="text-sm font-bold text-white">{{ selectedMachine.placa || 'N/A' }}</p></div>
+                </div>
+              </div>
+
+              <!-- Datos de Seguro (Para Pesada) -->
+              <div v-if="selectedMachine.clasificacion_tipo !== 'Liviana'" class="border-t border-white/5 pt-6 mt-6">
+                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
+                  <ShieldCheckIcon class="w-4 h-4 text-primary" /> Datos del Seguro
+                </h5>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Aseguradora</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_aseguradora || 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Contacto</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_contacto_nombre || 'N/A' }}</p></div>
+                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Teléfono</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_contacto_telefono || 'N/A' }}</p></div>
+                  <div>
+                    <p class="text-[9px] text-white/30 uppercase tracking-widest">Contrato</p>
+                    <a v-if="selectedMachine.seguro_contrato_adjunto_path" :href="getFileUrl(selectedMachine.seguro_contrato_adjunto_path)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline mt-0.5">
+                      <DocumentTextIcon class="w-3.5 h-3.5" /> Ver Contrato
+                    </a>
+                    <span v-else class="text-sm font-bold text-white/40">No adjunto</span>
+                  </div>
                 </div>
               </div>
 
@@ -699,7 +803,8 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { 
   ArrowTrendingUpIcon, ArrowTrendingDownIcon, WrenchScrewdriverIcon, ExclamationTriangleIcon, 
   MapPinIcon, ClockIcon, Square3Stack3DIcon, ListBulletIcon, ArchiveBoxIcon, CubeIcon, 
-  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon
+  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon,
+  ShieldCheckIcon, DocumentTextIcon, CalendarIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../stores/auth';
@@ -799,8 +904,10 @@ const showLogModal = ref(false);
 
 // Forms Data
 const formMachine = ref({
+  clasificacion_tipo: 'Pesada',
   categoria: '',
   codigo_interno: '',
+  no_factura: '',
   marca: '',
   modelo: '',
   numero_serie: '',
@@ -812,7 +919,12 @@ const formMachine = ref({
   estado: 'Activo',
   costo_adquisicion: '',
   fecha_adquisicion: '',
-  foto: null
+  fecha_servicio: '',
+  seguro_aseguradora: '',
+  seguro_contacto_nombre: '',
+  seguro_contacto_telefono: '',
+  foto: null,
+  seguro_contrato_adjunto: null
 });
 
 const formLog = ref({
@@ -907,7 +1019,17 @@ const openMachineModal = () => {
 };
 
 const openEditMachine = (m) => {
-  formMachine.value = { ...m, foto: null };
+  formMachine.value = { 
+    ...m, 
+    clasificacion_tipo: m.clasificacion_tipo || 'Pesada',
+    no_factura: m.no_factura || '',
+    fecha_servicio: m.fecha_servicio || '',
+    seguro_aseguradora: m.seguro_aseguradora || '',
+    seguro_contacto_nombre: m.seguro_contacto_nombre || '',
+    seguro_contacto_telefono: m.seguro_contacto_telefono || '',
+    foto: null, 
+    seguro_contrato_adjunto: null 
+  };
   isEditingMachine.value = true;
   editingMachineId.value = m.id;
   showMachineModal.value = true;
@@ -920,16 +1042,33 @@ const closeMachineModal = () => {
 
 const resetMachineForm = () => {
   formMachine.value = {
-    categoria: '', codigo_interno: '', marca: '', modelo: '', numero_serie: '',
+    clasificacion_tipo: 'Pesada',
+    categoria: '', codigo_interno: '', no_factura: '', marca: '', modelo: '', numero_serie: '',
     anio_fabricacion: '', placa: '', horometro_actual: 0,
     operador_id: null,
-    proyecto_id: null, estado: 'Activo', costo_adquisicion: '', fecha_adquisicion: '', foto: null
+    proyecto_id: null, estado: 'Activo', costo_adquisicion: '', fecha_adquisicion: '',
+    fecha_servicio: '',
+    seguro_aseguradora: '',
+    seguro_contacto_nombre: '',
+    seguro_contacto_telefono: '',
+    foto: null,
+    seguro_contrato_adjunto: null
   };
 };
 
 const handleFileChange = (e) => {
   const file = e.target.files[0];
   if (file) formMachine.value.foto = file;
+};
+
+const handleInsuranceDocChange = (e) => {
+  const file = e.target.files[0];
+  if (file) formMachine.value.seguro_contrato_adjunto = file;
+};
+
+const getFileUrl = (path) => {
+  if (!path) return '';
+  return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
 };
 
 const submitMachine = async () => {

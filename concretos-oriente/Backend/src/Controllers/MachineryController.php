@@ -39,11 +39,14 @@ class MachineryController extends Controller
     {
         try {
             $data = [
+                'clasificacion_tipo'    => trim($_POST['clasificacion_tipo'] ?? 'Pesada'),
                 'categoria'             => trim($_POST['categoria']         ?? ''),
                 'codigo_interno'        => trim($_POST['codigo_interno']    ?? ''),
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
-                'horometro_actual'      => $_POST['horometro_actual'] ?? null,
+                'horometro_actual'      => $_POST['horometro_actual'] ?? 0,
+                'fecha_servicio'        => (isset($_POST['fecha_servicio']) && $_POST['fecha_servicio'] !== '')
+                                            ? $_POST['fecha_servicio'] : null,
                 'estado'                => trim($_POST['estado']       ?? 'Activo'),
                 'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
@@ -53,6 +56,9 @@ class MachineryController extends Controller
                                             ? (int)$_POST['operador_id'] : null,
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                             ? (int)$_POST['proyecto_id'] : null,
+                'seguro_contacto_nombre'   => trim($_POST['seguro_contacto_nombre'] ?? '') ?: null,
+                'seguro_contacto_telefono' => trim($_POST['seguro_contacto_telefono'] ?? '') ?: null,
+                'seguro_aseguradora'       => trim($_POST['seguro_aseguradora'] ?? '') ?: null,
                 'costo_adquisicion'     => (isset($_POST['costo_adquisicion']) && $_POST['costo_adquisicion'] !== '')
                                             ? $_POST['costo_adquisicion'] : null,
                 'fecha_adquisicion'     => (isset($_POST['fecha_adquisicion']) && $_POST['fecha_adquisicion'] !== '')
@@ -61,8 +67,9 @@ class MachineryController extends Controller
             ];
 
             $fileData = $_FILES['foto'] ?? null;
+            $seguroDoc = $_FILES['seguro_contrato_adjunto'] ?? null;
 
-            $result = $this->machineryService->createMachinery($data, $fileData);
+            $result = $this->machineryService->createMachinery($data, $fileData, $seguroDoc);
 
             $this->json([
                 'status'    => 'success',
@@ -86,11 +93,14 @@ class MachineryController extends Controller
     {
         try {
             $data = [
+                'clasificacion_tipo'    => trim($_POST['clasificacion_tipo'] ?? 'Pesada'),
                 'categoria'             => trim($_POST['categoria']         ?? ''),
                 'codigo_interno'        => trim($_POST['codigo_interno']    ?? ''),
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
-                'horometro_actual'      => $_POST['horometro_actual'] ?? null,
+                'horometro_actual'      => $_POST['horometro_actual'] ?? 0,
+                'fecha_servicio'        => (isset($_POST['fecha_servicio']) && $_POST['fecha_servicio'] !== '')
+                                            ? $_POST['fecha_servicio'] : null,
                 'estado'                => trim($_POST['estado']       ?? 'Activo'),
                 'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
@@ -98,6 +108,34 @@ class MachineryController extends Controller
                 'placa'                 => trim($_POST['placa'] ?? '') ?: null,
                 'operador_id'           => (isset($_POST['operador_id']) && $_POST['operador_id'] !== '')
                                             ? (int)$_POST['operador_id'] : null,
+                'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
+                                            ? (int)$_POST['proyecto_id'] : null,
+                'seguro_contacto_nombre'   => trim($_POST['seguro_contacto_nombre'] ?? '') ?: null,
+                'seguro_contacto_telefono' => trim($_POST['seguro_contacto_telefono'] ?? '') ?: null,
+                'seguro_aseguradora'       => trim($_POST['seguro_aseguradora'] ?? '') ?: null,
+                'costo_adquisicion'     => (isset($_POST['costo_adquisicion']) && $_POST['costo_adquisicion'] !== '')
+                                            ? $_POST['costo_adquisicion'] : null,
+                'fecha_adquisicion'     => (isset($_POST['fecha_adquisicion']) && $_POST['fecha_adquisicion'] !== '')
+                                            ? $_POST['fecha_adquisicion'] : null,
+            ];
+
+            $fileData = $_FILES['foto'] ?? null;
+            $seguroDoc = $_FILES['seguro_contrato_adjunto'] ?? null;
+
+            $result = $this->machineryService->updateMachinery((int)$id, $data, $fileData, $seguroDoc);
+
+            $this->json([
+                'status'    => 'success',
+                'message'   => 'Maquinaria actualizada correctamente',
+                'foto_path' => $result['foto_path']
+            ]);
+
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
+        }
+    }
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                             ? (int)$_POST['proyecto_id'] : null,
                 'costo_adquisicion'     => (isset($_POST['costo_adquisicion']) && $_POST['costo_adquisicion'] !== '')

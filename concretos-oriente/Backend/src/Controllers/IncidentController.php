@@ -45,22 +45,50 @@ class IncidentController extends Controller
 
             $id = $this->repository->create($data);
 
-            if (!empty($_FILES['adjunto']) && $_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../../Uploads/Incidents/' . $id . '/';
+            $savedPaths = [];
+            $uploadDir = __DIR__ . '/../../Uploads/Incidents/' . $id . '/';
+            $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'webp'];
+
+            $processUpload = function($tmpName, $originalName) use ($uploadDir, $allowed, $id, &$savedPaths) {
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
                 }
-
-                $ext = strtolower(pathinfo($_FILES['adjunto']['name'], PATHINFO_EXTENSION));
-                $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
                 if (in_array($ext, $allowed)) {
-                    $fileName = 'adjunto.' . $ext;
-                    $dest = $uploadDir . $fileName;
-                    if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $dest)) {
-                        $path = 'Uploads/Incidents/' . $id . '/' . $fileName;
-                        $this->repository->updateAdjuntoPath($id, $path);
+                    $uniqueName = uniqid('evidencia_') . '.' . $ext;
+                    $dest = $uploadDir . $uniqueName;
+                    if (move_uploaded_file($tmpName, $dest)) {
+                        $savedPaths[] = 'Uploads/Incidents/' . $id . '/' . $uniqueName;
                     }
                 }
+            };
+
+            if (!empty($_FILES['adjuntos']['name'])) {
+                if (is_array($_FILES['adjuntos']['name'])) {
+                    for ($i = 0; $i < count($_FILES['adjuntos']['name']); $i++) {
+                        if ($_FILES['adjuntos']['error'][$i] === UPLOAD_ERR_OK) {
+                            $processUpload($_FILES['adjuntos']['tmp_name'][$i], $_FILES['adjuntos']['name'][$i]);
+                        }
+                    }
+                } else if ($_FILES['adjuntos']['error'] === UPLOAD_ERR_OK) {
+                    $processUpload($_FILES['adjuntos']['tmp_name'], $_FILES['adjuntos']['name']);
+                }
+            }
+
+            if (!empty($_FILES['adjunto']['name'])) {
+                if (is_array($_FILES['adjunto']['name'])) {
+                    for ($i = 0; $i < count($_FILES['adjunto']['name']); $i++) {
+                        if ($_FILES['adjunto']['error'][$i] === UPLOAD_ERR_OK) {
+                            $processUpload($_FILES['adjunto']['tmp_name'][$i], $_FILES['adjunto']['name'][$i]);
+                        }
+                    }
+                } else if ($_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
+                    $processUpload($_FILES['adjunto']['tmp_name'], $_FILES['adjunto']['name']);
+                }
+            }
+
+            if (!empty($savedPaths)) {
+                $this->repository->updateAdjuntoPath($id, json_encode($savedPaths));
             }
 
             $this->json(['status' => 'success', 'message' => 'Incidencia registrada correctamente', 'id' => $id], 201);

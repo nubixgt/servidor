@@ -201,9 +201,13 @@
                 <select v-model="form.tipo_transporte" required
                   class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
                   <option value="">Seleccionar tipo</option>
-                  <option value="Volteo">Volteo</option>
-                  <option value="Pipa">Pipa</option>
-                  <option value="Trailer Concreto">Trailer Concreto</option>
+                  <option value="Camion de volteo">Camión de volteo</option>
+                  <option value="Rastra">Rastra</option>
+                  <option value="Gondola">Góndola</option>
+                  <option value="Lowboy">Lowboy</option>
+                  <option value="Cabezal">Cabezal</option>
+                  <option value="Camion 5 toneladas">Camión 5 toneladas</option>
+                  <option value="Camion 10 toneladas">Camión 10 toneladas</option>
                 </select>
               </div>
 

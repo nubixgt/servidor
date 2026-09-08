@@ -86,7 +86,7 @@
         </div>
         <div class="relative w-full lg:w-80">
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-          <input v-model="searchTerm" type="text" placeholder="Buscar por nombre, tipo o subtipo..."
+          <input v-model="searchTerm" type="text" placeholder="Buscar por código, nombre o tipo..."
             class="glass-input pl-10 pr-4 py-3 rounded-xl text-xs font-bold w-full text-white placeholder:text-white/20" />
         </div>
       </div>
@@ -101,7 +101,12 @@
           class="glass-card rounded-[28px] border border-white/5 p-6 flex flex-col gap-4 hover:border-white/15 transition-all relative overflow-hidden">
 
           <div class="flex items-start justify-between gap-2">
-            <h4 class="text-base font-black italic uppercase text-white/90 tracking-tight leading-tight flex-1">{{ m.nombre }}</h4>
+            <div class="flex-1">
+              <span v-if="m.codigo" class="font-mono text-xs font-black tracking-widest bg-primary/20 border border-primary/30 px-2.5 py-1 rounded-lg text-primary mr-2 inline-block mb-1">
+                {{ m.codigo }}
+              </span>
+              <h4 class="text-base font-black italic uppercase text-white/90 tracking-tight leading-tight">{{ m.nombre }}</h4>
+            </div>
             <span :class="['px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider border shrink-0', estadoBadge(m.estado)]">
               {{ m.estado }}
             </span>
@@ -111,8 +116,8 @@
             <span class="px-2 py-0.5 bg-primary/10 border border-primary/20 rounded text-[9px] font-black text-primary uppercase tracking-widest">
               {{ m.tipo_maquinaria }}
             </span>
-            <span class="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/50 uppercase tracking-widest">
-              {{ m.subtipo }}
+            <span v-if="m.valor" class="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+              Q {{ Number(m.valor).toLocaleString('es-GT', { minimumFractionDigits: 2 }) }}
             </span>
           </div>
 
@@ -128,6 +133,10 @@
             <div v-if="m.anio" class="flex items-center justify-between">
               <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">Año</span>
               <span class="text-xs font-black text-white/80">{{ m.anio }}</span>
+            </div>
+            <div v-if="m.seguro_aseguradora" class="flex items-center justify-between">
+              <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">Seguro</span>
+              <span class="text-xs font-black text-sky-400 truncate max-w-[160px]">{{ m.seguro_aseguradora }}</span>
             </div>
             <div v-if="m.ubicacion" class="flex items-center justify-between">
               <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">Ubicación</span>
@@ -172,7 +181,13 @@
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-              <div class="space-y-2 md:col-span-2">
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Código de Maquinaria</label>
+                <input v-model="form.codigo" type="text" placeholder="Ej. ME-001"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <div class="space-y-2">
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Nombre de Maquinaria <span class="text-rose-400">*</span></label>
                 <input v-model="form.nombre" type="text" required placeholder="Ej. Concretera Industrial 350L"
                   class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
@@ -180,41 +195,27 @@
 
               <div class="space-y-2">
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Tipo de Maquinaria <span class="text-rose-400">*</span></label>
-                <select v-model="form.tipo_maquinaria" required @change="form.subtipo = ''"
+                <select v-model="form.tipo_maquinaria" required
                   class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
                   <option value="">Seleccionar tipo</option>
-                  <option value="Concreto">Concreto</option>
-                  <option value="Elevacion">Elevación</option>
-                  <option value="Pavimentacion">Pavimentación</option>
+                  <option value="Bomba de concreto">Bomba de concreto</option>
+                  <option value="Dosificadora de concreto">Dosificadora de concreto</option>
+                  <option value="Otra">Otra</option>
                 </select>
               </div>
 
               <div class="space-y-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Subtipo <span class="text-rose-400">*</span></label>
-                <select v-model="form.subtipo" required :disabled="!form.tipo_maquinaria"
-                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary disabled:opacity-40">
-                  <option value="">{{ form.tipo_maquinaria ? 'Seleccionar subtipo' : 'Primero elige el tipo' }}</option>
-                  <template v-if="form.tipo_maquinaria === 'Concreto'">
-                    <option value="Concretera">Concretera</option>
-                    <option value="Planta de Concreto">Planta de Concreto</option>
-                    <option value="Bomba de Concreto">Bomba de Concreto</option>
-                    <option value="Vibrador de Concreto">Vibrador de Concreto</option>
-                  </template>
-                  <template v-else-if="form.tipo_maquinaria === 'Elevacion'">
-                    <option value="Montacarga">Montacarga</option>
-                    <option value="Plataforma Elevadora">Plataforma Elevadora</option>
-                  </template>
-                  <template v-else-if="form.tipo_maquinaria === 'Pavimentacion'">
-                    <option value="Pavimentadora">Pavimentadora</option>
-                    <option value="Fresadora">Fresadora</option>
-                    <option value="Distribuidor de Asfalto">Distribuidor de Asfalto</option>
-                  </template>
-                </select>
+                <label class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Valor / Precio (GTQ)</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-emerald-400">Q</span>
+                  <input v-model="form.valor" type="number" min="0" step="0.01" placeholder="0.00"
+                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-emerald-500/20 focus:border-emerald-400 transition-all text-sm font-black text-white" />
+                </div>
               </div>
 
               <div class="space-y-2">
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Marca</label>
-                <input v-model="form.marca" type="text" placeholder="Caterpillar, Liebherr..."
+                <input v-model="form.marca" type="text" placeholder="Caterpillar, Liebherr, Wacker..."
                   class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
               </div>
 
@@ -244,6 +245,44 @@
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Ubicación</label>
                 <input v-model="form.ubicacion" type="text" placeholder="Bodega central, Proyecto X..."
                   class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+            </div>
+          </section>
+
+          <!-- Datos del Seguro -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <ShieldCheckIcon class="w-4 h-4" /> Datos del Seguro
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Empresa / Aseguradora</label>
+                <input v-model="form.seguro_aseguradora" type="text" placeholder="Ej. Seguros Universales, El Roble"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Persona de Contacto</label>
+                <input v-model="form.seguro_contacto_nombre" type="text" placeholder="Nombre del asesor de seguro"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Teléfono de Contacto</label>
+                <input v-model="form.seguro_contacto_telefono" type="text" placeholder="Ej. +502 2333-4444"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">No. de Póliza</label>
+                <input v-model="form.seguro_poliza" type="text" placeholder="Ej. POL-992834"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+              </div>
+
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Contrato de Seguro (Adjuntar PDF o Imagen)</label>
+                <input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" @change="onInsuranceDocChange"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
               </div>
             </div>
           </section>
@@ -287,7 +326,7 @@
           <div class="bg-primary p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
             <div class="relative z-10 space-y-4">
               <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Vista Previa</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">{{ form.codigo || 'Código' }}</p>
                 <p class="text-xl font-black italic tracking-tighter uppercase mt-1 leading-tight">{{ form.nombre || 'Nombre de Maquinaria' }}</p>
               </div>
               <div class="space-y-2 pt-2 text-xs border-t border-white/20">
@@ -295,9 +334,9 @@
                   <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Tipo</span>
                   <span class="font-black text-white/95 text-[10px]">{{ form.tipo_maquinaria || '—' }}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Subtipo</span>
-                  <span class="font-black text-white/90 text-[10px]">{{ form.subtipo || '—' }}</span>
+                <div class="flex justify-between" v-if="form.valor">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Valor</span>
+                  <span class="font-black text-emerald-200 text-[10px]">Q {{ Number(form.valor).toLocaleString('es-GT', {minimumFractionDigits: 2}) }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Estado</span>
@@ -328,9 +367,12 @@
         <div @click="showDetailsModal = false" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"></div>
         <div class="relative w-full max-w-3xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white z-10">
           <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
-            <h4 class="text-lg font-black italic uppercase flex items-center gap-2">
-              <Cog6ToothIcon class="w-5 h-5 text-primary" /> {{ selectedItem.nombre }}
-            </h4>
+            <div>
+              <span v-if="selectedItem.codigo" class="text-xs font-mono font-bold text-primary mr-2 bg-primary/10 px-2 py-0.5 rounded border border-primary/20">{{ selectedItem.codigo }}</span>
+              <h4 class="text-lg font-black italic uppercase inline-flex items-center gap-2">
+                <Cog6ToothIcon class="w-5 h-5 text-primary" /> {{ selectedItem.nombre }}
+              </h4>
+            </div>
             <button @click="showDetailsModal = false" class="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-all">
               <XMarkIcon class="w-5 h-5" />
             </button>
@@ -339,12 +381,42 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="space-y-4">
               <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                <InformationCircleIcon class="w-4 h-4" /> Información
+                <InformationCircleIcon class="w-4 h-4" /> Información General
               </h3>
               <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
                 <div v-for="field in detailFields" :key="field.label">
                   <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">{{ field.label }}</span>
                   <span class="text-sm font-black text-white">{{ field.value }}</span>
+                </div>
+              </div>
+
+              <!-- Seguro Info -->
+              <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
+                <h4 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2 mb-2">
+                  <ShieldCheckIcon class="w-4 h-4" /> Datos del Seguro
+                </h4>
+                <div>
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Aseguradora</span>
+                  <span class="text-sm font-black text-white">{{ selectedItem.seguro_aseguradora || '—' }}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Contacto</span>
+                  <span class="text-sm font-black text-white">{{ selectedItem.seguro_contacto_nombre || '—' }}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Teléfono</span>
+                  <span class="text-sm font-black text-white">{{ selectedItem.seguro_contacto_telefono || '—' }}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Póliza</span>
+                  <span class="text-sm font-black text-white">{{ selectedItem.seguro_poliza || '—' }}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Contrato Adjunto</span>
+                  <a v-if="selectedItem.seguro_contrato_adjunto_path" :href="getFileUrl(selectedItem.seguro_contrato_adjunto_path)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline mt-1">
+                    <DocumentTextIcon class="w-4 h-4" /> Ver Contrato
+                  </a>
+                  <span v-else class="text-sm font-black text-white/40">No adjunto</span>
                 </div>
               </div>
             </div>
@@ -381,7 +453,8 @@ import Swal from 'sweetalert2';
 import {
   PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
   UserIcon, CameraIcon, XMarkIcon, Cog6ToothIcon, WrenchScrewdriverIcon,
-  CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon
+  CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon,
+  ShieldCheckIcon, DocumentTextIcon
 } from '@heroicons/vue/24/outline';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
@@ -395,9 +468,23 @@ const personnel    = ref([]);
 const editingId    = ref(null);
 
 const form = ref({
-  nombre: '', tipo_maquinaria: '', subtipo: '', marca: '', modelo: '',
-  anio: '', estado: 'En Funcionamiento', ubicacion: '', responsable_id: ''
+  codigo: '',
+  nombre: '',
+  tipo_maquinaria: '',
+  marca: '',
+  modelo: '',
+  anio: '',
+  estado: 'En Funcionamiento',
+  valor: '',
+  ubicacion: '',
+  responsable_id: '',
+  seguro_aseguradora: '',
+  seguro_contacto_nombre: '',
+  seguro_contacto_telefono: '',
+  seguro_poliza: ''
 });
+
+const insuranceContractFile = ref(null);
 
 const photoFields = [
   { key: 'foto_1', label: 'Foto 1' },
@@ -424,9 +511,11 @@ const statusOptions = [
 const filteredList = computed(() => {
   const q = searchTerm.value.toLowerCase();
   return items.value.filter(m => {
-    const matchText = m.nombre?.toLowerCase().includes(q) ||
+    const matchText = m.codigo?.toLowerCase().includes(q) ||
+                      m.nombre?.toLowerCase().includes(q) ||
                       m.tipo_maquinaria?.toLowerCase().includes(q) ||
-                      m.subtipo?.toLowerCase().includes(q);
+                      m.marca?.toLowerCase().includes(q) ||
+                      m.modelo?.toLowerCase().includes(q);
     if (statusFilter.value === 'all') return matchText;
     return matchText && m.estado === statusFilter.value;
   });
@@ -443,9 +532,10 @@ const detailFields = computed(() => {
   if (!selectedItem.value) return [];
   const m = selectedItem.value;
   return [
+    { label: 'Código',         value: m.codigo || '—' },
     { label: 'Nombre',         value: m.nombre },
     { label: 'Tipo',           value: m.tipo_maquinaria },
-    { label: 'Subtipo',        value: m.subtipo },
+    { label: 'Valor',          value: m.valor ? `Q ${Number(m.valor).toLocaleString('es-GT', { minimumFractionDigits: 2 })}` : '—' },
     { label: 'Marca / Modelo', value: [m.marca, m.modelo].filter(Boolean).join(' ') || '—' },
     { label: 'Año',            value: m.anio || '—' },
     { label: 'Estado',         value: m.estado },
@@ -468,6 +558,11 @@ const photoUrl = (path) => {
   return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
 };
 
+const getFileUrl = (path) => {
+  if (!path) return '';
+  return `/concretos-oriente/Backend/${path}?t=${Date.now()}`;
+};
+
 const toast = (msg, icon = 'success') => Swal.fire({
   toast: true, position: 'top-end', icon, title: msg,
   showConfirmButton: false, timer: 4000, timerProgressBar: true,
@@ -487,7 +582,7 @@ const fetchItems = async () => {
 const fetchPersonnel = async () => {
   try {
     const token = localStorage.getItem('token');
-    const res   = await fetch(`${BASE_URL}/personnel`, { headers: { Authorization: `Bearer ${token}` } });
+    const res   = await fetch(`${BASE_URL}/payrolls/active-personnel`, { headers: { Authorization: `Bearer ${token}` } });
     const data  = await res.json();
     if (data.status === 'success' || data.success) personnel.value = data.data || [];
   } catch (e) { console.error(e); }
@@ -498,7 +593,12 @@ onMounted(() => { fetchItems(); fetchPersonnel(); });
 // ── Form ───────────────────────────────────────────────────────────────────
 const resetForm = () => {
   editingId.value = null;
-  form.value = { nombre: '', tipo_maquinaria: '', subtipo: '', marca: '', modelo: '', anio: '', estado: 'En Funcionamiento', ubicacion: '', responsable_id: '' };
+  form.value = {
+    codigo: '', nombre: '', tipo_maquinaria: '', marca: '', modelo: '', anio: '',
+    estado: 'En Funcionamiento', valor: '', ubicacion: '', responsable_id: '',
+    seguro_aseguradora: '', seguro_contacto_nombre: '', seguro_contacto_telefono: '', seguro_poliza: ''
+  };
+  insuranceContractFile.value = null;
   photoPreviews.value = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
   photoFiles = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
 };
@@ -508,10 +608,22 @@ const switchTab = (tab) => { activeTab.value = tab; };
 const startEdit = (m) => {
   editingId.value = m.id;
   form.value = {
-    nombre: m.nombre, tipo_maquinaria: m.tipo_maquinaria, subtipo: m.subtipo,
-    marca: m.marca || '', modelo: m.modelo || '', anio: m.anio || '',
-    estado: m.estado, ubicacion: m.ubicacion || '', responsable_id: m.responsable_id || ''
+    codigo: m.codigo || '',
+    nombre: m.nombre,
+    tipo_maquinaria: m.tipo_maquinaria,
+    marca: m.marca || '',
+    modelo: m.modelo || '',
+    anio: m.anio || '',
+    estado: m.estado,
+    valor: m.valor || '',
+    ubicacion: m.ubicacion || '',
+    responsable_id: m.responsable_id || '',
+    seguro_aseguradora: m.seguro_aseguradora || '',
+    seguro_contacto_nombre: m.seguro_contacto_nombre || '',
+    seguro_contacto_telefono: m.seguro_contacto_telefono || '',
+    seguro_poliza: m.seguro_poliza || ''
   };
+  insuranceContractFile.value = null;
   photoFiles = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
   photoPreviews.value = {
     foto_1: m.foto_1 ? photoUrl(m.foto_1) : null,
@@ -531,9 +643,14 @@ const onPhotoChange = (e, key) => {
   photoPreviews.value[key] = URL.createObjectURL(file);
 };
 
+const onInsuranceDocChange = (e) => {
+  const file = e.target.files?.[0];
+  if (file) insuranceContractFile.value = file;
+};
+
 const submitForm = async () => {
-  if (!form.value.nombre.trim() || !form.value.tipo_maquinaria || !form.value.subtipo) {
-    toast('Nombre, tipo de maquinaria y subtipo son obligatorios.', 'warning');
+  if (!form.value.nombre.trim() || !form.value.tipo_maquinaria) {
+    toast('El nombre y el tipo de maquinaria son obligatorios.', 'warning');
     return;
   }
 
@@ -545,6 +662,10 @@ const submitForm = async () => {
     photoFields.forEach(({ key }) => {
       if (photoFiles[key]) fd.append(key, photoFiles[key]);
     });
+
+    if (insuranceContractFile.value) {
+      fd.append('seguro_contrato_adjunto', insuranceContractFile.value);
+    }
 
     const url = editingId.value
       ? `${BASE_URL}/special-machinery/update/${editingId.value}`
