@@ -36,6 +36,7 @@ class IncidentController extends Controller
                 'texto'        => trim($_POST['texto']  ?? ''),
                 'fecha'        => trim($_POST['fecha']  ?? ''),
                 'motivo'       => trim($_POST['motivo'] ?? ''),
+                'adjunto_path' => null,
             ];
 
             if (!$data['personnel_id'] || empty($data['texto']) || empty($data['fecha']) || empty($data['motivo'])) {
@@ -43,6 +44,24 @@ class IncidentController extends Controller
             }
 
             $id = $this->repository->create($data);
+
+            if (!empty($_FILES['adjunto']) && $_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = __DIR__ . '/../../Uploads/Incidents/' . $id . '/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $ext = strtolower(pathinfo($_FILES['adjunto']['name'], PATHINFO_EXTENSION));
+                $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                if (in_array($ext, $allowed)) {
+                    $fileName = 'adjunto.' . $ext;
+                    $dest = $uploadDir . $fileName;
+                    if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $dest)) {
+                        $path = 'Uploads/Incidents/' . $id . '/' . $fileName;
+                        $this->repository->updateAdjuntoPath($id, $path);
+                    }
+                }
+            }
 
             $this->json(['status' => 'success', 'message' => 'Incidencia registrada correctamente', 'id' => $id], 201);
 
@@ -59,6 +78,14 @@ class IncidentController extends Controller
             $incident = $this->repository->findById((int)$id);
             if (!$incident) {
                 throw new Exception('Incidencia no encontrada.', 404);
+            }
+
+            $uploadDir = __DIR__ . '/../../Uploads/Incidents/' . (int)$id . '/';
+            if (is_dir($uploadDir)) {
+                foreach (glob($uploadDir . '*') as $file) {
+                    if (is_file($file)) unlink($file);
+                }
+                rmdir($uploadDir);
             }
 
             $this->repository->delete((int)$id);

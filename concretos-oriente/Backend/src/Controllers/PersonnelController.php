@@ -4,15 +4,18 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Attributes\Route;
 use App\Services\PersonnelService;
+use App\Repositories\EmployeePayrollRepository;
 use Exception;
 
 class PersonnelController extends Controller
 {
     private PersonnelService $personnelService;
+    private EmployeePayrollRepository $payrollRepo;
 
     public function __construct()
     {
         $this->personnelService = new PersonnelService();
+        $this->payrollRepo = new EmployeePayrollRepository();
     }
 
     // ----------------------------------------------------------------
@@ -96,6 +99,7 @@ class PersonnelController extends Controller
                 'contacto_numero'    => trim($_POST['contacto_numero']  ?? '') ?: null,
                 'cantidad_hijos'     => (isset($_POST['cantidad_hijos']) && $_POST['cantidad_hijos'] !== '')
                                         ? (int)$_POST['cantidad_hijos'] : null,
+                'edades_hijos'       => trim($_POST['edades_hijos']     ?? '') ?: null,
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
@@ -111,16 +115,20 @@ class PersonnelController extends Controller
                                         ? (int)$_POST['proyecto_id'] : null,
             ];
 
+            $files = [
+                'foto'             => $_FILES['foto'] ?? null,
+                'dpi_adjunto'      => $_FILES['dpi_adjunto'] ?? null,
+                'contrato_adjunto' => $_FILES['contrato_adjunto'] ?? null,
+                'licencia_adjunto' => $_FILES['licencia_adjunto'] ?? null,
+            ];
 
-            $fileData = $_FILES['foto'] ?? null;
-
-            $result = $this->personnelService->createPersonnel($data, $fileData);
+            $result = $this->personnelService->createPersonnel($data, $files);
 
             $this->json([
                 'status'    => 'success',
                 'message'   => 'Personal creado correctamente',
                 'id'        => $result['id'],
-                'foto_path' => $result['foto_path']
+                'foto_path' => $result['foto_path'] ?? null
             ], 201);
 
         } catch (Exception $e) {
@@ -159,6 +167,7 @@ class PersonnelController extends Controller
                 'contacto_numero'    => trim($_POST['contacto_numero']  ?? '') ?: null,
                 'cantidad_hijos'     => (isset($_POST['cantidad_hijos']) && $_POST['cantidad_hijos'] !== '')
                                         ? (int)$_POST['cantidad_hijos'] : null,
+                'edades_hijos'       => trim($_POST['edades_hijos']     ?? '') ?: null,
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
@@ -174,14 +183,19 @@ class PersonnelController extends Controller
                                         ? (int)$_POST['proyecto_id'] : null,
             ];
 
-            $fileData = $_FILES['foto'] ?? null;
+            $files = [
+                'foto'             => $_FILES['foto'] ?? null,
+                'dpi_adjunto'      => $_FILES['dpi_adjunto'] ?? null,
+                'contrato_adjunto' => $_FILES['contrato_adjunto'] ?? null,
+                'licencia_adjunto' => $_FILES['licencia_adjunto'] ?? null,
+            ];
 
-            $result = $this->personnelService->updatePersonnel((int)$id, $data, $fileData);
+            $result = $this->personnelService->updatePersonnel((int)$id, $data, $files);
 
             $this->json([
                 'status'    => 'success',
                 'message'   => 'Personal actualizado correctamente',
-                'foto_path' => $result['foto_path']
+                'foto_path' => $result['foto_path'] ?? null
             ]);
 
         } catch (Exception $e) {
@@ -199,15 +213,105 @@ class PersonnelController extends Controller
     {
         try {
             $this->personnelService->deletePersonnel((int)$id);
-
-            $this->json([
-                'status'  => 'success',
-                'message' => 'Personal eliminado correctamente'
-            ]);
-
+            $this->json(['status' => 'success', 'message' => 'Personal eliminado correctamente']);
         } catch (Exception $e) {
             $code = $e->getCode() ?: 500;
             $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // GET /personnel/payroll-payments — Historial de Pagos de Planilla
+    // ----------------------------------------------------------------
+    #[Route('/personnel/payroll-payments', 'GET')]
+    public function getPayrollPayments()
+    {
+        try {
+            $payments = $this->payrollRepo->findAll();
+            $this->json(['status' => 'success', 'data' => $payments]);
+        } catch (Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // POST /personnel/payroll-payments — Registrar Pago Mensual
+    // ----------------------------------------------------------------
+    #[Route('/personnel/payroll-payments', 'POST')]
+    public function createPayrollPayment()
+    {
+        try {
+            $raw = file_get_contents('php://input');
+            $body = json_decode($raw, true) ?: $_POST;
+
+            $personnel_id = (int)($body['personnel_id'] ?? 0);
+            if (!$personnel_id) {
+                throw new Exception('Debe seleccionar un colaborador.', 400);
+            }
+
+            $salario_base = (float)($body['salario_base'] ?? 0);
+            $dias_trabajados = (int)($body['dias_trabajados'] ?? 30);
+            $sueldo_calculado = (float)($body['sueldo_calculado'] ?? round(($salario_base / 30) * $dias_trabajados, 2));
+
+            $tiene_horas_extras = !empty($body['tiene_horas_extras']) ? 1 : 0;
+            $horas_extras = $tiene_horas_extras ? (float)($body['horas_extras'] ?? 0) : 0;
+            $tarifa_hora_extra = $tiene_horas_extras ? (float)($body['tarifa_hora_extra'] ?? 0) : 0;
+            $monto_horas_extras = $tiene_horas_extras ? (float)($body['monto_horas_extras'] ?? round($horas_extras * $tarifa_hora_extra, 2)) : 0;
+
+            $tiene_viaticos = !empty($body['tiene_viaticos']) ? 1 : 0;
+            $monto_viaticos = $tiene_viaticos ? (float)($body['monto_viaticos'] ?? 0) : 0;
+            $observaciones_viaticos = $tiene_viaticos ? trim($body['observaciones_viaticos'] ?? '') : null;
+
+            $total_pagar = (float)($body['total_pagar'] ?? round($sueldo_calculado + $monto_horas_extras + $monto_viaticos, 2));
+
+            $data = [
+                'personnel_id'           => $personnel_id,
+                'periodo'                => trim($body['periodo'] ?? date('F Y')),
+                'fecha_pago'             => trim($body['fecha_pago'] ?? date('Y-m-d')),
+                'salario_base'           => $salario_base,
+                'dias_trabajados'        => $dias_trabajados,
+                'sueldo_calculado'       => $sueldo_calculado,
+                'tiene_horas_extras'     => $tiene_horas_extras,
+                'horas_extras'           => $horas_extras,
+                'tarifa_hora_extra'      => $tarifa_hora_extra,
+                'monto_horas_extras'     => $monto_horas_extras,
+                'tiene_viaticos'         => $tiene_viaticos,
+                'monto_viaticos'         => $monto_viaticos,
+                'observaciones_viaticos' => $observaciones_viaticos,
+                'total_pagar'            => $total_pagar,
+                'metodo_pago'            => trim($body['metodo_pago'] ?? 'Transferencia'),
+                'observaciones'          => trim($body['observaciones'] ?? '') ?: null,
+            ];
+
+            $newId = $this->payrollRepo->create($data);
+
+            $this->json([
+                'status'  => 'success',
+                'message' => 'Pago de planilla registrado correctamente',
+                'id'      => $newId
+            ], 201);
+        } catch (Exception $e) {
+            $code = ($e->getCode() >= 400 && $e->getCode() < 600) ? $e->getCode() : 500;
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // DELETE /personnel/payroll-payments/{id} — Eliminar Pago
+    // ----------------------------------------------------------------
+    #[Route('/personnel/payroll-payments/{id}', 'DELETE')]
+    public function deletePayrollPayment($id)
+    {
+        try {
+            $payment = $this->payrollRepo->findById((int)$id);
+            if (!$payment) {
+                throw new Exception('Registro de pago no encontrado.', 404);
+            }
+            $this->payrollRepo->delete((int)$id);
+            $this->json(['status' => 'success', 'message' => 'Pago eliminado correctamente']);
+        } catch (Exception $e) {
+            $code = ($e->getCode() >= 400 && $e->getCode() < 600) ? $e->getCode() : 500;
             $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
         }
     }

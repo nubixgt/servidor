@@ -18,7 +18,7 @@ class PersonnelService
         return $this->repository->findAllWithProjects();
     }
 
-    public function createPersonnel(array $data, ?array $fileData): array
+    public function createPersonnel(array $data, array $files = []): array
     {
         $this->validatePersonnelData($data);
 
@@ -27,28 +27,39 @@ class PersonnelService
 
         try {
             $newId = $this->repository->create($data);
-            $foto_path = null;
+            $docPaths = [];
 
-            if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
-                $foto_path = $this->handlePhotoUpload($newId, $fileData);
-                if ($foto_path) {
-                    $this->repository->updatePhotoPath($newId, $foto_path);
-                }
+            if (!empty($files['foto']) && $files['foto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($newId, $files['foto'], 'foto', ['jpg', 'jpeg', 'png']);
+                if ($p) $docPaths['foto_path'] = $p;
+            }
+            if (!empty($files['dpi_adjunto']) && $files['dpi_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($newId, $files['dpi_adjunto'], 'dpi', ['jpg', 'jpeg', 'png', 'pdf']);
+                if ($p) $docPaths['dpi_adjunto_path'] = $p;
+            }
+            if (!empty($files['contrato_adjunto']) && $files['contrato_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($newId, $files['contrato_adjunto'], 'contrato', ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']);
+                if ($p) $docPaths['contrato_adjunto_path'] = $p;
+            }
+            if (!empty($files['licencia_adjunto']) && $files['licencia_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($newId, $files['licencia_adjunto'], 'licencia', ['jpg', 'jpeg', 'png', 'pdf']);
+                if ($p) $docPaths['licencia_adjunto_path'] = $p;
+            }
+
+            if (!empty($docPaths)) {
+                $this->repository->updateDocumentPaths($newId, $docPaths);
             }
 
             $pdo->commit();
 
-            return [
-                'id' => $newId,
-                'foto_path' => $foto_path
-            ];
+            return array_merge(['id' => $newId], $docPaths);
         } catch (Exception $e) {
             $pdo->rollBack();
             throw $e;
         }
     }
 
-    public function updatePersonnel(int $id, array $data, ?array $fileData): array
+    public function updatePersonnel(int $id, array $data, array $files = []): array
     {
         $empleado = $this->repository->findById($id);
         if (!$empleado) {
@@ -62,21 +73,32 @@ class PersonnelService
 
         try {
             $this->repository->update($id, $data);
-            $foto_path = $empleado['foto_path'];
+            $docPaths = [];
 
-            if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
-                $new_foto_path = $this->handlePhotoUpload($id, $fileData, true);
-                if ($new_foto_path) {
-                    $foto_path = $new_foto_path;
-                    $this->repository->updatePhotoPath($id, $foto_path);
-                }
+            if (!empty($files['foto']) && $files['foto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($id, $files['foto'], 'foto', ['jpg', 'jpeg', 'png'], true);
+                if ($p) $docPaths['foto_path'] = $p;
+            }
+            if (!empty($files['dpi_adjunto']) && $files['dpi_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($id, $files['dpi_adjunto'], 'dpi', ['jpg', 'jpeg', 'png', 'pdf'], true);
+                if ($p) $docPaths['dpi_adjunto_path'] = $p;
+            }
+            if (!empty($files['contrato_adjunto']) && $files['contrato_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($id, $files['contrato_adjunto'], 'contrato', ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'], true);
+                if ($p) $docPaths['contrato_adjunto_path'] = $p;
+            }
+            if (!empty($files['licencia_adjunto']) && $files['licencia_adjunto']['error'] === UPLOAD_ERR_OK) {
+                $p = $this->handleFileUpload($id, $files['licencia_adjunto'], 'licencia', ['jpg', 'jpeg', 'png', 'pdf'], true);
+                if ($p) $docPaths['licencia_adjunto_path'] = $p;
+            }
+
+            if (!empty($docPaths)) {
+                $this->repository->updateDocumentPaths($id, $docPaths);
             }
 
             $pdo->commit();
 
-            return [
-                'foto_path' => $foto_path
-            ];
+            return $docPaths;
         } catch (Exception $e) {
             $pdo->rollBack();
             throw $e;
@@ -105,33 +127,34 @@ class PersonnelService
         }
     }
 
-    private function handlePhotoUpload(int $id, array $fileData, bool $cleanOld = false): ?string
+    private function handleFileUpload(int $id, array $fileData, string $prefix = 'doc', array $allowedExts = ['jpg', 'jpeg', 'png', 'pdf'], bool $cleanPrefix = false): ?string
     {
         $uploadDir = __DIR__ . '/../../Uploads/Personal/' . $id . '/';
 
-        if ($cleanOld && is_dir($uploadDir)) {
-            foreach (glob($uploadDir . '*') as $file) {
-                if (is_file($file)) {
-                    unlink($file);
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        if ($cleanPrefix && is_dir($uploadDir)) {
+            foreach (glob($uploadDir . $prefix . '.*') as $oldFile) {
+                if (is_file($oldFile)) {
+                    unlink($oldFile);
                 }
             }
-        } elseif (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
         }
 
         $fileTmpPath   = $fileData['tmp_name'];
         $fileExtension = strtolower(pathinfo($fileData['name'], PATHINFO_EXTENSION));
 
-        $allowed = ['jpg', 'jpeg', 'png'];
-        if (in_array($fileExtension, $allowed)) {
-            $newFileName = 'foto.' . $fileExtension;
+        if (in_array($fileExtension, $allowedExts)) {
+            $newFileName = $prefix . '.' . $fileExtension;
             $destPath    = $uploadDir . $newFileName;
 
             if (move_uploaded_file($fileTmpPath, $destPath)) {
                 return 'Uploads/Personal/' . $id . '/' . $newFileName;
             }
         }
-        
+
         return null;
     }
 

@@ -11,13 +11,28 @@ class IncidentRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM employee_incidents LIKE 'adjunto_path'");
+            if ($stmt && $stmt->fetch() === false) {
+                $this->pdo->exec("ALTER TABLE `employee_incidents` ADD COLUMN `adjunto_path` VARCHAR(255) DEFAULT NULL AFTER `motivo`");
+            }
+        } catch (\Exception $e) {
+            error_log('Error en auto-migración incidents: ' . $e->getMessage());
+        }
     }
 
     public function findAllWithPersonnel(): array
     {
         $sql = "SELECT
                     i.*,
-                    CONCAT(p.nombres, ' ', p.apellidos) AS empleado_nombre
+                    CONCAT(p.nombres, ' ', p.apellidos) AS empleado_nombre,
+                    p.puesto AS empleado_puesto,
+                    p.foto_path AS empleado_foto
                 FROM employee_incidents i
                 JOIN personnel p ON p.id = i.personnel_id
                 ORDER BY i.fecha DESC, i.id DESC";
@@ -36,8 +51,8 @@ class IncidentRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO employee_incidents (personnel_id, texto, fecha, motivo)
-                VALUES (:personnel_id, :texto, :fecha, :motivo)";
+        $sql = "INSERT INTO employee_incidents (personnel_id, texto, fecha, motivo, adjunto_path)
+                VALUES (:personnel_id, :texto, :fecha, :motivo, :adjunto_path)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -45,9 +60,16 @@ class IncidentRepository
             'texto'        => $data['texto'],
             'fecha'        => $data['fecha'],
             'motivo'       => $data['motivo'],
+            'adjunto_path' => $data['adjunto_path'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function updateAdjuntoPath(int $id, ?string $path): void
+    {
+        $this->pdo->prepare("UPDATE employee_incidents SET adjunto_path = :path WHERE id = :id")
+             ->execute(['path' => $path, 'id' => $id]);
     }
 
     public function delete(int $id): void

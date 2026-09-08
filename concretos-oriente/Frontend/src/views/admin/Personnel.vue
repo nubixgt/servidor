@@ -5,19 +5,26 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
         <h2 class="text-4xl font-bold tracking-tight text-white mb-2">Gestión de RRHH</h2>
-        <p class="text-white/60">Gestiona tu fuerza laboral y registra nuevos empleados.</p>
+        <p class="text-white/60">Gestiona tu fuerza laboral, incidencias, pagos mensuales y expedientes de empleados.</p>
       </div>
       <div class="flex flex-wrap gap-3">
         <button
+          @click="openPayrollModal()"
+          class="glass-button text-white py-4 px-7 rounded-2xl font-bold flex items-center justify-center gap-2 border border-emerald-400/40 text-emerald-400 hover:bg-emerald-400/10 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-xl shadow-emerald-500/10"
+        >
+          <BanknotesIcon class="w-5 h-5" />
+          Espacio de Planilla
+        </button>
+        <button
           @click="openIncidentModal()"
-          class="glass-button text-white py-4 px-8 rounded-2xl font-bold flex items-center justify-center gap-2 border border-amber-400/30 text-amber-400 hover:bg-amber-400/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+          class="glass-button text-white py-4 px-7 rounded-2xl font-bold flex items-center justify-center gap-2 border border-amber-400/30 text-amber-400 hover:bg-amber-400/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
         >
           <ExclamationTriangleIcon class="w-5 h-5" />
           Incidencia Empleado
         </button>
         <button
           @click="openModal()"
-          class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+          class="glass-button-primary text-white py-4 px-8 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
         >
           <PlusIcon class="w-5 h-5" />
           Nuevo Empleado
@@ -30,7 +37,7 @@
       <div
         v-for="(stat, i) in stats"
         :key="i"
-        class="glass-card p-8 rounded-[32px] flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:scale-105 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000"
+        class="glass-card p-8 rounded-[32px] flex flex-col justify-between h-44 cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000"
       >
         <div class="flex items-center justify-between mb-4">
           <div :class="`p-3 rounded-2xl ${stat.bgColor} ${stat.color} border border-white/10 shadow-lg`">
@@ -47,14 +54,14 @@
       </div>
     </div>
 
-    <!-- Table Section -->
+    <!-- Table Section: Empleados -->
     <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
       <!-- Filter Bar -->
       <div class="p-8 border-b border-white/5 space-y-4">
         <div class="flex flex-wrap items-center gap-3">
           <!-- Search -->
           <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 flex-1 min-w-[200px]">
-            <svg class="w-4 h-4 text-white/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <MagnifyingGlassIcon class="w-4 h-4 text-white/30 flex-shrink-0" />
             <input
               v-model="searchQuery"
               type="text"
@@ -101,77 +108,93 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto px-4">
-        <table class="w-full min-w-[640px] text-left">
+      <!-- Table Content -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">
-              <th class="px-8 py-8">Nombre del Empleado</th>
-              <th class="px-8 py-8">DPI / NIT</th>
-              <th class="px-8 py-8">Puesto / Planilla</th>
-              <th class="px-8 py-8">Proyecto</th>
-              <th class="px-8 py-8">Salario Base</th>
-              <th class="px-8 py-8">Estado</th>
-              <th class="px-8 py-8 text-right">Acciones</th>
+            <tr class="border-b border-white/5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/40 bg-white/[0.02]">
+              <th class="px-8 py-6">Empleado</th>
+              <th class="px-8 py-6">Teléfono</th>
+              <th class="px-8 py-6">Tipo / Planilla</th>
+              <th class="px-8 py-6">Salario Base</th>
+              <th class="px-8 py-6">Estado</th>
+              <th class="px-8 py-6 text-right">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5">
             <tr v-if="loading">
-              <td colspan="7" class="px-8 py-8 text-center text-white/50">Cargando RRHH...</td>
+              <td colspan="6" class="px-8 py-12 text-center text-white/50">Cargando personal...</td>
             </tr>
             <tr v-else-if="filteredPersonnel.length === 0">
-              <td colspan="7" class="px-8 py-12 text-center">
+              <td colspan="6" class="px-8 py-12 text-center">
                 <p class="text-white/40 font-semibold">No se encontraron empleados</p>
-                <p v-if="activeFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
+                <p v-if="activeFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros de búsqueda</p>
               </td>
             </tr>
-            <tr v-for="emp in paginatedPersonnel" :key="emp.id" class="hover:bg-white/5 group transition-colors duration-500">
-              <!-- Nombre + foto + tipo badge -->
-              <td class="px-8 py-6">
+            <tr
+              v-for="emp in paginatedPersonnel"
+              :key="emp.id"
+              class="hover:bg-white/5 group transition-colors duration-300"
+            >
+              <!-- Empleado -->
+              <td class="px-8 py-5">
                 <div class="flex items-center gap-4">
                   <div
                     @click="emp.foto_path ? openImageFullScreen(getPhotoUrl(emp)) : null"
-                    :class="['w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden border border-white/10 shadow-lg transition-transform hover:scale-105 flex-shrink-0', emp.foto_path ? 'cursor-pointer' : '']"
+                    :class="['w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/10 shadow-inner', emp.foto_path ? 'cursor-pointer hover:scale-110 transition-transform' : '']"
                   >
-                    <img v-if="emp.foto_path" :src="getPhotoUrl(emp)" alt="Foto" class="w-full h-full object-cover" />
+                    <img v-if="emp.foto_path" :src="getPhotoUrl(emp)" alt="Avatar" class="w-full h-full object-cover" />
                     <span v-else class="font-bold text-primary text-sm">{{ getInitials(emp.nombres, emp.apellidos) }}</span>
                   </div>
                   <div>
-                    <p class="font-bold text-white">{{ emp.nombres }} {{ emp.apellidos }}</p>
-                    <span :class="`mt-1 inline-block px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider ${getTipoEmpleadoBadge(emp.tipo_empleado).color}`">
-                      {{ emp.tipo_empleado }}
-                    </span>
+                    <p class="text-base font-bold text-white group-hover:text-primary transition-colors flex items-center gap-2">
+                      {{ emp.nombres }} {{ emp.apellidos }}
+                      <span v-if="emp.dpi_adjunto_path || emp.contrato_adjunto_path || emp.licencia_adjunto_path" title="Tiene documentos adjuntos" class="inline-flex items-center text-indigo-400">
+                        <PaperClipIcon class="w-3.5 h-3.5" />
+                      </span>
+                    </p>
+                    <p class="text-xs text-white/40 font-medium">
+                      {{ emp.puesto }} · DPI: {{ emp.dpi }}
+                    </p>
                   </div>
                 </div>
               </td>
-              <!-- DPI / NIT -->
-              <td class="px-8 py-6">
-                <p class="text-sm font-semibold text-white/90">{{ emp.dpi }}</p>
-                <p class="text-xs text-white/40 mt-0.5">{{ emp.nit || 'Sin NIT' }}</p>
+
+              <!-- Teléfono -->
+              <td class="px-8 py-5">
+                <span class="text-sm font-semibold text-white/80">{{ emp.telefono || '—' }}</span>
               </td>
-              <!-- Puesto / Planilla -->
-              <td class="px-8 py-6">
-                <p class="text-sm font-semibold text-white/80">{{ emp.puesto }}</p>
-                <p class="text-xs text-white/40 mt-0.5">{{ emp.tipo_planilla }}</p>
+
+              <!-- Tipo / Planilla -->
+              <td class="px-8 py-5">
+                <div class="space-y-1">
+                  <span :class="`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border inline-block ${getTipoEmpleadoBadge(emp.tipo_empleado).color}`">
+                    {{ emp.tipo_empleado }}
+                  </span>
+                  <p class="text-xs text-white/40">{{ emp.tipo_planilla }}</p>
+                </div>
               </td>
-              <!-- Proyecto -->
-              <td class="px-8 py-6">
-                <span v-if="emp.proyecto_nombre" class="text-sm font-semibold text-primary">{{ emp.proyecto_nombre }}</span>
-                <span v-else class="text-xs text-white/30">Sin asignar</span>
+
+              <!-- Salario Base -->
+              <td class="px-8 py-5">
+                <p class="text-sm font-bold text-white">Q {{ formatCurrency(emp.salario_base) }}</p>
+                <p v-if="emp.tarifa_hora_extra" class="text-[11px] text-white/40">H.E: Q {{ formatCurrency(emp.tarifa_hora_extra) }}/hr</p>
               </td>
-              <!-- Salario -->
-              <td class="px-8 py-6 font-bold text-white">
-                Q {{ formatCurrency(emp.salario_base) }}
-              </td>
+
               <!-- Estado -->
-              <td class="px-8 py-6">
-                <span :class="`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${getEstadoBadge(emp).color}`">
+              <td class="px-8 py-5">
+                <span :class="`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest border ${getEstadoBadge(emp).color}`">
                   {{ getEstadoBadge(emp).label }}
                 </span>
               </td>
+
               <!-- Acciones -->
-              <td class="px-8 py-6">
-                <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                  <button @click="openViewModal(emp)" class="p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Visualizar">
+              <td class="px-8 py-5">
+                <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <button @click="openQuickPayroll(emp)" class="p-3 text-emerald-400/80 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-xl transition-all" title="Pagar Planilla">
+                    <BanknotesIcon class="w-5 h-5" />
+                  </button>
+                  <button @click="openViewModal(emp)" class="p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Ver detalles">
                     <EyeIcon class="w-5 h-5" />
                   </button>
                   <button @click="openEditModal(emp)" class="p-3 text-white/40 hover:text-primary hover:bg-white/10 rounded-xl transition-all" title="Editar">
@@ -187,13 +210,12 @@
         </table>
       </div>
 
-      <!-- Pagination Footer -->
+      <!-- Pagination -->
       <div class="px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
         <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
           Mostrando {{ Math.min((currentPage - 1) * PAGE_SIZE + 1, filteredPersonnel.length) }}–{{ Math.min(currentPage * PAGE_SIZE, filteredPersonnel.length) }}
           de {{ filteredPersonnel.length }} empleado{{ filteredPersonnel.length !== 1 ? 's' : '' }}
         </p>
-
         <div class="flex items-center gap-2">
           <button
             @click="currentPage--"
@@ -202,7 +224,6 @@
           >
             <ChevronLeftIcon class="w-5 h-5" />
           </button>
-
           <template v-for="page in totalPages" :key="page">
             <button
               v-if="totalPages <= 7 || Math.abs(page - currentPage) <= 1 || page === 1 || page === totalPages"
@@ -219,7 +240,6 @@
               class="text-white/30 px-1"
             >…</span>
           </template>
-
           <button
             @click="currentPage++"
             :disabled="currentPage === totalPages"
@@ -232,14 +252,361 @@
     </div>
 
     <!-- ============================================================
-         MODAL AÑADIR / EDITAR
+         SECCIÓN ESPACIO DE PLANILLA (HISTORIAL DE PAGOS MENSUALES)
+         ============================================================ -->
+    <div class="glass-card rounded-[40px] overflow-hidden border border-emerald-500/20 transition-all duration-500 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <!-- Header -->
+      <div class="p-8 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-emerald-950/10">
+        <div class="flex items-center gap-4">
+          <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+            <BanknotesIcon class="w-7 h-7" />
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+              Espacio de Planilla
+              <span class="text-xs px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-400 border border-emerald-400/30 font-bold uppercase tracking-wider">Pagos Mensuales</span>
+            </h3>
+            <p class="text-white/50 text-sm mt-0.5">Control y registro de pagos mensuales, cálculo automático de sueldo base, horas extra y viáticos.</p>
+          </div>
+        </div>
+        <button
+          @click="openPayrollModal()"
+          class="flex items-center justify-center gap-2 text-sm font-bold text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 px-6 py-3.5 rounded-2xl border border-emerald-400/40 transition-all shadow-lg shadow-emerald-500/10"
+        >
+          <PlusIcon class="w-5 h-5" />
+          Registrar Pago Mensual
+        </button>
+      </div>
+
+      <!-- Filtros de Planilla -->
+      <div class="p-6 border-b border-white/5 bg-white/[0.01]">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-2.5 flex-1 min-w-[200px]">
+            <MagnifyingGlassIcon class="w-4 h-4 text-white/30 flex-shrink-0" />
+            <input
+              v-model="payrollSearch"
+              type="text"
+              placeholder="Buscar pago por empleado o periodo..."
+              class="bg-transparent flex-1 text-sm text-white placeholder-white/30 focus:outline-none"
+            />
+          </div>
+
+          <select v-model="filterPayrollEmpleado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-white/80 focus:outline-none focus:border-emerald-400/50 transition-all appearance-none w-full md:w-auto md:min-w-[180px]">
+            <option value="">Todos los empleados</option>
+            <option v-for="emp in personnel" :key="emp.id" :value="String(emp.id)">
+              {{ emp.nombres }} {{ emp.apellidos }}
+            </option>
+          </select>
+
+          <button
+            v-if="payrollSearch || filterPayrollEmpleado"
+            @click="payrollSearch = ''; filterPayrollEmpleado = ''"
+            class="flex items-center gap-1.5 text-white/50 hover:text-white text-xs font-bold px-3 py-2.5 rounded-xl hover:bg-white/5 border border-white/10 transition-all"
+          >
+            <XMarkIcon class="w-4 h-4" />
+            Limpiar
+          </button>
+
+          <span class="ml-auto text-xs font-bold text-emerald-400/70 uppercase tracking-widest">
+            {{ filteredPayrollPayments.length }} pago{{ filteredPayrollPayments.length !== 1 ? 's' : '' }} registrado{{ filteredPayrollPayments.length !== 1 ? 's' : '' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tabla de Pagos de Planilla -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-white/5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/40 bg-white/[0.02]">
+              <th class="px-8 py-5">Colaborador</th>
+              <th class="px-6 py-5">Periodo / Fecha</th>
+              <th class="px-6 py-5 text-center">Días Trab.</th>
+              <th class="px-6 py-5">Salario Proporcional</th>
+              <th class="px-6 py-5">Horas Extra</th>
+              <th class="px-6 py-5">Viáticos</th>
+              <th class="px-8 py-5 text-right font-black text-emerald-400">Total a Pagar</th>
+              <th class="px-6 py-5 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr v-if="loadingPayroll">
+              <td colspan="8" class="px-8 py-10 text-center text-white/50">Cargando registros de planilla...</td>
+            </tr>
+            <tr v-else-if="filteredPayrollPayments.length === 0">
+              <td colspan="8" class="px-8 py-12 text-center">
+                <p class="text-white/40 font-semibold">Sin pagos de planilla registrados</p>
+                <p class="text-white/25 text-sm mt-1">Haz clic en "Registrar Pago Mensual" para crear el primero.</p>
+              </td>
+            </tr>
+            <tr
+              v-for="p in paginatedPayrollPayments"
+              :key="p.id"
+              class="hover:bg-white/5 group transition-colors duration-300"
+            >
+              <td class="px-8 py-5">
+                <p class="text-sm font-bold text-white">{{ p.empleado_nombre }}</p>
+                <p class="text-xs text-white/40">{{ p.empleado_puesto || 'Colaborador' }} · DPI: {{ p.empleado_dpi || '—' }}</p>
+              </td>
+              <td class="px-6 py-5">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/5 border border-white/10 text-white/90 inline-block mb-1">
+                  {{ p.periodo }}
+                </span>
+                <p class="text-xs text-white/40">{{ formatDate(p.fecha_pago) }}</p>
+              </td>
+              <td class="px-6 py-5 text-center">
+                <span class="text-sm font-bold text-white/90">{{ p.dias_trabajados }}</span>
+                <span class="text-[10px] text-white/40 block">días</span>
+              </td>
+              <td class="px-6 py-5">
+                <p class="text-sm font-semibold text-white">Q {{ formatCurrency(p.salario_base_calculado) }}</p>
+                <p class="text-[10px] text-white/40">Base: Q {{ formatCurrency(p.salario_base) }}</p>
+              </td>
+              <td class="px-6 py-5">
+                <div v-if="parseFloat(p.horas_extras) > 0">
+                  <p class="text-sm font-semibold text-amber-400">Q {{ formatCurrency(p.total_horas_extras) }}</p>
+                  <p class="text-[10px] text-white/40">{{ p.horas_extras }} hrs × Q {{ formatCurrency(p.tarifa_hora_extra) }}</p>
+                </div>
+                <span v-else class="text-xs text-white/30">—</span>
+              </td>
+              <td class="px-6 py-5">
+                <div v-if="parseFloat(p.monto_viaticos) > 0">
+                  <p class="text-sm font-semibold text-sky-400">Q {{ formatCurrency(p.monto_viaticos) }}</p>
+                  <p v-if="p.observaciones_viaticos" class="text-[10px] text-white/40 truncate max-w-[120px]" :title="p.observaciones_viaticos">
+                    {{ p.observaciones_viaticos }}
+                  </p>
+                </div>
+                <span v-else class="text-xs text-white/30">—</span>
+              </td>
+              <td class="px-8 py-5 text-right">
+                <span class="text-base font-black text-emerald-400 tracking-tight">
+                  Q {{ formatCurrency(p.total_pagar) }}
+                </span>
+              </td>
+              <td class="px-6 py-5 text-right">
+                <div class="flex justify-end gap-1">
+                  <button
+                    @click="openReceiptModal(p)"
+                    class="p-2.5 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                    title="Ver Boleta de Pago"
+                  >
+                    <DocumentTextIcon class="w-5 h-5 text-emerald-400" />
+                  </button>
+                  <button
+                    @click="deletePayrollPayment(p.id)"
+                    class="p-2.5 text-white/40 hover:text-rose-400 hover:bg-white/10 rounded-xl transition-all"
+                    title="Eliminar Pago"
+                  >
+                    <TrashIcon class="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación Planilla -->
+      <div class="px-8 py-4 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
+        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
+          Mostrando {{ Math.min((payrollCurrentPage - 1) * PAYROLL_PAGE_SIZE + 1, filteredPayrollPayments.length) }}–{{ Math.min(payrollCurrentPage * PAYROLL_PAGE_SIZE, filteredPayrollPayments.length) }}
+          de {{ filteredPayrollPayments.length }} pago{{ filteredPayrollPayments.length !== 1 ? 's' : '' }}
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            @click="payrollCurrentPage--"
+            :disabled="payrollCurrentPage === 1"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeftIcon class="w-5 h-5" />
+          </button>
+          <template v-for="page in totalPayrollPages" :key="page">
+            <button
+              v-if="totalPayrollPages <= 7 || Math.abs(page - payrollCurrentPage) <= 1 || page === 1 || page === totalPayrollPages"
+              @click="payrollCurrentPage = page"
+              :class="[
+                'min-w-[36px] h-9 px-2 rounded-xl text-sm font-bold transition-all',
+                page === payrollCurrentPage
+                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                  : 'text-white/40 hover:text-white hover:bg-white/10'
+              ]"
+            >{{ page }}</button>
+          </template>
+          <button
+            @click="payrollCurrentPage++"
+            :disabled="payrollCurrentPage === totalPayrollPages"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRightIcon class="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         SECCIÓN INCIDENCIAS
+         ============================================================ -->
+    <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
+      <!-- Header -->
+      <div class="p-8 border-b border-white/5 flex items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-bold text-white">Incidencias de Empleados</h3>
+          <p class="text-white/40 text-sm mt-1">{{ filteredIncidents.length }} registro{{ filteredIncidents.length !== 1 ? 's' : '' }}</p>
+        </div>
+        <button
+          @click="openIncidentModal()"
+          class="flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 px-5 py-3 rounded-2xl hover:bg-amber-400/10 border border-amber-400/20 transition-all"
+        >
+          <PlusIcon class="w-4 h-4" />
+          Nueva Incidencia
+        </button>
+      </div>
+
+      <!-- Filtros incidencias -->
+      <div class="p-8 border-b border-white/5 space-y-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 flex-1 min-w-[200px]">
+            <MagnifyingGlassIcon class="w-4 h-4 text-white/30 flex-shrink-0" />
+            <input
+              v-model="incidentSearch"
+              type="text"
+              placeholder="Buscar por texto, motivo o empleado..."
+              class="bg-transparent flex-1 text-sm text-white placeholder-white/30 focus:outline-none"
+            />
+          </div>
+
+          <select v-model="filterIncidentEmpleado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/50 transition-all appearance-none w-full md:w-auto md:min-w-[180px]">
+            <option value="">Todos los empleados</option>
+            <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
+              {{ emp.nombres }} {{ emp.apellidos }}
+            </option>
+          </select>
+
+          <input
+            v-model="filterIncidentFecha"
+            type="date"
+            class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/50 transition-all w-full md:w-auto"
+          />
+
+          <button
+            v-if="activeIncidentFiltersCount > 0"
+            @click="resetIncidentFilters"
+            class="flex items-center gap-2 text-white/50 hover:text-white text-xs font-bold px-4 py-3 rounded-2xl hover:bg-white/5 border border-white/10 transition-all"
+          >
+            <XMarkIcon class="w-4 h-4" />
+            Limpiar ({{ activeIncidentFiltersCount }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla incidencias -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-white/5 text-[10px] font-extrabold uppercase tracking-[0.2em] text-white/40 bg-white/[0.02]">
+              <th class="px-8 py-6">Empleado</th>
+              <th class="px-8 py-6">Texto</th>
+              <th class="px-8 py-6">Fecha</th>
+              <th class="px-8 py-6">Motivo</th>
+              <th class="px-8 py-6 text-center">Adjunto</th>
+              <th class="px-8 py-6 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr v-if="loadingIncidents">
+              <td colspan="6" class="px-8 py-8 text-center text-white/50">Cargando incidencias...</td>
+            </tr>
+            <tr v-else-if="filteredIncidents.length === 0">
+              <td colspan="6" class="px-8 py-12 text-center">
+                <p class="text-white/40 font-semibold">Sin incidencias registradas</p>
+                <p v-if="activeIncidentFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
+              </td>
+            </tr>
+            <tr v-for="inc in paginatedIncidents" :key="inc.id" class="hover:bg-white/5 group transition-colors duration-300">
+              <td class="px-8 py-5">
+                <p class="text-sm font-bold text-white">{{ inc.empleado_nombre }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <p class="text-sm text-white/80">{{ inc.texto }}</p>
+              </td>
+              <td class="px-8 py-5">
+                <span class="text-sm font-semibold text-amber-400">{{ formatDate(inc.fecha) }}</span>
+              </td>
+              <td class="px-8 py-5 max-w-xs">
+                <p class="text-sm text-white/60 line-clamp-2">{{ inc.motivo }}</p>
+              </td>
+              <td class="px-8 py-5 text-center">
+                <a
+                  v-if="inc.adjunto_path"
+                  :href="getDocumentUrl(inc.adjunto_path)"
+                  target="_blank"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-bold hover:bg-amber-400/20 transition-all"
+                  title="Ver documento adjunto"
+                >
+                  <PaperClipIcon class="w-3.5 h-3.5" />
+                  Ver Adjunto
+                </a>
+                <span v-else class="text-xs text-white/20">—</span>
+              </td>
+              <td class="px-8 py-5">
+                <div class="flex justify-end opacity-0 group-hover:opacity-100 transition-all">
+                  <button @click="deleteIncident(inc.id)" class="p-3 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
+                    <TrashIcon class="w-5 h-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación incidencias -->
+      <div class="px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
+        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
+          Mostrando {{ Math.min((incidentCurrentPage - 1) * INCIDENT_PAGE_SIZE + 1, filteredIncidents.length) }}–{{ Math.min(incidentCurrentPage * INCIDENT_PAGE_SIZE, filteredIncidents.length) }}
+          de {{ filteredIncidents.length }} incidencia{{ filteredIncidents.length !== 1 ? 's' : '' }}
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            @click="incidentCurrentPage--"
+            :disabled="incidentCurrentPage === 1"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronLeftIcon class="w-5 h-5" />
+          </button>
+          <template v-for="page in totalIncidentPages" :key="page">
+            <button
+              v-if="totalIncidentPages <= 7 || Math.abs(page - incidentCurrentPage) <= 1 || page === 1 || page === totalIncidentPages"
+              @click="incidentCurrentPage = page"
+              :class="[
+                'min-w-[36px] h-9 px-2 rounded-xl text-sm font-bold transition-all',
+                page === incidentCurrentPage
+                  ? 'bg-amber-400/80 text-white shadow-lg shadow-amber-400/20'
+                  : 'text-white/40 hover:text-white hover:bg-white/10'
+              ]"
+            >{{ page }}</button>
+          </template>
+          <button
+            @click="incidentCurrentPage++"
+            :disabled="incidentCurrentPage === totalIncidentPages"
+            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          >
+            <ChevronRightIcon class="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL CREAR / EDITAR EMPLEADO
          ============================================================ -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeModal"></div>
 
-      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
-          <h3 class="text-2xl font-bold text-white">{{ isEditing ? 'Editar Empleado' : 'Nuevo Empleado' }}</h3>
+          <h3 class="text-2xl font-bold text-white">
+            {{ isEditing ? 'Editar Empleado' : 'Nuevo Empleado' }}
+          </h3>
           <button @click="closeModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
             <XMarkIcon class="w-6 h-6" />
           </button>
@@ -247,70 +614,49 @@
 
         <form @submit.prevent="submitForm" class="space-y-8">
 
-          <!-- SECCIÓN 1: Información Personal -->
+          <!-- SECCIÓN 1: Datos Personales -->
           <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Información Personal</p>
+            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Datos Personales</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-              <!-- Tipo de Puesto -->
+              <!-- DPI + Botón RENAP -->
               <div class="space-y-2 md:col-span-2">
                 <div class="flex items-center justify-between">
-                  <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Puesto <span class="text-tertiary">*</span></label>
-                  <button
-                    type="button"
-                    @click="addNuevoPuesto"
-                    class="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
-                    title="Agregar nuevo tipo de puesto"
-                  >
-                    <PlusIcon class="w-4 h-4" />
-                    Nuevo puesto
-                  </button>
-                </div>
-                <select v-model="formData.tipo_empleado" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
-                  <option value="" disabled>Seleccionar...</option>
-                  <option v-for="p in puestos" :key="p.id" :value="p.nombre">{{ p.nombre }}</option>
-                </select>
-              </div>
-
-              <!-- DPI (Movido antes de Nombres y Apellidos) -->
-              <div class="space-y-2 md:col-span-2">
-                <div class="flex items-center justify-between">
-                  <label class="text-xs font-bold text-white/50 uppercase tracking-wider">DPI (13 dígitos) <span class="text-tertiary">*</span></label>
-                  <span v-if="loadingRenap" class="text-xs font-semibold text-primary flex items-center gap-1.5 animate-pulse">
-                    <svg class="animate-spin h-3.5 w-3.5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    Consultando RENAP...
-                  </span>
-                  <span v-else-if="renapSuccess" class="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                    <CheckCircleIcon class="w-3.5 h-3.5" />
-                    Autocompletado con RENAP
+                  <label class="text-xs font-bold text-white/50 uppercase tracking-wider">
+                    DPI (CUI) <span class="text-tertiary">*</span>
+                    <span class="text-white/30 normal-case font-normal ml-2">(13 dígitos - Autocompleta datos con RENAP)</span>
+                  </label>
+                  <span v-if="renapSuccess" class="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                    <CheckCircleIcon class="w-4 h-4" /> Datos de RENAP cargados
                   </span>
                 </div>
-                <div class="relative flex items-center">
-                  <input
-                    v-model="formData.dpi"
-                    @input="onDpiInput"
-                    type="text"
-                    required
-                    placeholder="0000 00000 0000"
-                    maxlength="15"
-                    class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all pr-28 font-mono tracking-wider"
-                  />
+                <div class="flex gap-2">
+                  <div class="relative flex-1">
+                    <input
+                      v-model="formData.dpi"
+                      @input="onDpiInput"
+                      type="text"
+                      required
+                      placeholder="0000 00000 0000"
+                      maxlength="15"
+                      class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-mono tracking-wider text-base"
+                    />
+                    <div v-if="loadingRenap" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-primary text-xs font-bold">
+                      <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Consultando RENAP...
+                    </div>
+                  </div>
                   <button
                     type="button"
                     @click="consultarRenap(true)"
                     :disabled="loadingRenap || getDpiClean().length !== 13"
-                    class="absolute right-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
-                    title="Consultar datos en RENAP"
+                    class="px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all whitespace-nowrap"
                   >
-                    <svg v-if="loadingRenap" class="animate-spin h-3 w-3 text-primary" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <MagnifyingGlassIcon v-else class="w-3.5 h-3.5" />
-                    <span>Consultar</span>
+                    <MagnifyingGlassIcon class="w-4 h-4" />
+                    Consultar RENAP
                   </button>
                 </div>
               </div>
@@ -325,8 +671,23 @@
               <!-- Apellidos -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Apellidos <span class="text-tertiary">*</span></label>
-                <input v-model="formData.apellidos" type="text" required placeholder="Ej. Pérez García"
+                <input v-model="formData.apellidos" type="text" required placeholder="Ej. Pérez Gómez"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Tipo de empleado -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Puesto <span class="text-tertiary">*</span></label>
+                <div class="flex gap-2">
+                  <select v-model="formData.tipo_empleado" required class="flex-1 bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all appearance-none">
+                    <option value="" disabled>Seleccionar tipo...</option>
+                    <option v-for="p in puestos" :key="p.id" :value="p.nombre">{{ p.nombre }}</option>
+                  </select>
+                  <button type="button" @click="addNuevoPuesto" title="Agregar nuevo tipo de puesto"
+                    class="px-4 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white transition-all flex items-center justify-center flex-shrink-0">
+                    <PlusIcon class="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               <!-- NIT -->
@@ -380,7 +741,7 @@
               <!-- Cantidad de Hijos -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Cantidad de Hijos</label>
-                <input v-model="formData.cantidad_hijos" type="number" min="0" placeholder="0"
+                <input v-model="formData.cantidad_hijos" @input="onCantidadHijosChange" type="number" min="0" placeholder="0"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
@@ -394,6 +755,30 @@
                   <option value="Diversificado">Diversificado</option>
                   <option value="Universidad">Universidad</option>
                 </select>
+              </div>
+
+              <!-- Espacio dinámico para Edades de Hijos -->
+              <div v-if="parsedCantidadHijos > 0" class="space-y-3 md:col-span-2 bg-white/5 p-5 rounded-3xl border border-white/10">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-2">
+                    <UsersIcon class="w-4 h-4" />
+                    Edades de los Hijos ({{ parsedCantidadHijos }} hijo{{ parsedCantidadHijos !== 1 ? 's' : '' }})
+                  </label>
+                  <span class="text-[11px] text-white/40">Ingresa la edad en años de cada uno</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  <div v-for="idx in parsedCantidadHijos" :key="idx" class="space-y-1">
+                    <span class="text-[10px] text-white/50 font-bold uppercase tracking-wider">Hijo #{{ idx }}</span>
+                    <input
+                      v-model="formData.edades_hijos_list[idx - 1]"
+                      type="number"
+                      min="0"
+                      max="100"
+                      placeholder="Edad (años)"
+                      class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                    />
+                  </div>
+                </div>
               </div>
 
               <!-- Dirección -->
@@ -535,16 +920,48 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 5: Fotografía -->
+          <!-- SECCIÓN 5: Fotografía y Documentos Adjuntos -->
           <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Fotografía</p>
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">
-                Foto del Empleado (PNG, JPG, JPEG)
-                <span v-if="isEditing" class="text-primary normal-case ml-1">— Sube una nueva foto para reemplazar la actual</span>
-              </label>
-              <input @change="handleFileChange" type="file" accept=".png,.jpg,.jpeg"
-                class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Fotografía y Documentos Adjuntos</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Foto -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">
+                  Foto del Empleado (PNG, JPG, JPEG)
+                </label>
+                <input @change="handleFileChange" type="file" accept=".png,.jpg,.jpeg"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+              </div>
+
+              <!-- Adjuntar DPI -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                  <IdentificationIcon class="w-4 h-4 text-indigo-400" />
+                  Adjuntar DPI (PDF / Imagen)
+                </label>
+                <input @change="handleDpiFileChange" type="file" accept=".pdf,.png,.jpg,.jpeg"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+              </div>
+
+              <!-- Adjuntar Contrato -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                  <DocumentTextIcon class="w-4 h-4 text-emerald-400" />
+                  Adjuntar Contrato (PDF / Doc / Imagen)
+                </label>
+                <input @change="handleContratoFileChange" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-emerald-500/20 file:text-emerald-400 hover:file:bg-emerald-500/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+              </div>
+
+              <!-- Adjuntar Licencia -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                  <DocumentCheckIcon class="w-4 h-4 text-amber-400" />
+                  Adjuntar Licencia (PDF / Imagen)
+                </label>
+                <input @change="handleLicenciaFileChange" type="file" accept=".pdf,.png,.jpg,.jpeg"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-500/20 file:text-amber-400 hover:file:bg-amber-500/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+              </div>
             </div>
           </div>
 
@@ -563,14 +980,17 @@
     </div>
 
     <!-- ============================================================
-         MODAL VISUALIZAR
+         MODAL VISUALIZAR EMPLEADO
          ============================================================ -->
     <div v-if="showViewModal && selectedEmp" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewModal"></div>
 
-      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[32px] p-6 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
-          <h3 class="text-2xl font-bold text-white">Detalles del Empleado</h3>
+          <div>
+            <h3 class="text-2xl font-bold text-white">Detalles del Empleado</h3>
+            <p class="text-white/40 text-xs mt-0.5">Expediente completo y documentos adjuntos</p>
+          </div>
           <button @click="closeViewModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
             <XMarkIcon class="w-6 h-6" />
           </button>
@@ -644,6 +1064,17 @@
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Cantidad de Hijos</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.cantidad_hijos !== null && selectedEmp.cantidad_hijos !== undefined ? selectedEmp.cantidad_hijos : 'No registrado' }}</p>
             </div>
+
+            <!-- Edades de Hijos si aplica -->
+            <div v-if="selectedEmp.edades_hijos || (selectedEmp.cantidad_hijos > 0)" class="sm:col-span-2 bg-white/5 p-3.5 rounded-2xl border border-white/5">
+              <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                <UsersIcon class="w-3.5 h-3.5" /> Edades de los Hijos
+              </p>
+              <p class="text-sm font-semibold text-white/90">
+                {{ formatEdadesHijos(selectedEmp.edades_hijos) }}
+              </p>
+            </div>
+
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Nivel Académico</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.nivel_academico || 'No registrado' }}</p>
@@ -674,7 +1105,7 @@
             </div>
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Tarifa Hora Extra</p>
-              <p class="text-xl font-bold text-white">{{ selectedEmp.tarifa_hora_extra ? 'Q ' + formatCurrency(selectedEmp.tarifa_hora_extra) : 'No aplica' }}</p>
+              <p class="text-xl font-bold text-white">{{ selectedEmp.tarifa_hora_extra ? 'Q ' + formatCurrency(selectedEmp.tarifa_hora_extra) + '/hr' : 'No aplica' }}</p>
             </div>
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Fecha de Contratación</p>
@@ -684,6 +1115,64 @@
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Fecha de Baja</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.fecha_baja ? formatDate(selectedEmp.fecha_baja) : 'Activo' }}</p>
             </div>
+
+            <!-- DOCUMENTOS ADJUNTOS -->
+            <div class="sm:col-span-2 border-t border-white/5 pt-4">
+              <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em] mb-3">Documentos Adjuntos</p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- DPI -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">DPI Escaneado</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedEmp.dpi_adjunto_path ? 'Disponible' : 'No adjunto' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedEmp.dpi_adjunto_path"
+                    :href="getDocumentUrl(selectedEmp.dpi_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-400/30 text-xs font-bold hover:bg-indigo-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-4 h-4" />
+                    Abrir DPI
+                  </a>
+                </div>
+
+                <!-- Contrato -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Contrato Laboral</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedEmp.contrato_adjunto_path ? 'Disponible' : 'No adjunto' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedEmp.contrato_adjunto_path"
+                    :href="getDocumentUrl(selectedEmp.contrato_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 text-xs font-bold hover:bg-emerald-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-4 h-4" />
+                    Abrir Contrato
+                  </a>
+                </div>
+
+                <!-- Licencia -->
+                <div class="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col justify-between gap-2">
+                  <div>
+                    <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Licencia de Conducir</span>
+                    <span class="text-xs font-semibold text-white/80">{{ selectedEmp.licencia_adjunto_path ? 'Disponible' : 'No adjunto' }}</span>
+                  </div>
+                  <a
+                    v-if="selectedEmp.licencia_adjunto_path"
+                    :href="getDocumentUrl(selectedEmp.licencia_adjunto_path)"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-400/30 text-xs font-bold hover:bg-amber-500/30 transition-all"
+                  >
+                    <ArrowTopRightOnSquareIcon class="w-4 h-4" />
+                    Abrir Licencia
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div v-if="selectedEmp.direccion" class="sm:col-span-2">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Dirección</p>
               <p class="text-sm font-semibold text-white/80">{{ selectedEmp.direccion }}</p>
@@ -706,7 +1195,7 @@
               </div>
             </template>
 
-            <!-- Datos bancarios (solo si existen) -->
+            <!-- Datos bancarios -->
             <template v-if="selectedEmp.numero_cuenta || selectedEmp.nombre_banco">
               <div class="sm:col-span-2 border-t border-white/5 pt-4">
                 <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em] mb-3">Datos Bancarios</p>
@@ -722,160 +1211,379 @@
                 </div>
               </div>
             </template>
-
-            <div class="sm:col-span-2 border-t border-white/5 pt-3">
-              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Registrado el</p>
-              <p class="text-sm font-semibold text-white/50">{{ new Date(selectedEmp.created_at).toLocaleString('es-GT') }}</p>
-            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ============================================================
-         SECCIÓN INCIDENCIAS
+         MODAL ESPACIO DE PLANILLA (PAGO MENSUAL)
          ============================================================ -->
-    <div class="glass-card rounded-[40px] overflow-hidden border border-white/10 transition-all duration-500" data-aos="zoom-in-up" data-aos-duration="1000">
-      <!-- Header -->
-      <div class="p-8 border-b border-white/5 flex items-center justify-between gap-4">
-        <div>
-          <h3 class="text-xl font-bold text-white">Incidencias de Empleados</h3>
-          <p class="text-white/40 text-sm mt-1">{{ filteredIncidents.length }} registro{{ filteredIncidents.length !== 1 ? 's' : '' }}</p>
-        </div>
-        <button
-          @click="openIncidentModal()"
-          class="flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 px-5 py-3 rounded-2xl hover:bg-amber-400/10 border border-amber-400/20 transition-all"
-        >
-          <PlusIcon class="w-4 h-4" />
-          Nueva Incidencia
-        </button>
-      </div>
+    <div v-if="showPayrollModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closePayrollModal"></div>
 
-      <!-- Filtros -->
-      <div class="px-8 pt-6 pb-4 border-b border-white/5">
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Buscador -->
-          <div class="flex items-center gap-2 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 flex-1 min-w-[200px]">
-            <svg class="w-4 h-4 text-white/30 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <div class="glass-card w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[32px] p-6 md:p-8 relative z-10 border border-emerald-500/30 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+              <BanknotesIcon class="w-6 h-6" />
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-white">Espacio de Planilla</h3>
+              <p class="text-white/50 text-xs">Registrar pago mensual con cálculo automático</p>
+            </div>
+          </div>
+          <button @click="closePayrollModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+
+        <form @submit.prevent="submitPayrollPayment" class="space-y-6">
+
+          <!-- 1. Escoger Colaborador -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/60 uppercase tracking-wider flex items-center justify-between">
+              <span>1. Escoger Colaborador <span class="text-tertiary">*</span></span>
+              <span v-if="selectedPayrollEmp" class="text-emerald-400 font-bold normal-case text-xs">
+                Puesto: {{ selectedPayrollEmp.puesto }} · Tipo: {{ selectedPayrollEmp.tipo_planilla }}
+              </span>
+            </label>
+            <select
+              v-model="payrollForm.personnel_id"
+              @change="onPayrollPersonnelChange"
+              required
+              class="w-full bg-black/30 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-emerald-400/60 focus:ring-1 focus:ring-emerald-400/30 transition-all appearance-none text-base"
+            >
+              <option value="" disabled>Seleccione un colaborador...</option>
+              <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
+                {{ emp.nombres }} {{ emp.apellidos }} — [{{ emp.puesto }}] — Salario Base: Q {{ formatCurrency(emp.salario_base) }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Quick badges for collaborator config -->
+          <div v-if="selectedPayrollEmp" class="grid grid-cols-3 gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+            <div>
+              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Salario Base Mensual</span>
+              <span class="text-sm font-bold text-white">Q {{ formatCurrency(selectedPayrollEmp.salario_base) }}</span>
+            </div>
+            <div>
+              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Tarifa Hora Extra</span>
+              <span class="text-sm font-bold text-amber-400">
+                {{ selectedPayrollEmp.tarifa_hora_extra ? 'Q ' + formatCurrency(selectedPayrollEmp.tarifa_hora_extra) + '/hr' : 'No definida' }}
+              </span>
+            </div>
+            <div>
+              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Diario Viáticos</span>
+              <span class="text-sm font-bold text-sky-400">
+                {{ selectedPayrollEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedPayrollEmp.diario_viaticos) : 'No definido' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- 2. Periodo y Fecha de Pago -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-white/60 uppercase tracking-wider">Periodo (Mes / Año) <span class="text-tertiary">*</span></label>
+              <input
+                v-model="payrollForm.periodo"
+                type="text"
+                required
+                placeholder="Ej. Septiembre 2026 o 2026-09"
+                class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-emerald-400/50 transition-all"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-white/60 uppercase tracking-wider">Fecha de Pago <span class="text-tertiary">*</span></label>
+              <input
+                v-model="payrollForm.fecha_pago"
+                type="date"
+                required
+                class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-400/50 transition-all"
+              />
+            </div>
+          </div>
+
+          <!-- 3. Días Trabajados (Cálculo automático salario proporcional) -->
+          <div class="space-y-2 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-white/70 uppercase tracking-wider">
+                2. Días Trabajados en el Mes <span class="text-tertiary">*</span>
+              </label>
+              <span class="text-xs text-white/40">Base mes: 30 días</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <input
+                v-model.number="payrollForm.dias_trabajados"
+                type="number"
+                min="1"
+                max="31"
+                required
+                class="w-32 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white font-bold text-lg focus:outline-none focus:border-emerald-400/50 text-center"
+              />
+              <div class="flex-1 text-sm text-white/70">
+                Salario proporcional calculado:
+                <span class="text-emerald-400 font-bold block text-base">
+                  Q {{ formatCurrency(payrollCalculations.salarioBaseCalculado) }}
+                </span>
+                <span class="text-[11px] text-white/40">
+                  (Q {{ formatCurrency(payrollCalculations.salarioBase) }} / 30) × {{ payrollForm.dias_trabajados || 0 }} días
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Horas Extra (Tiene Horas Extra -> Sí -> Cantidad de Horas) -->
+          <div class="space-y-3 bg-amber-950/15 p-4 rounded-2xl border border-amber-400/20">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                <ClockIcon class="w-4 h-4" />
+                3. ¿Tiene Horas Extras?
+              </label>
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-white/80">
+                  <input type="radio" v-model="payrollForm.tiene_horas_extras" :value="true" class="accent-amber-400 w-4 h-4" />
+                  Sí
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-white/80">
+                  <input type="radio" v-model="payrollForm.tiene_horas_extras" :value="false" class="accent-amber-400 w-4 h-4" />
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div v-if="payrollForm.tiene_horas_extras" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-amber-400/10">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-white/60 uppercase">Cantidad de Horas Extras</label>
+                <input
+                  v-model.number="payrollForm.horas_extras"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  placeholder="0"
+                  class="w-full bg-black/30 border border-amber-400/30 rounded-xl px-4 py-2.5 text-white font-bold focus:outline-none focus:border-amber-400/60"
+                />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-white/60 uppercase">Total Horas Extras</label>
+                <div class="px-4 py-2.5 rounded-xl bg-amber-400/10 border border-amber-400/20 text-amber-400 font-bold">
+                  Q {{ formatCurrency(payrollCalculations.totalHorasExtras) }}
+                  <span class="text-[10px] text-white/40 block font-normal">
+                    {{ payrollForm.horas_extras || 0 }} hrs × Q {{ formatCurrency(payrollCalculations.tarifaHoraExtra) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Viáticos (Tiene Viáticos -> Sí -> Cantidad Brindada + Observaciones) -->
+          <div class="space-y-3 bg-sky-950/15 p-4 rounded-2xl border border-sky-400/20">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                <CreditCardIcon class="w-4 h-4" />
+                4. ¿Viáticos?
+              </label>
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-white/80">
+                  <input type="radio" v-model="payrollForm.tiene_viaticos" :value="true" class="accent-sky-400 w-4 h-4" />
+                  Sí
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-white/80">
+                  <input type="radio" v-model="payrollForm.tiene_viaticos" :value="false" class="accent-sky-400 w-4 h-4" />
+                  No
+                </label>
+              </div>
+            </div>
+
+            <div v-if="payrollForm.tiene_viaticos" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-sky-400/10">
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-white/60 uppercase">Cantidad Brindada (GTQ)</label>
+                <input
+                  v-model.number="payrollForm.monto_viaticos"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  class="w-full bg-black/30 border border-sky-400/30 rounded-xl px-4 py-2.5 text-white font-bold focus:outline-none focus:border-sky-400/60"
+                />
+              </div>
+              <div class="space-y-1">
+                <label class="text-[11px] font-bold text-white/60 uppercase">Observaciones Viáticos</label>
+                <input
+                  v-model="payrollForm.observaciones_viaticos"
+                  type="text"
+                  placeholder="Ej. Combustible y alimentación proyecto X"
+                  class="w-full bg-black/30 border border-sky-400/30 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-sky-400/60"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Observaciones Generales -->
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Observaciones Generales</label>
             <input
-              v-model="incidentSearch"
+              v-model="payrollForm.observaciones"
               type="text"
-              placeholder="Buscar en texto o motivo..."
-              class="bg-transparent flex-1 text-sm text-white placeholder-white/30 focus:outline-none"
+              placeholder="Opcional"
+              class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-primary/50 transition-all"
             />
           </div>
 
-          <!-- Filtro empleado -->
-          <select v-model="filterIncidentEmpleado" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/30 transition-all appearance-none w-full md:w-auto md:min-w-[200px]">
-            <option value="">Todos los empleados</option>
-            <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
-              {{ emp.nombres }} {{ emp.apellidos }}
-            </option>
-          </select>
+          <!-- ============================================================
+               TOTAL A PAGAR EN EL MES (Banner destacado)
+               ============================================================ -->
+          <div class="p-6 rounded-3xl bg-gradient-to-br from-emerald-950/60 via-emerald-900/30 to-black/40 border-2 border-emerald-400/40 shadow-2xl space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-[0.2em] text-emerald-400 flex items-center gap-2">
+                <CalculatorIcon class="w-5 h-5" />
+                # Total a Pagar en el Mes
+              </span>
+              <span class="text-3xl font-black text-white tracking-tight">
+                Q {{ formatCurrency(payrollCalculations.totalPagar) }}
+              </span>
+            </div>
 
-          <!-- Filtro fecha -->
-          <input
-            v-model="filterIncidentFecha"
-            type="date"
-            class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 focus:outline-none focus:border-amber-400/30 transition-all w-full md:w-auto"
-          />
+            <!-- Desglose -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-emerald-400/20 text-xs">
+              <div>
+                <span class="text-white/40 block">Salario Base:</span>
+                <span class="font-bold text-white">Q {{ formatCurrency(payrollCalculations.salarioBaseCalculado) }}</span>
+              </div>
+              <div>
+                <span class="text-white/40 block">Horas Extras:</span>
+                <span class="font-bold text-amber-400">+ Q {{ formatCurrency(payrollCalculations.totalHorasExtras) }}</span>
+              </div>
+              <div>
+                <span class="text-white/40 block">Viáticos:</span>
+                <span class="font-bold text-sky-400">+ Q {{ formatCurrency(payrollCalculations.montoViaticos) }}</span>
+              </div>
+            </div>
+          </div>
 
-          <!-- Limpiar -->
-          <button
-            v-if="activeIncidentFiltersCount > 0"
-            @click="resetIncidentFilters"
-            class="flex items-center gap-2 text-white/50 hover:text-white text-xs font-bold px-4 py-3 rounded-2xl hover:bg-white/5 border border-white/10 transition-all"
-          >
-            <XMarkIcon class="w-4 h-4" />
-            Limpiar ({{ activeIncidentFiltersCount }})
-          </button>
-        </div>
-      </div>
-
-      <!-- Tabla -->
-      <div class="overflow-x-auto px-4">
-        <table class="w-full min-w-[600px] text-left">
-          <thead>
-            <tr class="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">
-              <th class="px-8 py-6">Empleado</th>
-              <th class="px-8 py-6">Texto</th>
-              <th class="px-8 py-6">Fecha</th>
-              <th class="px-8 py-6">Motivo</th>
-              <th class="px-8 py-6 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-white/5">
-            <tr v-if="loadingIncidents">
-              <td colspan="5" class="px-8 py-8 text-center text-white/50">Cargando incidencias...</td>
-            </tr>
-            <tr v-else-if="filteredIncidents.length === 0">
-              <td colspan="5" class="px-8 py-12 text-center">
-                <p class="text-white/40 font-semibold">Sin incidencias registradas</p>
-                <p v-if="activeIncidentFiltersCount > 0" class="text-white/25 text-sm mt-1">Prueba ajustando los filtros</p>
-              </td>
-            </tr>
-            <tr v-for="inc in paginatedIncidents" :key="inc.id" class="hover:bg-white/5 group transition-colors duration-300">
-              <td class="px-8 py-5">
-                <p class="text-sm font-bold text-white">{{ inc.empleado_nombre }}</p>
-              </td>
-              <td class="px-8 py-5">
-                <p class="text-sm text-white/80">{{ inc.texto }}</p>
-              </td>
-              <td class="px-8 py-5">
-                <span class="text-sm font-semibold text-amber-400">{{ formatDate(inc.fecha) }}</span>
-              </td>
-              <td class="px-8 py-5 max-w-xs">
-                <p class="text-sm text-white/60 line-clamp-2">{{ inc.motivo }}</p>
-              </td>
-              <td class="px-8 py-5">
-                <div class="flex justify-end opacity-0 group-hover:opacity-100 transition-all">
-                  <button @click="deleteIncident(inc.id)" class="p-3 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
-                    <TrashIcon class="w-5 h-5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Paginación incidencias -->
-      <div class="px-8 py-5 flex flex-wrap items-center justify-between gap-4 border-t border-white/5">
-        <p class="text-xs font-bold text-white/30 tracking-widest uppercase">
-          Mostrando {{ Math.min((incidentCurrentPage - 1) * INCIDENT_PAGE_SIZE + 1, filteredIncidents.length) }}–{{ Math.min(incidentCurrentPage * INCIDENT_PAGE_SIZE, filteredIncidents.length) }}
-          de {{ filteredIncidents.length }} incidencia{{ filteredIncidents.length !== 1 ? 's' : '' }}
-        </p>
-        <div class="flex items-center gap-2">
-          <button
-            @click="incidentCurrentPage--"
-            :disabled="incidentCurrentPage === 1"
-            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-          >
-            <ChevronLeftIcon class="w-5 h-5" />
-          </button>
-          <template v-for="page in totalIncidentPages" :key="page">
+          <!-- Botones Formulario Planilla -->
+          <div class="pt-2 flex justify-end gap-4 border-t border-white/10">
+            <button type="button" @click="closePayrollModal" class="px-7 py-3.5 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">
+              Cancelar
+            </button>
             <button
-              v-if="totalIncidentPages <= 7 || Math.abs(page - incidentCurrentPage) <= 1 || page === 1 || page === totalIncidentPages"
-              @click="incidentCurrentPage = page"
-              :class="[
-                'min-w-[36px] h-9 px-2 rounded-xl text-sm font-bold transition-all',
-                page === incidentCurrentPage
-                  ? 'bg-amber-400/80 text-white shadow-lg shadow-amber-400/20'
-                  : 'text-white/40 hover:text-white hover:bg-white/10'
-              ]"
-            >{{ page }}</button>
-            <span
-              v-else-if="(page === incidentCurrentPage - 2 && page > 2) || (page === incidentCurrentPage + 2 && page < totalIncidentPages - 1)"
-              class="text-white/30 px-1"
-            >…</span>
-          </template>
-          <button
-            @click="incidentCurrentPage++"
-            :disabled="incidentCurrentPage === totalIncidentPages"
-            class="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-          >
-            <ChevronRightIcon class="w-5 h-5" />
-          </button>
+              type="submit"
+              :disabled="isSubmittingPayroll || !payrollForm.personnel_id"
+              class="glass-button text-white py-3.5 px-8 rounded-2xl font-bold flex items-center gap-2 bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 hover:bg-emerald-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-emerald-500/20"
+            >
+              <span v-if="isSubmittingPayroll">Guardando Pago...</span>
+              <span v-else>Guardar y Registrar Pago</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL BOLETA DE PAGO (IMPRIMIBLE)
+         ============================================================ -->
+    <div v-if="showReceiptModal && selectedReceipt" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="showReceiptModal = false"></div>
+
+      <div class="glass-card w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-[32px] p-6 md:p-8 relative z-10 border border-white/10 shadow-2xl" id="printable-receipt">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10 no-print">
+          <h3 class="text-xl font-bold text-white">Boleta de Pago de Planilla</h3>
+          <div class="flex items-center gap-2">
+            <button @click="printReceipt" class="px-4 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 text-xs font-bold hover:bg-emerald-500/30 transition-all flex items-center gap-1.5">
+              <PrinterIcon class="w-4 h-4" />
+              Imprimir Boleta
+            </button>
+            <button @click="showReceiptModal = false" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+              <XMarkIcon class="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <!-- Documento Boleta -->
+        <div class="bg-white/[0.03] p-6 rounded-2xl border border-white/10 space-y-6 text-white">
+          <!-- Cabecera de la boleta -->
+          <div class="text-center pb-4 border-b border-white/10 space-y-1">
+            <h4 class="text-xl font-black text-white uppercase tracking-wider">Concretos de Oriente</h4>
+            <p class="text-xs text-white/60">Comprobante de Pago Mensual de Planilla</p>
+            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mt-1">Periodo: {{ selectedReceipt.periodo }}</p>
+          </div>
+
+          <!-- Info Colaborador -->
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span class="text-white/40 uppercase block font-bold">Colaborador:</span>
+              <span class="text-sm font-bold text-white">{{ selectedReceipt.empleado_nombre }}</span>
+            </div>
+            <div>
+              <span class="text-white/40 uppercase block font-bold">DPI:</span>
+              <span class="text-sm font-semibold text-white/90">{{ selectedReceipt.empleado_dpi || '—' }}</span>
+            </div>
+            <div>
+              <span class="text-white/40 uppercase block font-bold">Puesto:</span>
+              <span class="text-sm font-semibold text-white/90">{{ selectedReceipt.empleado_puesto || '—' }}</span>
+            </div>
+            <div>
+              <span class="text-white/40 uppercase block font-bold">Fecha de Pago:</span>
+              <span class="text-sm font-semibold text-white/90">{{ formatDate(selectedReceipt.fecha_pago) }}</span>
+            </div>
+          </div>
+
+          <!-- Tabla de Conceptos -->
+          <div class="border border-white/10 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-white/5 border-b border-white/10 text-[10px] uppercase font-bold text-white/60 tracking-wider">
+                <tr>
+                  <th class="p-3">Concepto</th>
+                  <th class="p-3 text-center">Detalle / Días</th>
+                  <th class="p-3 text-right">Monto</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr>
+                  <td class="p-3 font-medium">Salario Base ({{ selectedReceipt.dias_trabajados }} días)</td>
+                  <td class="p-3 text-center text-white/60">Q {{ formatCurrency(selectedReceipt.salario_base) }} / mes</td>
+                  <td class="p-3 text-right font-bold text-white">Q {{ formatCurrency(selectedReceipt.salario_base_calculado) }}</td>
+                </tr>
+                <tr v-if="parseFloat(selectedReceipt.horas_extras) > 0">
+                  <td class="p-3 font-medium">Horas Extras</td>
+                  <td class="p-3 text-center text-white/60">{{ selectedReceipt.horas_extras }} hrs @ Q {{ formatCurrency(selectedReceipt.tarifa_hora_extra) }}</td>
+                  <td class="p-3 text-right font-bold text-amber-400">Q {{ formatCurrency(selectedReceipt.total_horas_extras) }}</td>
+                </tr>
+                <tr v-if="parseFloat(selectedReceipt.monto_viaticos) > 0">
+                  <td class="p-3 font-medium">
+                    Viáticos
+                    <span v-if="selectedReceipt.observaciones_viaticos" class="block text-[10px] text-white/40">({{ selectedReceipt.observaciones_viaticos }})</span>
+                  </td>
+                  <td class="p-3 text-center text-white/60">Asignación</td>
+                  <td class="p-3 text-right font-bold text-sky-400">Q {{ formatCurrency(selectedReceipt.monto_viaticos) }}</td>
+                </tr>
+                <tr class="bg-white/5 font-black text-sm">
+                  <td colspan="2" class="p-3 uppercase text-emerald-400">Total Liquidado a Pagar</td>
+                  <td class="p-3 text-right text-emerald-400 text-base">Q {{ formatCurrency(selectedReceipt.total_pagar) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Observaciones -->
+          <div v-if="selectedReceipt.observaciones" class="text-xs text-white/60">
+            <span class="font-bold text-white/80 uppercase tracking-wider block mb-0.5">Observaciones:</span>
+            <p>{{ selectedReceipt.observaciones }}</p>
+          </div>
+
+          <!-- Firmas -->
+          <div class="grid grid-cols-2 gap-8 pt-8 border-t border-white/10 text-center text-xs">
+            <div>
+              <div class="border-b border-white/30 h-10 mb-2"></div>
+              <p class="font-bold text-white/80">Firma del Colaborador</p>
+              <p class="text-[10px] text-white/40">{{ selectedReceipt.empleado_nombre }}</p>
+            </div>
+            <div>
+              <div class="border-b border-white/30 h-10 mb-2"></div>
+              <p class="font-bold text-white/80">Firma Autorizada</p>
+              <p class="text-[10px] text-white/40">Recursos Humanos</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -927,6 +1635,16 @@
               class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/30 transition-all resize-none"></textarea>
           </div>
 
+          <!-- Adjuntar Foto / Documento -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+              <PaperClipIcon class="w-4 h-4 text-amber-400" />
+              Adjuntar Foto o Documento (PDF, Imagen)
+            </label>
+            <input @change="handleIncidentFileChange" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+              class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-400/20 file:text-amber-400 hover:file:bg-amber-400/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+          </div>
+
           <div class="pt-2 flex justify-end gap-4 border-t border-white/5">
             <button type="button" @click="closeIncidentModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">
               Cancelar
@@ -961,7 +1679,10 @@ import {
   UsersIcon, CheckCircleIcon, BriefcaseIcon, BuildingOfficeIcon,
   PlusIcon, XMarkIcon, EyeIcon, PencilIcon, TrashIcon,
   ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon, BanknotesIcon, DocumentArrowDownIcon,
+  DocumentTextIcon, IdentificationIcon, DocumentCheckIcon,
+  PaperClipIcon, PrinterIcon, ArrowTopRightOnSquareIcon,
+  CalculatorIcon, ClockIcon, CreditCardIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -970,12 +1691,22 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 // ----------------------------------------------------------------
 // State
 // ----------------------------------------------------------------
-const personnel  = ref([]);
-const projects   = ref([]);
-const puestos    = ref([]);
-const incidents  = ref([]);
-const loading    = ref(true);
-const loadingIncidents = ref(false);
+const personnel         = ref([]);
+const projects          = ref([]);
+const puestos           = ref([]);
+const incidents         = ref([]);
+const payrollPayments   = ref([]);
+const loading           = ref(true);
+const loadingIncidents  = ref(false);
+const loadingPayroll    = ref(false);
+
+// Filtros y paginación de personal
+const searchQuery    = ref('');
+const filterTipo     = ref('');
+const filterEstado   = ref('');
+const filterProyecto = ref('');
+const currentPage    = ref(1);
+const PAGE_SIZE      = 10;
 
 // Filtros y paginación de incidencias
 const incidentSearch          = ref('');
@@ -984,26 +1715,180 @@ const filterIncidentFecha     = ref('');
 const incidentCurrentPage     = ref(1);
 const INCIDENT_PAGE_SIZE      = 10;
 
-const showModal          = ref(false);
-const showViewModal      = ref(false);
-const showIncidentModal  = ref(false);
-const isSubmitting       = ref(false);
+// Filtros y paginación de planilla
+const payrollSearch          = ref('');
+const filterPayrollEmpleado  = ref('');
+const payrollCurrentPage     = ref(1);
+const PAYROLL_PAGE_SIZE      = 10;
+
+// Modals state
+const showModal            = ref(false);
+const showViewModal        = ref(false);
+const showIncidentModal    = ref(false);
+const showPayrollModal     = ref(false);
+const showReceiptModal     = ref(false);
+
+const isSubmitting         = ref(false);
 const isSubmittingIncident = ref(false);
-const isEditing      = ref(false);
-const editingId      = ref(null);
-const selectedEmp    = ref(null);
-const fullscreenImage = ref(null);
+const isSubmittingPayroll  = ref(false);
+const isEditing            = ref(false);
+const editingId            = ref(null);
+const selectedEmp          = ref(null);
+const selectedReceipt      = ref(null);
+const fullscreenImage      = ref(null);
+
+// Form data empleado
+const formData = ref({
+  tipo_empleado:      '',
+  nombres:            '',
+  apellidos:          '',
+  dpi:                '',
+  nit:                '',
+  telefono:           '',
+  direccion:          '',
+  puesto:             '',
+  tipo_planilla:      '',
+  salario_base:       '',
+  tarifa_hora_extra:  '',
+  diario_viaticos:    '',
+  contacto_nombres:   '',
+  contacto_numero:    '',
+  cantidad_hijos:     '',
+  edades_hijos_list:  [],
+  nivel_academico:    '',
+  fecha_nacimiento:   '',
+  depto_nacimiento:   '',
+  muni_nacimiento:    '',
+  estado_civil:       '',
+  igss:               null,
+  igss_numero:        '',
+  fecha_contratacion: '',
+  fecha_baja:         '',
+  numero_cuenta:      '',
+  nombre_banco:       '',
+  proyecto_id:        null,
+  foto:               null,
+  dpi_adjunto:        null,
+  contrato_adjunto:   null,
+  licencia_adjunto:   null
+});
+
+// Form data incidencia
+const incidentForm = ref({
+  personnel_id: '',
+  texto: '',
+  fecha: '',
+  motivo: '',
+  adjunto: null
+});
+
+// Form data planilla (Espacio de Planilla)
+const payrollForm = ref({
+  personnel_id: '',
+  periodo: '',
+  fecha_pago: new Date().toISOString().split('T')[0],
+  dias_trabajados: 30,
+  tiene_horas_extras: false,
+  horas_extras: 0,
+  tiene_viaticos: false,
+  monto_viaticos: 0,
+  observaciones_viaticos: '',
+  observaciones: ''
+});
 
 // ----------------------------------------------------------------
-// Filters & Pagination
+// Computed: Dynamic Children Count
 // ----------------------------------------------------------------
-const searchQuery    = ref('');
-const filterTipo     = ref('');
-const filterEstado   = ref('');
-const filterProyecto = ref('');
-const currentPage    = ref(1);
-const PAGE_SIZE      = 10;
+const parsedCantidadHijos = computed(() => {
+  const n = parseInt(formData.value.cantidad_hijos);
+  return isNaN(n) || n < 0 ? 0 : n;
+});
 
+const onCantidadHijosChange = () => {
+  const count = parsedCantidadHijos.value;
+  const currentList = [...formData.value.edades_hijos_list];
+  if (currentList.length < count) {
+    while (currentList.length < count) currentList.push('');
+  } else if (currentList.length > count) {
+    currentList.length = count;
+  }
+  formData.value.edades_hijos_list = currentList;
+};
+
+// ----------------------------------------------------------------
+// Computed: Payroll calculations
+// ----------------------------------------------------------------
+const selectedPayrollEmp = computed(() => {
+  if (!payrollForm.value.personnel_id) return null;
+  return personnel.value.find(e => String(e.id) === String(payrollForm.value.personnel_id)) || null;
+});
+
+const payrollCalculations = computed(() => {
+  const emp = selectedPayrollEmp.value;
+  const salarioBase = emp ? parseFloat(emp.salario_base || 0) : 0;
+  const tarifaHoraExtra = emp ? parseFloat(emp.tarifa_hora_extra || 0) : 0;
+  const diasTrabajados = parseInt(payrollForm.value.dias_trabajados || 0);
+
+  // Pro-rated base salary (salario_base / 30) * dias_trabajados
+  const salarioBaseCalculado = (salarioBase / 30) * Math.max(0, diasTrabajados);
+
+  // Overtime
+  const horasExtras = payrollForm.value.tiene_horas_extras ? Math.max(0, parseFloat(payrollForm.value.horas_extras || 0)) : 0;
+  const totalHorasExtras = horasExtras * tarifaHoraExtra;
+
+  // Viáticos
+  const montoViaticos = payrollForm.value.tiene_viaticos ? Math.max(0, parseFloat(payrollForm.value.monto_viaticos || 0)) : 0;
+
+  // Total
+  const totalPagar = salarioBaseCalculado + totalHorasExtras + montoViaticos;
+
+  return {
+    salarioBase,
+    tarifaHoraExtra,
+    salarioBaseCalculado,
+    horasExtras,
+    totalHorasExtras,
+    montoViaticos,
+    totalPagar
+  };
+});
+
+const onPayrollPersonnelChange = () => {
+  const emp = selectedPayrollEmp.value;
+  if (!emp) return;
+  // If colaborador has diario_viaticos defined, prefill or reset
+  if (emp.diario_viaticos && parseFloat(emp.diario_viaticos) > 0) {
+    payrollForm.value.tiene_viaticos = true;
+    payrollForm.value.monto_viaticos = parseFloat(emp.diario_viaticos) * (payrollForm.value.dias_trabajados || 30);
+  }
+  if (emp.tarifa_hora_extra && parseFloat(emp.tarifa_hora_extra) > 0) {
+    payrollForm.value.tiene_horas_extras = false;
+  }
+};
+
+// ----------------------------------------------------------------
+// Stats computed
+// ----------------------------------------------------------------
+const stats = computed(() => {
+  const total    = personnel.value.length;
+  const today    = new Date().toISOString().split('T')[0];
+  const activos  = personnel.value.filter(e => !e.fecha_baja || e.fecha_baja > today).length;
+  const enPlanilla = personnel.value.filter(e => parseFloat(e.salario_base) > 0).length;
+  const proyectos = new Set(
+    personnel.value.filter(e => e.proyecto_id).map(e => e.proyecto_id)
+  ).size;
+
+  return [
+    { label: 'Total Empleados',     value: total.toString(),      change: 'Total',       icon: UsersIcon,           color: 'text-primary',     bgColor: 'bg-primary/20' },
+    { label: 'Activos',             value: activos.toString(),    change: 'Activos',     icon: CheckCircleIcon,     color: 'text-emerald-400', bgColor: 'bg-emerald-400/10' },
+    { label: 'En Planilla',         value: enPlanilla.toString(), change: 'Con salario', icon: BriefcaseIcon,       color: 'text-amber-400',   bgColor: 'bg-amber-400/10' },
+    { label: 'Proyectos Cubiertos', value: proyectos.toString(), change: 'Proyectos',   icon: BuildingOfficeIcon,  color: 'text-sky-400',     bgColor: 'bg-sky-400/10' },
+  ];
+});
+
+// ----------------------------------------------------------------
+// Filters & Pagination: Personnel
+// ----------------------------------------------------------------
 watch([searchQuery, filterTipo, filterEstado, filterProyecto], () => {
   currentPage.value = 1;
 });
@@ -1053,7 +1938,39 @@ const resetFilters = () => {
 };
 
 // ----------------------------------------------------------------
-// Filtros y paginación de incidencias
+// Filters & Pagination: Planilla
+// ----------------------------------------------------------------
+watch([payrollSearch, filterPayrollEmpleado], () => {
+  payrollCurrentPage.value = 1;
+});
+
+const filteredPayrollPayments = computed(() => {
+  const q = payrollSearch.value.toLowerCase().trim();
+  return payrollPayments.value.filter(p => {
+    if (q) {
+      const name = (p.empleado_nombre || '').toLowerCase();
+      const per  = (p.periodo || '').toLowerCase();
+      const obs  = (p.observaciones || '').toLowerCase();
+      if (!name.includes(q) && !per.includes(q) && !obs.includes(q)) return false;
+    }
+    if (filterPayrollEmpleado.value && String(p.personnel_id) !== String(filterPayrollEmpleado.value)) {
+      return false;
+    }
+    return true;
+  });
+});
+
+const totalPayrollPages = computed(() =>
+  Math.max(1, Math.ceil(filteredPayrollPayments.value.length / PAYROLL_PAGE_SIZE))
+);
+
+const paginatedPayrollPayments = computed(() => {
+  const start = (payrollCurrentPage.value - 1) * PAYROLL_PAGE_SIZE;
+  return filteredPayrollPayments.value.slice(start, start + PAYROLL_PAGE_SIZE);
+});
+
+// ----------------------------------------------------------------
+// Filters & Pagination: Incidencias
 // ----------------------------------------------------------------
 watch([incidentSearch, filterIncidentEmpleado, filterIncidentFecha], () => {
   incidentCurrentPage.value = 1;
@@ -1094,72 +2011,17 @@ const resetIncidentFilters = () => {
   incidentCurrentPage.value    = 1;
 };
 
-const formData = ref({
-  tipo_empleado:      '',
-  nombres:            '',
-  apellidos:          '',
-  dpi:                '',
-  nit:                '',
-  telefono:           '',
-  direccion:          '',
-  puesto:             '',
-  tipo_planilla:      '',
-  salario_base:       '',
-  tarifa_hora_extra:  '',
-  diario_viaticos:    '',
-  contacto_nombres:   '',
-  contacto_numero:    '',
-  cantidad_hijos:     '',
-  nivel_academico:    '',
-  fecha_nacimiento:   '',
-  depto_nacimiento:   '',
-  muni_nacimiento:    '',
-  estado_civil:       '',
-  igss:               null,
-  igss_numero:        '',
-  fecha_contratacion: '',
-  fecha_baja:         '',
-  numero_cuenta:      '',
-  nombre_banco:       '',
-  proyecto_id:        null,
-  foto:               null
-});
-
 // ----------------------------------------------------------------
-// Stats computed
+// Lifecycle & Fetching
 // ----------------------------------------------------------------
-const stats = computed(() => {
-  const total    = personnel.value.length;
-  const today    = new Date().toISOString().split('T')[0];
-  const activos  = personnel.value.filter(e => !e.fecha_baja || e.fecha_baja > today).length;
-  const enPlanilla = personnel.value.filter(e => parseFloat(e.salario_base) > 0).length;
-  const proyectos = new Set(
-    personnel.value.filter(e => e.proyecto_id).map(e => e.proyecto_id)
-  ).size;
-
-  return [
-    { label: 'Total Empleados',    value: total.toString(),      change: 'Total',    icon: UsersIcon,           color: 'text-primary',   bgColor: 'bg-primary/20' },
-    { label: 'Activos',            value: activos.toString(),    change: 'Activos',  icon: CheckCircleIcon,     color: 'text-emerald-400', bgColor: 'bg-emerald-400/10' },
-    { label: 'En Planilla',        value: enPlanilla.toString(), change: 'Con salario', icon: BriefcaseIcon,    color: 'text-amber-400',  bgColor: 'bg-amber-400/10' },
-    { label: 'Proyectos Cubiertos', value: proyectos.toString(), change: 'Proyectos', icon: BuildingOfficeIcon, color: 'text-sky-400',    bgColor: 'bg-sky-400/10' },
-  ];
-});
-
-// ----------------------------------------------------------------
-// Lifecycle
-// ----------------------------------------------------------------
-const incidentForm = ref({ personnel_id: '', texto: '', fecha: '', motivo: '' });
-
 onMounted(() => {
   fetchPersonnel();
   fetchProjects();
   fetchPuestos();
   fetchIncidents();
+  fetchPayrollPayments();
 });
 
-// ----------------------------------------------------------------
-// Fetch
-// ----------------------------------------------------------------
 const fetchPersonnel = async () => {
   loading.value = true;
   try {
@@ -1213,13 +2075,175 @@ const fetchIncidents = async () => {
   }
 };
 
+const fetchPayrollPayments = async () => {
+  loadingPayroll.value = true;
+  try {
+    const res = await fetch(`${BASE_URL}/personnel/payroll-payments`);
+    const result = await res.json();
+    if (result.status === 'success') {
+      payrollPayments.value = result.data;
+    }
+  } catch (err) {
+    console.error('Error fetching payroll payments:', err);
+  } finally {
+    loadingPayroll.value = false;
+  }
+};
+
+// ----------------------------------------------------------------
+// Espacio de Planilla / Payroll Methods
+// ----------------------------------------------------------------
+const openPayrollModal = () => {
+  const currentMonthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const now = new Date();
+  const defaultPeriodo = `${currentMonthNames[now.getMonth()]} ${now.getFullYear()}`;
+
+  payrollForm.value = {
+    personnel_id: '',
+    periodo: defaultPeriodo,
+    fecha_pago: now.toISOString().split('T')[0],
+    dias_trabajados: 30,
+    tiene_horas_extras: false,
+    horas_extras: 0,
+    tiene_viaticos: false,
+    monto_viaticos: 0,
+    observaciones_viaticos: '',
+    observaciones: ''
+  };
+  showPayrollModal.value = true;
+};
+
+const openQuickPayroll = (emp) => {
+  openPayrollModal();
+  payrollForm.value.personnel_id = emp.id;
+  onPayrollPersonnelChange();
+};
+
+const closePayrollModal = () => {
+  showPayrollModal.value = false;
+};
+
+const submitPayrollPayment = async () => {
+  if (!payrollForm.value.personnel_id) {
+    Swal.fire({ ...swalBase, title: 'Atención', text: 'Por favor seleccione un colaborador.', icon: 'warning' });
+    return;
+  }
+
+  isSubmittingPayroll.value = true;
+  try {
+    const fd = new FormData();
+    fd.append('personnel_id',           payrollForm.value.personnel_id);
+    fd.append('periodo',                payrollForm.value.periodo);
+    fd.append('fecha_pago',             payrollForm.value.fecha_pago);
+    fd.append('dias_trabajados',        payrollForm.value.dias_trabajados);
+    fd.append('salario_base',           payrollCalculations.value.salarioBase);
+    fd.append('salario_base_calculado', payrollCalculations.value.salarioBaseCalculado);
+    fd.append('tiene_horas_extras',     payrollForm.value.tiene_horas_extras ? '1' : '0');
+    fd.append('horas_extras',           payrollCalculations.value.horasExtras);
+    fd.append('tarifa_hora_extra',      payrollCalculations.value.tarifaHoraExtra);
+    fd.append('total_horas_extras',     payrollCalculations.value.totalHorasExtras);
+    fd.append('tiene_viaticos',         payrollForm.value.tiene_viaticos ? '1' : '0');
+    fd.append('monto_viaticos',         payrollCalculations.value.montoViaticos);
+    fd.append('observaciones_viaticos', payrollForm.value.observaciones_viaticos || '');
+    fd.append('total_pagar',            payrollCalculations.value.totalPagar);
+    fd.append('observaciones',          payrollForm.value.observaciones || '');
+
+    const res = await fetch(`${BASE_URL}/personnel/payroll-payments`, {
+      method: 'POST',
+      body: fd
+    });
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      await fetchPayrollPayments();
+      closePayrollModal();
+
+      const createdPayment = result.data;
+      Swal.fire({
+        ...swalBase,
+        title: '¡Pago Registrado!',
+        html: `<p class="text-white/80">Total a pagar: <b class="text-emerald-400 text-lg">Q ${formatCurrency(payrollCalculations.value.totalPagar)}</b></p>`,
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Ver Boleta de Pago',
+        cancelButtonText: 'Cerrar'
+      }).then(r => {
+        if (r.isConfirmed && createdPayment) {
+          openReceiptModal(createdPayment);
+        }
+      });
+    } else {
+      Swal.fire({ ...swalBase, title: 'Error', text: result.message || 'Error al registrar el pago.', icon: 'error' });
+    }
+  } catch (err) {
+    console.error('Error submitting payroll payment:', err);
+    Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al registrar pago de planilla.', icon: 'error' });
+  } finally {
+    isSubmittingPayroll.value = false;
+  }
+};
+
+const deletePayrollPayment = async (id) => {
+  const result = await Swal.fire({
+    ...swalBase,
+    title: '¿Eliminar registro de pago?',
+    text: 'Esta acción cancelará el registro del pago de planilla.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor:  '#475569',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText:  'Cancelar',
+  });
+
+  if (!result.isConfirmed) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/personnel/payroll-payments/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      await fetchPayrollPayments();
+      Swal.fire({ ...swalBase, title: '¡Eliminado!', text: 'El pago ha sido eliminado correctamente.', icon: 'success' });
+    } else {
+      Swal.fire({ ...swalBase, title: 'Error', text: data.message || 'Error al eliminar', icon: 'error' });
+    }
+  } catch (err) {
+    console.error('Error deleting payroll payment:', err);
+    Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
+  }
+};
+
+const openReceiptModal = (payment) => {
+  selectedReceipt.value = payment;
+  showReceiptModal.value = true;
+};
+
+const printReceipt = () => {
+  window.print();
+};
+
+// ----------------------------------------------------------------
+// Incidents Methods
+// ----------------------------------------------------------------
 const openIncidentModal = () => {
-  incidentForm.value = { personnel_id: '', texto: '', fecha: '', motivo: '' };
+  incidentForm.value = {
+    personnel_id: '',
+    texto: '',
+    fecha: new Date().toISOString().split('T')[0],
+    motivo: '',
+    adjunto: null
+  };
   showIncidentModal.value = true;
 };
 
 const closeIncidentModal = () => {
   showIncidentModal.value = false;
+};
+
+const handleIncidentFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) incidentForm.value.adjunto = file;
 };
 
 const submitIncident = async () => {
@@ -1230,6 +2254,9 @@ const submitIncident = async () => {
     fd.append('texto',        incidentForm.value.texto);
     fd.append('fecha',        incidentForm.value.fecha);
     fd.append('motivo',       incidentForm.value.motivo);
+    if (incidentForm.value.adjunto) {
+      fd.append('adjunto', incidentForm.value.adjunto);
+    }
 
     const res    = await fetch(`${BASE_URL}/incidents`, { method: 'POST', body: fd });
     const result = await res.json();
@@ -1332,6 +2359,22 @@ const openModal = () => {
 };
 
 const openEditModal = (emp) => {
+  let edadesList = [];
+  if (emp.edades_hijos) {
+    try {
+      if (emp.edades_hijos.startsWith('[')) {
+        edadesList = JSON.parse(emp.edades_hijos);
+      } else {
+        edadesList = emp.edades_hijos.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    } catch {
+      edadesList = emp.edades_hijos.split(',').map(s => s.trim()).filter(Boolean);
+    }
+  }
+
+  const numHijos = emp.cantidad_hijos !== null && emp.cantidad_hijos !== undefined ? parseInt(emp.cantidad_hijos) : 0;
+  while (edadesList.length < numHijos) edadesList.push('');
+
   formData.value = {
     tipo_empleado:      emp.tipo_empleado      || '',
     nombres:            emp.nombres            || '',
@@ -1348,6 +2391,7 @@ const openEditModal = (emp) => {
     contacto_nombres:   emp.contacto_nombres   || '',
     contacto_numero:    emp.contacto_numero    || '',
     cantidad_hijos:     emp.cantidad_hijos     !== null && emp.cantidad_hijos !== undefined ? emp.cantidad_hijos : '',
+    edades_hijos_list:  edadesList,
     nivel_academico:    emp.nivel_academico    || '',
     fecha_nacimiento:   emp.fecha_nacimiento   || '',
     depto_nacimiento:   emp.depto_nacimiento   || '',
@@ -1360,7 +2404,10 @@ const openEditModal = (emp) => {
     numero_cuenta:      emp.numero_cuenta      || '',
     nombre_banco:       emp.nombre_banco       || '',
     proyecto_id:        emp.proyecto_id        || null,
-    foto:               null
+    foto:               null,
+    dpi_adjunto:        null,
+    contrato_adjunto:   null,
+    licencia_adjunto:   null
   };
   isEditing.value = true;
   editingId.value = emp.id;
@@ -1419,7 +2466,7 @@ const consultarRenap = async (isManual = false) => {
       console.warn('Direct RENAP fetch failed, falling back to backend endpoint...', directErr);
     }
 
-    // 2. Si falló la llamada directa (CORS o Mixed Content), usamos el endpoint backend
+    // 2. Si falló la llamada directa, usamos el backend proxy
     if (!result || !result.ok) {
       try {
         const res = await fetch(`${BASE_URL}/personnel/renap/${cui}`);
@@ -1449,7 +2496,7 @@ const consultarRenap = async (isManual = false) => {
         formData.value.apellidos = apellidosParts.join(' ');
       }
 
-      // Fecha de Nacimiento (API retorna DD/MM/YYYY)
+      // Fecha de Nacimiento
       if (person.FECHA_NACIMIENTO) {
         const parts = person.FECHA_NACIMIENTO.split('/');
         if (parts.length === 3) {
@@ -1555,6 +2602,7 @@ const resetForm = () => {
     contacto_nombres:   '',
     contacto_numero:    '',
     cantidad_hijos:     '',
+    edades_hijos_list:  [],
     nivel_academico:    '',
     fecha_nacimiento:   '',
     depto_nacimiento:   '',
@@ -1567,7 +2615,10 @@ const resetForm = () => {
     numero_cuenta:      '',
     nombre_banco:       '',
     proyecto_id:        null,
-    foto:               null
+    foto:               null,
+    dpi_adjunto:        null,
+    contrato_adjunto:   null,
+    licencia_adjunto:   null
   };
 };
 
@@ -1586,11 +2637,26 @@ const openImageFullScreen = (url) => {
 };
 
 // ----------------------------------------------------------------
-// File input
+// File inputs
 // ----------------------------------------------------------------
 const handleFileChange = (e) => {
   const file = e.target.files[0];
   if (file) formData.value.foto = file;
+};
+
+const handleDpiFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) formData.value.dpi_adjunto = file;
+};
+
+const handleContratoFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) formData.value.contrato_adjunto = file;
+};
+
+const handleLicenciaFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) formData.value.licencia_adjunto = file;
 };
 
 // ----------------------------------------------------------------
@@ -1627,13 +2693,26 @@ const formatContactoNumero = (e) => {
 
 const formatCurrency = (value) => {
   if (!value && value !== 0) return '0.00';
-  return parseFloat(value).toFixed(2);
+  return parseFloat(value).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const formatDate = (val) => {
   if (!val) return '';
   const [y, m, d] = val.split('-');
   return `${d}/${m}/${y}`;
+};
+
+const formatEdadesHijos = (edadesRaw) => {
+  if (!edadesRaw) return 'No registradas';
+  try {
+    if (typeof edadesRaw === 'string' && edadesRaw.startsWith('[')) {
+      const arr = JSON.parse(edadesRaw);
+      return arr.map(e => `${e} años`).join(', ');
+    }
+    return edadesRaw.split(',').map(e => `${e.trim()} años`).join(', ');
+  } catch {
+    return edadesRaw;
+  }
 };
 
 // ----------------------------------------------------------------
@@ -1649,6 +2728,11 @@ const getPhotoUrl = (emp) => {
   if (!emp || !emp.foto_path) return '';
   const timestamp = emp._t || Date.now();
   return `/concretos-oriente/Backend/${emp.foto_path}?t=${timestamp}`;
+};
+
+const getDocumentUrl = (path) => {
+  if (!path) return '';
+  return `/concretos-oriente/Backend/${path}`;
 };
 
 const getEstadoBadge = (emp) => {
@@ -1670,9 +2754,6 @@ const getTipoEmpleadoBadge = (tipo) => {
   return { color: PUESTO_COLORS[tipo] || 'bg-violet-400/15 text-violet-400 border-violet-400/20' };
 };
 
-// ----------------------------------------------------------------
-// Swal helper
-// ----------------------------------------------------------------
 const swalBase = {
   background: '#0f172a',
   color: '#fff',
@@ -1685,13 +2766,13 @@ const swalBase = {
 };
 
 // ----------------------------------------------------------------
-// CRUD
+// CRUD Empleados
 // ----------------------------------------------------------------
 const deleteEmployee = async (id) => {
   const result = await Swal.fire({
     ...swalBase,
     title: '¿Estás seguro?',
-    text: 'Esta acción no se puede deshacer y eliminará los datos y la foto del empleado.',
+    text: 'Esta acción no se puede deshacer y eliminará los datos, documentos y foto del empleado.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#f43f5e',
@@ -1737,6 +2818,14 @@ const submitForm = async () => {
   data.append('contacto_nombres',   formData.value.contacto_nombres   || '');
   data.append('contacto_numero',    formData.value.contacto_numero    || '');
   data.append('cantidad_hijos',     formData.value.cantidad_hijos !== '' ? formData.value.cantidad_hijos : '');
+
+  // Edades de hijos list
+  if (formData.value.edades_hijos_list && formData.value.edades_hijos_list.length > 0) {
+    data.append('edades_hijos', JSON.stringify(formData.value.edades_hijos_list));
+  } else {
+    data.append('edades_hijos', '');
+  }
+
   data.append('nivel_academico',    formData.value.nivel_academico    || '');
   data.append('fecha_nacimiento',   formData.value.fecha_nacimiento   || '');
   data.append('depto_nacimiento',   formData.value.depto_nacimiento   || '');
@@ -1753,6 +2842,15 @@ const submitForm = async () => {
   if (formData.value.foto) {
     data.append('foto', formData.value.foto);
   }
+  if (formData.value.dpi_adjunto) {
+    data.append('dpi_adjunto', formData.value.dpi_adjunto);
+  }
+  if (formData.value.contrato_adjunto) {
+    data.append('contrato_adjunto', formData.value.contrato_adjunto);
+  }
+  if (formData.value.licencia_adjunto) {
+    data.append('licencia_adjunto', formData.value.licencia_adjunto);
+  }
 
   try {
     const url = isEditing.value
@@ -1765,7 +2863,7 @@ const submitForm = async () => {
     if (result.status === 'success') {
       await fetchPersonnel();
       closeModal();
-      Swal.fire({ ...swalBase, title: '¡Guardado!', text: 'Empleado guardado correctamente.', icon: 'success' });
+      Swal.fire({ ...swalBase, title: '¡Guardado!', text: 'Empleado y documentos guardados correctamente.', icon: 'success' });
     } else {
       Swal.fire({ ...swalBase, title: 'Error', text: result.message || 'Error al guardar', icon: 'error' });
     }
@@ -1777,3 +2875,34 @@ const submitForm = async () => {
   }
 };
 </script>
+
+<style scoped>
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    background: white !important;
+    color: black !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  #printable-receipt * {
+    color: black !important;
+    border-color: #cbd5e1 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+</style>
