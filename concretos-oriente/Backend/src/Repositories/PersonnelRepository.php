@@ -222,6 +222,15 @@ class PersonnelRepository
         }
     }
 
+    public function updateFechaBaja(int $id, ?string $fecha_baja): void
+    {
+        $stmt = $this->pdo->prepare("UPDATE personnel SET fecha_baja = :fecha_baja WHERE id = :id");
+        $stmt->execute([
+            'id'         => $id,
+            'fecha_baja' => $fecha_baja
+        ]);
+    }
+
     public function delete(int $id): void
     {
         $this->pdo->prepare("DELETE FROM personnel WHERE id = :id")->execute(['id' => $id]);

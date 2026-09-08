@@ -200,6 +200,19 @@
                   <button @click="openEditModal(emp)" class="p-3 text-white/40 hover:text-primary hover:bg-white/10 rounded-xl transition-all" title="Editar">
                     <PencilIcon class="w-5 h-5" />
                   </button>
+                  <button
+                    @click="toggleBajaEmployee(emp)"
+                    :class="[
+                      'p-3 rounded-xl transition-all',
+                      isEmpleadoActivo(emp)
+                        ? 'text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10'
+                        : 'text-emerald-400/80 hover:text-emerald-400 hover:bg-emerald-500/10'
+                    ]"
+                    :title="isEmpleadoActivo(emp) ? 'Dar de baja al empleado' : 'Reactivar empleado'"
+                  >
+                    <UserMinusIcon v-if="isEmpleadoActivo(emp)" class="w-5 h-5" />
+                    <UserPlusIcon v-else class="w-5 h-5" />
+                  </button>
                   <button @click="deleteEmployee(emp.id)" class="p-3 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
                     <TrashIcon class="w-5 h-5" />
                   </button>
@@ -349,7 +362,7 @@
               </td>
               <td class="px-6 py-5">
                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/5 border border-white/10 text-white/90 inline-block mb-1">
-                  {{ p.periodo }}
+                  {{ formatPeriodo(p.periodo) }}
                 </span>
                 <p class="text-xs text-white/40">{{ formatDate(p.fecha_pago) }}</p>
               </td>
@@ -1284,13 +1297,17 @@
           <!-- 2. Periodo y Fecha de Pago -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/60 uppercase tracking-wider">Periodo (Mes / Año) <span class="text-tertiary">*</span></label>
+              <label class="text-xs font-bold text-white/60 uppercase tracking-wider flex items-center justify-between">
+                <span>Periodo (Mes / Año) <span class="text-tertiary">*</span></span>
+                <span v-if="payrollForm.periodo" class="text-xs font-bold text-emerald-400 capitalize">
+                  {{ formatPeriodo(payrollForm.periodo) }}
+                </span>
+              </label>
               <input
                 v-model="payrollForm.periodo"
-                type="text"
+                type="month"
                 required
-                placeholder="Ej. Septiembre 2026 o 2026-09"
-                class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white placeholder-white/20 focus:outline-none focus:border-emerald-400/50 transition-all"
+                class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-emerald-400/50 transition-all [color-scheme:dark]"
               />
             </div>
             <div class="space-y-2">
@@ -1505,7 +1522,7 @@
           <div class="text-center pb-4 border-b border-white/10 space-y-1">
             <h4 class="text-xl font-black text-white uppercase tracking-wider">Concretos de Oriente</h4>
             <p class="text-xs text-white/60">Comprobante de Pago Mensual de Planilla</p>
-            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mt-1">Periodo: {{ selectedReceipt.periodo }}</p>
+            <p class="text-xs font-bold text-emerald-400 uppercase tracking-widest mt-1">Periodo: {{ formatPeriodo(selectedReceipt.periodo) }}</p>
           </div>
 
           <!-- Info Colaborador -->
@@ -1682,7 +1699,7 @@ import {
   MagnifyingGlassIcon, BanknotesIcon, DocumentArrowDownIcon,
   DocumentTextIcon, IdentificationIcon, DocumentCheckIcon,
   PaperClipIcon, PrinterIcon, ArrowTopRightOnSquareIcon,
-  CalculatorIcon, ClockIcon, CreditCardIcon
+  CalculatorIcon, ClockIcon, CreditCardIcon, UserMinusIcon, UserPlusIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -2094,9 +2111,8 @@ const fetchPayrollPayments = async () => {
 // Espacio de Planilla / Payroll Methods
 // ----------------------------------------------------------------
 const openPayrollModal = () => {
-  const currentMonthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   const now = new Date();
-  const defaultPeriodo = `${currentMonthNames[now.getMonth()]} ${now.getFullYear()}`;
+  const defaultPeriodo = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
   payrollForm.value = {
     personnel_id: '',
@@ -2702,6 +2718,17 @@ const formatDate = (val) => {
   return `${d}/${m}/${y}`;
 };
 
+const formatPeriodo = (periodo) => {
+  if (!periodo) return '';
+  if (/^\d{4}-\d{2}$/.test(periodo)) {
+    const [year, month] = periodo.split('-');
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const mName = months[parseInt(month, 10) - 1] || month;
+    return `${mName} ${year}`;
+  }
+  return periodo;
+};
+
 const formatEdadesHijos = (edadesRaw) => {
   if (!edadesRaw) return 'No registradas';
   try {
@@ -2768,6 +2795,110 @@ const swalBase = {
 // ----------------------------------------------------------------
 // CRUD Empleados
 // ----------------------------------------------------------------
+const isEmpleadoActivo = (emp) => {
+  if (!emp) return false;
+  const today = new Date().toISOString().split('T')[0];
+  return !emp.fecha_baja || emp.fecha_baja > today;
+};
+
+const toggleBajaEmployee = async (emp) => {
+  const activo = isEmpleadoActivo(emp);
+  const today = new Date().toISOString().split('T')[0];
+
+  if (activo) {
+    const { value: formValues, isConfirmed } = await Swal.fire({
+      ...swalBase,
+      title: `Dar de Baja a ${emp.nombres} ${emp.apellidos}`,
+      html: `
+        <div class="text-left space-y-3 mt-4">
+          <div>
+            <label class="text-xs font-bold text-white/60 uppercase tracking-wider block mb-1">Fecha de Baja</label>
+            <input id="swal-fecha-baja" type="date" value="${today}" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-rose-400 [color-scheme:dark]" />
+          </div>
+          <p class="text-xs text-white/40">El empleado pasará al estado "Baja" a partir de la fecha seleccionada.</p>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonColor: '#f43f5e',
+      cancelButtonColor: '#475569',
+      confirmButtonText: 'Confirmar Baja',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        const fecha = document.getElementById('swal-fecha-baja').value;
+        if (!fecha) {
+          Swal.showValidationMessage('Debe seleccionar la fecha de baja.');
+          return false;
+        }
+        return { fecha_baja: fecha };
+      }
+    });
+
+    if (!isConfirmed || !formValues) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/personnel/${emp.id}/baja`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fecha_baja: formValues.fecha_baja })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        await fetchPersonnel();
+        Swal.fire({
+          ...swalBase,
+          title: '¡Dado de Baja!',
+          text: `El colaborador ha sido dado de baja con fecha ${formatDate(formValues.fecha_baja)}.`,
+          icon: 'success'
+        });
+      } else {
+        Swal.fire({ ...swalBase, title: 'Error', text: data.message || 'No se pudo registrar la baja', icon: 'error' });
+      }
+    } catch (err) {
+      console.error('Error al dar de baja:', err);
+      Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
+    }
+
+  } else {
+    const result = await Swal.fire({
+      ...swalBase,
+      title: '¿Reactivar Empleado?',
+      text: `¿Deseas reactivar a ${emp.nombres} ${emp.apellidos}? Su estado volverá a "Activo" y se removerá la fecha de baja.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#475569',
+      confirmButtonText: 'Sí, reactivar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/personnel/${emp.id}/baja`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fecha_baja: null })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        await fetchPersonnel();
+        Swal.fire({
+          ...swalBase,
+          title: '¡Reactivado!',
+          text: 'El colaborador ha sido reactivado como Activo.',
+          icon: 'success'
+        });
+      } else {
+        Swal.fire({ ...swalBase, title: 'Error', text: data.message || 'No se pudo reactivar', icon: 'error' });
+      }
+    } catch (err) {
+      console.error('Error al reactivar:', err);
+      Swal.fire({ ...swalBase, title: 'Error', text: 'Error de conexión al servidor', icon: 'error' });
+    }
+  }
+};
+
 const deleteEmployee = async (id) => {
   const result = await Swal.fire({
     ...swalBase,

@@ -222,6 +222,28 @@ class PersonnelController extends Controller
     }
 
     // ----------------------------------------------------------------
+    // POST /personnel/{id}/baja — Dar de baja o reactivar empleado
+    // ----------------------------------------------------------------
+    #[Route('/personnel/{id}/baja', 'POST')]
+    public function setBajaStatus($id)
+    {
+        try {
+            $raw = file_get_contents('php://input');
+            $body = json_decode($raw, true) ?: $_POST;
+            $fecha_baja = !empty($body['fecha_baja']) ? $body['fecha_baja'] : null;
+
+            $this->personnelRepo->updateFechaBaja((int)$id, $fecha_baja);
+
+            $this->json([
+                'status'  => 'success',
+                'message' => $fecha_baja ? 'Empleado dado de baja correctamente' : 'Empleado reactivado correctamente'
+            ]);
+        } catch (Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    // ----------------------------------------------------------------
     // GET /personnel/payroll-payments — Historial de Pagos de Planilla
     // ----------------------------------------------------------------
     #[Route('/personnel/payroll-payments', 'GET')]
