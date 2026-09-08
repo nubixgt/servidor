@@ -202,10 +202,22 @@
                 </div>
                 <h3 class="text-2xl font-black text-white mb-2 leading-tight uppercase italic line-clamp-2">{{ proj.nombre }}</h3>
 
-                <p v-if="proj.ubicacion" class="text-xs text-white/60 flex items-center gap-1.5 truncate mb-4">
-                  <MapPinIcon class="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span class="truncate">{{ proj.ubicacion }}</span>
-                </p>
+                <div v-if="proj.ubicacion || proj.coordenadas" class="flex items-center justify-between text-xs text-white/60 mb-4 gap-2">
+                  <p class="flex items-center gap-1.5 truncate">
+                    <MapPinIcon class="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span class="truncate">{{ proj.ubicacion || proj.coordenadas }}</span>
+                  </p>
+                  <button
+                    v-if="getProjectMapsUrl(proj)"
+                    @click.stop="copyMapsUrl(proj)"
+                    type="button"
+                    class="p-1.5 rounded-lg bg-white/5 hover:bg-primary/20 hover:text-primary text-white/40 transition-all border border-white/5 shrink-0 flex items-center gap-1"
+                    title="Copiar URL de Google Maps"
+                  >
+                    <ClipboardDocumentIcon class="w-3.5 h-3.5" />
+                    <span class="text-[10px] font-bold">Copiar URL</span>
+                  </button>
+                </div>
               </div>
 
               <div class="flex items-center justify-between pt-5 border-t border-white/10 mt-4">
@@ -362,29 +374,42 @@
                 </div>
               </div>
 
-              <!-- Ubicación con Acción de Copiar Dirección -->
+              <!-- Ubicación con Acción de Copiar URL y Dirección -->
               <div class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between flex-wrap gap-2">
                   <p class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-1.5">
                     <MapPinIcon class="w-4 h-4 text-primary" /> Ubicación del Proyecto
                   </p>
-                  <!-- Botón Copiar Dirección -->
-                  <button
-                    v-if="selectedProject.ubicacion || selectedProject.coordenadas"
-                    @click="copyAddress(selectedProject.ubicacion || selectedProject.coordenadas)"
-                    type="button"
-                    class="flex items-center gap-1.5 px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider bg-white/10 hover:bg-primary hover:text-white text-white/70 transition-all border border-white/10"
-                    title="Copiar texto de la dirección"
-                  >
-                    <ClipboardDocumentCheckIcon v-if="copiedLocation" class="w-3.5 h-3.5 text-emerald-400" />
-                    <ClipboardDocumentIcon v-else class="w-3.5 h-3.5" />
-                    <span>{{ copiedLocation ? '¡Copiado!' : 'Copiar Dirección' }}</span>
-                  </button>
+                  <!-- Botones de Copiar -->
+                  <div class="flex items-center gap-2">
+                    <button
+                      v-if="getProjectMapsUrl(selectedProject)"
+                      @click="copyMapsUrl(selectedProject)"
+                      type="button"
+                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-primary hover:bg-primary/80 text-white transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                      title="Copiar URL / Enlace directo de Google Maps"
+                    >
+                      <ClipboardDocumentCheckIcon v-if="copiedMapsUrl" class="w-3.5 h-3.5 text-emerald-300" />
+                      <ClipboardDocumentIcon v-else class="w-3.5 h-3.5" />
+                      <span>{{ copiedMapsUrl ? '¡URL Copiada!' : 'Copiar URL Maps' }}</span>
+                    </button>
+                    <button
+                      v-if="selectedProject.ubicacion || selectedProject.coordenadas"
+                      @click="copyAddress(selectedProject.ubicacion || selectedProject.coordenadas)"
+                      type="button"
+                      class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all border border-white/10 cursor-pointer"
+                      title="Copiar texto de la dirección"
+                    >
+                      <ClipboardDocumentCheckIcon v-if="copiedLocation" class="w-3.5 h-3.5 text-emerald-400" />
+                      <ClipboardDocumentIcon v-else class="w-3.5 h-3.5" />
+                      <span>{{ copiedLocation ? '¡Copiado!' : 'Copiar Texto' }}</span>
+                    </button>
+                  </div>
                 </div>
                 <p class="text-sm font-bold text-white">{{ selectedProject.ubicacion || 'Sin dirección especificada' }}</p>
                 <div class="flex items-center gap-4 text-xs font-medium pt-1">
-                  <a v-if="selectedProject.coordenadas" :href="`https://www.google.com/maps/search/?api=1&query=${selectedProject.coordenadas}`" target="_blank" class="text-primary hover:underline flex items-center gap-1">
-                    Abrir en Google Maps ({{ selectedProject.coordenadas }})
+                  <a v-if="getProjectMapsUrl(selectedProject)" :href="getProjectMapsUrl(selectedProject)" target="_blank" class="text-primary hover:underline flex items-center gap-1 font-bold">
+                    Abrir en Google Maps ({{ selectedProject.coordenadas || selectedProject.ubicacion }}) ↗
                   </a>
                 </div>
               </div>
@@ -934,59 +959,68 @@ const isEditing = ref(false);
 const editingId = ref(null);
 const mapFullscreen = ref(false);
 const copiedLocation = ref(false);
+const copiedMapsUrl = ref(false);
 
-// Ampliaciones de Presupuesto
-const budgetExtensions = ref([]);
-const showExtensionModal = ref(false);
-const isSubmittingExtension = ref(false);
-const extensionForm = ref({ monto: '', tipo_ampliacion: '', documentos: [] });
+const getProjectMapsUrl = (proj) => {
+  if (!proj) return '';
+  const coords = proj.coordenadas ? String(proj.coordenadas).trim() : '';
+  const loc = proj.ubicacion ? String(proj.ubicacion).trim() : '';
+  
+  if (coords) {
+    if (coords.startsWith('http://') || coords.startsWith('https://')) return coords;
+    return `https://www.google.com/maps?q=${encodeURIComponent(coords)}`;
+  }
+  if (loc) {
+    if (loc.startsWith('http://') || loc.startsWith('https://')) return loc;
+    return `https://www.google.com/maps?q=${encodeURIComponent(loc)}`;
+  }
+  return '';
+};
 
-const fetchBudgetExtensions = async (projectId) => {
+const copyMapsUrl = async (proj) => {
+  const url = typeof proj === 'string' ? proj : getProjectMapsUrl(proj);
+  if (!url) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'warning',
+      title: 'No hay ubicación o coordenadas para generar URL',
+      showConfirmButton: false,
+      timer: 2000,
+      background: '#0f172a',
+      color: '#fff'
+    });
+    return;
+  }
   try {
-    const res = await fetch(`${BASE_URL}/projects/${projectId}/budget-extensions`);
-    const data = await res.json();
-    if (data.status === 'success') budgetExtensions.value = data.data;
-    else budgetExtensions.value = [];
-  } catch { budgetExtensions.value = []; }
-};
-
-watch(selectedProject, (project) => {
-  if (project) fetchBudgetExtensions(project.id);
-  else budgetExtensions.value = [];
-});
-
-const getDisplayValue = (val) => {
-  if (val === null || val === undefined || val === '') return '';
-  const str = String(val);
-  const parts = str.split('.');
-  const numPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.length > 1 ? `Q ${numPart}.${parts[1]}` : `Q ${numPart}`;
-};
-
-const updateCurrencyField = (obj, key, event) => {
-  let raw = event.target.value.replace(/[^0-9.]/g, '');
-  const parts = raw.split('.');
-  if (parts.length > 2) raw = parts[0] + '.' + parts.slice(1).join('');
-  obj[key] = raw === '' ? 0 : raw;
-  event.target.value = getDisplayValue(raw);
+    await navigator.clipboard.writeText(url);
+  } catch (err) {
+    const el = document.createElement('textarea');
+    el.value = url;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+  copiedMapsUrl.value = true;
+  setTimeout(() => { copiedMapsUrl.value = false; }, 2000);
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'success',
+    title: 'URL de Google Maps copiada',
+    text: url,
+    showConfirmButton: false,
+    timer: 2500,
+    background: '#0f172a',
+    color: '#fff'
+  });
 };
 
 const copyAddress = async (text) => {
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
-    copiedLocation.value = true;
-    setTimeout(() => { copiedLocation.value = false; }, 2000);
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Dirección copiada al portapapeles',
-      showConfirmButton: false,
-      timer: 1800,
-      background: '#0f172a',
-      color: '#fff'
-    });
   } catch (err) {
     const el = document.createElement('textarea');
     el.value = text;
@@ -994,9 +1028,19 @@ const copyAddress = async (text) => {
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
-    copiedLocation.value = true;
-    setTimeout(() => { copiedLocation.value = false; }, 2000);
   }
+  copiedLocation.value = true;
+  setTimeout(() => { copiedLocation.value = false; }, 2000);
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'success',
+    title: 'Dirección copiada al portapapeles',
+    showConfirmButton: false,
+    timer: 1800,
+    background: '#0f172a',
+    color: '#fff'
+  });
 };
 
 const openExtensionModal = () => {
