@@ -5,9 +5,9 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
         <h2 class="text-4xl font-bold tracking-tight text-white mb-2">
-          {{ activeTab === 'register' ? (editingId ? 'Modificar Registro' : 'Registrar Servicio') : 'Control de Mecánica' }}
+          {{ activeTab === 'register' ? (editingId ? 'Modificar Registro' : 'Registrar Servicio Mecánico') : 'Control de Mecánica' }}
         </h2>
-        <p class="text-white/60">Registro de servicios mecánicos y compra de repuestos por unidad.</p>
+        <p class="text-white/60">Registro de servicios mecánicos, repuestos, mano de obra y programación de alertas.</p>
       </div>
 
       <div class="flex gap-2 bg-black/30 border border-white/10 rounded-2xl p-1 w-fit">
@@ -66,7 +66,7 @@
           <span class="text-[10px] font-black text-white/40 uppercase tracking-widest">Total Productos</span>
           <div class="mt-3">
             <h3 class="text-4xl font-black italic text-violet-400 tracking-tighter">{{ stats.totalItems }}</h3>
-            <p class="text-[10px] font-bold text-violet-400/60 uppercase tracking-wider mt-1">Registrados</p>
+            <p class="text-[10px] font-bold text-violet-400/60 uppercase tracking-wider mt-1">Repuestos/Servicios</p>
           </div>
         </div>
         <div class="p-3 bg-violet-500/10 border border-violet-500/20 rounded-2xl text-violet-400 shrink-0">
@@ -86,27 +86,29 @@
         </div>
         <div class="relative w-full lg:w-80">
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-          <input v-model="searchTerm" type="text" placeholder="Buscar por placa o proveedor..."
+          <input v-model="searchTerm" type="text" placeholder="Buscar por placa, tipo o trabajo..."
             class="glass-input pl-10 pr-4 py-3 rounded-xl text-xs font-bold w-full text-white placeholder:text-white/20" />
         </div>
       </div>
 
       <div class="glass-card rounded-[32px] overflow-hidden border border-white/5">
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[750px] text-left">
+          <table class="w-full min-w-[850px] text-left">
             <thead>
               <tr class="text-[10px] font-black text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
                 <th class="px-6 py-5">Fecha</th>
                 <th class="px-6 py-5">Placa / Unidad</th>
-                <th class="px-6 py-5">Proveedor</th>
+                <th class="px-6 py-5">Tipo de Trabajo</th>
                 <th class="px-6 py-5 text-center">Productos</th>
+                <th class="px-6 py-5 text-right">Mano de Obra</th>
                 <th class="px-6 py-5 text-right">Total</th>
+                <th class="px-6 py-5 text-center">Próx. Servicio</th>
                 <th class="px-6 py-5 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
               <tr v-if="filteredList.length === 0">
-                <td colspan="6" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros.</td>
+                <td colspan="8" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros.</td>
               </tr>
               <tr v-else v-for="r in filteredList" :key="r.id" class="hover:bg-white/[0.015] transition-colors">
                 <td class="px-6 py-4">
@@ -119,13 +121,26 @@
                   </div>
                 </td>
                 <td class="px-6 py-4">
-                  <span class="text-xs font-bold text-white/80">{{ r.proveedor_nombre || '—' }}</span>
+                  <span class="text-xs font-bold text-white/90">{{ r.tipo_trabajo || 'Mantenimiento General' }}</span>
                 </td>
                 <td class="px-6 py-4 text-center">
                   <span class="text-xs font-black text-violet-400 bg-violet-500/10 px-2 py-1 rounded-lg border border-violet-500/20">{{ r.items_count }}</span>
                 </td>
                 <td class="px-6 py-4 text-right">
+                  <span v-if="r.mano_obra_monto > 0" class="text-xs font-bold text-sky-400">Q {{ Number(r.mano_obra_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                  <span v-else class="text-xs text-white/20">—</span>
+                </td>
+                <td class="px-6 py-4 text-right">
                   <span class="text-xs font-black text-emerald-400">Q {{ Number(r.total_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <span v-if="r.proximo_servicio_hrs" class="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                    {{ Number(r.proximo_servicio_hrs).toFixed(1) }} hrs
+                  </span>
+                  <span v-else-if="r.proximo_servicio_km" class="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                    {{ Number(r.proximo_servicio_km).toLocaleString() }} km
+                  </span>
+                  <span v-else class="text-xs text-white/20">—</span>
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
@@ -161,7 +176,7 @@
         <!-- Left: campos -->
         <div class="lg:col-span-8 space-y-6">
 
-          <!-- Datos principales -->
+          <!-- 1. Datos Principales (con Tipo de Trabajo) -->
           <section class="glass-card p-8 rounded-3xl border border-white/5 relative z-10">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
               <InformationCircleIcon class="w-4 h-4" /> Datos del Servicio
@@ -175,14 +190,11 @@
                   class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
               </div>
 
-              <!-- Proveedor -->
+              <!-- Tipo de Trabajo (en lugar de proveedor principal) -->
               <div class="space-y-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Proveedor</label>
-                <select v-model="form.proveedor_id"
-                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
-                  <option value="">Sin proveedor</option>
-                  <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.razon_social }}</option>
-                </select>
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Tipo de Trabajo <span class="text-rose-400">*</span></label>
+                <input v-model="form.tipo_trabajo" type="text" placeholder="Ej. Cambio de Aceite, Frenos, Overhaul..." required
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
               </div>
 
               <!-- Placa buscador -->
@@ -194,6 +206,7 @@
                     @focus="showPlacaDropdown = true"
                     @input="showPlacaDropdown = true"
                     class="w-full h-12 pl-10 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white uppercase tracking-widest" />
+                  
                   <div v-if="showPlacaDropdown && filteredPlates.length > 0"
                     class="absolute top-full left-0 right-0 mt-1 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl z-30 max-h-48 overflow-y-auto">
                     <button v-for="plate in filteredPlates" :key="plate.placa"
@@ -222,62 +235,188 @@
             </div>
           </section>
 
-          <!-- Productos -->
+          <!-- 2. Espacio de Productos / Servicios (Listado Detallado con Proveedor y Foto Factura) -->
           <section class="glass-card p-8 rounded-3xl border border-white/5">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                <CubeIcon class="w-4 h-4" /> Productos / Servicios
-              </h3>
-              <button @click="addItem"
+              <div>
+                <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <CubeIcon class="w-4 h-4" /> Espacio de Productos / Servicios
+                </h3>
+                <p class="text-white/40 text-[11px] mt-0.5">Detalla cada repuesto o producto, su monto, proveedor y factura.</p>
+              </div>
+              <button @click="addItem" type="button"
                 class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
-                <PlusIcon class="w-3.5 h-3.5" /> Agregar
+                <PlusIcon class="w-3.5 h-3.5" /> + Agregar Producto
               </button>
             </div>
 
-            <div v-if="items.length === 0" class="text-center py-8 text-white/20 text-xs font-black uppercase tracking-widest">
-              Sin productos. Haz clic en "Agregar".
+            <div v-if="items.length === 0" class="text-center py-8 text-white/20 text-xs font-black uppercase tracking-widest border-2 border-dashed border-white/5 rounded-2xl">
+              Sin productos agregados. Haz clic en "+ Agregar Producto".
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
               <div v-for="(item, idx) in items" :key="idx"
-                class="flex gap-3 items-start bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                <div class="flex-1 space-y-1">
-                  <label class="text-[8px] font-black text-white/25 uppercase tracking-widest">Producto / Descripción</label>
-                  <input v-model="item.producto" type="text" placeholder="Ej. Aceite de motor, filtro de aire..."
-                    class="w-full h-10 px-3 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-white" />
+                class="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                  
+                  <!-- Producto -->
+                  <div class="md:col-span-4 space-y-1">
+                    <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Producto / Repuesto</label>
+                    <input v-model="item.producto" type="text" placeholder="Ej. Filtro de Aceite LF16015..."
+                      class="w-full h-10 px-3 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-white" />
+                  </div>
+
+                  <!-- Monto -->
+                  <div class="md:col-span-3 space-y-1">
+                    <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Monto</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
+                      <input v-model="item.monto" type="number" min="0" step="0.01" placeholder="0.00"
+                        class="w-full h-10 pl-7 pr-3 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-emerald-400" />
+                    </div>
+                  </div>
+
+                  <!-- Proveedor (listado) -->
+                  <div class="md:col-span-4 space-y-1">
+                    <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Proveedor</label>
+                    <select v-model="item.proveedor_id"
+                      class="w-full h-10 px-3 rounded-xl bg-slate-950/65 border border-white/10 text-xs font-black uppercase text-white focus:outline-none focus:border-primary">
+                      <option value="">Seleccionar Proveedor</option>
+                      <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.razon_social }}</option>
+                    </select>
+                  </div>
+
+                  <!-- Eliminar -->
+                  <div class="md:col-span-1 flex justify-end">
+                    <button @click="removeItem(idx)" type="button"
+                      class="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/20 transition-all shrink-0">
+                      <TrashIcon class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
                 </div>
-                <div class="w-36 space-y-1">
-                  <label class="text-[8px] font-black text-white/25 uppercase tracking-widest">Monto</label>
-                  <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
-                    <input v-model="item.monto" type="number" min="0" step="0.01" placeholder="0.00"
-                      class="w-full h-10 pl-7 pr-3 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-white" />
+
+                <!-- Foto Factura de este producto -->
+                <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+                  <div class="flex items-center gap-2">
+                    <label class="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase text-white/70 transition-all">
+                      <CameraIcon class="w-3.5 h-3.5 text-primary" />
+                      {{ itemPhotoPreviews[idx] || item.foto_factura ? 'Cambiar Factura' : 'Adjuntar Factura' }}
+                      <input type="file" accept="image/*,.pdf" @change="onItemPhotoChange($event, idx)" class="hidden" />
+                    </label>
+                    <span v-if="itemPhotoPreviews[idx]" class="text-[9px] font-bold text-emerald-400">✓ Factura cargada</span>
+                    <a v-else-if="item.foto_factura" :href="photoUrl(item.foto_factura)" target="_blank" class="text-[9px] font-bold text-primary underline">Ver factura actual</a>
                   </div>
                 </div>
-                <button @click="removeItem(idx)"
-                  class="mt-6 p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/20 transition-all shrink-0">
-                  <TrashIcon class="w-3.5 h-3.5" />
-                </button>
+
               </div>
             </div>
 
-            <div v-if="items.length > 0" class="flex justify-end mt-4 pt-4 border-t border-white/5">
+            <div v-if="items.length > 0" class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+              <span class="text-xs text-white/40 font-bold">{{ items.length }} producto(s) agregado(s)</span>
               <div class="text-right">
-                <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Total</span>
-                <span class="text-2xl font-black italic text-emerald-400">Q {{ itemsTotal.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Subtotal Productos</span>
+                <span class="text-xl font-black italic text-emerald-400">Q {{ itemsTotal.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
               </div>
             </div>
           </section>
 
+          <!-- 3. Campo Mano de Obra -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <WrenchScrewdriverIcon class="w-4 h-4" /> Mano de Obra
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              
+              <!-- Proveedor Mano de Obra -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Proveedor Mano de Obra</label>
+                <select v-model="form.mano_obra_proveedor_id"
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
+                  <option value="">Seleccionar Proveedor</option>
+                  <option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.razon_social }}</option>
+                </select>
+              </div>
+
+              <!-- Monto Mano de Obra -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Monto Mano de Obra</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
+                  <input v-model="form.mano_obra_monto" type="number" min="0" step="0.01" placeholder="0.00"
+                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+                </div>
+              </div>
+
+              <!-- Factura Mano de Obra -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Factura Mano de Obra</label>
+                <label class="w-full h-12 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-dashed border-white/20 hover:border-primary flex items-center justify-center gap-2 cursor-pointer transition-all">
+                  <CameraIcon class="w-4 h-4 text-primary" />
+                  <span class="text-xs font-black uppercase text-white/70 truncate">
+                    {{ manoObraFacturaName || (form.mano_obra_factura ? 'Factura Adjunta' : 'Subir Factura') }}
+                  </span>
+                  <input type="file" accept="image/*,.pdf" @change="onManoObraFacturaChange" class="hidden" />
+                </label>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- 4. Próximo Servicio (Horómetro si es Máquina, Kilómetros si es Transporte) -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 border-l-4 border-amber-500/50">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-xs font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
+                  <BellAlertIcon class="w-4 h-4" /> Próximo Servicio (Programación de Alerta)
+                </h3>
+                <p class="text-white/40 text-[11px] mt-0.5">
+                  Genera una notificación en el módulo de <strong>Alertas</strong> al aproximarse al valor establecido.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
+              <!-- Si es Maquinaria -> Horómetro -->
+              <div v-if="form.tipo_unidad === 'Maquinaria'" class="space-y-2 md:col-span-2">
+                <label class="text-[9px] font-black text-amber-400 uppercase tracking-widest">Horómetro de Próximo Servicio</label>
+                <div class="relative">
+                  <input v-model="form.proximo_servicio_hrs" type="number" min="0" step="0.1" placeholder="Ej. 1250.0"
+                    class="w-full h-12 pl-4 pr-16 rounded-xl glass-input border-amber-500/30 focus:border-amber-400 transition-all text-sm font-black text-amber-300" />
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-amber-400 tracking-widest">HRS</span>
+                </div>
+              </div>
+
+              <!-- Si es Transporte / Vehículo / Otro -> Kilometraje -->
+              <div v-else class="space-y-2 md:col-span-2">
+                <label class="text-[9px] font-black text-amber-400 uppercase tracking-widest">Kilometraje de Próximo Servicio</label>
+                <div class="relative">
+                  <input v-model="form.proximo_servicio_km" type="number" min="0" step="1" placeholder="Ej. 150000"
+                    class="w-full h-12 pl-4 pr-16 rounded-xl glass-input border-amber-500/30 focus:border-amber-400 transition-all text-sm font-black text-amber-300" />
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-amber-400 tracking-widest">KM</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. Observaciones Generales -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-4 flex items-center gap-2">
+              <DocumentTextIcon class="w-4 h-4" /> Observaciones Generales
+            </h3>
+            <textarea v-model="form.observaciones" rows="3" placeholder="Detalles adicionales, recomendaciones del mecánico o notas importantes..."
+              class="w-full p-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-medium text-white resize-none"></textarea>
+          </section>
+
         </div>
 
-        <!-- Right: fotos + resumen + botones -->
+        <!-- Right: 5 fotos de evidencia + Resumen + Botones -->
         <div class="lg:col-span-4 space-y-6">
 
-          <!-- Fotos -->
+          <!-- Evidencia Fotográfica (5 fotos) -->
           <section class="glass-card p-6 rounded-3xl border border-white/5">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
-              <CameraIcon class="w-4 h-4" /> Evidencia Fotográfica <span class="text-white/30 font-normal normal-case tracking-normal text-[10px]">(máx. 5)</span>
+              <CameraIcon class="w-4 h-4" /> Evidencia Fotográfica <span class="text-white/30 font-normal normal-case tracking-normal text-[10px]">(5 fotos)</span>
             </h3>
             <div class="grid grid-cols-2 gap-2">
               <div v-for="photo in photoFields.slice(0, 4)" :key="photo.key"
@@ -308,12 +447,13 @@
             </div>
           </section>
 
-          <!-- Resumen -->
+          <!-- Resumen de Costos -->
           <div class="bg-primary p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
             <div class="relative z-10 space-y-4">
               <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Resumen</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Resumen del Servicio</p>
                 <p class="text-2xl font-black italic tracking-tighter uppercase mt-1">{{ form.placa || 'PLACA-0000' }}</p>
+                <p class="text-xs font-bold text-white/80 uppercase mt-0.5">{{ form.tipo_trabajo || 'Mantenimiento General' }}</p>
               </div>
               <div class="space-y-2 pt-2 text-xs border-t border-white/20">
                 <div class="flex justify-between">
@@ -321,12 +461,16 @@
                   <span class="font-black text-white/95 text-[10px]">{{ form.fecha || '—' }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Productos</span>
-                  <span class="font-black text-white/90 text-[10px]">{{ items.length }}</span>
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Productos / Repuestos</span>
+                  <span class="font-black text-white/90 text-[10px]">Q {{ itemsTotal.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Total</span>
-                  <span class="font-black text-white/90 text-[10px]">Q {{ itemsTotal.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Mano de Obra</span>
+                  <span class="font-black text-white/90 text-[10px]">Q {{ (parseFloat(form.mano_obra_monto) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-white/20 text-sm">
+                  <span class="font-black uppercase tracking-wider">TOTAL INVERSIÓN</span>
+                  <span class="font-black text-emerald-300">Q {{ grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
                 </div>
               </div>
             </div>
@@ -337,7 +481,7 @@
           <div class="flex gap-3">
             <button @click="submitForm"
               class="flex-1 bg-primary hover:opacity-90 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-2xl transition-all">
-              {{ editingId ? 'Guardar Cambios' : 'Registrar' }}
+              {{ editingId ? 'Guardar Cambios' : 'Registrar Servicio' }}
             </button>
             <button @click="switchTab('list'); resetForm()"
               class="px-5 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-white/50 transition-all">
@@ -352,12 +496,13 @@
     <Transition name="modal">
       <div v-if="showDetailsModal && selectedRecord" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div @click="showDetailsModal = false" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"></div>
-        <div class="relative w-full max-w-2xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10">
+        <div class="relative w-full max-w-4xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] z-10 text-white">
+          
           <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
             <h4 class="text-lg font-black italic uppercase flex items-center gap-2 text-white">
               <WrenchScrewdriverIcon class="w-5 h-5 text-primary" />
               <span class="font-mono text-primary">{{ selectedRecord.placa }}</span>
-              <span class="text-white/50 text-sm font-normal">{{ formatDate(selectedRecord.fecha) }}</span>
+              <span class="text-white/50 text-sm font-normal">· {{ formatDate(selectedRecord.fecha) }}</span>
             </h4>
             <button @click="showDetailsModal = false" class="p-1.5 hover:bg-white/10 rounded-lg text-white/50 hover:text-white transition-all">
               <XMarkIcon class="w-5 h-5" />
@@ -365,54 +510,96 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Info + items -->
+            
+            <!-- Info principal + Productos + Mano de Obra -->
             <div class="space-y-4">
+              
               <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
-                <div>
-                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Unidad</span>
-                  <span class="text-sm font-black text-white">{{ selectedRecord.placa }}</span>
-                  <span :class="['text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ml-2', unidadBadge(selectedRecord.tipo_unidad)]">{{ selectedRecord.tipo_unidad }}</span>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Tipo de Trabajo</span>
+                    <span class="text-sm font-black text-white">{{ selectedRecord.tipo_trabajo || 'Mantenimiento General' }}</span>
+                  </div>
+                  <span :class="['text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border', unidadBadge(selectedRecord.tipo_unidad)]">{{ selectedRecord.tipo_unidad }}</span>
                 </div>
-                <div>
-                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Proveedor</span>
-                  <span class="text-sm font-black text-white">{{ selectedRecord.proveedor_nombre || '—' }}</span>
+
+                <div v-if="selectedRecord.proximo_servicio_hrs || selectedRecord.proximo_servicio_km" class="pt-2 border-t border-white/5">
+                  <span class="text-[9px] font-black text-amber-400 uppercase tracking-widest block">Próximo Servicio Programado</span>
+                  <span v-if="selectedRecord.proximo_servicio_hrs" class="text-xs font-black text-amber-300">{{ Number(selectedRecord.proximo_servicio_hrs).toFixed(1) }} HRS</span>
+                  <span v-else class="text-xs font-black text-amber-300">{{ Number(selectedRecord.proximo_servicio_km).toLocaleString() }} KM</span>
                 </div>
-                <div>
-                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block">Total</span>
-                  <span class="text-xl font-black text-emerald-400">Q {{ Number(selectedRecord.total_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+
+                <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                  <span class="text-[9px] font-black text-white/40 uppercase tracking-widest">Inversión Total</span>
+                  <span class="text-2xl font-black text-emerald-400">Q {{ Number(selectedRecord.total_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
                 </div>
               </div>
 
+              <!-- Mano de Obra -->
+              <div v-if="selectedRecord.mano_obra_monto > 0 || selectedRecord.mano_obra_proveedor_razon"
+                class="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                <h5 class="text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1.5">
+                  <WrenchScrewdriverIcon class="w-3.5 h-3.5" /> Mano de Obra
+                </h5>
+                <div class="flex justify-between text-xs">
+                  <span class="text-white/70">{{ selectedRecord.mano_obra_proveedor_razon || selectedRecord.mano_obra_proveedor_nombre || 'Proveedor asignado' }}</span>
+                  <span class="font-black text-emerald-400">Q {{ Number(selectedRecord.mano_obra_monto || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                </div>
+                <div v-if="selectedRecord.mano_obra_factura" class="pt-1">
+                  <a :href="photoUrl(selectedRecord.mano_obra_factura)" target="_blank"
+                    class="text-[10px] font-bold text-primary hover:underline flex items-center gap-1">
+                    <DocumentTextIcon class="w-3.5 h-3.5" /> Ver Factura Mano de Obra
+                  </a>
+                </div>
+              </div>
+
+              <!-- Productos / Servicios -->
               <div>
-                <h5 class="text-[9px] font-black text-primary uppercase tracking-widest mb-3">Productos / Servicios</h5>
-                <div v-if="detailItems.length === 0" class="text-white/25 text-xs py-2">Cargando...</div>
-                <div class="space-y-2">
+                <h5 class="text-[9px] font-black text-primary uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                  <CubeIcon class="w-3.5 h-3.5" /> Repuestos y Productos ({{ detailItems.length }})
+                </h5>
+                <div v-if="detailItems.length === 0" class="text-white/25 text-xs py-2">Sin productos registrados.</div>
+                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
                   <div v-for="(item, i) in detailItems" :key="i"
-                    class="flex items-center justify-between bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
-                    <span class="text-xs font-bold text-white/80">{{ item.producto }}</span>
-                    <span class="text-xs font-black text-emerald-400">Q {{ Number(item.monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                    class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-1">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-white/90">{{ item.producto }}</span>
+                      <span class="font-black text-emerald-400">Q {{ Number(item.monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-white/40">
+                      <span>{{ item.proveedor_nombre || 'Sin proveedor' }}</span>
+                      <a v-if="item.foto_factura" :href="photoUrl(item.foto_factura)" target="_blank" class="text-primary underline">Ver Factura</a>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Observaciones -->
+              <div v-if="selectedRecord.observaciones" class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <span class="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-1">Observaciones</span>
+                <p class="text-xs text-white/70 italic leading-relaxed">{{ selectedRecord.observaciones }}</p>
+              </div>
+
             </div>
 
-            <!-- Fotos -->
+            <!-- Fotos de evidencia -->
             <div class="space-y-4">
               <h5 class="text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                <CameraIcon class="w-3.5 h-3.5" /> Evidencia
+                <CameraIcon class="w-3.5 h-3.5" /> Evidencia Fotográfica (5)
               </h5>
               <div class="grid grid-cols-2 gap-2">
                 <div v-for="photo in photoFields" :key="photo.key" class="space-y-1">
                   <span class="text-[7px] font-black text-white/25 uppercase tracking-widest block">{{ photo.label }}</span>
                   <div class="aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center">
-                    <img v-if="selectedRecord[photo.key]" :src="photoUrl(selectedRecord[photo.key])" class="w-full h-full object-cover" />
+                    <img v-if="selectedRecord[photo.key]" :src="photoUrl(selectedRecord[photo.key])" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform" />
                     <div v-else class="text-center text-white/20 p-2">
-                      <CameraIcon class="w-5 h-5 mx-auto opacity-50" />
+                      <CameraIcon class="w-5 h-5 mx-auto opacity-40" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -427,7 +614,7 @@ import Swal from 'sweetalert2';
 import {
   PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
   CameraIcon, XMarkIcon, WrenchScrewdriverIcon, InformationCircleIcon,
-  BanknotesIcon, CalendarDaysIcon, CubeIcon
+  BanknotesIcon, CalendarDaysIcon, CubeIcon, BellAlertIcon, DocumentTextIcon
 } from '@heroicons/vue/24/outline';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
@@ -440,7 +627,12 @@ const records    = ref([]);
 const suppliers  = ref([]);
 const allPlates  = ref([]);
 const editingId  = ref(null);
-const items      = ref([]);
+
+const items              = ref([]);
+const itemPhotoFiles     = ref({});
+const itemPhotoPreviews  = ref({});
+const manoObraFacturaFile = ref(null);
+const manoObraFacturaName = ref('');
 
 const placaSearch       = ref('');
 const showPlacaDropdown = ref(false);
@@ -448,7 +640,15 @@ const placaContainer    = ref(null);
 
 const form = ref({
   fecha: new Date().toISOString().split('T')[0],
-  placa: '', tipo_unidad: 'Vehiculo', proveedor_id: ''
+  placa: '',
+  tipo_unidad: 'Vehiculo',
+  tipo_trabajo: '',
+  mano_obra_proveedor_id: '',
+  mano_obra_monto: '',
+  mano_obra_factura: '',
+  observaciones: '',
+  proximo_servicio_km: '',
+  proximo_servicio_hrs: ''
 });
 
 const photoFields = [
@@ -477,6 +677,7 @@ const filteredList = computed(() => {
   const q = searchTerm.value.toLowerCase();
   return records.value.filter(r => {
     const matchText = r.placa?.toLowerCase().includes(q) ||
+                      r.tipo_trabajo?.toLowerCase().includes(q) ||
                       r.proveedor_nombre?.toLowerCase().includes(q);
     if (unitFilter.value === 'all') return matchText;
     return matchText && r.tipo_unidad === unitFilter.value;
@@ -506,6 +707,10 @@ const itemsTotal = computed(() =>
   items.value.reduce((s, i) => s + parseFloat(i.monto || 0), 0)
 );
 
+const grandTotal = computed(() =>
+  itemsTotal.value + (parseFloat(form.value.mano_obra_monto) || 0)
+);
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 const unidadBadge = (tipo) => {
   if (tipo === 'Vehiculo')          return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
@@ -533,8 +738,26 @@ const toast = (msg, icon = 'success') => Swal.fire({
 });
 
 // ── Items dinámicos ────────────────────────────────────────────────────────
-const addItem    = () => items.value.push({ producto: '', monto: '' });
-const removeItem = (idx) => items.value.splice(idx, 1);
+const addItem = () => items.value.push({ producto: '', monto: '', proveedor_id: '', foto_factura: '' });
+const removeItem = (idx) => {
+  items.value.splice(idx, 1);
+  delete itemPhotoFiles.value[idx];
+  delete itemPhotoPreviews.value[idx];
+};
+
+const onItemPhotoChange = (e, idx) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  itemPhotoFiles.value[idx] = file;
+  itemPhotoPreviews.value[idx] = URL.createObjectURL(file);
+};
+
+const onManoObraFacturaChange = (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  manoObraFacturaFile.value = file;
+  manoObraFacturaName.value = file.name;
+};
 
 // ── Placa dropdown ─────────────────────────────────────────────────────────
 const selectPlate = (plate) => {
@@ -542,12 +765,16 @@ const selectPlate = (plate) => {
   form.value.tipo_unidad = plate.tipo_unidad;
   placaSearch.value      = plate.placa;
   showPlacaDropdown.value = false;
+  form.value.proximo_servicio_km  = '';
+  form.value.proximo_servicio_hrs = '';
 };
 
 const clearPlaca = () => {
   form.value.placa       = '';
   form.value.tipo_unidad = 'Vehiculo';
   placaSearch.value      = '';
+  form.value.proximo_servicio_km  = '';
+  form.value.proximo_servicio_hrs = '';
 };
 
 const onClickOutside = (e) => {
@@ -613,10 +840,22 @@ const resetForm = () => {
   editingId.value = null;
   form.value = {
     fecha: new Date().toISOString().split('T')[0],
-    placa: '', tipo_unidad: 'Vehiculo', proveedor_id: ''
+    placa: '',
+    tipo_unidad: 'Vehiculo',
+    tipo_trabajo: '',
+    mano_obra_proveedor_id: '',
+    mano_obra_monto: '',
+    mano_obra_factura: '',
+    observaciones: '',
+    proximo_servicio_km: '',
+    proximo_servicio_hrs: ''
   };
   placaSearch.value = '';
   items.value = [];
+  itemPhotoFiles.value = {};
+  itemPhotoPreviews.value = {};
+  manoObraFacturaFile.value = null;
+  manoObraFacturaName.value = '';
   photoPreviews.value = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
   photoFiles = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
 };
@@ -626,12 +865,21 @@ const switchTab = (tab) => { activeTab.value = tab; };
 const startEdit = async (r) => {
   editingId.value = r.id;
   form.value = {
-    fecha:        r.fecha,
-    placa:        r.placa,
-    tipo_unidad:  r.tipo_unidad,
-    proveedor_id: r.proveedor_id || '',
+    fecha:                  r.fecha,
+    placa:                  r.placa,
+    tipo_unidad:            r.tipo_unidad,
+    tipo_trabajo:           r.tipo_trabajo || '',
+    mano_obra_proveedor_id: r.mano_obra_proveedor_id || '',
+    mano_obra_monto:        r.mano_obra_monto || '',
+    mano_obra_factura:      r.mano_obra_factura || '',
+    observaciones:          r.observaciones || '',
+    proximo_servicio_km:    r.proximo_servicio_km || '',
+    proximo_servicio_hrs:   r.proximo_servicio_hrs || '',
   };
   placaSearch.value = r.placa;
+  manoObraFacturaFile.value = null;
+  manoObraFacturaName.value = '';
+
   photoFiles = { foto_1: null, foto_2: null, foto_3: null, foto_4: null, foto_5: null };
   photoPreviews.value = {
     foto_1: r.foto_1 ? photoUrl(r.foto_1) : null,
@@ -640,8 +888,17 @@ const startEdit = async (r) => {
     foto_4: r.foto_4 ? photoUrl(r.foto_4) : null,
     foto_5: r.foto_5 ? photoUrl(r.foto_5) : null,
   };
+
   const fetchedItems = await fetchItems(r.id);
-  items.value = fetchedItems.map(i => ({ producto: i.producto, monto: i.monto }));
+  items.value = fetchedItems.map(i => ({
+    producto:     i.producto,
+    monto:        i.monto,
+    proveedor_id: i.proveedor_id || '',
+    foto_factura: i.foto_factura || ''
+  }));
+  itemPhotoFiles.value = {};
+  itemPhotoPreviews.value = {};
+
   activeTab.value = 'register';
 };
 
@@ -654,8 +911,8 @@ const onPhotoChange = (e, key) => {
 };
 
 const submitForm = async () => {
-  if (!form.value.fecha || !form.value.placa) {
-    toast('Fecha y unidad son obligatorios.', 'warning');
+  if (!form.value.fecha || !form.value.placa || !form.value.tipo_trabajo) {
+    toast('Fecha, unidad y tipo de trabajo son obligatorios.', 'warning');
     return;
   }
   if (!form.value.placa && placaSearch.value) {
@@ -667,8 +924,23 @@ const submitForm = async () => {
     const token = localStorage.getItem('token');
     const fd    = new FormData();
     Object.entries(form.value).forEach(([k, v]) => fd.append(k, v ?? ''));
+
     fd.append('items_json', JSON.stringify(items.value.filter(i => i.producto)));
-    photoFields.forEach(({ key }) => { if (photoFiles[key]) fd.append(key, photoFiles[key]); });
+
+    // Append item invoice photos
+    Object.entries(itemPhotoFiles.value).forEach(([idx, file]) => {
+      if (file) fd.append(`item_foto_${idx}`, file);
+    });
+
+    // Append mano de obra invoice
+    if (manoObraFacturaFile.value) {
+      fd.append('mano_obra_factura', manoObraFacturaFile.value);
+    }
+
+    // Append main photos
+    photoFields.forEach(({ key }) => {
+      if (photoFiles[key]) fd.append(key, photoFiles[key]);
+    });
 
     const url = editingId.value
       ? `${BASE_URL}/mechanic-records/update/${editingId.value}`
@@ -685,7 +957,9 @@ const submitForm = async () => {
     } else {
       toast(result.message || 'Error al guardar.', 'error');
     }
-  } catch (e) { toast('Error de conexión.', 'error'); }
+  } catch (e) {
+    toast('Error de conexión.', 'error');
+  }
 };
 
 // ── Delete ─────────────────────────────────────────────────────────────────

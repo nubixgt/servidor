@@ -88,7 +88,7 @@ class FuelRecordService
         $uploader = new Uploader('Uploads/FuelRecords/' . $id);
         $photos   = [];
 
-        foreach (['foto_1', 'foto_2'] as $field) {
+        foreach (['foto_1', 'foto_2', 'foto_3'] as $field) {
             if (isset($files[$field]) && $files[$field]['error'] === UPLOAD_ERR_OK) {
                 $photos[$field] = $uploader->upload($files[$field], $field);
             }

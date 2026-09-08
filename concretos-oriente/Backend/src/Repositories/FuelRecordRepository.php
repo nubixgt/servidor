@@ -11,6 +11,25 @@ class FuelRecordRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->autoMigrate();
+    }
+
+    private function autoMigrate(): void
+    {
+        try {
+            $cols = $this->pdo->query("SHOW COLUMNS FROM fuel_records")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('precio_galon', $cols)) {
+                $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN precio_galon DECIMAL(10,2) NULL AFTER cantidad_galones");
+            }
+            if (!in_array('proyectos_detalle', $cols)) {
+                $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN proyectos_detalle LONGTEXT NULL AFTER proyecto_id");
+            }
+            if (!in_array('foto_3', $cols)) {
+                $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN foto_3 VARCHAR(255) NULL AFTER foto_2");
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
     }
 
     public function getPDO(): PDO
@@ -67,22 +86,24 @@ class FuelRecordRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO fuel_records
-                    (fecha, piloto_id, placa, tipo_unidad, proyecto_id,
-                     cantidad_galones, monto, kilometraje, horometro)
+                    (fecha, piloto_id, placa, tipo_unidad, proyecto_id, proyectos_detalle,
+                     cantidad_galones, precio_galon, monto, kilometraje, horometro)
                 VALUES
-                    (:fecha, :piloto_id, :placa, :tipo_unidad, :proyecto_id,
-                     :cantidad_galones, :monto, :kilometraje, :horometro)";
+                    (:fecha, :piloto_id, :placa, :tipo_unidad, :proyecto_id, :proyectos_detalle,
+                     :cantidad_galones, :precio_galon, :monto, :kilometraje, :horometro)";
 
         $this->pdo->prepare($sql)->execute([
-            'fecha'           => $data['fecha'],
-            'piloto_id'       => $data['piloto_id'] ?: null,
-            'placa'           => $data['placa'],
-            'tipo_unidad'     => $data['tipo_unidad'],
-            'proyecto_id'     => $data['proyecto_id'] ?: null,
-            'cantidad_galones'=> $data['cantidad_galones'],
-            'monto'           => $data['monto'],
-            'kilometraje'     => $data['kilometraje'] ?: null,
-            'horometro'       => $data['horometro'] ?: null,
+            'fecha'             => $data['fecha'],
+            'piloto_id'         => $data['piloto_id'] ?: null,
+            'placa'             => $data['placa'],
+            'tipo_unidad'       => $data['tipo_unidad'],
+            'proyecto_id'       => $data['proyecto_id'] ?: null,
+            'proyectos_detalle' => $data['proyectos_detalle'] ?? null,
+            'cantidad_galones'  => $data['cantidad_galones'],
+            'precio_galon'      => $data['precio_galon'] ?: null,
+            'monto'             => $data['monto'],
+            'kilometraje'       => $data['kilometraje'] ?: null,
+            'horometro'         => $data['horometro'] ?: null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -91,28 +112,32 @@ class FuelRecordRepository
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE fuel_records SET
-                    fecha            = :fecha,
-                    piloto_id        = :piloto_id,
-                    placa            = :placa,
-                    tipo_unidad      = :tipo_unidad,
-                    proyecto_id      = :proyecto_id,
-                    cantidad_galones = :cantidad_galones,
-                    monto            = :monto,
-                    kilometraje      = :kilometraje,
-                    horometro        = :horometro
+                    fecha             = :fecha,
+                    piloto_id         = :piloto_id,
+                    placa             = :placa,
+                    tipo_unidad       = :tipo_unidad,
+                    proyecto_id       = :proyecto_id,
+                    proyectos_detalle = :proyectos_detalle,
+                    cantidad_galones  = :cantidad_galones,
+                    precio_galon      = :precio_galon,
+                    monto             = :monto,
+                    kilometraje       = :kilometraje,
+                    horometro         = :horometro
                 WHERE id = :id";
 
         $this->pdo->prepare($sql)->execute([
-            'id'              => $id,
-            'fecha'           => $data['fecha'],
-            'piloto_id'       => $data['piloto_id'] ?: null,
-            'placa'           => $data['placa'],
-            'tipo_unidad'     => $data['tipo_unidad'],
-            'proyecto_id'     => $data['proyecto_id'] ?: null,
-            'cantidad_galones'=> $data['cantidad_galones'],
-            'monto'           => $data['monto'],
-            'kilometraje'     => $data['kilometraje'] ?: null,
-            'horometro'       => $data['horometro'] ?: null,
+            'id'                => $id,
+            'fecha'             => $data['fecha'],
+            'piloto_id'         => $data['piloto_id'] ?: null,
+            'placa'             => $data['placa'],
+            'tipo_unidad'       => $data['tipo_unidad'],
+            'proyecto_id'       => $data['proyecto_id'] ?: null,
+            'proyectos_detalle' => $data['proyectos_detalle'] ?? null,
+            'cantidad_galones'  => $data['cantidad_galones'],
+            'precio_galon'      => $data['precio_galon'] ?: null,
+            'monto'             => $data['monto'],
+            'kilometraje'       => $data['kilometraje'] ?: null,
+            'horometro'         => $data['horometro'] ?: null,
         ]);
     }
 
@@ -121,7 +146,7 @@ class FuelRecordRepository
         $updates = [];
         $params  = ['id' => $id];
 
-        foreach (['foto_1', 'foto_2'] as $field) {
+        foreach (['foto_1', 'foto_2', 'foto_3'] as $field) {
             if (isset($photos[$field]) && $photos[$field] !== null) {
                 $updates[]      = "{$field} = :{$field}";
                 $params[$field] = $photos[$field];
@@ -140,3 +165,4 @@ class FuelRecordRepository
         $this->pdo->prepare("DELETE FROM fuel_records WHERE id = :id")->execute(['id' => $id]);
     }
 }
+

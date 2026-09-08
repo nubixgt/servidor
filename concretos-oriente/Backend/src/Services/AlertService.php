@@ -50,4 +50,9 @@ class AlertService
     {
         return $this->alertRepository->findAllHistory();
     }
+
+    public function deleteHistory(int $id): void
+    {
+        $this->alertRepository->deleteHistory($id);
+    }
 }

@@ -7,7 +7,7 @@
         <h2 class="text-4xl font-bold tracking-tight text-white mb-2">
           {{ activeTab === 'register' ? (editingId ? 'Modificar Registro' : 'Registrar Combustible') : 'Control de Combustible' }}
         </h2>
-        <p class="text-white/60">Registro de consumo de combustible por unidad.</p>
+        <p class="text-white/60">Registro de consumo de combustible, asignación a proyectos y rendimiento.</p>
       </div>
 
       <div class="flex gap-2 bg-black/30 border border-white/10 rounded-2xl p-1 w-fit">
@@ -99,7 +99,8 @@
                 <th class="px-6 py-5">Fecha</th>
                 <th class="px-6 py-5">Placa / Unidad</th>
                 <th class="px-6 py-5">Piloto</th>
-                <th class="px-6 py-5">Proyecto</th>
+                <th class="px-6 py-5">Proyecto(s)</th>
+                <th class="px-6 py-5 text-right">Precio/Gal</th>
                 <th class="px-6 py-5 text-right">Galones</th>
                 <th class="px-6 py-5 text-right">Monto</th>
                 <th class="px-6 py-5 text-right">KM / HRS</th>
@@ -108,7 +109,7 @@
             </thead>
             <tbody class="divide-y divide-white/5">
               <tr v-if="filteredList.length === 0">
-                <td colspan="8" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros con el filtro aplicado.</td>
+                <td colspan="9" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros con el filtro aplicado.</td>
               </tr>
               <tr v-else v-for="r in filteredList" :key="r.id" class="hover:bg-white/[0.015] transition-colors">
                 <td class="px-6 py-4">
@@ -124,7 +125,17 @@
                   <span class="text-xs font-bold text-white/80">{{ r.piloto_nombre || '—' }}</span>
                 </td>
                 <td class="px-6 py-4">
-                  <span class="text-xs font-bold text-white/70">{{ r.proyecto_nombre || '—' }}</span>
+                  <div v-if="getProjectBadges(r).length > 0" class="flex flex-wrap gap-1">
+                    <span v-for="(pName, pIdx) in getProjectBadges(r)" :key="pIdx"
+                      class="text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-0.5 rounded-md text-white/80">
+                      {{ pName }}
+                    </span>
+                  </div>
+                  <span v-else class="text-xs font-bold text-white/70">{{ r.proyecto_nombre || '—' }}</span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <span v-if="r.precio_galon" class="text-xs font-bold text-amber-400">Q {{ Number(r.precio_galon).toFixed(2) }}</span>
+                  <span v-else class="text-xs text-white/20">—</span>
                 </td>
                 <td class="px-6 py-4 text-right">
                   <span class="text-xs font-black text-sky-400">{{ Number(r.cantidad_galones).toFixed(2) }} gal</span>
@@ -174,7 +185,7 @@
           <!-- Sección 1: Datos del registro -->
           <section class="glass-card p-8 rounded-3xl border border-white/5 relative">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
-              <InformationCircleIcon class="w-4 h-4" /> Datos del Registro
+              <InformationCircleIcon class="w-4 h-4" /> Datos de la Carga
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
@@ -197,7 +208,7 @@
 
               <!-- Placa buscador -->
               <div class="space-y-2 md:col-span-2 relative" ref="placaContainer">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Placa <span class="text-rose-400">*</span></label>
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Unidad (Placa) <span class="text-rose-400">*</span></label>
                 <div class="relative">
                   <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
                   <input v-model="placaSearch" type="text" placeholder="Buscar placa registrada..."
@@ -233,39 +244,39 @@
                 </div>
               </div>
 
-              <!-- Proyecto -->
-              <div class="space-y-2 md:col-span-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Proyecto</label>
-                <select v-model="form.proyecto_id"
-                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary">
-                  <option value="">Sin proyecto</option>
-                  <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
-                </select>
+              <!-- Precio por Galón -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Precio Galones (Q/gal)</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
+                  <input v-model="form.precio_galon" @input="onPriceOrGalonesChange('price')" type="number" min="0" step="0.01" placeholder="0.00"
+                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-amber-400" />
+                </div>
               </div>
 
-              <!-- Galones -->
+              <!-- Cantidad Galones -->
               <div class="space-y-2">
                 <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Cantidad Galones <span class="text-rose-400">*</span></label>
                 <div class="relative">
-                  <input v-model="form.cantidad_galones" type="number" min="0" step="0.01" required placeholder="0.00"
+                  <input v-model="form.cantidad_galones" @input="onPriceOrGalonesChange('galones')" type="number" min="0" step="0.01" required placeholder="0.00"
                     class="w-full h-12 pl-4 pr-12 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
                   <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/40 tracking-widest">GAL</span>
                 </div>
               </div>
 
-              <!-- Monto -->
+              <!-- Monto Total -->
               <div class="space-y-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Monto <span class="text-rose-400">*</span></label>
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Monto Total <span class="text-rose-400">*</span></label>
                 <div class="relative">
                   <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
-                  <input v-model="form.monto" type="number" min="0" step="0.01" required placeholder="0.00"
-                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
+                  <input v-model="form.monto" @input="onMontoChange" type="number" min="0" step="0.01" required placeholder="0.00"
+                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-emerald-400" />
                 </div>
               </div>
 
               <!-- Kilometraje (solo Vehiculo / Transporte Pesado) -->
-              <div v-if="showKilometraje" class="space-y-2 md:col-span-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Kilometraje</label>
+              <div v-if="showKilometraje" class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Kilometraje Actual</label>
                 <div class="relative">
                   <input v-model="form.kilometraje" type="number" min="0" step="0.01" placeholder="0"
                     class="w-full h-12 pl-4 pr-12 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
@@ -274,8 +285,8 @@
               </div>
 
               <!-- Horómetro (solo Maquinaria) -->
-              <div v-if="showHorometro" class="space-y-2 md:col-span-2">
-                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Horómetro</label>
+              <div v-if="showHorometro" class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Horómetro Actual</label>
                 <div class="relative">
                   <input v-model="form.horometro" type="number" min="0" step="0.1" placeholder="0.0"
                     class="w-full h-12 pl-4 pr-12 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" />
@@ -285,25 +296,113 @@
 
             </div>
           </section>
+
+          <!-- Sección 2: Asignación a Proyectos (Multi-Proyecto) -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
+              <div>
+                <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <MapPinIcon class="w-4 h-4" /> Asignación a Proyectos
+                </h3>
+                <p class="text-white/40 text-[11px] mt-0.5">Distribuye el consumo de combustible en uno o más proyectos con su rendimiento.</p>
+              </div>
+              <button @click="addProjectRow" type="button"
+                class="flex items-center gap-1.5 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all w-fit">
+                <PlusIcon class="w-3.5 h-3.5" /> + Agregar Proyecto
+              </button>
+            </div>
+
+            <div v-if="projectRows.length === 0" class="text-center py-6 text-white/30 text-xs font-bold border-2 border-dashed border-white/5 rounded-2xl">
+              <p>No se han asignado proyectos específicos.</p>
+              <button @click="addProjectRow" class="mt-2 text-primary text-xs font-black uppercase tracking-wider hover:underline">
+                + Asignar a un Proyecto
+              </button>
+            </div>
+
+            <div v-else class="space-y-3">
+              <div v-for="(row, idx) in projectRows" :key="idx"
+                class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-2xl items-end">
+                
+                <!-- Proyecto -->
+                <div class="md:col-span-4 space-y-1">
+                  <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Proyecto</label>
+                  <select v-model="row.proyecto_id" @change="onProjectRowSelect(row)"
+                    class="w-full h-10 px-3 rounded-xl bg-slate-950/65 border border-white/10 text-xs font-black uppercase text-white focus:outline-none focus:border-primary">
+                    <option value="">Seleccionar Proyecto</option>
+                    <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+                  </select>
+                </div>
+
+                <!-- Galones -->
+                <div class="md:col-span-2 space-y-1">
+                  <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Galones</label>
+                  <div class="relative">
+                    <input v-model="row.galones" @input="recalcProjectRow(row)" type="number" min="0" step="0.01" placeholder="0.00"
+                      class="w-full h-10 pl-3 pr-8 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-white" />
+                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-white/30">gal</span>
+                  </div>
+                </div>
+
+                <!-- Monto -->
+                <div class="md:col-span-3 space-y-1">
+                  <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Monto (Q)</label>
+                  <div class="relative">
+                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/40">Q</span>
+                    <input v-model="row.monto" type="number" min="0" step="0.01" placeholder="0.00"
+                      class="w-full h-10 pl-6 pr-2 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-emerald-400" />
+                  </div>
+                </div>
+
+                <!-- Rendimiento -->
+                <div class="md:col-span-2 space-y-1">
+                  <label class="text-[8px] font-black text-white/30 uppercase tracking-widest">Rendimiento</label>
+                  <input v-model="row.rendimiento" type="number" min="0" step="0.01" placeholder="0.00"
+                    class="w-full h-10 px-3 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-xs font-black text-sky-400" />
+                </div>
+
+                <!-- Eliminar -->
+                <div class="md:col-span-1 flex justify-end">
+                  <button @click="removeProjectRow(idx)" type="button"
+                    class="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/20 transition-all shrink-0">
+                    <TrashIcon class="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Total distribuido -->
+              <div class="flex flex-wrap items-center justify-between text-xs pt-2 px-2 text-white/40">
+                <span>Distribuido en {{ projectRows.length }} proyecto(s)</span>
+                <div class="flex gap-4">
+                  <span>Galones: <strong class="text-sky-400">{{ totalDistGalones.toFixed(2) }} gal</strong></span>
+                  <span>Monto: <strong class="text-emerald-400">Q {{ totalDistMonto.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</strong></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
 
-        <!-- Right: fotos + preview + botones -->
+        <!-- Right: 3 fotos + preview + botones -->
         <div class="lg:col-span-4 space-y-6">
 
-          <!-- Fotos -->
+          <!-- 3 Fotos de adjuntar -->
           <section class="glass-card p-6 rounded-3xl border border-white/5">
             <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
-              <CameraIcon class="w-4 h-4" /> Comprobante Fotográfico <span class="text-white/30 font-normal normal-case tracking-normal text-[10px]">(máx. 2)</span>
+              <CameraIcon class="w-4 h-4" /> Comprobantes Fotográficos <span class="text-white/30 font-normal normal-case tracking-normal text-[10px]">(3 fotos)</span>
             </h3>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-3">
               <div v-for="photo in photoFields" :key="photo.key"
-                class="group relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center">
+                class="group relative h-24 rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center">
                 <img v-if="photoPreviews[photo.key]" :src="photoPreviews[photo.key]"
                   class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity z-0" />
-                <div class="z-10 flex flex-col items-center gap-1 p-2 rounded-xl transition-all"
-                  :class="photoPreviews[photo.key] ? 'bg-slate-950/60 backdrop-blur-md opacity-0 group-hover:opacity-100' : ''">
-                  <CameraIcon class="w-5 h-5 text-white/30 group-hover:text-primary transition-colors" />
-                  <p class="text-[8px] font-black text-white/40 uppercase tracking-widest leading-tight">{{ photo.label }}</p>
+                <div class="z-10 flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all"
+                  :class="photoPreviews[photo.key] ? 'bg-slate-950/70 backdrop-blur-md' : ''">
+                  <CameraIcon class="w-5 h-5 text-white/40 group-hover:text-primary transition-colors shrink-0" />
+                  <div class="text-left">
+                    <p class="text-[9px] font-black text-white/80 uppercase tracking-wider leading-tight">{{ photo.label }}</p>
+                    <p class="text-[7px] font-bold text-white/30 uppercase tracking-widest">{{ photo.sub }}</p>
+                  </div>
                 </div>
                 <input type="file" accept="image/*" @change="onPhotoChange($event, photo.key)"
                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
@@ -324,12 +423,20 @@
                   <span class="font-black text-white/95 text-[10px]">{{ form.fecha || '—' }}</span>
                 </div>
                 <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Precio/Galón</span>
+                  <span class="font-black text-amber-300 text-[10px]">Q {{ form.precio_galon || '0.00' }}</span>
+                </div>
+                <div class="flex justify-between">
                   <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Galones</span>
                   <span class="font-black text-white/90 text-[10px]">{{ form.cantidad_galones || '0' }} gal</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Monto</span>
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Monto Total</span>
                   <span class="font-black text-white/90 text-[10px]">Q {{ form.monto || '0.00' }}</span>
+                </div>
+                <div v-if="projectRows.length > 0" class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Proyectos</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ projectRows.length }} asignado(s)</span>
                 </div>
               </div>
             </div>
@@ -355,7 +462,8 @@
     <Transition name="modal">
       <div v-if="showDetailsModal && selectedRecord" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div @click="showDetailsModal = false" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm cursor-pointer"></div>
-        <div class="relative w-full max-w-2xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white z-10">
+        <div class="relative w-full max-w-3xl bg-slate-950 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-white z-10">
+          
           <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
             <h4 class="text-lg font-black italic uppercase flex items-center gap-2">
               <FireIcon class="w-5 h-5 text-primary" />
@@ -368,6 +476,8 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Left Info -->
             <div class="space-y-4">
               <div class="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-3">
                 <div v-for="field in detailFields" :key="field.label">
@@ -375,25 +485,47 @@
                   <span class="text-sm font-black text-white">{{ field.value }}</span>
                 </div>
               </div>
+
+              <!-- Detalle por proyectos si existe -->
+              <div v-if="detailProjectsList.length > 0">
+                <h5 class="text-[10px] font-black text-primary uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <MapPinIcon class="w-3.5 h-3.5" /> Detalle de Proyectos Asignados
+                </h5>
+                <div class="space-y-2">
+                  <div v-for="(p, pIdx) in detailProjectsList" :key="pIdx"
+                    class="bg-white/5 border border-white/5 p-3 rounded-xl flex items-center justify-between text-xs">
+                    <div>
+                      <p class="font-black text-white">{{ p.proyecto_nombre || 'Proyecto #' + p.proyecto_id }}</p>
+                      <p class="text-[10px] text-white/40">Rendimiento: <strong class="text-sky-400">{{ p.rendimiento || '—' }}</strong></p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-black text-sky-400">{{ p.galones }} gal</p>
+                      <p class="font-black text-emerald-400">Q {{ Number(p.monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
+            <!-- Right 3 fotos -->
             <div class="space-y-4">
               <h3 class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                <CameraIcon class="w-4 h-4" /> Comprobantes
+                <CameraIcon class="w-4 h-4" /> Comprobantes Adjuntos (3)
               </h3>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="space-y-3">
                 <div v-for="photo in photoFields" :key="photo.key" class="space-y-1">
-                  <span class="text-[8px] font-black text-white/30 uppercase tracking-widest block">{{ photo.label }}</span>
-                  <div class="aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center">
-                    <img v-if="selectedRecord[photo.key]" :src="photoUrl(selectedRecord[photo.key])" class="w-full h-full object-cover cursor-pointer" />
+                  <span class="text-[8px] font-black text-white/30 uppercase tracking-widest block">{{ photo.label }} · {{ photo.sub }}</span>
+                  <div class="h-28 bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center">
+                    <img v-if="selectedRecord[photo.key]" :src="photoUrl(selectedRecord[photo.key])" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform" />
                     <div v-else class="text-center text-white/20 p-2">
-                      <CameraIcon class="w-6 h-6 mx-auto mb-1 opacity-50" />
+                      <CameraIcon class="w-6 h-6 mx-auto mb-1 opacity-40" />
                       <span class="text-[8px] font-black uppercase tracking-widest">Sin foto</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -408,7 +540,7 @@ import Swal from 'sweetalert2';
 import {
   PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
   CameraIcon, XMarkIcon, FireIcon, InformationCircleIcon,
-  BeakerIcon, BanknotesIcon, CalendarDaysIcon
+  BeakerIcon, BanknotesIcon, CalendarDaysIcon, MapPinIcon
 } from '@heroicons/vue/24/outline';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
@@ -430,18 +562,28 @@ const placaContainer    = ref(null);
 
 const form = ref({
   fecha: new Date().toISOString().split('T')[0],
-  piloto_id: '', placa: '', tipo_unidad: 'Vehiculo',
-  proyecto_id: '', cantidad_galones: '', monto: '',
-  kilometraje: '', horometro: ''
+  piloto_id: '',
+  placa: '',
+  tipo_unidad: 'Vehiculo',
+  proyecto_id: '',
+  precio_galon: '',
+  cantidad_galones: '',
+  monto: '',
+  kilometraje: '',
+  horometro: ''
 });
 
+// Proyectos detalle dinámicos
+const projectRows = ref([]);
+
 const photoFields = [
-  { key: 'foto_1', label: 'Foto 1' },
-  { key: 'foto_2', label: 'Foto 2' },
+  { key: 'foto_1', label: 'Foto 1', sub: 'Odómetro / Horómetro' },
+  { key: 'foto_2', label: 'Foto 2', sub: 'Bomba / Ticket' },
+  { key: 'foto_3', label: 'Foto 3', sub: 'Factura / Comprobante' },
 ];
 
-const photoPreviews = ref({ foto_1: null, foto_2: null });
-let photoFiles = { foto_1: null, foto_2: null };
+const photoPreviews = ref({ foto_1: null, foto_2: null, foto_3: null });
+let photoFiles = { foto_1: null, foto_2: null, foto_3: null };
 
 const showDetailsModal = ref(false);
 const selectedRecord   = ref(null);
@@ -460,7 +602,8 @@ const filteredList = computed(() => {
   return records.value.filter(r => {
     const matchText = r.placa?.toLowerCase().includes(q) ||
                       r.piloto_nombre?.toLowerCase().includes(q) ||
-                      r.proyecto_nombre?.toLowerCase().includes(q);
+                      r.proyecto_nombre?.toLowerCase().includes(q) ||
+                      (r.proyectos_detalle && r.proyectos_detalle.toLowerCase().includes(q));
     if (unitFilter.value === 'all') return matchText;
     return matchText && r.tipo_unidad === unitFilter.value;
   });
@@ -492,24 +635,57 @@ const showKilometraje = computed(() =>
 
 const showHorometro = computed(() => form.value.tipo_unidad === 'Maquinaria');
 
+const totalDistGalones = computed(() =>
+  projectRows.value.reduce((sum, r) => sum + (parseFloat(r.galones) || 0), 0)
+);
+
+const totalDistMonto = computed(() =>
+  projectRows.value.reduce((sum, r) => sum + (parseFloat(r.monto) || 0), 0)
+);
+
+const detailProjectsList = computed(() => {
+  if (!selectedRecord.value || !selectedRecord.value.proyectos_detalle) return [];
+  try {
+    const parsed = JSON.parse(selectedRecord.value.proyectos_detalle);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+});
+
 const detailFields = computed(() => {
   if (!selectedRecord.value) return [];
   const r = selectedRecord.value;
   const fields = [
-    { label: 'Fecha',    value: formatDate(r.fecha) },
-    { label: 'Placa',    value: r.placa },
-    { label: 'Unidad',   value: r.tipo_unidad },
-    { label: 'Piloto',   value: r.piloto_nombre || '—' },
-    { label: 'Proyecto', value: r.proyecto_nombre || '—' },
-    { label: 'Galones',  value: `${Number(r.cantidad_galones).toFixed(2)} gal` },
-    { label: 'Monto',    value: `Q ${Number(r.monto).toLocaleString('en-US', { minimumFractionDigits: 2 })}` },
+    { label: 'Fecha',        value: formatDate(r.fecha) },
+    { label: 'Placa',        value: r.placa },
+    { label: 'Unidad',       value: r.tipo_unidad },
+    { label: 'Piloto',       value: r.piloto_nombre || '—' },
+    { label: 'Precio/Galón', value: r.precio_galon ? `Q ${Number(r.precio_galon).toFixed(2)}` : '—' },
+    { label: 'Galones',      value: `${Number(r.cantidad_galones).toFixed(2)} gal` },
+    { label: 'Monto Total',  value: `Q ${Number(r.monto).toLocaleString('en-US', { minimumFractionDigits: 2 })}` },
   ];
+  if (r.proyecto_nombre && detailProjectsList.value.length === 0) {
+    fields.push({ label: 'Proyecto', value: r.proyecto_nombre });
+  }
   if (r.kilometraje) fields.push({ label: 'Kilometraje', value: `${Number(r.kilometraje).toLocaleString()} km` });
   if (r.horometro)   fields.push({ label: 'Horómetro',   value: `${Number(r.horometro).toFixed(1)} hrs` });
   return fields;
 });
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ── Badges helpers ─────────────────────────────────────────────────────────
+const getProjectBadges = (r) => {
+  if (r.proyectos_detalle) {
+    try {
+      const arr = JSON.parse(r.proyectos_detalle);
+      if (Array.isArray(arr) && arr.length > 0) {
+        return arr.map(item => item.proyecto_nombre || `Proj #${item.proyecto_id}`);
+      }
+    } catch (e) {}
+  }
+  return r.proyecto_nombre ? [r.proyecto_nombre] : [];
+};
+
 const unidadBadge = (tipo) => {
   if (tipo === 'Vehiculo')          return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
   if (tipo === 'Transporte Pesado') return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
@@ -535,19 +711,66 @@ const toast = (msg, icon = 'success') => Swal.fire({
   background: '#0f172a', color: '#ffffff'
 });
 
+// ── Multi-project row handlers ─────────────────────────────────────────────
+const addProjectRow = () => {
+  projectRows.value.push({
+    proyecto_id: '',
+    proyecto_nombre: '',
+    galones: '',
+    monto: '',
+    rendimiento: ''
+  });
+};
+
+const removeProjectRow = (idx) => {
+  projectRows.value.splice(idx, 1);
+};
+
+const onProjectRowSelect = (row) => {
+  const p = projects.value.find(item => item.id == row.proyecto_id);
+  row.proyecto_nombre = p ? p.nombre : '';
+};
+
+const recalcProjectRow = (row) => {
+  const price = parseFloat(form.value.precio_galon) || 0;
+  if (price > 0 && row.galones) {
+    row.monto = (parseFloat(row.galones) * price).toFixed(2);
+  }
+};
+
+// ── Calculations ───────────────────────────────────────────────────────────
+const onPriceOrGalonesChange = (source) => {
+  const price   = parseFloat(form.value.precio_galon) || 0;
+  const galones = parseFloat(form.value.cantidad_galones) || 0;
+
+  if (price > 0 && galones > 0) {
+    form.value.monto = (price * galones).toFixed(2);
+  }
+  // recalculate project rows if any
+  projectRows.value.forEach(row => recalcProjectRow(row));
+};
+
+const onMontoChange = () => {
+  const monto   = parseFloat(form.value.monto) || 0;
+  const galones = parseFloat(form.value.cantidad_galones) || 0;
+
+  if (monto > 0 && galones > 0) {
+    form.value.precio_galon = (monto / galones).toFixed(2);
+  }
+};
+
 // ── Placa dropdown ─────────────────────────────────────────────────────────
 const selectPlate = (plate) => {
-  form.value.placa      = plate.placa;
+  form.value.placa       = plate.placa;
   form.value.tipo_unidad = plate.tipo_unidad;
   placaSearch.value      = plate.placa;
   showPlacaDropdown.value = false;
-  // limpiar campos condicionales al cambiar tipo
   form.value.kilometraje = '';
   form.value.horometro   = '';
 };
 
 const clearPlaca = () => {
-  form.value.placa      = '';
+  form.value.placa       = '';
   form.value.tipo_unidad = 'Vehiculo';
   placaSearch.value      = '';
   form.value.kilometraje = '';
@@ -557,9 +780,8 @@ const clearPlaca = () => {
 const onClickOutside = (e) => {
   if (placaContainer.value && !placaContainer.value.contains(e.target)) {
     showPlacaDropdown.value = false;
-    // Si escribió algo que no está en la lista, lo usa como placa libre
     if (placaSearch.value && !form.value.placa) {
-      form.value.placa      = placaSearch.value.toUpperCase();
+      form.value.placa       = placaSearch.value.toUpperCase();
       form.value.tipo_unidad = 'Otro';
     }
   }
@@ -614,18 +836,25 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', onClickOutside);
 });
 
-// ── Form ───────────────────────────────────────────────────────────────────
+// ── Form Actions ───────────────────────────────────────────────────────────
 const resetForm = () => {
   editingId.value = null;
   form.value = {
     fecha: new Date().toISOString().split('T')[0],
-    piloto_id: '', placa: '', tipo_unidad: 'Vehiculo',
-    proyecto_id: '', cantidad_galones: '', monto: '',
-    kilometraje: '', horometro: ''
+    piloto_id: '',
+    placa: '',
+    tipo_unidad: 'Vehiculo',
+    proyecto_id: '',
+    precio_galon: '',
+    cantidad_galones: '',
+    monto: '',
+    kilometraje: '',
+    horometro: ''
   };
+  projectRows.value = [];
   placaSearch.value = '';
-  photoPreviews.value = { foto_1: null, foto_2: null };
-  photoFiles = { foto_1: null, foto_2: null };
+  photoPreviews.value = { foto_1: null, foto_2: null, foto_3: null };
+  photoFiles = { foto_1: null, foto_2: null, foto_3: null };
 };
 
 const switchTab = (tab) => { activeTab.value = tab; };
@@ -638,16 +867,44 @@ const startEdit = (r) => {
     placa:            r.placa,
     tipo_unidad:      r.tipo_unidad,
     proyecto_id:      r.proyecto_id || '',
+    precio_galon:     r.precio_galon || '',
     cantidad_galones: r.cantidad_galones,
     monto:            r.monto,
     kilometraje:      r.kilometraje || '',
     horometro:        r.horometro || '',
   };
   placaSearch.value = r.placa;
-  photoFiles = { foto_1: null, foto_2: null };
+
+  // Restore project rows if any
+  projectRows.value = [];
+  if (r.proyectos_detalle) {
+    try {
+      const parsed = JSON.parse(r.proyectos_detalle);
+      if (Array.isArray(parsed)) {
+        projectRows.value = parsed.map(item => ({
+          proyecto_id: item.proyecto_id || '',
+          proyecto_nombre: item.proyecto_nombre || '',
+          galones: item.galones || '',
+          monto: item.monto || '',
+          rendimiento: item.rendimiento || ''
+        }));
+      }
+    } catch (e) {}
+  } else if (r.proyecto_id) {
+    projectRows.value.push({
+      proyecto_id: r.proyecto_id,
+      proyecto_nombre: r.proyecto_nombre || '',
+      galones: r.cantidad_galones || '',
+      monto: r.monto || '',
+      rendimiento: ''
+    });
+  }
+
+  photoFiles = { foto_1: null, foto_2: null, foto_3: null };
   photoPreviews.value = {
     foto_1: r.foto_1 ? photoUrl(r.foto_1) : null,
     foto_2: r.foto_2 ? photoUrl(r.foto_2) : null,
+    foto_3: r.foto_3 ? photoUrl(r.foto_3) : null,
   };
   activeTab.value = 'register';
 };
@@ -666,9 +923,8 @@ const submitForm = async () => {
     return;
   }
 
-  // Si dejó texto en el buscador sin seleccionar, úsalo como placa libre
   if (!form.value.placa && placaSearch.value) {
-    form.value.placa      = placaSearch.value.toUpperCase();
+    form.value.placa       = placaSearch.value.toUpperCase();
     form.value.tipo_unidad = 'Otro';
   }
 
@@ -676,7 +932,20 @@ const submitForm = async () => {
     const token = localStorage.getItem('token');
     const fd    = new FormData();
 
+    // Fill project_id with first project if multiple configured
+    const validProjects = projectRows.value.filter(p => p.proyecto_id);
+    if (validProjects.length > 0) {
+      form.value.proyecto_id = validProjects[0].proyecto_id;
+    }
+
     Object.entries(form.value).forEach(([k, v]) => fd.append(k, v ?? ''));
+
+    if (validProjects.length > 0) {
+      fd.append('proyectos_detalle', JSON.stringify(validProjects));
+    } else {
+      fd.append('proyectos_detalle', '');
+    }
+
     photoFields.forEach(({ key }) => {
       if (photoFiles[key]) fd.append(key, photoFiles[key]);
     });

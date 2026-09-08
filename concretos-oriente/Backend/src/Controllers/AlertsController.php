@@ -66,4 +66,17 @@ class AlertsController extends Controller
             $this->json(['status' => 'error', 'message' => 'Error al recuperar historial: ' . $e->getMessage()], 500);
         }
     }
+
+    #[Route('/alerts_history/{id}', 'DELETE')]
+    public function destroyHistory($id)
+    {
+        try {
+            $this->alertService->deleteHistory((int)$id);
+            $this->json(['status' => 'success', 'message' => 'Alerta eliminada']);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => 'Error al eliminar alerta: ' . $e->getMessage()], $code);
+        }
+    }
 }
