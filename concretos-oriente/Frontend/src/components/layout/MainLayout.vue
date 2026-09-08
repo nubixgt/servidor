@@ -15,9 +15,9 @@
       <TopBar />
 
       <main class="flex-grow md:ml-[280px]">
-        <router-view v-slot="{ Component }">
+        <router-view v-slot="{ Component, route }">
           <transition name="fade-slide" mode="out-in">
-            <component :is="Component" />
+            <component :is="Component" :key="route.path" />
           </transition>
         </router-view>
       </main>

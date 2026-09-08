@@ -55,23 +55,22 @@
             <!-- Children list -->
             <ul v-if="openSubmenu === item.id" class="mt-1 ml-3 space-y-0.5 border-l border-white/10 pl-3">
               <li v-for="child in item.children" :key="child.id" class="relative">
-                <router-link :to="'/' + child.id" custom v-slot="{ isActive, navigate }">
-                  <button
-                    @click="() => { navigate(); sidebarOpen = false; }"
-                    :class="[
-                      'w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 group',
-                      isActive
-                        ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
-                        : 'text-white/60 hover:text-white hover:bg-white/5'
-                    ]"
-                  >
-                    <component
-                      :is="child.icon"
-                      :class="['w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110', isActive ? 'text-primary' : 'text-white/40']"
-                    />
-                    <span class="text-xs font-black uppercase tracking-widest italic">{{ child.label }}</span>
-                    <div v-if="isActive" class="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"></div>
-                  </button>
+                <router-link
+                  :to="'/' + child.id"
+                  @click="closeMobileSidebar"
+                  :class="[
+                    'w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative',
+                    route.path === '/' + child.id
+                      ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ]"
+                >
+                  <component
+                    :is="child.icon"
+                    :class="['w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110', route.path === '/' + child.id ? 'text-primary' : 'text-white/40']"
+                  />
+                  <span class="text-xs font-black uppercase tracking-widest italic">{{ child.label }}</span>
+                  <div v-if="route.path === '/' + child.id" class="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"></div>
                 </router-link>
               </li>
             </ul>
@@ -81,25 +80,20 @@
           <template v-else>
             <router-link
               :to="'/' + item.id"
-              custom
-              v-slot="{ isActive, navigate }"
+              @click="closeMobileSidebar"
+              :class="[
+                'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group relative',
+                route.path === '/' + item.id
+                  ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              ]"
             >
-              <button
-                @click="() => { navigate(); sidebarOpen = false; }"
-                :class="[
-                  'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group',
-                  isActive
-                    ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
-                ]"
-              >
-                <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isActive ? 'text-primary' : 'text-white/40']" />
-                <span class="text-xs font-black uppercase tracking-widest italic">{{ item.label }}</span>
-                <div
-                  v-if="isActive"
-                  class="absolute right-6 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"
-                ></div>
-              </button>
+              <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', route.path === '/' + item.id ? 'text-primary' : 'text-white/40']" />
+              <span class="text-xs font-black uppercase tracking-widest italic">{{ item.label }}</span>
+              <div
+                v-if="route.path === '/' + item.id"
+                class="absolute right-6 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"
+              ></div>
             </router-link>
           </template>
 
@@ -139,6 +133,12 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const sidebarOpen = inject('sidebarOpen');
+
+const closeMobileSidebar = () => {
+  if (sidebarOpen && typeof sidebarOpen.value !== 'undefined') {
+    sidebarOpen.value = false;
+  }
+};
 
 const role = computed(() => authStore.userRole);
 const openSubmenu = ref(null);
