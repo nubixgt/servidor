@@ -178,12 +178,12 @@ const allNavItemsArr = [
   { id: "calendar", label: "Calendario", icon: CalendarDaysIcon, roles: ["admin"] },
   { id: "users", label: "Usuarios", icon: ShieldCheckIcon, roles: ["admin"] },
   { id: "bank-conciliation", label: "Bancos", icon: BuildingLibraryIcon, roles: ["admin"] },
-  { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },
-  { id: "budgets-estimations", label: "Presupuestos y Estimaciones", icon: CalculatorIcon, roles: ["admin"] },
-  { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: CreditCardIcon, roles: ["admin"] },
+  // { id: "bitacora-mantenimiento", label: "Bitácoras y Mantenimiento", icon: ClipboardDocumentListIcon, roles: ["admin"] },
+  // { id: "budgets-estimations", label: "Presupuestos y Estimaciones", icon: CalculatorIcon, roles: ["admin"] },
+  // { id: "credits-accounts-payable", label: "Créditos y Cuentas por Pagar", icon: CreditCardIcon, roles: ["admin"] },
   { id: "digital-documents", label: "Documentos Digitales", icon: FolderOpenIcon, roles: ["admin"] },
   { id: "notifications-alerts", label: "Notificaciones y Alertas", icon: BellAlertIcon, roles: ["admin"] },
-  { id: "payroll-expenses", label: "Planilla y Gastos", icon: CurrencyDollarIcon, roles: ["admin"] },
+  // { id: "payroll-expenses", label: "Planilla y Gastos", icon: CurrencyDollarIcon, roles: ["admin"] },
 ];
 
 const isGroupActive = (group) => group.children.some(c => route.path === '/' + c.id);

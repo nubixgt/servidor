@@ -3,14 +3,15 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-3">
         <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">
-          {{ activeTab === 'directorio' ? 'Directorio de Proveedores' : 'Historial de Compras' }}
+          Directorio de Proveedores
         </h2>
         <p class="text-white/40 font-bold uppercase tracking-[0.2em] text-xs">
-          {{ activeTab === 'directorio' ? 'Gestión de alianzas estratégicas, suministros e historial financiero' : 'Registro histórico de todas las órdenes emitidas' }}
+          Gestión de alianzas estratégicas, suministros e historial financiero
         </p>
       </div>
       <div class="flex items-center gap-4">
-        <!-- Tabs -->
+        <!-- Tabs (Oculto temporalmente) -->
+        <!--
         <div class="flex items-center bg-black/20 p-1 rounded-2xl border border-white/10">
           <button 
             @click="activeTab = 'directorio'"
@@ -25,8 +26,9 @@
             Compras
           </button>
         </div>
+        -->
 
-        <button v-if="activeTab === 'directorio'" @click="openSupplierModal" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
+        <button @click="openSupplierModal" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-105 transition-all">
           <PlusIcon class="w-5 h-5" />
           Añadir Proveedor
         </button>
