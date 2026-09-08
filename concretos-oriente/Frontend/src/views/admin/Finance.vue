@@ -294,7 +294,7 @@
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto</label>
               <select v-model="formExpense.proyecto_id" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50 appearance-none">
-                <option value="">Egreso Corporativo General</option>
+                <option value="" disabled selected>Seleccionar Proyecto</option>
                 <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
               </select>
             </div>
@@ -303,7 +303,7 @@
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo de Egreso *</label>
               <select v-model="formExpense.tipo_egreso" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50 appearance-none">
                 <option value="Proveedor">Proveedor</option>
-                <option value="Contratista">Contratista</option>
+                <option value="Contratista">Subcontratista</option>
                 <option value="Caja Chica">Caja Chica</option>
                 <option value="Nómina">Nómina</option>
                 <option value="Mantenimiento">Mantenimiento</option>
@@ -338,18 +338,18 @@
               <input v-model="formExpense.numero_cheque" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
             </div>
 
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Beneficiario *</label>
-              <div v-if="formExpense.tipo_egreso === 'Contratista'" class="flex gap-2">
+            <!-- Campo Subcontratista: visible SOLO cuando tipo_egreso es Subcontratista/Contratista -->
+            <div v-if="formExpense.tipo_egreso === 'Contratista'" class="space-y-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Subcontratista *</label>
+              <div class="flex gap-2">
                 <select v-model="formExpense.contratista_id" @change="handleContractorSelect" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50 appearance-none">
-                  <option value="" disabled>Seleccione un contratista...</option>
-                  <option v-for="c in contractors" :key="c.id" :value="c.id">{{ c.nombre }}</option>
+                  <option value="" disabled>Seleccione un subcontratista...</option>
+                  <option v-for="c in contractors" :key="c.id" :value="c.id">{{ c.empresa || c.nombre }}</option>
                 </select>
-                <button type="button" @click="openQuickContractorModal" class="shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all" title="Nuevo contratista">
+                <button type="button" @click="openQuickContractorModal" class="shrink-0 w-14 h-14 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-all" title="Nuevo subcontratista">
                   <PlusIcon class="w-5 h-5" />
                 </button>
               </div>
-              <input v-else v-model="formExpense.beneficiario" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
             </div>
 
             <div class="space-y-2">
@@ -362,10 +362,10 @@
               <textarea v-model="formExpense.descripcion" rows="2" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50"></textarea>
             </div>
 
-            <!-- REGISTROS DINAMICOS EGRESO -->
+            <!-- DETALLES DE EGRESOS DINAMICOS -->
             <div class="md:col-span-2 space-y-4 bg-white/5 p-6 rounded-3xl border border-white/5">
               <div class="flex items-center justify-between">
-                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Registros</h4>
+                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Detalles de Egresos</h4>
                 <button type="button" @click="addRegistro(formExpense)" class="flex items-center gap-2 text-xs font-bold text-tertiary hover:text-tertiary/70 uppercase tracking-widest transition-all">
                   <PlusIcon class="w-4 h-4" /> Agregar más
                 </button>
@@ -402,29 +402,23 @@
       </div>
     </div>
 
-    <!-- QUICK NEW CONTRACTOR MODAL -->
+    <!-- QUICK NEW SUBCONTRACTOR MODAL -->
     <div v-if="showQuickContractorModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeQuickContractorModal"></div>
       <div class="glass-card w-full max-w-lg rounded-[32px] p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
         <div class="flex items-center justify-between mb-8">
-          <h3 class="text-xl font-bold text-white">Nuevo Contratista</h3>
+          <h3 class="text-xl font-bold text-white">Nuevo Subcontratista</h3>
           <button @click="closeQuickContractorModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"><XMarkIcon class="w-6 h-6" /></button>
         </div>
 
         <form @submit.prevent="submitQuickContractor" class="space-y-5">
           <div class="space-y-2">
-            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nombre *</label>
-            <input v-model="formQuickContractor.nombre" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Empresa / Razón Social *</label>
+            <input v-model="formQuickContractor.nombre" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Nombre de la empresa" />
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
-              <input v-model="formQuickContractor.telefono" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
-            </div>
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Correo Electrónico</label>
-              <input v-model="formQuickContractor.correo_electronico" type="email" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" />
-            </div>
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
+            <input v-model="formQuickContractor.telefono" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="0000-0000" />
           </div>
           <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
             <button type="button" @click="closeQuickContractorModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
@@ -787,16 +781,16 @@ watch(() => formExpense.value.tipo_egreso, (tipo) => {
 
 const handleContractorSelect = () => {
   const contractor = contractors.value.find(c => c.id === formExpense.value.contratista_id);
-  formExpense.value.beneficiario = contractor ? contractor.nombre : '';
+  formExpense.value.beneficiario = contractor ? (contractor.empresa || contractor.nombre) : '';
 };
 
-// QUICK NEW CONTRACTOR MODAL
+// QUICK NEW SUBCONTRACTOR MODAL
 const showQuickContractorModal = ref(false);
 const isSubmittingQuickContractor = ref(false);
-const formQuickContractor = ref({ nombre: '', telefono: '', correo_electronico: '' });
+const formQuickContractor = ref({ nombre: '', telefono: '' });
 
 const openQuickContractorModal = () => {
-  formQuickContractor.value = { nombre: '', telefono: '', correo_electronico: '' };
+  formQuickContractor.value = { nombre: '', telefono: '' };
   showQuickContractorModal.value = true;
 };
 
@@ -805,22 +799,22 @@ const closeQuickContractorModal = () => showQuickContractorModal.value = false;
 const submitQuickContractor = async () => {
   isSubmittingQuickContractor.value = true;
   const fd = new FormData();
-  Object.keys(formQuickContractor.value).forEach(k => {
-    if (formQuickContractor.value[k] !== null && formQuickContractor.value[k] !== '') fd.append(k, formQuickContractor.value[k]);
-  });
+  fd.append('empresa', formQuickContractor.value.nombre);
+  fd.append('nombre', formQuickContractor.value.nombre);
+  if (formQuickContractor.value.telefono) fd.append('telefono', formQuickContractor.value.telefono);
 
   try {
     const res = await fetch(`${BASE_URL}/contractors`, { method: 'POST', body: fd });
     const json = await res.json();
     if (json.status === 'success') {
       await fetchContractors();
-      const created = contractors.value.find(c => c.nombre === formQuickContractor.value.nombre);
+      const created = contractors.value.find(c => (c.empresa || c.nombre) === formQuickContractor.value.nombre);
       if (created) {
         formExpense.value.contratista_id = created.id;
-        formExpense.value.beneficiario = created.nombre;
+        formExpense.value.beneficiario = created.empresa || created.nombre;
       }
       closeQuickContractorModal();
-      Swal.fire({background: '#0f172a', color: '#fff', icon: 'success', title: 'Contratista Registrado'});
+      Swal.fire({background: '#0f172a', color: '#fff', icon: 'success', title: 'Subcontratista Registrado'});
     } else {
       Swal.fire({background: '#0f172a', color: '#fff', icon: 'error', text: json.message});
     }
