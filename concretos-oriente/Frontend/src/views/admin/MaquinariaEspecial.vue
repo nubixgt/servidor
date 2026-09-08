@@ -131,8 +131,17 @@
             </div>
           </div>
 
-          <div v-if="m.foto_1" class="rounded-2xl overflow-hidden aspect-video bg-black/20 border border-white/5">
-            <img :src="photoUrl(m.foto_1)" class="w-full h-full object-cover" />
+          <div
+            v-if="m.foto_1"
+            class="rounded-2xl overflow-hidden aspect-video bg-black/20 border border-white/5 cursor-zoom-in relative group/cardphoto"
+            @click="openImagePreview(photoUrl(m.foto_1), `${m.marca || ''} ${m.modelo || ''} - Foto 1`)"
+          >
+            <img :src="photoUrl(m.foto_1)" class="w-full h-full object-cover group-hover/cardphoto:scale-105 transition-transform duration-300" />
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/cardphoto:opacity-100 transition-opacity flex items-center justify-center">
+              <span class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1 border border-white/20">
+                <EyeIcon class="w-3.5 h-3.5 text-primary" /> Ampliar
+              </span>
+            </div>
           </div>
 
           <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
@@ -415,8 +424,17 @@
                 <div v-for="photo in photoFields" :key="photo.key"
                   :class="['space-y-1', photo.key === 'foto_5' ? 'col-span-2' : '']">
                   <span class="text-[8px] font-black text-white/30 uppercase tracking-widest block">{{ photo.label }}</span>
-                  <div class="aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center">
-                    <img v-if="selectedItem[photo.key]" :src="photoUrl(selectedItem[photo.key])" class="w-full h-full object-cover" />
+                  <div
+                    class="aspect-video bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center relative group/photo"
+                    :class="selectedItem[photo.key] ? 'cursor-zoom-in hover:border-primary/50' : ''"
+                    @click="selectedItem[photo.key] && openImagePreview(photoUrl(selectedItem[photo.key]), `${selectedItem.marca || ''} ${selectedItem.modelo || ''} - Foto ${photo.label}`)"
+                  >
+                    <img v-if="selectedItem[photo.key]" :src="photoUrl(selectedItem[photo.key])" class="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-300" />
+                    <div v-if="selectedItem[photo.key]" class="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center">
+                      <span class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1 border border-white/20">
+                        <EyeIcon class="w-3.5 h-3.5 text-primary" /> Ampliar
+                      </span>
+                    </div>
                     <div v-else class="text-center text-white/20 p-2">
                       <CameraIcon class="w-6 h-6 mx-auto mb-1 opacity-50" />
                       <span class="text-[8px] font-black uppercase tracking-widest">Sin foto</span>
@@ -425,6 +443,26 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Modal Lightbox / Ampliar Foto -->
+    <Transition name="fade">
+      <div v-if="previewImage" class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md" @click="closeImagePreview"></div>
+        <div class="relative z-10 max-w-5xl max-h-[92vh] w-full flex flex-col items-center">
+          <div class="w-full flex items-center justify-between pb-3 text-white">
+            <span class="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+              <CameraIcon class="w-4 h-4" /> {{ previewTitle || 'Vista Ampliada de Fotografía' }}
+            </span>
+            <button @click="closeImagePreview" class="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all" title="Cerrar">
+              <XMarkIcon class="w-6 h-6" />
+            </button>
+          </div>
+          <div class="relative rounded-3xl overflow-hidden border border-white/20 shadow-[0_0_80px_rgba(0,0,0,0.9)] bg-black/60 max-h-[82vh] flex items-center justify-center">
+            <img :src="previewImage" class="max-w-full max-h-[80vh] object-contain rounded-2xl" :alt="previewTitle" />
           </div>
         </div>
       </div>
@@ -452,6 +490,19 @@ const statusFilter = ref('all');
 const items        = ref([]);
 const personnel    = ref([]);
 const editingId    = ref(null);
+
+// Lightbox modal state
+const previewImage = ref(null);
+const previewTitle = ref('');
+const openImagePreview = (url, title = 'Fotografía') => {
+  if (!url) return;
+  previewImage.value = url;
+  previewTitle.value = title;
+};
+const closeImagePreview = () => {
+  previewImage.value = null;
+  previewTitle.value = '';
+};
 
 const form = ref({
   codigo: '',

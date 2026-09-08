@@ -832,11 +832,22 @@
 
           <!-- Left: Media & Gallery -->
           <div class="lg:w-1/2 relative bg-black/40 min-h-[300px] flex flex-col justify-between">
-            <div class="relative w-full h-[280px] bg-black/60 overflow-hidden">
-              <img v-if="activeModalPhoto" :src="getPhotoUrl(activeModalPhoto)" class="w-full h-full object-cover" :alt="selectedMachine.modelo" />
+            <div
+              class="relative w-full h-[280px] bg-black/60 overflow-hidden group/mainphoto"
+              :class="activeModalPhoto ? 'cursor-zoom-in' : ''"
+              @click="activeModalPhoto && (fullscreenImage = getPhotoUrl(activeModalPhoto))"
+            >
+              <img v-if="activeModalPhoto" :src="getPhotoUrl(activeModalPhoto)" class="w-full h-full object-cover group-hover/mainphoto:scale-105 transition-transform duration-300" :alt="selectedMachine.modelo" />
               <div v-else class="w-full h-full flex items-center justify-center text-white/20"><WrenchScrewdriverIcon class="w-24 h-24" /></div>
               <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
               
+              <!-- Zoom badge hover -->
+              <div v-if="activeModalPhoto" class="absolute top-4 left-6 z-10 opacity-0 group-hover/mainphoto:opacity-100 transition-opacity">
+                <span class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1 border border-white/20">
+                  <EyeIcon class="w-3.5 h-3.5 text-primary" /> Ampliar Fotografía
+                </span>
+              </div>
+
               <div class="absolute bottom-4 left-6 right-6">
                 <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1 block">{{ selectedMachine.codigo_interno }}</span>
                 <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">{{ selectedMachine.marca }}</h2>
