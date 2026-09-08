@@ -97,9 +97,11 @@ class ProjectIncomeService
             if (!$tieneAnticipo || $ultimaEstimacion === 0) {
                 throw new Exception("Debe registrar al menos el Anticipo y 1 Estimación antes del Pago Final.");
             }
-            $montoTotal = $presupuesto - $totalCobradoPrevio;
+            $montoTotal = isset($data['monto_total']) && (float)$data['monto_total'] > 0 
+                ? (float)$data['monto_total'] 
+                : ($presupuesto - $totalCobradoPrevio);
             if ($montoTotal <= 0) {
-                throw new Exception("El presupuesto del proyecto ya ha sido cubierto al 100%.");
+                throw new Exception("El monto total del pago final debe ser mayor a cero.");
             }
         }
 
