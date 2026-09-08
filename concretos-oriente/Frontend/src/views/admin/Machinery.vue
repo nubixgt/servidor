@@ -1,241 +1,269 @@
 <template>
-  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-12">
+  <div class="pt-20 pb-10 px-4 md:px-10 md:pb-20 max-w-7xl mx-auto space-y-10 relative">
+    
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
-        <h2 class="text-4xl font-bold tracking-tight text-white mb-2">Gestión de Maquinaria</h2>
-        <p class="text-white/60">Registra y controla el estado de los equipos y su bitácora diaria.</p>
+        <h2 class="text-4xl font-bold tracking-tight text-white mb-2">
+          {{ activeTab === 'register' ? (isEditingMachine ? 'Modificar Maquinaria' : 'Registrar Maquinaria') : 'Gestión de Maquinaria' }}
+        </h2>
+        <p class="text-white/60">Registra y controla el estado de los equipos pesados y livianos, y su bitácora diaria.</p>
       </div>
-      <div class="flex gap-4">
-        <button
-          v-if="activeTab === 'machinery'"
-          @click="openMachineModal"
-          class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+
+      <!-- Pill Tab Switcher -->
+      <div class="flex gap-2 bg-black/30 border border-white/10 rounded-2xl p-1 w-fit">
+        <button 
+          @click="switchTab('machinery')" 
+          :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'machinery' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']"
         >
-          <PlusIcon class="w-5 h-5" />
-          Registrar Maquinaria
+          Ver Equipos
         </button>
-        <button
-          v-if="activeTab === 'log'"
-          @click="openLogModal"
-          class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+        <button 
+          @click="switchTab('log')" 
+          :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'log' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']"
         >
-          <PlusIcon class="w-5 h-5" />
-          Registrar Bitácora
+          Bitácora Diaria
+        </button>
+        <button 
+          @click="startRegister" 
+          :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2', activeTab === 'register' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']"
+        >
+          <PlusIcon class="w-3.5 h-3.5" /> {{ isEditingMachine ? 'Editando' : 'Registrar' }}
         </button>
       </div>
     </div>
 
-    <!-- Metrics Section -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- KPI Metrics Section -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div
         v-for="(metric, i) in metrics"
         :key="i"
-        class="glass-card p-8 rounded-3xl flex flex-col justify-between h-44 border border-white/5 transition-all cursor-pointer group hover:-translate-y-3 hover:scale-105 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.5)] hover:scale-105" data-aos="zoom-in-up" data-aos-duration="1000"
+        class="glass-card p-6 rounded-3xl border border-white/5 flex flex-col justify-between h-40 transition-all group hover:-translate-y-1 hover:border-white/15"
       >
         <div>
-          <p class="text-white/40 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">{{ metric.label }}</p>
-          <h3 :class="`text-3xl font-bold ${metric.color === 'text-error' ? 'text-tertiary' : 'text-white'}`">{{ metric.value }}</h3>
+          <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mb-2">{{ metric.label }}</p>
+          <h3 :class="`text-3xl font-black italic tracking-tighter ${metric.color === 'text-error' ? 'text-rose-400' : 'text-white'}`">{{ metric.value }}</h3>
         </div>
-        <div v-if="metric.percentage" class="w-full bg-white/5 h-2 rounded-full mt-6 overflow-hidden p-[1px]">
+        <div v-if="metric.percentage !== undefined" class="w-full bg-white/5 h-2 rounded-full overflow-hidden p-[1px]">
           <div 
             :style="{ width: `${metric.percentage}%` }"
             class="bg-primary h-full rounded-full shadow-[0_0_10px_#6366f1] transition-all duration-1000"
           ></div>
         </div>
-        <div v-else :class="`flex items-center gap-2 mt-6 ${metric.color} bg-white/5 px-3 py-1.5 rounded-xl w-fit border border-white/5`">
-          <component :is="metric.icon" v-if="metric.icon" class="w-4 h-4" />
-          <span class="text-[10px] font-bold uppercase tracking-wider">{{ metric.trend }}</span>
+        <div v-else :class="`flex items-center gap-2 ${metric.color} bg-white/5 px-3 py-1.5 rounded-xl w-fit border border-white/5`">
+          <component :is="metric.icon" v-if="metric.icon" class="w-3.5 h-3.5" />
+          <span class="text-[9px] font-black uppercase tracking-wider">{{ metric.trend }}</span>
         </div>
       </div>
     </section>
 
-    <!-- Tabs -->
-    <section>
-      <div class="flex gap-12 border-b border-white/10 relative overflow-x-auto whitespace-nowrap">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          @click="activeTab = tab.id"
-          :class="`pb-6 text-xl font-bold transition-all relative ${
-            activeTab === tab.id ? 'text-white' : 'text-white/40 hover:text-white/60'
-          }`"
-        >
-          {{ tab.name }}
-          <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-1.5 bg-primary rounded-t-full shadow-[0_0_15px_#6366f1]"></div>
-        </button>
-      </div>
-    </section>
-
-    <!-- Filters & Search -->
-    <section class="flex flex-col lg:flex-row gap-4">
-      <div class="flex-1 relative">
-        <input 
-          v-if="activeTab === 'machinery'" 
-          v-model="searchMachine" 
-          type="text" 
-          placeholder="Buscar máquina (código, marca, modelo)..." 
-          class="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-all"
-        />
-        <input 
-          v-else-if="activeTab === 'log'" 
-          v-model="searchLog" 
-          type="text" 
-          placeholder="Buscar en bitácora (máquina, operador)..." 
-          class="w-full bg-black/20 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-white/40 focus:outline-none focus:border-primary/50 transition-all"
-        />
-        <MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon class="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-white/40" />
-      </div>
-      
-      <!-- Filters Machinery -->
-      <div v-if="activeTab === 'machinery'" class="flex flex-wrap gap-3">
-        <select v-model="filterCategory" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
-          <option value="">Todas las Categorías</option>
-          <option value="Maquinaria Pesada">Maquinaria Pesada</option>
-          <option value="Maquinaria Especial">Maquinaria Especial</option>
-          <option value="Vehículo">Vehículo</option>
-          <option value="Transporte Pesado">Transporte Pesado</option>
-          <option value="Equipo Menor">Equipo Menor</option>
-        </select>
-        <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
-          <option value="">Todos los Estados</option>
-          <option value="Activo">Activo</option>
-          <option value="En Mantenimiento">En Mantenimiento</option>
-          <option value="En Reparación">En Reparación</option>
-          <option value="Inactivo">Inactivo</option>
-        </select>
-      </div>
-
-      <!-- Filters Log -->
-      <div v-if="activeTab === 'log'" class="flex flex-wrap gap-3">
-        <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none w-full md:w-auto md:min-w-[200px]">
-          <option value="">Todos los Proyectos</option>
-          <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- Content -->
-    <transition name="fade-slide" mode="out-in">
-      
-      <!-- TAB: MAQUINARIA -->
-      <section v-if="activeTab === 'machinery'" key="machinery">
-        <div v-if="loading" class="text-center py-20 text-white/40">Cargando maquinaria...</div>
-        <div v-else-if="filteredMachinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-[40px] border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000">
-          No hay maquinaria registrada.
-        </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div 
-            v-for="m in filteredMachinery" 
-            :key="m.id"
-            class="glass-card rounded-[40px] overflow-hidden group hover:-translate-y-2 transition-all duration-500 border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000"
+    <!-- ═══════════════════════════════════════════ TAB: VER EQUIPOS ═══════════════════════════════════════════ -->
+    <template v-if="activeTab === 'machinery'">
+      <!-- Filters & Search -->
+      <section class="flex flex-col lg:flex-row gap-4 items-center justify-between border-b border-white/5 pb-6">
+        <div class="flex gap-2 bg-black/30 border border-white/10 rounded-2xl p-1 overflow-x-auto w-full lg:w-auto">
+          <button 
+            @click="filterType = ''" 
+            :class="['px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap', filterType === '' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white']"
           >
-            <!-- Imagen y Estado -->
-            <div class="h-56 relative overflow-hidden cursor-pointer" @click="selectedMachine = m">
-              <img v-if="m.foto_path" :src="getPhotoUrl(m.foto_path)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" :alt="m.modelo" />
-              <div v-else class="w-full h-full bg-white/5 flex items-center justify-center text-white/20 group-hover:scale-110 transition-transform duration-1000">
-                <WrenchScrewdriverIcon class="w-20 h-20" />
+            Todos
+          </button>
+          <button 
+            @click="filterType = 'Pesada'" 
+            :class="['px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap', filterType === 'Pesada' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white']"
+          >
+            Pesada
+          </button>
+          <button 
+            @click="filterType = 'Liviana'" 
+            :class="['px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap', filterType === 'Liviana' ? 'bg-amber-500 text-white shadow-lg' : 'text-white/40 hover:text-white']"
+          >
+            Liviana
+          </button>
+        </div>
+
+        <div class="flex flex-wrap lg:flex-nowrap gap-3 w-full lg:w-auto flex-1 justify-end">
+          <div class="relative w-full lg:w-80">
+            <MagnifyingGlassIcon class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+            <input 
+              v-model="searchMachine" 
+              type="text" 
+              placeholder="Buscar por código, marca, modelo, serie..." 
+              class="w-full bg-black/20 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-xs font-bold text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-all"
+            />
+          </div>
+
+          <select v-model="filterStatus" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[160px]">
+            <option value="">Todos los Estados</option>
+            <option value="Activo">Activo</option>
+            <option value="En Mantenimiento">En Mantenimiento</option>
+            <option value="En Reparación">En Reparación</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Machinery Grid -->
+      <div v-if="loading" class="text-center py-20 text-white/40">Cargando maquinaria...</div>
+      <div v-else-if="filteredMachinery.length === 0" class="text-center py-20 text-white/40 glass-card rounded-3xl border border-white/10">
+        <WrenchScrewdriverIcon class="w-12 h-12 text-white/10 mx-auto mb-4" />
+        <p class="font-black uppercase tracking-widest text-xs">No hay maquinaria registrada con ese criterio.</p>
+      </div>
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div 
+          v-for="m in filteredMachinery" 
+          :key="m.id"
+          class="glass-card rounded-[32px] overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 border border-white/5 flex flex-col justify-between"
+        >
+          <!-- Imagen y Badges -->
+          <div>
+            <div class="h-48 relative overflow-hidden cursor-pointer bg-black/30" @click="selectedMachine = m">
+              <img v-if="m.foto_path" :src="getPhotoUrl(m.foto_path)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" :alt="m.modelo" />
+              <div v-else class="w-full h-full flex items-center justify-center text-white/15">
+                <WrenchScrewdriverIcon class="w-16 h-16" />
               </div>
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              <div class="absolute top-6 right-6 px-4 py-2 backdrop-blur-xl bg-black/40 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2.5 border border-white/20 shadow-xl">
-                <span :class="`w-2.5 h-2.5 rounded-full ${getStatusColor(m.estado)} shadow-[0_0_10px_currentColor]`"></span>
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+              
+              <!-- Estado Badge -->
+              <div class="absolute top-4 right-4 px-3 py-1.5 backdrop-blur-xl bg-black/50 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-2 border border-white/10 shadow-lg">
+                <span :class="`w-2 h-2 rounded-full ${getStatusColor(m.estado)}`"></span>
                 {{ m.estado }}
+              </div>
+
+              <!-- Tipo Badge -->
+              <div class="absolute top-4 left-4">
+                <span :class="m.clasificacion_tipo === 'Liviana' ? 'bg-amber-500/80 text-white border-amber-400/40' : 'bg-primary/80 text-white border-primary/40'" class="px-2.5 py-1 text-[9px] font-black uppercase rounded-lg border backdrop-blur-md tracking-wider shadow-lg">
+                  {{ m.clasificacion_tipo || 'Pesada' }}
+                </span>
               </div>
             </div>
             
-            <!-- Info -->
-            <div class="p-10 relative">
-              <div class="flex justify-between items-start mb-8">
-                <div class="cursor-pointer" @click="selectedMachine = m">
-                  <h4 class="text-2xl font-bold text-white tracking-tight">{{ m.marca }} {{ m.modelo }}</h4>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span :class="m.clasificacion_tipo === 'Liviana' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-primary/20 text-primary border-primary/30'" class="px-2 py-0.5 text-[9px] font-black uppercase rounded-md border tracking-wider">
-                      {{ m.clasificacion_tipo || 'Pesada' }}
-                    </span>
-                    <p class="text-xs font-semibold text-white/40 uppercase tracking-widest">{{ m.categoria }} • {{ m.codigo_interno }}</p>
-                  </div>
+            <!-- Card Body Info -->
+            <div class="p-6 space-y-4">
+              <div class="cursor-pointer" @click="selectedMachine = m">
+                <div class="flex items-center gap-2 mb-1">
+                  <span v-if="m.codigo_interno" class="font-mono text-xs font-black tracking-widest bg-primary/20 border border-primary/30 px-2 py-0.5 rounded-md text-primary">
+                    {{ m.codigo_interno }}
+                  </span>
+                  <span class="text-xs font-bold text-white/40 uppercase tracking-wider">{{ m.categoria }}</span>
                 </div>
-                
-                <!-- Acciones dropdown (simplificado como botones inline por ahora) -->
-                <div class="flex gap-2">
-                  <button @click="openEditMachine(m)" class="p-2.5 bg-white/5 hover:bg-white/10 hover:text-primary rounded-xl transition-all text-white/40 border border-white/10" title="Editar">
-                    <PencilIcon class="w-4 h-4" />
-                  </button>
-                  <button @click="deleteMachine(m.id)" class="p-2.5 bg-white/5 hover:bg-white/10 hover:text-tertiary rounded-xl transition-all text-white/40 border border-white/10" title="Eliminar">
-                    <TrashIcon class="w-4 h-4" />
-                  </button>
-                </div>
+                <h4 class="text-xl font-black italic uppercase text-white tracking-tight leading-snug">{{ m.marca }} {{ m.modelo }}</h4>
               </div>
-              
-              <div class="space-y-6">
+
+              <div class="bg-black/20 rounded-2xl p-4 border border-white/5 space-y-2 text-xs">
                 <!-- Horómetro -->
-                <div class="flex items-center justify-between border-b border-white/5 pb-4">
-                  <div class="flex items-center gap-3">
-                    <ClockIcon class="w-5 h-5 text-white/30" />
-                    <span class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Horómetro</span>
-                  </div>
-                  <span class="text-sm font-bold text-white tracking-widest">{{ m.horometro_actual }} hrs</span>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest flex items-center gap-1.5">
+                    <ClockIcon class="w-3.5 h-3.5 text-primary" /> Horómetro
+                  </span>
+                  <span class="font-black text-white tracking-wider">{{ m.horometro_actual }} hrs</span>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="space-y-2">
-                    <p class="text-[10px] text-white/30 uppercase font-bold tracking-[0.2em]">Operador</p>
-                    <p class="text-xs font-bold text-white tracking-wide truncate">
-                      {{ m.operador_nombre || 'Sin asignar' }}
-                    </p>
-                  </div>
-                  <div class="space-y-2">
-                    <p class="text-[10px] text-white/30 uppercase font-bold tracking-[0.2em]">Proyecto</p>
-                    <p class="text-xs font-bold text-white tracking-wide truncate">
-                      {{ m.proyecto_nombre || 'Sin asignar' }}
-                    </p>
-                  </div>
+
+                <div v-if="m.no_factura" class="flex items-center justify-between">
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">No. Factura</span>
+                  <span class="font-black text-white/70">{{ m.no_factura }}</span>
+                </div>
+
+                <div v-if="m.clasificacion_tipo === 'Liviana' && m.fecha_servicio" class="flex items-center justify-between">
+                  <span class="text-[9px] font-black text-amber-400/70 uppercase tracking-widest">Fec. Servicio</span>
+                  <span class="font-black text-amber-300">{{ formatDate(m.fecha_servicio) }}</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">Operador</span>
+                  <span class="font-black text-white/80 truncate max-w-[140px]">{{ m.operador_nombre || 'Sin asignar' }}</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] font-black text-white/30 uppercase tracking-widest">Proyecto</span>
+                  <span class="font-black text-primary truncate max-w-[140px]">{{ m.proyecto_nombre || 'Sin asignar' }}</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- TAB: BITÁCORA -->
-      <section v-else-if="activeTab === 'log'" key="log" class="glass-card rounded-[40px] overflow-hidden border border-white/10" data-aos="zoom-in-up" data-aos-duration="1000">
-        <div class="overflow-x-auto px-4">
+          <!-- Actions footer -->
+          <div class="px-6 pb-6 pt-2 border-t border-white/5 flex items-center justify-end gap-2">
+            <button @click="selectedMachine = m" class="px-3.5 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl border border-primary/20 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1">
+              <EyeIcon class="w-3.5 h-3.5" /> Detalles
+            </button>
+            <button @click="openEditMachine(m)" class="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1">
+              <PencilIcon class="w-3.5 h-3.5" /> Modificar
+            </button>
+            <button @click="deleteMachine(m.id)" class="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-white/30 hover:text-rose-400 rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1">
+              <TrashIcon class="w-3.5 h-3.5" /> Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- ═══════════════════════════════════════════ TAB: BITÁCORA DIARIA ═══════════════════════════════════════════ -->
+    <template v-else-if="activeTab === 'log'">
+      <div class="glass-card rounded-[32px] overflow-hidden border border-white/10">
+        <!-- Top bar with New Log button -->
+        <div class="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex flex-1 gap-3">
+            <div class="relative w-full md:w-80">
+              <MagnifyingGlassIcon class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+              <input 
+                v-model="searchLog" 
+                type="text" 
+                placeholder="Buscar máquina u operador..." 
+                class="w-full bg-black/20 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-xs font-bold text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-all"
+              />
+            </div>
+            <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[180px]">
+              <option value="">Todos los Proyectos</option>
+              <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+            </select>
+          </div>
+
+          <button
+            @click="openLogModal"
+            class="px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/30 shrink-0"
+          >
+            <PlusIcon class="w-4 h-4" /> Registrar Bitácora
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
           <table class="w-full min-w-[640px] text-left">
             <thead>
-              <tr class="border-b border-white/5">
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Fecha</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Máquina</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Proyecto</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Horómetro</th>
-                <th class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Operador</th>
-                <th v-if="authStore.userRole === 'admin'" class="px-8 py-8 text-[11px] font-bold text-white/30 uppercase tracking-[0.2em]">Creador</th>
-                <th class="px-8 py-8 text-right">Acciones</th>
+              <tr class="border-b border-white/5 bg-white/[0.02]">
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Fecha</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Máquina</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Proyecto</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Horómetro</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Operador</th>
+                <th v-if="authStore.userRole === 'admin'" class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Creador</th>
+                <th class="px-6 py-5 text-right text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Acciones</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5">
               <tr v-if="loadingLogs">
-                <td colspan="6" class="px-8 py-8 text-center text-white/50">Cargando bitácoras...</td>
+                <td colspan="7" class="px-6 py-10 text-center text-white/50 text-xs font-bold">Cargando bitácoras...</td>
               </tr>
               <tr v-else-if="filteredLogs.length === 0">
-                <td colspan="6" class="px-8 py-12 text-center text-white/40 font-semibold">No hay bitácoras registradas</td>
+                <td colspan="7" class="px-6 py-12 text-center text-white/40 font-black uppercase tracking-widest text-xs">No hay bitácoras registradas</td>
               </tr>
-              <tr v-for="log in paginatedLogs" :key="log.id" class="hover:bg-white/5 transition-all group">
-                <td class="px-8 py-6 text-sm font-semibold text-white/80">{{ formatDate(log.fecha) }}</td>
-                <td class="px-8 py-6 font-bold text-white">{{ log.maquina_nombre }}</td>
-                <td class="px-8 py-6 text-sm font-semibold text-primary">{{ log.proyecto_nombre || 'N/A' }}</td>
-                <td class="px-8 py-6">
-                  <p class="text-xs text-white/40">Inicial: <span class="text-white">{{ log.horometro_inicial }}</span></p>
-                  <p class="text-xs text-white/40">Final: <span class="text-white">{{ log.horometro_final }}</span></p>
+              <tr v-for="log in paginatedLogs" :key="log.id" class="hover:bg-white/5 transition-all">
+                <td class="px-6 py-4 text-xs font-bold text-white/80">{{ formatDate(log.fecha) }}</td>
+                <td class="px-6 py-4 font-black uppercase text-sm text-white">{{ log.maquina_nombre }}</td>
+                <td class="px-6 py-4 text-xs font-bold text-primary">{{ log.proyecto_nombre || 'N/A' }}</td>
+                <td class="px-6 py-4">
+                  <p class="text-[11px] font-bold text-white/50">Ini: <span class="text-white">{{ log.horometro_inicial }}</span></p>
+                  <p class="text-[11px] font-bold text-white/50">Fin: <span class="text-white">{{ log.horometro_final }}</span></p>
                 </td>
-                <td class="px-8 py-6 text-sm text-white/80">{{ log.operador_nombre || 'N/A' }}</td>
-                <td v-if="authStore.userRole === 'admin'" class="px-8 py-6 text-sm text-white/80">{{ log.creado_por_nombre || 'N/A' }}</td>
-                <td class="px-8 py-6 text-right">
+                <td class="px-6 py-4 text-xs font-bold text-white/80">{{ log.operador_nombre || 'N/A' }}</td>
+                <td v-if="authStore.userRole === 'admin'" class="px-6 py-4 text-xs font-bold text-white/60">{{ log.creado_por_nombre || 'N/A' }}</td>
+                <td class="px-6 py-4 text-right">
                   <div class="flex justify-end gap-2">
                     <button @click="openViewLog(log)" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Visualizar">
-                      <EyeIcon class="w-5 h-5" />
+                      <EyeIcon class="w-4 h-4" />
                     </button>
-                    <button @click="deleteLog(log.id)" class="p-2 text-white/40 hover:text-tertiary hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
-                      <TrashIcon class="w-5 h-5" />
+                    <button @click="deleteLog(log.id)" class="p-2 text-white/40 hover:text-rose-400 hover:bg-white/10 rounded-xl transition-all" title="Eliminar">
+                      <TrashIcon class="w-4 h-4" />
                     </button>
                   </div>
                 </td>
@@ -245,56 +273,49 @@
         </div>
         
         <!-- Paginación -->
-        <div v-if="totalLogPages > 1" class="flex justify-between items-center px-8 py-6 border-t border-white/5 bg-black/20">
+        <div v-if="totalLogPages > 1" class="flex justify-between items-center px-6 py-4 border-t border-white/5 bg-black/20">
           <p class="text-xs text-white/40 font-semibold tracking-widest">
-            Página <span class="text-white">{{ currentLogPage }}</span> de <span class="text-white">{{ totalLogPages }}</span>
+            Página <span class="text-white font-bold">{{ currentLogPage }}</span> de <span class="text-white font-bold">{{ totalLogPages }}</span>
           </p>
           <div class="flex gap-2">
             <button 
               @click="currentLogPage--" 
               :disabled="currentLogPage === 1"
-              class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
+              class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
             >
-              <ChevronLeftIcon class="w-5 h-5" />
+              <ChevronLeftIcon class="w-4 h-4" />
             </button>
             <button 
               @click="currentLogPage++" 
               :disabled="currentLogPage === totalLogPages"
-              class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
+              class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
             >
-              <ChevronRightIcon class="w-5 h-5" />
+              <ChevronRightIcon class="w-4 h-4" />
             </button>
           </div>
         </div>
-      </section>
+      </div>
+    </template>
 
+    <!-- ═══════════════════════════════════════════ TAB: FORMULARIO (REGISTRAR/EDITAR) ═══════════════════════════════════════════ -->
+    <template v-else-if="activeTab === 'register'">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    </transition>
+        <!-- Left: Form Sections -->
+        <div class="lg:col-span-8 space-y-6">
 
-    <!-- ============================================================
-         MODAL: REGISTRO/EDICIÓN MAQUINARIA
-         ============================================================ -->
-    <div v-if="showMachineModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeMachineModal"></div>
-      
-      <div class="glass-card w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
-        <div class="flex items-center justify-between mb-8">
-          <h3 class="text-2xl font-bold text-white">{{ isEditingMachine ? 'Editar Maquinaria' : 'Registrar Nueva Maquinaria' }}</h3>
-          <button @click="closeMachineModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
-            <XMarkIcon class="w-6 h-6" />
-          </button>
-        </div>
-
-        <form @submit.prevent="submitMachine" class="space-y-8">
-          <!-- Clasificación Inicial -->
-          <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Tipo de Maquinaria <span class="text-tertiary">*</span></p>
+          <!-- Clasificación Inicial: Pesada vs Liviana -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <WrenchScrewdriverIcon class="w-4 h-4" /> Clasificación de Maquinaria <span class="text-rose-400">*</span>
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button 
                 type="button" 
                 @click="formMachine.clasificacion_tipo = 'Pesada'"
                 :class="formMachine.clasificacion_tipo === 'Pesada' ? 'bg-primary/20 border-primary text-white shadow-lg shadow-primary/20 ring-1 ring-primary/50' : 'bg-black/20 border-white/10 text-white/50 hover:border-white/20'"
-                class="flex items-center justify-center gap-3 p-4 rounded-2xl border font-bold text-sm transition-all"
+                class="flex items-center justify-center gap-3 p-5 rounded-2xl border font-black uppercase tracking-wider text-xs transition-all"
               >
                 <WrenchScrewdriverIcon class="w-5 h-5 text-primary" />
                 Maquinaria Pesada (Con Seguro)
@@ -303,23 +324,42 @@
                 type="button" 
                 @click="formMachine.clasificacion_tipo = 'Liviana'"
                 :class="formMachine.clasificacion_tipo === 'Liviana' ? 'bg-amber-500/20 border-amber-500 text-white shadow-lg shadow-amber-500/20 ring-1 ring-amber-500/50' : 'bg-black/20 border-white/10 text-white/50 hover:border-white/20'"
-                class="flex items-center justify-center gap-3 p-4 rounded-2xl border font-bold text-sm transition-all"
+                class="flex items-center justify-center gap-3 p-5 rounded-2xl border font-black uppercase tracking-wider text-xs transition-all"
               >
                 <ClockIcon class="w-5 h-5 text-amber-400" />
                 Maquinaria Liviana (Sin Seguro)
               </button>
             </div>
-          </div>
+          </section>
 
-          <!-- Datos Principales -->
-          <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Información del Equipo</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              
-              <div class="space-y-2 lg:col-span-1">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tipo / Categoría <span class="text-tertiary">*</span></label>
-                <select v-model="formMachine.categoria" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
-                  <option value="" disabled>Seleccionar...</option>
+          <!-- Sección 1: Información General -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5 relative overflow-hidden">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <InformationCircleIcon class="w-4 h-4" /> Información General
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+              <!-- Código Interno -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Código Interno <span class="text-rose-400">*</span></label>
+                <input 
+                  v-model="formMachine.codigo_interno" 
+                  type="text" 
+                  required 
+                  placeholder="Ej. EX-042"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black uppercase tracking-wider text-white" 
+                />
+              </div>
+
+              <!-- Tipo / Categoría -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Categoría / Tipo <span class="text-rose-400">*</span></label>
+                <select 
+                  v-model="formMachine.categoria" 
+                  required
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
+                >
+                  <option value="">Seleccionar categoría</option>
                   <template v-if="formMachine.clasificacion_tipo === 'Liviana'">
                     <option value="Rotomartillo">Rotomartillo</option>
                     <option value="Bailarina">Bailarina</option>
@@ -341,19 +381,25 @@
                 </select>
               </div>
 
-              <div class="space-y-2 lg:col-span-1">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Código Interno <span class="text-tertiary">*</span></label>
-                <input v-model="formMachine.codigo_interno" type="text" required placeholder="Ej. EX-042" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              <!-- No. de Factura -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">No. de Factura</label>
+                <input 
+                  v-model="formMachine.no_factura" 
+                  type="text" 
+                  placeholder="Ej. FAC-00921"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
-              <div class="space-y-2 lg:col-span-1">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">No. de Factura</label>
-                <input v-model="formMachine.no_factura" type="text" placeholder="Ej. FAC-00921" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
-              </div>
-
-              <div class="space-y-2 lg:col-span-1">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Estado <span class="text-tertiary">*</span></label>
-                <select v-model="formMachine.estado" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
+              <!-- Estado -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Estado <span class="text-rose-400">*</span></label>
+                <select 
+                  v-model="formMachine.estado" 
+                  required
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
+                >
                   <option value="Activo">Activo</option>
                   <option value="En Mantenimiento">En Mantenimiento</option>
                   <option value="En Reparación">En Reparación</option>
@@ -361,131 +407,308 @@
                 </select>
               </div>
 
+              <!-- Marca -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Marca <span class="text-tertiary">*</span></label>
-                <input v-model="formMachine.marca" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Marca <span class="text-rose-400">*</span></label>
+                <input 
+                  v-model="formMachine.marca" 
+                  type="text" 
+                  required 
+                  placeholder="Caterpillar, Komatsu, DeWalt..."
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
+              <!-- Modelo -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Modelo <span class="text-tertiary">*</span></label>
-                <input v-model="formMachine.modelo" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Modelo <span class="text-rose-400">*</span></label>
+                <input 
+                  v-model="formMachine.modelo" 
+                  type="text" 
+                  required 
+                  placeholder="CAT 320, D6T, 350L..."
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
+              <!-- Año de Fabricación -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Año de Fabricación</label>
-                <input v-model="formMachine.anio_fabricacion" type="number" min="1900" max="2100" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Año de Fabricación</label>
+                <input 
+                  v-model="formMachine.anio_fabricacion" 
+                  type="number" 
+                  min="1900" 
+                  max="2100" 
+                  placeholder="2024"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
+              <!-- Número de Serie -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Número de Serie</label>
-                <input v-model="formMachine.numero_serie" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Número de Serie</label>
+                <input 
+                  v-model="formMachine.numero_serie" 
+                  type="text" 
+                  placeholder="CAT320D123456"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Placa</label>
-                <input v-model="formMachine.placa" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+              <!-- Placa -->
+              <div class="space-y-2 md:col-span-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Placa (si aplica)</label>
+                <input 
+                  v-model="formMachine.placa" 
+                  type="text" 
+                  placeholder="C-123XYZ"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black uppercase tracking-widest text-white" 
+                />
               </div>
             </div>
-          </div>
+          </section>
 
-          <!-- Uso y Mantenimiento -->
-          <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Uso y Mantenimiento</p>
+          <!-- Sección 2: Uso y Horómetro -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <ClockIcon class="w-4 h-4" /> Control de Horómetro y Mantenimiento
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Horómetro de Registro -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Horómetro de Registro <span class="text-rose-400">*</span></label>
+                <div class="relative">
+                  <input 
+                    v-model="formMachine.horometro_actual" 
+                    type="number" 
+                    min="0" 
+                    required 
+                    placeholder="0"
+                    class="w-full h-12 pl-4 pr-12 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                  />
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/40 tracking-widest">HRS</span>
+                </div>
+              </div>
+
+              <!-- Fecha de Servicio (Requerida en Maquinaria Liviana) -->
+              <div v-if="formMachine.clasificacion_tipo === 'Liviana'" class="space-y-2">
+                <label class="text-[9px] font-black text-amber-300 uppercase tracking-widest flex items-center gap-1">
+                  <CalendarIcon class="w-3.5 h-3.5" /> Fecha de Servicio <span class="text-rose-400">*</span>
+                </label>
+                <input 
+                  v-model="formMachine.fecha_servicio" 
+                  type="date" 
+                  :required="formMachine.clasificacion_tipo === 'Liviana'"
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-amber-500/40 focus:border-amber-400 text-sm font-black text-white focus:outline-none" 
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección 3: Datos del Seguro (Solo para Maquinaria Pesada) -->
+          <section v-if="formMachine.clasificacion_tipo === 'Pesada'" class="glass-card p-8 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <ShieldCheckIcon class="w-4 h-4" /> Datos de Aseguradora
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro (hrs) <span class="text-tertiary">*</span></label>
-                <input v-model="formMachine.horometro_actual" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Empresa / Aseguradora</label>
+                <input 
+                  v-model="formMachine.seguro_aseguradora" 
+                  type="text" 
+                  placeholder="Ej. Seguros G&T, El Roble, Mapfre..."
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
 
-              <div v-if="formMachine.clasificacion_tipo === 'Liviana'" class="space-y-2">
-                <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <CalendarIcon class="w-4 h-4" />
-                  Fecha de Servicio <span class="text-tertiary">*</span>
-                </label>
-                <input v-model="formMachine.fecha_servicio" type="date" :required="formMachine.clasificacion_tipo === 'Liviana'" class="w-full bg-black/20 border border-amber-500/40 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-amber-400" />
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Persona de Contacto</label>
+                <input 
+                  v-model="formMachine.seguro_contacto_nombre" 
+                  type="text" 
+                  placeholder="Nombre del asesor de seguros"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
-            </div>
-          </div>
 
-          <!-- Datos del Seguro (Solo para Maquinaria Pesada) -->
-          <div v-if="formMachine.clasificacion_tipo === 'Pesada'" class="border-t border-white/10 pt-6">
-            <div class="flex items-center gap-2 mb-4">
-              <ShieldCheckIcon class="w-5 h-5 text-primary" />
-              <p class="text-xs font-bold text-white/70 uppercase tracking-[0.25em]">Datos del Seguro</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Empresa / Aseguradora</label>
-                <input v-model="formMachine.seguro_aseguradora" type="text" placeholder="Ej. Seguros G&T, El Roble" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Teléfono de Contacto</label>
+                <input 
+                  v-model="formMachine.seguro_contacto_telefono" 
+                  type="text" 
+                  placeholder="+502 2222-3333"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                />
               </div>
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Persona de Contacto</label>
-                <input v-model="formMachine.seguro_contacto_nombre" type="text" placeholder="Nombre del asesor" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
-              </div>
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
-                <input v-model="formMachine.seguro_contacto_telefono" type="text" placeholder="Ej. +502 2222-3333" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50" />
-              </div>
-              <div class="space-y-2 lg:col-span-3">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Contrato de Seguro (Adjuntar PDF/Imagen)</label>
-                <input @change="handleInsuranceDocChange" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
-              </div>
-            </div>
-          </div>
 
-          <!-- Asignaciones y Compra -->
-          <div class="border-t border-white/10 pt-6">
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Asignaciones y Adquisición</p>
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Contrato / Póliza (PDF o Imagen)</label>
+                <input 
+                  @change="handleInsuranceDocChange" 
+                  type="file" 
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" 
+                  class="w-full text-xs text-white/60 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-slate-950/65 border border-white/10 rounded-xl p-1.5" 
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección 4: Asignaciones y Adquisición -->
+          <section class="glass-card p-8 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
+              <UserIcon class="w-4 h-4" /> Asignaciones y Compra
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               
+              <!-- Operador -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Operador Asignado</label>
-                <select v-model="formMachine.operador_id" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
-                  <option :value="null">Sin operador asignado</option>
-                  <option v-for="emp in personnel" :key="emp.id" :value="emp.id">{{ emp.nombres }} {{ emp.apellidos }}</option>
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Operador Asignado</label>
+                <select 
+                  v-model="formMachine.operador_id"
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
+                >
+                  <option :value="null">Ninguno — Sin asignar</option>
+                  <option v-for="emp in personnel" :key="emp.id" :value="emp.id">
+                    {{ emp.nombres }} {{ emp.apellidos }}
+                  </option>
                 </select>
               </div>
 
+              <!-- Proyecto -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Proyecto Actual</label>
-                <select v-model="formMachine.proyecto_id" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Proyecto Actual</label>
+                <select 
+                  v-model="formMachine.proyecto_id"
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
+                >
                   <option :value="null">Sin proyecto asignado</option>
-                  <option v-for="proj in projects" :key="proj.id" :value="proj.id">{{ proj.nombre }}</option>
+                  <option v-for="proj in projects" :key="proj.id" :value="proj.id">
+                    {{ proj.nombre }}
+                  </option>
                 </select>
               </div>
 
+              <!-- Costo Adquisición -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Costo Adquisición (GTQ)</label>
-                <input v-model="formMachine.costo_adquisicion" type="number" step="0.01" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Costo de Adquisición</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-white/40">Q</span>
+                  <input 
+                    v-model="formMachine.costo_adquisicion" 
+                    type="number" 
+                    min="0" 
+                    step="0.01" 
+                    placeholder="0.00"
+                    class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
+                  />
+                </div>
               </div>
 
+              <!-- Fecha Adquisición -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha Adquisición</label>
-                <input v-model="formMachine.fecha_adquisicion" type="date" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Fecha de Adquisición</label>
+                <input 
+                  v-model="formMachine.fecha_adquisicion" 
+                  type="date" 
+                  class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black text-white focus:outline-none focus:border-primary" 
+                />
               </div>
             </div>
-          </div>
+          </section>
+        </div>
 
-          <!-- Foto -->
-          <div>
-            <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Fotografía</p>
-            <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Imagen de la Máquina (PNG, JPG)</label>
-              <input @change="handleFileChange" type="file" accept=".png,.jpg,.jpeg" class="w-full text-white/60 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/20 border border-white/10 rounded-2xl p-2" />
+        <!-- Right: Photo Upload, Live Preview, and Submit buttons -->
+        <div class="lg:col-span-4 space-y-6">
+
+          <!-- Foto Preview & Upload -->
+          <section class="glass-card p-6 rounded-3xl border border-white/5">
+            <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-5 flex items-center gap-2">
+              <CameraIcon class="w-4 h-4" /> Registro Fotográfico
+            </h3>
+            <div class="relative aspect-video rounded-2xl bg-white/5 hover:bg-white/10 border-2 border-dashed border-white/10 hover:border-primary transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden text-center group">
+              <img 
+                v-if="photoPreview || (isEditingMachine && formMachine.foto_path)" 
+                :src="photoPreview || getPhotoUrl(formMachine.foto_path)"
+                class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity z-0" 
+              />
+              <div 
+                class="z-10 flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all"
+                :class="(photoPreview || (isEditingMachine && formMachine.foto_path)) ? 'bg-slate-950/70 backdrop-blur-md opacity-0 group-hover:opacity-100' : ''"
+              >
+                <CameraIcon class="w-6 h-6 text-white/40 group-hover:text-primary transition-colors" />
+                <p class="text-[9px] font-black text-white/50 uppercase tracking-widest leading-tight">
+                  {{ (photoPreview || formMachine.foto_path) ? 'Cambiar Fotografía' : 'Subir Fotografía del Equipo' }}
+                </p>
+              </div>
+              <input type="file" accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" />
             </div>
+          </section>
+
+          <!-- Live Preview Card -->
+          <div class="bg-primary p-6 rounded-3xl text-white shadow-2xl relative overflow-hidden">
+            <div class="relative z-10 space-y-4">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Vista Previa</p>
+                <p class="text-2xl font-black italic tracking-tighter uppercase mt-1">
+                  {{ (formMachine.marca || formMachine.modelo) ? `${formMachine.marca} ${formMachine.modelo}`.trim() : (formMachine.codigo_interno || 'NUEVA MAQUINARIA') }}
+                </p>
+              </div>
+              <div class="space-y-2 pt-2 text-xs border-t border-white/20">
+                <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Código</span>
+                  <span class="font-black text-white/95 text-[10px] font-mono">{{ formMachine.codigo_interno || '—' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Clasificación</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ formMachine.clasificacion_tipo }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Categoría</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ formMachine.categoria || '—' }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Horómetro</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ formMachine.horometro_actual || 0 }} hrs</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Estado</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ formMachine.estado }}</span>
+                </div>
+                <div v-if="formMachine.no_factura" class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">No. Factura</span>
+                  <span class="font-black text-white/90 text-[10px]">{{ formMachine.no_factura }}</span>
+                </div>
+                <div v-if="formMachine.costo_adquisicion" class="flex justify-between">
+                  <span class="text-white/60 text-[9px] font-black uppercase tracking-wider">Costo</span>
+                  <span class="font-black text-white/90 text-[10px]">Q {{ Number(formMachine.costo_adquisicion).toLocaleString('es-GT', { minimumFractionDigits: 2 }) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
           </div>
 
-          <!-- Botones -->
-          <div class="pt-4 flex justify-end gap-4 border-t border-white/5">
-            <button type="button" @click="closeMachineModal" class="px-8 py-4 rounded-2xl font-bold text-white/60 hover:text-white hover:bg-white/5 transition-all">Cancelar</button>
-            <button type="submit" :disabled="isSubmitting" class="glass-button-primary text-white py-4 px-10 rounded-2xl font-bold flex items-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 disabled:opacity-50 transition-all">
+          <!-- Action Buttons -->
+          <div class="flex gap-3">
+            <button 
+              type="button" 
+              @click="submitMachine" 
+              :disabled="isSubmitting"
+              class="flex-1 bg-primary hover:opacity-90 disabled:opacity-50 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-2xl transition-all"
+            >
               <span v-if="isSubmitting">Guardando...</span>
-              <span v-else>{{ isEditingMachine ? 'Actualizar' : 'Guardar' }}</span>
+              <span v-else>{{ isEditingMachine ? 'Guardar Cambios' : 'Registrar Maquinaria' }}</span>
+            </button>
+            <button 
+              type="button" 
+              @click="switchTab('machinery'); resetMachineForm()"
+              class="px-5 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-black text-white/50 transition-all"
+            >
+              Cancelar
             </button>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- ============================================================
          MODAL: REGISTRO BITÁCORA DIARIA
@@ -493,7 +716,7 @@
     <div v-if="showLogModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeLogModal"></div>
       
-      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-4 md:p-8 relative z-10 border border-white/10 shadow-2xl" data-aos="zoom-in-up" data-aos-duration="1000">
+      <div class="glass-card w-full max-w-2xl overflow-y-auto rounded-[32px] p-6 md:p-8 relative z-10 border border-white/10 shadow-2xl">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-2xl font-bold text-white">Registrar Bitácora Diaria</h3>
           <button @click="closeLogModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
@@ -504,15 +727,15 @@
         <form @submit.prevent="submitLog" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div class="space-y-2 md:col-span-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Máquina <span class="text-tertiary">*</span></label>
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Máquina <span class="text-rose-400">*</span></label>
               <select v-model="formLog.maquina_id" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 appearance-none">
                 <option value="" disabled>Seleccionar máquina...</option>
-                <option v-for="m in filteredMachinery" :key="m.id" :value="m.id">{{ m.codigo_interno }} - {{ m.marca }} {{ m.modelo }}</option>
+                <option v-for="m in machinery" :key="m.id" :value="m.id">{{ m.codigo_interno }} - {{ m.marca }} {{ m.modelo }}</option>
               </select>
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha <span class="text-tertiary">*</span></label>
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Fecha <span class="text-rose-400">*</span></label>
               <input v-model="formLog.fecha" type="date" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
@@ -525,12 +748,12 @@
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro Inicial <span class="text-tertiary">*</span></label>
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro Inicial <span class="text-rose-400">*</span></label>
               <input v-model="formLog.horometro_inicial" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
             <div class="space-y-2">
-              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro Final <span class="text-tertiary">*</span></label>
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Horómetro Final <span class="text-rose-400">*</span></label>
               <input v-model="formLog.horometro_final" type="number" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50" />
             </div>
 
@@ -568,146 +791,109 @@
     <transition name="fade">
       <div v-if="selectedMachine" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedMachine = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-4xl glass-card rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[90vh]" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="relative w-full max-w-4xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col lg:flex-row max-h-[90vh]">
           
-          <button @click="selectedMachine = null" class="absolute top-8 right-8 z-10 w-12 h-12 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
-            <XMarkIcon class="w-6 h-6" />
+          <button @click="selectedMachine = null" class="absolute top-6 right-6 z-10 w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
+            <XMarkIcon class="w-5 h-5" />
           </button>
 
           <!-- Left: Media -->
-          <div class="lg:w-1/2 relative bg-black/40">
+          <div class="lg:w-1/2 relative bg-black/40 min-h-[260px]">
             <img v-if="selectedMachine.foto_path" :src="getPhotoUrl(selectedMachine.foto_path)" class="w-full h-full object-cover" :alt="selectedMachine.modelo" />
             <div v-else class="w-full h-full flex items-center justify-center text-white/20"><WrenchScrewdriverIcon class="w-24 h-24" /></div>
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-            <div class="absolute bottom-10 left-10">
-              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2 block">{{ selectedMachine.codigo_interno }}</span>
-              <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">{{ selectedMachine.marca }}</h2>
-              <h3 class="text-2xl font-bold text-white/80 uppercase">{{ selectedMachine.modelo }}</h3>
-              <p class="text-white/40 font-bold uppercase tracking-widest mt-2">{{ selectedMachine.categoria }}</p>
+            <div class="absolute bottom-8 left-8 right-8">
+              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1 block">{{ selectedMachine.codigo_interno }}</span>
+              <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">{{ selectedMachine.marca }}</h2>
+              <h3 class="text-xl font-bold text-white/80 uppercase mt-1">{{ selectedMachine.modelo }}</h3>
+              <p class="text-white/40 font-bold uppercase tracking-widest text-xs mt-1">{{ selectedMachine.categoria }}</p>
             </div>
           </div>
 
           <!-- Right: Info -->
-          <div class="lg:w-1/2 p-12 bg-black/20 overflow-y-auto">
-            <div class="space-y-8">
-              <!-- Status & Usage -->
-              <div class="flex gap-4">
-                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
-                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-4 flex items-center gap-2">
-                    <ChartBarIcon class="w-4 h-4" /> Estado
-                  </p>
-                  <div class="flex items-center gap-3">
-                    <div :class="`w-3 h-3 rounded-full ${getStatusColor(selectedMachine.estado)} shadow-[0_0_10px_currentColor]`"></div>
-                    <span class="text-lg font-black italic uppercase text-white">{{ selectedMachine.estado }}</span>
-                  </div>
-                </div>
-                <div class="flex-1 glass-card p-6 rounded-3xl border border-white/5" data-aos="zoom-in-up" data-aos-duration="1000">
-                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-4 flex items-center gap-2">
-                    <ClockIcon class="w-4 h-4" /> Horómetro
-                  </p>
-                  <span class="text-xl font-black italic uppercase text-white">{{ selectedMachine.horometro_actual }} h</span>
+          <div class="lg:w-1/2 p-8 lg:p-10 bg-black/20 overflow-y-auto space-y-6">
+            <!-- Status & Usage -->
+            <div class="flex gap-4">
+              <div class="flex-1 glass-card p-5 rounded-2xl border border-white/5">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2 flex items-center gap-2">
+                  <ChartBarIcon class="w-3.5 h-3.5" /> Estado
+                </p>
+                <div class="flex items-center gap-2.5">
+                  <div :class="`w-2.5 h-2.5 rounded-full ${getStatusColor(selectedMachine.estado)}`"></div>
+                  <span class="text-base font-black italic uppercase text-white">{{ selectedMachine.estado }}</span>
                 </div>
               </div>
+              <div class="flex-1 glass-card p-5 rounded-2xl border border-white/5">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2 flex items-center gap-2">
+                  <ClockIcon class="w-3.5 h-3.5" /> Horómetro
+                </p>
+                <span class="text-lg font-black italic uppercase text-white">{{ selectedMachine.horometro_actual }} hrs</span>
+              </div>
+            </div>
 
-              <!-- Technical Specs -->
-              <div>
-                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
-                  <div class="w-8 h-[1px] bg-white/10"></div> Detalles Técnicos y Clasificación
-                </h5>
-                <div class="grid grid-cols-2 gap-4">
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Tipo</p><p class="text-sm font-bold text-white"><span :class="selectedMachine.clasificacion_tipo === 'Liviana' ? 'text-amber-300' : 'text-primary'">{{ selectedMachine.clasificacion_tipo || 'Pesada' }}</span></p></div>
-                  <div v-if="selectedMachine.clasificacion_tipo === 'Liviana'"><p class="text-[9px] text-amber-400 uppercase tracking-widest">Fecha de Servicio</p><p class="text-sm font-bold text-amber-300">{{ formatDate(selectedMachine.fecha_servicio) || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">No. Factura</p><p class="text-sm font-bold text-white">{{ selectedMachine.no_factura || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Año</p><p class="text-sm font-bold text-white">{{ selectedMachine.anio_fabricacion || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Serie</p><p class="text-sm font-bold text-white">{{ selectedMachine.numero_serie || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Placa</p><p class="text-sm font-bold text-white">{{ selectedMachine.placa || 'N/A' }}</p></div>
+            <!-- Technical Specs -->
+            <div>
+              <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3 flex items-center gap-2">
+                <InformationCircleIcon class="w-3.5 h-3.5" /> Detalles Técnicos
+              </h5>
+              <div class="grid grid-cols-2 gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Tipo</p><p class="text-xs font-bold text-white"><span :class="selectedMachine.clasificacion_tipo === 'Liviana' ? 'text-amber-300' : 'text-primary'">{{ selectedMachine.clasificacion_tipo || 'Pesada' }}</span></p></div>
+                <div v-if="selectedMachine.clasificacion_tipo === 'Liviana'"><p class="text-[9px] text-amber-400 uppercase tracking-widest">Fecha de Servicio</p><p class="text-xs font-bold text-amber-300">{{ formatDate(selectedMachine.fecha_servicio) || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">No. Factura</p><p class="text-xs font-bold text-white">{{ selectedMachine.no_factura || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Año</p><p class="text-xs font-bold text-white">{{ selectedMachine.anio_fabricacion || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Serie</p><p class="text-xs font-bold text-white truncate">{{ selectedMachine.numero_serie || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Placa</p><p class="text-xs font-bold text-white">{{ selectedMachine.placa || 'N/A' }}</p></div>
+              </div>
+            </div>
+
+            <!-- Datos de Seguro (Para Pesada) -->
+            <div v-if="selectedMachine.clasificacion_tipo !== 'Liviana'" class="border-t border-white/5 pt-4">
+              <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3 flex items-center gap-2">
+                <ShieldCheckIcon class="w-3.5 h-3.5 text-primary" /> Datos del Seguro
+              </h5>
+              <div class="grid grid-cols-2 gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Aseguradora</p><p class="text-xs font-bold text-white">{{ selectedMachine.seguro_aseguradora || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Contacto</p><p class="text-xs font-bold text-white">{{ selectedMachine.seguro_contacto_nombre || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Teléfono</p><p class="text-xs font-bold text-white">{{ selectedMachine.seguro_contacto_telefono || 'N/A' }}</p></div>
+                <div>
+                  <p class="text-[9px] text-white/30 uppercase tracking-widest">Contrato</p>
+                  <a v-if="selectedMachine.seguro_contrato_adjunto_path" :href="getFileUrl(selectedMachine.seguro_contrato_adjunto_path)" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline mt-0.5">
+                    <DocumentTextIcon class="w-3.5 h-3.5" /> Ver Póliza
+                  </a>
+                  <span v-else class="text-xs font-bold text-white/40">No adjunto</span>
                 </div>
               </div>
+            </div>
 
-              <!-- Datos de Seguro (Para Pesada) -->
-              <div v-if="selectedMachine.clasificacion_tipo !== 'Liviana'" class="border-t border-white/5 pt-6 mt-6">
-                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
-                  <ShieldCheckIcon class="w-4 h-4 text-primary" /> Datos del Seguro
-                </h5>
-                <div class="grid grid-cols-2 gap-4">
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Aseguradora</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_aseguradora || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Contacto</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_contacto_nombre || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Teléfono</p><p class="text-sm font-bold text-white">{{ selectedMachine.seguro_contacto_telefono || 'N/A' }}</p></div>
-                  <div>
-                    <p class="text-[9px] text-white/30 uppercase tracking-widest">Contrato</p>
-                    <a v-if="selectedMachine.seguro_contrato_adjunto_path" :href="getFileUrl(selectedMachine.seguro_contrato_adjunto_path)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline mt-0.5">
-                      <DocumentTextIcon class="w-3.5 h-3.5" /> Ver Contrato
-                    </a>
-                    <span v-else class="text-sm font-bold text-white/40">No adjunto</span>
-                  </div>
-                </div>
+            <!-- Mantenimiento & Adquisición -->
+            <div class="border-t border-white/5 pt-4">
+              <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3 flex items-center gap-2">
+                <UserIcon class="w-3.5 h-3.5" /> Asignaciones y Compra
+              </h5>
+              <div class="grid grid-cols-2 gap-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Operador</p><p class="text-xs font-bold text-white truncate">{{ selectedMachine.operador_nombre || 'Sin asignar' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Proyecto</p><p class="text-xs font-bold text-primary truncate">{{ selectedMachine.proyecto_nombre || 'Sin asignar' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Adquisición</p><p class="text-xs font-bold text-white">{{ formatDate(selectedMachine.fecha_adquisicion) || 'N/A' }}</p></div>
+                <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Costo</p><p class="text-xs font-bold text-emerald-400">{{ selectedMachine.costo_adquisicion ? 'Q ' + Number(selectedMachine.costo_adquisicion).toLocaleString('es-GT', {minimumFractionDigits: 2}) : 'N/A' }}</p></div>
               </div>
+            </div>
 
-              <!-- Mantenimiento & Adquisición -->
-              <div class="border-t border-white/5 pt-6 mt-6">
-                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
-                  <div class="w-8 h-[1px] bg-white/10"></div> Mantenimiento y Compra
-                </h5>
-                <div class="grid grid-cols-2 gap-4">
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Adquisición</p><p class="text-sm font-bold text-white">{{ formatDate(selectedMachine.fecha_adquisicion) || 'N/A' }}</p></div>
-                  <div><p class="text-[9px] text-white/30 uppercase tracking-widest">Costo</p><p class="text-sm font-bold text-white">{{ selectedMachine.costo_adquisicion ? 'Q ' + selectedMachine.costo_adquisicion : 'N/A' }}</p></div>
-                </div>
-              </div>
-              
-              <!-- Personnel & Project -->
-              <div class="p-6 rounded-[32px] bg-white/5 border border-white/5">
-                <div class="space-y-4">
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary"><UserIcon class="w-6 h-6" /></div>
-                    <div><p class="text-[10px] text-white/20 uppercase tracking-widest">Operador</p><p class="text-base font-bold text-white">{{ selectedMachine.operador_nombre || 'Sin asignar' }}</p></div>
+            <!-- Historial de Mantenimientos -->
+            <div v-if="selectedMachineMaintenanceLogs.length > 0" class="border-t border-white/5 pt-4">
+              <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3 flex items-center gap-2">
+                <WrenchScrewdriverIcon class="w-3.5 h-3.5" /> Bitácoras de Mantenimiento
+              </h5>
+              <div class="space-y-3">
+                <div v-for="item in selectedMachineMaintenanceLogs" :key="item.id" class="bg-black/20 p-4 rounded-2xl border border-white/5 text-xs">
+                  <div class="flex justify-between items-start mb-1.5">
+                    <span :class="[
+                      'text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border',
+                      item.tipo_mantenimiento === 'Preventivo' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                    ]">{{ item.tipo_mantenimiento }}</span>
+                    <span class="text-xs font-black text-emerald-400">Q{{ Number(item.costo_total).toLocaleString('es-GT', {minimumFractionDigits:2}) }}</span>
                   </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-sky-500/20 flex items-center justify-center text-sky-400"><MapPinIcon class="w-6 h-6" /></div>
-                    <div><p class="text-[10px] text-white/20 uppercase tracking-widest">Proyecto</p><p class="text-base font-bold text-white">{{ selectedMachine.proyecto_nombre || 'Sin asignar' }}</p></div>
-                  </div>
-                  <div v-if="authStore.userRole === 'admin'" class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-tertiary/20 flex items-center justify-center text-tertiary"><UserIcon class="w-6 h-6" /></div>
-                    <div><p class="text-[10px] text-white/20 uppercase tracking-widest">Creado Por</p><p class="text-base font-bold text-white">{{ selectedMachine.creado_por_nombre || 'Sistema' }}</p></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Historial de Mantenimientos -->
-              <div v-if="selectedMachineMaintenanceLogs.length > 0" class="border-t border-white/5 pt-6 mt-6">
-                <h5 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-4 flex items-center gap-3">
-                  <div class="w-8 h-[1px] bg-white/10"></div> Bitácoras de Mantenimiento
-                </h5>
-                <div class="space-y-4">
-                  <div v-for="item in selectedMachineMaintenanceLogs" :key="item.id" class="bg-black/20 p-5 rounded-3xl border border-white/5">
-                    <div class="flex justify-between items-start mb-2">
-                      <div class="flex items-center gap-2">
-                        <span :class="[
-                          'text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border',
-                          item.tipo_mantenimiento === 'Preventivo' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                        ]">{{ item.tipo_mantenimiento }}</span>
-                        <span class="text-[10px] font-black text-white/60 bg-white/5 px-2 py-1 rounded-md">{{ item.fecha_mantenimiento }}</span>
-                      </div>
-                      <span class="text-xs font-black text-emerald-400">Q{{ Number(item.costo_total).toLocaleString('es-GT', {minimumFractionDigits:2}) }}</span>
-                    </div>
-                    
-                    <p class="text-xs text-white/90 font-bold leading-relaxed mb-1">{{ item.descripcion }}</p>
-                    <p v-if="item.observaciones" class="text-[10px] text-white/40 italic mb-3 leading-relaxed pl-2 border-l-2 border-white/10">{{ item.observaciones }}</p>
-                    
-                    <!-- Repuestos -->
-                    <div v-if="item.repuestos && item.repuestos.length > 0" class="mt-4 bg-white/5 p-3 rounded-xl border border-white/5">
-                      <p class="text-[9px] font-black uppercase text-white/30 mb-2">Repuestos Utilizados</p>
-                      <ul class="space-y-1">
-                        <li v-for="r in item.repuestos" :key="r.id" class="text-[10px] font-bold text-white/70 flex justify-between">
-                          <span>{{ r.cantidad }}x {{ r.nombre_repuesto }}</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <!-- Fotos -->
-                    <div v-if="item.fotos && item.fotos.length > 0" class="grid grid-cols-4 gap-2 mt-4">
-                      <img v-for="(imgUrl, iIdx) in item.fotos" :key="iIdx" :src="getPhotoUrl(imgUrl)" class="w-full h-16 object-cover rounded-xl border border-white/10 cursor-pointer hover:scale-105 hover:shadow-2xl transition-all" @click="fullscreenImage = getPhotoUrl(imgUrl)" />
-                    </div>
-                  </div>
+                  <p class="text-white/90 font-bold mb-1">{{ item.descripcion }}</p>
+                  <p class="text-[10px] text-white/40">{{ item.fecha_mantenimiento }}</p>
                 </div>
               </div>
             </div>
@@ -720,7 +906,7 @@
     <transition name="fade">
       <div v-if="selectedLog" class="fixed inset-0 z-50 flex items-center justify-center p-6">
         <div @click="selectedLog = null" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl p-8" data-aos="zoom-in-up" data-aos-duration="1000">
+        <div class="relative w-full max-w-2xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-2xl p-8">
           <button @click="selectedLog = null" class="absolute top-8 right-8 z-10 w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white transition-all">
             <XMarkIcon class="w-5 h-5" />
           </button>
@@ -760,7 +946,7 @@
               <div class="h-10 w-[1px] bg-white/10"></div>
               <div>
                 <p class="text-[10px] text-white/30 uppercase font-bold tracking-widest">Trabajado</p>
-                <p class="text-xl font-black text-primary">{{ selectedLog.horometro_final - selectedLog.horometro_inicial }} h</p>
+                <p class="text-xl font-black text-primary">{{ (Number(selectedLog.horometro_final) - Number(selectedLog.horometro_inicial)).toFixed(1) }} h</p>
               </div>
             </div>
             
@@ -797,30 +983,23 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { 
-  ArrowTrendingUpIcon, ArrowTrendingDownIcon, WrenchScrewdriverIcon, ExclamationTriangleIcon, 
-  MapPinIcon, ClockIcon, Square3Stack3DIcon, ListBulletIcon, ArchiveBoxIcon, CubeIcon, 
-  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon,
-  ShieldCheckIcon, DocumentTextIcon, CalendarIcon
+  WrenchScrewdriverIcon, ExclamationTriangleIcon, ClockIcon, ListBulletIcon, 
+  XMarkIcon, UserIcon, ChartBarIcon, PlusIcon, PencilIcon, TrashIcon, EyeIcon, 
+  MagnifyingGlassIcon, ChevronLeftIcon, ChevronRightIcon, ShieldCheckIcon, 
+  DocumentTextIcon, CalendarIcon, CameraIcon, InformationCircleIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../../stores/auth';
 import api from '../../services/api';
 
 const authStore = useAuthStore();
-
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
 // State
-const activeTab = ref("machinery");
-const tabs = [
-  { id: 'machinery', name: 'Maquinaria Pesada' },
-  { id: 'log', name: 'Bitácora Diaria' }
-];
-
+const activeTab = ref("machinery"); // 'machinery' | 'log' | 'register'
 const machinery = ref([]);
 const logs = ref([]);
 const maintenanceLogs = ref([]);
@@ -831,13 +1010,14 @@ const loadingLogs = ref(true);
 
 const fullscreenImage = ref('');
 
-
 const searchMachine = ref("");
-const filterCategory = ref("");
+const filterType = ref("");
 const filterStatus = ref("");
 
 const searchLog = ref("");
 const filterLogProject = ref("");
+
+const photoPreview = ref('');
 
 const filteredMachinery = computed(() => {
   return machinery.value.filter(m => {
@@ -845,10 +1025,12 @@ const filteredMachinery = computed(() => {
     const matchSearch = (m.codigo_interno && m.codigo_interno.toLowerCase().includes(searchVal)) ||
                         (m.marca && m.marca.toLowerCase().includes(searchVal)) ||
                         (m.modelo && m.modelo.toLowerCase().includes(searchVal)) ||
+                        (m.numero_serie && m.numero_serie.toLowerCase().includes(searchVal)) ||
+                        (m.no_factura && m.no_factura.toLowerCase().includes(searchVal)) ||
                         (m.placa && m.placa.toLowerCase().includes(searchVal));
-    const matchCat = filterCategory.value === "" || m.categoria === filterCategory.value;
+    const matchType = filterType.value === "" || (m.clasificacion_tipo || 'Pesada') === filterType.value;
     const matchStatus = filterStatus.value === "" || m.estado === filterStatus.value;
-    return matchSearch && matchCat && matchStatus;
+    return matchSearch && matchType && matchStatus;
   });
 });
 
@@ -862,10 +1044,8 @@ const filteredLogs = computed(() => {
   });
 });
 
-
 const currentLogPage = ref(1);
 const itemsPerPage = 10;
-
 const totalLogPages = computed(() => Math.ceil(filteredLogs.value.length / itemsPerPage));
 
 const paginatedLogs = computed(() => {
@@ -878,14 +1058,10 @@ watch([searchLog, filterLogProject], () => {
 });
 
 const selectedMachine = ref(null);
-
-
-
 const selectedLog = ref(null);
 
 const selectedMachineMaintenanceLogs = computed(() => {
   if (!selectedMachine.value) return [];
-  // Maintenance logs use `machinery_id` as the foreign key in the backend
   return maintenanceLogs.value.filter(l => l.machinery_id === selectedMachine.value.id);
 });
 
@@ -893,16 +1069,12 @@ const openViewLog = (log) => {
   selectedLog.value = log;
 };
 
-
-// Modals State
-const showMachineModal = ref(false);
+// Form State
 const isEditingMachine = ref(false);
 const editingMachineId = ref(null);
 const isSubmitting = ref(false);
-
 const showLogModal = ref(false);
 
-// Forms Data
 const formMachine = ref({
   clasificacion_tipo: 'Pesada',
   categoria: '',
@@ -924,6 +1096,7 @@ const formMachine = ref({
   seguro_contacto_nombre: '',
   seguro_contacto_telefono: '',
   foto: null,
+  foto_path: '',
   seguro_contrato_adjunto: null
 });
 
@@ -938,21 +1111,38 @@ const formLog = ref({
   observaciones: ''
 });
 
-// Mock Metrics (Puedes conectarlas a la API luego)
+// KPIs Metrics
 const metrics = computed(() => {
   const activas = machinery.value.filter(m => m.estado === 'Activo').length;
   const total = machinery.value.length;
-  const pct = total > 0 ? Math.round((activas/total)*100) : 0;
+  const pct = total > 0 ? Math.round((activas / total) * 100) : 0;
   const mtto = machinery.value.filter(m => m.estado === 'En Mantenimiento' || m.estado === 'En Reparación').length;
 
   return [
-    { label: "Maquinaria Registrada", value: total.toString(), trend: "Total de equipos", icon: WrenchScrewdriverIcon, color: "text-primary" },
-    { label: "Equipos Operativos", value: `${activas} / ${total}`, percentage: pct, color: "text-primary" },
-    { label: "En Mantenimiento", value: mtto.toString(), trend: "Atención requerida", icon: ExclamationTriangleIcon, color: "text-orange-500" },
+    { label: "Total Maquinaria", value: total.toString(), trend: "Total equipos", icon: WrenchScrewdriverIcon, color: "text-primary" },
+    { label: "Operativas / Activas", value: `${activas} / ${total}`, percentage: pct, color: "text-primary" },
+    { label: "En Mantenimiento", value: mtto.toString(), trend: "Atención requerida", icon: ExclamationTriangleIcon, color: "text-amber-400" },
     { label: "Bitácoras Registradas", value: logs.value.length.toString(), trend: "Total histórico", icon: ListBulletIcon, color: "text-sky-400" },
   ];
 });
 
+// Navigation Tab Switcher
+const switchTab = (tab) => {
+  activeTab.value = tab;
+  if (tab !== 'register') {
+    isEditingMachine.value = false;
+    editingMachineId.value = null;
+    photoPreview.value = '';
+  }
+};
+
+const startRegister = () => {
+  resetMachineForm();
+  isEditingMachine.value = false;
+  editingMachineId.value = null;
+  activeTab.value = 'register';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // ----------------------------------------------------------------
 // Lifecycle & Fetches
@@ -1011,13 +1201,6 @@ const fetchProjects = async () => {
 // ----------------------------------------------------------------
 // Machine CRUD
 // ----------------------------------------------------------------
-const openMachineModal = () => {
-  resetMachineForm();
-  isEditingMachine.value = false;
-  editingMachineId.value = null;
-  showMachineModal.value = true;
-};
-
 const openEditMachine = (m) => {
   formMachine.value = { 
     ...m, 
@@ -1027,38 +1210,51 @@ const openEditMachine = (m) => {
     seguro_aseguradora: m.seguro_aseguradora || '',
     seguro_contacto_nombre: m.seguro_contacto_nombre || '',
     seguro_contacto_telefono: m.seguro_contacto_telefono || '',
-    foto: null, 
+    foto: null,
+    foto_path: m.foto_path || '',
     seguro_contrato_adjunto: null 
   };
+  photoPreview.value = '';
   isEditingMachine.value = true;
   editingMachineId.value = m.id;
-  showMachineModal.value = true;
-};
-
-const closeMachineModal = () => {
-  showMachineModal.value = false;
-  resetMachineForm();
+  activeTab.value = 'register';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const resetMachineForm = () => {
   formMachine.value = {
     clasificacion_tipo: 'Pesada',
-    categoria: '', codigo_interno: '', no_factura: '', marca: '', modelo: '', numero_serie: '',
-    anio_fabricacion: '', placa: '', horometro_actual: 0,
+    categoria: '', 
+    codigo_interno: '', 
+    no_factura: '', 
+    marca: '', 
+    modelo: '', 
+    numero_serie: '',
+    anio_fabricacion: '', 
+    placa: '', 
+    horometro_actual: 0,
     operador_id: null,
-    proyecto_id: null, estado: 'Activo', costo_adquisicion: '', fecha_adquisicion: '',
+    proyecto_id: null, 
+    estado: 'Activo', 
+    costo_adquisicion: '', 
+    fecha_adquisicion: '',
     fecha_servicio: '',
     seguro_aseguradora: '',
     seguro_contacto_nombre: '',
     seguro_contacto_telefono: '',
     foto: null,
+    foto_path: '',
     seguro_contrato_adjunto: null
   };
+  photoPreview.value = '';
 };
 
 const handleFileChange = (e) => {
   const file = e.target.files[0];
-  if (file) formMachine.value.foto = file;
+  if (file) {
+    formMachine.value.foto = file;
+    photoPreview.value = URL.createObjectURL(file);
+  }
 };
 
 const handleInsuranceDocChange = (e) => {
@@ -1072,11 +1268,34 @@ const getFileUrl = (path) => {
 };
 
 const submitMachine = async () => {
+  // Simple validation
+  if (!formMachine.value.codigo_interno || !formMachine.value.categoria || !formMachine.value.marca || !formMachine.value.modelo) {
+    Swal.fire({
+      background: '#0f172a',
+      color: '#fff',
+      icon: 'warning',
+      title: 'Campos requeridos',
+      text: 'Por favor completa el código interno, categoría, marca y modelo.'
+    });
+    return;
+  }
+
+  if (formMachine.value.clasificacion_tipo === 'Liviana' && !formMachine.value.fecha_servicio) {
+    Swal.fire({
+      background: '#0f172a',
+      color: '#fff',
+      icon: 'warning',
+      title: 'Fecha de Servicio requerida',
+      text: 'Para maquinaria liviana debes indicar la fecha de servicio.'
+    });
+    return;
+  }
+
   isSubmitting.value = true;
   const fd = new FormData();
   
   Object.keys(formMachine.value).forEach(key => {
-    if (formMachine.value[key] !== null && formMachine.value[key] !== '') {
+    if (key !== 'foto_path' && formMachine.value[key] !== null && formMachine.value[key] !== '') {
       fd.append(key, formMachine.value[key]);
     }
   });
@@ -1088,8 +1307,9 @@ const submitMachine = async () => {
     
     if (result.status === 'success') {
       await fetchMachinery();
-      closeMachineModal();
-      Swal.fire({ background: '#0f172a', color: '#fff', icon: 'success', title: '¡Guardado!' });
+      switchTab('machinery');
+      resetMachineForm();
+      Swal.fire({ background: '#0f172a', color: '#fff', icon: 'success', title: '¡Guardado correctamente!' });
     } else {
       Swal.fire({ background: '#0f172a', color: '#fff', icon: 'error', title: 'Error', text: result.message });
     }
@@ -1114,7 +1334,7 @@ const deleteMachine = async (id) => {
     const data = await res.json();
     if (data.status === 'success') {
       await fetchMachinery();
-      await fetchLogs(); // Actualizar logs también
+      await fetchLogs();
       Swal.fire({ background: '#0f172a', color: '#fff', icon: 'success', title: 'Eliminado' });
     }
   } catch (err) { }
@@ -1149,7 +1369,7 @@ const submitLog = async () => {
     
     if (result.status === 'success') {
       await fetchLogs();
-      await fetchMachinery(); // Por si el horómetro cambió
+      await fetchMachinery();
       closeLogModal();
       Swal.fire({ background: '#0f172a', color: '#fff', icon: 'success', title: '¡Bitácora Guardada!' });
     } else {
@@ -1199,9 +1419,14 @@ const formatDate = (val) => {
 </script>
 
 <style scoped>
-.fade-slide-enter-active, .fade-slide-leave-active { transition: opacity 0.4s ease-out, transform 0.4s ease-out; }
-.fade-slide-enter-from { opacity: 0; transform: scale(0.98); }
-.fade-slide-leave-to { opacity: 0; transform: scale(0.98); }
+.glass-input {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+.glass-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+}
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
