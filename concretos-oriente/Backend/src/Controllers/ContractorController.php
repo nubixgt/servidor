@@ -36,15 +36,19 @@ class ContractorController extends Controller
     public function store()
     {
         try {
+            $empresa = trim($_POST['empresa'] ?? $_POST['nombre'] ?? '');
             $data = [
-                'nombre'             => trim($_POST['nombre'] ?? ''),
-                'telefono'           => trim($_POST['telefono'] ?? '') ?: null,
-                'correo_electronico' => trim($_POST['correo_electronico'] ?? '') ?: null,
+                'empresa'          => $empresa,
+                'nombre'           => $empresa,
+                'representante'    => trim($_POST['representante'] ?? '') ?: null,
+                'telefono'         => trim($_POST['telefono'] ?? '') ?: null,
+                'encargado_id'     => !empty($_POST['encargado_id']) ? (int)$_POST['encargado_id'] : null,
+                'encargado_nombre' => trim($_POST['encargado_nombre'] ?? '') ?: null,
             ];
 
             $this->contractorService->createContractor($data);
 
-            $this->json(['status' => 'success', 'message' => 'Contratista registrado correctamente']);
+            $this->json(['status' => 'success', 'message' => 'Subcontratista registrado correctamente']);
         } catch (Exception $e) {
             $code = $e->getCode() ?: 500;
             $code = $code >= 400 && $code < 600 ? $code : 500;
@@ -59,15 +63,19 @@ class ContractorController extends Controller
     public function update($id)
     {
         try {
+            $empresa = trim($_POST['empresa'] ?? $_POST['nombre'] ?? '');
             $data = [
-                'nombre'             => trim($_POST['nombre'] ?? ''),
-                'telefono'           => trim($_POST['telefono'] ?? '') ?: null,
-                'correo_electronico' => trim($_POST['correo_electronico'] ?? '') ?: null,
+                'empresa'          => $empresa,
+                'nombre'           => $empresa,
+                'representante'    => trim($_POST['representante'] ?? '') ?: null,
+                'telefono'         => trim($_POST['telefono'] ?? '') ?: null,
+                'encargado_id'     => !empty($_POST['encargado_id']) ? (int)$_POST['encargado_id'] : null,
+                'encargado_nombre' => trim($_POST['encargado_nombre'] ?? '') ?: null,
             ];
 
             $this->contractorService->updateContractor((int)$id, $data);
 
-            $this->json(['status' => 'success', 'message' => 'Contratista actualizado correctamente']);
+            $this->json(['status' => 'success', 'message' => 'Subcontratista actualizado correctamente']);
         } catch (Exception $e) {
             $code = $e->getCode() ?: 500;
             $code = $code >= 400 && $code < 600 ? $code : 500;

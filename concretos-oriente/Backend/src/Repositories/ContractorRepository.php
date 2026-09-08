@@ -11,17 +11,64 @@ class ContractorRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->autoMigrate();
+    }
+
+    private function autoMigrate(): void
+    {
+        try {
+            $cols = $this->pdo->query("SHOW COLUMNS FROM contractors")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('empresa', $cols)) {
+                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN empresa VARCHAR(255) NULL AFTER id");
+                $this->pdo->exec("UPDATE contractors SET empresa = nombre WHERE empresa IS NULL OR empresa = ''");
+            }
+            if (!in_array('representante', $cols)) {
+                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN representante VARCHAR(255) NULL AFTER empresa");
+            }
+            if (!in_array('encargado_id', $cols)) {
+                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN encargado_id INT NULL");
+            }
+            if (!in_array('encargado_nombre', $cols)) {
+                $this->pdo->exec("ALTER TABLE contractors ADD COLUMN encargado_nombre VARCHAR(255) NULL");
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
     }
 
     public function findAll(): array
     {
-        $sql = "SELECT * FROM contractors ORDER BY nombre ASC";
+        $sql = "SELECT c.*,
+                       COALESCE(c.empresa, c.nombre) AS empresa,
+                       c.representante,
+                       COALESCE(CONCAT(p.nombres, ' ', p.apellidos), c.encargado_nombre) AS encargado_asignado,
+                       p.puesto AS encargado_puesto,
+                       (
+                           SELECT COUNT(DISTINCT pc.project_id) FROM project_contractors pc WHERE pc.contractor_id = c.id
+                       ) AS proyectos_count,
+                       (
+                           SELECT COALESCE(SUM(pc.monto_contratado), 0) FROM project_contractors pc WHERE pc.contractor_id = c.id
+                       ) AS total_contratado,
+                       (
+                           SELECT COALESCE(SUM(e.monto), 0) FROM expenses e WHERE e.contratista_id = c.id AND e.tipo_egreso = 'Contratista'
+                       ) AS total_pagado
+                FROM contractors c
+                LEFT JOIN personnel p ON p.id = c.encargado_id
+                ORDER BY COALESCE(c.empresa, c.nombre) ASC";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM contractors WHERE id = :id");
+        $stmt = $this->pdo->prepare("
+            SELECT c.*,
+                   COALESCE(c.empresa, c.nombre) AS empresa,
+                   COALESCE(CONCAT(p.nombres, ' ', p.apellidos), c.encargado_nombre) AS encargado_asignado,
+                   p.puesto AS encargado_puesto
+            FROM contractors c
+            LEFT JOIN personnel p ON p.id = c.encargado_id
+            WHERE c.id = :id
+        ");
         $stmt->execute(['id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -30,13 +77,17 @@ class ContractorRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO contractors (nombre, telefono, correo_electronico)
-                VALUES (:nombre, :telefono, :correo_electronico)";
+        $empresa = !empty($data['empresa']) ? $data['empresa'] : ($data['nombre'] ?? '');
+        $sql = "INSERT INTO contractors (nombre, empresa, representante, telefono, correo_electronico, encargado_id, encargado_nombre)
+                VALUES (:nombre, :empresa, :representante, :telefono, NULL, :encargado_id, :encargado_nombre)";
 
         $this->pdo->prepare($sql)->execute([
-            'nombre'             => $data['nombre'],
-            'telefono'           => $data['telefono'] ?? null,
-            'correo_electronico' => $data['correo_electronico'] ?? null,
+            'nombre'           => $empresa,
+            'empresa'          => $empresa,
+            'representante'    => $data['representante'] ?? null,
+            'telefono'         => $data['telefono'] ?? null,
+            'encargado_id'     => !empty($data['encargado_id']) ? (int)$data['encargado_id'] : null,
+            'encargado_nombre' => $data['encargado_nombre'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -44,17 +95,24 @@ class ContractorRepository
 
     public function update(int $id, array $data): void
     {
+        $empresa = !empty($data['empresa']) ? $data['empresa'] : ($data['nombre'] ?? '');
         $sql = "UPDATE contractors SET
-                    nombre = :nombre,
-                    telefono = :telefono,
-                    correo_electronico = :correo_electronico
+                    nombre           = :nombre,
+                    empresa          = :empresa,
+                    representante    = :representante,
+                    telefono         = :telefono,
+                    encargado_id     = :encargado_id,
+                    encargado_nombre = :encargado_nombre
                 WHERE id = :id";
 
         $this->pdo->prepare($sql)->execute([
-            'nombre'             => $data['nombre'],
-            'telefono'           => $data['telefono'] ?? null,
-            'correo_electronico' => $data['correo_electronico'] ?? null,
-            'id'                 => $id
+            'nombre'           => $empresa,
+            'empresa'          => $empresa,
+            'representante'    => $data['representante'] ?? null,
+            'telefono'         => $data['telefono'] ?? null,
+            'encargado_id'     => !empty($data['encargado_id']) ? (int)$data['encargado_id'] : null,
+            'encargado_nombre' => $data['encargado_nombre'] ?? null,
+            'id'               => $id
         ]);
     }
 

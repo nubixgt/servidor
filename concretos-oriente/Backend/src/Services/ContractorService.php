@@ -125,8 +125,9 @@ class ContractorService
 
     private function validateContractorData(array $data): void
     {
-        if (empty($data['nombre'])) {
-            throw new Exception('El nombre del contratista es requerido.', 400);
+        $empresa = trim($data['empresa'] ?? $data['nombre'] ?? '');
+        if (empty($empresa)) {
+            throw new Exception('El nombre de la empresa subcontratista es obligatorio.', 400);
         }
     }
 }
