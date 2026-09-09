@@ -651,14 +651,16 @@
                 </div>
               </div>
 
-              <div v-if="!isEditingAccount">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">Saldo Inicial (Q)</label>
+              <div>
+                <label class="block text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 pl-1">
+                  {{ isEditingAccount ? 'Saldo Disponible / Monto Actual (Q) *' : 'Saldo Inicial (Q)' }}
+                </label>
                 <input
                   type="text"
                   :value="getDisplayValue(accountForm.saldo_inicial)"
                   @input="e => updateCurrencyField(accountForm, 'saldo_inicial', e)"
                   placeholder="Q 0.00"
-                  class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3.5 text-white font-bold focus:outline-none focus:border-primary transition-all"
+                  class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-3.5 text-white font-bold focus:outline-none focus:border-primary transition-all text-base font-mono text-emerald-400"
                 />
               </div>
 
@@ -1302,7 +1304,7 @@ const openEditAccountModal = (acc: any) => {
     numero_cuenta: acc.numero_cuenta,
     tipo_cuenta: acc.tipo_cuenta || 'Monetaria',
     moneda: acc.moneda || 'GTQ',
-    saldo_inicial: acc.saldo_inicial || 0,
+    saldo_inicial: acc.saldo_actual !== undefined && acc.saldo_actual !== null ? acc.saldo_actual : (acc.saldo_inicial || 0),
     activa: acc.activa == 1 || acc.activa === true
   };
   showAccountModal.value = true;
@@ -1316,12 +1318,14 @@ const handleSaveAccount = async () => {
 
   isSubmittingAccount.value = true;
   try {
+    const amountVal = parseFloat(String(accountForm.value.saldo_inicial).replace(/,/g, '')) || 0;
     const payload = {
       nombre_banco: accountForm.value.nombre_banco.trim(),
       numero_cuenta: accountForm.value.numero_cuenta.trim(),
       tipo_cuenta: accountForm.value.tipo_cuenta,
       moneda: accountForm.value.moneda,
-      saldo_inicial: parseFloat(String(accountForm.value.saldo_inicial).replace(/,/g, '')) || 0,
+      saldo_inicial: amountVal,
+      saldo_actual: amountVal,
       activa: accountForm.value.activa ? 1 : 0
     };
 

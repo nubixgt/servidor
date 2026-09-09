@@ -74,6 +74,8 @@ class BankConciliationController extends Controller
                 'tipo_cuenta'   => trim($data['tipo_cuenta'] ?? ''),
                 'moneda'        => trim($data['moneda'] ?? 'GTQ'),
                 'activa'        => isset($data['activa']) ? (int)$data['activa'] : 1,
+                'saldo_actual'  => isset($data['saldo_actual']) ? (float)$data['saldo_actual'] : (isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : 0),
+                'saldo_inicial' => isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : (isset($data['saldo_actual']) ? (float)$data['saldo_actual'] : 0),
             ];
 
             $this->bankConciliationService->updateAccount($id, $accountData);

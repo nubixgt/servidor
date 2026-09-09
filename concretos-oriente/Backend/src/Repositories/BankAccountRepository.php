@@ -53,16 +53,23 @@ class BankAccountRepository
                     numero_cuenta = :numero_cuenta,
                     tipo_cuenta = :tipo_cuenta,
                     moneda = :moneda,
-                    activa = :activa
+                    activa = :activa,
+                    saldo_actual = :saldo_actual,
+                    saldo_inicial = :saldo_inicial
                 WHERE id = :id";
         
+        $saldoVal = isset($data['saldo_actual']) ? (float)$data['saldo_actual'] : (isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : 0);
+        $saldoIni = isset($data['saldo_inicial']) ? (float)$data['saldo_inicial'] : $saldoVal;
+
         $this->pdo->prepare($sql)->execute([
             'id'            => $id,
             'nombre_banco'  => $data['nombre_banco'],
             'numero_cuenta' => $data['numero_cuenta'],
             'tipo_cuenta'   => $data['tipo_cuenta'],
             'moneda'        => $data['moneda'] ?? 'GTQ',
-            'activa'        => $data['activa'] ?? 1
+            'activa'        => $data['activa'] ?? 1,
+            'saldo_actual'  => $saldoVal,
+            'saldo_inicial' => $saldoIni
         ]);
     }
 
