@@ -681,7 +681,7 @@
     </Transition>
 
     <!-- ═══════════════════════════════════════════ REPORTE POR VEHICULO ═══ -->
-    <template v-else-if="activeTab === 'report'">
+    <template v-if="activeTab === 'report'">
       <div class="glass-card p-8 rounded-[32px] border border-white/5 space-y-8">
         
         <!-- Header & Seleccion -->
