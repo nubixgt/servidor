@@ -45,10 +45,20 @@
                 <p class="text-xs text-white/50">{{ role.description }}</p>
               </td>
               <td v-for="module in modules" :key="module.id" class="p-4 text-center">
-                <div class="inline-flex relative items-center cursor-pointer" @click="togglePermission(role, module.id)">
-                  <div class="w-6 h-6 rounded flex items-center justify-center transition-colors"
-                       :class="hasPermission(role, module.id) ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'border border-white/20 bg-transparent'">
-                    <CheckIcon v-if="hasPermission(role, module.id)" class="w-4 h-4 text-white" />
+                <div class="flex items-center justify-center gap-2">
+                  <!-- Botón de Ver (Lectura) -->
+                  <div class="group relative cursor-pointer" @click="togglePermission(role, module.id + '_view')" title="Solo Lectura">
+                    <div class="w-8 h-8 rounded flex items-center justify-center transition-all duration-300"
+                         :class="hasPermission(role, module.id + '_view') ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.3)]' : 'border border-white/10 bg-black/20 text-white/30 hover:text-white/60'">
+                      <EyeIcon class="w-4 h-4" />
+                    </div>
+                  </div>
+                  <!-- Botón de Editar (Escritura) -->
+                  <div class="group relative cursor-pointer" @click="togglePermission(role, module.id + '_edit')" title="Escritura / Edición">
+                    <div class="w-8 h-8 rounded flex items-center justify-center transition-all duration-300"
+                         :class="hasPermission(role, module.id + '_edit') ? 'bg-indigo-500/20 border-indigo-500 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.3)]' : 'border border-white/10 bg-black/20 text-white/30 hover:text-white/60'">
+                      <PencilIcon class="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </td>
@@ -73,7 +83,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { ShieldCheckIcon, CheckIcon } from '@heroicons/vue/24/solid';
+import { ShieldCheckIcon, EyeIcon, PencilIcon } from '@heroicons/vue/24/solid';
 import api from '../../services/api';
 import Swal from 'sweetalert2';
 
@@ -94,10 +104,10 @@ const loadRoles = async () => {
     // Si no hay roles, creamos datos por defecto para la vista
     if (response.data.length === 0) {
       roles.value = [
-        { id: 1, name: 'Administrador general', description: 'Control Total y Parametrización', permissions: ['rrhh', 'maquinaria', 'inventario', 'finanzas', 'configuracion'] },
-        { id: 2, name: 'RRHH / Planillas', description: 'Ingreso y Atención al personal', permissions: ['rrhh'] },
-        { id: 3, name: 'Operador / Técnico', description: 'Atención Técnica de Maquinaria', permissions: ['maquinaria'] },
-        { id: 4, name: 'Auditor / Consulta', description: 'Monitoreo pasivo y reportes', permissions: ['inventario', 'finanzas'] }
+        { id: 1, name: 'Administrador general', description: 'Control Total y Parametrización', permissions: ['rrhh_view', 'rrhh_edit', 'maquinaria_view', 'maquinaria_edit', 'inventario_view', 'inventario_edit', 'finanzas_view', 'finanzas_edit', 'configuracion_view', 'configuracion_edit'] },
+        { id: 2, name: 'RRHH / Planillas', description: 'Ingreso y Atención al personal', permissions: ['rrhh_view', 'rrhh_edit'] },
+        { id: 3, name: 'Operador / Técnico', description: 'Atención Técnica de Maquinaria', permissions: ['maquinaria_view', 'maquinaria_edit'] },
+        { id: 4, name: 'Auditor / Consulta', description: 'Monitoreo pasivo y reportes', permissions: ['inventario_view', 'finanzas_view'] }
       ];
     } else {
       roles.value = response.data;
@@ -117,15 +127,34 @@ const hasPermission = (role, moduleId) => {
   return role.permissions && role.permissions.includes(moduleId);
 };
 
-const togglePermission = (role, moduleId) => {
+const togglePermission = (role, permissionStr) => {
   if (!role.permissions) {
     role.permissions = [];
   }
-  const index = role.permissions.indexOf(moduleId);
+  const index = role.permissions.indexOf(permissionStr);
   if (index > -1) {
+    // Apagando el permiso
     role.permissions.splice(index, 1);
+    
+    // Si se apaga "_view", apagar automáticamente "_edit"
+    if (permissionStr.endsWith('_view')) {
+      const editPerm = permissionStr.replace('_view', '_edit');
+      const editIndex = role.permissions.indexOf(editPerm);
+      if (editIndex > -1) {
+        role.permissions.splice(editIndex, 1);
+      }
+    }
   } else {
-    role.permissions.push(moduleId);
+    // Encendiendo el permiso
+    role.permissions.push(permissionStr);
+    
+    // Si se activa "_edit", encender automáticamente "_view"
+    if (permissionStr.endsWith('_edit')) {
+      const viewPerm = permissionStr.replace('_edit', '_view');
+      if (!role.permissions.includes(viewPerm)) {
+        role.permissions.push(viewPerm);
+      }
+    }
   }
 };
 
