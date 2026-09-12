@@ -1149,24 +1149,9 @@ const submitLog = async () => {
 
 // ── Historial ──────────────────────────────────────────────────────────────
 const showHistory = (v) => {
-  const rows = v.history?.length
-    ? v.history.map(h => `<div class="p-3 bg-white/5 border border-white/10 rounded-xl mb-2">
-        <div class="flex justify-between mb-1">
-          <span class="text-[10px] font-black text-primary uppercase">${h.type}</span>
-          <span class="text-[9px] font-mono text-white/40">${h.date}</span>
-        </div>
-        <p class="text-xs text-white/80">${h.description}</p>
-      </div>`).join('')
-    : '<p class="text-white/40 text-xs italic">Sin registros aún.</p>';
-
-  Swal.fire({
-    title: `<span class="text-white font-black uppercase text-sm tracking-widest">Historial [${v.placa}]</span>`,
-    html: `<div class="text-left max-h-64 overflow-y-auto">${rows}</div>`,
-    background: '#0f172a',
-    showCloseButton: true,
-    showConfirmButton: false,
-    customClass: { popup: 'rounded-3xl border border-white/10 shadow-2xl', closeButton: 'text-white/50 hover:text-white' }
-  });
+  searchLog.value = v.placa;
+  filterLogProject.value = '';
+  switchTab('log');
 };
 </script>
 

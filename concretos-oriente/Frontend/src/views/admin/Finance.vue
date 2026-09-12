@@ -356,7 +356,11 @@
             <!-- Campo Dependiente: visible SOLO cuando tipo_egreso es Subcontratista/Contratista -->
             <div v-if="formExpense.tipo_egreso === 'Contratista'" class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Dependiente (Opcional)</label>
-              <input v-model="formExpense.dependiente" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Persona a cargo (opcional)..." />
+              <select v-if="dependientesDisponibles.length > 0" v-model="formExpense.dependiente" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50 appearance-none">
+                <option value="">Seleccione una persona a cargo (opcional)...</option>
+                <option v-for="d in dependientesDisponibles" :key="d" :value="d">{{ d }}</option>
+              </select>
+              <input v-else v-model="formExpense.dependiente" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Persona a cargo (opcional)..." />
             </div>
 
             <div class="space-y-2">
@@ -795,9 +799,19 @@ watch(() => formExpense.value.tipo_egreso, (tipo) => {
   }
 });
 
+const dependientesDisponibles = computed(() => {
+  if (formExpense.value.tipo_egreso !== 'Contratista' || !formExpense.value.contratista_id) return [];
+  const c = contractors.value.find(contract => contract.id === formExpense.value.contratista_id);
+  if (c && c.encargado_nombre) {
+    return c.encargado_nombre.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+});
+
 const handleContractorSelect = () => {
   const contractor = contractors.value.find(c => c.id === formExpense.value.contratista_id);
   formExpense.value.beneficiario = contractor ? (contractor.empresa || contractor.nombre) : '';
+  formExpense.value.dependiente = ''; // Reset dependiente when contractor changes
 };
 
 // QUICK NEW SUBCONTRACTOR MODAL
