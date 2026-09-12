@@ -92,8 +92,8 @@ router.beforeEach((to, from, next) => {
             return;
         }
 
-        // Si la ruta no está en sus permisos, redirigir al dashboard
-        if (!permisos.includes(pathName)) {
+        // Si la ruta no está en sus permisos con sufijo, redirigir al dashboard
+        if (!permisos.includes(pathName) && !permisos.includes(pathName + '_view') && !permisos.includes(pathName + '_edit')) {
             // Verificar si es la ruta base del rol
             if (authStore.userRole === 'tecnico' && pathName === 'tech-machinery') {
                  next();

@@ -186,18 +186,25 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  <label v-for="mod in availableModules" :key="mod.id" class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 cursor-pointer transition-all group">
-                    <div class="relative flex items-center justify-center w-5 h-5">
-                      <input 
-                        type="checkbox" 
-                        :value="mod.id" 
-                        v-model="formData.permisos"
-                        class="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-transparent checked:bg-primary checked:border-primary transition-all cursor-pointer"
-                      />
-                      <CheckIcon class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                  <div v-for="mod in availableModules" :key="mod.id" class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 transition-all group">
+                    <span class="text-xs font-bold text-white/70 group-hover:text-white transition-colors truncate pr-2" :title="mod.label">{{ mod.label }}</span>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <!-- Botón Ver -->
+                      <div class="cursor-pointer" @click="toggleUserPermission(mod.id + '_view')" title="Solo Lectura">
+                        <div class="w-7 h-7 rounded flex items-center justify-center transition-all duration-300"
+                             :class="hasUserPermission(mod.id + '_view') ? 'bg-blue-500/20 border border-blue-500 text-blue-400' : 'border border-white/10 bg-black/20 text-white/30 hover:text-white/60'">
+                          <EyeIcon class="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+                      <!-- Botón Editar -->
+                      <div class="cursor-pointer" @click="toggleUserPermission(mod.id + '_edit')" title="Edición">
+                        <div class="w-7 h-7 rounded flex items-center justify-center transition-all duration-300"
+                             :class="hasUserPermission(mod.id + '_edit') ? 'bg-indigo-500/20 border border-indigo-500 text-indigo-400' : 'border border-white/10 bg-black/20 text-white/30 hover:text-white/60'">
+                          <PencilIcon class="w-3.5 h-3.5" />
+                        </div>
+                      </div>
                     </div>
-                    <span class="text-xs font-bold text-white/70 group-hover:text-white transition-colors">{{ mod.label }}</span>
-                  </label>
+                  </div>
                 </div>
               </div>
 
@@ -284,7 +291,9 @@ import {
   CheckIcon,
   XMarkIcon,
   MagnifyingGlassIcon,
-  FunnelIcon
+  FunnelIcon,
+  EyeIcon,
+  PencilIcon
 } from '@heroicons/vue/24/outline';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
@@ -350,10 +359,43 @@ const availableModules = [
 ];
 
 const toggleAllPermissions = () => {
-  if (formData.value.permisos.length === availableModules.length) {
+  // If we have all views and all edits (length * 2), uncheck all.
+  if (formData.value.permisos.length >= availableModules.length * 2) {
     formData.value.permisos = [];
   } else {
-    formData.value.permisos = availableModules.map(m => m.id);
+    formData.value.permisos = availableModules.reduce((acc, mod) => {
+      acc.push(mod.id + '_view', mod.id + '_edit');
+      return acc;
+    }, []);
+  }
+};
+
+const hasUserPermission = (permissionStr) => {
+  return formData.value.permisos && formData.value.permisos.includes(permissionStr);
+};
+
+const toggleUserPermission = (permissionStr) => {
+  if (!formData.value.permisos) formData.value.permisos = [];
+  const index = formData.value.permisos.indexOf(permissionStr);
+  if (index > -1) {
+    // Apagar
+    formData.value.permisos.splice(index, 1);
+    // Si apaga _view, apaga _edit
+    if (permissionStr.endsWith('_view')) {
+      const editPerm = permissionStr.replace('_view', '_edit');
+      const editIndex = formData.value.permisos.indexOf(editPerm);
+      if (editIndex > -1) formData.value.permisos.splice(editIndex, 1);
+    }
+  } else {
+    // Encender
+    formData.value.permisos.push(permissionStr);
+    // Si activa _edit, activa _view
+    if (permissionStr.endsWith('_edit')) {
+      const viewPerm = permissionStr.replace('_edit', '_view');
+      if (!formData.value.permisos.includes(viewPerm)) {
+        formData.value.permisos.push(viewPerm);
+      }
+    }
   }
 };
 

@@ -206,18 +206,22 @@ const filteredItems = computed(() => {
     return allNavItemsArr.filter(item => item.roles.includes('admin'));
   }
   const permisos = authStore.userPermisos || [];
-  const efectivos = permisos.includes('recurrents') ? [...permisos, 'calendar'] : permisos;
+  const efectivos = (permisos.includes('recurrents') || permisos.includes('recurrents_view') || permisos.includes('recurrents_edit')) 
+    ? [...permisos, 'calendar_view', 'calendar_edit'] 
+    : permisos;
+
+  const hasAccess = (id) => efectivos.includes(id) || efectivos.includes(id + '_view') || efectivos.includes(id + '_edit');
 
   return allNavItemsArr
     .filter(item => {
       if (item.type === 'group') {
-        return item.children.some(c => efectivos.includes(c.id));
+        return item.children.some(c => hasAccess(c.id));
       }
-      return efectivos.includes(item.id);
+      return hasAccess(item.id);
     })
     .map(item => {
       if (item.type === 'group') {
-        return { ...item, children: item.children.filter(c => efectivos.includes(c.id)) };
+        return { ...item, children: item.children.filter(c => hasAccess(c.id)) };
       }
       return item;
     });
