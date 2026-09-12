@@ -82,6 +82,9 @@ class EmployeePayrollRepository
     {
         $sql = "SELECT
                     p.*,
+                    per.nombres,
+                    per.apellidos,
+                    per.puesto,
                     CONCAT(per.nombres, ' ', per.apellidos) AS empleado_nombre,
                     per.puesto AS empleado_puesto,
                     per.tipo_empleado,

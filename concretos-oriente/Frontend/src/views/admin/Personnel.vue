@@ -774,7 +774,7 @@
               </div>
 
               <!-- Título Académico -->
-              <div class="space-y-2" v-if="formData.nivel_academico === 'Diversificado' || formData.nivel_academico === 'Universidad'">
+              <div class="space-y-2" v-show="formData.nivel_academico === 'Diversificado' || formData.nivel_academico === 'Universidad'">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Título Académico</label>
                 <input v-model="formData.titulo_academico" type="text" placeholder="Ej. Perito Contador / Ingeniero Civil"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
@@ -858,9 +858,9 @@
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
-              <!-- Diario Viáticos -->
+              <!-- Monto Viáticos -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Diario Viáticos (GTQ)</label>
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Viáticos (GTQ)</label>
                 <input v-model="formData.diario_viaticos" type="number" step="0.01" min="0" placeholder="0.00"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
@@ -1134,7 +1134,7 @@
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.proyecto_nombre || 'Sin asignar' }}</p>
             </div>
             <div>
-              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Diario Viáticos</p>
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Monto Viáticos</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedEmp.diario_viaticos) : 'No aplica' }}</p>
             </div>
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
@@ -1320,7 +1320,7 @@
               </span>
             </div>
             <div>
-              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Diario Viáticos</span>
+              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Monto Viáticos</span>
               <span class="text-sm font-bold text-sky-400">
                 {{ selectedPayrollEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedPayrollEmp.diario_viaticos) : 'No definido' }}
               </span>

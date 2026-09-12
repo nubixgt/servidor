@@ -791,7 +791,7 @@ const onPayrollPersonnelChange = () => {
 const filteredPayments = computed(() => {
   return payments.value.filter(p => {
     const q = searchQuery.value.toLowerCase();
-    const matchSearch = (p.nombres && p.nombres.toLowerCase().includes(q)) ||
+    const matchSearch = !q || (p.nombres && p.nombres.toLowerCase().includes(q)) ||
                         (p.apellidos && p.apellidos.toLowerCase().includes(q)) ||
                         (p.puesto && p.puesto.toLowerCase().includes(q));
     const matchPeriodo = !filterPeriodo.value || p.periodo === filterPeriodo.value;
