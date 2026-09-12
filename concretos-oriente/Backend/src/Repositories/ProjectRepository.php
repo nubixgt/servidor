@@ -161,6 +161,54 @@ class ProjectRepository
              ->execute([':contratos_archivos' => $docsJson, ':id' => $id]);
     }
 
+    public function removeConvenio(int $id, string $filePath): void
+    {
+        $project = $this->findById($id);
+        if (!$project || !$project['convenios_archivos']) return;
+        $files = json_decode($project['convenios_archivos'], true) ?: [];
+        $files = array_values(array_filter($files, fn($f) => $f !== $filePath));
+        
+        $newJson = count($files) > 0 ? json_encode($files) : null;
+        $this->pdo->prepare("UPDATE projects SET convenios_archivos = :json WHERE id = :id")
+             ->execute(['json' => $newJson, 'id' => $id]);
+    }
+
+    public function getHistory(int $projectId): array
+    {
+        // Global Incomes (general income logged against the project)
+        $sqlIncomes = "SELECT 'Ingreso' as type, fecha_ingreso as date, monto as amount, descripcion as detail, numero_cheque as reference, pagador as entity
+                       FROM incomes WHERE proyecto_id = :project_id";
+        
+        // Global Expenses (general expenses logged against the project)
+        $sqlExpenses = "SELECT 'Egreso' as type, fecha_egreso as date, monto as amount, descripcion as detail, numero_cheque as reference, beneficiario as entity
+                        FROM expenses WHERE proyecto_id = :project_id";
+                        
+        // Project Incomes (estimations from project sources)
+        $sqlProjectIncomes = "SELECT 'Cobro de Estimación' as type, s.fecha_cobro as date, s.monto_aportado as amount, 
+                                     CONCAT('Estimación ', i.numero_estimacion, ' - Fuente: ', s.fuente) as detail, s.numero_documento as reference, s.fuente as entity
+                              FROM project_income_sources s
+                              JOIN project_incomes i ON s.project_income_id = i.id
+                              WHERE i.project_id = :project_id AND s.estado = 'Recibido'";
+
+        $stmtIncomes = $this->pdo->prepare($sqlIncomes);
+        $stmtIncomes->execute(['project_id' => $projectId]);
+        $incomes = $stmtIncomes->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmtExpenses = $this->pdo->prepare($sqlExpenses);
+        $stmtExpenses->execute(['project_id' => $projectId]);
+        $expenses = $stmtExpenses->fetchAll(PDO::FETCH_ASSOC);
+        
+        $stmtProjIncomes = $this->pdo->prepare($sqlProjectIncomes);
+        $stmtProjIncomes->execute(['project_id' => $projectId]);
+        $projIncomes = $stmtProjIncomes->fetchAll(PDO::FETCH_ASSOC);
+
+        $history = array_merge($incomes, $expenses, $projIncomes);
+        
+        usort($history, fn($a, $b) => strtotime($b['date'] ?: '1970-01-01') - strtotime($a['date'] ?: '1970-01-01'));
+        
+        return $history;
+    }
+
     public function delete(int $id): void
     {
         $this->pdo->prepare("DELETE FROM projects WHERE id = :id")->execute([':id' => $id]);

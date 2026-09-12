@@ -39,13 +39,18 @@ class ProjectController extends Controller
     public function store()
     {
         try {
+            $monto_cocode = $_POST['monto_cocode'] ?? 0;
+            $monto_muni = $_POST['monto_muni'] ?? 0;
+            $monto_comunidad = $_POST['monto_comunidad'] ?? 0;
+            $presupuesto = (float)$monto_cocode + (float)$monto_muni + (float)$monto_comunidad;
+
             $data = [
                 'codigo'             => trim($_POST['codigo'] ?? ''),
                 'nombre'             => trim($_POST['nombre'] ?? ''),
                 'cliente_id'         => !empty($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : 0,
                 'ubicacion'          => trim($_POST['ubicacion'] ?? ''),
                 'coordenadas'        => trim($_POST['coordenadas'] ?? ''),
-                'presupuesto'        => $_POST['presupuesto'] ?? 0,
+                'presupuesto'        => $presupuesto,
                 'fecha_inicio'       => $_POST['fecha_inicio'] ?? date('Y-m-d'),
                 'fecha_fin_estimada' => !empty($_POST['fecha_fin_estimada']) ? $_POST['fecha_fin_estimada'] : null,
                 'fecha_fin_real'     => !empty($_POST['fecha_fin_real']) ? $_POST['fecha_fin_real'] : null,
@@ -56,9 +61,9 @@ class ProjectController extends Controller
                 'gerente_id'         => !empty($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : 0,
                 'snip'               => trim($_POST['snip'] ?? '') ?: null,
                 'nog'                => trim($_POST['nog'] ?? '') ?: null,
-                'monto_cocode'       => $_POST['monto_cocode'] ?? 0,
-                'monto_muni'         => $_POST['monto_muni'] ?? 0,
-                'monto_comunidad'    => $_POST['monto_comunidad'] ?? 0,
+                'monto_cocode'       => $monto_cocode,
+                'monto_muni'         => $monto_muni,
+                'monto_comunidad'    => $monto_comunidad,
                 'tipo_inversion'     => trim($_POST['tipo_inversion'] ?? '') ?: null,
             ];
 
@@ -99,13 +104,18 @@ class ProjectController extends Controller
     public function update($id)
     {
         try {
+            $monto_cocode = isset($_POST['monto_cocode']) ? $_POST['monto_cocode'] : 0;
+            $monto_muni = isset($_POST['monto_muni']) ? $_POST['monto_muni'] : 0;
+            $monto_comunidad = isset($_POST['monto_comunidad']) ? $_POST['monto_comunidad'] : 0;
+            $presupuesto = (float)$monto_cocode + (float)$monto_muni + (float)$monto_comunidad;
+
             $data = [
                 'codigo'             => isset($_POST['codigo']) ? trim($_POST['codigo']) : null,
                 'nombre'             => isset($_POST['nombre']) ? trim($_POST['nombre']) : null,
                 'cliente_id'         => isset($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : null,
                 'ubicacion'          => isset($_POST['ubicacion']) ? trim($_POST['ubicacion']) : null,
                 'coordenadas'        => isset($_POST['coordenadas']) ? trim($_POST['coordenadas']) : null,
-                'presupuesto'        => isset($_POST['presupuesto']) ? $_POST['presupuesto'] : null,
+                'presupuesto'        => $presupuesto,
                 'fecha_inicio'       => isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : null,
                 'fecha_fin_estimada' => isset($_POST['fecha_fin_estimada']) ? ($_POST['fecha_fin_estimada'] ?: null) : false,
                 'fecha_fin_real'     => isset($_POST['fecha_fin_real']) ? ($_POST['fecha_fin_real'] ?: null) : false,
@@ -116,9 +126,9 @@ class ProjectController extends Controller
                 'gerente_id'         => isset($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : null,
                 'snip'               => isset($_POST['snip']) ? (trim($_POST['snip']) ?: null) : null,
                 'nog'                => isset($_POST['nog']) ? (trim($_POST['nog']) ?: null) : null,
-                'monto_cocode'       => isset($_POST['monto_cocode']) ? $_POST['monto_cocode'] : 0,
-                'monto_muni'         => isset($_POST['monto_muni']) ? $_POST['monto_muni'] : 0,
-                'monto_comunidad'    => isset($_POST['monto_comunidad']) ? $_POST['monto_comunidad'] : 0,
+                'monto_cocode'       => $monto_cocode,
+                'monto_muni'         => $monto_muni,
+                'monto_comunidad'    => $monto_comunidad,
                 'tipo_inversion'     => isset($_POST['tipo_inversion']) ? (trim($_POST['tipo_inversion']) ?: null) : null,
             ];
 
@@ -174,6 +184,26 @@ class ProjectController extends Controller
                 "status" => "error",
                 "message" => "Error al eliminar: " . $e->getMessage()
             ], $code);
+        }
+    }
+
+    // GET /projects/{id}/finances
+    #[Route('/projects/{id}/finances', 'GET')]
+    public function finances($id)
+    {
+        try {
+            $repo = new \App\Repositories\ProjectRepository();
+            $history = $repo->getHistory((int)$id);
+
+            $this->json([
+                "status" => "success",
+                "data" => $history
+            ]);
+        } catch (Exception $e) {
+            $this->json([
+                "status" => "error",
+                "message" => "Error al obtener historial: " . $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -90,4 +90,17 @@ class ClientController extends Controller
             $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
         }
     }
+
+    #[Route('/clients/{id}/machinery-statement', 'GET')]
+    public function machineryStatement($id)
+    {
+        try {
+            $data = $this->clientService->getMachineryStatement((int)$id);
+            $this->json(['status' => 'success', 'data' => $data]);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], $code);
+        }
+    }
 }

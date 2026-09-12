@@ -229,9 +229,14 @@
                       <h4 class="text-lg font-black text-white uppercase tracking-wider">{{ p.proyecto_nombre }}</h4>
                       <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Proyecto en ejecución</p>
                     </div>
-                    <button v-if="p.project_contractor_id" @click="removeAssignment(p)" class="p-2 hover:bg-white/10 rounded-xl text-white/30 hover:text-rose-400 transition-all ml-2" title="Quitar asignación de proyecto">
-                      <TrashIcon class="w-4 h-4" />
-                    </button>
+                    <div class="flex items-center gap-2 ml-2">
+                      <button v-if="p.project_contractor_id" @click="openEditAssignModal(p)" class="p-2 hover:bg-white/10 rounded-xl text-white/30 hover:text-white transition-all" title="Editar Trato / Extras">
+                        <PencilIcon class="w-4 h-4" />
+                      </button>
+                      <button v-if="p.project_contractor_id" @click="removeAssignment(p)" class="p-2 hover:bg-white/10 rounded-xl text-white/30 hover:text-rose-400 transition-all" title="Quitar asignación de proyecto">
+                        <TrashIcon class="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                   <div class="text-right">
                     <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">Monto Contratado</p>
@@ -404,15 +409,14 @@
     <div v-if="showAssignModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" @click="closeAssignModal"></div>
       <div class="glass-card w-full max-w-2xl rounded-[36px] p-6 md:p-10 relative z-10 border border-white/10 shadow-2xl space-y-8" data-aos="zoom-in-up" data-aos-duration="1000">
-        <div class="flex items-center justify-between border-b border-white/10 pb-5">
+        <div class="p-8 pb-0 flex items-start justify-between">
           <div>
             <h3 class="text-2xl font-black text-white italic uppercase tracking-tight">Asignar Proyecto</h3>
             <p class="text-white/40 text-xs font-bold uppercase tracking-wider">Subcontratista: {{ selectedContractor?.empresa || selectedContractor?.nombre }}</p>
           </div>
           <button @click="closeAssignModal" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all"><XMarkIcon class="w-6 h-6" /></button>
         </div>
-
-        <form @submit.prevent="submitAssign" class="space-y-6">
+        <form @submit.prevent="submitAssign" class="space-y-6 p-8">
           <div class="space-y-2">
             <label class="text-xs font-bold text-white/60 uppercase tracking-wider">Proyecto *</label>
             <select v-model="formAssign.project_id" required class="w-full bg-black/30 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-primary/50 transition-all appearance-none">
@@ -919,7 +923,15 @@ const openAssignModal = () => {
   formAssign.value = { project_id: '', monto_contratado: '', fecha_asignacion: new Date().toISOString().slice(0, 10), observaciones: '' };
   showAssignModal.value = true;
 };
-
+const openEditAssignModal = (p) => {
+  formAssign.value = { 
+    project_id: p.project_id, 
+    monto_contratado: p.monto_contratado, 
+    fecha_asignacion: p.fecha_asignacion ? p.fecha_asignacion.split(' ')[0] : new Date().toISOString().slice(0, 10), 
+    observaciones: p.observaciones || '' 
+  };
+  showAssignModal.value = true;
+};
 const closeAssignModal = () => showAssignModal.value = false;
 
 const submitAssign = async () => {

@@ -125,7 +125,7 @@ import {
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
   ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon, ArrowTrendingUpIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';
 
@@ -151,6 +151,7 @@ const allNavItemsArr = [
       { id: "personnel", label: "Gestión Personal", icon: UsersIcon, roles: ["admin"] },
       { id: "rrhh-planillas", label: "Planilla", icon: BanknotesIcon, roles: ["admin"] },
       { id: "rrhh-incidencias", label: "Incidencias", icon: ExclamationTriangleIcon, roles: ["admin"] },
+      { id: "viaticos", label: "Viáticos", icon: ArrowTrendingUpIcon, roles: ["admin"] },
     ]
   },
   {

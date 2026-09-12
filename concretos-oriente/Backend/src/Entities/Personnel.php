@@ -29,6 +29,9 @@ class Personnel
     public ?string $nombre_banco = null;
     public ?int $proyecto_id = null;
     public ?string $foto_path = null;
+    public ?string $titulo_academico = null;
+    public ?float $bonificacion = null;
+    public ?string $nombre_cuenta = null;
 
     public function toArray(): array
     {

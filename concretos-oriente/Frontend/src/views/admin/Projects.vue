@@ -250,6 +250,13 @@
         <div class="relative w-full max-w-5xl glass-card rounded-[40px] overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] z-10">
           <div class="absolute top-6 right-6 z-10 flex gap-3">
             <button
+              @click="openHistoryModal(selectedProject)"
+              class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-emerald-500 flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-emerald-500/40"
+              title="Historial Financiero"
+            >
+              <ChartBarIcon class="w-5 h-5" />
+            </button>
+            <button
               @click="openEditModal(selectedProject)"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-primary/40"
               title="Editar"
@@ -607,7 +614,55 @@
       </transition>
     </Teleport>
 
-    <!-- Botón Añadir Proyecto -->
+    <!-- Modal Historial Financiero -->
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="showHistoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeHistoryModal"></div>
+          
+          <div class="glass-card w-full max-w-4xl rounded-[40px] p-8 md:p-12 relative z-10 border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between mb-8 shrink-0">
+              <div>
+                <h3 class="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tight">Historial Financiero</h3>
+                <p class="text-white/40 text-xs font-bold uppercase tracking-wider">Proyecto: {{ selectedHistoryProject?.nombre }}</p>
+              </div>
+              <button @click="closeHistoryModal" class="w-12 h-12 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all border border-white/5 text-white/40 hover:text-white">
+                <XMarkIcon class="w-6 h-6" />
+              </button>
+            </div>
+
+            <div v-if="loadingHistory" class="flex-1 flex items-center justify-center">
+              <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+
+            <div v-else class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+              <div v-if="historyData.length === 0" class="p-12 text-center text-white/40 border border-dashed border-white/10 rounded-3xl">
+                No hay movimientos financieros registrados.
+              </div>
+              <div v-else v-for="(item, idx) in historyData" :key="idx" class="p-6 rounded-3xl bg-black/40 border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div class="flex items-center gap-3 mb-2">
+                    <span :class="['px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest', item.type.includes('Ingreso') ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400']">
+                      {{ item.type }}
+                    </span>
+                    <span class="text-white/40 text-xs font-bold">{{ item.date ? item.date.split(' ')[0] : 'S/F' }}</span>
+                  </div>
+                  <p class="text-white font-bold">{{ item.detail }}</p>
+                  <p class="text-white/50 text-xs mt-1"><strong class="text-white/30 uppercase tracking-wider text-[10px]">Entidad/Ref:</strong> {{ item.entity || 'N/A' }} <span v-if="item.reference">| Doc: {{ item.reference }}</span></p>
+                </div>
+                <div class="text-right shrink-0">
+                  <p :class="['text-xl font-black italic whitespace-nowrap', item.type.includes('Ingreso') ? 'text-emerald-400' : 'text-rose-400']">
+                    {{ item.type.includes('Ingreso') ? '+' : '-' }} Q {{ formatCurrency(item.amount) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
+
+    <!-- Modal para Agregar/Editar Proyecto -->
     <button @click="openModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 h-14 w-14 md:h-20 md:w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
       <PlusIcon class="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 shadow-[0_0_20px_rgba(99,102,241,0.5)]" />
     </button>
@@ -698,7 +753,7 @@
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Presupuesto Contractual (GTQ) *</label>
-                  <input type="text" :value="getDisplayValue(formData.presupuesto)" @input="e => updateCurrencyField(formData, 'presupuesto', e)" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-white placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="Q 0.00" />
+                  <input type="text" :value="getDisplayValue(Number(formData.monto_cocode || 0) + Number(formData.monto_muni || 0) + Number(formData.monto_comunidad || 0))" readonly class="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3.5 text-white/50 cursor-not-allowed transition-all font-bold" placeholder="Q 0.00" />
                 </div>
                 <div>
                   <label class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 block">Monto COCODE (Q)</label>
@@ -830,7 +885,7 @@
                   </div>
                   <div>
                     <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Teléfono</label>
-                    <input v-model="contact.telefono" type="tel" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="+502 0000-0000" />
+                    <input v-model="contact.telefono" type="tel" maxlength="8" pattern="\d{8}" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-primary transition-all font-bold" placeholder="00000000" />
                   </div>
                   <div>
                     <label class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1 block">Email</label>
@@ -964,6 +1019,11 @@ const showExtensionModal = ref(false);
 const isSubmittingExtension = ref(false);
 const extensionForm = ref({ monto: '', tipo_ampliacion: '', documentos: [] });
 const showModal = ref(false);
+const showHistoryModal = ref(false);
+const selectedHistoryProject = ref(null);
+const historyData = ref([]);
+const loadingHistory = ref(false);
+
 const isSubmitting = ref(false);
 const isEditing = ref(false);
 const editingId = ref(null);
@@ -1391,6 +1451,32 @@ const openProjectDetails = (proj) => {
   if (proj.id) {
     fetchBudgetExtensions(proj.id);
   }
+};
+
+const openHistoryModal = async (proj) => {
+  selectedHistoryProject.value = proj;
+  showHistoryModal.value = true;
+  loadingHistory.value = true;
+  historyData.value = [];
+  try {
+    const res = await fetch(`${BASE_URL}/projects/${proj.id}/finances`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      historyData.value = data.data;
+    }
+  } catch (error) {
+    console.error('Error fetching history:', error);
+  } finally {
+    loadingHistory.value = false;
+  }
+};
+
+const closeHistoryModal = () => {
+  showHistoryModal.value = false;
+  selectedHistoryProject.value = null;
+  historyData.value = [];
 };
 
 const closeProjectDetails = () => {

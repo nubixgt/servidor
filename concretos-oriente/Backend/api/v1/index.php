@@ -31,6 +31,7 @@ use App\Controllers\SpecialMachineryController;
 use App\Controllers\FuelRecordController;
 use App\Controllers\MechanicRecordController;
 use App\Controllers\ContractorController;
+use App\Controllers\ViaticoController;
 
 // Backend/api/v1/index.php
 
@@ -90,6 +91,7 @@ $router->registerController(SpecialMachineryController::class);
 $router->registerController(FuelRecordController::class);
 $router->registerController(MechanicRecordController::class);
 $router->registerController(ContractorController::class);
+$router->registerController(ViaticoController::class);
 
 
 

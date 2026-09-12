@@ -73,4 +73,29 @@ class ClientRepository
     {
         $this->pdo->prepare("DELETE FROM clients WHERE id = :id")->execute(['id' => $id]);
     }
+
+    public function getMachineryStatement(int $clientId): array
+    {
+        $sql = "SELECT 
+                    ml.id,
+                    ml.fecha,
+                    CONCAT(m.marca, ' ', m.modelo) AS maquina_nombre,
+                    m.codigo_interno,
+                    m.clasificacion_tipo,
+                    p.nombre AS proyecto_nombre,
+                    ml.horometro_inicial,
+                    ml.horometro_final,
+                    (ml.horometro_final - ml.horometro_inicial) AS horas_trabajadas,
+                    ml.precio_renta,
+                    ((ml.horometro_final - ml.horometro_inicial) * ml.precio_renta) AS total_renta
+                FROM machinery_log ml
+                INNER JOIN projects p ON p.id = ml.proyecto_id
+                INNER JOIN machinery m ON m.id = ml.maquina_id
+                WHERE p.cliente_id = :client_id
+                ORDER BY ml.fecha DESC";
+                
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['client_id' => $clientId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

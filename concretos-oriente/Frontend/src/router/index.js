@@ -21,6 +21,7 @@ const routes = [
             { path: 'personnel', name: 'Personnel', component: () => import('../views/admin/Personnel.vue'), meta: { requiresRole: 'admin' } },
             { path: 'rrhh-planillas', name: 'RRHHPlanillas', component: () => import('../views/admin/RRHHPlanillas.vue'), meta: { requiresRole: 'admin' } },
             { path: 'rrhh-incidencias', name: 'RRHHIncidencias', component: () => import('../views/admin/RRHHIncidencias.vue'), meta: { requiresRole: 'admin' } },
+            { path: 'viaticos', name: 'Viaticos', component: () => import('../views/admin/Viaticos.vue'), meta: { requiresRole: 'admin' } },
             { path: 'vehicles', name: 'Vehicles', component: () => import('../views/admin/Vehicles.vue') },
             { path: 'machinery', name: 'Machinery', component: () => import('../views/admin/Machinery.vue') },
             { path: 'transporte-pesado', name: 'TransportePesado', component: () => import('../views/admin/TransportePesado.vue'), meta: { requiresRole: 'admin' } },

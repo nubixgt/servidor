@@ -35,6 +35,7 @@
           <thead>
             <tr class="text-[11px] font-bold text-white/20 uppercase tracking-[0.3em] border-b border-white/5">
               <th class="p-6">Concepto</th>
+              <th class="p-6">Beneficiario / Cuenta</th>
               <th class="p-6">Descripción</th>
               <th class="p-6">Monto</th>
               <th class="p-6">Día de Pago</th>
@@ -47,6 +48,10 @@
             </tr>
             <tr v-for="item in paginatedRecurrents" :key="item.id" class="hover:bg-white/5 transition-all">
               <td class="p-6 font-black uppercase text-sm">{{ item.concepto }}</td>
+              <td class="p-6">
+                <p class="font-bold text-white text-xs">{{ item.beneficiario || 'Sin Beneficiario' }}</p>
+                <p class="text-[10px] text-white/40 uppercase tracking-widest mt-1">{{ item.cuenta || 'Sin Cuenta' }}</p>
+              </td>
               <td class="p-6 text-white/50 text-xs">{{ item.descripcion || '-' }}</td>
               <td class="p-6 text-primary font-bold">
                 {{ item.monto ? `Q${Number(item.monto).toLocaleString('en-US', {minimumFractionDigits:2})}` : '-' }}
@@ -89,6 +94,16 @@
           </div>
           <div class="grid grid-cols-2 gap-6">
             <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Beneficiario</label>
+              <input type="text" v-model="form.beneficiario" placeholder="A nombre de..." class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">No. Cuenta / Banco</label>
+              <input type="text" v-model="form.cuenta" placeholder="Cuenta de origen o destino" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-2">
               <label class="text-[10px] font-black text-white/30 uppercase tracking-widest ml-1">Monto (Q)</label>
               <input type="text" :value="form.monto_display" @input="handleCurrencyInput" placeholder="Q0.00" class="w-full glass-input rounded-2xl p-4 text-sm font-bold placeholder:text-white/20 text-white" />
             </div>
@@ -123,7 +138,9 @@ const form = ref({
   descripcion: '',
   monto: 0,
   monto_display: '',
-  dia_pago: ''
+  dia_pago: '',
+  beneficiario: '',
+  cuenta: ''
 });
 
 const searchQuery = ref('');
@@ -199,19 +216,21 @@ const openModal = (item = null) => {
       descripcion: item.descripcion || '',
       monto: m,
       monto_display: m ? 'Q' + m.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '',
-      dia_pago: item.dia_pago || ''
+      dia_pago: item.dia_pago || '',
+      beneficiario: item.beneficiario || '',
+      cuenta: item.cuenta || ''
     };
   } else {
     isEditing.value = false;
     editingId.value = null;
-    form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '' };
+    form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '', beneficiario: '', cuenta: '' };
   }
   showModal.value = true;
 };
 
 const closeModal = () => {
   showModal.value = false;
-  form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '' };
+  form.value = { concepto: '', descripcion: '', monto: 0, monto_display: '', dia_pago: '', beneficiario: '', cuenta: '' };
 };
 
 const saveRecurrent = async () => {

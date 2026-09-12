@@ -77,6 +77,11 @@ class PersonnelController extends Controller
     public function store()
     {
         try {
+            $telefono = trim($_POST['telefono'] ?? '');
+            if (empty($telefono)) {
+                throw new Exception('El número de teléfono es obligatorio.', 400);
+            }
+
             $data = [
                 'tipo_empleado'      => trim($_POST['tipo_empleado']      ?? ''),
                 'nombres'            => trim($_POST['nombres']            ?? ''),
@@ -101,6 +106,7 @@ class PersonnelController extends Controller
                                         ? (int)$_POST['cantidad_hijos'] : null,
                 'edades_hijos'       => trim($_POST['edades_hijos']     ?? '') ?: null,
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
+                'titulo_academico'   => trim($_POST['titulo_academico'] ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
                 'depto_nacimiento'   => trim($_POST['depto_nacimiento'] ?? '') ?: null,
@@ -113,6 +119,9 @@ class PersonnelController extends Controller
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                         ? (int)$_POST['proyecto_id'] : null,
+                'bonificacion'       => (isset($_POST['bonificacion']) && $_POST['bonificacion'] !== '')
+                                        ? $_POST['bonificacion'] : null,
+                'nombre_cuenta'      => trim($_POST['nombre_cuenta']    ?? '') ?: null,
             ];
 
             $files = [
@@ -145,6 +154,11 @@ class PersonnelController extends Controller
     public function update($id)
     {
         try {
+            $telefono = trim($_POST['telefono'] ?? '');
+            if (empty($telefono)) {
+                throw new Exception('El número de teléfono es obligatorio.', 400);
+            }
+
             $data = [
                 'tipo_empleado'      => trim($_POST['tipo_empleado']      ?? ''),
                 'nombres'            => trim($_POST['nombres']            ?? ''),
@@ -169,6 +183,7 @@ class PersonnelController extends Controller
                                         ? (int)$_POST['cantidad_hijos'] : null,
                 'edades_hijos'       => trim($_POST['edades_hijos']     ?? '') ?: null,
                 'nivel_academico'    => trim($_POST['nivel_academico']  ?? '') ?: null,
+                'titulo_academico'   => trim($_POST['titulo_academico'] ?? '') ?: null,
                 'fecha_nacimiento'   => (isset($_POST['fecha_nacimiento']) && $_POST['fecha_nacimiento'] !== '')
                                         ? $_POST['fecha_nacimiento'] : null,
                 'depto_nacimiento'   => trim($_POST['depto_nacimiento'] ?? '') ?: null,
@@ -181,6 +196,9 @@ class PersonnelController extends Controller
                                         ? $_POST['fecha_baja'] : null,
                 'proyecto_id'        => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                         ? (int)$_POST['proyecto_id'] : null,
+                'bonificacion'       => (isset($_POST['bonificacion']) && $_POST['bonificacion'] !== '')
+                                        ? $_POST['bonificacion'] : null,
+                'nombre_cuenta'      => trim($_POST['nombre_cuenta']    ?? '') ?: null,
             ];
 
             $files = [
@@ -283,9 +301,16 @@ class PersonnelController extends Controller
 
             $tiene_viaticos = !empty($body['tiene_viaticos']) ? 1 : 0;
             $monto_viaticos = $tiene_viaticos ? (float)($body['monto_viaticos'] ?? 0) : 0;
+            $cantidad_viaticos = $tiene_viaticos ? (int)($body['cantidad_viaticos'] ?? 0) : 0;
+            $fecha_viaticos_inicio = $tiene_viaticos ? trim($body['fecha_viaticos_inicio'] ?? '') : null;
+            $fecha_viaticos_fin = $tiene_viaticos ? trim($body['fecha_viaticos_fin'] ?? '') : null;
             $observaciones_viaticos = $tiene_viaticos ? trim($body['observaciones_viaticos'] ?? '') : null;
 
-            $total_pagar = (float)($body['total_pagar'] ?? round($sueldo_calculado + $monto_horas_extras + $monto_viaticos, 2));
+            $tiene_extra = !empty($body['tiene_extra']) ? 1 : 0;
+            $monto_extra = $tiene_extra ? (float)($body['monto_extra'] ?? 0) : 0;
+            $observacion_extra = $tiene_extra ? trim($body['observacion_extra'] ?? '') : null;
+
+            $total_pagar = (float)($body['total_pagar'] ?? round($sueldo_calculado + $monto_horas_extras + $monto_viaticos + $monto_extra, 2));
 
             $data = [
                 'personnel_id'           => $personnel_id,
@@ -299,8 +324,14 @@ class PersonnelController extends Controller
                 'tarifa_hora_extra'      => $tarifa_hora_extra,
                 'monto_horas_extras'     => $monto_horas_extras,
                 'tiene_viaticos'         => $tiene_viaticos,
+                'cantidad_viaticos'      => $cantidad_viaticos,
+                'fecha_viaticos_inicio'  => $fecha_viaticos_inicio,
+                'fecha_viaticos_fin'     => $fecha_viaticos_fin,
                 'monto_viaticos'         => $monto_viaticos,
                 'observaciones_viaticos' => $observaciones_viaticos,
+                'tiene_extra'            => $tiene_extra,
+                'monto_extra'            => $monto_extra,
+                'observacion_extra'      => $observacion_extra,
                 'total_pagar'            => $total_pagar,
                 'metodo_pago'            => trim($body['metodo_pago'] ?? 'Transferencia'),
                 'observaciones'          => trim($body['observaciones'] ?? '') ?: null,

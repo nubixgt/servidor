@@ -715,8 +715,8 @@
 
               <!-- Teléfono -->
               <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono</label>
-                <input v-model="formData.telefono" @input="formatPhone" type="text" placeholder="0000-0000" maxlength="9"
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Teléfono <span class="text-tertiary">*</span></label>
+                <input v-model="formData.telefono" @input="formatPhone" type="text" placeholder="0000-0000" maxlength="9" required
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
@@ -771,6 +771,13 @@
                   <option value="Diversificado">Diversificado</option>
                   <option value="Universidad">Universidad</option>
                 </select>
+              </div>
+
+              <!-- Título Académico -->
+              <div class="space-y-2" v-if="formData.nivel_academico === 'Diversificado' || formData.nivel_academico === 'Universidad'">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Título Académico</label>
+                <input v-model="formData.titulo_academico" type="text" placeholder="Ej. Perito Contador / Ingeniero Civil"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
               <!-- Espacio dinámico para Edades de Hijos -->
@@ -834,6 +841,13 @@
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Salario Base (GTQ) <span class="text-tertiary">*</span></label>
                 <input v-model="formData.salario_base" type="number" step="0.01" min="0" required placeholder="0.00"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+
+              <!-- Bonificación -->
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Bonificación (Complemento)</label>
+                <input v-model="formData.bonificacion" type="number" step="0.01" min="0" placeholder="0.00"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
@@ -922,10 +936,15 @@
           <!-- SECCIÓN 4: Datos Bancarios -->
           <div>
             <p class="text-xs font-bold text-white/30 uppercase tracking-[0.25em] mb-4">Datos Bancarios</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Número de Cuenta</label>
                 <input v-model="formData.numero_cuenta" type="text" placeholder="Opcional"
+                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Nombre de la Cuenta</label>
+                <input v-model="formData.nombre_cuenta" type="text" placeholder="Opcional"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
               <div class="space-y-2">
@@ -1093,7 +1112,10 @@
 
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Nivel Académico</p>
-              <p class="text-base font-semibold text-white/90">{{ selectedEmp.nivel_academico || 'No registrado' }}</p>
+              <p class="text-base font-semibold text-white/90">
+                {{ selectedEmp.nivel_academico || 'No registrado' }}
+                <span v-if="selectedEmp.titulo_academico" class="block text-xs text-white/60">({{ selectedEmp.titulo_academico }})</span>
+              </p>
             </div>
             <div>
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Teléfono</p>
@@ -1118,6 +1140,10 @@
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Salario Base</p>
               <p class="text-xl font-bold text-white">Q {{ formatCurrency(selectedEmp.salario_base) }}</p>
+            </div>
+            <div v-if="selectedEmp.bonificacion" class="bg-white/5 p-4 rounded-2xl border border-white/5">
+              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Bonificación</p>
+              <p class="text-xl font-bold text-white">Q {{ formatCurrency(selectedEmp.bonificacion) }}</p>
             </div>
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Tarifa Hora Extra</p>
@@ -1212,13 +1238,17 @@
             </template>
 
             <!-- Datos bancarios -->
-            <template v-if="selectedEmp.numero_cuenta || selectedEmp.nombre_banco">
+            <template v-if="selectedEmp.numero_cuenta || selectedEmp.nombre_cuenta || selectedEmp.nombre_banco">
               <div class="sm:col-span-2 border-t border-white/5 pt-4">
                 <p class="text-[10px] font-bold text-white/30 uppercase tracking-[0.25em] mb-3">Datos Bancarios</p>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                   <div v-if="selectedEmp.numero_cuenta">
                     <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Número de Cuenta</p>
                     <p class="text-base font-semibold text-white/90">{{ selectedEmp.numero_cuenta }}</p>
+                  </div>
+                  <div v-if="selectedEmp.nombre_cuenta">
+                    <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Nombre de la Cuenta</p>
+                    <p class="text-base font-semibold text-white/90">{{ selectedEmp.nombre_cuenta }}</p>
                   </div>
                   <div v-if="selectedEmp.nombre_banco">
                     <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Banco</p>
@@ -1775,6 +1805,7 @@ const formData = ref({
   puesto:             '',
   tipo_planilla:      '',
   salario_base:       '',
+  bonificacion:       '',
   tarifa_hora_extra:  '',
   diario_viaticos:    '',
   contacto_nombres:   '',
@@ -1782,6 +1813,7 @@ const formData = ref({
   cantidad_hijos:     '',
   edades_hijos_list:  [],
   nivel_academico:    '',
+  titulo_academico:   '',
   fecha_nacimiento:   '',
   depto_nacimiento:   '',
   muni_nacimiento:    '',
@@ -1791,6 +1823,7 @@ const formData = ref({
   fecha_contratacion: '',
   fecha_baja:         '',
   numero_cuenta:      '',
+  nombre_cuenta:      '',
   nombre_banco:       '',
   proyecto_id:        null,
   foto:               null,
@@ -2426,6 +2459,7 @@ const openEditModal = (emp) => {
     puesto:             emp.puesto             || '',
     tipo_planilla:      emp.tipo_planilla      || '',
     salario_base:       emp.salario_base       || '',
+    bonificacion:       emp.bonificacion       || '',
     tarifa_hora_extra:  emp.tarifa_hora_extra  || '',
     diario_viaticos:    emp.diario_viaticos    || '',
     contacto_nombres:   emp.contacto_nombres   || '',
@@ -2433,6 +2467,7 @@ const openEditModal = (emp) => {
     cantidad_hijos:     emp.cantidad_hijos     !== null && emp.cantidad_hijos !== undefined ? emp.cantidad_hijos : '',
     edades_hijos_list:  edadesList,
     nivel_academico:    emp.nivel_academico    || '',
+    titulo_academico:   emp.titulo_academico   || '',
     fecha_nacimiento:   emp.fecha_nacimiento   || '',
     depto_nacimiento:   emp.depto_nacimiento   || '',
     muni_nacimiento:    emp.muni_nacimiento    || '',
@@ -2442,6 +2477,7 @@ const openEditModal = (emp) => {
     fecha_contratacion: emp.fecha_contratacion || '',
     fecha_baja:         emp.fecha_baja         || '',
     numero_cuenta:      emp.numero_cuenta      || '',
+    nombre_cuenta:      emp.nombre_cuenta      || '',
     nombre_banco:       emp.nombre_banco       || '',
     proyecto_id:        emp.proyecto_id        || null,
     foto:               null,
@@ -2637,6 +2673,7 @@ const resetForm = () => {
     puesto:             '',
     tipo_planilla:      '',
     salario_base:       '',
+    bonificacion:       '',
     tarifa_hora_extra:  '',
     diario_viaticos:    '',
     contacto_nombres:   '',
@@ -2644,6 +2681,7 @@ const resetForm = () => {
     cantidad_hijos:     '',
     edades_hijos_list:  [],
     nivel_academico:    '',
+    titulo_academico:   '',
     fecha_nacimiento:   '',
     depto_nacimiento:   '',
     muni_nacimiento:    '',
@@ -2653,6 +2691,7 @@ const resetForm = () => {
     fecha_contratacion: '',
     fecha_baja:         '',
     numero_cuenta:      '',
+    nombre_cuenta:      '',
     nombre_banco:       '',
     proyecto_id:        null,
     foto:               null,
@@ -2968,6 +3007,7 @@ const submitForm = async () => {
   data.append('puesto',             formData.value.puesto);
   data.append('tipo_planilla',      formData.value.tipo_planilla);
   data.append('salario_base',       formData.value.salario_base);
+  data.append('bonificacion',       formData.value.bonificacion       || '');
   data.append('tarifa_hora_extra',  formData.value.tarifa_hora_extra  || '');
   data.append('diario_viaticos',    formData.value.diario_viaticos    || '');
   data.append('contacto_nombres',   formData.value.contacto_nombres   || '');
@@ -2982,6 +3022,7 @@ const submitForm = async () => {
   }
 
   data.append('nivel_academico',    formData.value.nivel_academico    || '');
+  data.append('titulo_academico',   formData.value.titulo_academico   || '');
   data.append('fecha_nacimiento',   formData.value.fecha_nacimiento   || '');
   data.append('depto_nacimiento',   formData.value.depto_nacimiento   || '');
   data.append('muni_nacimiento',    formData.value.muni_nacimiento    || '');
@@ -2991,6 +3032,7 @@ const submitForm = async () => {
   data.append('fecha_contratacion', formData.value.fecha_contratacion);
   data.append('fecha_baja',         formData.value.fecha_baja         || '');
   data.append('numero_cuenta',      formData.value.numero_cuenta      || '');
+  data.append('nombre_cuenta',      formData.value.nombre_cuenta      || '');
   data.append('nombre_banco',       formData.value.nombre_banco       || '');
   data.append('proyecto_id',        formData.value.proyecto_id !== null ? formData.value.proyecto_id : '');
 

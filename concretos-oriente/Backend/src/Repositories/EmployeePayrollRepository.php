@@ -13,6 +13,7 @@ class EmployeePayrollRepository
     {
         $this->pdo = Database::getInstance()->getConnection();
         $this->ensureTableExists();
+        $this->ensureColumnsExist();
     }
 
     private function ensureTableExists(): void
@@ -31,8 +32,14 @@ class EmployeePayrollRepository
               `tarifa_hora_extra` decimal(10,2) NOT NULL DEFAULT 0.00,
               `monto_horas_extras` decimal(15,2) NOT NULL DEFAULT 0.00,
               `tiene_viaticos` tinyint(1) NOT NULL DEFAULT 0,
+              `cantidad_viaticos` int(11) DEFAULT 0,
+              `fecha_viaticos_inicio` date DEFAULT NULL,
+              `fecha_viaticos_fin` date DEFAULT NULL,
               `monto_viaticos` decimal(15,2) NOT NULL DEFAULT 0.00,
               `observaciones_viaticos` text DEFAULT NULL,
+              `tiene_extra` tinyint(1) NOT NULL DEFAULT 0,
+              `monto_extra` decimal(15,2) NOT NULL DEFAULT 0.00,
+              `observacion_extra` text DEFAULT NULL,
               `total_pagar` decimal(15,2) NOT NULL DEFAULT 0.00,
               `metodo_pago` varchar(50) DEFAULT 'Transferencia',
               `observaciones` text DEFAULT NULL,
@@ -44,6 +51,30 @@ class EmployeePayrollRepository
             $this->pdo->exec($sql);
         } catch (Exception $e) {
             error_log('Error en auto-migración employee_payroll_payments: ' . $e->getMessage());
+        }
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $columns = [
+                'cantidad_viaticos' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `cantidad_viaticos` int(11) DEFAULT 0;",
+                'fecha_viaticos_inicio' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `fecha_viaticos_inicio` date DEFAULT NULL;",
+                'fecha_viaticos_fin' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `fecha_viaticos_fin` date DEFAULT NULL;",
+                'tiene_extra' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `tiene_extra` tinyint(1) NOT NULL DEFAULT 0;",
+                'monto_extra' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `monto_extra` decimal(15,2) NOT NULL DEFAULT 0.00;",
+                'observacion_extra' => "ALTER TABLE `employee_payroll_payments` ADD COLUMN `observacion_extra` text DEFAULT NULL;"
+            ];
+
+            foreach ($columns as $columnName => $alterSql) {
+                $checkSql = "SHOW COLUMNS FROM `employee_payroll_payments` LIKE '$columnName'";
+                $stmt = $this->pdo->query($checkSql);
+                if ($stmt && $stmt->rowCount() === 0) {
+                    $this->pdo->exec($alterSql);
+                }
+            }
+        } catch (Exception $e) {
+            error_log('Error auto-adding columns to employee_payroll_payments: ' . $e->getMessage());
         }
     }
 
@@ -76,12 +107,14 @@ class EmployeePayrollRepository
         $sql = "INSERT INTO employee_payroll_payments
                     (personnel_id, periodo, fecha_pago, salario_base, dias_trabajados, sueldo_calculado,
                      tiene_horas_extras, horas_extras, tarifa_hora_extra, monto_horas_extras,
-                     tiene_viaticos, monto_viaticos, observaciones_viaticos,
+                     tiene_viaticos, cantidad_viaticos, fecha_viaticos_inicio, fecha_viaticos_fin, monto_viaticos, observaciones_viaticos,
+                     tiene_extra, monto_extra, observacion_extra,
                      total_pagar, metodo_pago, observaciones)
                 VALUES
                     (:personnel_id, :periodo, :fecha_pago, :salario_base, :dias_trabajados, :sueldo_calculado,
                      :tiene_horas_extras, :horas_extras, :tarifa_hora_extra, :monto_horas_extras,
-                     :tiene_viaticos, :monto_viaticos, :observaciones_viaticos,
+                     :tiene_viaticos, :cantidad_viaticos, :fecha_viaticos_inicio, :fecha_viaticos_fin, :monto_viaticos, :observaciones_viaticos,
+                     :tiene_extra, :monto_extra, :observacion_extra,
                      :total_pagar, :metodo_pago, :observaciones)";
 
         $stmt = $this->pdo->prepare($sql);
@@ -97,8 +130,14 @@ class EmployeePayrollRepository
             'tarifa_hora_extra'      => $data['tarifa_hora_extra'],
             'monto_horas_extras'     => $data['monto_horas_extras'],
             'tiene_viaticos'         => $data['tiene_viaticos'],
+            'cantidad_viaticos'      => $data['cantidad_viaticos'] ?? 0,
+            'fecha_viaticos_inicio'  => $data['fecha_viaticos_inicio'] ?: null,
+            'fecha_viaticos_fin'     => $data['fecha_viaticos_fin'] ?: null,
             'monto_viaticos'         => $data['monto_viaticos'],
             'observaciones_viaticos' => $data['observaciones_viaticos'],
+            'tiene_extra'            => $data['tiene_extra'] ?? 0,
+            'monto_extra'            => $data['monto_extra'] ?? 0,
+            'observacion_extra'      => $data['observacion_extra'] ?? null,
             'total_pagar'            => $data['total_pagar'],
             'metodo_pago'            => $data['metodo_pago'] ?? 'Transferencia',
             'observaciones'          => $data['observaciones'] ?? null,

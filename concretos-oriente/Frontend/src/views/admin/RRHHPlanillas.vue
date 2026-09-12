@@ -69,6 +69,14 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <div class="flex bg-black/20 border border-white/10 rounded-2xl p-1">
+            <button @click="viewMode = 'individual'" :class="['px-4 py-2 rounded-xl text-xs font-bold transition-all', viewMode === 'individual' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white']">
+              Boletas
+            </button>
+            <button @click="viewMode = 'consolidada'" :class="['px-4 py-2 rounded-xl text-xs font-bold transition-all', viewMode === 'consolidada' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white']">
+              Consolidada
+            </button>
+          </div>
           <span class="text-xs font-bold text-white/40 uppercase tracking-widest">
             {{ filteredPayments.length }} {{ filteredPayments.length === 1 ? 'Pago' : 'Pagos' }}
           </span>
@@ -76,7 +84,7 @@
       </div>
 
       <!-- Table Content -->
-      <div class="overflow-x-auto">
+      <div v-if="viewMode === 'individual'" class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b border-white/5 bg-white/[0.02]">
@@ -186,8 +194,53 @@
         </table>
       </div>
 
+      <!-- Consolidada Table Content -->
+      <div v-if="viewMode === 'consolidada'" class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-white/5 bg-white/[0.02]">
+              <th class="py-5 px-8 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Colaborador</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Días Total</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Sueldo Base</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">H. Extras</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Viáticos</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Extras</th>
+              <th class="py-5 px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Total Líquido</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            <tr v-if="consolidatedData.length === 0" class="text-center">
+              <td colspan="7" class="py-16 text-white/40 font-semibold">No hay datos consolidados para este filtro.</td>
+            </tr>
+            <tr v-for="row in consolidatedData" :key="row.personnel_id" class="hover:bg-white/[0.03] transition-colors">
+              <td class="py-5 px-8">
+                <p class="font-bold text-white text-sm leading-tight">{{ row.nombres }} {{ row.apellidos }}</p>
+                <p class="text-xs text-white/40 mt-0.5">{{ row.puesto || 'Colaborador' }}</p>
+              </td>
+              <td class="py-5 px-6 text-sm text-white/80 font-bold">{{ row.dias_trabajados }}</td>
+              <td class="py-5 px-6 text-sm text-white/80">Q {{ formatCurrency(row.salario_base_calculado) }}</td>
+              <td class="py-5 px-6 text-sm text-amber-400">Q {{ formatCurrency(row.total_horas_extras) }}</td>
+              <td class="py-5 px-6 text-sm text-sky-400">Q {{ formatCurrency(row.monto_viaticos) }}</td>
+              <td class="py-5 px-6 text-sm text-fuchsia-400">Q {{ formatCurrency(row.monto_extra) }}</td>
+              <td class="py-5 px-6 text-base font-black text-emerald-400">Q {{ formatCurrency(row.total_pagar) }}</td>
+            </tr>
+          </tbody>
+          <tfoot v-if="consolidatedData.length > 0" class="border-t-2 border-white/10 bg-white/5">
+            <tr>
+              <td class="py-5 px-8 font-black uppercase text-white/60 tracking-wider">Totales Generales</td>
+              <td class="py-5 px-6 text-white font-bold">{{ consolidatedData.reduce((a, b) => a + b.dias_trabajados, 0) }}</td>
+              <td class="py-5 px-6 text-white font-bold">Q {{ formatCurrency(consolidatedData.reduce((a, b) => a + b.salario_base_calculado, 0)) }}</td>
+              <td class="py-5 px-6 text-amber-400 font-bold">Q {{ formatCurrency(consolidatedData.reduce((a, b) => a + b.total_horas_extras, 0)) }}</td>
+              <td class="py-5 px-6 text-sky-400 font-bold">Q {{ formatCurrency(consolidatedData.reduce((a, b) => a + b.monto_viaticos, 0)) }}</td>
+              <td class="py-5 px-6 text-fuchsia-400 font-bold">Q {{ formatCurrency(consolidatedData.reduce((a, b) => a + b.monto_extra, 0)) }}</td>
+              <td class="py-5 px-6 text-emerald-400 font-black text-lg">Q {{ formatCurrency(consolidatedData.reduce((a, b) => a + b.total_pagar, 0)) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
       <!-- Pagination -->
-      <div v-if="totalPages > 1" class="p-6 border-t border-white/5 flex items-center justify-between">
+      <div v-if="totalPages > 1 && viewMode === 'individual'" class="p-6 border-t border-white/5 flex items-center justify-between">
         <p class="text-xs text-white/40">
           Página <span class="text-white font-bold">{{ currentPage }}</span> de <span class="text-white font-bold">{{ totalPages }}</span>
         </p>
@@ -346,6 +399,33 @@
 
                 <div v-if="payrollForm.tiene_viaticos" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/5">
                   <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Cantidad Viáticos</label>
+                    <input
+                      v-model.number="payrollForm.cantidad_viaticos"
+                      type="number"
+                      min="0"
+                      class="w-full h-11 px-3 rounded-xl bg-slate-900 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Inicio Rango</label>
+                      <input
+                        v-model="payrollForm.fecha_viaticos_inicio"
+                        type="date"
+                        class="w-full h-11 px-3 rounded-xl bg-slate-900 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                      />
+                    </div>
+                    <div>
+                      <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Fin Rango</label>
+                      <input
+                        v-model="payrollForm.fecha_viaticos_fin"
+                        type="date"
+                        class="w-full h-11 px-3 rounded-xl bg-slate-900 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                      />
+                    </div>
+                  </div>
+                  <div>
                     <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Monto Viáticos (Q)</label>
                     <input
                       v-model.number="payrollForm.monto_viaticos"
@@ -368,6 +448,44 @@
                 </div>
               </div>
 
+              <!-- Pago Extra Toggle -->
+              <div class="space-y-2 md:col-span-2 bg-white/5 p-5 rounded-2xl border border-white/5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-sm text-white">¿Aplica Pago Extra?</p>
+                    <p class="text-xs text-white/40">Agregar un pago extra a la planilla.</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    v-model="payrollForm.tiene_extra"
+                    class="w-5 h-5 accent-primary cursor-pointer"
+                  />
+                </div>
+
+                <div v-if="payrollForm.tiene_extra" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/5">
+                  <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Monto Extra (Q)</label>
+                    <input
+                      v-model.number="payrollForm.monto_extra"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      class="w-full h-11 px-3 rounded-xl bg-slate-900 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Observación</label>
+                    <input
+                      v-model="payrollForm.observacion_extra"
+                      type="text"
+                      placeholder="Ej. Bono especial"
+                      class="w-full h-11 px-3 rounded-xl bg-slate-900 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <!-- Resumen de Liquidación -->
               <div class="md:col-span-2 bg-gradient-to-r from-emerald-500/20 via-primary/20 to-slate-900 p-6 rounded-3xl border border-emerald-500/30">
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 mb-3">Resumen de Liquidación</p>
@@ -383,6 +501,10 @@
                   <div v-if="payrollForm.tiene_viaticos" class="flex justify-between text-sky-300">
                     <span>Viáticos / Adicionales:</span>
                     <span class="font-bold">+Q {{ formatCurrency(payrollCalculations.montoViaticos) }}</span>
+                  </div>
+                  <div v-if="payrollForm.tiene_extra" class="flex justify-between text-fuchsia-300">
+                    <span>Pago Extra:</span>
+                    <span class="font-bold">+Q {{ formatCurrency(payrollCalculations.montoExtra) }}</span>
                   </div>
                   <div class="pt-3 border-t border-white/10 flex justify-between items-center">
                     <span class="font-black text-sm text-white uppercase tracking-wider">Total a Pagar:</span>
@@ -493,6 +615,13 @@
                 </div>
                 <span class="font-bold text-slate-800">+Q {{ formatCurrency(selectedReceipt.monto_viaticos) }}</span>
               </div>
+              <div v-if="Number(selectedReceipt.monto_extra) > 0" class="p-3 flex justify-between items-center">
+                <div>
+                  <span class="text-slate-600">Pago Extra</span>
+                  <p v-if="selectedReceipt.observacion_extra" class="text-[10px] text-slate-400">{{ selectedReceipt.observacion_extra }}</p>
+                </div>
+                <span class="font-bold text-slate-800">+Q {{ formatCurrency(selectedReceipt.monto_extra) }}</span>
+              </div>
               <div class="p-4 flex justify-between items-center bg-emerald-50 text-emerald-950">
                 <span class="font-black text-sm uppercase">Total Líquido a Recibir</span>
                 <span class="font-black text-xl text-emerald-700">Q {{ formatCurrency(selectedReceipt.total_pagar) }}</span>
@@ -568,6 +697,7 @@ const isSubmitting = ref(false);
 
 const searchQuery = ref('');
 const filterPeriodo = ref('');
+const viewMode = ref('individual');
 
 const showPayrollModal = ref(false);
 const showReceiptModal = ref(false);
@@ -581,8 +711,14 @@ const payrollForm = ref({
   tiene_horas_extras: false,
   horas_extras: 0,
   tiene_viaticos: false,
+  cantidad_viaticos: 0,
+  fecha_viaticos_inicio: '',
+  fecha_viaticos_fin: '',
   monto_viaticos: 0,
   observaciones_viaticos: '',
+  tiene_extra: false,
+  monto_extra: 0,
+  observacion_extra: '',
   observaciones: ''
 });
 
@@ -625,7 +761,12 @@ const payrollCalculations = computed(() => {
     montoViaticos = Number(payrollForm.value.monto_viaticos || 0);
   }
 
-  const totalPagar = Number((salarioBaseCalculado + totalHorasExtras + montoViaticos).toFixed(2));
+  let montoExtra = 0;
+  if (payrollForm.value.tiene_extra) {
+    montoExtra = Number(payrollForm.value.monto_extra || 0);
+  }
+
+  const totalPagar = Number((salarioBaseCalculado + totalHorasExtras + montoViaticos + montoExtra).toFixed(2));
 
   return {
     salarioBase,
@@ -634,6 +775,7 @@ const payrollCalculations = computed(() => {
     horasExtras: Number(payrollForm.value.horas_extras || 0),
     totalHorasExtras,
     montoViaticos,
+    montoExtra,
     totalPagar
   };
 });
@@ -663,6 +805,39 @@ const totalPages = computed(() => Math.ceil(filteredPayments.value.length / item
 const paginatedPayments = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredPayments.value.slice(start, start + itemsPerPage);
+});
+
+const consolidatedData = computed(() => {
+  const map = new Map();
+  filteredPayments.value.forEach(p => {
+    const key = p.personnel_id;
+    if (!map.has(key)) {
+      map.set(key, {
+        personnel_id: key,
+        nombres: p.nombres,
+        apellidos: p.apellidos,
+        puesto: p.puesto,
+        dias_trabajados: 0,
+        salario_base: 0,
+        salario_base_calculado: 0,
+        horas_extras: 0,
+        total_horas_extras: 0,
+        monto_viaticos: 0,
+        monto_extra: 0,
+        total_pagar: 0
+      });
+    }
+    const item = map.get(key);
+    item.dias_trabajados += Number(p.dias_trabajados || 0);
+    item.salario_base = Number(p.salario_base || 0);
+    item.salario_base_calculado += Number(p.salario_base_calculado || p.salario_base || 0);
+    item.horas_extras += Number(p.horas_extras || 0);
+    item.total_horas_extras += Number(p.total_horas_extras || 0);
+    item.monto_viaticos += Number(p.monto_viaticos || 0);
+    item.monto_extra += Number(p.monto_extra || 0);
+    item.total_pagar += Number(p.total_pagar || 0);
+  });
+  return Array.from(map.values());
 });
 
 // Lifecycle
@@ -710,8 +885,14 @@ const openPayrollModal = () => {
     tiene_horas_extras: false,
     horas_extras: 0,
     tiene_viaticos: false,
+    cantidad_viaticos: 0,
+    fecha_viaticos_inicio: '',
+    fecha_viaticos_fin: '',
     monto_viaticos: 0,
     observaciones_viaticos: '',
+    tiene_extra: false,
+    monto_extra: 0,
+    observacion_extra: '',
     observaciones: ''
   };
   showPayrollModal.value = true;
@@ -741,8 +922,14 @@ const submitPayrollPayment = async () => {
     fd.append('tarifa_hora_extra',      payrollCalculations.value.tarifaHoraExtra);
     fd.append('total_horas_extras',     payrollCalculations.value.totalHorasExtras);
     fd.append('tiene_viaticos',         payrollForm.value.tiene_viaticos ? '1' : '0');
+    fd.append('cantidad_viaticos',      payrollForm.value.cantidad_viaticos || 0);
+    fd.append('fecha_viaticos_inicio',  payrollForm.value.fecha_viaticos_inicio || '');
+    fd.append('fecha_viaticos_fin',     payrollForm.value.fecha_viaticos_fin || '');
     fd.append('monto_viaticos',         payrollCalculations.value.montoViaticos);
     fd.append('observaciones_viaticos', payrollForm.value.observaciones_viaticos || '');
+    fd.append('tiene_extra',            payrollForm.value.tiene_extra ? '1' : '0');
+    fd.append('monto_extra',            payrollCalculations.value.montoExtra);
+    fd.append('observacion_extra',      payrollForm.value.observacion_extra || '');
     fd.append('total_pagar',            payrollCalculations.value.totalPagar);
     fd.append('observaciones',          payrollForm.value.observaciones || '');
 

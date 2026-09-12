@@ -20,9 +20,11 @@ class ExpenseRepository
 
     public function findAllWithProjects(): array
     {
-        $sql = "SELECT e.*, p.nombre as proyecto_nombre, 'Egreso' as transaction_type 
+        $sql = "SELECT e.*, p.nombre as proyecto_nombre, 'Egreso' as transaction_type, 
+                       c.empresa as contratista_empresa, c.nombre as contratista_nombre, c.representante as contratista_representante 
                 FROM expenses e 
-                LEFT JOIN projects p ON e.proyecto_id = p.id";
+                LEFT JOIN projects p ON e.proyecto_id = p.id
+                LEFT JOIN contractors c ON e.contratista_id = c.id";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 

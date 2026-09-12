@@ -51,4 +51,14 @@ class ClientService
 
         $this->clientRepo->delete($id);
     }
+
+    public function getMachineryStatement(int $clientId): array
+    {
+        $existing = $this->clientRepo->findById($clientId);
+        if (!$existing) {
+            throw new Exception("Cliente no encontrado.", 404);
+        }
+
+        return $this->clientRepo->getMachineryStatement($clientId);
+    }
 }

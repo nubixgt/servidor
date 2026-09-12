@@ -108,24 +108,84 @@ class ProjectIncomeRepository
 
     public function updateSource(int $sourceId, array $data): void
     {
-        $sql = "UPDATE project_income_sources SET 
-                fecha_cobro = :fecha_cobro, 
-                numero_documento = :numero_documento, 
-                bank_account_id = :bank_account_id, 
-                estado = :estado,
-                comprobante_path = COALESCE(:comprobante_path, comprobante_path),
-                updated_at = CURRENT_TIMESTAMP
-                WHERE id = :id";
-                
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ':fecha_cobro' => $data['fecha_cobro'] ?? null,
-            ':numero_documento' => $data['numero_documento'] ?? null,
-            ':bank_account_id' => !empty($data['bank_account_id']) ? $data['bank_account_id'] : null,
-            ':estado' => $data['estado'],
-            ':comprobante_path' => $data['comprobante_path'] ?? null,
-            ':id' => $sourceId
-        ]);
+        // 1. Fetch current source to check state transition
+        $stmtCurrent = $this->pdo->prepare("SELECT * FROM project_income_sources WHERE id = :id");
+        $stmtCurrent->execute(['id' => $sourceId]);
+        $currentSource = $stmtCurrent->fetch(PDO::FETCH_ASSOC);
+
+        if (!$currentSource) {
+            throw new Exception("Fuente de financiamiento no encontrada.");
+        }
+
+        $wasReceived = ($currentSource['estado'] === 'Recibido');
+        $isReceivedNow = ($data['estado'] === 'Recibido');
+
+        // 2. Fetch related project to link the global income
+        $stmtProj = $this->pdo->prepare("SELECT i.project_id, i.tipo_cobro, i.numero_estimacion FROM project_income_sources s JOIN project_incomes i ON s.project_income_id = i.id WHERE s.id = :id");
+        $stmtProj->execute(['id' => $sourceId]);
+        $projData = $stmtProj->fetch(PDO::FETCH_ASSOC);
+
+        $this->pdo->beginTransaction();
+        try {
+            // 3. Update the source
+            $sql = "UPDATE project_income_sources SET 
+                    fecha_cobro = :fecha_cobro, 
+                    numero_documento = :numero_documento, 
+                    bank_account_id = :bank_account_id, 
+                    estado = :estado,
+                    comprobante_path = COALESCE(:comprobante_path, comprobante_path),
+                    updated_at = CURRENT_TIMESTAMP
+                    WHERE id = :id";
+                    
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':fecha_cobro' => $data['fecha_cobro'] ?? null,
+                ':numero_documento' => $data['numero_documento'] ?? null,
+                ':bank_account_id' => !empty($data['bank_account_id']) ? $data['bank_account_id'] : null,
+                ':estado' => $data['estado'],
+                ':comprobante_path' => $data['comprobante_path'] ?? null,
+                ':id' => $sourceId
+            ]);
+
+            // 4. If changed to Recibido and has bank account, register global income
+            if (!$wasReceived && $isReceivedNow && !empty($data['bank_account_id'])) {
+                // Fetch bank account details
+                $stmtBank = $this->pdo->prepare("SELECT * FROM bank_accounts WHERE id = :id");
+                $stmtBank->execute(['id' => $data['bank_account_id']]);
+                $bank = $stmtBank->fetch(PDO::FETCH_ASSOC);
+
+                if ($bank) {
+                    $cuentaName = $bank['nombre_banco'] . ' - ' . $bank['numero_cuenta'];
+                    $descripcion = "Cobro de Estimación (" . ($projData['numero_estimacion'] ?? 'N/A') . ") - Fuente: " . $currentSource['fuente'];
+
+                    // Insert into global incomes
+                    $sqlIncome = "INSERT INTO incomes (proyecto_id, tipo_ingreso, monto, fecha_ingreso, cuenta_bancaria, numero_cheque, pagador, descripcion) 
+                                  VALUES (:proyecto_id, :tipo_ingreso, :monto, :fecha, :cuenta, :cheque, :pagador, :descripcion)";
+                    $this->pdo->prepare($sqlIncome)->execute([
+                        'proyecto_id'  => $projData['project_id'],
+                        'tipo_ingreso' => $projData['tipo_cobro'] ?: 'Estimación',
+                        'monto'        => $currentSource['monto_aportado'],
+                        'fecha'        => $data['fecha_cobro'] ?: date('Y-m-d H:i:s'),
+                        'cuenta'       => $cuentaName,
+                        'cheque'       => $data['numero_documento'] ?? null,
+                        'pagador'      => $currentSource['fuente'],
+                        'descripcion'  => $descripcion
+                    ]);
+
+                    // Update bank balance
+                    $stmtBalance = $this->pdo->prepare("UPDATE bank_accounts SET saldo_actual = saldo_actual + :change WHERE id = :id");
+                    $stmtBalance->execute([
+                        'change' => $currentSource['monto_aportado'],
+                        'id' => $data['bank_account_id']
+                    ]);
+                }
+            }
+
+            $this->pdo->commit();
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
     
     public function getTotalsByProject(int $projectId): array

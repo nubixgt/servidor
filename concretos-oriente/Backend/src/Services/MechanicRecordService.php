@@ -27,6 +27,11 @@ class MechanicRecordService
         return $this->repo->getAllPlates();
     }
 
+    public function getVehicleStatement(string $placa): array
+    {
+        return $this->repo->getVehicleStatement($placa);
+    }
+
     public function getItems(int $id): array
     {
         if (!$this->repo->findById($id)) {

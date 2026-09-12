@@ -27,6 +27,12 @@ class FuelRecordRepository
             if (!in_array('foto_3', $cols)) {
                 $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN foto_3 VARCHAR(255) NULL AFTER foto_2");
             }
+            if (!in_array('forma_pago', $cols)) {
+                $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN forma_pago VARCHAR(50) NULL AFTER monto");
+            }
+            if (!in_array('lugar', $cols)) {
+                $this->pdo->exec("ALTER TABLE fuel_records ADD COLUMN lugar VARCHAR(255) NULL AFTER forma_pago");
+            }
         } catch (\Throwable $e) {
             // ignore
         }
@@ -87,10 +93,10 @@ class FuelRecordRepository
     {
         $sql = "INSERT INTO fuel_records
                     (fecha, piloto_id, placa, tipo_unidad, proyecto_id, proyectos_detalle,
-                     cantidad_galones, precio_galon, monto, kilometraje, horometro)
+                     cantidad_galones, precio_galon, monto, forma_pago, lugar, kilometraje, horometro)
                 VALUES
                     (:fecha, :piloto_id, :placa, :tipo_unidad, :proyecto_id, :proyectos_detalle,
-                     :cantidad_galones, :precio_galon, :monto, :kilometraje, :horometro)";
+                     :cantidad_galones, :precio_galon, :monto, :forma_pago, :lugar, :kilometraje, :horometro)";
 
         $this->pdo->prepare($sql)->execute([
             'fecha'             => $data['fecha'],
@@ -102,6 +108,8 @@ class FuelRecordRepository
             'cantidad_galones'  => $data['cantidad_galones'],
             'precio_galon'      => $data['precio_galon'] ?: null,
             'monto'             => $data['monto'],
+            'forma_pago'        => $data['forma_pago'] ?? null,
+            'lugar'             => $data['lugar'] ?? null,
             'kilometraje'       => $data['kilometraje'] ?: null,
             'horometro'         => $data['horometro'] ?: null,
         ]);
@@ -121,6 +129,8 @@ class FuelRecordRepository
                     cantidad_galones  = :cantidad_galones,
                     precio_galon      = :precio_galon,
                     monto             = :monto,
+                    forma_pago        = :forma_pago,
+                    lugar             = :lugar,
                     kilometraje       = :kilometraje,
                     horometro         = :horometro
                 WHERE id = :id";
@@ -136,6 +146,8 @@ class FuelRecordRepository
             'cantidad_galones'  => $data['cantidad_galones'],
             'precio_galon'      => $data['precio_galon'] ?: null,
             'monto'             => $data['monto'],
+            'forma_pago'        => $data['forma_pago'] ?? null,
+            'lugar'             => $data['lugar'] ?? null,
             'kilometraje'       => $data['kilometraje'] ?: null,
             'horometro'         => $data['horometro'] ?: null,
         ]);

@@ -38,6 +38,15 @@ class PersonnelRepository
             if (!in_array('edades_hijos', $existingColumns)) {
                 $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `edades_hijos` VARCHAR(255) DEFAULT NULL AFTER `cantidad_hijos`");
             }
+            if (!in_array('titulo_academico', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `titulo_academico` VARCHAR(255) DEFAULT NULL AFTER `nivel_academico`");
+            }
+            if (!in_array('bonificacion', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `bonificacion` DECIMAL(10,2) DEFAULT NULL AFTER `salario_base`");
+            }
+            if (!in_array('nombre_cuenta', $existingColumns)) {
+                $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `nombre_cuenta` VARCHAR(255) DEFAULT NULL AFTER `numero_cuenta`");
+            }
             if (!in_array('dpi_adjunto_path', $existingColumns)) {
                 $this->pdo->exec("ALTER TABLE `personnel` ADD COLUMN `dpi_adjunto_path` VARCHAR(255) DEFAULT NULL AFTER `foto_path`");
             }
@@ -85,18 +94,18 @@ class PersonnelRepository
                     (tipo_empleado, nombres, apellidos, dpi, nit, telefono, direccion,
                      puesto, tipo_planilla, salario_base, tarifa_hora_extra,
                      diario_viaticos, contacto_nombres, contacto_numero,
-                     cantidad_hijos, edades_hijos, nivel_academico, fecha_nacimiento, depto_nacimiento, muni_nacimiento, estado_civil,
+                     cantidad_hijos, edades_hijos, nivel_academico, titulo_academico, fecha_nacimiento, depto_nacimiento, muni_nacimiento, estado_civil,
                      igss, igss_numero,
                      fecha_contratacion, fecha_baja,
-                     numero_cuenta, nombre_banco, proyecto_id)
+                     numero_cuenta, nombre_cuenta, nombre_banco, proyecto_id, bonificacion)
                 VALUES
                     (:tipo_empleado, :nombres, :apellidos, :dpi, :nit, :telefono, :direccion,
                      :puesto, :tipo_planilla, :salario_base, :tarifa_hora_extra,
                      :diario_viaticos, :contacto_nombres, :contacto_numero,
-                     :cantidad_hijos, :edades_hijos, :nivel_academico, :fecha_nacimiento, :depto_nacimiento, :muni_nacimiento, :estado_civil,
+                     :cantidad_hijos, :edades_hijos, :nivel_academico, :titulo_academico, :fecha_nacimiento, :depto_nacimiento, :muni_nacimiento, :estado_civil,
                      :igss, :igss_numero,
                      :fecha_contratacion, :fecha_baja,
-                     :numero_cuenta, :nombre_banco, :proyecto_id)";
+                     :numero_cuenta, :nombre_cuenta, :nombre_banco, :proyecto_id, :bonificacion)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -117,6 +126,7 @@ class PersonnelRepository
             'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
             'edades_hijos'       => $data['edades_hijos'] ?? null,
             'nivel_academico'    => $data['nivel_academico'] ?? null,
+            'titulo_academico'   => $data['titulo_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
             'depto_nacimiento'   => $data['depto_nacimiento'] ?? null,
             'muni_nacimiento'    => $data['muni_nacimiento'] ?? null,
@@ -126,8 +136,10 @@ class PersonnelRepository
             'fecha_contratacion' => $data['fecha_contratacion'],
             'fecha_baja'         => $data['fecha_baja'] ?? null,
             'numero_cuenta'      => $data['numero_cuenta'] ?? null,
+            'nombre_cuenta'      => $data['nombre_cuenta'] ?? null,
             'nombre_banco'       => $data['nombre_banco'] ?? null,
             'proyecto_id'        => $data['proyecto_id'] ?? null,
+            'bonificacion'       => $data['bonificacion'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -146,6 +158,7 @@ class PersonnelRepository
                     puesto             = :puesto,
                     tipo_planilla      = :tipo_planilla,
                     salario_base       = :salario_base,
+                    bonificacion       = :bonificacion,
                     tarifa_hora_extra  = :tarifa_hora_extra,
                     diario_viaticos    = :diario_viaticos,
                     contacto_nombres   = :contacto_nombres,
@@ -153,6 +166,7 @@ class PersonnelRepository
                     cantidad_hijos     = :cantidad_hijos,
                     edades_hijos       = :edades_hijos,
                     nivel_academico    = :nivel_academico,
+                    titulo_academico   = :titulo_academico,
                     fecha_nacimiento   = :fecha_nacimiento,
                     depto_nacimiento   = :depto_nacimiento,
                     muni_nacimiento    = :muni_nacimiento,
@@ -162,6 +176,7 @@ class PersonnelRepository
                     fecha_contratacion = :fecha_contratacion,
                     fecha_baja         = :fecha_baja,
                     numero_cuenta      = :numero_cuenta,
+                    nombre_cuenta      = :nombre_cuenta,
                     nombre_banco       = :nombre_banco,
                     proyecto_id        = :proyecto_id
                 WHERE id = :id";
@@ -185,6 +200,7 @@ class PersonnelRepository
             'cantidad_hijos'     => $data['cantidad_hijos'] ?? null,
             'edades_hijos'       => $data['edades_hijos'] ?? null,
             'nivel_academico'    => $data['nivel_academico'] ?? null,
+            'titulo_academico'   => $data['titulo_academico'] ?? null,
             'fecha_nacimiento'   => $data['fecha_nacimiento'] ?? null,
             'depto_nacimiento'   => $data['depto_nacimiento'] ?? null,
             'muni_nacimiento'    => $data['muni_nacimiento'] ?? null,
@@ -194,8 +210,10 @@ class PersonnelRepository
             'fecha_contratacion' => $data['fecha_contratacion'],
             'fecha_baja'         => $data['fecha_baja'] ?? null,
             'numero_cuenta'      => $data['numero_cuenta'] ?? null,
+            'nombre_cuenta'      => $data['nombre_cuenta'] ?? null,
             'nombre_banco'       => $data['nombre_banco'] ?? null,
             'proyecto_id'        => $data['proyecto_id'] ?? null,
+            'bonificacion'       => $data['bonificacion'] ?? null,
             'id'                 => $id,
         ]);
     }

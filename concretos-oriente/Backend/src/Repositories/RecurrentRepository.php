@@ -11,6 +11,34 @@ class RecurrentRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->autoMigrate();
+    }
+
+    private function autoMigrate(): void
+    {
+        $this->pdo->exec("
+            CREATE TABLE IF NOT EXISTS recurrents (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                concepto VARCHAR(255) NOT NULL,
+                descripcion TEXT NULL,
+                monto DECIMAL(10,2) NOT NULL DEFAULT 0,
+                dia_pago INT NULL,
+                created_by INT NOT NULL,
+                beneficiario VARCHAR(255) NULL,
+                cuenta VARCHAR(255) NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        ");
+
+        $columns = $this->pdo->query("SHOW COLUMNS FROM recurrents")->fetchAll(PDO::FETCH_COLUMN);
+        
+        if (!in_array('beneficiario', $columns)) {
+            $this->pdo->exec("ALTER TABLE recurrents ADD COLUMN beneficiario VARCHAR(255) NULL");
+        }
+        if (!in_array('cuenta', $columns)) {
+            $this->pdo->exec("ALTER TABLE recurrents ADD COLUMN cuenta VARCHAR(255) NULL");
+        }
     }
 
     public function findAll(): array
@@ -28,15 +56,17 @@ class RecurrentRepository
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO recurrents (concepto, descripcion, monto, dia_pago, created_by) 
-                VALUES (:concepto, :descripcion, :monto, :dia_pago, :created_by)";
+        $sql = "INSERT INTO recurrents (concepto, descripcion, monto, dia_pago, created_by, beneficiario, cuenta) 
+                VALUES (:concepto, :descripcion, :monto, :dia_pago, :created_by, :beneficiario, :cuenta)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'concepto'   => $data['concepto'],
-            'descripcion'=> $data['descripcion'],
+            'descripcion'=> $data['descripcion'] ?? null,
             'monto'      => $data['monto'],
-            'dia_pago'   => $data['dia_pago'],
-            'created_by' => $data['created_by']
+            'dia_pago'   => $data['dia_pago'] ?? null,
+            'created_by' => $data['created_by'],
+            'beneficiario'=> $data['beneficiario'] ?? null,
+            'cuenta'     => $data['cuenta'] ?? null
         ]);
         return (int) $this->pdo->lastInsertId();
     }
@@ -44,14 +74,17 @@ class RecurrentRepository
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE recurrents 
-                SET concepto = :concepto, descripcion = :descripcion, monto = :monto, dia_pago = :dia_pago 
+                SET concepto = :concepto, descripcion = :descripcion, monto = :monto, dia_pago = :dia_pago,
+                    beneficiario = :beneficiario, cuenta = :cuenta 
                 WHERE id = :id AND created_by = :created_by";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'concepto'   => $data['concepto'],
-            'descripcion'=> $data['descripcion'],
+            'descripcion'=> $data['descripcion'] ?? null,
             'monto'      => $data['monto'],
-            'dia_pago'   => $data['dia_pago'],
+            'dia_pago'   => $data['dia_pago'] ?? null,
+            'beneficiario'=> $data['beneficiario'] ?? null,
+            'cuenta'     => $data['cuenta'] ?? null,
             'id'         => $id,
             'created_by' => $data['created_by']
         ]);

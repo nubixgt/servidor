@@ -81,6 +81,28 @@ class MechanicRecordRepository
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getVehicleStatement(string $placa): array
+    {
+        $sql = "SELECT
+                    mr.*,
+                    s.razon_social AS proveedor_nombre,
+                    mo_s.razon_social AS mano_obra_proveedor_razon,
+                    COALESCE(SUM(i.monto), 0) + COALESCE(mr.mano_obra_monto, 0) AS total_monto,
+                    COALESCE(SUM(i.monto), 0) AS productos_monto,
+                    COUNT(i.id) AS items_count
+                FROM mechanic_records mr
+                LEFT JOIN suppliers s ON s.id = mr.proveedor_id
+                LEFT JOIN suppliers mo_s ON mo_s.id = mr.mano_obra_proveedor_id
+                LEFT JOIN mechanic_record_items i ON i.mechanic_record_id = mr.id
+                WHERE mr.placa = :placa
+                GROUP BY mr.id
+                ORDER BY mr.fecha DESC, mr.id DESC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['placa' => $placa]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM mechanic_records WHERE id = :id");

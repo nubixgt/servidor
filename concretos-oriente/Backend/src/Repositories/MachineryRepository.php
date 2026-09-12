@@ -42,8 +42,14 @@ class MachineryRepository
             if (!in_array('no_factura', $existingColumns)) {
                 try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `no_factura` VARCHAR(100) NULL"); } catch (\Throwable $e) {}
             }
-            if (!in_array('fecha_servicio', $existingColumns)) {
-                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `fecha_servicio` DATE NULL"); } catch (\Throwable $e) {}
+            if (!in_array('frecuencia_servicio_horas', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `frecuencia_servicio_horas` INT DEFAULT 0"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('proveedor_compra', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `proveedor_compra` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+            }
+            if (!in_array('telefono_proveedor', $existingColumns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `telefono_proveedor` VARCHAR(50) NULL"); } catch (\Throwable $e) {}
             }
             if (!in_array('seguro_contacto_nombre', $existingColumns)) {
                 try { $this->pdo->exec("ALTER TABLE `machinery` ADD COLUMN `seguro_contacto_nombre` VARCHAR(255) NULL"); } catch (\Throwable $e) {}
@@ -110,12 +116,12 @@ class MachineryRepository
     {
         $sql = "INSERT INTO machinery
                     (clasificacion_tipo, categoria, codigo_interno, no_factura, marca, modelo, numero_serie, anio_fabricacion,
-                     placa, horometro_actual, fecha_servicio, operador_id, proyecto_id, estado,
+                     placa, horometro_actual, frecuencia_servicio_horas, proveedor_compra, telefono_proveedor, operador_id, proyecto_id, estado,
                      seguro_contacto_nombre, seguro_contacto_telefono, seguro_aseguradora,
                      costo_adquisicion, fecha_adquisicion, created_by)
                 VALUES
                     (:clasificacion_tipo, :categoria, :codigo_interno, :no_factura, :marca, :modelo, :numero_serie, :anio_fabricacion,
-                     :placa, :horometro_actual, :fecha_servicio, :operador_id, :proyecto_id, :estado,
+                     :placa, :horometro_actual, :frecuencia_servicio_horas, :proveedor_compra, :telefono_proveedor, :operador_id, :proyecto_id, :estado,
                      :seguro_contacto_nombre, :seguro_contacto_telefono, :seguro_aseguradora,
                      :costo_adquisicion, :fecha_adquisicion, :created_by)";
 
@@ -131,7 +137,9 @@ class MachineryRepository
             'anio_fabricacion'         => $data['anio_fabricacion'] ?? null,
             'placa'                    => $data['placa'] ?? null,
             'horometro_actual'         => $data['horometro_actual'] ?? 0,
-            'fecha_servicio'           => $data['fecha_servicio'] ?? null,
+            'frecuencia_servicio_horas'=> $data['frecuencia_servicio_horas'] ?? 0,
+            'proveedor_compra'         => $data['proveedor_compra'] ?? null,
+            'telefono_proveedor'       => $data['telefono_proveedor'] ?? null,
             'operador_id'              => $data['operador_id'] ?? null,
             'proyecto_id'              => $data['proyecto_id'] ?? null,
             'estado'                   => $data['estado'] ?? 'Activo',
@@ -159,7 +167,9 @@ class MachineryRepository
                     anio_fabricacion         = :anio_fabricacion,
                     placa                    = :placa,
                     horometro_actual         = :horometro_actual,
-                    fecha_servicio           = :fecha_servicio,
+                    frecuencia_servicio_horas= :frecuencia_servicio_horas,
+                    proveedor_compra         = :proveedor_compra,
+                    telefono_proveedor       = :telefono_proveedor,
                     operador_id              = :operador_id,
                     proyecto_id              = :proyecto_id,
                     estado                   = :estado,
@@ -183,7 +193,9 @@ class MachineryRepository
             'anio_fabricacion'         => $data['anio_fabricacion'] ?? null,
             'placa'                    => $data['placa'] ?? null,
             'horometro_actual'         => $data['horometro_actual'] ?? 0,
-            'fecha_servicio'           => $data['fecha_servicio'] ?? null,
+            'frecuencia_servicio_horas'=> $data['frecuencia_servicio_horas'] ?? 0,
+            'proveedor_compra'         => $data['proveedor_compra'] ?? null,
+            'telefono_proveedor'       => $data['telefono_proveedor'] ?? null,
             'operador_id'              => $data['operador_id'] ?? null,
             'proyecto_id'              => $data['proyecto_id'] ?? null,
             'estado'                   => $data['estado'] ?? 'Activo',

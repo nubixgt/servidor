@@ -39,6 +39,8 @@ class RecurrentController extends Controller
                 'descripcion' => trim($input['descripcion'] ?? '') ?: null,
                 'monto'       => isset($input['monto']) && $input['monto'] !== '' ? (float)$input['monto'] : null,
                 'dia_pago'    => isset($input['dia_pago']) && $input['dia_pago'] !== '' ? (int)$input['dia_pago'] : null,
+                'beneficiario'=> trim($input['beneficiario'] ?? '') ?: null,
+                'cuenta'      => trim($input['cuenta'] ?? '') ?: null,
             ];
 
             $this->recurrentService->create($data, $user['id']);
@@ -60,6 +62,8 @@ class RecurrentController extends Controller
                 'descripcion' => trim($input['descripcion'] ?? '') ?: null,
                 'monto'       => isset($input['monto']) && $input['monto'] !== '' ? (float)$input['monto'] : null,
                 'dia_pago'    => isset($input['dia_pago']) && $input['dia_pago'] !== '' ? (int)$input['dia_pago'] : null,
+                'beneficiario'=> trim($input['beneficiario'] ?? '') ?: null,
+                'cuenta'      => trim($input['cuenta'] ?? '') ?: null,
             ];
 
             $this->recurrentService->update($id, $data, $user['id']);

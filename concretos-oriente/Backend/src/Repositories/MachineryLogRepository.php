@@ -12,6 +12,21 @@ class MachineryLogRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM `machinery_log`");
+            $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            if (!in_array('precio_renta', $columns)) {
+                try { $this->pdo->exec("ALTER TABLE `machinery_log` ADD COLUMN `precio_renta` DECIMAL(10,2) DEFAULT 0"); } catch (\Throwable $e) {}
+            }
+        } catch (\Throwable $e) {
+            // Ignore if table doesn't exist yet
+        }
     }
 
     public function findAllWithDetails(?array $user = null): array
@@ -61,10 +76,10 @@ class MachineryLogRepository
     {
         $sql = "INSERT INTO machinery_log
                     (maquina_id, proyecto_id, fecha, horometro_inicial, horometro_final,
-                     combustible_consumido, observaciones, operador_id, created_by)
+                     combustible_consumido, observaciones, operador_id, precio_renta, created_by)
                 VALUES
                     (:maquina_id, :proyecto_id, :fecha, :horometro_inicial, :horometro_final,
-                     :combustible_consumido, :observaciones, :operador_id, :created_by)";
+                     :combustible_consumido, :observaciones, :operador_id, :precio_renta, :created_by)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -76,6 +91,7 @@ class MachineryLogRepository
             'combustible_consumido'=> $data['combustible_consumido'] ?? null,
             'observaciones'        => $data['observaciones'] ?? null,
             'operador_id'          => $data['operador_id'] ?? null,
+            'precio_renta'         => $data['precio_renta'] ?? 0,
             'created_by'           => $data['created_by'] ?? null,
         ]);
 

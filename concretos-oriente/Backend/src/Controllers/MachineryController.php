@@ -45,8 +45,8 @@ class MachineryController extends Controller
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
                 'horometro_actual'      => $_POST['horometro_actual'] ?? 0,
-                'fecha_servicio'        => (isset($_POST['fecha_servicio']) && $_POST['fecha_servicio'] !== '')
-                                            ? $_POST['fecha_servicio'] : null,
+                'frecuencia_servicio_horas' => (isset($_POST['frecuencia_servicio_horas']) && $_POST['frecuencia_servicio_horas'] !== '')
+                                            ? (int)$_POST['frecuencia_servicio_horas'] : 0,
                 'estado'                => trim($_POST['estado']       ?? 'Activo'),
                 'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
@@ -56,6 +56,8 @@ class MachineryController extends Controller
                                             ? (int)$_POST['operador_id'] : null,
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                             ? (int)$_POST['proyecto_id'] : null,
+                'proveedor_compra'      => trim($_POST['proveedor_compra'] ?? '') ?: null,
+                'telefono_proveedor'    => trim($_POST['telefono_proveedor'] ?? '') ?: null,
                 'seguro_contacto_nombre'   => trim($_POST['seguro_contacto_nombre'] ?? '') ?: null,
                 'seguro_contacto_telefono' => trim($_POST['seguro_contacto_telefono'] ?? '') ?: null,
                 'seguro_aseguradora'       => trim($_POST['seguro_aseguradora'] ?? '') ?: null,
@@ -99,8 +101,8 @@ class MachineryController extends Controller
                 'marca'                 => trim($_POST['marca']             ?? ''),
                 'modelo'                => trim($_POST['modelo']            ?? ''),
                 'horometro_actual'      => $_POST['horometro_actual'] ?? 0,
-                'fecha_servicio'        => (isset($_POST['fecha_servicio']) && $_POST['fecha_servicio'] !== '')
-                                            ? $_POST['fecha_servicio'] : null,
+                'frecuencia_servicio_horas' => (isset($_POST['frecuencia_servicio_horas']) && $_POST['frecuencia_servicio_horas'] !== '')
+                                            ? (int)$_POST['frecuencia_servicio_horas'] : 0,
                 'estado'                => trim($_POST['estado']       ?? 'Activo'),
                 'numero_serie'          => trim($_POST['numero_serie']     ?? '') ?: null,
                 'anio_fabricacion'      => (isset($_POST['anio_fabricacion']) && $_POST['anio_fabricacion'] !== '')
@@ -110,6 +112,8 @@ class MachineryController extends Controller
                                             ? (int)$_POST['operador_id'] : null,
                 'proyecto_id'           => (isset($_POST['proyecto_id']) && $_POST['proyecto_id'] !== '')
                                             ? (int)$_POST['proyecto_id'] : null,
+                'proveedor_compra'      => trim($_POST['proveedor_compra'] ?? '') ?: null,
+                'telefono_proveedor'    => trim($_POST['telefono_proveedor'] ?? '') ?: null,
                 'seguro_contacto_nombre'   => trim($_POST['seguro_contacto_nombre'] ?? '') ?: null,
                 'seguro_contacto_telefono' => trim($_POST['seguro_contacto_telefono'] ?? '') ?: null,
                 'seguro_aseguradora'       => trim($_POST['seguro_aseguradora'] ?? '') ?: null,
@@ -189,6 +193,8 @@ class MachineryController extends Controller
                                             ? (int)$_POST['proyecto_id'] : null,
                 'combustible_consumido'=> (isset($_POST['combustible_consumido']) && $_POST['combustible_consumido'] !== '')
                                             ? $_POST['combustible_consumido'] : null,
+                'precio_renta'         => (isset($_POST['precio_renta']) && $_POST['precio_renta'] !== '')
+                                            ? $_POST['precio_renta'] : 0,
                 'observaciones'        => trim($_POST['observaciones'] ?? '') ?: null,
                 'created_by'           => $this->getUser()['id'] ?? null,
             ];

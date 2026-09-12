@@ -14,6 +14,9 @@
         <button @click="switchTab('list')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'list' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
           Registros
         </button>
+        <button @click="switchTab('report')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all', activeTab === 'report' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
+          Gasto por Vehículo
+        </button>
         <button @click="switchTab('register')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2', activeTab === 'register' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
           <PlusIcon class="w-3.5 h-3.5" /> {{ editingId ? 'Editando' : 'Registrar' }}
         </button>
@@ -84,6 +87,14 @@
             {{ f.label }}
           </button>
         </div>
+        
+        <div class="flex gap-2 w-full lg:w-auto overflow-x-auto">
+          <input v-model="dateFrom" type="date"
+            class="glass-input px-4 py-3 rounded-xl text-xs font-bold w-full lg:w-auto text-white placeholder:text-white/20" />
+          <input v-model="dateTo" type="date"
+            class="glass-input px-4 py-3 rounded-xl text-xs font-bold w-full lg:w-auto text-white placeholder:text-white/20" />
+        </div>
+
         <div class="relative w-full lg:w-80">
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input v-model="searchTerm" type="text" placeholder="Buscar por placa, tipo o trabajo..."
@@ -170,7 +181,7 @@
     </template>
 
     <!-- ═══════════════════════════════════════════ FORMULARIO ═══ -->
-    <template v-else>
+    <template v-else-if="activeTab === 'register'">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         <!-- Left: campos -->
@@ -669,6 +680,98 @@
       </div>
     </Transition>
 
+    <!-- ═══════════════════════════════════════════ REPORTE POR VEHICULO ═══ -->
+    <template v-else-if="activeTab === 'report'">
+      <div class="glass-card p-8 rounded-[32px] border border-white/5 space-y-8">
+        
+        <!-- Header & Seleccion -->
+        <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+          <div>
+            <h3 class="text-2xl font-black italic tracking-tighter text-white">Reporte de Gastos</h3>
+            <p class="text-xs font-bold text-white/50">Selecciona un vehículo para ver su historial de mantenimiento y gasto total.</p>
+          </div>
+          
+          <div class="w-full md:w-80 relative">
+            <label class="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-2">Seleccionar Vehículo/Maquinaria</label>
+            <select v-model="reportSelectedPlaca" @change="fetchVehicleStatement" class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white appearance-none">
+              <option value="" disabled class="bg-slate-900 text-white/50">Seleccione una placa...</option>
+              <option v-for="p in allPlates" :key="p.placa" :value="p.placa" class="bg-slate-900 text-white">
+                {{ p.placa }} - {{ p.descripcion }}
+              </option>
+            </select>
+            <ChevronDownIcon class="absolute right-4 bottom-4 w-4 h-4 text-white/40 pointer-events-none" />
+          </div>
+        </div>
+
+        <!-- Indicadores -->
+        <div v-if="reportSelectedPlaca && vehicleStatement.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <span class="text-[9px] font-black text-white/40 uppercase tracking-widest block">Total Histórico</span>
+              <span class="text-3xl font-black italic tracking-tighter text-emerald-400">Q {{ Number(vehicleStats.totalGasto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+            </div>
+            <BanknotesIcon class="w-8 h-8 text-emerald-500/20" />
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <span class="text-[9px] font-black text-white/40 uppercase tracking-widest block">Mano de Obra</span>
+              <span class="text-2xl font-black italic tracking-tighter text-sky-400">Q {{ Number(vehicleStats.totalManoObra).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+            </div>
+            <WrenchScrewdriverIcon class="w-8 h-8 text-sky-500/20" />
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between">
+            <div>
+              <span class="text-[9px] font-black text-white/40 uppercase tracking-widest block">Servicios Registrados</span>
+              <span class="text-2xl font-black italic tracking-tighter text-violet-400">{{ vehicleStatement.length }}</span>
+            </div>
+            <ListBulletIcon class="w-8 h-8 text-violet-500/20" />
+          </div>
+        </div>
+
+        <!-- Mensaje vacío -->
+        <div v-if="reportSelectedPlaca && vehicleStatement.length === 0" class="py-10 text-center text-white/30 font-black uppercase tracking-widest text-xs">
+          El vehículo seleccionado no cuenta con registros de mantenimiento.
+        </div>
+        <div v-else-if="!reportSelectedPlaca" class="py-10 text-center text-white/30 font-black uppercase tracking-widest text-xs">
+          Seleccione un vehículo en la lista desplegable.
+        </div>
+
+        <!-- Tabla de bitácora del vehículo -->
+        <div v-if="vehicleStatement.length > 0" class="overflow-x-auto">
+          <table class="w-full min-w-[700px] text-left">
+            <thead>
+              <tr class="text-[10px] font-black text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
+                <th class="px-4 py-3">Fecha</th>
+                <th class="px-4 py-3">Trabajo</th>
+                <th class="px-4 py-3 text-right">Repuestos (Q)</th>
+                <th class="px-4 py-3 text-right">Mano Obra (Q)</th>
+                <th class="px-4 py-3 text-right">Total (Q)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr v-for="r in vehicleStatement" :key="r.id" class="hover:bg-white/[0.015] transition-colors">
+                <td class="px-4 py-3 text-xs font-black text-white/80">{{ formatDate(r.fecha) }}</td>
+                <td class="px-4 py-3">
+                  <span class="text-xs font-bold text-white/90 block">{{ r.tipo_trabajo || 'Mantenimiento General' }}</span>
+                  <span class="text-[9px] font-black text-white/40 uppercase">{{ r.proveedor_nombre || 'Interno' }}</span>
+                </td>
+                <td class="px-4 py-3 text-right text-xs font-black text-amber-400">
+                  {{ Number(r.productos_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                </td>
+                <td class="px-4 py-3 text-right text-xs font-black text-sky-400">
+                  {{ Number(r.mano_obra_monto || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                </td>
+                <td class="px-4 py-3 text-right text-xs font-black text-emerald-400 bg-white/[0.02]">
+                  {{ Number(r.total_monto).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </template>
+
   </div>
 </template>
 
@@ -688,6 +791,8 @@ const BASE_URL = '/concretos-oriente/Backend/api/v1';
 const activeTab  = ref('list');
 const searchTerm = ref('');
 const unitFilter = ref('all');
+const dateFrom   = ref('');
+const dateTo     = ref('');
 const records    = ref([]);
 const suppliers  = ref([]);
 const allPlates  = ref([]);
@@ -702,6 +807,10 @@ const manoObraFacturaName = ref('');
 const placaSearch       = ref('');
 const showPlacaDropdown = ref(false);
 const placaContainer    = ref(null);
+
+// Variables for vehicle statement
+const reportSelectedPlaca = ref('');
+const vehicleStatement    = ref([]);
 
 const form = ref({
   fecha: new Date().toISOString().split('T')[0],
@@ -744,9 +853,30 @@ const filteredList = computed(() => {
     const matchText = r.placa?.toLowerCase().includes(q) ||
                       r.tipo_trabajo?.toLowerCase().includes(q) ||
                       r.proveedor_nombre?.toLowerCase().includes(q);
-    if (unitFilter.value === 'all') return matchText;
-    return matchText && r.tipo_unidad === unitFilter.value;
+    
+    let matchUnit = unitFilter.value === 'all' ? true : r.tipo_unidad === unitFilter.value;
+    
+    let matchDate = true;
+    if (dateFrom.value && dateTo.value) {
+      matchDate = r.fecha >= dateFrom.value && r.fecha <= dateTo.value;
+    } else if (dateFrom.value) {
+      matchDate = r.fecha >= dateFrom.value;
+    } else if (dateTo.value) {
+      matchDate = r.fecha <= dateTo.value;
+    }
+
+    return matchText && matchUnit && matchDate;
   });
+});
+
+const vehicleStats = computed(() => {
+  let totalGasto = 0;
+  let totalManoObra = 0;
+  vehicleStatement.value.forEach(r => {
+    totalGasto += parseFloat(r.total_monto || 0);
+    totalManoObra += parseFloat(r.mano_obra_monto || 0);
+  });
+  return { totalGasto, totalManoObra };
 });
 
 const filteredPlates = computed(() => {
@@ -940,6 +1070,19 @@ onMounted(() => {
   document.addEventListener('click', onClickOutside);
 });
 
+const fetchVehicleStatement = async () => {
+  if (!reportSelectedPlaca.value) return;
+  try {
+    const placaUrl = encodeURIComponent(reportSelectedPlaca.value);
+    const res = await fetch(`${BASE_URL}/mechanic-records/vehicle-statement/${placaUrl}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }});
+    const data = await res.json();
+    if (data.success) vehicleStatement.value = data.data;
+    else toast(data.message || 'Error', 'error');
+  } catch (e) {
+    console.error('Error fetching vehicle statement:', e);
+  }
+};
+
 onBeforeUnmount(() => {
   document.removeEventListener('click', onClickOutside);
 });
@@ -1116,6 +1259,7 @@ const openDetails = async (r) => {
   showDetailsModal.value = true;
   detailItems.value      = await fetchItems(r.id);
 };
+
 </script>
 
 <style scoped>

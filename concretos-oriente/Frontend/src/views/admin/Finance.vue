@@ -118,10 +118,10 @@
         <table class="w-full min-w-[640px] text-left">
           <thead>
             <tr class="text-[11px] font-bold text-white/20 uppercase tracking-[0.3em]">
-              <th class="px-4 md:px-8 py-4 md:py-8">Descripción / Fecha</th>
-              <th class="px-4 md:px-8 py-4 md:py-8">Tipo / Entidad</th>
-              <th class="px-4 md:px-8 py-4 md:py-8">Proyecto Vinculado</th>
-              <th class="px-10 py-10 text-right">Valor Neto</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">Descripción / Proyecto</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">A Nombre De (Cheque)</th>
+              <th class="px-4 md:px-8 py-4 md:py-8">No. Cheque / Ref.</th>
+              <th class="px-10 py-10 text-right">Monto (Q)</th>
               <th class="px-4 md:px-8 py-4 md:py-8">Comprobante</th>
             </tr>
           </thead>
@@ -134,13 +134,14 @@
             </tr>
             <tr v-for="tx in paginatedTransactions" :key="tx.id + tx.transaction_type" class="hover:bg-white/5 group transition-all duration-500 cursor-pointer">
               <td class="px-4 md:px-8 py-4 md:py-8">
-                <div class="flex items-center gap-6">
-                  <div :class="`w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center transition-all duration-500 shadow-xl ${tx.transaction_type === 'Ingreso' ? 'text-primary group-hover:bg-primary group-hover:shadow-primary/30' : 'text-tertiary group-hover:bg-tertiary group-hover:shadow-tertiary/30'} group-hover:text-white`">
-                    <component :is="tx.transaction_type === 'Ingreso' ? ArrowTrendingUpIcon : ArrowTrendingDownIcon" class="w-8 h-8" />
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg" :class="tx.transaction_type === 'Ingreso' ? 'bg-primary/20 text-primary' : 'bg-tertiary/20 text-tertiary'">
+                    <ArrowDownTrayIcon v-if="tx.transaction_type === 'Ingreso'" class="w-6 h-6" />
+                    <ArrowUpTrayIcon v-else class="w-6 h-6" />
                   </div>
                   <div>
                     <p class="font-black text-lg text-white tracking-tight italic uppercase truncate max-w-[200px]" :title="tx.descripcion || tx.transaction_type">{{ tx.descripcion || tx.transaction_type }}</p>
-                    <p class="text-[10px] font-bold text-white/30 mt-1 uppercase tracking-widest">{{ formatDate(tx.fecha_ingreso || tx.fecha_egreso) }}</p>
+                    <p class="text-[10px] font-bold text-white/30 mt-1 uppercase tracking-widest">{{ tx.proyecto_nombre || 'Múltiples / General' }} | {{ formatDate(tx.fecha_ingreso || tx.fecha_egreso) }}</p>
                   </div>
                 </div>
               </td>
@@ -149,7 +150,7 @@
                 <span class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-1 block">{{ tx.pagador || tx.beneficiario || 'N/A' }}</span>
               </td>
               <td class="px-4 md:px-8 py-4 md:py-8">
-                <span class="text-sm font-bold text-white/40 uppercase tracking-widest">{{ tx.proyecto_nombre || 'Múltiples / General' }}</span>
+                <p class="font-bold text-white text-sm">{{ tx.numero_cheque || '—' }}</p>
               </td>
               <td :class="`px-10 py-10 text-right font-black italic text-2xl ${tx.transaction_type === 'Ingreso' ? 'text-primary shadow-[0_0_15px_#6366f130]' : 'text-tertiary shadow-[0_0_15px_#f43f5e30]'}`">
                 {{ tx.transaction_type === 'Ingreso' ? '+' : '-' }}Q{{ Number(tx.monto).toLocaleString('en-US', {minimumFractionDigits: 2}) }}
@@ -353,6 +354,11 @@
             </div>
 
             <div class="space-y-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">A Nombre De (Cheque) *</label>
+              <input v-model="formExpense.beneficiario" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Nombre en el cheque..." />
+            </div>
+
+            <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Comprobante Digital</label>
               <input type="file" @change="handleFileUpload" accept="image/*,.pdf" class="w-full text-white/60 file:mr-4 file:py-4 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer" />
             </div>
@@ -438,7 +444,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { 
   WalletIcon, ArrowTrendingUpIcon, ClockIcon, ArrowTrendingDownIcon,
   BanknotesIcon, ArchiveBoxIcon, UserIcon, PlusIcon, DocumentArrowDownIcon, 
-  EllipsisVerticalIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon, XMarkIcon, TrashIcon
+  EllipsisVerticalIcon, ChevronLeftIcon, ChevronRightIcon, DocumentTextIcon, XMarkIcon, TrashIcon, ArrowDownTrayIcon, ArrowUpTrayIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 import api from '../../services/api';
@@ -628,7 +634,11 @@ const filteredTransactions = computed(() => {
       (tx.pagador && tx.pagador.toLowerCase().includes(s)) ||
       (tx.beneficiario && tx.beneficiario.toLowerCase().includes(s)) ||
       (tx.proyecto_nombre && tx.proyecto_nombre.toLowerCase().includes(s)) ||
-      (tx.transaction_type.toLowerCase().includes(s))
+      (tx.transaction_type.toLowerCase().includes(s)) ||
+      (tx.numero_cheque && tx.numero_cheque.toLowerCase().includes(s)) ||
+      (tx.contratista_empresa && tx.contratista_empresa.toLowerCase().includes(s)) ||
+      (tx.contratista_nombre && tx.contratista_nombre.toLowerCase().includes(s)) ||
+      (tx.contratista_representante && tx.contratista_representante.toLowerCase().includes(s))
     );
   }
   return result;

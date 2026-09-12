@@ -89,4 +89,16 @@ class MechanicRecordController extends Controller
             Response::json(['success' => false, 'message' => $e->getMessage()], $code);
         }
     }
+
+    #[Route('/mechanic-records/vehicle-statement/{placa}', 'GET')]
+    #[Authorize]
+    public function vehicleStatement(string $placa): void
+    {
+        try {
+            Response::json(['success' => true, 'data' => $this->service->getVehicleStatement(urldecode($placa))]);
+        } catch (Exception $e) {
+            $code = ($e->getCode() >= 400 && $e->getCode() < 600) ? $e->getCode() : 500;
+            Response::json(['success' => false, 'message' => $e->getMessage()], $code);
+        }
+    }
 }

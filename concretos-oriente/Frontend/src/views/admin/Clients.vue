@@ -138,7 +138,8 @@
             <tr class="text-[10px] font-extrabold text-white/30 uppercase tracking-widest border-b border-white/5 bg-white/5">
               <th class="px-8 py-5">Empresa / Cliente</th>
               <th class="px-8 py-5">Contacto Principal</th>
-              <th class="px-8 py-5 text-center">Proyectos Activos</th>
+              <th class="px-8 py-5">Teléfono / Dirección</th>
+              <th class="px-8 py-5 text-center">Proyectos</th>
               <th class="px-8 py-5 text-center">Estado</th>
               <th class="px-8 py-5 text-right">Monto Cartera</th>
               <th class="px-8 py-5 text-right">Acciones</th>
@@ -146,10 +147,10 @@
           </thead>
           <tbody class="divide-y divide-white/5">
             <tr v-if="loading">
-              <td colspan="6" class="px-8 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Cargando...</td>
+              <td colspan="7" class="px-8 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Cargando...</td>
             </tr>
             <tr v-else-if="currentItems.length === 0">
-              <td colspan="6" class="px-8 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">
+              <td colspan="7" class="px-8 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">
                 No se han encontrado registros en el directorio de clientes.
               </td>
             </tr>
@@ -181,6 +182,18 @@
                 <p class="text-[10px] font-medium text-white/40 lowercase mt-1">{{ c.email || 'N/A' }}</p>
               </td>
 
+              <!-- Phone and Address -->
+              <td class="px-8 py-5">
+                <div class="flex items-center gap-2 mb-2">
+                  <PhoneIcon class="w-3 h-3 text-primary shrink-0" />
+                  <p class="font-extrabold text-[11px] text-white/70">{{ c.phone || 'No registrado' }}</p>
+                </div>
+                <div class="flex items-start gap-2">
+                  <MapPinIcon class="w-3 h-3 text-primary shrink-0 mt-0.5" />
+                  <p class="text-[10px] font-medium text-white/40 uppercase tracking-widest line-clamp-2 max-w-[200px]" :title="c.address">{{ c.address || 'Sin dirección' }}</p>
+                </div>
+              </td>
+
               <!-- Active projects count -->
               <td class="px-8 py-5 text-center">
                 <span class="inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full bg-white/5 border border-white/5 text-xs font-black italic text-primary">
@@ -209,6 +222,13 @@
               <!-- Action toggles -->
               <td class="px-8 py-5 text-right">
                 <div class="flex items-center justify-end gap-1.5">
+                  <button 
+                    @click="openStatement(c)"
+                    title="Estado de Cuenta"
+                    class="p-2 bg-white/5 hover:bg-white/10 text-white/65 hover:text-amber-400 rounded-xl border border-white/5 transition-all"
+                  >
+                    <DocumentTextIcon class="w-3.5 h-3.5" />
+                  </button>
                   <button 
                     @click="openDrawer('detail', c)"
                     title="Ver detalles"
@@ -517,6 +537,73 @@
         </div>
       </div>
     </transition>
+
+    <!-- Modal: Estado de Cuenta -->
+    <transition name="fade">
+      <div v-if="showStatementModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeStatement"></div>
+        <div class="relative w-full max-w-4xl glass-card rounded-[32px] overflow-hidden border border-white/10 shadow-2xl flex flex-col max-h-[90vh]">
+          
+          <div class="p-6 md:p-8 border-b border-white/5 flex items-center justify-between sticky top-0 bg-slate-950/80 backdrop-blur-md z-10">
+            <div>
+              <h3 class="text-2xl font-black text-white italic tracking-tighter uppercase">Estado de Cuenta</h3>
+              <p class="text-xs font-bold text-white/40 uppercase tracking-widest mt-1">
+                Cliente: <span class="text-white">{{ selectedClientForStatement?.company_name }}</span>
+              </p>
+            </div>
+            <button @click="closeStatement" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+              <XMarkIcon class="w-6 h-6" />
+            </button>
+          </div>
+
+          <div class="p-6 md:p-8 overflow-y-auto">
+            <div v-if="loadingStatement" class="text-center py-10 text-white/50 text-xs font-bold uppercase tracking-widest">
+              Cargando registros...
+            </div>
+            <div v-else-if="statementData.length === 0" class="text-center py-16 text-white/40 font-black uppercase tracking-widest text-xs">
+              El cliente no tiene bitácoras registradas.
+            </div>
+            <div v-else class="space-y-6">
+              
+              <div class="glass-card p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between">
+                <span class="text-xs font-black uppercase tracking-widest text-emerald-400">Total Facturable</span>
+                <span class="text-3xl font-black italic tracking-tighter text-white">
+                  Q {{ totalStatementAmount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
+                </span>
+              </div>
+
+              <div class="overflow-x-auto rounded-2xl border border-white/5">
+                <table class="w-full text-left min-w-[800px]">
+                  <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                      <th class="px-4 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Fecha</th>
+                      <th class="px-4 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Máquina</th>
+                      <th class="px-4 py-4 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Proyecto</th>
+                      <th class="px-4 py-4 text-center text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Horas</th>
+                      <th class="px-4 py-4 text-right text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Precio (Q)</th>
+                      <th class="px-4 py-4 text-right text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Total (Q)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-white/5">
+                    <tr v-for="st in statementData" :key="st.id" class="hover:bg-white/[0.02] transition-colors">
+                      <td class="px-4 py-3 text-xs font-bold text-white/80">{{ st.fecha }}</td>
+                      <td class="px-4 py-3">
+                        <p class="font-black text-xs text-white uppercase">{{ st.maquina_nombre }}</p>
+                        <p class="text-[9px] text-white/40 uppercase">{{ st.codigo_interno }} ({{ st.clasificacion_tipo }})</p>
+                      </td>
+                      <td class="px-4 py-3 text-xs text-primary font-bold">{{ st.proyecto_nombre }}</td>
+                      <td class="px-4 py-3 text-center text-xs font-black text-white">{{ st.horas_trabajadas }}</td>
+                      <td class="px-4 py-3 text-right text-xs text-white/70">{{ Number(st.precio_renta).toLocaleString('en-US', {minimumFractionDigits: 2}) }}</td>
+                      <td class="px-4 py-3 text-right text-sm font-black text-white">{{ Number(st.total_renta).toLocaleString('en-US', {minimumFractionDigits: 2}) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -524,7 +611,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { 
   UsersIcon, UserPlusIcon, BriefcaseIcon, MagnifyingGlassIcon, 
-  ArrowTrendingUpIcon, TrashIcon, PencilIcon, 
+  ArrowTrendingUpIcon, TrashIcon, PencilIcon, DocumentTextIcon,
   EyeIcon, EnvelopeIcon, PhoneIcon, MapPinIcon, XMarkIcon, 
   ChevronLeftIcon, ChevronRightIcon, CurrencyDollarIcon
 } from '@heroicons/vue/24/outline';
@@ -543,6 +630,11 @@ const statusFilter = ref('all');
 const isDrawerOpen = ref(false);
 const drawerMode = ref('create');
 
+const showStatementModal = ref(false);
+const selectedClientForStatement = ref(null);
+const statementData = ref([]);
+const loadingStatement = ref(false);
+
 const formClient = ref({
   id: null,
   company_name: '',
@@ -557,6 +649,29 @@ const formClient = ref({
 
 const currentPage = ref(1);
 const itemsPerPage = 10;
+
+const openStatement = async (client) => {
+  selectedClientForStatement.value = client;
+  showStatementModal.value = true;
+  loadingStatement.value = true;
+  statementData.value = [];
+  try {
+    const res = await fetch(`${BASE_URL}/clients/${client.id}/machinery-statement`);
+    const data = await res.json();
+    if (data.status === 'success') {
+      statementData.value = data.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  loadingStatement.value = false;
+};
+
+const closeStatement = () => {
+  showStatementModal.value = false;
+  selectedClientForStatement.value = null;
+  statementData.value = [];
+};
 
 const fetchClients = async () => {
   loading.value = true;
@@ -593,6 +708,10 @@ const totalPages = computed(() => Math.max(1, Math.ceil(filteredClients.value.le
 const currentItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredClients.value.slice(start, start + itemsPerPage);
+});
+
+const totalStatementAmount = computed(() => {
+  return statementData.value.reduce((acc, curr) => acc + Number(curr.total_renta), 0);
 });
 
 const kpis = computed(() => {

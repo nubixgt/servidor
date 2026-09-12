@@ -100,6 +100,7 @@
                 <th class="px-6 py-5">Placa / Unidad</th>
                 <th class="px-6 py-5">Piloto</th>
                 <th class="px-6 py-5">Proyecto(s)</th>
+                <th class="px-6 py-5">Pago / Lugar</th>
                 <th class="px-6 py-5 text-right">Precio/Gal</th>
                 <th class="px-6 py-5 text-right">Galones</th>
                 <th class="px-6 py-5 text-right">Monto</th>
@@ -109,7 +110,7 @@
             </thead>
             <tbody class="divide-y divide-white/5">
               <tr v-if="filteredList.length === 0">
-                <td colspan="9" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros con el filtro aplicado.</td>
+                <td colspan="10" class="px-6 py-16 text-center text-white/30 font-black uppercase tracking-widest text-xs">Sin registros con el filtro aplicado.</td>
               </tr>
               <tr v-else v-for="r in filteredList" :key="r.id" class="hover:bg-white/[0.015] transition-colors">
                 <td class="px-6 py-4">
@@ -132,6 +133,10 @@
                     </span>
                   </div>
                   <span v-else class="text-xs font-bold text-white/70">{{ r.proyecto_nombre || '—' }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <p class="text-xs font-bold text-white/80">{{ r.forma_pago || '—' }}</p>
+                  <p class="text-[9px] font-black text-white/40 uppercase">{{ r.lugar || '—' }}</p>
                 </td>
                 <td class="px-6 py-4 text-right">
                   <span v-if="r.precio_galon" class="text-xs font-bold text-amber-400">Q {{ Number(r.precio_galon).toFixed(2) }}</span>
@@ -272,6 +277,23 @@
                   <input v-model="form.monto" @input="onMontoChange" type="number" min="0" step="0.01" required placeholder="0.00"
                     class="w-full h-12 pl-8 pr-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-emerald-400" />
                 </div>
+              </div>
+
+              <!-- Forma de Pago -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Forma de Pago <span class="text-rose-400">*</span></label>
+                <select v-model="form.forma_pago" required
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white appearance-none">
+                  <option value="Contado" class="bg-slate-900 text-white">Contado</option>
+                  <option value="Credito" class="bg-slate-900 text-white">Crédito</option>
+                </select>
+              </div>
+
+              <!-- Lugar (Gasolinera) -->
+              <div class="space-y-2">
+                <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Lugar (Gasolinera) <span class="text-rose-400">*</span></label>
+                <input v-model="form.lugar" type="text" required placeholder="Ej. Gasolinera X"
+                  class="w-full h-12 px-4 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white uppercase" />
               </div>
 
               <!-- Kilometraje (solo Vehiculo / Transporte Pesado) -->
@@ -569,6 +591,8 @@ const form = ref({
   precio_galon: '',
   cantidad_galones: '',
   monto: '',
+  forma_pago: 'Contado',
+  lugar: '',
   kilometraje: '',
   horometro: ''
 });
@@ -661,6 +685,8 @@ const detailFields = computed(() => {
     { label: 'Placa',        value: r.placa },
     { label: 'Unidad',       value: r.tipo_unidad },
     { label: 'Piloto',       value: r.piloto_nombre || '—' },
+    { label: 'Forma de Pago', value: r.forma_pago || '—' },
+    { label: 'Lugar',        value: r.lugar || '—' },
     { label: 'Precio/Galón', value: r.precio_galon ? `Q ${Number(r.precio_galon).toFixed(2)}` : '—' },
     { label: 'Galones',      value: `${Number(r.cantidad_galones).toFixed(2)} gal` },
     { label: 'Monto Total',  value: `Q ${Number(r.monto).toLocaleString('en-US', { minimumFractionDigits: 2 })}` },
@@ -848,6 +874,8 @@ const resetForm = () => {
     precio_galon: '',
     cantidad_galones: '',
     monto: '',
+    forma_pago: 'Contado',
+    lugar: '',
     kilometraje: '',
     horometro: ''
   };
@@ -870,6 +898,8 @@ const startEdit = (r) => {
     precio_galon:     r.precio_galon || '',
     cantidad_galones: r.cantidad_galones,
     monto:            r.monto,
+    forma_pago:       r.forma_pago || 'Contado',
+    lugar:            r.lugar || '',
     kilometraje:      r.kilometraje || '',
     horometro:        r.horometro || '',
   };
@@ -918,8 +948,8 @@ const onPhotoChange = (e, key) => {
 };
 
 const submitForm = async () => {
-  if (!form.value.fecha || !form.value.placa || !form.value.cantidad_galones || !form.value.monto) {
-    toast('Fecha, placa, galones y monto son obligatorios.', 'warning');
+  if (!form.value.fecha || !form.value.placa || !form.value.cantidad_galones || !form.value.monto || !form.value.forma_pago || !form.value.lugar) {
+    toast('Fecha, placa, galones, monto, forma de pago y lugar son obligatorios.', 'warning');
     return;
   }
 
