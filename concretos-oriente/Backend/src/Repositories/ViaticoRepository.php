@@ -21,11 +21,15 @@ class ViaticoRepository
             $sql = "CREATE TABLE IF NOT EXISTS `viaticos` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `personnel_id` int(10) UNSIGNED NOT NULL,
+              `periodo` varchar(7) DEFAULT NULL,
+              `dias_detalle` json DEFAULT NULL,
+              `total_tiempos` int(11) DEFAULT 0,
+              `valor_viatico` decimal(15,2) DEFAULT 0.00,
               `fecha_solicitud` date NOT NULL,
               `fecha_inicio` date DEFAULT NULL,
               `fecha_fin` date DEFAULT NULL,
               `monto` decimal(15,2) NOT NULL DEFAULT 0.00,
-              `motivo` varchar(255) NOT NULL,
+              `motivo` varchar(255) DEFAULT NULL,
               `estado` varchar(50) DEFAULT 'Pendiente',
               `observaciones` text DEFAULT NULL,
               `created_at` timestamp NULL DEFAULT current_timestamp(),
@@ -34,6 +38,13 @@ class ViaticoRepository
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
             $this->pdo->exec($sql);
+
+            // Auto-migrate new columns
+            $this->pdo->exec("ALTER TABLE `viaticos` ADD COLUMN IF NOT EXISTS `periodo` VARCHAR(7) DEFAULT NULL AFTER `personnel_id`");
+            $this->pdo->exec("ALTER TABLE `viaticos` ADD COLUMN IF NOT EXISTS `dias_detalle` JSON DEFAULT NULL AFTER `periodo`");
+            $this->pdo->exec("ALTER TABLE `viaticos` ADD COLUMN IF NOT EXISTS `total_tiempos` INT(11) DEFAULT 0 AFTER `dias_detalle`");
+            $this->pdo->exec("ALTER TABLE `viaticos` ADD COLUMN IF NOT EXISTS `valor_viatico` DECIMAL(15,2) DEFAULT 0.00 AFTER `total_tiempos`");
+            $this->pdo->exec("ALTER TABLE `viaticos` MODIFY COLUMN `motivo` VARCHAR(255) DEFAULT NULL");
         } catch (Exception $e) {
             error_log('Error en auto-migración viaticos: ' . $e->getMessage());
         }
@@ -64,19 +75,23 @@ class ViaticoRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO viaticos
-                    (personnel_id, fecha_solicitud, fecha_inicio, fecha_fin, monto, motivo, estado, observaciones)
+                    (personnel_id, periodo, dias_detalle, total_tiempos, valor_viatico, fecha_solicitud, fecha_inicio, fecha_fin, monto, motivo, estado, observaciones)
                 VALUES
-                    (:personnel_id, :fecha_solicitud, :fecha_inicio, :fecha_fin, :monto, :motivo, :estado, :observaciones)";
+                    (:personnel_id, :periodo, :dias_detalle, :total_tiempos, :valor_viatico, :fecha_solicitud, :fecha_inicio, :fecha_fin, :monto, :motivo, :estado, :observaciones)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'personnel_id'    => $data['personnel_id'],
-            'fecha_solicitud' => $data['fecha_solicitud'],
-            'fecha_inicio'    => $data['fecha_inicio'] ?: null,
-            'fecha_fin'       => $data['fecha_fin'] ?: null,
+            'periodo'         => $data['periodo'] ?? null,
+            'dias_detalle'    => isset($data['dias_detalle']) ? json_encode($data['dias_detalle']) : null,
+            'total_tiempos'   => $data['total_tiempos'] ?? 0,
+            'valor_viatico'   => $data['valor_viatico'] ?? 0,
+            'fecha_solicitud' => $data['fecha_solicitud'] ?? date('Y-m-d'),
+            'fecha_inicio'    => $data['fecha_inicio'] ?? null,
+            'fecha_fin'       => $data['fecha_fin'] ?? null,
             'monto'           => $data['monto'],
-            'motivo'          => $data['motivo'],
-            'estado'          => $data['estado'] ?? 'Pendiente',
+            'motivo'          => $data['motivo'] ?? 'Viáticos',
+            'estado'          => $data['estado'] ?? 'Aprobado',
             'observaciones'   => $data['observaciones'] ?? null,
         ]);
 
@@ -87,6 +102,10 @@ class ViaticoRepository
     {
         $sql = "UPDATE viaticos SET
                     personnel_id = :personnel_id,
+                    periodo = :periodo,
+                    dias_detalle = :dias_detalle,
+                    total_tiempos = :total_tiempos,
+                    valor_viatico = :valor_viatico,
                     fecha_solicitud = :fecha_solicitud,
                     fecha_inicio = :fecha_inicio,
                     fecha_fin = :fecha_fin,
@@ -99,12 +118,16 @@ class ViaticoRepository
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'personnel_id'    => $data['personnel_id'],
-            'fecha_solicitud' => $data['fecha_solicitud'],
-            'fecha_inicio'    => $data['fecha_inicio'] ?: null,
-            'fecha_fin'       => $data['fecha_fin'] ?: null,
+            'periodo'         => $data['periodo'] ?? null,
+            'dias_detalle'    => isset($data['dias_detalle']) ? json_encode($data['dias_detalle']) : null,
+            'total_tiempos'   => $data['total_tiempos'] ?? 0,
+            'valor_viatico'   => $data['valor_viatico'] ?? 0,
+            'fecha_solicitud' => $data['fecha_solicitud'] ?? date('Y-m-d'),
+            'fecha_inicio'    => $data['fecha_inicio'] ?? null,
+            'fecha_fin'       => $data['fecha_fin'] ?? null,
             'monto'           => $data['monto'],
-            'motivo'          => $data['motivo'],
-            'estado'          => $data['estado'] ?? 'Pendiente',
+            'motivo'          => $data['motivo'] ?? 'Viáticos',
+            'estado'          => $data['estado'] ?? 'Aprobado',
             'observaciones'   => $data['observaciones'] ?? null,
             'id'              => $id
         ]);

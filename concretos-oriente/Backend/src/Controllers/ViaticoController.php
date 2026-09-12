@@ -33,18 +33,22 @@ class ViaticoController extends Controller
             $raw = file_get_contents('php://input');
             $body = json_decode($raw, true) ?: $_POST;
 
-            if (empty($body['personnel_id']) || empty($body['monto']) || empty($body['motivo'])) {
+            if (empty($body['personnel_id']) || empty($body['monto'])) {
                 throw new Exception('Faltan campos obligatorios.', 400);
             }
 
             $data = [
                 'personnel_id'    => (int)$body['personnel_id'],
+                'periodo'         => $body['periodo'] ?? null,
+                'dias_detalle'    => $body['dias_detalle'] ?? null,
+                'total_tiempos'   => (int)($body['total_tiempos'] ?? 0),
+                'valor_viatico'   => (float)($body['valor_viatico'] ?? 0),
                 'fecha_solicitud' => $body['fecha_solicitud'] ?? date('Y-m-d'),
                 'fecha_inicio'    => $body['fecha_inicio'] ?? null,
                 'fecha_fin'       => $body['fecha_fin'] ?? null,
                 'monto'           => (float)$body['monto'],
-                'motivo'          => trim($body['motivo']),
-                'estado'          => trim($body['estado'] ?? 'Pendiente'),
+                'motivo'          => trim($body['motivo'] ?? 'Viáticos del Mes'),
+                'estado'          => trim($body['estado'] ?? 'Aprobado'),
                 'observaciones'   => trim($body['observaciones'] ?? ''),
             ];
 
@@ -63,24 +67,28 @@ class ViaticoController extends Controller
     }
 
     #[Route('/viaticos/{id}', 'PUT')]
-    public function update(int $id)
+    public function update($id)
     {
         try {
             $raw = file_get_contents('php://input');
-            $body = json_decode($raw, true) ?: [];
+            $body = json_decode($raw, true) ?: $_POST;
 
-            if (empty($body['personnel_id']) || empty($body['monto']) || empty($body['motivo'])) {
+            if (empty($body['personnel_id']) || empty($body['monto'])) {
                 throw new Exception('Faltan campos obligatorios.', 400);
             }
 
             $data = [
                 'personnel_id'    => (int)$body['personnel_id'],
+                'periodo'         => $body['periodo'] ?? null,
+                'dias_detalle'    => $body['dias_detalle'] ?? null,
+                'total_tiempos'   => (int)($body['total_tiempos'] ?? 0),
+                'valor_viatico'   => (float)($body['valor_viatico'] ?? 0),
                 'fecha_solicitud' => $body['fecha_solicitud'] ?? date('Y-m-d'),
                 'fecha_inicio'    => $body['fecha_inicio'] ?? null,
                 'fecha_fin'       => $body['fecha_fin'] ?? null,
                 'monto'           => (float)$body['monto'],
-                'motivo'          => trim($body['motivo']),
-                'estado'          => trim($body['estado'] ?? 'Pendiente'),
+                'motivo'          => trim($body['motivo'] ?? 'Viáticos del Mes'),
+                'estado'          => trim($body['estado'] ?? 'Aprobado'),
                 'observaciones'   => trim($body['observaciones'] ?? ''),
             ];
 
@@ -88,7 +96,7 @@ class ViaticoController extends Controller
 
             $this->json([
                 'status'  => 'success',
-                'message' => 'Viático actualizado correctamente'
+                'message' => 'Viático actualizado exitosamente'
             ]);
         } catch (Exception $e) {
             $code = $e->getCode() ?: 500;

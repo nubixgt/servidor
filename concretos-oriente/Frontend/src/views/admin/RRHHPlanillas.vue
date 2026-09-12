@@ -510,6 +510,10 @@
                     <span class="font-black text-sm text-white uppercase tracking-wider">Total a Pagar:</span>
                     <span class="font-black text-2xl text-emerald-400">Q {{ formatCurrency(payrollCalculations.totalPagar) }}</span>
                   </div>
+                  <div class="pt-1 flex justify-between items-center text-white/50">
+                    <span class="font-black text-xs uppercase tracking-wider">Valor Líquido (Sin Viáticos):</span>
+                    <span class="font-black text-lg">Q {{ formatCurrency(payrollCalculations.totalPagar - payrollCalculations.montoViaticos) }}</span>
+                  </div>
                 </div>
               </div>
 
@@ -622,9 +626,16 @@
                 </div>
                 <span class="font-bold text-slate-800">+Q {{ formatCurrency(selectedReceipt.monto_extra) }}</span>
               </div>
-              <div class="p-4 flex justify-between items-center bg-emerald-50 text-emerald-950">
-                <span class="font-black text-sm uppercase">Total Líquido a Recibir</span>
-                <span class="font-black text-xl text-emerald-700">Q {{ formatCurrency(selectedReceipt.total_pagar) }}</span>
+              <div class="p-3 flex justify-between items-center bg-slate-100 text-slate-800">
+                <span class="font-black text-sm uppercase">Total a Pagar en el Mes</span>
+                <span class="font-black text-lg">Q {{ formatCurrency(selectedReceipt.total_pagar) }}</span>
+              </div>
+              <div class="p-4 flex flex-col justify-center items-end bg-emerald-50 text-emerald-950">
+                <div class="w-full flex justify-between items-center">
+                  <span class="font-black text-sm uppercase">Valor a Pagar (Líquido)</span>
+                  <span class="font-black text-2xl text-emerald-700">Q {{ formatCurrency(Number(selectedReceipt.total_pagar) - Number(selectedReceipt.monto_viaticos || 0)) }}</span>
+                </div>
+                <p class="text-[9px] text-emerald-700/60 font-bold uppercase tracking-wider mt-1 text-right max-w-[80%]">(Base + Horas + Extras) No se suman viáticos. Los viáticos se pagan por separado.</p>
               </div>
             </div>
           </div>
