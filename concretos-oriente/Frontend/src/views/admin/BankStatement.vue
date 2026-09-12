@@ -16,7 +16,7 @@
     </div>
 
     <!-- Filtros -->
-    <div class="glass-card p-6 rounded-[32px] border border-white/10 flex flex-wrap gap-4 items-center">
+    <div class="glass-card p-6 rounded-[32px] border border-white/10 flex flex-wrap gap-4 items-end">
       <div class="flex-1 min-w-[250px]">
         <label class="text-[10px] font-black uppercase tracking-wider text-white/50 mb-2 block">Búsqueda</label>
         <div class="relative">
@@ -28,6 +28,16 @@
             class="w-full bg-black/20 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-colors"
           />
         </div>
+      </div>
+      <div class="min-w-[220px]">
+        <label class="text-[10px] font-black uppercase tracking-wider text-white/50 mb-2 block">Cuenta de Banco</label>
+        <select
+          v-model="selectedBank"
+          class="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none"
+        >
+          <option value="">Todas las cuentas</option>
+          <option v-for="banco in banks" :key="banco" :value="banco">{{ banco }}</option>
+        </select>
       </div>
     </div>
 
@@ -101,6 +111,7 @@ import api from '../../services/api';
 const loading = ref(true);
 const data = ref([]);
 const searchTerm = ref('');
+const selectedBank = ref('');
 const banks = ref([]);
 
 const fetchData = async () => {
@@ -133,14 +144,23 @@ const extractBanks = () => {
 };
 
 const filteredData = computed(() => {
-  if (!searchTerm.value) return data.value;
-  const term = searchTerm.value.toLowerCase();
-  return data.value.filter(r => 
-    (r.nombre || '').toLowerCase().includes(term) ||
-    (r.proyecto || '').toLowerCase().includes(term) ||
-    (`${r.prefix}${r.id}`).toLowerCase().includes(term) ||
-    (r.descripcion || '').toLowerCase().includes(term)
-  );
+  let result = data.value;
+
+  if (selectedBank.value) {
+    result = result.filter(r => r.banco === selectedBank.value);
+  }
+
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase();
+    result = result.filter(r =>
+      (r.nombre || '').toLowerCase().includes(term) ||
+      (r.proyecto || '').toLowerCase().includes(term) ||
+      (`${r.prefix}${r.id}`).toLowerCase().includes(term) ||
+      (r.descripcion || '').toLowerCase().includes(term)
+    );
+  }
+
+  return result;
 });
 
 const getAmountFormatted = (row, banco) => {
