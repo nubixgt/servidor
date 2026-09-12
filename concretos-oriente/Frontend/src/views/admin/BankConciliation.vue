@@ -54,9 +54,6 @@
           <div class="w-12 h-12 rounded-2xl bg-primary/20 text-primary border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/20">
             <CreditCardIcon class="w-6 h-6" />
           </div>
-          <span class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <ArrowTrendingUpIcon class="w-3 h-3" /> +12%
-          </span>
         </div>
         <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Saldo Total</p>
         <h3 class="text-2xl md:text-3xl font-black italic tracking-tighter mt-1" :class="totalBalance >= 0 ? 'text-white' : 'text-rose-400'">
@@ -91,9 +88,6 @@
           <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-500/20">
             <ArrowTrendingUpIcon class="w-6 h-6" />
           </div>
-          <span class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <ArrowTrendingUpIcon class="w-3 h-3" /> +8%
-          </span>
         </div>
         <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Ingresos (Mes)</p>
         <h3 class="text-2xl md:text-3xl font-black text-emerald-400 italic tracking-tighter mt-1">
@@ -109,9 +103,6 @@
           <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center shadow-lg shadow-rose-500/20">
             <ArrowTrendingDownIcon class="w-6 h-6" />
           </div>
-          <span class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
-            <ArrowTrendingDownIcon class="w-3 h-3" /> +5%
-          </span>
         </div>
         <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Egresos (Mes)</p>
         <h3 class="text-2xl md:text-3xl font-black text-rose-400 italic tracking-tighter mt-1">
@@ -1114,7 +1105,7 @@ const monthlyIncomesTotal = computed(() => {
       const d = new Date(tx.date);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     })
-    .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0) || 125600; // default realistic fallback if empty
+    .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0);
 });
 
 const monthlyExpensesTotal = computed(() => {
@@ -1126,7 +1117,7 @@ const monthlyExpensesTotal = computed(() => {
       const d = new Date(tx.date);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     })
-    .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0) || 129400; // default realistic fallback if empty
+    .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0);
 });
 
 const currentDateFormatted = computed(() => {
