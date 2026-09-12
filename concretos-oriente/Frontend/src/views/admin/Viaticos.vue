@@ -294,7 +294,7 @@ const promptTiempos = async (day) => {
 const onEmployeeSelect = () => {
   const emp = personnelList.value.find(p => p.id === form.value.personnel_id);
   if (emp) {
-    form.value.valor_viatico = Number(emp.monto_viaticos || 0);
+    form.value.valor_viatico = Number(emp.diario_viaticos || 0);
   }
 };
 
