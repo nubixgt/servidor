@@ -40,6 +40,7 @@ const routes = [
             { path: 'concrete-control', name: 'ConcreteControl', component: () => import('../views/admin/ConcreteControl.vue') },
 
             { path: 'users', name: 'Users', component: () => import('../views/admin/Users.vue') },
+            { path: 'roles', name: 'RolesPermissions', component: () => import('../views/admin/RolesPermissions.vue') },
             { path: 'tech-machinery', name: 'MachineryStatus', component: () => import('../views/tecnico/MachineryStatus.vue') },
             { path: 'tech-projects', name: 'TechProjects', component: () => import('../views/tecnico/TechProjects.vue') },
             { path: 'bank-conciliation', name: 'BankConciliation', component: () => import('../views/admin/BankConciliation.vue'), meta: { requiresRole: 'admin' } },
