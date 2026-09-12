@@ -7,9 +7,9 @@
           <UserGroupIcon class="w-10 h-10 text-primary" />
         </div>
         <div>
-          <h1 class="text-3xl font-black text-white tracking-tight">Gestión de Usuarios</h1>
+          <h1 class="text-3xl font-black text-white tracking-tight">Configuración y Administración</h1>
           <p class="text-white/50 mt-1 font-medium flex items-center gap-2 text-sm uppercase tracking-widest">
-            <ShieldCheckIcon class="w-4 h-4" /> Control de Accesos
+            <ShieldCheckIcon class="w-4 h-4" /> Gestión de Accesos
           </p>
         </div>
       </div>
@@ -17,6 +17,16 @@
         <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
         <PlusIcon class="w-6 h-6 relative z-10" />
         <span class="relative z-10">Nuevo Usuario</span>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-white/10 mb-8 overflow-x-auto pb-px scrollbar-hide">
+      <button class="px-4 py-3 text-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap">
+        USUARIOS ({{ users.length }})
+      </button>
+      <button @click="$router.push('/roles')" class="px-4 py-3 text-sm font-bold text-white/50 hover:text-white transition whitespace-nowrap">
+        ROLES Y PERMISOS
       </button>
     </div>
 
