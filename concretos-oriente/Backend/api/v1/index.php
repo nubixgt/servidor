@@ -33,6 +33,7 @@ use App\Controllers\MechanicRecordController;
 use App\Controllers\ContractorController;
 use App\Controllers\ViaticoController;
 use App\Controllers\RoleController;
+use App\Controllers\DashboardController;
 
 // Backend/api/v1/index.php
 
@@ -94,6 +95,7 @@ $router->registerController(MechanicRecordController::class);
 $router->registerController(ContractorController::class);
 $router->registerController(ViaticoController::class);
 $router->registerController(RoleController::class);
+$router->registerController(DashboardController::class);
 
 
 
