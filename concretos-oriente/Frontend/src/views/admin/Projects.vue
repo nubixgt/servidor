@@ -366,6 +366,43 @@
                 </div>
               </div>
 
+              <!-- Historial Financiero (Ingresos y Egresos) -->
+              <div class="bg-white/5 p-5 rounded-3xl border border-white/5 space-y-4">
+                <div class="flex justify-between items-center pb-3 border-b border-white/10">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                    <ChartBarIcon class="w-4 h-4 text-emerald-400" /> Ingresos y Egresos del Proyecto
+                  </p>
+                  <button @click="openHistoryModal(selectedProject)" class="text-[10px] bg-primary/20 hover:bg-primary/40 text-primary px-3 py-1.5 rounded-lg font-black uppercase tracking-widest transition-colors border border-primary/30">
+                    Ver Todo
+                  </button>
+                </div>
+                
+                <div v-if="loadingProjectFinances" class="flex justify-center py-4">
+                  <div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <div v-else-if="!projectFinances.length" class="text-center py-4 text-[10px] text-white/30 uppercase tracking-widest font-bold">
+                  No hay movimientos registrados
+                </div>
+                <div v-else class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                  <div v-for="(item, idx) in projectFinances" :key="idx" class="bg-black/30 p-3 rounded-xl border border-white/5 flex justify-between items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1">
+                        <span :class="['px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest', item.type.includes('Ingreso') ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400']">
+                          {{ item.type }}
+                        </span>
+                        <span class="text-[9px] text-white/40 font-mono">{{ item.date ? item.date.split(' ')[0] : 'S/F' }}</span>
+                      </div>
+                      <p class="text-xs text-white font-bold truncate" :title="item.detail">{{ item.detail }}</p>
+                    </div>
+                    <div class="shrink-0 text-right">
+                      <p :class="['text-xs font-black italic whitespace-nowrap', item.type.includes('Ingreso') ? 'text-emerald-400' : 'text-rose-400']">
+                        {{ item.type.includes('Ingreso') ? '+' : '-' }} Q {{ formatCurrency(item.amount) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Fechas -->
               <div class="grid grid-cols-3 gap-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <div>
@@ -1445,11 +1482,33 @@ const parseJson = (raw) => {
   }
 };
 
+const projectFinances = ref([]);
+const loadingProjectFinances = ref(false);
+
+const fetchProjectFinances = async (id) => {
+  loadingProjectFinances.value = true;
+  projectFinances.value = [];
+  try {
+    const res = await fetch(`${BASE_URL}/projects/${id}/finances`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      projectFinances.value = data.data;
+    }
+  } catch (error) {
+    console.error('Error fetching finances:', error);
+  } finally {
+    loadingProjectFinances.value = false;
+  }
+};
+
 const openProjectDetails = (proj) => {
   if (!proj) return;
   selectedProject.value = { ...proj };
   if (proj.id) {
     fetchBudgetExtensions(proj.id);
+    fetchProjectFinances(proj.id);
   }
 };
 

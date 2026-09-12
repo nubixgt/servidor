@@ -36,7 +36,7 @@
 
         <!-- Welcome Message -->
         <div class="max-w-2xl relative">
-          <h2 class="text-3xl font-light text-white/90 mb-2">¡Hola, <span class="font-bold text-white">Elder!</span></h2>
+          <h2 class="text-3xl font-light text-white/90 mb-2">¡Hola, <span class="font-bold text-white">{{ authStore.userName || 'Usuario' }}!</span></h2>
           <p class="text-sm text-white/60 mb-6 font-medium">Aquí tienes el estado actual de tus proyectos</p>
           
           <h1 class="text-5xl md:text-[64px] font-black leading-none tracking-tight mb-4 uppercase drop-shadow-2xl">
@@ -522,6 +522,9 @@ import {
   BellIcon, CalendarIcon, SunIcon
 } from '@heroicons/vue/24/outline';
 import HeaderImg from '../../assets/images/dashboard_header.png';
+import { useAuthStore } from '../../stores/auth';
+
+const authStore = useAuthStore();
 
 const financialData = [
   { month: "Ene", income: 40, expense: 30 },
