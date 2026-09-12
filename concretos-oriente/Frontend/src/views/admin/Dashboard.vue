@@ -5,55 +5,26 @@
     <div class="relative w-full rounded-[40px] overflow-visible">
       <!-- Background Image -->
       <div class="absolute inset-0 rounded-[40px] overflow-hidden">
-        <div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen" style="background-image: url('/src/assets/images/dashboard_header.png');"></div>
+        <div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-screen" :style="{ backgroundImage: `url(${HeaderImg})` }"></div>
         <!-- Gradients to blend -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#050f1a] via-[#050f1a]/80 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#050f1a] via-[#050f1a]/60 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#050f1a] via-transparent to-transparent"></div>
       </div>
 
       <!-- Top Bar / Header Content -->
-      <div class="relative z-10 p-10 pt-8 pb-32">
-        <!-- Top Nav Items (Search, User, Weather) -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
-          
-          <!-- Search Bar -->
-          <div class="relative w-full max-w-md">
-            <MagnifyingGlassIcon class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
-            <input type="text" placeholder="Buscar proyectos, pagos, documentos, personal..." 
-                   class="w-full bg-[#112236]/80 backdrop-blur-md border border-white/10 rounded-full py-3 pl-12 pr-12 text-sm text-white focus:outline-none focus:border-primary/50 shadow-lg placeholder:text-white/30" />
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded-lg bg-white/10 text-[10px] font-mono text-white/50">⌘ K</div>
-          </div>
-
-          <!-- Right Actions -->
-          <div class="flex flex-wrap items-center gap-6">
-            <!-- Notifications -->
-            <button class="relative p-3 rounded-full bg-[#112236]/80 backdrop-blur-md border border-white/10 hover:bg-white/10 transition">
-              <BellIcon class="w-5 h-5 text-white/70" />
-              <span class="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-[9px] font-bold flex items-center justify-center border-2 border-[#112236]">3</span>
-            </button>
-            
-            <!-- User Profile -->
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                EE
-              </div>
-              <div class="hidden sm:block">
-                <p class="text-sm font-bold leading-tight">Elder Elias</p>
-                <p class="text-[11px] text-white/50">Administrador</p>
-              </div>
-            </div>
-
-            <!-- Date -->
-            <div class="hidden lg:flex items-center gap-3 bg-[#112236]/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
+      <div class="relative z-10 p-10 pt-8 pb-20">
+        <!-- User Welcome Section (Removed Search/Profile to avoid duplication with TopBar) -->
+        <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+          <!-- Date and Weather in Header -->
+          <div class="flex flex-col gap-4 ml-auto">
+            <div class="hidden lg:flex items-center gap-3 bg-[#112236]/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 ml-auto">
               <CalendarIcon class="w-5 h-5 text-white/50" />
               <div>
                 <p class="text-[10px] uppercase font-bold tracking-wider text-white/50">Jueves</p>
                 <p class="text-xs font-bold">11 de septiembre de 2026</p>
               </div>
             </div>
-
-            <!-- Weather -->
-            <div class="hidden xl:flex items-center gap-3 bg-[#112236]/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
+            <div class="hidden xl:flex items-center gap-3 bg-[#112236]/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 ml-auto">
               <SunIcon class="w-6 h-6 text-yellow-500" />
               <div>
                 <p class="text-xs font-bold">27°C</p>
@@ -550,6 +521,7 @@ import {
   ClipboardDocumentIcon, BellAlertIcon, ClockIcon, MagnifyingGlassIcon,
   BellIcon, CalendarIcon, SunIcon
 } from '@heroicons/vue/24/outline';
+import HeaderImg from '../../assets/images/dashboard_header.png';
 
 const financialData = [
   { month: "Ene", income: 40, expense: 30 },
