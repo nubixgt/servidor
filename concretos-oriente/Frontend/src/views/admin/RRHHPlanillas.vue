@@ -776,8 +776,12 @@ const payrollCalculations = computed(() => {
   let totalHorasExtras = 0;
   let tarifaHoraExtra = 0;
   if (payrollForm.value.tiene_horas_extras && salarioBase > 0) {
-    const valorHoraNormal = salarioBase / 30 / 8;
-    tarifaHoraExtra = Number((valorHoraNormal * 1.5).toFixed(2));
+    if (emp && emp.tarifa_hora_extra && Number(emp.tarifa_hora_extra) > 0) {
+      tarifaHoraExtra = Number(emp.tarifa_hora_extra);
+    } else {
+      const valorHoraNormal = salarioBase / 30 / 8;
+      tarifaHoraExtra = Number((valorHoraNormal * 1.5).toFixed(2));
+    }
     totalHorasExtras = Number((tarifaHoraExtra * Number(payrollForm.value.horas_extras || 0)).toFixed(2));
   }
 

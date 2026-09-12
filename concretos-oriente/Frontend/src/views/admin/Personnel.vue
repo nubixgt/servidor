@@ -858,13 +858,6 @@
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
-              <!-- Monto Viáticos -->
-              <div class="space-y-2">
-                <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Viáticos (GTQ)</label>
-                <CurrencyInput v-model="formData.diario_viaticos" placeholder="0.00"
-                  class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
-              </div>
-
               <!-- IGSS -->
               <div class="space-y-2" :class="formData.igss === 1 ? 'md:col-span-2' : ''">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">IGSS</label>
@@ -1133,10 +1126,6 @@
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Proyecto Asignado</p>
               <p class="text-base font-semibold text-white/90">{{ selectedEmp.proyecto_nombre || 'Sin asignar' }}</p>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Monto Viáticos</p>
-              <p class="text-base font-semibold text-white/90">{{ selectedEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedEmp.diario_viaticos) : 'No aplica' }}</p>
-            </div>
             <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
               <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Salario Base</p>
               <p class="text-xl font-bold text-white">Q {{ formatCurrency(selectedEmp.salario_base) }}</p>
@@ -1317,12 +1306,6 @@
               <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Tarifa Hora Extra</span>
               <span class="text-sm font-bold text-amber-400">
                 {{ selectedPayrollEmp.tarifa_hora_extra ? 'Q ' + formatCurrency(selectedPayrollEmp.tarifa_hora_extra) + '/hr' : 'No definida' }}
-              </span>
-            </div>
-            <div>
-              <span class="text-[10px] text-white/40 uppercase font-bold tracking-wider block">Monto Viáticos</span>
-              <span class="text-sm font-bold text-sky-400">
-                {{ selectedPayrollEmp.diario_viaticos ? 'Q ' + formatCurrency(selectedPayrollEmp.diario_viaticos) : 'No definido' }}
               </span>
             </div>
           </div>
@@ -1883,7 +1866,6 @@ const selectedPayrollEmp = computed(() => {
 const payrollCalculations = computed(() => {
   const emp = selectedPayrollEmp.value;
   const salarioBase = emp ? parseFloat(emp.salario_base || 0) : 0;
-  const tarifaHoraExtra = emp ? parseFloat(emp.tarifa_hora_extra || 0) : 0;
   const diasTrabajados = parseInt(payrollForm.value.dias_trabajados || 0);
 
   // Pro-rated base salary (salario_base / 30) * dias_trabajados
@@ -1891,6 +1873,15 @@ const payrollCalculations = computed(() => {
 
   // Overtime
   const horasExtras = payrollForm.value.tiene_horas_extras ? Math.max(0, parseFloat(payrollForm.value.horas_extras || 0)) : 0;
+  
+  let tarifaHoraExtra = 0;
+  if (emp && emp.tarifa_hora_extra && parseFloat(emp.tarifa_hora_extra) > 0) {
+    tarifaHoraExtra = parseFloat(emp.tarifa_hora_extra);
+  } else {
+    const valorHoraNormal = salarioBase / 30 / 8;
+    tarifaHoraExtra = parseFloat((valorHoraNormal * 1.5).toFixed(2));
+  }
+  
   const totalHorasExtras = horasExtras * tarifaHoraExtra;
 
   // Viáticos
@@ -1913,11 +1904,6 @@ const payrollCalculations = computed(() => {
 const onPayrollPersonnelChange = () => {
   const emp = selectedPayrollEmp.value;
   if (!emp) return;
-  // If colaborador has diario_viaticos defined, prefill or reset
-  if (emp.diario_viaticos && parseFloat(emp.diario_viaticos) > 0) {
-    payrollForm.value.tiene_viaticos = true;
-    payrollForm.value.monto_viaticos = parseFloat(emp.diario_viaticos) * (payrollForm.value.dias_trabajados || 30);
-  }
   if (emp.tarifa_hora_extra && parseFloat(emp.tarifa_hora_extra) > 0) {
     payrollForm.value.tiene_horas_extras = false;
   }
