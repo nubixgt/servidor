@@ -117,6 +117,7 @@
 import { computed, inject, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import Swal from 'sweetalert2';
 import {
   Squares2X2Icon, UsersIcon, WrenchScrewdriverIcon, BriefcaseIcon,
   BanknotesIcon, ArrowRightOnRectangleIcon,
@@ -227,8 +228,23 @@ const filteredItems = computed(() => {
     });
 });
 
-const handleLogout = () => {
-  authStore.logout();
-  router.push('/login');
+const handleLogout = async () => {
+  const { isConfirmed } = await Swal.fire({
+    background: '#0f172a',
+    color: '#fff',
+    title: '¿Cerrar sesión?',
+    text: 'Tendrás que iniciar sesión nuevamente para continuar.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor: '#334155',
+    confirmButtonText: 'Sí, cerrar sesión',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (isConfirmed) {
+    authStore.logout();
+    router.push('/login');
+  }
 };
 </script>
