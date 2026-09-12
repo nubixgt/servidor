@@ -692,7 +692,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import {
   BanknotesIcon, PlusIcon, MagnifyingGlassIcon, CalendarIcon,
   TrashIcon, DocumentTextIcon, XMarkIcon, PrinterIcon,
@@ -939,9 +939,49 @@ const downloadExcelBanco = () => {
   document.body.removeChild(link);
 };
 
+const allViaticos = ref([]);
+
+const fetchViaticos = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/viaticos`);
+    const data = await res.json();
+    if (data.status === 'success') {
+      allViaticos.value = data.data;
+    }
+  } catch (error) {
+    console.error('Error fetching viaticos:', error);
+  }
+};
+
+watch([() => payrollForm.value.personnel_id, () => payrollForm.value.periodo], ([newId, newPeriod]) => {
+  if (newId && newPeriod) {
+    const viaticosDelMes = allViaticos.value.filter(v => 
+      v.personnel_id == newId && 
+      v.periodo === newPeriod && 
+      v.estado === 'Aprobado'
+    );
+    
+    const totalViaticos = viaticosDelMes.reduce((sum, v) => sum + Number(v.monto || 0), 0);
+    const totalTiempos = viaticosDelMes.reduce((sum, v) => sum + Number(v.total_tiempos || 0), 0);
+    
+    if (totalViaticos > 0) {
+      payrollForm.value.tiene_viaticos = true;
+      payrollForm.value.monto_viaticos = totalViaticos;
+      payrollForm.value.cantidad_viaticos = totalTiempos;
+      payrollForm.value.observaciones_viaticos = 'Viáticos del periodo ' + newPeriod;
+    } else {
+      payrollForm.value.tiene_viaticos = false;
+      payrollForm.value.monto_viaticos = 0;
+      payrollForm.value.cantidad_viaticos = 0;
+      payrollForm.value.observaciones_viaticos = '';
+    }
+  }
+});
+
 onMounted(() => {
   fetchPayments();
   fetchActivePersonnel();
+  fetchViaticos();
 });
 
 const fetchPayments = async () => {
