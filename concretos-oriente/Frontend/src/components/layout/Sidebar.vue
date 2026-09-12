@@ -125,7 +125,7 @@ import {
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
   ChevronDownIcon, ChevronRightIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon,
-  ExclamationTriangleIcon, ArrowTrendingUpIcon
+  ExclamationTriangleIcon, ArrowTrendingUpIcon, DocumentTextIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';
 
