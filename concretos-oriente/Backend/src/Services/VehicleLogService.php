@@ -19,9 +19,8 @@ class VehicleLogService
             throw new Exception('El ID del vehículo es obligatorio.', 400);
         }
 
-        if (empty($data['estatus_vehiculo'])) {
-            throw new Exception('El estatus del vehículo es obligatorio.', 400);
-        }
+        // estatus_vehiculo ya no es estrictamente obligatorio si se usa para uso diario, 
+        // pero se asume 'Activo' por defecto si no viene en el controller.
 
         return $this->logRepository->create($data);
     }
@@ -29,5 +28,10 @@ class VehicleLogService
     public function getLogsByVehicle(int $vehiculoId): array
     {
         return $this->logRepository->getLogsByVehicle($vehiculoId);
+    }
+
+    public function getAllLogs(?array $user = null): array
+    {
+        return $this->logRepository->findAllWithDetails($user);
     }
 }

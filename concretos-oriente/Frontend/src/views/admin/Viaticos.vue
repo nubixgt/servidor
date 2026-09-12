@@ -54,8 +54,10 @@
                   <p class="font-bold text-white text-sm">{{ record.empleado_nombre }}</p>
                   <p class="text-[11px] text-white/40 mt-0.5">{{ record.empleado_puesto }}</p>
                 </td>
-                <td class="py-5 px-6 font-bold text-white/80 uppercase">{{ record.periodo }}</td>
-                <td class="py-5 px-6 text-center font-black text-sky-400 text-lg">{{ record.total_tiempos }}</td>
+                <td class="py-5 px-6 font-bold text-white/80 uppercase">{{ record.periodo || record.fecha_solicitud }}</td>
+                <td class="py-5 px-6 text-center font-black text-sky-400 text-lg">
+                  {{ record.total_tiempos > 0 ? record.total_tiempos : 'N/A' }}
+                </td>
                 <td class="py-5 px-6 text-right font-black text-emerald-400">Q {{ formatCurrency(record.monto) }}</td>
                 <td class="py-5 px-6 text-right">
                   <div class="flex items-center justify-end gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
@@ -301,7 +303,8 @@ const fetchPersonnel = async () => {
     const res = await fetch(`${BASE_URL}/personnel`);
     const data = await res.json();
     if (data.status === 'success') {
-      personnelList.value = data.data.filter(p => p.estado === 'Activo');
+      const today = new Date().toISOString().split('T')[0];
+      personnelList.value = data.data.filter(p => !p.fecha_baja || p.fecha_baja > today);
     }
   } catch (err) {}
 };

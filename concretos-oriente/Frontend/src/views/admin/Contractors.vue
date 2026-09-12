@@ -218,11 +218,11 @@
             </div>
 
             <div v-else class="space-y-8">
-              <div v-for="p in summaryProjects" :key="p.project_id" class="rounded-[32px] overflow-hidden border border-white/10 bg-black/40 shadow-xl">
+              <div v-for="(p, pIdx) in summaryProjects" :key="p.project_id" :class="['rounded-[32px] overflow-hidden border bg-black/40 shadow-xl transition-all', getProjectTheme(pIdx).borderClass]">
                 <!-- Project Bar Header -->
                 <div class="bg-white/5 px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10">
                   <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary font-black text-sm">
+                    <div :class="['w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm', getProjectTheme(pIdx).iconBg, getProjectTheme(pIdx).iconText]">
                       <FolderIcon class="w-5 h-5" />
                     </div>
                     <div>
@@ -291,7 +291,7 @@
                       <p class="text-xs font-black text-white">{{ Number(p.porcentaje).toFixed(1) }}%</p>
                     </div>
                     <div class="w-full h-2.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
-                      <div class="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full transition-all duration-500" :style="{ width: Math.min(p.porcentaje, 100) + '%' }"></div>
+                      <div :class="['h-full rounded-full transition-all duration-500', getProjectTheme(pIdx).progressClass]" :style="{ width: Math.min(p.porcentaje, 100) + '%' }"></div>
                     </div>
                   </div>
                 </div>
@@ -682,6 +682,35 @@ const formatDate = (val) => {
 };
 
 const formatMoney = (val) => Number(val || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+const PROJECT_THEMES = [
+  {
+    borderClass: 'border-emerald-500/50 shadow-emerald-500/20',
+    iconBg: 'bg-emerald-500/20',
+    iconText: 'text-emerald-400',
+    progressClass: 'bg-gradient-to-r from-emerald-600 to-emerald-400'
+  },
+  {
+    borderClass: 'border-amber-500/50 shadow-amber-500/20',
+    iconBg: 'bg-amber-500/20',
+    iconText: 'text-amber-400',
+    progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400'
+  },
+  {
+    borderClass: 'border-sky-500/50 shadow-sky-500/20',
+    iconBg: 'bg-sky-500/20',
+    iconText: 'text-sky-400',
+    progressClass: 'bg-gradient-to-r from-sky-600 to-sky-400'
+  },
+  {
+    borderClass: 'border-fuchsia-500/50 shadow-fuchsia-500/20',
+    iconBg: 'bg-fuchsia-500/20',
+    iconText: 'text-fuchsia-400',
+    progressClass: 'bg-gradient-to-r from-fuchsia-600 to-fuchsia-400'
+  }
+];
+
+const getProjectTheme = (index) => PROJECT_THEMES[index % PROJECT_THEMES.length];
 
 const formatPhone = (e) => {
   let val = e.target.value.replace(/\D/g, '');

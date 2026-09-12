@@ -11,6 +11,19 @@ class ExpenseRepository
     public function __construct()
     {
         $this->pdo = Database::getInstance()->getConnection();
+        $this->ensureColumnsExist();
+    }
+
+    private function ensureColumnsExist(): void
+    {
+        try {
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM `expenses`");
+            $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            if (!in_array('dependiente', $columns)) {
+                try { $this->pdo->exec("ALTER TABLE `expenses` ADD COLUMN `dependiente` VARCHAR(150) NULL"); } catch (\Throwable $e) {}
+            }
+        } catch (\Throwable $e) {}
     }
 
     public function getPDO(): PDO
@@ -31,9 +44,9 @@ class ExpenseRepository
     public function create(array $data): int
     {
         $sql = "INSERT INTO expenses
-                    (proyecto_id, contratista_id, tipo_egreso, monto, fecha_egreso, cuenta_origen, numero_cheque, beneficiario, descripcion, comprobante_path)
+                    (proyecto_id, contratista_id, tipo_egreso, monto, fecha_egreso, cuenta_origen, numero_cheque, beneficiario, descripcion, dependiente, comprobante_path)
                 VALUES
-                    (:proyecto_id, :contratista_id, :tipo_egreso, :monto, :fecha_egreso, :cuenta_origen, :numero_cheque, :beneficiario, :descripcion, NULL)";
+                    (:proyecto_id, :contratista_id, :tipo_egreso, :monto, :fecha_egreso, :cuenta_origen, :numero_cheque, :beneficiario, :descripcion, :dependiente, NULL)";
 
         $this->pdo->prepare($sql)->execute([
             'proyecto_id'     => $data['proyecto_id'],
@@ -44,7 +57,8 @@ class ExpenseRepository
             'cuenta_origen'   => $data['cuenta_origen'] ?? null,
             'numero_cheque'   => $data['numero_cheque'] ?? null,
             'beneficiario'    => $data['beneficiario'],
-            'descripcion'     => $data['descripcion'] ?? null
+            'descripcion'     => $data['descripcion'] ?? null,
+            'dependiente'     => $data['dependiente'] ?? null
         ]);
 
         return (int) $this->pdo->lastInsertId();

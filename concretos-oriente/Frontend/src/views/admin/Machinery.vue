@@ -361,16 +361,20 @@
                 class="w-full h-12 px-4 rounded-xl bg-slate-950/65 border border-white/10 text-sm font-black uppercase text-white focus:outline-none focus:border-primary"
               />
               <datalist id="categorias-list">
-                <option value="Rotomartillo"></option>
-                <option value="Bailarina"></option>
-                <option value="Sapo"></option>
-                <option value="Generador Eléctrico"></option>
-                <option value="Luces"></option>
-                <option value="Retro"></option>
-                <option value="Patrol"></option>
-                <option value="Excavadora"></option>
-                <option value="Cargador frontal"></option>
-                <option value="Rodo"></option>
+                <template v-if="formMachine.clasificacion_tipo === 'Liviana'">
+                  <option value="Rotomartillo"></option>
+                  <option value="Bailarina"></option>
+                  <option value="Sapo"></option>
+                  <option value="Generador Eléctrico"></option>
+                  <option value="Luces"></option>
+                </template>
+                <template v-else-if="formMachine.clasificacion_tipo === 'Pesada'">
+                  <option value="Retro"></option>
+                  <option value="Patrol"></option>
+                  <option value="Excavadora"></option>
+                  <option value="Cargador frontal"></option>
+                  <option value="Rodo"></option>
+                </template>
               </datalist>
             </div>
 
@@ -459,15 +463,15 @@
           </div>
         </section>
 
-        <!-- Sección 2: Uso y Horómetro -->
-        <section class="glass-card p-8 rounded-3xl border border-white/5">
+        <!-- Sección 2: Uso y Horómetro (Solo Pesada o Generador Eléctrico) -->
+        <section v-if="formMachine.clasificacion_tipo === 'Pesada' || formMachine.categoria === 'Generador Eléctrico'" class="glass-card p-8 rounded-3xl border border-white/5">
           <h3 class="text-xs font-black uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
-            <ClockIcon class="w-4 h-4" /> Control de Horómetro y Mantenimiento
+            <ClockIcon class="w-4 h-4" /> Control de {{ formMachine.categoria === 'Generador Eléctrico' ? 'Kilometraje' : 'Horómetro' }} y Mantenimiento
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <!-- Horómetro de Registro -->
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">Horómetro de Registro <span class="text-rose-400">*</span></label>
+              <label class="text-[9px] font-black text-white/30 uppercase tracking-widest">{{ formMachine.categoria === 'Generador Eléctrico' ? 'Kilometraje de Registro' : 'Horómetro de Registro' }} <span class="text-rose-400">*</span></label>
               <div class="relative">
                 <input 
                   v-model="formMachine.horometro_actual" 
@@ -477,14 +481,14 @@
                   placeholder="0"
                   class="w-full h-12 pl-4 pr-12 rounded-xl glass-input border-white/5 focus:border-primary transition-all text-sm font-black text-white" 
                 />
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/40 tracking-widest">HRS</span>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-white/40 tracking-widest">{{ formMachine.categoria === 'Generador Eléctrico' ? 'KM' : 'HRS' }}</span>
               </div>
             </div>
 
             <!-- Frecuencia de Servicio (Requerida en Maquinaria Liviana) -->
             <div v-if="formMachine.clasificacion_tipo === 'Liviana'" class="space-y-2">
               <label class="text-[9px] font-black text-amber-300 uppercase tracking-widest flex items-center gap-1">
-                <ClockIcon class="w-3.5 h-3.5" /> Frecuencia de Servicio (Horas) <span class="text-rose-400">*</span>
+                <ClockIcon class="w-3.5 h-3.5" /> Frecuencia de Servicio ({{ formMachine.categoria === 'Generador Eléctrico' ? 'Kilómetros' : 'Horas' }}) <span class="text-rose-400">*</span>
               </label>
               <input 
                 v-model="formMachine.frecuencia_servicio_horas" 

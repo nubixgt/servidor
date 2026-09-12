@@ -87,6 +87,7 @@ class FinanceController extends Controller
                 'numero_cheque' => trim($_POST['numero_cheque'] ?? '') ?: null,
                 'beneficiario'  => trim($_POST['beneficiario'] ?? ''),
                 'descripcion'   => trim($_POST['descripcion'] ?? '') ?: null,
+                'dependiente'   => trim($_POST['dependiente'] ?? '') ?: null,
                 'registros'     => isset($_POST['registros']) ? json_decode($_POST['registros'], true) : []
             ];
 

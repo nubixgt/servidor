@@ -8,13 +8,27 @@
         <p class="text-white/60">Genera, calcula y consulta los pagos de nómina mensuales y semanales de los colaboradores.</p>
       </div>
 
-      <div class="flex gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          @click="downloadExcelBanco()"
+          class="bg-blue-600 hover:bg-blue-500 text-white py-3 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-blue-600/20 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+        >
+          <ArrowDownTrayIcon class="w-5 h-5" />
+          Planilla Banco
+        </button>
+        <button
+          @click="downloadExcelBase()"
+          class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-emerald-600/20 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+        >
+          <ArrowDownTrayIcon class="w-5 h-5" />
+          Descargar Base
+        </button>
         <button
           @click="openPayrollModal()"
-          class="glass-button-primary text-white py-4 px-8 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+          class="glass-button-primary text-white py-3 px-6 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all"
         >
           <PlusIcon class="w-5 h-5" />
-          Registrar Pago de Planilla
+          Registrar Pago
         </button>
       </div>
     </div>
@@ -682,7 +696,7 @@ import { ref, onMounted, computed } from 'vue';
 import {
   BanknotesIcon, PlusIcon, MagnifyingGlassIcon, CalendarIcon,
   TrashIcon, DocumentTextIcon, XMarkIcon, PrinterIcon,
-  UserGroupIcon, ClockIcon, ArrowTrendingUpIcon
+  UserGroupIcon, ClockIcon, ArrowTrendingUpIcon, ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -852,6 +866,79 @@ const consolidatedData = computed(() => {
 });
 
 // Lifecycle
+const downloadExcelBase = () => {
+  if (!payments.value.length) {
+    Swal.fire({ ...swalBase, title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning' });
+    return;
+  }
+  
+  const headers = ['No. Registro', 'Colaborador', 'Puesto', 'Periodo', 'Dias Trabajados', 'Salario Base', 'Horas Extras', 'Monto Horas Extras', 'Monto Viaticos', 'Monto Extra', 'Total Pagado'];
+  
+  const rows = payments.value.map(p => [
+    p.id,
+    `${p.nombres} ${p.apellidos}`,
+    p.puesto,
+    p.periodo,
+    p.dias_trabajados,
+    p.salario_base_calculado,
+    p.horas_extras,
+    p.total_horas_extras,
+    p.monto_viaticos,
+    p.monto_extra,
+    p.total_pagar
+  ]);
+  
+  let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+  csvContent += headers.join(",") + "\n";
+  rows.forEach(rowArray => {
+    const row = rowArray.map(item => `"${(item || '').toString().replace(/"/g, '""')}"`).join(",");
+    csvContent += row + "\n";
+  });
+  
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "Planilla_General.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const downloadExcelBanco = () => {
+  if (!payments.value.length) {
+    Swal.fire({ ...swalBase, title: 'Atención', text: 'No hay datos para exportar.', icon: 'warning' });
+    return;
+  }
+  
+  const headers = ['No. de registro', 'Nombre (empleado)', 'No. de cuenta', 'Nombre de la cuenta', 'Monto a pagar'];
+  
+  const rows = payments.value.map(p => {
+    const montoBanco = Number(p.total_pagar) - Number(p.monto_viaticos || 0);
+    return [
+      p.id,
+      `${p.nombres} ${p.apellidos}`,
+      p.numero_cuenta,
+      p.nombre_cuenta,
+      montoBanco.toFixed(2)
+    ];
+  });
+  
+  let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+  csvContent += headers.join(",") + "\n";
+  rows.forEach(rowArray => {
+    const row = rowArray.map(item => `"${(item || '').toString().replace(/"/g, '""')}"`).join(",");
+    csvContent += row + "\n";
+  });
+  
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "Planilla_Banco.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 onMounted(() => {
   fetchPayments();
   fetchActivePersonnel();

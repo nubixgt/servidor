@@ -96,6 +96,36 @@ class ProjectIncomeRepository
                     ':estado' => $source['estado'] ?? 'Pendiente',
                     ':comprobante_path' => $source['comprobante_path'] ?? null
                 ]);
+
+                if (($source['estado'] ?? 'Pendiente') === 'Recibido' && !empty($source['bank_account_id'])) {
+                    $stmtBank = $this->pdo->prepare("SELECT * FROM bank_accounts WHERE id = :id");
+                    $stmtBank->execute(['id' => $source['bank_account_id']]);
+                    $bank = $stmtBank->fetch(PDO::FETCH_ASSOC);
+
+                    if ($bank) {
+                        $cuentaName = $bank['nombre_banco'] . ' - ' . $bank['numero_cuenta'];
+                        $descripcion = "Cobro de Estimación (" . ($data['numero_estimacion'] ?? 'N/A') . ") - Fuente: " . $source['fuente'];
+
+                        $sqlIncome = "INSERT INTO incomes (proyecto_id, tipo_ingreso, monto, fecha_ingreso, cuenta_bancaria, numero_cheque, pagador, descripcion) 
+                                      VALUES (:proyecto_id, :tipo_ingreso, :monto, :fecha, :cuenta, :cheque, :pagador, :descripcion)";
+                        $this->pdo->prepare($sqlIncome)->execute([
+                            'proyecto_id'  => $data['project_id'],
+                            'tipo_ingreso' => $data['tipo_cobro'] ?: 'Estimación',
+                            'monto'        => $source['monto_aportado'],
+                            'fecha'        => !empty($source['fecha_cobro']) ? $source['fecha_cobro'] : date('Y-m-d H:i:s'),
+                            'cuenta'       => $cuentaName,
+                            'cheque'       => $source['numero_documento'] ?? null,
+                            'pagador'      => $source['fuente'],
+                            'descripcion'  => $descripcion
+                        ]);
+
+                        $stmtBalance = $this->pdo->prepare("UPDATE bank_accounts SET saldo_actual = saldo_actual + :change WHERE id = :id");
+                        $stmtBalance->execute([
+                            'change' => $source['monto_aportado'],
+                            'id' => $source['bank_account_id']
+                        ]);
+                    }
+                }
             }
 
             $this->pdo->commit();

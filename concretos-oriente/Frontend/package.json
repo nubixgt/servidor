@@ -16,6 +16,7 @@
         "pinia": "^2.1.7",
         "sweetalert2": "^11.10.5",
         "vue": "^3.4.19",
+        "vue-currency-input": "^3.2.2",
         "vue-router": "^4.2.5"
     },
     "devDependencies": {

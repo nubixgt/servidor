@@ -38,13 +38,13 @@
               :class="[
                 'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group',
                 isGroupActive(item)
-                  ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                  ? 'text-white bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               ]"
             >
               <component
                 :is="item.icon"
-                :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isGroupActive(item) ? 'text-primary' : 'text-white/40']"
+                :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', isGroupActive(item) ? 'text-white' : 'text-white/40']"
               />
               <span class="text-xs font-black uppercase tracking-widest italic flex-1 text-left">{{ item.label }}</span>
               <ChevronDownIcon
@@ -61,16 +61,16 @@
                   :class="[
                     'w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 group relative',
                     route.path === '/' + child.id
-                      ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                      ? 'text-white bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30'
                       : 'text-white/60 hover:text-white hover:bg-white/5'
                   ]"
                 >
                   <component
                     :is="child.icon"
-                    :class="['w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110', route.path === '/' + child.id ? 'text-primary' : 'text-white/40']"
+                    :class="['w-4 h-4 mr-3 transition-transform duration-300 group-hover:scale-110', route.path === '/' + child.id ? 'text-white' : 'text-white/40']"
                   />
                   <span class="text-xs font-black uppercase tracking-widest italic">{{ child.label }}</span>
-                  <div v-if="route.path === '/' + child.id" class="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"></div>
+                  <ChevronRightIcon v-if="route.path === '/' + child.id" class="absolute right-3 w-4 h-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" />
                 </router-link>
               </li>
             </ul>
@@ -84,16 +84,16 @@
               :class="[
                 'w-full flex items-center px-6 py-4 rounded-2xl transition-all duration-300 group relative',
                 route.path === '/' + item.id
-                  ? 'text-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.05)]'
+                  ? 'text-white bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.4)] border border-blue-400/30'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
               ]"
             >
-              <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', route.path === '/' + item.id ? 'text-primary' : 'text-white/40']" />
-              <span class="text-xs font-black uppercase tracking-widest italic">{{ item.label }}</span>
-              <div
+              <component :is="item.icon" :class="['w-5 h-5 mr-4 transition-transform duration-300 group-hover:scale-110', route.path === '/' + item.id ? 'text-white' : 'text-white/40']" />
+              <span class="text-xs font-black uppercase tracking-widest italic flex-1 text-left">{{ item.label }}</span>
+              <ChevronRightIcon
                 v-if="route.path === '/' + item.id"
-                class="absolute right-6 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_#6366f1]"
-              ></div>
+                class="absolute right-6 w-5 h-5 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]"
+              />
             </router-link>
           </template>
 
@@ -124,7 +124,7 @@ import {
   BuildingLibraryIcon, ClipboardDocumentListIcon, CalculatorIcon,
   CreditCardIcon, FolderOpenIcon, BellAlertIcon, CurrencyDollarIcon, TruckIcon,
   ArrowPathIcon, XMarkIcon, CalendarDaysIcon,
-  ChevronDownIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon,
+  ChevronDownIcon, ChevronRightIcon, FireIcon, WrenchIcon, Cog6ToothIcon, UserGroupIcon,
   ExclamationTriangleIcon, ArrowTrendingUpIcon
 } from '@heroicons/vue/24/outline';
 import Logo from '../../assets/images/Logo.png';

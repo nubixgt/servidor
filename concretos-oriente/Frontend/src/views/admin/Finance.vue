@@ -353,6 +353,12 @@
               </div>
             </div>
 
+            <!-- Campo Dependiente: visible SOLO cuando tipo_egreso es Subcontratista/Contratista -->
+            <div v-if="formExpense.tipo_egreso === 'Contratista'" class="space-y-2">
+              <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Dependiente (Opcional)</label>
+              <input v-model="formExpense.dependiente" type="text" class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Persona a cargo (opcional)..." />
+            </div>
+
             <div class="space-y-2">
               <label class="text-xs font-bold text-white/50 uppercase tracking-wider">A Nombre De (Cheque) *</label>
               <input v-model="formExpense.beneficiario" type="text" required class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-tertiary/50" placeholder="Nombre en el cheque..." />
@@ -681,7 +687,7 @@ const formIncome = ref({
 const formExpense = ref({
   proyecto_id: '', contratista_id: '', tipo_egreso: 'Proveedor', monto: 0,
   fecha_egreso: new Date().toISOString().slice(0,10), cuenta_origen: '',
-  numero_cheque: '', beneficiario: '', descripcion: '',
+  numero_cheque: '', beneficiario: '', descripcion: '', dependiente: '',
   registros: []
 });
 

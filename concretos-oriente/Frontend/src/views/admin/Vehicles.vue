@@ -156,6 +156,95 @@
     </template>
 
     <!-- ═══════════════════════════════════ REGISTRAR / EDITAR ═══ -->
+    <!-- ═══════════════════════════════════ TAB: BITÁCORA DIARIA ═══════════════════════════════════ -->
+    <template v-else-if="activeTab === 'log'">
+      <div class="glass-card rounded-[32px] overflow-hidden border border-white/10">
+        <!-- Top bar with New Log button -->
+        <div class="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex flex-1 gap-3">
+            <div class="relative w-full md:w-80">
+              <MagnifyingGlassIcon class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
+              <input 
+                v-model="searchLog" 
+                type="text" 
+                placeholder="Buscar vehículo o piloto..." 
+                class="w-full bg-black/20 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-xs font-bold text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-all"
+              />
+            </div>
+            <select v-model="filterLogProject" class="bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-xs font-bold text-white focus:outline-none focus:border-primary/50 appearance-none min-w-[180px]">
+              <option value="">Todos los Proyectos</option>
+              <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.nombre }}</option>
+            </select>
+          </div>
+
+          <button
+            @click="openLogModal"
+            class="px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/30 shrink-0"
+          >
+            <PlusIcon class="w-4 h-4" /> Registrar Bitácora
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[640px] text-left">
+            <thead>
+              <tr class="border-b border-white/5 bg-white/[0.02]">
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Fecha</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Vehículo</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Proyecto</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Kilometraje</th>
+                <th class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Piloto</th>
+                <th v-if="authStore.userRole === 'admin'" class="px-6 py-5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Creador</th>
+                <th class="px-6 py-5 text-right text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr v-if="loadingLogs">
+                <td colspan="7" class="px-6 py-10 text-center text-white/50 text-xs font-bold">Cargando bitácoras...</td>
+              </tr>
+              <tr v-else-if="filteredLogs.length === 0">
+                <td colspan="7" class="px-6 py-12 text-center text-white/40 font-black uppercase tracking-widest text-xs">No hay bitácoras registradas</td>
+              </tr>
+              <tr v-for="log in paginatedLogs" :key="log.id" class="hover:bg-white/5 transition-all">
+                <td class="px-6 py-4 text-xs font-bold text-white/80">{{ formatDate(log.fecha) }}</td>
+                <td class="px-6 py-4 font-black uppercase text-sm text-white">{{ log.vehiculo_nombre }}</td>
+                <td class="px-6 py-4 text-xs font-bold text-primary">{{ log.proyecto_nombre || 'N/A' }}</td>
+                <td class="px-6 py-4">
+                  <p class="text-[11px] font-bold text-white/50">Ini: <span class="text-white">{{ log.kilometraje_inicial }}</span></p>
+                  <p class="text-[11px] font-bold text-white/50">Fin: <span class="text-white">{{ log.kilometraje_final }}</span></p>
+                </td>
+                <td class="px-6 py-4 text-xs font-bold text-white/80">{{ log.piloto_nombre || 'N/A' }}</td>
+                <td v-if="authStore.userRole === 'admin'" class="px-6 py-4 text-xs font-bold text-white/60">{{ log.creado_por_nombre || 'N/A' }}</td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    <button @click="openViewLog(log)" class="p-2 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Visualizar">
+                      <EyeIcon class="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination for logs -->
+        <div v-if="filteredLogs.length > logsPerPage" class="p-4 border-t border-white/5 flex items-center justify-between bg-white/[0.02]">
+          <span class="text-xs font-bold text-white/40">Mostrando {{ paginatedLogs.length }} de {{ filteredLogs.length }}</span>
+          <div class="flex gap-1">
+            <button
+              v-for="page in totalLogPages"
+              :key="page"
+              @click="currentLogPage = page"
+              :class="['w-8 h-8 rounded-lg text-xs font-black transition-all flex items-center justify-center', currentLogPage === page ? 'bg-primary text-white' : 'hover:bg-white/10 text-white/50']"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- ═══════════════════════════════════ REGISTRAR / EDITAR ═══ -->
     <template v-if="activeTab === 'register'">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
@@ -724,11 +813,46 @@ let   docFiles      = { seguro_contrato_adjunto: null, calcomania_adjunto: null,
 
 // Bitácora modal
 const showLogModal = ref(false);
-const logForm = ref({ vehiculo_id: '', piloto_id: '', estatus_vehiculo: 'Activo', envio_servicio: '', reportar_averia: '', observaciones: '' });
+const logForm = ref({ fecha: new Date().toISOString().split('T')[0], vehiculo_id: '', proyecto_id: '', piloto_id: '', estatus_vehiculo: 'Activo', kilometraje_inicial: 0, kilometraje_final: 0, combustible_consumido: 0, precio_renta: 0, envio_servicio: '', reportar_averia: '', observaciones: '' });
 
 // Detalles modal
 const showDetailsModal  = ref(false);
 const selectedVehicle   = ref(null);
+
+const logs = ref([]);
+const loadingLogs = ref(false);
+const searchLog = ref('');
+const filterLogProject = ref('');
+const projects = ref([]);
+const showViewLogModal = ref(false);
+const viewLog = ref(null);
+const currentLogPage = ref(1);
+const logsPerPage = 10;
+
+const filteredLogs = computed(() => {
+  return logs.value.filter(l => {
+    const searchVal = searchLog.value.toLowerCase();
+    const matchSearch = (l.vehiculo_nombre && l.vehiculo_nombre.toLowerCase().includes(searchVal)) ||
+                        (l.piloto_nombre && l.piloto_nombre.toLowerCase().includes(searchVal));
+    const matchProj = filterLogProject.value === "" || String(l.proyecto_id) === String(filterLogProject.value);
+    return matchSearch && matchProj;
+  });
+});
+
+const paginatedLogs = computed(() => {
+  const start = (currentLogPage.value - 1) * logsPerPage;
+  return filteredLogs.value.slice(start, start + logsPerPage);
+});
+
+const totalLogPages = computed(() => Math.ceil(filteredLogs.value.length / logsPerPage));
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  // adjust to local UTC
+  const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  return adjustedDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+};
 
 const statusOptions = [
   { value: 'all',      label: 'Todos'    },
@@ -815,7 +939,7 @@ const fetchPersonnel = async () => {
   } catch (e) { console.error(e); }
 };
 
-onMounted(() => { fetchVehicles(); fetchPersonnel(); });
+onMounted(() => { fetchVehicles(); fetchLogs(); fetchLogs(); fetchProjects(); fetchPersonnel(); });
 
 // ── Form ───────────────────────────────────────────────────────────────────
 const resetForm = () => {
@@ -927,7 +1051,7 @@ const submitForm = async () => {
       toast(editingId.value ? 'Vehículo actualizado correctamente.' : 'Vehículo registrado correctamente.');
       resetForm();
       activeTab.value = 'fleet';
-      fetchVehicles();
+      fetchVehicles(); fetchLogs(); fetchLogs(); fetchProjects();
     } else {
       toast(result.message || 'Error al guardar.', 'error');
     }
@@ -957,7 +1081,7 @@ const deleteVehicle = async (id, placa) => {
     const token = localStorage.getItem('token');
     const res   = await fetch(`${BASE_URL}/vehicles/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
     const result = await res.json();
-    if (result.success) { toast(`Vehículo [${placa}] retirado.`); fetchVehicles(); }
+    if (result.success) { toast(`Vehículo [${placa}] retirado.`); fetchVehicles(); fetchLogs(); fetchProjects(); }
     else toast(result.message || 'Error al retirar.', 'error');
   } catch (e) { toast('Error de conexión.', 'error'); }
 };
@@ -967,9 +1091,33 @@ const openDetails = (v) => { selectedVehicle.value = v; showDetailsModal.value =
 
 // ── Bitácora ───────────────────────────────────────────────────────────────
 const openLogModal = () => {
-  logForm.value = { vehiculo_id: '', piloto_id: '', estatus_vehiculo: 'En Funcionamiento', envio_servicio: '', reportar_averia: '', observaciones: '' };
+  logForm.value = { fecha: new Date().toISOString().split('T')[0], vehiculo_id: '', proyecto_id: '', piloto_id: '', estatus_vehiculo: 'Activo', kilometraje_inicial: 0, kilometraje_final: 0, combustible_consumido: 0, precio_renta: 0, envio_servicio: '', reportar_averia: '', observaciones: '' };
   showLogModal.value = true;
 };
+
+const openViewLog = (log) => {
+  viewLog.value = log;
+  showViewLogModal.value = true;
+};
+
+const fetchLogs = async () => {
+  loadingLogs.value = true;
+  try {
+    const res = await fetch(`${BASE_URL}/vehicle-log`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+    const data = await res.json();
+    if (data.status === 'success') logs.value = data.data;
+  } catch (err) { console.error(err); }
+  loadingLogs.value = false;
+};
+
+const fetchProjects = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/projects`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+    const data = await res.json();
+    if (data.status === 'success') projects.value = data.data;
+  } catch (err) { console.error(err); }
+};
+
 
 watch(() => logForm.value.vehiculo_id, (id) => {
   if (!id) return;
@@ -992,7 +1140,7 @@ const submitLog = async () => {
     if (result.success) {
       toast('Bitácora registrada correctamente.');
       showLogModal.value = false;
-      fetchVehicles();
+      fetchVehicles(); fetchLogs(); fetchProjects();
     } else {
       toast(result.message || 'Error al registrar.', 'error');
     }

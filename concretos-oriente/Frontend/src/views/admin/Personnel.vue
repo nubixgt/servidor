@@ -840,28 +840,28 @@
               <!-- Salario base -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Salario Base (GTQ) <span class="text-tertiary">*</span></label>
-                <input v-model="formData.salario_base" type="number" step="0.01" min="0" required placeholder="0.00"
+                <CurrencyInput v-model="formData.salario_base" required placeholder="0.00"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
               <!-- Bonificación -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Bonificación (Complemento)</label>
-                <input v-model="formData.bonificacion" type="number" step="0.01" min="0" placeholder="0.00"
+                <CurrencyInput v-model="formData.bonificacion" placeholder="0.00"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
               <!-- Tarifa hora extra -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Tarifa por Hora Extra (GTQ/hr)</label>
-                <input v-model="formData.tarifa_hora_extra" type="number" step="0.01" min="0" placeholder="Opcional"
+                <CurrencyInput v-model="formData.tarifa_hora_extra" placeholder="Opcional"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
               <!-- Monto Viáticos -->
               <div class="space-y-2">
                 <label class="text-xs font-bold text-white/50 uppercase tracking-wider">Monto Viáticos (GTQ)</label>
-                <input v-model="formData.diario_viaticos" type="number" step="0.01" min="0" placeholder="0.00"
+                <CurrencyInput v-model="formData.diario_viaticos" placeholder="0.00"
                   class="w-full bg-black/20 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" />
               </div>
 
@@ -1448,11 +1448,8 @@
             <div v-if="payrollForm.tiene_viaticos" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-sky-400/10">
               <div class="space-y-1">
                 <label class="text-[11px] font-bold text-white/60 uppercase">Cantidad Brindada (GTQ)</label>
-                <input
-                  v-model.number="payrollForm.monto_viaticos"
-                  type="number"
-                  step="0.01"
-                  min="0"
+                <CurrencyInput
+                  v-model="payrollForm.monto_viaticos"
                   placeholder="0.00"
                   class="w-full bg-black/30 border border-sky-400/30 rounded-xl px-4 py-2.5 text-white font-bold focus:outline-none focus:border-sky-400/60"
                 />
@@ -1741,6 +1738,7 @@ import {
   CalculatorIcon, ClockIcon, CreditCardIcon, UserMinusIcon, UserPlusIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
+import CurrencyInput from '../../components/CurrencyInput.vue';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
 
