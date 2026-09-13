@@ -69,13 +69,19 @@ router.beforeEach((to, from, next) => {
     
     if (to.meta.requiresAuth && !authStore.userRole) {
         next('/login');
-    } else if (to.path === '/login' && authStore.userRole) {
+        return;
+    }
+    
+    if (to.path === '/login' && authStore.userRole) {
         if (authStore.userRole === 'tecnico') {
             next('/tech-machinery');
         } else {
             next('/dashboard');
         }
-    } else if (to.meta.requiresAuth && authStore.userRole !== 'admin') {
+        return;
+    }
+    
+    if (to.meta.requiresAuth && authStore.userRole !== 'admin') {
         // Validación de permisos
         const pathName = to.path.substring(1); // ej. 'personnel'
         

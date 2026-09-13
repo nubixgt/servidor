@@ -229,7 +229,7 @@ const filteredItems = computed(() => {
 });
 
 const handleLogout = async () => {
-  const { isConfirmed } = await Swal.fire({
+  const result = await Swal.fire({
     background: '#0f172a',
     color: '#fff',
     title: '¿Cerrar sesión?',
@@ -242,9 +242,13 @@ const handleLogout = async () => {
     cancelButtonText: 'Cancelar'
   });
 
-  if (isConfirmed) {
+  if (result.isConfirmed) {
     authStore.logout();
-    router.push('/login');
+    try {
+      await router.replace('/login');
+    } catch {
+      window.location.href = '/login';
+    }
   }
 };
 </script>
