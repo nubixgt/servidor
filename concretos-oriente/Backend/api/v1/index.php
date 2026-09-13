@@ -47,7 +47,25 @@ date_default_timezone_set('America/Guatemala');
 require_once __DIR__ . '/../../autoload.php';
 
 // 2. Set Headers / CORS
-header("Access-Control-Allow-Origin: *");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'https://www.concretosdeoriente.com',
+    'https://concretosdeoriente.com',
+    'http://www.concretosdeoriente.com',
+    'http://concretosdeoriente.com',
+    'http://100.61.146.53',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173'
+];
+
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header("Access-Control-Allow-Origin: https://www.concretosdeoriente.com");
+}
+
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Max-Age: 3600");

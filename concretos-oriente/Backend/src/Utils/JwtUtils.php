@@ -3,11 +3,26 @@ namespace App\Utils;
 
 class JwtUtils
 {
-    private static $secret = 'YOUR_SECRET_KEY_CHANGE_ME'; // In production, use ENV
-    private static $algo = 'HS256';
+    private static ?string $secret = null;
+    private static string $algo = 'HS256';
+
+    private static function init(): void
+    {
+        if (self::$secret === null) {
+            $configFile = __DIR__ . '/../../config/jwt.php';
+            if (file_exists($configFile)) {
+                $config = require $configFile;
+                self::$secret = $config['secret'] ?? 'c7b489d2e1f56a9083b4c6e789a0123456789abcdef0123456789abcdef0123456789abcdef';
+                self::$algo = $config['algo'] ?? 'HS256';
+            } else {
+                self::$secret = getenv('JWT_SECRET') ?: 'c7b489d2e1f56a9083b4c6e789a0123456789abcdef0123456789abcdef0123456789abcdef';
+            }
+        }
+    }
 
     public static function generate($payload)
     {
+        self::init();
         $header = json_encode(['typ' => 'JWT', 'alg' => self::$algo]);
 
         $base64UrlHeader = self::base64UrlEncode($header);
@@ -21,6 +36,7 @@ class JwtUtils
 
     public static function validate($token)
     {
+        self::init();
         $parts = explode('.', $token);
         if (count($parts) !== 3)
             return false;
