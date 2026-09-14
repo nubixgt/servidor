@@ -169,8 +169,8 @@
                 </div>
               </div>
 
-              <!-- Permisos section (solo para roles que no sean admin) -->
-              <div v-if="formData.rol !== 'admin'" class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4">
+              <!-- Permisos section -->
+              <div class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4">
                 <div class="flex justify-between items-start">
                   <div>
                     <h3 class="text-sm font-black text-white uppercase tracking-widest">Permisos de Acceso</h3>
@@ -181,7 +181,7 @@
                     @click="toggleAllPermissions"
                     class="px-3 py-1.5 bg-primary/20 hover:bg-primary/40 text-primary border border-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
                   >
-                    {{ formData.permisos.length === availableModules.length ? 'Desmarcar Todos' : 'Acceso Completo' }}
+                    {{ formData.permisos.length >= availableModules.length * 2 ? 'Desmarcar Todos' : 'Acceso Completo' }}
                   </button>
                 </div>
                 
@@ -208,8 +208,8 @@
                 </div>
               </div>
 
-              <!-- Proyectos section (solo para roles que no sean admin) -->
-              <div v-if="formData.rol !== 'admin'" class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4 mt-6">
+              <!-- Proyectos section -->
+              <div class="p-6 bg-black/20 rounded-2xl border border-white/5 space-y-4 mt-6">
                 <div class="flex justify-between items-start">
                   <div>
                     <h3 class="text-sm font-black text-white uppercase tracking-widest">Proyectos Asignados</h3>
@@ -524,15 +524,8 @@ const submitForm = async () => {
   }
   data.append('rol', formData.value.rol);
   data.append('estado', formData.value.estado);
-  
-  if (formData.value.rol !== 'admin') {
-    data.append('permisos', JSON.stringify(formData.value.permisos));
-    data.append('proyectos', JSON.stringify(formData.value.proyectos));
-  } else {
-    // Si es admin, puede tener acceso a todo y la DB puede estar nula
-    data.append('permisos', JSON.stringify([])); 
-    data.append('proyectos', JSON.stringify([])); 
-  }
+  data.append('permisos', JSON.stringify(formData.value.permisos || []));
+  data.append('proyectos', JSON.stringify(formData.value.proyectos || []));
   
   if (formData.value.foto) {
     data.append('foto', formData.value.foto);

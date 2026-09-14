@@ -72,5 +72,22 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('userProyectos');
     };
 
-    return { userRole, userName, token, userPermisos, userProyectos, login, logout };
+    const canEdit = (moduleId) => {
+        // If superadmin with NO specific permissions configured, allow all
+        if (userRole.value === 'admin' && (!userPermisos.value || userPermisos.value.length === 0)) {
+            return true;
+        }
+        const perms = userPermisos.value || [];
+        return perms.includes(moduleId + '_edit') || perms.includes(moduleId);
+    };
+
+    const canView = (moduleId) => {
+        if (userRole.value === 'admin' && (!userPermisos.value || userPermisos.value.length === 0)) {
+            return true;
+        }
+        const perms = userPermisos.value || [];
+        return perms.includes(moduleId + '_view') || perms.includes(moduleId + '_edit') || perms.includes(moduleId);
+    };
+
+    return { userRole, userName, token, userPermisos, userProyectos, login, logout, canEdit, canView };
 });

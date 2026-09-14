@@ -203,15 +203,18 @@ watch(() => route.path, (path) => {
 }, { immediate: true });
 
 const filteredItems = computed(() => {
-  if (role.value === 'admin') {
+  const permisos = authStore.userPermisos || [];
+  if (role.value === 'admin' && permisos.length === 0) {
     return allNavItemsArr.filter(item => item.roles.includes('admin'));
   }
-  const permisos = authStore.userPermisos || [];
   const efectivos = (permisos.includes('recurrents') || permisos.includes('recurrents_view') || permisos.includes('recurrents_edit')) 
     ? [...permisos, 'calendar_view', 'calendar_edit'] 
     : permisos;
 
-  const hasAccess = (id) => efectivos.includes(id) || efectivos.includes(id + '_view') || efectivos.includes(id + '_edit');
+  const hasAccess = (id) => {
+    if (role.value === 'admin' && permisos.length === 0) return true;
+    return efectivos.includes(id) || efectivos.includes(id + '_view') || efectivos.includes(id + '_edit');
+  };
 
   return allNavItemsArr
     .filter(item => {

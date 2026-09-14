@@ -15,7 +15,7 @@
         <button @click="switchTab('log')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2', activeTab === 'log' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
           <ClipboardDocumentListIcon class="w-3.5 h-3.5" /> Bitácora
         </button>
-        <button @click="switchTab('register')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2', activeTab === 'register' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
+        <button v-if="authStore.canEdit('vehicles')" @click="switchTab('register')" :class="['px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2', activeTab === 'register' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-white/50 hover:text-white']">
           <PlusIcon class="w-3.5 h-3.5" /> {{ editingId ? 'Editando' : 'Registrar' }}
         </button>
       </div>
@@ -144,10 +144,10 @@
             <button @click="showHistory(v)" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-white transition-all" title="Historial">
               <ClipboardDocumentListIcon class="w-4 h-4" />
             </button>
-            <button @click="startEdit(v)" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-primary transition-all" title="Editar">
+            <button v-if="authStore.canEdit('vehicles')" @click="startEdit(v)" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-primary transition-all" title="Editar">
               <PencilIcon class="w-4 h-4" />
             </button>
-            <button @click="deleteVehicle(v.id, v.placa)" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-rose-500/20 border border-white/10 text-white/50 hover:text-rose-400 transition-all" title="Eliminar">
+            <button v-if="authStore.canEdit('vehicles')" @click="deleteVehicle(v.id, v.placa)" class="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-rose-500/20 border border-white/10 text-white/50 hover:text-rose-400 transition-all" title="Eliminar">
               <TrashIcon class="w-4 h-4" />
             </button>
           </div>
@@ -178,6 +178,7 @@
           </div>
 
           <button
+            v-if="authStore.canEdit('vehicles')"
             @click="openLogModal"
             class="px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/30 shrink-0"
           >
@@ -746,6 +747,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { useAuthStore } from '../../stores/auth';
 import Swal from 'sweetalert2';
 import {
   TruckIcon, PlusIcon, MagnifyingGlassIcon, EyeIcon, PencilIcon, TrashIcon,
@@ -755,6 +757,7 @@ import {
 } from '@heroicons/vue/24/outline';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
+const authStore = useAuthStore();
 
 // ── State ──────────────────────────────────────────────────────────────────
 const activeTab    = ref('fleet');
@@ -830,10 +833,13 @@ const currentLogPage = ref(1);
 const logsPerPage = 10;
 
 const filteredLogs = computed(() => {
-  return logs.value.filter(l => {
-    const searchVal = searchLog.value.toLowerCase();
-    const matchSearch = (l.vehiculo_nombre && l.vehiculo_nombre.toLowerCase().includes(searchVal)) ||
-                        (l.piloto_nombre && l.piloto_nombre.toLowerCase().includes(searchVal));
+  const list = logs.value || [];
+  return list.filter(l => {
+    if (!l) return false;
+    const searchVal = (searchLog.value || '').toLowerCase();
+    const vehName = (l.vehiculo_nombre || '').toLowerCase();
+    const pilName = (l.piloto_nombre || '').toLowerCase();
+    const matchSearch = vehName.includes(searchVal) || pilName.includes(searchVal);
     const matchProj = filterLogProject.value === "" || String(l.proyecto_id) === String(filterLogProject.value);
     return matchSearch && matchProj;
   });
@@ -849,7 +855,7 @@ const totalLogPages = computed(() => Math.ceil(filteredLogs.value.length / logsP
 const formatDate = (dateString) => {
   if (!dateString) return '';
   const date = new Date(dateString);
-  // adjust to local UTC
+  if (isNaN(date.getTime())) return dateString;
   const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
   return adjustedDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
 };
@@ -864,8 +870,10 @@ const statusOptions = [
 const isActivo = (estatus) => estatus === 'Activo' || estatus === 'En Funcionamiento' || estatus === 'Nuevo';
 
 const filteredVehicles = computed(() => {
-  const q = searchTerm.value.toLowerCase();
-  return vehicles.value.filter(v => {
+  const q = (searchTerm.value || '').toLowerCase();
+  const list = vehicles.value || [];
+  return list.filter(v => {
+    if (!v) return false;
     const matchText = v.placa?.toLowerCase().includes(q) ||
                       v.marca?.toLowerCase().includes(q) ||
                       v.modelo?.toLowerCase().includes(q);
@@ -876,11 +884,14 @@ const filteredVehicles = computed(() => {
   });
 });
 
-const stats = computed(() => ({
-  total:    vehicles.value.length,
-  activo:   vehicles.value.filter(v => isActivo(v.estatus)).length,
-  inactivo: vehicles.value.filter(v => v.estatus === 'Inactivo').length,
-}));
+const stats = computed(() => {
+  const list = vehicles.value || [];
+  return {
+    total:    list.length,
+    activo:   list.filter(v => isActivo(v?.estatus)).length,
+    inactivo: list.filter(v => v?.estatus === 'Inactivo').length,
+  };
+});
 
 const detailFields = computed(() => {
   if (!selectedVehicle.value) return [];
@@ -939,7 +950,7 @@ const fetchPersonnel = async () => {
   } catch (e) { console.error(e); }
 };
 
-onMounted(() => { fetchVehicles(); fetchLogs(); fetchLogs(); fetchProjects(); fetchPersonnel(); });
+onMounted(() => { fetchVehicles(); fetchLogs(); fetchProjects(); fetchPersonnel(); });
 
 // ── Form ───────────────────────────────────────────────────────────────────
 const resetForm = () => {
@@ -1021,6 +1032,11 @@ const onDocChange = (e, key) => {
 };
 
 const submitForm = async () => {
+  if (!authStore.canEdit('vehicles')) {
+    toast('No tienes permisos de edición en este módulo.', 'error');
+    return;
+  }
+
   if (!form.value.placa.trim() || !form.value.tipo_vehiculo || !form.value.marca.trim() || !form.value.modelo.trim()) {
     toast('Completa los campos obligatorios.', 'warning');
     return;
@@ -1051,7 +1067,7 @@ const submitForm = async () => {
       toast(editingId.value ? 'Vehículo actualizado correctamente.' : 'Vehículo registrado correctamente.');
       resetForm();
       activeTab.value = 'fleet';
-      fetchVehicles(); fetchLogs(); fetchLogs(); fetchProjects();
+      fetchVehicles(); fetchLogs(); fetchProjects();
     } else {
       toast(result.message || 'Error al guardar.', 'error');
     }
@@ -1062,6 +1078,11 @@ const submitForm = async () => {
 
 // ── Delete ─────────────────────────────────────────────────────────────────
 const deleteVehicle = async (id, placa) => {
+  if (!authStore.canEdit('vehicles')) {
+    toast('No tienes permisos para eliminar en este módulo.', 'error');
+    return;
+  }
+
   const confirm = await Swal.fire({
     title: '¿Retirar vehículo?',
     text: `¿Estás seguro de retirar el vehículo [${placa}]?`,
@@ -1129,6 +1150,10 @@ watch(() => logForm.value.vehiculo_id, (id) => {
 });
 
 const submitLog = async () => {
+  if (!authStore.canEdit('vehicles')) {
+    toast('No tienes permisos para registrar bitácora.', 'error');
+    return;
+  }
   try {
     const token = localStorage.getItem('token');
     const res   = await fetch(`${BASE_URL}/vehicle-logs`, {
