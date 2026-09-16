@@ -234,6 +234,103 @@ class SearchRepository
             }
         } catch (\Throwable $e) {}
 
+        // ── 10. ACTIVIDADES DEL DESPACHO ─────────────────────────────
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT a.id, a.titulo, a.categoria, a.estado, t.nombre as tecnico,
+                        DATE_FORMAT(a.fecha_creacion, '%d/%m/%Y') as fecha
+                 FROM despacho_actividades a
+                 LEFT JOIN despacho_tecnicos t ON a.tecnico_id = t.id
+                 WHERE a.titulo LIKE ? OR a.descripcion LIKE ? OR a.categoria LIKE ? OR t.nombre LIKE ?
+                 ORDER BY a.fecha_creacion DESC
+                 LIMIT ?"
+            );
+            $stmt->execute([$param, $param, $param, $param, $limit]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $results[] = [
+                    'type'      => 'Actividad Ministerial',
+                    'icon'      => 'document',
+                    'primary'   => $row['titulo'],
+                    'secondary' => ($row['categoria'] ?? 'General') . ' · ' . ($row['tecnico'] ?? 'N/D') . ' · ' . $row['fecha'],
+                    'badge'     => $row['estado'],
+                    'route'     => '/admin/actividades-despacho',
+                    'entity_id' => $row['id'],
+                ];
+            }
+        } catch (\Throwable $e) {}
+
+        // ── 11. EJECUCIÓN FÍSICA VIDER ────────────────────────────────
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT id, departamento, municipio, fisico_tipo, fisico_ejecutado,
+                        DATE_FORMAT(fecha, '%d/%m/%Y') as fecha
+                 FROM vider_ejecucion
+                 WHERE departamento LIKE ? OR municipio LIKE ?
+                 ORDER BY fecha DESC
+                 LIMIT ?"
+            );
+            $stmt->execute([$param, $param, $limit]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $results[] = [
+                    'type'      => 'Ejecución VIDER',
+                    'icon'      => 'map',
+                    'primary'   => $row['municipio'] . ', ' . $row['departamento'],
+                    'secondary' => number_format($row['fisico_ejecutado']) . ' ' . $row['fisico_tipo'] . ' · ' . $row['fecha'],
+                    'badge'     => null,
+                    'route'     => '/admin/vider/tabla',
+                    'entity_id' => $row['id'],
+                ];
+            }
+        } catch (\Throwable $e) {}
+
+        // ── 12. COOPERATIVAS TOBANIK (VIDER) ──────────────────────────
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT id, departamento, nombre_cooperativa, productores, monto_otorgado
+                 FROM vider_tobanik
+                 WHERE nombre_cooperativa LIKE ? OR departamento LIKE ?
+                 ORDER BY nombre_cooperativa ASC
+                 LIMIT ?"
+            );
+            $stmt->execute([$param, $param, $limit]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $results[] = [
+                    'type'      => 'Cooperativa Tobanik',
+                    'icon'      => 'user-group',
+                    'primary'   => $row['nombre_cooperativa'],
+                    'secondary' => $row['departamento'] . ' · ' . $row['productores'] . ' productores · Q' . number_format($row['monto_otorgado'], 2),
+                    'badge'     => null,
+                    'route'     => '/admin/vider/tobanik',
+                    'entity_id' => $row['id'],
+                ];
+            }
+        } catch (\Throwable $e) {}
+
+        // ── 13. EJECUCIÓN PRESUPUESTARIA ──────────────────────────────
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT e.id, c.nombre as categoria, c.tipo, e.ejercicio_fiscal, e.pct_ejec,
+                        DATE_FORMAT(e.fecha_corte, '%d/%m/%Y') as fecha_corte
+                 FROM presupuesto_ejecucion e
+                 JOIN presupuesto_categorias c ON e.categoria_id = c.id
+                 WHERE c.nombre LIKE ? OR c.codigo LIKE ?
+                 ORDER BY e.fecha_corte DESC
+                 LIMIT ?"
+            );
+            $stmt->execute([$param, $param, $limit]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $results[] = [
+                    'type'      => 'Ejecución Presupuestaria',
+                    'icon'      => 'document',
+                    'primary'   => $row['categoria'],
+                    'secondary' => $row['tipo'] . ' · Ejercicio ' . $row['ejercicio_fiscal'] . ' · ' . number_format($row['pct_ejec'], 1) . '% ejecutado',
+                    'badge'     => $row['fecha_corte'],
+                    'route'     => '/admin/presupuesto',
+                    'entity_id' => $row['id'],
+                ];
+            }
+        } catch (\Throwable $e) {}
+
         return $results;
     }
 }
