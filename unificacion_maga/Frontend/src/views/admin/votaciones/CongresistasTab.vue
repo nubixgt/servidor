@@ -13,36 +13,9 @@
             </div>
 
             <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Card 1 -->
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center shrink-0">
-                        <UsersIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Total Congresistas</h3>
-                        <p class="text-3xl font-black text-blue-600 dark:text-blue-400">{{ stats.total }}</p>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-500 flex items-center justify-center shrink-0">
-                        <ChartPieIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Promedio Ausencias</h3>
-                        <p class="text-3xl font-black text-amber-500">{{ Number(stats.promedio_ausencias || 0).toFixed(1) }}%</p>
-                    </div>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center shrink-0">
-                        <CheckBadgeIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Total Votos</h3>
-                        <p class="text-3xl font-black text-blue-600 dark:text-blue-400">{{ Number(stats.total_votos || 0).toLocaleString() }}</p>
-                    </div>
-                </div>
+                <StatCard :icon="UsersIcon" label="Total Congresistas" :value="stats.total" color="blue" />
+                <StatCard :icon="ChartPieIcon" label="Promedio Ausencias" :value="Number(stats.promedio_ausencias || 0).toFixed(1) + '%'" color="amber" />
+                <StatCard :icon="CheckBadgeIcon" label="Total Votos" :value="Number(stats.total_votos || 0).toLocaleString()" color="emerald" />
             </div>
         </div>
 
@@ -176,6 +149,7 @@ import {
     ChartBarIcon
 } from '@heroicons/vue/24/outline';
 import VotacionesService from '@/services/votaciones/VotacionesService';
+import StatCard from '@/components/common/StatCard.vue';
 
 import { useRoute } from 'vue-router';
 

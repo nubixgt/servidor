@@ -13,46 +13,10 @@
             </div>
 
             <div v-else class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                 <!-- Card 1 -->
-                 <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 flex items-center justify-center shrink-0">
-                        <RectangleGroupIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Total Bloques</h3>
-                        <p class="text-3xl font-black text-indigo-600 dark:text-indigo-400">{{ summary.bloques }}</p>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-cyan-50 dark:bg-cyan-900/20 text-cyan-500 flex items-center justify-center shrink-0">
-                        <UsersIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Congresistas</h3>
-                        <p class="text-3xl font-black text-cyan-600 dark:text-cyan-400">{{ summary.congresistas }}</p>
-                    </div>
-                </div>
-                 <!-- Card 3 -->
-                 <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center shrink-0">
-                        <CheckBadgeIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Votos Registrados</h3>
-                        <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400">{{ Number(summary.votos).toLocaleString() }}</p>
-                    </div>
-                </div>
-                <!-- Card 4 -->
-                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center shrink-0">
-                        <CursorArrowRaysIcon class="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h3 class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Eventos</h3>
-                        <p class="text-3xl font-black text-blue-600 dark:text-blue-400">{{ summary.eventos }}</p>
-                    </div>
-                </div>
+                <StatCard :icon="RectangleGroupIcon" label="Total Bloques" :value="summary.bloques" color="indigo" />
+                <StatCard :icon="UsersIcon" label="Congresistas" :value="summary.congresistas" color="cyan" />
+                <StatCard :icon="CheckBadgeIcon" label="Votos Registrados" :value="Number(summary.votos).toLocaleString()" color="emerald" />
+                <StatCard :icon="CursorArrowRaysIcon" label="Eventos" :value="summary.eventos" color="blue" />
             </div>
         </div>
 
