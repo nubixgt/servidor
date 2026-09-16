@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import L from 'leaflet'
 import * as topojson from 'topojson-client'
 import 'leaflet/dist/leaflet.css'
-import { Maximize2, Minimize2, RefreshCcw, ArrowLeft, Map as MapIcon } from 'lucide-vue-next'
+import { RefreshCcw, ArrowLeft, Map as MapIcon, Plus, Minus } from 'lucide-vue-next'
 
 const props = defineProps({
   data: {
@@ -17,7 +17,7 @@ const emit = defineEmits(['select-dept', 'select-muni'])
 const normalizeText = (text) => {
   if (!text) return ''
   return text.toString().normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .toUpperCase()
     .trim()
 }
@@ -26,21 +26,12 @@ const formatNum = (val) => new Intl.NumberFormat('es-GT').format(val || 0)
 
 const getTooltipContent = (name, data) => {
   return `
-    <div class="text-[10px] font-black uppercase mb-1 border-b border-white/20 pb-1">${name.toUpperCase()}</div>
-    <div class="flex flex-col gap-1">
-      <div class="flex justify-between gap-4">
-        <span class="opacity-70">Total:</span>
-        <span class="font-bold">${formatNum(data.beneficiarios)}</span>
-      </div>
-      <div class="flex justify-between gap-4">
-        <span class="opacity-70">Hombres:</span>
-        <span class="font-bold text-blue-300">${formatNum(data.hombres)}</span>
-      </div>
-      <div class="flex justify-between gap-4">
-        <span class="opacity-70">Mujeres:</span>
-        <span class="font-bold text-pink-300">${formatNum(data.mujeres)}</span>
-      </div>
-    </div>
+    <div class="popup-name">${(name || '').toUpperCase()}</div>
+    <div class="popup-dept">${data.beneficiarios !== undefined ? 'Ejecución VIDER' : 'Sin datos registrados'}</div>
+    <div class="popup-row"><span class="k">Beneficiarios</span><span class="v">${formatNum(data.beneficiarios)}</span></div>
+    <div class="popup-row"><span class="k">Hombres</span><span class="v">${formatNum(data.hombres)}</span></div>
+    <div class="popup-row"><span class="k">Mujeres</span><span class="v">${formatNum(data.mujeres)}</span></div>
+    <div class="popup-action">Click para explorar →</div>
   `
 }
 
@@ -54,6 +45,7 @@ const guatemalaCenter = [15.78, -90.23]
 
 const currentView = ref('national') // 'national' or 'department'
 const selectedArea = ref('Guatemala')
+const muniCount = ref(0)
 
 const getColor = (d) => {
   return d > 5000 ? '#fb923c' :
@@ -67,13 +59,13 @@ const deptStyle = (feature) => {
   const nameNorm = normalizeText(feature.properties.Departamento || feature.properties.NOMBRE || feature.properties.nombre)
   const deptData = props.data.find(d => normalizeText(d.departamento) === nameNorm)
   const total = deptData ? (parseInt(deptData.beneficiarios) || 0) : 0
-  
+
   return {
     fillColor: getColor(total),
     weight: 1.5,
     opacity: 1,
-    color: 'rgba(255,255,255,0.4)',
-    fillOpacity: 0.7
+    color: 'rgba(255,255,255,0.5)',
+    fillOpacity: 0.75
   }
 }
 
@@ -81,8 +73,8 @@ const highlightFeature = (e) => {
   const layer = e.target
   layer.setStyle({
     weight: 3,
-    color: '#fff',
-    fillOpacity: 0.9
+    color: '#48d7ff',
+    fillOpacity: 0.92
   })
   layer.bringToFront()
 }
@@ -95,12 +87,12 @@ const onDeptClick = (e) => {
   const feature = e.target.feature
   const name = feature.properties.Departamento || feature.properties.NOMBRE || feature.properties.nombre
   const code = feature.properties.id || feature.properties.CODIGO || feature.properties.codigo
-  
+
   map.fitBounds(e.target.getBounds(), { padding: [50, 50] })
   currentView.value = 'department'
   selectedArea.value = name
   emit('select-dept', { name, code })
-  
+
   loadMunicipalities(code)
 }
 
@@ -110,15 +102,16 @@ const loadMunicipalities = async (deptCode) => {
     const topoData = await response.json()
     const key = Object.keys(topoData.objects)[0]
     const geoData = topojson.feature(topoData, topoData.objects[key])
-    
+
     if (munisLayer) map.removeLayer(munisLayer)
     if (deptosLayer) map.removeLayer(deptosLayer)
-    
+
     const filtered = {
       type: 'FeatureCollection',
       features: geoData.features.filter(f => f.properties.id_depto == deptCode)
     }
-    
+    muniCount.value = filtered.features.length
+
     munisLayer = L.geoJSON(filtered, {
       style: (feature) => {
         const name = feature.properties.Municipio || feature.properties.nombre
@@ -128,14 +121,14 @@ const loadMunicipalities = async (deptCode) => {
           fillColor: getColor(total),
           weight: 1.5,
           opacity: 1,
-          color: 'rgba(255,255,255,0.4)',
-          fillOpacity: 0.7
+          color: 'rgba(255,255,255,0.5)',
+          fillOpacity: 0.75
         }
       },
       onEachFeature: (feature, layer) => {
         const name = feature.properties.Municipio || feature.properties.nombre || ''
         const data = props.data.find(d => normalizeText(d.municipio) === normalizeText(name)) || {}
-        layer.bindTooltip(getTooltipContent(name, data), { className: 'map-tooltip', sticky: true })
+        layer.bindTooltip(getTooltipContent(name, data), { className: 'map-tooltip', sticky: true, opacity: 1 })
 
         layer.on({
           mouseover: highlightFeature,
@@ -165,30 +158,30 @@ const resetMap = () => {
 
 onMounted(async () => {
   const bounds = [[13.0, -93.0], [18.5, -87.5]] // Límites estrictos para Guatemala
-  
+
   map = L.map(mapContainer.value, {
     center: guatemalaCenter,
     zoom: 7,
     minZoom: 7,
-    maxZoom: 10,
+    maxZoom: 12,
     maxBounds: bounds,
     maxBoundsViscosity: 1.0,
     zoomControl: false,
     attributionControl: false
   })
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap'
+  // Basemap satelital (Esri World Imagery) — sin necesidad de API key
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri',
+    maxZoom: 19
   }).addTo(map)
-  
-  L.control.zoom({ position: 'topright' }).addTo(map)
 
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}assets/vider/maps/deptos.json`)
     const topoData = await response.json()
     const key = Object.keys(topoData.objects)[0]
     const geoData = topojson.feature(topoData, topoData.objects[key])
-    
+
     deptosLayer = L.geoJSON(geoData, {
       style: deptStyle,
       onEachFeature: (feature, layer) => {
@@ -199,10 +192,10 @@ onMounted(async () => {
         })
         const name = feature.properties.Departamento || feature.properties.NOMBRE || feature.properties.nombre || ''
         const data = props.data.find(d => normalizeText(d.departamento) === normalizeText(name)) || {}
-        layer.bindTooltip(getTooltipContent(name, data), { className: 'map-tooltip', sticky: true })
+        layer.bindTooltip(getTooltipContent(name, data), { className: 'map-tooltip', sticky: true, opacity: 1 })
       }
     }).addTo(map)
-    
+
     map.fitBounds(guatemalaBounds)
   } catch (error) {
     console.error('Error loading departments:', error)
@@ -231,8 +224,8 @@ watch(() => props.data, (newData) => {
         fillColor: getColor(total),
         weight: 1.5,
         opacity: 1,
-        color: 'rgba(255,255,255,0.4)',
-        fillOpacity: 0.7
+        color: 'rgba(255,255,255,0.5)',
+        fillOpacity: 0.75
       }
     })
     munisLayer.eachLayer(layer => {
@@ -245,36 +238,37 @@ watch(() => props.data, (newData) => {
 </script>
 
 <template>
-  <div class="relative w-full h-full overflow-hidden">
-    <!-- Header info Overlay -->
-    <div class="absolute top-6 left-6 z-[1000] flex flex-col gap-3">
-      <div class="flex items-center gap-3 bg-slate-900 border border-white/20 p-3 rounded-2xl shadow-2xl">
-        <div class="p-2 bg-indigo-500 rounded-xl shadow-lg shadow-indigo-500/30">
-          <MapIcon class="w-5 h-5 text-white"/>
-        </div>
-        <div>
-          <h3 class="text-sm font-black text-white leading-tight uppercase tracking-widest">Mapa de Ejecución</h3>
-          <p class="text-[9px] font-bold text-indigo-300 uppercase tracking-widest opacity-90">VIDER · Guatemala</p>
+  <div class="relative w-full h-full overflow-hidden bg-[#07111f]">
+    <!-- Topbar glass (estilo Inteligencia Territorial) -->
+    <div class="absolute top-4 left-4 right-4 z-[1000] flex items-center justify-between gap-4 px-5 py-3.5 bg-[rgba(10,20,35,0.65)] border border-white/10 rounded-3xl backdrop-blur-2xl shadow-2xl">
+      <div>
+        <h3 class="flex items-center gap-2 text-sm font-black text-white uppercase tracking-widest">
+          <MapIcon class="w-4 h-4 text-cyan-400"/> Mapa de Ejecución VIDER
+        </h3>
+        <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
+          <span class="cursor-pointer hover:text-white transition-colors font-semibold" :class="currentView === 'national' ? 'text-white' : ''" @click="resetMap">Guatemala</span>
+          <span v-if="currentView === 'department'" class="opacity-40">›</span>
+          <span v-if="currentView === 'department'" class="text-white font-bold">{{ selectedArea }}</span>
         </div>
       </div>
-      
-      <button v-if="currentView !== 'national'" @click="resetMap" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 border border-indigo-400 rounded-xl text-white text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-indigo-700 transition-all active:scale-95 w-fit shadow-lg shadow-indigo-500/40">
-        <ArrowLeft class="w-3.5 h-3.5"/> Volver al Mapa Nacional
-      </button>
-    </div>
-
-    <!-- Area info Badge -->
-    <div class="absolute top-6 right-16 z-[1000] hidden md:block">
-      <div class="px-6 py-2.5 bg-slate-900 border border-white/20 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl">
-        {{ selectedArea }}
+      <div class="flex items-center gap-2">
+        <span class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-400/10 border border-cyan-400/30 text-cyan-300">
+          {{ currentView === 'department' ? muniCount + ' municipios' : '22 Departamentos' }}
+        </span>
+        <button v-if="currentView !== 'national'" @click="resetMap" class="map-btn back-btn" title="Volver al mapa nacional">
+          <ArrowLeft class="w-3.5 h-3.5"/> <span class="hidden md:inline">Volver</span>
+        </button>
+        <button @click="map?.zoomIn()" class="map-btn" title="Acercar"><Plus class="w-3.5 h-3.5"/></button>
+        <button @click="map?.zoomOut()" class="map-btn" title="Alejar"><Minus class="w-3.5 h-3.5"/></button>
+        <button @click="resetMap" class="map-btn" title="Restablecer"><RefreshCcw class="w-3.5 h-3.5"/></button>
       </div>
     </div>
 
     <!-- Map Container -->
-    <div ref="mapContainer" class="w-full h-full bg-slate-900"></div>
+    <div ref="mapContainer" class="w-full h-full"></div>
 
     <!-- Legend -->
-    <div class="absolute bottom-6 left-6 z-[1000] bg-slate-900 border border-white/20 p-5 rounded-3xl shadow-2xl">
+    <div class="absolute bottom-6 left-6 z-[1000] bg-[rgba(10,20,35,0.75)] border border-white/10 backdrop-blur-2xl p-5 rounded-3xl shadow-2xl">
       <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">Escala de Beneficiarios</h4>
       <div class="flex gap-2">
         <div v-for="scale in [
@@ -289,45 +283,47 @@ watch(() => props.data, (newData) => {
         </div>
       </div>
     </div>
-
-    <!-- Controls button -->
-    <div class="absolute bottom-6 right-6 z-[1000] flex flex-col gap-2">
-      <button @click="resetMap" class="p-3 bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-xl text-white hover:bg-white/20 transition-all active:scale-95">
-        <RefreshCcw class="w-4 h-4"/>
-      </button>
-    </div>
   </div>
 </template>
 
 <style>
+.map-btn {
+  width: 36px; height: 36px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #edf5ff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  transition: all .2s;
+}
+.map-btn:hover { background: #2f81f7; border-color: #2f81f7; transform: translateY(-2px); }
+.back-btn { width: auto; padding: 0 14px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #48d7ff; border-color: rgba(72,215,255,0.3); }
+.back-btn:hover { color: #001228; background: #48d7ff; }
+
 .map-tooltip {
-  background: rgba(15, 23, 42, 0.9) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15) !important;
-  border-radius: 12px !important;
-  color: white !important;
-  padding: 8px 14px !important;
-  font-weight: 900 !important;
-  font-size: 10px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(11, 23, 41, 0.97) !important;
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(74, 144, 217, 0.22) !important;
+  border-radius: 14px !important;
+  color: #edf5ff !important;
+  padding: 14px 18px !important;
+  min-width: 190px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.5) !important;
 }
+.leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before, .leaflet-tooltip-right:before { display: none !important; }
+.popup-name { font-size: 14px; font-weight: 800; color: white; margin-bottom: 2px; letter-spacing: .02em; }
+.popup-dept { font-size: 10px; color: #8ea6c2; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .06em; }
+.popup-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 12px; }
+.popup-row:last-of-type { border-bottom: none; }
+.popup-row .k { color: #8ea6c2; }
+.popup-row .v { font-weight: 700; }
+.popup-action { margin-top: 10px; text-align: center; color: #48d7ff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+
 .leaflet-container {
-  background: transparent !important;
-}
-.leaflet-control-zoom {
-  border: none !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-}
-.leaflet-control-zoom-in, .leaflet-control-zoom-out {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  color: white !important;
-  font-weight: bold !important;
-}
-.leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
+  background: #07111f !important;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 </style>
