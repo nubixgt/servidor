@@ -17,7 +17,7 @@ const emit = defineEmits(['select-dept', 'select-muni'])
 const normalizeText = (text) => {
   if (!text) return ''
   return text.toString().normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase()
     .trim()
 }
