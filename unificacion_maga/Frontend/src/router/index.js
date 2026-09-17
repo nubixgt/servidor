@@ -192,6 +192,24 @@ const router = createRouter({
     routes
 });
 
+// ─── Recuperación de chunks obsoletos ─────────────────────────────────────
+// Cuando se publica un nuevo build, los archivos JS de las rutas antiguas
+// dejan de existir en el servidor. Si el navegador tiene abierta una pestaña
+// con el bundle anterior, el import() dinámico falla y Apache responde con
+// index.html (text/html) en vez del módulo JS. En ese caso forzamos una
+// recarga completa (una sola vez) para obtener el build actualizado.
+router.onError((error, to) => {
+    const isChunkError = /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i.test(error?.message || '');
+
+    if (isChunkError) {
+        const reloadKey = 'chunk-reload-attempted';
+        if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, '1');
+            window.location.href = to.fullPath;
+        }
+    }
+});
+
 // ─── Navigation Guard ──────────────────────────────────────────────────────
 // Valida autenticación Y expiración del token en cada cambio de ruta
 router.beforeEach((to, from, next) => {
@@ -223,6 +241,10 @@ function isTokenExpired(token) {
     } catch (_) { /* token mal formado */ }
     return false;
 }
+
+router.afterEach(() => {
+    sessionStorage.removeItem('chunk-reload-attempted');
+});
 
 export default router;
 

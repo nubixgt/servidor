@@ -22,14 +22,14 @@ export default defineConfig({
                 orientation: 'portrait',
                 icons: [
                     {
-                        src: 'logo-maga.png',
-                        sizes: 'any',
+                        src: 'icons/icon-any.png',
+                        sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any'
                     },
                     {
-                        src: 'logo-maga.png',
-                        sizes: 'any',
+                        src: 'icons/icon-maskable.png',
+                        sizes: '512x512',
                         type: 'image/png',
                         purpose: 'maskable'
                     }
