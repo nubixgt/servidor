@@ -1335,6 +1335,28 @@ let bodegasFilterBodega = '';
 let bodegasFilterConv = '';
 let bodegasSearchTerm = '';
 let currentEditBodegaRow = null;
+let bodegasSortColumn = null;
+let bodegasSortDirection = 'asc';
+
+function toggleBodegasSort(column) {
+  if (bodegasSortColumn === column) {
+    bodegasSortDirection = bodegasSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    bodegasSortColumn = column;
+    bodegasSortDirection = 'asc';
+  }
+  renderBodegasContent();
+}
+window.toggleBodegasSort = toggleBodegasSort;
+
+function bodegasSortIconHtml(column) {
+  if (bodegasSortColumn !== column) {
+    return '<span style="opacity:0.45;font-size:10px;margin-left:5px">⇅</span>';
+  }
+  return bodegasSortDirection === 'asc'
+    ? '<span style="font-size:10px;margin-left:5px">▲</span>'
+    : '<span style="font-size:10px;margin-left:5px">▼</span>';
+}
 
 function recalculateResumenTotales() {
   if (typeof BODEGAS_RESUMEN_CONVENIOS === 'undefined' || !BODEGAS_RESUMEN_CONVENIOS.filas) return;
@@ -1630,12 +1652,44 @@ function renderBodegasResumenConvenios(container) {
     filas = filas.filter(r => r.bodega === bodegasFilterBodega || r.bodega_id === bodegasFilterBodega);
   }
   if (bodegasSearchTerm) {
-    filas = filas.filter(r => 
-      r.bodega.toLowerCase().includes(bodegasSearchTerm) || 
+    filas = filas.filter(r =>
+      r.bodega.toLowerCase().includes(bodegasSearchTerm) ||
       (r.nombre && r.nombre.toLowerCase().includes(bodegasSearchTerm)) ||
       (r.entidad && r.entidad.toLowerCase().includes(bodegasSearchTerm)) ||
       (r.departamento && r.departamento.toLowerCase().includes(bodegasSearchTerm))
     );
+  }
+
+  if (bodegasSortColumn) {
+    const col = bodegasSortColumn;
+    const dir = bodegasSortDirection === 'asc' ? 1 : -1;
+    filas = [...filas].sort((a, b) => {
+      const metaA = BODEGAS_METADATA[a.bodega_id] || BODEGAS_METADATA[a.bodega] || {};
+      const metaB = BODEGAS_METADATA[b.bodega_id] || BODEGAS_METADATA[b.bodega] || {};
+      let va, vb;
+      switch (col) {
+        case 'bodega':
+          va = metaA.nombre || a.nombre || a.bodega || '';
+          vb = metaB.nombre || b.nombre || b.bodega || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'entidad':
+          va = a.entidad || metaA.entidad || '';
+          vb = b.entidad || metaB.entidad || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'departamento':
+          va = a.departamento || metaA.departamento || '';
+          vb = b.departamento || metaB.departamento || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'part':
+          va = a.total || 0;
+          vb = b.total || 0;
+          return (va - vb) * dir;
+        default:
+          va = a[col] || 0;
+          vb = b[col] || 0;
+          return (va - vb) * dir;
+      }
+    });
   }
 
   let html = `
@@ -1650,7 +1704,7 @@ function renderBodegasResumenConvenios(container) {
 
     html += `
       <div class="card glass-panel" style="padding:18px 20px;border-left:4px solid ${conv.color};background:linear-gradient(145deg, rgba(255,255,255,0.96), rgba(248,251,255,0.85));box-shadow:0 6px 20px rgba(10,37,84,0.06);position:relative;overflow:hidden">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="display:flex;align-items:flex-start;margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:22px">${conv.icono || '📦'}</span>
             <div>
@@ -1660,9 +1714,6 @@ function renderBodegasResumenConvenios(container) {
               <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-top:2px;font-family:'Sora',sans-serif">${conv.nombre}</h4>
             </div>
           </div>
-          <span style="font-size:11px;font-weight:700;color:${conv.color};background:rgba(255,255,255,0.9);padding:3px 8px;border-radius:12px;border:1px solid ${conv.color}33">
-            ${pct}%
-          </span>
         </div>
 
         <div style="margin:12px 0 8px">
@@ -1715,25 +1766,25 @@ function renderBodegasResumenConvenios(container) {
         <table style="width:100%;border-collapse:collapse;font-size:12.5px;min-width:980px">
           <thead>
             <tr style="background:#133d79;color:#fff">
-              <th style="padding:12px 14px;text-align:left;min-width:180px">Bodega / Almacén</th>
-              <th style="padding:12px 10px;text-align:center;width:80px">Entidad</th>
-              <th style="padding:12px 12px;text-align:left;min-width:120px">Departamento</th>
-              <th style="padding:12px 12px;text-align:right;background:#1e40af;color:#dbeafe" title="Convenio 02-2026 (INSAN)">
-                02-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">INSAN</span>
+              <th style="padding:12px 14px;text-align:left;min-width:180px;cursor:pointer;user-select:none" onclick="toggleBodegasSort('bodega')" title="Ordenar por Bodega / Almacén">Bodega / Almacén${bodegasSortIconHtml('bodega')}</th>
+              <th style="padding:12px 10px;text-align:center;width:80px;cursor:pointer;user-select:none" onclick="toggleBodegasSort('entidad')" title="Ordenar por Entidad">Entidad${bodegasSortIconHtml('entidad')}</th>
+              <th style="padding:12px 12px;text-align:left;min-width:120px;cursor:pointer;user-select:none" onclick="toggleBodegasSort('departamento')" title="Ordenar por Departamento">Departamento${bodegasSortIconHtml('departamento')}</th>
+              <th style="padding:12px 12px;text-align:right;background:#1e40af;color:#dbeafe;cursor:pointer;user-select:none" onclick="toggleBodegasSort('c02_2026')" title="Ordenar por Convenio 02-2026 (INSAN)">
+                02-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">INSAN</span>${bodegasSortIconHtml('c02_2026')}
               </th>
-              <th style="padding:12px 12px;text-align:right;background:#065f46;color:#d1fae5" title="Convenio 03-2026 (Reserva Estratégica)">
-                03-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">Res. Estratégica</span>
+              <th style="padding:12px 12px;text-align:right;background:#065f46;color:#d1fae5;cursor:pointer;user-select:none" onclick="toggleBodegasSort('c03_2026')" title="Ordenar por Convenio 03-2026 (Reserva Estratégica)">
+                03-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">Res. Estratégica</span>${bodegasSortIconHtml('c03_2026')}
               </th>
-              <th style="padding:12px 12px;text-align:right;background:#92400e;color:#fef3c7" title="Convenio 04-2026 (Alimentos por Acciones)">
-                04-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">Alim. Acciones</span>
+              <th style="padding:12px 12px;text-align:right;background:#92400e;color:#fef3c7;cursor:pointer;user-select:none" onclick="toggleBodegasSort('c04_2026')" title="Ordenar por Convenio 04-2026 (Alimentos por Acciones)">
+                04-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">Alim. Acciones</span>${bodegasSortIconHtml('c04_2026')}
               </th>
-              <th style="padding:12px 12px;text-align:right;background:#5b21b6;color:#ede9fe" title="Convenio 05-2026 (NDA - MJ - MT - MC)">
-                05-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">NDA·MJ·MT·MC</span>
+              <th style="padding:12px 12px;text-align:right;background:#5b21b6;color:#ede9fe;cursor:pointer;user-select:none" onclick="toggleBodegasSort('c05_2026')" title="Ordenar por Convenio 05-2026 (NDA - MJ - MT - MC)">
+                05-2026<br><span style="font-size:10px;font-weight:400;opacity:0.9">NDA·MJ·MT·MC</span>${bodegasSortIconHtml('c05_2026')}
               </th>
-              <th style="padding:12px 14px;text-align:right;background:#0f274a;color:#fff;font-weight:800">
-                TOTAL PARA<br>PROGRAMAR
+              <th style="padding:12px 14px;text-align:right;background:#0f274a;color:#fff;font-weight:800;cursor:pointer;user-select:none" onclick="toggleBodegasSort('total')" title="Ordenar por Total para Programar">
+                TOTAL PARA<br>PROGRAMAR${bodegasSortIconHtml('total')}
               </th>
-              <th style="padding:12px 12px;text-align:right">Part. %</th>
+              <th style="padding:12px 12px;text-align:right;cursor:pointer;user-select:none" onclick="toggleBodegasSort('part')" title="Ordenar por Participación %">Part. %${bodegasSortIconHtml('part')}</th>
               <th style="padding:12px 14px;text-align:center;min-width:130px">Composición</th>
               <th style="padding:12px 14px;text-align:center;min-width:100px">Acciones</th>
             </tr>
