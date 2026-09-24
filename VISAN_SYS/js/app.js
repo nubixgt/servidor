@@ -1358,6 +1358,29 @@ function bodegasSortIconHtml(column) {
     : '<span style="font-size:10px;margin-left:5px">▼</span>';
 }
 
+let bodegasInvSortColumn = null;
+let bodegasInvSortDirection = 'asc';
+
+function toggleBodegasInvSort(column) {
+  if (bodegasInvSortColumn === column) {
+    bodegasInvSortDirection = bodegasInvSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    bodegasInvSortColumn = column;
+    bodegasInvSortDirection = 'asc';
+  }
+  renderBodegasContent();
+}
+window.toggleBodegasInvSort = toggleBodegasInvSort;
+
+function bodegasInvSortIconHtml(column) {
+  if (bodegasInvSortColumn !== column) {
+    return '<span style="opacity:0.45;font-size:10px;margin-left:5px">⇅</span>';
+  }
+  return bodegasInvSortDirection === 'asc'
+    ? '<span style="font-size:10px;margin-left:5px">▲</span>'
+    : '<span style="font-size:10px;margin-left:5px">▼</span>';
+}
+
 function recalculateResumenTotales() {
   if (typeof BODEGAS_RESUMEN_CONVENIOS === 'undefined' || !BODEGAS_RESUMEN_CONVENIOS.filas) return;
   let c02 = 0, c03 = 0, c04 = 0, c05 = 0;
@@ -2112,11 +2135,45 @@ function renderBodegasTable(container) {
   if (bodegasFilterBodega) rows = rows.filter(r => r.bodega === bodegasFilterBodega);
   if (bodegasFilterConv) rows = rows.filter(r => r.convenio === bodegasFilterConv);
   if (bodegasSearchTerm) {
-    rows = rows.filter(r => 
+    rows = rows.filter(r =>
       r.bodega.toLowerCase().includes(bodegasSearchTerm) ||
       (r.convenio && r.convenio.toLowerCase().includes(bodegasSearchTerm)) ||
       (r.programa && r.programa.toLowerCase().includes(bodegasSearchTerm))
     );
+  }
+
+  if (bodegasInvSortColumn) {
+    const col = bodegasInvSortColumn;
+    const dir = bodegasInvSortDirection === 'asc' ? 1 : -1;
+    rows = [...rows].sort((a, b) => {
+      let va, vb;
+      switch (col) {
+        case 'bodega':
+          va = (BODEGAS_METADATA[a.bodega] || {}).nombre || a.bodega || '';
+          vb = (BODEGAS_METADATA[b.bodega] || {}).nombre || b.bodega || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'convenio':
+          va = a.convenio || '';
+          vb = b.convenio || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'programa':
+          va = a.programa || '';
+          vb = b.programa || '';
+          return va.localeCompare(vb, 'es') * dir;
+        case 'mezcla_900g':
+          va = a.mezcla_900g || a.harina_soya_900g || 0;
+          vb = b.mezcla_900g || b.harina_soya_900g || 0;
+          return (va - vb) * dir;
+        case 'maiz_blanco_25lb':
+          va = a.maiz_blanco_25lb || a.maiz_25lb || 0;
+          vb = b.maiz_blanco_25lb || b.maiz_25lb || 0;
+          return (va - vb) * dir;
+        default:
+          va = a[col] || 0;
+          vb = b[col] || 0;
+          return (va - vb) * dir;
+      }
+    });
   }
 
   // Totales
@@ -2166,47 +2223,47 @@ function renderBodegasTable(container) {
         <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1380px">
           <thead>
             <tr style="background:#133d79;color:#fff">
-              <th style="padding:12px 14px;text-align:left;position:sticky;left:0;background:#133d79;z-index:10;min-width:180px">
-                Bodega
+              <th style="padding:12px 14px;text-align:left;position:sticky;left:0;background:#133d79;z-index:10;min-width:180px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('bodega')" title="Ordenar por Bodega">
+                Bodega${bodegasInvSortIconHtml('bodega')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:85px">
-                Arroz<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 5 lb</span>
+              <th style="padding:10px 8px;text-align:right;min-width:85px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('arroz_5lb')" title="Ordenar por Arroz">
+                Arroz<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 5 lb</span>${bodegasInvSortIconHtml('arroz_5lb')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:90px">
-                Frijol Negro<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 05 lb</span>
+              <th style="padding:10px 8px;text-align:right;min-width:90px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('frijol_5lb')" title="Ordenar por Frijol Negro 5lb">
+                Frijol Negro<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 05 lb</span>${bodegasInvSortIconHtml('frijol_5lb')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:90px">
-                Frijol Negro<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 10 lb</span>
+              <th style="padding:10px 8px;text-align:right;min-width:90px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('frijol_10lb')" title="Ordenar por Frijol Negro 10lb">
+                Frijol Negro<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 10 lb</span>${bodegasInvSortIconHtml('frijol_10lb')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:85px">
-                Azúcar<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 500 g</span>
+              <th style="padding:10px 8px;text-align:right;min-width:85px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('azucar_500g')" title="Ordenar por Azúcar">
+                Azúcar<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 500 g</span>${bodegasInvSortIconHtml('azucar_500g')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:115px">
-                Mezcla Harina<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Maíz/Soya 900g</span>
+              <th style="padding:10px 8px;text-align:right;min-width:115px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('mezcla_900g')" title="Ordenar por Mezcla Harina">
+                Mezcla Harina<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Maíz/Soya 900g</span>${bodegasInvSortIconHtml('mezcla_900g')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:85px">
-                Sal Yodada<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 460 g</span>
+              <th style="padding:10px 8px;text-align:right;min-width:85px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('sal_460g')" title="Ordenar por Sal Yodada 460g">
+                Sal Yodada<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 460 g</span>${bodegasInvSortIconHtml('sal_460g')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:85px">
-                Sal Yodada<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 500 g</span>
+              <th style="padding:10px 8px;text-align:right;min-width:85px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('sal_500g')" title="Ordenar por Sal Yodada 500g">
+                Sal Yodada<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 500 g</span>${bodegasInvSortIconHtml('sal_500g')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:95px">
-                Aceite Vegetal<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Botella de 800 ml</span>
+              <th style="padding:10px 8px;text-align:right;min-width:95px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('aceite_800ml')" title="Ordenar por Aceite Vegetal">
+                Aceite Vegetal<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Botella de 800 ml</span>${bodegasInvSortIconHtml('aceite_800ml')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:95px">
-                Hojuela Avena<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 1 kg</span>
+              <th style="padding:10px 8px;text-align:right;min-width:95px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('avena_1kg')" title="Ordenar por Hojuela Avena">
+                Hojuela Avena<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 1 kg</span>${bodegasInvSortIconHtml('avena_1kg')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:115px">
-                Harina de Maíz<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Nixtamalizada 5lb</span>
+              <th style="padding:10px 8px;text-align:right;min-width:115px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('harina_maiz_5lb')" title="Ordenar por Harina de Maíz">
+                Harina de Maíz<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Nixtamalizada 5lb</span>${bodegasInvSortIconHtml('harina_maiz_5lb')}
               </th>
-              <th style="padding:10px 8px;text-align:right;min-width:95px">
-                Maíz Blanco<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 25 lb</span>
+              <th style="padding:10px 8px;text-align:right;min-width:95px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('maiz_blanco_25lb')" title="Ordenar por Maíz Blanco">
+                Maíz Blanco<br><span style="font-size:9.5px;font-weight:400;opacity:0.85">Bolsa de 25 lb</span>${bodegasInvSortIconHtml('maiz_blanco_25lb')}
               </th>
-              <th style="padding:10px 10px;text-align:right;min-width:110px;background:#fed7aa;color:#7c2d12;font-weight:800;border-left:1px solid #fdba74;border-right:1px solid #fdba74">
-                DISPONIBLE<br>EN RACIONES
+              <th style="padding:10px 10px;text-align:right;min-width:110px;background:#fed7aa;color:#7c2d12;font-weight:800;border-left:1px solid #fdba74;border-right:1px solid #fdba74;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('disponible_raciones')" title="Ordenar por Disponible en Raciones">
+                DISPONIBLE<br>EN RACIONES${bodegasInvSortIconHtml('disponible_raciones')}
               </th>
-              <th style="padding:10px 10px;text-align:center;min-width:85px">CONVENIO</th>
-              <th style="padding:10px 12px;text-align:left;min-width:140px">PROGRAMA / DAAN</th>
+              <th style="padding:10px 10px;text-align:center;min-width:85px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('convenio')" title="Ordenar por Convenio">CONVENIO${bodegasInvSortIconHtml('convenio')}</th>
+              <th style="padding:10px 12px;text-align:left;min-width:140px;cursor:pointer;user-select:none" onclick="toggleBodegasInvSort('programa')" title="Ordenar por Programa / DAAN">PROGRAMA / DAAN${bodegasInvSortIconHtml('programa')}</th>
               ${isEditor ? `<th style="padding:10px 8px;text-align:center;min-width:60px">Acción</th>` : ''}
             </tr>
           </thead>
