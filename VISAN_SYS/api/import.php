@@ -71,10 +71,15 @@ switch ($accion) {
             array_filter($actuales, fn($a, $cod) => !isset($codNuevos[$cod]), ARRAY_FILTER_USE_BOTH)
         ));
 
-        // Si la celda «Fecha de actualización» viene vacía, se intenta leer del nombre ("... 23 sep.xlsx")
+        // Si la celda «Fecha de actualización» viene vacía, se intenta leer del nombre del archivo:
+        // primero como "... 23 sep.xlsx" y, si no, como "... 24_09_2026.xlsx" (día_mes_año numérico).
         if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})\s*(?:de\s+)?(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)[a-z]*\.?\b/iu', $arch['name'], $m)) {
             $mes = array_search(strtolower($m[2]), ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']) + 1;
             if (checkdate($mes, (int)$m[1], (int)date('Y'))) $r['fecha_corte'] = sprintf('%s-%02d-%02d', date('Y'), $mes, $m[1]);
+        }
+        if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})[_.\-\/](\d{1,2})[_.\-\/](\d{4})\b/', $arch['name'], $m)) {
+            [$dia, $mes, $anio] = [(int)$m[1], (int)$m[2], (int)$m[3]];
+            if (checkdate($mes, $dia, $anio)) $r['fecha_corte'] = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
         }
 
         $token = bin2hex(random_bytes(16));
