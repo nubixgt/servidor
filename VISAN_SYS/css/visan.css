@@ -44,8 +44,17 @@
 
 /* ── Relojes ── */
 .rx-rings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
-.rx-ring-card{display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;text-align:left;font-family:inherit;color:var(--text);cursor:pointer;background:rgba(255,255,255,.84);border:1px solid rgba(255,255,255,.95);box-shadow:0 10px 30px rgba(34,73,127,.09);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);transition:transform .18s ease,box-shadow .18s ease}
+.rx-ring-card{display:flex;flex-direction:column;align-items:stretch;padding:16px;border-radius:20px;text-align:left;font-family:inherit;color:var(--text);cursor:pointer;background:rgba(255,255,255,.84);border:1px solid rgba(255,255,255,.95);box-shadow:0 10px 30px rgba(34,73,127,.09);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);transition:transform .18s ease,box-shadow .18s ease}
 .rx-ring-card:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(34,73,127,.14)}
+.rx-ring-top{display:flex;align-items:center;gap:14px}
+.rx-ring-budget{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px dashed #d6e2f5}
+.rx-ring-budget-nums{display:flex;gap:18px;min-width:0}
+.rx-ring-budget-nums>div{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.rx-ring-budget-nums span{font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+.rx-ring-budget-nums strong{font-size:13.5px;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rx-ring-budget-mini{position:relative;width:46px;height:46px;flex-shrink:0}
+.rx-ring-budget-mini svg{width:100%;height:100%;display:block}
+.rx-ring-budget-mini span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--navy)}
 .rx-ring{position:relative;width:164px;height:164px;flex-shrink:0}
 .rx-ring svg{width:100%;height:100%;display:block}
 .rx-ring-bg{fill:none;stroke:#e8eef8;stroke-width:11}
@@ -154,6 +163,9 @@ td.rx-c-tot{background:rgba(34,197,94,.08);font-weight:700;color:var(--navy)}
   .rx-ring-lbl{font-size:9.5px;max-width:96px}
   .rx-ring-side strong{font-size:13px}
   .rx-ring-side .rx-ring-meta strong{font-size:16px}
+  .rx-ring-budget-nums{gap:10px}
+  .rx-ring-budget-nums strong{font-size:11.5px;white-space:normal}
+  .rx-ring-budget-mini{width:38px;height:38px}
 }
 @media(max-width:1760px) and (min-width:1251px){.rx-ring-side span{font-size:9px}}
 @media(max-width:1250px){.rx-rings,.rx-parts{grid-template-columns:repeat(2,minmax(0,1fr))}.rx-tables{grid-template-columns:1fr}}

@@ -3,6 +3,15 @@ const vcolor = c => c==='FFFF0000'?'var(--danger)':c==='FFFF8001'?'var(--warn-h)
 const vname  = c => c==='FFFF0000'?'Muy Alta':c==='FFFF8001'?'Alta':'Media';
 const vbadge = c => c==='FFFF0000'?'risk-r':c==='FFFF8001'?'risk-o':'risk-y';
 function fmtN(n){ if(!n&&n!==0)return '—'; return Number(n).toLocaleString('es-GT'); }
+function fmtQ(n){ if(!n&&n!==0)return '—'; return 'Q ' + Number(n).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// Presupuesto financiero por rubro (fuente: matriz de ejecución presupuestaria UDAFA).
+const RX_PRESUPUESTO = {
+  aa:  { presupuesto: 140000000,    ejecutado: 82771650 },
+  apa: { presupuesto: 84654305,     ejecutado: 48641165.70 },
+  res: { presupuesto: 31130243,     ejecutado: 24309000 },
+  tot: { presupuesto: 395784548,    ejecutado: 238493465.70 }
+};
 function fmtD(s){
   if(!s)return '—';
   if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[y,m,d]=s.split('-');return `${d}/${m}/${y}`;}
@@ -178,25 +187,43 @@ const RX_ICONS={
 
 function ringCard(o){
   const p=pctAvance(o.v),C=2*Math.PI*52,off=C*(1-Math.min(p,100)/100);
+  const b=RX_PRESUPUESTO[o.tone];
+  const bp=b?(b.presupuesto?b.ejecutado/b.presupuesto*100:0):0,bC=2*Math.PI*17,bOff=bC*(1-Math.min(bp,100)/100);
   return `<button class="rx-ring-card tone-${o.tone}" onclick="${o.action}" aria-label="${o.label}: ${fmtN(o.v.ej)} raciones ejecutadas, ${fmtPct(p)} de avance. Ver detalle">
-    <div class="rx-ring">
-      <svg viewBox="0 0 120 120" aria-hidden="true">
-        <defs><linearGradient id="rxg-${o.tone}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rx-${o.tone}-a)"/><stop offset="1" stop-color="var(--rx-${o.tone}-b)"/></linearGradient></defs>
-        <circle class="rx-ring-bg" cx="60" cy="60" r="52"/>
-        <circle class="rx-ring-fg" cx="60" cy="60" r="52" stroke="url(#rxg-${o.tone})" style="--c:${C.toFixed(2)};stroke-dasharray:${C.toFixed(2)};stroke-dashoffset:${off.toFixed(2)}" transform="rotate(-90 60 60)"/>
-      </svg>
-      <div class="rx-ring-in">
-        <span class="rx-ring-ico">${RX_ICONS[o.icon]}</span>
-        <span class="rx-ring-lbl">${o.label}</span>
-        <strong class="rx-ring-val">${fmtN(o.v.ej)}</strong>
-        <span class="rx-ring-pct">${fmtPct(p)}</span>
+    <div class="rx-ring-top">
+      <div class="rx-ring">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs><linearGradient id="rxg-${o.tone}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rx-${o.tone}-a)"/><stop offset="1" stop-color="var(--rx-${o.tone}-b)"/></linearGradient></defs>
+          <circle class="rx-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="rx-ring-fg" cx="60" cy="60" r="52" stroke="url(#rxg-${o.tone})" style="--c:${C.toFixed(2)};stroke-dasharray:${C.toFixed(2)};stroke-dashoffset:${off.toFixed(2)}" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="rx-ring-in">
+          <span class="rx-ring-ico">${RX_ICONS[o.icon]}</span>
+          <span class="rx-ring-lbl">${o.label}</span>
+          <strong class="rx-ring-val">${fmtN(o.v.ej)}</strong>
+          <span class="rx-ring-pct">${fmtPct(p)}</span>
+        </div>
+      </div>
+      <div class="rx-ring-side">
+        <div><span>Ejecutado</span><strong>${fmtN(o.v.ej)}</strong></div>
+        <div><span>Programado</span><strong>${fmtN(o.v.prog)}</strong></div>
+        <div class="rx-ring-meta"><span>Total</span><strong>${fmtN(o.v.ej+o.v.prog)}</strong></div>
       </div>
     </div>
-    <div class="rx-ring-side">
-      <div><span>Ejecutado</span><strong>${fmtN(o.v.ej)}</strong></div>
-      <div><span>Programado</span><strong>${fmtN(o.v.prog)}</strong></div>
-      <div class="rx-ring-meta"><span>Total</span><strong>${fmtN(o.v.ej+o.v.prog)}</strong></div>
-    </div>
+    ${b?`<div class="rx-ring-budget">
+      <div class="rx-ring-budget-nums">
+        <div><span>Presupuesto</span><strong>${fmtQ(b.presupuesto)}</strong></div>
+        <div><span>Ejecutado</span><strong>${fmtQ(b.ejecutado)}</strong></div>
+      </div>
+      <div class="rx-ring-budget-mini">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <defs><linearGradient id="rxgm-${o.tone}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--rx-${o.tone}-a)"/><stop offset="1" stop-color="var(--rx-${o.tone}-b)"/></linearGradient></defs>
+          <circle class="rx-ring-bg" cx="20" cy="20" r="17"/>
+          <circle class="rx-ring-fg" cx="20" cy="20" r="17" stroke="url(#rxgm-${o.tone})" stroke-width="5" style="stroke-dasharray:${bC.toFixed(2)};stroke-dashoffset:${bOff.toFixed(2)}" transform="rotate(-90 20 20)"/>
+        </svg>
+        <span>${Math.round(bp)}%</span>
+      </div>
+    </div>`:''}
   </button>`;
 }
 
