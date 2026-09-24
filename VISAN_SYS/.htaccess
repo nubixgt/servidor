@@ -1,0 +1,19 @@
+# Sistema VISAN · protección de archivos internos
+Options -Indexes
+DirectoryIndex index.html
+
+# Datos antiguos, Excel y archivos auxiliares no se sirven públicamente
+<FilesMatch "(^data\.js|\.xlsx|\.sqlite.*|LEEME\.txt|\.DS_Store)$">
+    Require all denied
+</FilesMatch>
+
+# Solo los endpoints del API son accesibles; los archivos de soporte PHP no
+<Files "config.php">
+    Require all denied
+</Files>
+<Files "bootstrap.php">
+    Require all denied
+</Files>
+<Files "matriz_excel.php">
+    Require all denied
+</Files>

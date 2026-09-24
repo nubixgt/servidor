@@ -1,0 +1,37 @@
+SISTEMA DE INFORMACIÓN VISAN · DAAN / MAGA
+Plan de Acción de Emergencia · Raciones de Alimentos 2026
+
+REQUISITOS DEL SERVIDOR
+- PHP 8.0 o superior con las extensiones pdo_sqlite y zip (vienen activas en cPanel).
+- No requiere crear base de datos MySQL: usa SQLite (archivo storage/visan.sqlite),
+  que se crea solo la primera vez que alguien abre el sistema.
+
+INSTALACIÓN
+1. Subir la carpeta completa (index.html, login.html, api/, js/, css/, seed/, storage/,
+   .htaccess, bodegas_data.js, fondo.png, maga-logo.png) a una carpeta del sitio.
+   No es necesario subir data.js, Bodegas.xlsx ni este archivo.
+2. La carpeta storage/ debe tener permiso de escritura para PHP (755 normalmente basta en cPanel).
+3. Abrir el sitio: redirige a login.html.
+
+USUARIOS INICIALES (se crean solo la primera vez; cambiar las contraseñas al ingresar)
+- admin  / U8vqgQUVoJ   (Administrador)
+- miguel / 2fSFN26DCy   (Editor con todos los permisos e importación)
+
+ROLES
+- Administrador: todo, incluidos "Usuarios y permisos" e "Importar datos".
+- Editor: solo edita lo que el administrador le delega: módulos (Ejecución, Programación,
+  CONRED, Bodegas), modalidades (NDA, MC, Judicial, INSAN, APA, Reserva), departamentos
+  (todos o algunos) y si puede importar el Excel.
+- Visualizador: solo consulta.
+Todas las ediciones, importaciones e ingresos quedan en la Bitácora.
+
+ACTUALIZAR DATOS
+Menú Sistema > Importar datos: subir el Excel "PROGRAMACION DAAN PLAN DE ACCION EMERGENCIA"
+(hoja MATRIZ, mismo formato de siempre). Se muestra una vista previa con las diferencias y,
+al confirmar, se reemplaza toda la matriz (incluidas las ediciones manuales).
+
+CÁLCULOS DEL PANEL PRINCIPAL
+- AA (Asistencia Alimentaria) = INSAN + NDA + Judicial + MC.
+- Total ejecutado = AA + APA + Reserva.
+- Total (meta) = ejecutado + programado; % de avance = ejecutado ÷ total.
+- El nivel de inseguridad (rojo/naranja/amarillo) se toma del color de la celda Municipio.
