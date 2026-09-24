@@ -30,7 +30,73 @@ function colIndice(string $ref): int
     return $n - 1;
 }
 
-function xmlDelZip(ZipArchive $zip, string $ruta): ?SimpleXMLElement
+/**
+ * Lector de .xlsx (en realidad un ZIP) en PHP puro, sin depender de la extensión "zip"
+ * (ZipArchive), que en algunos hospedajes no está instalada. Solo necesita zlib
+ * (gzinflate), incluida en prácticamente cualquier build de PHP.
+ */
+final class MiniZipReader
+{
+    /** @var array<string, array{offset:int, compSize:int, method:int}> */
+    private $entradas = [];
+    private $datos = '';
+
+    public function open(string $ruta): bool
+    {
+        $datos = @file_get_contents($ruta);
+        if ($datos === false || $datos === '') return false;
+        $this->datos = $datos;
+
+        $eocd = strrpos($datos, "\x50\x4b\x05\x06");
+        if ($eocd === false) return false;
+
+        $totalEntradas = unpack('v', substr($datos, $eocd + 10, 2))[1];
+        $cdOffset = unpack('V', substr($datos, $eocd + 16, 4))[1];
+
+        $pos = $cdOffset;
+        for ($i = 0; $i < $totalEntradas; $i++) {
+            if (substr($datos, $pos, 4) !== "\x50\x4b\x01\x02") break;
+            $metodo = unpack('v', substr($datos, $pos + 10, 2))[1];
+            $compSize = unpack('V', substr($datos, $pos + 20, 4))[1];
+            $nombreLen = unpack('v', substr($datos, $pos + 28, 2))[1];
+            $extraLen = unpack('v', substr($datos, $pos + 30, 2))[1];
+            $comentLen = unpack('v', substr($datos, $pos + 32, 2))[1];
+            $offsetLocal = unpack('V', substr($datos, $pos + 42, 4))[1];
+            $nombre = substr($datos, $pos + 46, $nombreLen);
+            $this->entradas[$nombre] = ['offset' => $offsetLocal, 'compSize' => $compSize, 'method' => $metodo];
+            $pos += 46 + $nombreLen + $extraLen + $comentLen;
+        }
+        return !empty($this->entradas);
+    }
+
+    /** @return string|false */
+    public function getFromName(string $nombre)
+    {
+        if (!isset($this->entradas[$nombre])) return false;
+        $e = $this->entradas[$nombre];
+        $pos = $e['offset'];
+        if (substr($this->datos, $pos, 4) !== "\x50\x4b\x03\x04") return false;
+        $nombreLen = unpack('v', substr($this->datos, $pos + 26, 2))[1];
+        $extraLen = unpack('v', substr($this->datos, $pos + 28, 2))[1];
+        $inicio = $pos + 30 + $nombreLen + $extraLen;
+        $crudo = substr($this->datos, $inicio, $e['compSize']);
+
+        if ($e['method'] === 0) return $crudo;
+        if ($e['method'] === 8) {
+            $out = @gzinflate($crudo);
+            return $out === false ? false : $out;
+        }
+        return false;
+    }
+
+    public function close(): void
+    {
+        $this->datos = '';
+        $this->entradas = [];
+    }
+}
+
+function xmlDelZip($zip, string $ruta): ?SimpleXMLElement
 {
     $txt = $zip->getFromName($ruta);
     if ($txt === false) return null;
@@ -60,7 +126,7 @@ function limpiarNumero($v, array &$avisos, string $ctx)
  */
 function leerMatrizExcel(string $ruta): array
 {
-    $zip = new ZipArchive();
+    $zip = (extension_loaded('zip') && class_exists('ZipArchive')) ? new ZipArchive() : new MiniZipReader();
     if ($zip->open($ruta) !== true) throw new InvalidArgumentException('El archivo no es un Excel (.xlsx) válido.');
 
     // Libro → hoja MATRIZ (o la primera)
