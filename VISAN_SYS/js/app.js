@@ -2037,6 +2037,15 @@ function renderBodegasCards(container) {
 
         <div class="bodega-card-foot">
           <span style="font-size:10px;color:var(--text-3)">Convenios: ${Array.from(b.convenios).join(', ') || (isIndeca ? 'Reserva Estratégica INDECA' : 'N/A')}</span>
+          <div style="display:flex;gap:6px">
+            <button class="glass-btn" style="font-size:11px;padding:4px 10px" onclick="selectBodegaCard('${b.key}')">
+              ${isSelected ? '✕ Quitar' : '🔍 Filtrar'}
+            </button>
+            <button class="glass-btn primary" style="font-size:11px;padding:4px 10px" onclick="viewBodegaInTable('${b.key}')">
+              📋 Insumos
+            </button>
+            ${isEditor && b.rows.length > 0 ? `<button class="muni-edit-action-btn" onclick="openEditBodegaModal('${b.rows[0]?.id}')">✏️ Editar</button>` : ''}
+          </div>
         </div>
       </div>
     `;
