@@ -798,3 +798,58 @@ const BODEGAS_CONTENIDO = [
     "programa": "NDA - MJ - MC - MT"
   }
 ];
+
+// Fichas técnicas oficiales de contenido de ración (fuente: RACIONES 2.xlsx)
+const BODEGAS_RACIONES_FICHA = [
+  {
+    id: "racion1",
+    titulo: "Ración 1",
+    grupo: "Niños con Desnutrición Aguda (NDA), Medidas Cautelares (MC), Medidas Judiciales (MJ), Medidas Transitorias (MT)",
+    convenios: ["005-2026"],
+    peso: "Aproximadamente 99 libras",
+    costo: 535,
+    kcal: 554.8,
+    productos: [
+      { producto: "Arroz Blanco", presentacion: "20 libras" },
+      { producto: "Frijol Negro", presentacion: "30 libras" },
+      { producto: "Aceite Vegetal", presentacion: "1,600 ml (3.52 libras)" },
+      { producto: "Hojuelas de Avena", presentacion: "3 kilogramos (6.6 libras)" },
+      { producto: "Harina de Maíz Nixtamalizada", presentacion: "25 libras" },
+      { producto: "Azúcar", presentacion: "2,500 grs. (5.5 libras)" },
+      { producto: "Mezcla de Harina de Maíz y Soya Fortificada", presentacion: "3,600 gramos (7.92 libras)" }
+    ]
+  },
+  {
+    id: "racion23",
+    titulo: "Ración 2 y 3",
+    grupo: "Alimentos por Acciones, Familias en Inseguridad Alimentaria y Nutricional (INSAN)",
+    convenios: ["002-2026", "004-2026"],
+    peso: "Aproximadamente 34 o 49 libras",
+    costo: 220,
+    kcal: 389.1,
+    productos: [
+      { producto: "Frijol Negro", presentacion: "10 libras" },
+      { producto: "Arroz Blanco", presentacion: "5 libras" },
+      { producto: "Aceite Vegetal", presentacion: "800 ml (1.76 libras)" },
+      { producto: "Sal Yodada", presentacion: "1 bolsa de 454 gr (1 libra)" },
+      { producto: "Avena en Hojuelas", presentacion: "1 kilogramo (2.2 libras)" },
+      { producto: "Harina de Maíz Nixtamalizada o Maíz en Grano", presentacion: "1 bolsa de 10 libras o 25 libras" },
+      { producto: "Azúcar Fortificada", presentacion: "1,000 gr (2.2 libras)" },
+      { producto: "Mezcla de Harina de Maíz y Soya Fortificada", presentacion: "900 grs. (1.98 libras)" }
+    ]
+  },
+  {
+    id: "racion4",
+    titulo: "Ración 4",
+    grupo: "Reserva Estratégica Nacional de Granos Básicos",
+    convenios: ["003-2026"],
+    peso: "70 libras",
+    costo: 292,
+    kcal: 918.3,
+    productos: [
+      { producto: "Maíz Blanco", presentacion: "50 libras" },
+      { producto: "Frijol Negro", presentacion: "15 libras" },
+      { producto: "Arroz Blanco", presentacion: "5 libras" }
+    ]
+  }
+];

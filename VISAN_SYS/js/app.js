@@ -2426,50 +2426,51 @@ function renderBodegasBalance(container) {
 }
 
 function renderBodegasContenido(container) {
-  // Agrupar por programa / convenio
-  const groups = {};
-  BODEGAS_CONTENIDO.forEach(item => {
-    const key = `${item.convenio} - ${item.programa}`;
-    if (!groups[key]) {
-      groups[key] = {
-        convenio: item.convenio,
-        programa: item.programa,
-        items: []
-      };
-    }
-    groups[key].items.push(item);
-  });
-
   let html = `
     <div style="margin-bottom:16px">
-      <h3 style="font-size:18px;font-family:'Sora',sans-serif;color:var(--navy);margin-bottom:4px">Fichas Técnicas del Contenido de la Ración</h3>
-      <p style="font-size:12px;color:var(--text-2)">Composición exacta de productos, presentaciones y cantidades por cada bolsa o paquete de ración entregado.</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h3 style="font-size:18px;font-family:'Sora',sans-serif;color:var(--navy)">Fichas Técnicas del Contenido de la Ración</h3>
+        <span style="background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.5px">
+          MATRIZ OFICIAL DE RACIONES
+        </span>
+      </div>
+      <p style="font-size:12px;color:var(--text-2);margin-top:4px">Composición oficial de productos, presentaciones, peso, costo y valor nutricional por cada tipo de ración entregada.</p>
     </div>
     <div class="ficha-grid">
   `;
 
-  Object.values(groups).forEach(g => {
-    const totalArticulos = g.items.reduce((s, i) => s + (i.cantidad || 0), 0);
+  BODEGAS_RACIONES_FICHA.forEach(f => {
     html += `
       <div class="ficha-card">
         <div class="ficha-hd">
-          <div class="ficha-tag">Convenio ${g.convenio}</div>
-          <h3>${g.programa}</h3>
-          <div style="font-size:11px;color:var(--text-2);margin-top:2px">
-            Total en la ración: <strong>${totalArticulos} unidades</strong> (${g.items.length} productos diferentes)
+          <div class="ficha-tag">Convenio${f.convenios.length > 1 ? 's' : ''} ${f.convenios.join(' · ')}</div>
+          <h3>${f.titulo}</h3>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px">${f.grupo}</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-bottom:14px">
+          <div style="background:#f8fbff;border:1px solid #e1effe;border-radius:9px;padding:8px 10px;text-align:center">
+            <div style="font-size:9.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px;font-weight:600">Peso</div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-top:2px">${f.peso}</div>
+          </div>
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:8px 10px;text-align:center">
+            <div style="font-size:9.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px;font-weight:600">Costo Ración</div>
+            <div style="font-size:12px;font-weight:700;color:#15803d;margin-top:2px">Q${fmtN(f.costo)}</div>
+          </div>
+          <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:8px 10px;text-align:center">
+            <div style="font-size:9.5px;color:var(--text-2);text-transform:uppercase;letter-spacing:0.4px;font-weight:600">Kilocalorías</div>
+            <div style="font-size:12px;font-weight:700;color:#c2410c;margin-top:2px">${f.kcal} kcal</div>
           </div>
         </div>
+
         <div class="ficha-items-list">
     `;
 
-    g.items.forEach(it => {
+    f.productos.forEach(it => {
       html += `
         <div class="ficha-item-row">
-          <div>
-            <div class="ficha-prod-title">${it.producto}</div>
-            <div class="ficha-prod-pres">${it.presentacion}</div>
-          </div>
-          <div class="ficha-prod-qty">${it.cantidad} ${it.cantidad === 1 ? 'unidad' : 'unidades'}</div>
+          <div class="ficha-prod-title">${it.producto}</div>
+          <div class="ficha-prod-qty">${it.presentacion}</div>
         </div>
       `;
     });
