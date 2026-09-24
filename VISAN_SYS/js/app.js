@@ -1498,6 +1498,12 @@ function initBodegas() {
 }
 window.initBodegas = initBodegas;
 
+function bodegasUltimaActualizacionTexto() {
+  const fecha = (window.VISAN_BODEGAS || {}).ultima_actualizacion;
+  if (!fecha) return 'Sin ediciones registradas en Bodegas';
+  return `Última actualización de Bodegas: ${fmtD(fecha.slice(0, 10))}`;
+}
+
 function renderBodegasMetrics() {
   const wrap = document.getElementById('bodegas-kpi-wrap');
   if (!wrap) return;
@@ -1529,7 +1535,7 @@ function renderBodegasMetrics() {
         ${bodegasFilterBodega || bodegasFilterConv ? `<span class="scope-count">(${invFiltered.length} registros)</span>` : ''}
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <span style="font-size:11px;color:var(--text-2)">Datos UDAFA / PMA / INDECA 2026</span>
+        <span style="font-size:11px;color:var(--text-2)">${bodegasUltimaActualizacionTexto()}</span>
         ${bodegasFilterBodega || bodegasFilterConv ? `<button class="scope-reset-btn" onclick="resetBodegasFilter()">✕ Ver Toda la Red</button>` : ''}
       </div>
     </div>

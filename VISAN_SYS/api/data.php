@@ -31,6 +31,7 @@ switch ($accion) {
             'bodegas' => [
                 'inventario' => json_decode(getMeta('bodegas_inventario', '{}'), true) ?: new stdClass(),
                 'resumen' => json_decode(getMeta('bodegas_resumen', '{}'), true) ?: new stdClass(),
+                'ultima_actualizacion' => db()->query("SELECT fecha FROM bitacora WHERE accion = 'edicion_bodega' ORDER BY id DESC LIMIT 1")->fetchColumn() ?: null,
             ],
         ]);
 
