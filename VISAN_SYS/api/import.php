@@ -44,42 +44,50 @@ switch ($accion) {
             $r = leerMatrizExcel($arch['tmp_name']);
         } catch (InvalidArgumentException $e) {
             fallar($e->getMessage(), 422);
+        } catch (Throwable $e) {
+            error_log('[VISAN] leerMatrizExcel: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            fallar('No se pudo leer el archivo (' . get_class($e) . '): ' . $e->getMessage() . ' [' . basename($e->getFile()) . ':' . $e->getLine() . ']', 500);
         }
 
-        $actuales = [];
-        foreach (db()->query('SELECT cod_mun, datos FROM matriz')->fetchAll() as $x) $actuales[(int)$x['cod_mun']] = json_decode($x['datos'], true);
+        try {
+            $actuales = [];
+            foreach (db()->query('SELECT cod_mun, datos FROM matriz')->fetchAll() as $x) $actuales[(int)$x['cod_mun']] = json_decode($x['datos'], true);
 
-        // Colores: si alguna celda no trae relleno reconocible, se conserva la clasificación anterior
-        $sinColor = 0;
-        foreach ($r['filas'] as &$f) {
-            if (!$f['color']) {
-                $f['color'] = $actuales[$f['cod_mun']]['color'] ?? null;
-                $sinColor++;
+            // Colores: si alguna celda no trae relleno reconocible, se conserva la clasificación anterior
+            $sinColor = 0;
+            foreach ($r['filas'] as &$f) {
+                if (!$f['color']) {
+                    $f['color'] = $actuales[$f['cod_mun']]['color'] ?? null;
+                    $sinColor++;
+                }
             }
-        }
-        unset($f);
+            unset($f);
 
-        $nuevos = $cambiados = 0;
-        $codNuevos = [];
-        foreach ($r['filas'] as $f) {
-            $codNuevos[$f['cod_mun']] = true;
-            if (!isset($actuales[$f['cod_mun']])) { $nuevos++; continue; }
-            if ($actuales[$f['cod_mun']] != $f) $cambiados++;
-        }
-        $eliminados = array_values(array_map(
-            fn($a) => "{$a['municipio']} ({$a['departamento']})",
-            array_filter($actuales, fn($a, $cod) => !isset($codNuevos[$cod]), ARRAY_FILTER_USE_BOTH)
-        ));
+            $nuevos = $cambiados = 0;
+            $codNuevos = [];
+            foreach ($r['filas'] as $f) {
+                $codNuevos[$f['cod_mun']] = true;
+                if (!isset($actuales[$f['cod_mun']])) { $nuevos++; continue; }
+                if ($actuales[$f['cod_mun']] != $f) $cambiados++;
+            }
+            $eliminados = array_values(array_map(
+                fn($a) => "{$a['municipio']} ({$a['departamento']})",
+                array_filter($actuales, fn($a, $cod) => !isset($codNuevos[$cod]), ARRAY_FILTER_USE_BOTH)
+            ));
 
-        // Si la celda «Fecha de actualización» viene vacía, se intenta leer del nombre del archivo:
-        // primero como "... 23 sep.xlsx" y, si no, como "... 24_09_2026.xlsx" (día_mes_año numérico).
-        if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})\s*(?:de\s+)?(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)[a-z]*\.?\b/iu', $arch['name'], $m)) {
-            $mes = array_search(strtolower($m[2]), ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']) + 1;
-            if (checkdate($mes, (int)$m[1], (int)date('Y'))) $r['fecha_corte'] = sprintf('%s-%02d-%02d', date('Y'), $mes, $m[1]);
-        }
-        if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})[_.\-\/](\d{1,2})[_.\-\/](\d{4})\b/', $arch['name'], $m)) {
-            [$dia, $mes, $anio] = [(int)$m[1], (int)$m[2], (int)$m[3]];
-            if (checkdate($mes, $dia, $anio)) $r['fecha_corte'] = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+            // Si la celda «Fecha de actualización» viene vacía, se intenta leer del nombre del archivo:
+            // primero como "... 23 sep.xlsx" y, si no, como "... 24_09_2026.xlsx" (día_mes_año numérico).
+            if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})\s*(?:de\s+)?(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)[a-z]*\.?\b/iu', $arch['name'], $m)) {
+                $mes = array_search(strtolower($m[2]), ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']) + 1;
+                if (checkdate($mes, (int)$m[1], (int)date('Y'))) $r['fecha_corte'] = sprintf('%s-%02d-%02d', date('Y'), $mes, $m[1]);
+            }
+            if (!$r['fecha_corte'] && preg_match('/\b(\d{1,2})[_.\-\/](\d{1,2})[_.\-\/](\d{4})\b/', $arch['name'], $m)) {
+                [$dia, $mes, $anio] = [(int)$m[1], (int)$m[2], (int)$m[3]];
+                if (checkdate($mes, $dia, $anio)) $r['fecha_corte'] = sprintf('%04d-%02d-%02d', $anio, $mes, $dia);
+            }
+        } catch (Throwable $e) {
+            error_log('[VISAN] import previsualizar (post-proceso): ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+            fallar('No se pudo procesar el archivo (' . get_class($e) . '): ' . $e->getMessage() . ' [' . basename($e->getFile()) . ':' . $e->getLine() . ']', 500);
         }
 
         $token = bin2hex(random_bytes(16));
