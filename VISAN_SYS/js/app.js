@@ -20,6 +20,11 @@ function sortD(s){
 
 // Los datos (DATA) llegan del servidor ya actualizados: ver js/boot.js
 
+// Lo programado solo cuenta si tiene fecha de programación (un texto como «SOLICITUD NUEVA» no es fecha).
+const PROG_KEYS=['nda','mc','judicial','apa','reserva','insan'];
+const tieneFechaProg=(r,k)=>/\d/.test(String(r['prog_'+k+'_fecha']||''));
+const progOf=(r,k)=>tieneFechaProg(r,k)?(Number(r['prog_'+k])||0):0;
+
 // ── AGGREGATIONS ──
 const DEPTS=[...new Set(DATA.map(r=>r.departamento))].sort();
 let T={
@@ -29,12 +34,12 @@ let T={
   ej_apa:DATA.reduce((s,r)=>s+(r.ej_apa||0),0),
   ej_reserva:DATA.reduce((s,r)=>s+(r.ej_reserva||0),0),
   ej_insan:DATA.reduce((s,r)=>s+(r.ej_insan||0),0),
-  prog_nda:DATA.reduce((s,r)=>s+(r.prog_nda||0),0),
-  prog_mc:DATA.reduce((s,r)=>s+(r.prog_mc||0),0),
-  prog_judicial:DATA.reduce((s,r)=>s+(r.prog_judicial||0),0),
-  prog_apa:DATA.reduce((s,r)=>s+(r.prog_apa||0),0),
-  prog_reserva:DATA.reduce((s,r)=>s+(r.prog_reserva||0),0),
-  prog_insan:DATA.reduce((s,r)=>s+(r.prog_insan||0),0),
+  prog_nda:DATA.reduce((s,r)=>s+progOf(r,'nda'),0),
+  prog_mc:DATA.reduce((s,r)=>s+progOf(r,'mc'),0),
+  prog_judicial:DATA.reduce((s,r)=>s+progOf(r,'judicial'),0),
+  prog_apa:DATA.reduce((s,r)=>s+progOf(r,'apa'),0),
+  prog_reserva:DATA.reduce((s,r)=>s+progOf(r,'reserva'),0),
+  prog_insan:DATA.reduce((s,r)=>s+progOf(r,'insan'),0),
 };
 let TOT_EJ=Object.values({a:T.ej_nda,b:T.ej_mc,c:T.ej_judicial,d:T.ej_apa,e:T.ej_reserva,f:T.ej_insan}).reduce((s,v)=>s+v,0);
 let TOT_PROG=Object.values({a:T.prog_nda,b:T.prog_mc,c:T.prog_judicial,d:T.prog_apa,e:T.prog_reserva,f:T.prog_insan}).reduce((s,v)=>s+v,0);
@@ -50,12 +55,12 @@ function recalculateAll() {
   T.ej_apa = DATA.reduce((s, r) => s + (r.ej_apa || 0), 0);
   T.ej_reserva = DATA.reduce((s, r) => s + (r.ej_reserva || 0), 0);
   T.ej_insan = DATA.reduce((s, r) => s + (r.ej_insan || 0), 0);
-  T.prog_nda = DATA.reduce((s, r) => s + (r.prog_nda || 0), 0);
-  T.prog_mc = DATA.reduce((s, r) => s + (r.prog_mc || 0), 0);
-  T.prog_judicial = DATA.reduce((s, r) => s + (r.prog_judicial || 0), 0);
-  T.prog_apa = DATA.reduce((s, r) => s + (r.prog_apa || 0), 0);
-  T.prog_reserva = DATA.reduce((s, r) => s + (r.prog_reserva || 0), 0);
-  T.prog_insan = DATA.reduce((s, r) => s + (r.prog_insan || 0), 0);
+  T.prog_nda = DATA.reduce((s,r)=>s+progOf(r,'nda'),0);
+  T.prog_mc = DATA.reduce((s,r)=>s+progOf(r,'mc'),0);
+  T.prog_judicial = DATA.reduce((s,r)=>s+progOf(r,'judicial'),0);
+  T.prog_apa = DATA.reduce((s,r)=>s+progOf(r,'apa'),0);
+  T.prog_reserva = DATA.reduce((s,r)=>s+progOf(r,'reserva'),0);
+  T.prog_insan = DATA.reduce((s,r)=>s+progOf(r,'insan'),0);
 
   TOT_EJ = T.ej_nda + T.ej_mc + T.ej_judicial + T.ej_apa + T.ej_reserva + T.ej_insan;
   TOT_PROG = T.prog_nda + T.prog_mc + T.prog_judicial + T.prog_apa + T.prog_reserva + T.prog_insan;
@@ -76,9 +81,9 @@ function recalculateAll() {
 }
 window.recalculateAll = recalculateAll;
 const ALERTS=[
-  {type:'critical',title:'INSAN programada sin ejecutar',body:`${DATA.filter(r=>r.prog_insan&&!r.ej_insan).length} municipios con INSAN programada pendiente de ejecución.`,count:DATA.filter(r=>r.prog_insan&&!r.ej_insan).length},
+  {type:'critical',title:'INSAN programada sin ejecutar',body:`${DATA.filter(r=>progOf(r,'insan')&&!r.ej_insan).length} municipios con INSAN programada pendiente de ejecución.`,count:DATA.filter(r=>progOf(r,'insan')&&!r.ej_insan).length},
   {type:'critical',title:'Municipios Muy Alta INSAN sin intervención',body:`${DATA.filter(r=>r.color==='FFFF0000'&&!r.atendido_prog).length} municipios en rojo sin intervención principal programada.`,count:DATA.filter(r=>r.color==='FFFF0000'&&!r.atendido_prog).length},
-  {type:'high',title:'APA programada sin ejecutar',body:`${DATA.filter(r=>r.prog_apa&&!r.ej_apa).length} municipios con APA programada pero sin ejecución.`,count:DATA.filter(r=>r.prog_apa&&!r.ej_apa).length},
+  {type:'high',title:'APA programada sin ejecutar',body:`${DATA.filter(r=>progOf(r,'apa')&&!r.ej_apa).length} municipios con APA programada pero sin ejecución.`,count:DATA.filter(r=>progOf(r,'apa')&&!r.ej_apa).length},
   {type:'medium',title:'NDA programado sin fecha definida',body:`${DATA.filter(r=>r.prog_nda&&!r.prog_nda_fecha).length} registros de NDA programado sin fecha de programación confirmada.`,count:DATA.filter(r=>r.prog_nda&&!r.prog_nda_fecha).length},
   {type:'info',title:'CONRED sin datos registrados',body:'La columna CONRED no tiene intervenciones activas en la matriz actual.',count:0},
 ];
@@ -141,7 +146,7 @@ function goToMuni(muni){
 // AA (Asistencia Alimentaria) = NDA + MC + Judicial + INSAN. APA y Reserva se reportan aparte.
 // Meta = ejecutado + programado pendiente; % de avance = ejecutado ÷ meta.
 const AA_KEYS=['nda','mc','judicial','insan'];
-function sumRows(rows,pre,keys){return rows.reduce((s,r)=>s+keys.reduce((a,k)=>a+(Number(r[pre+'_'+k])||0),0),0);}
+function sumRows(rows,pre,keys){return rows.reduce((s,r)=>s+keys.reduce((a,k)=>a+(pre==='prog'?progOf(r,k):(Number(r[pre+'_'+k])||0)),0),0);}
 function racionesDe(rows){
   const g=keys=>({ej:sumRows(rows,'ej',keys),prog:sumRows(rows,'prog',keys)});
   const aa=g(AA_KEYS),apa=g(['apa']),res=g(['reserva']);
@@ -205,7 +210,8 @@ function partCard(o){
   </button>`;
 }
 
-const RX_PAGE=10;
+// 22 filas: los 22 departamentos caben sin cambiar de página; municipios usa la misma altura.
+const RX_PAGE=22;
 const rxState={dep:{q:'',sort:'nombre',dir:1,page:1},mun:{q:'',dept:'',sort:'nombre',dir:1,page:1}};
 
 function rxRowsDept(){
@@ -309,7 +315,7 @@ function deptCardHTML(dept){
   const y=rows.filter(r=>r.color==='FFFFFF00').length;
   const tot=r+o+y||1;
   const ej=rows.reduce((s,r)=>s+(r.ej_nda||0)+(r.ej_mc||0)+(r.ej_judicial||0)+(r.ej_apa||0)+(r.ej_reserva||0)+(r.ej_insan||0),0);
-  const prog=rows.reduce((s,r)=>s+(r.prog_nda||0)+(r.prog_mc||0)+(r.prog_judicial||0)+(r.prog_apa||0)+(r.prog_reserva||0)+(r.prog_insan||0),0);
+  const prog=rows.reduce((s,r)=>s+PROG_KEYS.reduce((a,k)=>a+progOf(r,k),0),0);
   return `<div class="dept-card" onclick="goToDept('${dept}')">
     <div class="dept-card-hd"><div class="dept-card-name">${dept}</div><div class="dept-card-cnt">${rows.length} municipios</div></div>
     <div class="dept-risk-strip">
@@ -931,14 +937,14 @@ function renderProgMetrics(){
   const dept = progSelectedDept;
   const rows = dept ? DATA.filter(r => r.departamento === dept) : DATA;
   
-  const nda = rows.reduce((s, r) => s + (r.prog_nda || 0), 0);
-  const mc = rows.reduce((s, r) => s + (r.prog_mc || 0), 0);
-  const jud = rows.reduce((s, r) => s + (r.prog_judicial || 0), 0);
-  const apa = rows.reduce((s, r) => s + (r.prog_apa || 0), 0);
-  const res = rows.reduce((s, r) => s + (r.prog_reserva || 0), 0);
-  const ins = rows.reduce((s, r) => s + (r.prog_insan || 0), 0);
+  const nda = rows.reduce((s, r) => s + progOf(r, 'nda'), 0);
+  const mc = rows.reduce((s, r) => s + progOf(r, 'mc'), 0);
+  const jud = rows.reduce((s, r) => s + progOf(r, 'judicial'), 0);
+  const apa = rows.reduce((s, r) => s + progOf(r, 'apa'), 0);
+  const res = rows.reduce((s, r) => s + progOf(r, 'reserva'), 0);
+  const ins = rows.reduce((s, r) => s + progOf(r, 'insan'), 0);
   const tot = nda + mc + jud + apa + res + ins;
-  const munisProg = rows.filter(r => (r.prog_nda || r.prog_mc || r.prog_judicial || r.prog_apa || r.prog_reserva || r.prog_insan)).length;
+  const munisProg = rows.filter(r => PROG_KEYS.some(k => progOf(r, k))).length;
 
   const wrap = document.getElementById('prog-metrics-wrap');
   if(!wrap) return;
@@ -961,32 +967,32 @@ function renderProgMetrics(){
       <div class="metric-glass-card ${progInt==='nda'?'active-metric':''}" onclick="setProgInt('nda')" title="Filtrar por NDA Programado">
         <div class="m-label"><span>NDA Prog.</span><span>🏷️</span></div>
         <div class="m-value">${fmtN(nda)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_nda).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'nda')).length} munis programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='mc'?'active-metric':''}" onclick="setProgInt('mc')" title="Filtrar por MC Programado">
         <div class="m-label"><span>MC Prog.</span><span>🛒</span></div>
         <div class="m-value">${fmtN(mc)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_mc).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'mc')).length} munis programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='judicial'?'active-metric':''}" onclick="setProgInt('judicial')" title="Filtrar por Judicial Programado">
         <div class="m-label"><span>Judicial Prog.</span><span>⚖️</span></div>
         <div class="m-value">${fmtN(jud)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_judicial).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'judicial')).length} munis programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='apa'?'active-metric':''}" onclick="setProgInt('apa')" title="Filtrar por APA Programado">
         <div class="m-label"><span>APA Prog.</span><span>🌾</span></div>
         <div class="m-value">${fmtN(apa)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_apa).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'apa')).length} munis programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='reserva'?'active-metric':''}" onclick="setProgInt('reserva')" title="Filtrar por Reserva Programada">
         <div class="m-label"><span>Reserva Prog.</span><span>🏛️</span></div>
         <div class="m-value">${fmtN(res)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_reserva).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'reserva')).length} munis programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='insan'?'active-metric':''}" onclick="setProgInt('insan')" title="Filtrar por INSAN Programada">
         <div class="m-label"><span>INSAN Prog.</span><span>⚠️</span></div>
         <div class="m-value">${fmtN(ins)}</div>
-        <div class="m-sub">${rows.filter(r=>r.prog_insan).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'insan')).length} munis programados</div>
       </div>
     </div>
   `;
@@ -1002,8 +1008,7 @@ function renderProgTable(){
     if(vuln && r.color !== vuln) return false;
     if(q && !r.municipio.toLowerCase().includes(q) && !r.departamento.toLowerCase().includes(q)) return false;
     if(progInt !== 'all'){
-      const d = PROG_INTS.find(x => x.id === progInt);
-      if(d && !r[d.vk]) return false;
+      if(!progOf(r, progInt)) return false;
     }
     return true;
   });
@@ -1039,7 +1044,7 @@ function renderProgTable(){
     const rCount = dRows.filter(r => r.color === 'FFFF0000').length;
     const oCount = dRows.filter(r => r.color === 'FFFF8001').length;
     const yCount = dRows.filter(r => r.color === 'FFFFFF00').length;
-    const modSums = activeInts.map(m => dRows.reduce((s, r) => s + (r[m.vk] || 0), 0));
+    const modSums = activeInts.map(m => dRows.reduce((s, r) => s + progOf(r, m.id), 0));
 
     const isExp = isSearching || progExpandedDepts.has(d);
     const isSel = (progSelectedDept === d);
@@ -1107,7 +1112,8 @@ function renderProgTable(){
           const cellQtyAttr = canEditField(m.vk, r) ? `class="editable-cell" onclick="event.stopPropagation(); promptEditCell(${r.cod_mun}, '${m.vk}', '${m.l} Prog. Cant.', true)" title="Clic para editar ${m.l} Prog. Cant."` : '';
           const cellDateAttr = canEditField(m.dk, r) ? `class="editable-cell" onclick="event.stopPropagation(); promptEditCell(${r.cod_mun}, '${m.dk}', '${m.l} Prog. Fecha', false)" title="Clic para editar ${m.l} Prog. Fecha"` : '';
 
-          tbodyHTML += `<td style="text-align:right" ${cellQtyAttr}><span class="n-val">${fmtN(r[m.vk])}</span></td>
+          const sinFecha = r[m.vk] && !tieneFechaProg(r, m.id);
+          tbodyHTML += `<td style="text-align:right" ${cellQtyAttr}><span class="n-val${sinFecha ? ' n-sin-fecha' : ''}"${sinFecha ? ' title="Sin fecha de programación: no se suma en los totales"' : ''}>${fmtN(r[m.vk])}</span></td>
                         <td ${cellDateAttr}>${dateHTML}</td>`;
         });
         tbodyHTML += `</tr>`;
@@ -2058,15 +2064,6 @@ function renderBodegasCards(container) {
 
         <div class="bodega-card-foot">
           <span style="font-size:10px;color:var(--text-3)">Convenios: ${Array.from(b.convenios).join(', ') || (isIndeca ? 'Reserva Estratégica INDECA' : 'N/A')}</span>
-          <div style="display:flex;gap:6px">
-            <button class="glass-btn" style="font-size:11px;padding:4px 10px" onclick="selectBodegaCard('${b.key}')">
-              ${isSelected ? '✕ Quitar' : '🔍 Filtrar'}
-            </button>
-            <button class="glass-btn primary" style="font-size:11px;padding:4px 10px" onclick="viewBodegaInTable('${b.key}')">
-              📋 Insumos
-            </button>
-            ${isEditor && b.rows.length > 0 ? `<button class="muni-edit-action-btn" onclick="openEditBodegaModal('${b.rows[0]?.id}')">✏️ Editar</button>` : ''}
-          </div>
         </div>
       </div>
     `;
