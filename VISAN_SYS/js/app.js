@@ -101,6 +101,7 @@ function navigate(page){
   const titles={inicio:'Panel principal',resumen:'Resumen Departamental',ejecucion:'Ejecución',programacion:'Programación',conred:'CONRED',bodegas:'Bodegas y Almacenes',raciones:'Contenido de la Ración',departamentos:'Departamentos',alertas:'Alertas',importar:'Importar datos',usuarios:'Usuarios y permisos'};
   document.getElementById('top-title').textContent=titles[page]||page;
   if(actualPage === 'bodegas') initBodegas();
+  if(page === 'bodegas') switchBodegasView('resumen');
   if(page === 'raciones') switchBodegasView('ficha');
   if(page === 'importar') initImportPage();
   if(page === 'usuarios') initUsersPage();
