@@ -83,7 +83,7 @@ function leerMatrizExcel(string $ruta): array
     }
     if (!$destino) throw new InvalidArgumentException('No se encontró la hoja MATRIZ en el archivo.');
     $destino = ltrim($destino, '/');
-    if (!str_starts_with($destino, 'xl/')) $destino = 'xl/' . $destino;
+    if (strpos($destino, 'xl/') !== 0) $destino = 'xl/' . $destino;
 
     // Cadenas compartidas
     $cadenas = [];
@@ -143,7 +143,7 @@ function leerMatrizExcel(string $ruta): array
         if (is_string($cs[0]['v'] ?? null) && strcasecmp($cs[0]['v'], 'Departamento') === 0) { $filaEnc = $n; break; }
     }
     $enc = fn(int $i) => mb_strtoupper(trim((string)($filasCrudas[$filaEnc][$i]['v'] ?? '')));
-    if ($filaEnc === null || $enc(2) !== 'MUNICIPIO' || !str_contains($enc(4), 'MUNICIPAL')
+    if ($filaEnc === null || $enc(2) !== 'MUNICIPIO' || strpos($enc(4), 'MUNICIPAL') === false
         || $enc(5) !== 'NDA' || $enc(15) !== 'INSAN' || $enc(30) !== 'INSAN' || $enc(33) !== 'CONRED') {
         throw new InvalidArgumentException('El archivo no tiene el formato de la matriz DAAN (encabezados esperados en la fila «Departamento | Cod Departamental | Municipio …» hasta «CONRED»).');
     }
