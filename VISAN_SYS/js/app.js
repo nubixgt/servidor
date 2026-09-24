@@ -2035,33 +2035,6 @@ function renderBodegasCards(container) {
           </div>
         </div>
 
-        <div class="bodega-insumos-grid">
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🌾 Arroz (5lb)</span>
-            <span class="insumo-qty">${fmtN(b.arroz)}</span>
-          </div>
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🌱 Frijol (5/10lb)</span>
-            <span class="insumo-qty">${fmtN(b.frijol)}</span>
-          </div>
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🌽 Maíz (25lb)</span>
-            <span class="insumo-qty">${fmtN(b.maiz)}</span>
-          </div>
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🌻 Aceite (800ml)</span>
-            <span class="insumo-qty">${fmtN(b.aceite)}</span>
-          </div>
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🥣 Avena (1kg)</span>
-            <span class="insumo-qty">${fmtN(b.avena)}</span>
-          </div>
-          <div class="insumo-micro-card">
-            <span class="insumo-name">🥄 Azúcar (500g)</span>
-            <span class="insumo-qty">${fmtN(b.azucar)}</span>
-          </div>
-        </div>
-
         <div class="bodega-card-foot">
           <span style="font-size:10px;color:var(--text-3)">Convenios: ${Array.from(b.convenios).join(', ') || (isIndeca ? 'Reserva Estratégica INDECA' : 'N/A')}</span>
         </div>
