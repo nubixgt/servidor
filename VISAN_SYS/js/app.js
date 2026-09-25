@@ -1038,9 +1038,6 @@ function renderProgTable(){
     if(dept && r.departamento !== dept) return false;
     if(vuln && r.color !== vuln) return false;
     if(q && !r.municipio.toLowerCase().includes(q) && !r.departamento.toLowerCase().includes(q)) return false;
-    if(progInt !== 'all'){
-      if(!progOf(r, progInt)) return false;
-    }
     return true;
   });
 
