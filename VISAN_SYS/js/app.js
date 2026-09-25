@@ -107,7 +107,7 @@ function navigate(page){
   const actualPage = (page === 'raciones') ? 'bodegas' : page;
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+actualPage));
-  const titles={inicio:'Panel principal',resumen:'Resumen Departamental',ejecucion:'Ejecución',programacion:'Programación',conred:'CONRED',bodegas:'Bodegas y Almacenes',raciones:'Contenido de la Ración',departamentos:'Departamentos',alertas:'Alertas',importar:'Importar datos',usuarios:'Usuarios y permisos'};
+  const titles={inicio:'Panel principal',resumen:'Resumen Departamental',ejecucion:'Ejecución',programacion:'Programación',conred:'CONRED',bodegas:'Bodegas y Almacenes',raciones:'Contenido de la Ración',departamentos:'Departamentos',agroclimatico:'Condiciones Agroclimáticas',alertas:'Alertas',importar:'Importar datos',usuarios:'Usuarios y permisos'};
   document.getElementById('top-title').textContent=titles[page]||page;
   if(actualPage === 'bodegas') initBodegas();
   if(page === 'bodegas') switchBodegasView('resumen');

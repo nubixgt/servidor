@@ -1592,6 +1592,10 @@ body{background:url('fondo.png') no-repeat center center fixed !important;backgr
       <span class="sb-icon"><svg viewBox="0 0 20 20"><path d="M10 2a5 5 0 100 10A5 5 0 0010 2zm0 12c-4 0-8 2-8 4v1h16v-1c0-2-4-4-8-4z"/></svg></span>
       <span class="sb-item-label">Departamentos</span>
     </button>
+    <button class="sb-item" data-page="agroclimatico">
+      <span class="sb-icon"><svg viewBox="0 0 20 20"><path d="M4 12a4 4 0 014-4 5 5 0 019.6-1.5A3.5 3.5 0 0117 13.5H6a3 3 0 01-2-5.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 16v1.5M10 16v2M13 16v1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+      <span class="sb-item-label">Condiciones Agroclimáticas</span>
+    </button>
     <button class="sb-item" data-page="alertas" hidden>
       <span class="sb-icon"><svg viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6c0 4-2 6-2 6h16s-2-2-2-6a6 6 0 00-6-6zm0 16a2 2 0 002-2H8a2 2 0 002 2z"/></svg></span>
       <span class="sb-item-label">Alertas</span>
@@ -1855,6 +1859,18 @@ body{background:url('fondo.png') no-repeat center center fixed !important;backgr
         <input class="fi" type="text" id="dept-search2" placeholder="Buscar departamento…" oninput="renderDeptCards2()">
       </div>
       <div class="dept-grid" id="dept-grid2"></div>
+    </section>
+
+    <!-- ══ CONDICIONES AGROCLIMÁTICAS ══ -->
+    <section class="page" id="page-agroclimatico">
+      <div class="sec-hd">
+        <h2>Condiciones Agroclimáticas</h2>
+        <div class="sec-hd-line"></div>
+        <a class="glass-btn" href="condiciones-agroclimaticas.pdf" target="_blank" rel="noopener" style="text-decoration:none">⤓ Abrir en pestaña nueva</a>
+      </div>
+      <div class="card glass-panel" style="padding:8px;height:calc(100vh - 190px);min-height:520px">
+        <iframe src="condiciones-agroclimaticas.pdf" title="Condiciones Agroclimáticas" style="width:100%;height:100%;border:0;border-radius:12px"></iframe>
+      </div>
     </section>
 
     <!-- ══ ALERTAS ══ -->
