@@ -287,6 +287,18 @@ const BODEGAS_RESUMEN_CONVENIOS = {
       "c04_2026": 0,
       "c05_2026": 0,
       "total": 0
+    },
+    {
+      "bodega": "RETALHULEU / INDECA",
+      "bodega_id": "RETALHULEU",
+      "nombre": "Retalhuleu",
+      "entidad": "INDECA",
+      "departamento": "Retalhuleu",
+      "c02_2026": 0,
+      "c03_2026": 0,
+      "c04_2026": 0,
+      "c05_2026": 0,
+      "total": 0
     }
   ],
   "totales": {

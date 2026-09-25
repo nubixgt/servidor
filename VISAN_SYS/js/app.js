@@ -1582,7 +1582,7 @@ function renderBodegasMetrics() {
       </div>
       <div class="kpi-card" onclick="switchBodegasView('cards')">
         <div class="kpi-icon">🏢</div>
-        <div class="kpi-label">Almacenes en Red</div>
+        <div class="kpi-label">Bodegas Activas</div>
         <div class="kpi-value">${totalBodegasRed}</div>
         <div class="kpi-detail">En 7 departamentos (PMA e INDECA)</div>
         <div class="kpi-arrow">↗</div>
@@ -1982,7 +1982,7 @@ function renderBodegasResumenConvenios(container) {
           <tfoot>
             <tr style="background:#eaf2fc;font-weight:800;color:var(--navy);border-top:2px solid #bcd7fa;font-size:13px">
               <td style="padding:14px">TOTAL NACIONAL</td>
-              <td style="padding:14px 10px;text-align:center"><span style="font-size:10px;font-weight:800;color:var(--navy);background:#fff;padding:2px 8px;border-radius:6px;border:1px solid #cbd5e1">${Object.keys(BODEGAS_METADATA).length} RED</span></td>
+              <td style="padding:14px 10px;text-align:center"><span style="font-size:10px;font-weight:800;color:var(--navy);background:#fff;padding:2px 8px;border-radius:6px;border:1px solid #cbd5e1">${Object.keys(BODEGAS_METADATA).length} Bodegas Activas</span></td>
               <td style="padding:14px 12px">${filas.length} Almacenes (7 Deptos.)</td>
               <td style="padding:14px 12px;text-align:right;color:#1d4ed8">${fmtN(sub02)}</td>
               <td style="padding:14px 12px;text-align:right;color:#047857">${fmtN(sub03)}</td>
