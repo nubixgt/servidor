@@ -29,6 +29,17 @@ class PresupuestoController extends Controller
         }
     }
 
+    #[Route('/presupuesto/detalle-ue', 'GET')]
+    public function detalleUE()
+    {
+        try {
+            $data = $this->service->getDetalleUE($_GET['ejercicio'] ?? date('Y'));
+            $this->json(['status' => 'success', 'data' => $data]);
+        } catch (\Exception $e) {
+            $this->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
     #[Route('/presupuesto/items', 'POST')]
     public function create()
     {

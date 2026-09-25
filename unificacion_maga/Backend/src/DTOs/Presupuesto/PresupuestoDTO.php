@@ -61,7 +61,8 @@ class PresupuestoDTO
     public static function mapItem($data)
     {
         $nameToShow = $data['nombre'] ?? '';
-        if (($data['tipo'] ?? '') === 'UNIDAD_EJECUTORA') {
+        // Categorías importadas sin nombre real quedan como "Código X": mostrar solo el código
+        if ($nameToShow === '' || strpos($nameToShow, 'Código ') === 0) {
             $nameToShow = $data['codigo'] ?? '';
         }
         return [

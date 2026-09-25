@@ -37,6 +37,25 @@ class PresupuestoService
         ];
     }
 
+    public function getDetalleUE($ejercicio)
+    {
+        return array_map(function ($r) {
+            return [
+                'id'            => (int)$r['id'],
+                'unidad_codigo' => $r['unidad_codigo'],
+                'unidad'        => $r['unidad_codigo'] . ' "' . $r['unidad_nombre'] . '"',
+                'type'          => $r['tipo'],
+                'codigo'        => $r['codigo'],
+                'name'          => $r['codigo'] . ' "' . $r['nombre'] . '"',
+                'vigente'       => (float)$r['vigente'],
+                'devengado'     => (float)$r['devengado'],
+                'saldo'         => (float)$r['saldo'],
+                'pct_ejec'      => round((float)$r['pct_ejec'], 2),
+                'pct_rel'       => round((float)$r['pct_rel'], 2),
+            ];
+        }, $this->repository->getDetalleUE($ejercicio));
+    }
+
     public function createRecord($data, $user = 'System')
     {
         $id = $this->repository->create($data);
@@ -108,15 +127,31 @@ class PresupuestoService
      */
     public function importData($datos, $tipo, $ejercicio, $limpiarAntes)
     {
-        if ($tipo === 'GRUPO_GASTO' || $tipo === 'FUENTE_FINANCIAMIENTO') {
-            // En la arquitectura unificada de una sola tabla, los registros de grupos de gasto
-            // y fuentes de financiamiento ya se importan de manera consolidada (los 31 registros principales)
-            // al importar la hoja "UNI EJE" (tipo UNIDAD_EJECUTORA).
-            // Importar la hoja de detalles "UniEjeYGru_Gas" sin columna de unidad_ejecutora_id en la tabla
-            // solo generaría duplicados huérfanos que corrompen el dashboard. Por lo tanto, omitimos esta importación.
-            return 0;
-        }
+        // Todo o nada: si falla a la mitad o el archivo no trae filas válidas,
+        // se revierte el borrado y los datos existentes quedan intactos.
+        $this->repository->beginTransaction();
+        try {
+            if ($tipo === 'GRUPO_GASTO' || $tipo === 'FUENTE_FINANCIAMIENTO') {
+                // Hoja "UniEjeYGru_Gas": desglose de cada unidad ejecutora por grupo de gasto y fuente
+                $inserted = $this->importDetalleUE($datos, $ejercicio, $limpiarAntes);
+            } else {
+                $inserted = $this->importHojaPrincipal($datos, $tipo, $ejercicio, $limpiarAntes);
+            }
 
+            if ($inserted === 0) {
+                throw new \Exception("No se reconoció ninguna fila válida en la hoja. No se modificaron los datos existentes.");
+            }
+
+            $this->repository->commit();
+            return $inserted;
+        } catch (\Throwable $e) {
+            $this->repository->rollBack();
+            throw $e instanceof \Exception ? $e : new \Exception($e->getMessage(), 0, $e);
+        }
+    }
+
+    private function importHojaPrincipal($datos, $tipo, $ejercicio, $limpiarAntes)
+    {
         if ($limpiarAntes) {
             $this->repository->cleanEjecucion($ejercicio, $tipo);
         }
@@ -159,55 +194,6 @@ class PresupuestoService
                 $pct_ejec  = $this->numCol($rowLower, ['% ejecución', '% ejec']);
                 $pct_rel   = $this->numCol($rowLower, ['% relativo']);
 
-            } elseif ($rowTipo === 'GRUPO_GASTO') {
-                // Hoja UniEjeYGru_Gas: Col C=Grupo de gasto, E=vigente, F=devengado, G=saldo, H=%ejec, I=%rel
-                // Solo importar filas donde Tipo Ejecucion = "Grupo de gasto"
-                $tipoEje = strtolower(trim((string)($this->colValue($rowLower, ['tipo ejecucion']) ?? '')));
-                if ($tipoEje && strpos($tipoEje, 'grupo') === false) continue;
-
-                $rawName = $this->colValue($rowLower, ['grupo de gasto']);
-                if (!$rawName) continue;
-                $rawName = trim($rawName);
-                if (stripos($rawName, 'total') !== false && strlen($rawName) < 20) continue;
-
-                if (preg_match('/^(\d+)/', $rawName, $m)) {
-                    $codigo = $m[1];
-                } else {
-                    continue;
-                }
-                $nombre = "Código $codigo";
-
-                $vigente   = $this->numCol($rowLower, [' vigente ', 'vigente']);
-                $devengado = $this->numCol($rowLower, [' devengado ', 'devengado']);
-                $saldo     = $this->numCol($rowLower, [' saldo por devengar ', 'saldo']);
-                $pct_ejec  = $this->numCol($rowLower, ['% ejecución', '% ejecucion']);
-                $pct_rel   = $this->numCol($rowLower, ['% relativo']);
-                $asignado  = $vigente; // no viene asignado en esta hoja
-
-            } elseif ($rowTipo === 'FUENTE_FINANCIAMIENTO') {
-                // Hoja UniEjeYGru_Gas: Col D=Fuente, E=vigente, F=devengado
-                $tipoEje = strtolower(trim((string)($this->colValue($rowLower, ['tipo ejecucion']) ?? '')));
-                if ($tipoEje && strpos($tipoEje, 'fuente') === false) continue;
-
-                $rawName = $this->colValue($rowLower, ['fuente de financiamiento']);
-                if (!$rawName) continue;
-                $rawName = trim($rawName);
-                if (stripos($rawName, 'total') !== false && strlen($rawName) < 20) continue;
-
-                if (preg_match('/^(\d+)/', $rawName, $m)) {
-                    $codigo = $m[1];
-                } else {
-                    continue;
-                }
-                $nombre = "Código $codigo";
-
-                $vigente   = $this->numCol($rowLower, [' vigente ', 'vigente']);
-                $devengado = $this->numCol($rowLower, [' devengado ', 'devengado']);
-                $saldo     = $this->numCol($rowLower, [' saldo por devengar ', 'saldo']);
-                $pct_ejec  = $this->numCol($rowLower, ['% ejecución', '% ejecucion']);
-                $pct_rel   = $this->numCol($rowLower, ['% relativo']);
-                $asignado  = $vigente;
-
             } else {
                 // UNIDAD_EJECUTORA — Hoja "UNI EJE" (Contiene Programa, Unidad, Gasto y Financiamiento)
                 // Determinar dinámicamente el tipo real basándose en qué columna tiene datos
@@ -244,7 +230,7 @@ class PresupuestoService
                     continue; // Skip if no numeric prefix code found
                 }
                 $codigo = $matches[1];
-                $nombre = "Código $codigo";
+                $nombre = $this->extractNombre($codigoCompleto, $codigo);
 
                 $asignado   = $this->numCol($rowLower, [' asignado ', 'asignado']);
                 $modificado = $this->numCol($rowLower, [' modificado ', 'modificado']);
@@ -287,6 +273,109 @@ class PresupuestoService
         ]);
 
         return $inserted;
+    }
+
+    /**
+     * Importa la hoja "UniEjeYGru_Gas" a presupuesto_detalle_ue.
+     *   Col B: Unidad Ejecutora
+     *   Col C: Grupo de gasto  /  Col D: Fuente de financiamiento
+     *   Col E-I: Vigente, Devengado, Saldo por Devengar, % Ejecución, % Relativo
+     *   Col J: tipo Gasto _ Financiamiento (grupo o fuente, respaldo cuando C y D vienen vacías)
+     *   Col K: Tipo Ejecucion (a veces vacía; se deduce de las columnas anteriores)
+     */
+    private function importDetalleUE($datos, $ejercicio, $limpiarAntes)
+    {
+        if ($limpiarAntes) {
+            $this->repository->cleanDetalleUE($ejercicio);
+        }
+
+        $inserted = 0;
+        $omitidas = 0;
+        foreach ($datos as $row) {
+            $rowLower = [];
+            foreach ($row as $k => $v) {
+                $rowLower[strtolower(preg_replace('/[^a-zA-Z0-9]/', '', (string)$k))] = is_string($v) ? trim($v) : $v;
+            }
+
+            $unidadRaw = (string)($rowLower['unidadejecutora'] ?? '');
+            $grupoRaw  = (string)($rowLower['grupodegasto'] ?? '');
+            $fuenteRaw = (string)($rowLower['fuentedefinanciamiento'] ?? '');
+            $tgfRaw    = (string)($rowLower['tipogastofinanciamiento'] ?? '');
+            $tipoEje   = strtolower((string)($rowLower['tipoejecucion'] ?? ''));
+
+            // Filas vacías o de totales
+            if ($unidadRaw === '' || !preg_match('/^(\d+)/', $unidadRaw, $mUnidad)) {
+                if ($unidadRaw !== '' || $grupoRaw !== '' || $fuenteRaw !== '') $omitidas++;
+                continue;
+            }
+
+            if ($grupoRaw !== '') {
+                $tipo = 'GRUPO_GASTO';
+                $raw = $grupoRaw;
+            } elseif ($fuenteRaw !== '') {
+                $tipo = 'FUENTE_FINANCIAMIENTO';
+                $raw = $fuenteRaw;
+            } elseif ($tgfRaw !== '') {
+                $raw = $tgfRaw;
+                if (strpos($tipoEje, 'fuente') !== false) {
+                    $tipo = 'FUENTE_FINANCIAMIENTO';
+                } elseif (strpos($tipoEje, 'grupo') !== false) {
+                    $tipo = 'GRUPO_GASTO';
+                } else {
+                    // Grupos de gasto usan 3 dígitos (000, 100...), fuentes 2 dígitos (11, 21...)
+                    $tipo = preg_match('/^\d{3}/', $raw) ? 'GRUPO_GASTO' : 'FUENTE_FINANCIAMIENTO';
+                }
+            } else {
+                $omitidas++;
+                continue;
+            }
+
+            if (!preg_match('/^(\d+)/', $raw, $mCodigo)) {
+                $omitidas++;
+                continue;
+            }
+
+            $vigente   = $this->numCol($rowLower, ['vigente']);
+            $devengado = $this->numCol($rowLower, ['devengado']);
+            $saldo     = $this->numCol($rowLower, ['saldo por devengar', 'saldo']);
+            if ($vigente == 0 && $devengado == 0 && $saldo == 0) continue;
+
+            $this->repository->createDetalleUE([
+                'ejercicio_fiscal' => $ejercicio,
+                'unidad_codigo'    => $mUnidad[1],
+                'unidad_nombre'    => $this->extractNombre($unidadRaw, $mUnidad[1]),
+                'tipo'             => $tipo,
+                'codigo'           => $mCodigo[1],
+                'nombre'           => $this->extractNombre($raw, $mCodigo[1]),
+                'vigente'          => round($vigente, 2),
+                'devengado'        => round($devengado, 2),
+                'saldo'            => round($saldo, 2),
+                'pct_ejec'         => round($this->numCol($rowLower, ['% ejecución', '% ejecucion']), 4),
+                'pct_rel'          => round($this->numCol($rowLower, ['% relativo']), 4),
+                'fecha_corte'      => date('Y-m-d')
+            ]);
+            $inserted++;
+        }
+
+        $this->repository->log([
+            'usuario'  => 'System',
+            'accion'   => 'IMPORT_BUDGET',
+            'detalles' => "Importados $inserted registros de desglose por unidad ejecutora ($ejercicio)"
+                . ($omitidas ? ", $omitidas filas omitidas por formato no reconocido" : '')
+        ]);
+
+        return $inserted;
+    }
+
+    /**
+     * Extrae el nombre de textos como '201  "Administración Financiera -MAGA-”'.
+     */
+    private function extractNombre($texto, $codigo)
+    {
+        $nombre = substr(trim($texto), strlen($codigo));
+        $nombre = preg_replace('/^[\s"\'“”«»]+|[\s"\'“”«»]+$/u', '', $nombre);
+        $nombre = preg_replace('/\s+/u', ' ', $nombre);
+        return $nombre !== '' ? $nombre : "Código $codigo";
     }
 
     /**

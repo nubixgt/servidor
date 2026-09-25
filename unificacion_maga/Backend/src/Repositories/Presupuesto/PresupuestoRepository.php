@@ -158,6 +158,50 @@ class PresupuestoRepository
         }
     }
 
+    public function beginTransaction()
+    {
+        return $this->db->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->db->commit();
+    }
+
+    public function rollBack()
+    {
+        if ($this->db->inTransaction()) {
+            $this->db->rollBack();
+        }
+    }
+
+    public function cleanDetalleUE($ejercicio)
+    {
+        $stmt = $this->db->prepare("DELETE FROM presupuesto_detalle_ue WHERE ejercicio_fiscal = :ejercicio");
+        return $stmt->execute(['ejercicio' => $ejercicio]);
+    }
+
+    public function createDetalleUE(array $data)
+    {
+        $sql = "INSERT INTO presupuesto_detalle_ue (ejercicio_fiscal, unidad_codigo, unidad_nombre, tipo, codigo, nombre,
+                    vigente, devengado, saldo, pct_ejec, pct_rel, fecha_corte)
+                VALUES (:ejercicio_fiscal, :unidad_codigo, :unidad_nombre, :tipo, :codigo, :nombre,
+                    :vigente, :devengado, :saldo, :pct_ejec, :pct_rel, :fecha_corte)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($data);
+        return $this->db->lastInsertId();
+    }
+
+    public function getDetalleUE($ejercicio)
+    {
+        $sql = "SELECT * FROM presupuesto_detalle_ue
+                WHERE ejercicio_fiscal = :ejercicio
+                ORDER BY unidad_codigo ASC, tipo DESC, codigo ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['ejercicio' => $ejercicio]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getCategoriaId($tipo, $codigo, $nombre)
     {
         // Check if exists
@@ -182,6 +226,11 @@ class PresupuestoRepository
         }
         
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // Completar el nombre real si la categoría se creó con el nombre genérico "Código X"
+            if ($tipo !== 'MINISTERIO' && $nombre !== '' && strpos($nombre, 'Código ') !== 0) {
+                $upd = $this->db->prepare("UPDATE presupuesto_categorias SET nombre = :nombre WHERE id = :id AND nombre LIKE 'Código %'");
+                $upd->execute(['nombre' => $nombre, 'id' => $row['id']]);
+            }
             return $row['id'];
         }
 

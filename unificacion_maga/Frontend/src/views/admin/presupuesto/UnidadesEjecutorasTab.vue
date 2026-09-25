@@ -43,9 +43,9 @@
         <!-- Filters Banner -->
         <div class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-2xl mb-6 shadow-sm border border-white/80 dark:border-gray-800 flex flex-col sm:flex-row gap-4 items-center">
             <div class="flex flex-col flex-1 sm:max-w-xs">
-                 <label class="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">Unidad Ejecutora</label>
+                 <label class="text-[10px] uppercase font-bold text-gray-500 mb-1 ml-1">{{ currentLabels.label }}</label>
                  <select v-model="filterUnidad" class="w-full border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm">
-                     <option value="">Todas las Unidades</option>
+                     <option value="">{{ currentLabels.all }}</option>
                      <option v-for="u in uniqueNames" :key="u" :value="u">{{ u }}</option>
                  </select>
             </div>
@@ -96,6 +96,7 @@
                     <table class="w-full text-right border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-50/50 dark:bg-gray-800/30 text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-800">
+                                <th v-if="hasDetalle" class="p-4 font-bold text-left">Unidad Ejecutora</th>
                                 <th class="p-4 font-bold text-left w-40">Tipo Ejecución</th>
                                 <th class="p-4 font-bold text-left">Tipo Gasto / Financiamiento</th>
                                 <th class="p-4 font-bold">Vigente</th>
@@ -107,9 +108,12 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-mono text-xs">
                             <tr v-if="filteredData.length === 0">
-                                <td colspan="7" class="p-8 text-center text-gray-400 font-sans">No se encontraron registros con los filtros aplicados.</td>
+                                <td :colspan="hasDetalle ? 8 : 7" class="p-8 text-center text-gray-400 font-sans">No se encontraron registros con los filtros aplicados.</td>
                             </tr>
                             <tr v-for="item in filteredData" :key="item.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                <td v-if="hasDetalle" class="p-4 text-left font-sans text-gray-500 dark:text-gray-400 max-w-xs">
+                                    {{ item.unidad }}
+                                </td>
                                 <td class="p-4 text-left font-sans">
                                      <span :class="`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${item.type === 'FUENTE_FINANCIAMIENTO' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`">
                                         {{ item.type ? item.type.replace('_', ' ') : '' }}
@@ -167,25 +171,49 @@ const formatMoney = (val) => {
 };
 
 const loading = ref(true);
-const tableData = ref([]);
 const selectedYear = inject('selectedYear');
 
 // Filters
 const filterTipo = ref('');
 const filterUnidad = ref('');
 
+const filterLabels = {
+    '': { label: 'Unidad Ejecutora', all: 'Todas las Unidades' },
+    GRUPO_GASTO: { label: 'Grupo de gasto', all: 'Todos los Grupos' },
+    FUENTE_FINANCIAMIENTO: { label: 'Fuente de financiamiento', all: 'Todas las Fuentes' },
+};
+
+// Desglose de cada unidad ejecutora por grupo de gasto y fuente (hoja "UniEjeYGru_Gas")
+const detalle = ref([]);
+const hasDetalle = computed(() => detalle.value.length > 0);
+
+// Respaldo cuando el ejercicio no tiene desglose importado: totales del MAGA por tipo
+// ('' = Unidades Ejecutoras, GRUPO_GASTO, FUENTE_FINANCIAMIENTO)
+const dataByTipo = ref({ '': [], GRUPO_GASTO: [], FUENTE_FINANCIAMIENTO: [] });
+
+const tableData = computed(() => {
+    if (!hasDetalle.value) return dataByTipo.value[filterTipo.value] || [];
+    return filterTipo.value ? detalle.value.filter(i => i.type === filterTipo.value) : detalle.value;
+});
+
+const currentLabels = computed(() => hasDetalle.value ? filterLabels[''] : filterLabels[filterTipo.value]);
+
+// Con desglose se filtra por unidad ejecutora; sin él, por el nombre de cada fila
+const filterKey = (item) => hasDetalle.value ? item.unidad : item.name;
+
 const uniqueNames = computed(() => {
-    const names = tableData.value.map(i => i.name).filter(Boolean);
+    const names = tableData.value.map(filterKey).filter(Boolean);
     return [...new Set(names)].sort();
+});
+
+watch(filterTipo, () => {
+    if (!hasDetalle.value) filterUnidad.value = '';
 });
 
 const filteredData = computed(() => {
     let items = tableData.value;
-    if (filterTipo.value) {
-        items = items.filter(i => (i.type || '').toUpperCase() === filterTipo.value);
-    }
     if (filterUnidad.value) {
-        items = items.filter(i => i.name === filterUnidad.value);
+        items = items.filter(i => filterKey(i) === filterUnidad.value);
     }
     return items;
 });
@@ -198,10 +226,25 @@ const clearFilters = () => {
 const loadData = async () => {
     loading.value = true;
     try {
-        const resp = await PresupuestoService.getDashboard({ tipo: 'UNIDAD_EJECUTORA', ejercicio: selectedYear.value });
-        if (resp.status === 'success' && resp.data) {
-            tableData.value = resp.data.items || [];
-        }
+        const ejercicio = selectedYear.value;
+        const detallePromise = PresupuestoService.getDetalleUE({ ejercicio })
+            .then(resp => (resp.status === 'success' ? resp.data || [] : []))
+            .catch(error => {
+                console.error('Error al cargar desglose por unidad:', error);
+                return [];
+            });
+        const [unidades, grupos, fuentes] = await Promise.all(
+            ['UNIDAD_EJECUTORA', 'GRUPO_GASTO', 'FUENTE_FINANCIAMIENTO'].map(tipo =>
+                PresupuestoService.getDashboard({ tipo, ejercicio })
+                    .then(resp => (resp.status === 'success' && resp.data ? resp.data.items || [] : []))
+                    .catch(error => {
+                        console.error(`Error al cargar ${tipo}:`, error);
+                        return [];
+                    })
+            )
+        );
+        dataByTipo.value = { '': unidades, GRUPO_GASTO: grupos, FUENTE_FINANCIAMIENTO: fuentes };
+        detalle.value = await detallePromise;
     } catch (error) {
         console.error('Error al cargar unidades:', error);
     } finally {
@@ -219,7 +262,12 @@ onMounted(() => {
 });
 
 const totals = computed(() => {
-    return filteredData.value.reduce((acc, curr) => {
+    // En "Todos" cada unidad aparece desglosada por grupo y por fuente (ambos suman lo mismo):
+    // se totaliza solo por grupo de gasto para no contar el presupuesto dos veces
+    const items = hasDetalle.value && !filterTipo.value
+        ? filteredData.value.filter(i => i.type === 'GRUPO_GASTO')
+        : filteredData.value;
+    return items.reduce((acc, curr) => {
         acc.vigente += curr.vigente || 0;
         acc.devengado += curr.devengado || 0;
         acc.saldo += curr.saldo || 0;

@@ -331,7 +331,8 @@ const processFile = async (file) => {
                 // Show confirmation before uploading
                 const result = await Swal.fire({
                     title: '¿Iniciar importación?',
-                    text: `Se detectaron ${jsonData.length} filas en la hoja "${expectedSheet}". Esta acción puede tardar unos segundos.`,
+                    text: `Se detectaron ${jsonData.length} filas en la hoja "${expectedSheet}" para el ejercicio ${ejercicio.value}.`
+                        + (limpiarAntes.value ? ` Los datos actuales de ${ejercicio.value} de esta hoja serán reemplazados.` : ''),
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonText: 'Sí, importar',
