@@ -61,8 +61,8 @@ switch ($accion) {
             if (!$st->rowCount()) fallar('Usuario no encontrado.', 404);
             registrar($admin['usuario'], 'usuario_editado', "{$usuario} · rol {$rol}" . ($activo ? '' : ' · INACTIVO') . ($password !== '' ? ' · contraseña restablecida' : '') . " · permisos {$permJson}");
         } else {
-            db()->prepare('INSERT INTO usuarios (usuario, nombre, password_hash, rol, permisos, activo) VALUES (?,?,?,?,?,?)')
-                ->execute([$usuario, $nombre, password_hash($password, PASSWORD_DEFAULT), $rol, $permJson, (int)$activo]);
+            db()->prepare('INSERT INTO usuarios (usuario, nombre, password_hash, rol, permisos, activo, creado) VALUES (?,?,?,?,?,?,?)')
+                ->execute([$usuario, $nombre, password_hash($password, PASSWORD_DEFAULT), $rol, $permJson, (int)$activo, date('Y-m-d H:i:s')]);
             $id = (int)db()->lastInsertId();
             registrar($admin['usuario'], 'usuario_creado', "{$usuario} · rol {$rol} · permisos {$permJson}");
         }

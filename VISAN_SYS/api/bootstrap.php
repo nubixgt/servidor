@@ -91,7 +91,7 @@ function crearEsquema(PDO $pdo): void
             intentos_fallidos INTEGER NOT NULL DEFAULT 0,
             bloqueado_hasta INTEGER NOT NULL DEFAULT 0,
             ultimo_acceso TEXT,
-            creado TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+            creado TEXT NOT NULL DEFAULT (datetime('now','-6 hours'))
         );
         CREATE TABLE IF NOT EXISTS matriz (
             cod_mun INTEGER PRIMARY KEY,
@@ -108,7 +108,7 @@ function crearEsquema(PDO $pdo): void
         );
         CREATE TABLE IF NOT EXISTS bitacora (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fecha TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+            fecha TEXT NOT NULL DEFAULT (datetime('now','-6 hours')),
             usuario TEXT,
             accion TEXT NOT NULL,
             detalle TEXT
@@ -166,7 +166,8 @@ function setMeta(string $clave, ?string $valor): void
 
 function registrar(?string $usuario, string $accion, string $detalle = ''): void
 {
-    db()->prepare('INSERT INTO bitacora (usuario, accion, detalle) VALUES (?,?,?)')->execute([$usuario, $accion, $detalle]);
+    db()->prepare('INSERT INTO bitacora (fecha, usuario, accion, detalle) VALUES (?,?,?,?)')
+        ->execute([date('Y-m-d H:i:s'), $usuario, $accion, $detalle]);
 }
 
 // =====================================================

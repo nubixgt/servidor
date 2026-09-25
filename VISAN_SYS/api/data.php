@@ -67,8 +67,8 @@ switch ($accion) {
             }
         }
         if ($aplicados) {
-            db()->prepare("UPDATE matriz SET datos = ?, actualizado = datetime('now','localtime'), actualizado_por = ? WHERE cod_mun = ?")
-                ->execute([json_encode($fila, JSON_UNESCAPED_UNICODE), $u['usuario'], $cod]);
+            db()->prepare('UPDATE matriz SET datos = ?, actualizado = ?, actualizado_por = ? WHERE cod_mun = ?')
+                ->execute([json_encode($fila, JSON_UNESCAPED_UNICODE), date('Y-m-d H:i:s'), $u['usuario'], $cod]);
             $det = implode('; ', array_map(fn($k, $v) => "$k: " . json_encode($v['antes']) . ' → ' . json_encode($v['despues']), array_keys($aplicados), $aplicados));
             registrar($u['usuario'], 'edicion', "{$fila['municipio']}, {$fila['departamento']} ({$cod}) · {$det}");
         }

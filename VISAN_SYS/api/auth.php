@@ -45,8 +45,8 @@ switch ($accion) {
         iniciarSesion();
         session_regenerate_id(true);
         $_SESSION['uid'] = (int)$u['id'];
-        db()->prepare("UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = 0, ultimo_acceso = datetime('now','localtime') WHERE id = ?")
-            ->execute([$u['id']]);
+        db()->prepare('UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = 0, ultimo_acceso = ? WHERE id = ?')
+            ->execute([date('Y-m-d H:i:s'), $u['id']]);
         if (password_needs_rehash($u['password_hash'], PASSWORD_DEFAULT)) {
             db()->prepare('UPDATE usuarios SET password_hash = ? WHERE id = ?')->execute([password_hash($password, PASSWORD_DEFAULT), $u['id']]);
         }
