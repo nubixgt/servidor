@@ -532,6 +532,7 @@ function openEditMuniModal(cod_mun, module) {
     Object.entries(labels).forEach(([k, l]) => {
       fieldsHTML += editFieldHTML(row, `prog_${k}`, `${l} Prog. Cantidad`, 'number', '0');
       fieldsHTML += editFieldHTML(row, `prog_${k}_fecha`, `${l} Prog. Fecha`, 'text', 'AAAA-MM-DD o texto');
+      if (k === 'insan') fieldsHTML += editFieldHTML(row, `prog_${k}_solicitud`, `${l} Prog. Solicitud`, 'text', 'AAAA-MM-DD o texto');
     });
   } else if (currentEditModule === 'conred') {
     fieldsHTML += editFieldHTML(row, 'conred', 'CONRED Cantidad', 'number', '0', true);
@@ -930,7 +931,7 @@ const PROG_INTS=[
   {id:'judicial',l:'Judicial',vk:'prog_judicial',dk:'prog_judicial_fecha',desc:'Medida Transitoria / Judicial'},
   {id:'apa',l:'APA',vk:'prog_apa',dk:'prog_apa_fecha',desc:'Alimentos por Acciones'},
   {id:'reserva',l:'Reserva',vk:'prog_reserva',dk:'prog_reserva_fecha',desc:'Reserva Estratégica'},
-  {id:'insan',l:'INSAN',vk:'prog_insan',dk:'prog_insan_fecha',desc:'Inseguridad Alimentaria'}
+  {id:'insan',l:'INSAN',vk:'prog_insan',dk:'prog_insan_fecha',sk:'prog_insan_solicitud',desc:'Inseguridad Alimentaria'}
 ];
 let progInt='all';
 
@@ -1054,12 +1055,14 @@ function renderProgTable(){
     <th style="min-width:110px">Tipo</th>`;
   activeInts.forEach(m => {
     theadHTML += `<th style="text-align:right">${m.l} Cant.</th><th style="min-width:105px">${m.l} Fecha</th>`;
+    if (m.sk) theadHTML += `<th style="min-width:105px">${m.l} Solicitud</th>`;
   });
   theadHTML += `</tr>`;
   tbl.querySelector('thead').innerHTML = theadHTML;
 
+  const colCount = 4 + activeInts.reduce((n, m) => n + (m.sk ? 3 : 2), 0);
   if(!filtered.length){
-    tbl.querySelector('tbody').innerHTML = `<tr><td colspan="${4 + activeInts.length * 2}" style="text-align:center;padding:40px;color:var(--text-2)">Sin registros para los filtros aplicados.</td></tr>`;
+    tbl.querySelector('tbody').innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:40px;color:var(--text-2)">Sin registros para los filtros aplicados.</td></tr>`;
     document.getElementById('prog-pg').innerHTML = `<span>0 registros encontrados</span>`;
     return;
   }
@@ -1101,9 +1104,10 @@ function renderProgTable(){
       <td><span class="dept-blank-col">—</span></td>
       <td><span style="font-size:11px;font-weight:700;color:var(--text-2)">Totales Depto.</span></td>`;
 
-    modSums.forEach(sumVal => {
+    modSums.forEach((sumVal, i) => {
       tbodyHTML += `<td style="text-align:right"><span class="dept-total-val">${fmtN(sumVal)}</span></td>
                     <td><span class="dept-blank-col">—</span></td>`;
+      if (activeInts[i].sk) tbodyHTML += `<td><span class="dept-blank-col">—</span></td>`;
     });
     tbodyHTML += `</tr>`;
 
@@ -1145,6 +1149,10 @@ function renderProgTable(){
           const sinFecha = r[m.vk] && !tieneFechaProg(r, m.id);
           tbodyHTML += `<td style="text-align:right" ${cellQtyAttr}><span class="n-val${sinFecha ? ' n-sin-fecha' : ''}"${sinFecha ? ' title="Sin fecha de programación: no se suma en los totales"' : ''}>${fmtN(r[m.vk])}</span></td>
                         <td ${cellDateAttr}>${dateHTML}</td>`;
+          if (m.sk) {
+            const cellSolAttr = canEditField(m.sk, r) ? `class="editable-cell" onclick="event.stopPropagation(); promptEditCell(${r.cod_mun}, '${m.sk}', '${m.l} Solicitud', false)" title="Clic para editar ${m.l} Solicitud"` : '';
+            tbodyHTML += `<td ${cellSolAttr}><span class="d-val">${fmtD(r[m.sk])}</span></td>`;
+          }
         });
         tbodyHTML += `</tr>`;
       });
