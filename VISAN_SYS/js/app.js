@@ -691,12 +691,12 @@ window.toggleAllDepts = toggleAllDepts;
 // ── EJECUCIÓN MODULE ──
 const EJ_INTS=[
   {id:'all',l:'Todas'},
-  {id:'nda',l:'NDA',vk:'ej_nda',dk:'ej_nda_fecha',desc:'NDA Nacional'},
-  {id:'mc',l:'MC',vk:'ej_mc',dk:'ej_mc_fecha',desc:'Medida Cautelar'},
-  {id:'judicial',l:'Judicial',vk:'ej_judicial',dk:'ej_judicial_fecha',desc:'Medida Transitoria / Judicial'},
-  {id:'apa',l:'APA',vk:'ej_apa',dk:'ej_apa_fecha',desc:'Alimentos por Acciones'},
+  {id:'insan',l:'INSAN',vk:'ej_insan',dk:'ej_insan_fecha',desc:'Inseguridad Alimentaria'},
   {id:'reserva',l:'Reserva',vk:'ej_reserva',dk:'ej_reserva_fecha',desc:'Reserva Estratégica'},
-  {id:'insan',l:'INSAN',vk:'ej_insan',dk:'ej_insan_fecha',desc:'Inseguridad Alimentaria'}
+  {id:'apa',l:'APA',vk:'ej_apa',dk:'ej_apa_fecha',desc:'Alimentos por Acciones'},
+  {id:'nda',l:'NDA',vk:'ej_nda',dk:'ej_nda_fecha',desc:'NDA Nacional'},
+  {id:'judicial',l:'Judicial',vk:'ej_judicial',dk:'ej_judicial_fecha',desc:'Medida Transitoria / Judicial'},
+  {id:'mc',l:'MC',vk:'ej_mc',dk:'ej_mc_fecha',desc:'Medida Cautelar'}
 ];
 let ejInt='all';
 
@@ -926,12 +926,12 @@ window.renderEjTable = renderEjTable;
 // ── PROGRAMACIÓN MODULE ──
 const PROG_INTS=[
   {id:'all',l:'Todas'},
-  {id:'nda',l:'NDA',vk:'prog_nda',dk:'prog_nda_fecha',desc:'NDA Nacional'},
-  {id:'mc',l:'MC',vk:'prog_mc',dk:'prog_mc_fecha',desc:'Medida Cautelar'},
-  {id:'judicial',l:'Judicial',vk:'prog_judicial',dk:'prog_judicial_fecha',desc:'Medida Transitoria / Judicial'},
-  {id:'apa',l:'APA',vk:'prog_apa',dk:'prog_apa_fecha',desc:'Alimentos por Acciones'},
+  {id:'insan',l:'INSAN',vk:'prog_insan',dk:'prog_insan_fecha',sk:'prog_insan_solicitud',desc:'Inseguridad Alimentaria'},
   {id:'reserva',l:'Reserva',vk:'prog_reserva',dk:'prog_reserva_fecha',desc:'Reserva Estratégica'},
-  {id:'insan',l:'INSAN',vk:'prog_insan',dk:'prog_insan_fecha',sk:'prog_insan_solicitud',desc:'Inseguridad Alimentaria'}
+  {id:'apa',l:'APA',vk:'prog_apa',dk:'prog_apa_fecha',desc:'Alimentos por Acciones'},
+  {id:'nda',l:'NDA',vk:'prog_nda',dk:'prog_nda_fecha',desc:'NDA Nacional'},
+  {id:'judicial',l:'Judicial',vk:'prog_judicial',dk:'prog_judicial_fecha',desc:'Medida Transitoria / Judicial'},
+  {id:'mc',l:'MC',vk:'prog_mc',dk:'prog_mc_fecha',desc:'Medida Cautelar'}
 ];
 let progInt='all';
 
