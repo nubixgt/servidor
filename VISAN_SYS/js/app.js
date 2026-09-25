@@ -760,35 +760,35 @@ function renderEjMetrics(){
         <div class="m-value">${fmtN(tot)}</div>
         <div class="m-sub">${munisAtendidos} de ${rows.length} munis atendidos</div>
       </div>
-      <div class="metric-glass-card ${ejInt==='nda'?'active-metric':''}" onclick="setEjInt('nda')" title="Filtrar por modalidad NDA">
-        <div class="m-label"><span>NDA</span><span>🏷️</span></div>
-        <div class="m-value">${fmtN(nda)}</div>
-        <div class="m-sub">${rows.filter(r=>r.ej_nda).length} munis con entrega</div>
-      </div>
-      <div class="metric-glass-card ${ejInt==='mc'?'active-metric':''}" onclick="setEjInt('mc')" title="Filtrar por modalidad MC">
-        <div class="m-label"><span>MC</span><span>🛒</span></div>
-        <div class="m-value">${fmtN(mc)}</div>
-        <div class="m-sub">${rows.filter(r=>r.ej_mc).length} munis modalidad compra</div>
-      </div>
-      <div class="metric-glass-card ${ejInt==='judicial'?'active-metric':''}" onclick="setEjInt('judicial')" title="Filtrar por Judicial">
-        <div class="m-label"><span>Judicial</span><span>⚖️</span></div>
-        <div class="m-value">${fmtN(jud)}</div>
-        <div class="m-sub">${rows.filter(r=>r.ej_judicial).length} munis vía judicial</div>
-      </div>
-      <div class="metric-glass-card ${ejInt==='apa'?'active-metric':''}" onclick="setEjInt('apa')" title="Filtrar por APA">
-        <div class="m-label"><span>APA</span><span>🌾</span></div>
-        <div class="m-value">${fmtN(apa)}</div>
-        <div class="m-sub">${rows.filter(r=>r.ej_apa).length} munis atendidos</div>
+      <div class="metric-glass-card ${ejInt==='insan'?'active-metric':''}" onclick="setEjInt('insan')" title="Filtrar por INSAN">
+        <div class="m-label"><span>INSAN</span><span>⚠️</span></div>
+        <div class="m-value">${fmtN(ins)}</div>
+        <div class="m-sub">${rows.filter(r=>r.ej_insan).length} munis INSAN</div>
       </div>
       <div class="metric-glass-card ${ejInt==='reserva'?'active-metric':''}" onclick="setEjInt('reserva')" title="Filtrar por Reserva">
         <div class="m-label"><span>Reserva</span><span>🏛️</span></div>
         <div class="m-value">${fmtN(res)}</div>
         <div class="m-sub">${rows.filter(r=>r.ej_reserva).length} munis con reserva</div>
       </div>
-      <div class="metric-glass-card ${ejInt==='insan'?'active-metric':''}" onclick="setEjInt('insan')" title="Filtrar por INSAN">
-        <div class="m-label"><span>INSAN</span><span>⚠️</span></div>
-        <div class="m-value">${fmtN(ins)}</div>
-        <div class="m-sub">${rows.filter(r=>r.ej_insan).length} munis INSAN</div>
+      <div class="metric-glass-card ${ejInt==='apa'?'active-metric':''}" onclick="setEjInt('apa')" title="Filtrar por APA">
+        <div class="m-label"><span>APA</span><span>🌾</span></div>
+        <div class="m-value">${fmtN(apa)}</div>
+        <div class="m-sub">${rows.filter(r=>r.ej_apa).length} munis atendidos</div>
+      </div>
+      <div class="metric-glass-card ${ejInt==='nda'?'active-metric':''}" onclick="setEjInt('nda')" title="Filtrar por modalidad NDA">
+        <div class="m-label"><span>NDA</span><span>🏷️</span></div>
+        <div class="m-value">${fmtN(nda)}</div>
+        <div class="m-sub">${rows.filter(r=>r.ej_nda).length} munis con entrega</div>
+      </div>
+      <div class="metric-glass-card ${ejInt==='judicial'?'active-metric':''}" onclick="setEjInt('judicial')" title="Filtrar por Judicial">
+        <div class="m-label"><span>Judicial</span><span>⚖️</span></div>
+        <div class="m-value">${fmtN(jud)}</div>
+        <div class="m-sub">${rows.filter(r=>r.ej_judicial).length} munis vía judicial</div>
+      </div>
+      <div class="metric-glass-card ${ejInt==='mc'?'active-metric':''}" onclick="setEjInt('mc')" title="Filtrar por modalidad MC">
+        <div class="m-label"><span>MC</span><span>🛒</span></div>
+        <div class="m-value">${fmtN(mc)}</div>
+        <div class="m-sub">${rows.filter(r=>r.ej_mc).length} municipios ejecutados</div>
       </div>
     </div>
   `;
