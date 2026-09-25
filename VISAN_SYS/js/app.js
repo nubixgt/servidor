@@ -995,35 +995,35 @@ function renderProgMetrics(){
         <div class="m-value">${fmtN(tot)}</div>
         <div class="m-sub">${munisProg} de ${rows.length} munis con meta</div>
       </div>
-      <div class="metric-glass-card ${progInt==='nda'?'active-metric':''}" onclick="setProgInt('nda')" title="Filtrar por NDA Programado">
-        <div class="m-label"><span>NDA Prog.</span><span>🏷️</span></div>
-        <div class="m-value">${fmtN(nda)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'nda')).length} munis programados</div>
-      </div>
-      <div class="metric-glass-card ${progInt==='mc'?'active-metric':''}" onclick="setProgInt('mc')" title="Filtrar por MC Programado">
-        <div class="m-label"><span>MC Prog.</span><span>🛒</span></div>
-        <div class="m-value">${fmtN(mc)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'mc')).length} munis programados</div>
-      </div>
-      <div class="metric-glass-card ${progInt==='judicial'?'active-metric':''}" onclick="setProgInt('judicial')" title="Filtrar por Judicial Programado">
-        <div class="m-label"><span>Judicial Prog.</span><span>⚖️</span></div>
-        <div class="m-value">${fmtN(jud)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'judicial')).length} munis programados</div>
-      </div>
-      <div class="metric-glass-card ${progInt==='apa'?'active-metric':''}" onclick="setProgInt('apa')" title="Filtrar por APA Programado">
-        <div class="m-label"><span>APA Prog.</span><span>🌾</span></div>
-        <div class="m-value">${fmtN(apa)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'apa')).length} munis programados</div>
+      <div class="metric-glass-card ${progInt==='insan'?'active-metric':''}" onclick="setProgInt('insan')" title="Filtrar por INSAN Programada">
+        <div class="m-label"><span>INSAN Prog.</span><span>⚠️</span></div>
+        <div class="m-value">${fmtN(ins)}</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'insan')).length} municipios programados</div>
       </div>
       <div class="metric-glass-card ${progInt==='reserva'?'active-metric':''}" onclick="setProgInt('reserva')" title="Filtrar por Reserva Programada">
         <div class="m-label"><span>Reserva Prog.</span><span>🏛️</span></div>
         <div class="m-value">${fmtN(res)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'reserva')).length} munis programados</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'reserva')).length} municipios programados</div>
       </div>
-      <div class="metric-glass-card ${progInt==='insan'?'active-metric':''}" onclick="setProgInt('insan')" title="Filtrar por INSAN Programada">
-        <div class="m-label"><span>INSAN Prog.</span><span>⚠️</span></div>
-        <div class="m-value">${fmtN(ins)}</div>
-        <div class="m-sub">${rows.filter(r=>progOf(r,'insan')).length} munis programados</div>
+      <div class="metric-glass-card ${progInt==='apa'?'active-metric':''}" onclick="setProgInt('apa')" title="Filtrar por APA Programado">
+        <div class="m-label"><span>APA Prog.</span><span>🌾</span></div>
+        <div class="m-value">${fmtN(apa)}</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'apa')).length} municipios programados</div>
+      </div>
+      <div class="metric-glass-card ${progInt==='nda'?'active-metric':''}" onclick="setProgInt('nda')" title="Filtrar por NDA Programado">
+        <div class="m-label"><span>NDA Prog.</span><span>🏷️</span></div>
+        <div class="m-value">${fmtN(nda)}</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'nda')).length} municipios programados</div>
+      </div>
+      <div class="metric-glass-card ${progInt==='judicial'?'active-metric':''}" onclick="setProgInt('judicial')" title="Filtrar por Judicial Programado">
+        <div class="m-label"><span>Judicial Prog.</span><span>⚖️</span></div>
+        <div class="m-value">${fmtN(jud)}</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'judicial')).length} municipios programados</div>
+      </div>
+      <div class="metric-glass-card ${progInt==='mc'?'active-metric':''}" onclick="setProgInt('mc')" title="Filtrar por MC Programado">
+        <div class="m-label"><span>MC Prog.</span><span>🛒</span></div>
+        <div class="m-value">${fmtN(mc)}</div>
+        <div class="m-sub">${rows.filter(r=>progOf(r,'mc')).length} municipios programados</div>
       </div>
     </div>
   `;
