@@ -1048,7 +1048,6 @@ function renderProgTable(){
   let theadHTML = `<tr>
     <th style="min-width:230px">Departamento / Municipio</th>
     <th style="min-width:130px">Vulnerabilidad</th>
-    <th style="min-width:85px">Año Sol.</th>
     <th style="min-width:110px">Tipo</th>`;
   activeInts.forEach(m => {
     theadHTML += `<th style="text-align:right">${m.l} Cant.</th><th style="min-width:105px">${m.l} Fecha</th>`;
@@ -1057,7 +1056,7 @@ function renderProgTable(){
   theadHTML += `</tr>`;
   tbl.querySelector('thead').innerHTML = theadHTML;
 
-  const colCount = 4 + activeInts.reduce((n, m) => n + (m.sk ? 3 : 2), 0);
+  const colCount = 3 + activeInts.reduce((n, m) => n + (m.sk ? 3 : 2), 0);
   if(!filtered.length){
     tbl.querySelector('tbody').innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:40px;color:var(--text-2)">Sin registros para los filtros aplicados.</td></tr>`;
     document.getElementById('prog-pg').innerHTML = `<span>0 registros encontrados</span>`;
@@ -1098,7 +1097,6 @@ function renderProgTable(){
           ${yCount ? `<span class="dept-v-pill y" title="${yCount} municipios Media">● ${yCount}</span>` : ''}
         </div>
       </td>
-      <td><span class="dept-blank-col">—</span></td>
       <td><span style="font-size:11px;font-weight:700;color:var(--text-2)">Totales Depto.</span></td>`;
 
     modSums.forEach((sumVal, i) => {
@@ -1113,8 +1111,6 @@ function renderProgTable(){
       dRows.forEach(r => {
         const vulnCls = r.color === 'FFFF0000' ? 'vuln-muy-alta' : r.color === 'FFFF8001' ? 'vuln-alta' : 'vuln-media';
         const badgeCls = r.color === 'FFFF0000' ? 'r' : r.color === 'FFFF8001' ? 'o' : 'y';
-
-        const cellAnioAttr = canEditField('prog_anio', r) ? `class="editable-cell" onclick="event.stopPropagation(); promptEditCell(${r.cod_mun}, 'prog_anio', 'Año Sol.', true)" title="Clic para editar Año Sol."` : '';
 
         tbodyHTML += `<tr class="muni-child-row ${vulnCls}">
           <td>
@@ -1131,7 +1127,6 @@ function renderProgTable(){
             </div>
           </td>
           <td><span class="muni-badge-highlight ${badgeCls}">● ${vname(r.color)}</span></td>
-          <td ${cellAnioAttr}><span class="d-val">${r.prog_anio || '—'}</span></td>
           <td><span style="font-size:11px;color:var(--text-2);font-weight:600">${r.atendido_prog || '—'}</span></td>`;
 
         activeInts.forEach(m => {
