@@ -32,10 +32,14 @@ window.api = async function api(url, { json, form } = {}) {
   return data;
 };
 
+// Cache-busting: sin esto, el navegador puede quedarse con una copia vieja de
+// estos scripts (ej. bodegas_data.js) después de un despliegue, mostrando datos
+// desactualizados hasta que el usuario borre caché a mano.
+const BUILD_STAMP = Date.now();
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = src;
+    s.src = src + (src.includes('?') ? '&' : '?') + 'v=' + BUILD_STAMP;
     s.onload = resolve;
     s.onerror = () => reject(new Error(`No se pudo cargar ${src}`));
     document.body.appendChild(s);
