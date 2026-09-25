@@ -99,8 +99,8 @@ const ALERTS=[
 
 // ── DATE & TOPBAR ──
 const now=new Date();
-document.getElementById('top-date').innerHTML=`Actualización: ${fmtD((window.VISAN_META||{}).fecha_corte)}<br>Datos al ${fechaLarga((window.VISAN_META||{}).fecha_corte)}`;
 document.getElementById('sb-alert-badge').textContent=ALERTS.filter(a=>a.type==='critical'||a.type==='high').length;
+document.getElementById('sb-bodegas-badge').textContent=Object.keys(BODEGAS_METADATA).length;
 
 // ── NAVIGATION ──
 function navigate(page){
@@ -1469,9 +1469,13 @@ function loadBodegasEdits() {
 loadBodegasEdits();
 
 function initBodegas() {
+  const totalBodegas = Object.keys(BODEGAS_METADATA).length;
+  const cardsCount = document.getElementById('b-tab-cards-count');
+  if (cardsCount) cardsCount.textContent = totalBodegas;
+
   const bSelect = document.getElementById('bodegas-filter-bodega');
   if (bSelect) {
-    bSelect.innerHTML = '<option value="">Todas las Bodegas (10)</option>';
+    bSelect.innerHTML = `<option value="">Todas las Bodegas (${totalBodegas})</option>`;
     Object.keys(BODEGAS_METADATA).forEach(bKey => {
       const meta = BODEGAS_METADATA[bKey] || {};
       const opt = document.createElement('option');
@@ -1810,7 +1814,7 @@ function renderBodegasResumenConvenios(container) {
             </span>
           </div>
           <p style="font-size:12px;color:var(--text-2);margin-top:4px">
-            Distribución estratégica de raciones disponibles por convenio en la red de 10 bodegas y almacenes VISAN (PMA e INDECA).
+            Distribución estratégica de raciones disponibles por convenio en la red de ${Object.keys(BODEGAS_METADATA).length} bodegas y almacenes VISAN (PMA e INDECA).
           </p>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
@@ -1978,7 +1982,7 @@ function renderBodegasResumenConvenios(container) {
           <tfoot>
             <tr style="background:#eaf2fc;font-weight:800;color:var(--navy);border-top:2px solid #bcd7fa;font-size:13px">
               <td style="padding:14px">TOTAL NACIONAL</td>
-              <td style="padding:14px 10px;text-align:center"><span style="font-size:10px;font-weight:800;color:var(--navy);background:#fff;padding:2px 8px;border-radius:6px;border:1px solid #cbd5e1">10 RED</span></td>
+              <td style="padding:14px 10px;text-align:center"><span style="font-size:10px;font-weight:800;color:var(--navy);background:#fff;padding:2px 8px;border-radius:6px;border:1px solid #cbd5e1">${Object.keys(BODEGAS_METADATA).length} RED</span></td>
               <td style="padding:14px 12px">${filas.length} Almacenes (7 Deptos.)</td>
               <td style="padding:14px 12px;text-align:right;color:#1d4ed8">${fmtN(sub02)}</td>
               <td style="padding:14px 12px;text-align:right;color:#047857">${fmtN(sub03)}</td>
