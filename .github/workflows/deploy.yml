@@ -89,6 +89,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (LasOrquideas)
+        run: |
+          cd LasOrquideas/Frontend
+          npm install
+          npm run build
+
 
 
       - name: 🔐 Setup SSH
