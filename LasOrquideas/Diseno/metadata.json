@@ -1,0 +1,6 @@
+{
+  "name": "Las Orquídeas Lotificadora",
+  "description": "Desarrollo residencial campestre y lotificación de alta plusvalía en Guatemala. Terrenos para un mejor futuro.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
