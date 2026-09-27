@@ -183,6 +183,7 @@
 <script setup>
 import { ref } from 'vue';
 import { X, CheckCircle, ShieldCheck, MessageSquare, CreditCard, Building } from 'lucide-vue-next';
+import { whatsappLink } from '../../data/siteConfig.js';
 
 const props = defineProps({
   lot: { type: Object, default: null }
@@ -202,9 +203,7 @@ const handleConfirm = () => {
 
 const handleWhatsAppReservation = () => {
   if (!props.lot) return;
-  const text = encodeURIComponent(
-    `Hola Las Orquídeas, deseo reservar el ${props.lot.number} (${props.lot.manzana} - ${props.lot.areaM2} m²). Mi nombre es ${name.value}, teléfono ${phone.value}. Deseo coordinar el depósito de Q 1,000.`
-  );
-  window.open(`https://wa.me/50255555555?text=${text}`, '_blank');
+  const text = `Hola Las Orquídeas, deseo reservar el ${props.lot.number} (${props.lot.manzana} - ${props.lot.areaM2} m²). Mi nombre es ${name.value}, teléfono ${phone.value}. Deseo coordinar el depósito de Q 1,000.`;
+  window.open(whatsappLink(text), '_blank');
 };
 </script>

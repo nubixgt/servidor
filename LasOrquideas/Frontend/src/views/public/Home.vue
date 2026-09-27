@@ -562,7 +562,7 @@
                 </div>
 
                 <a
-                  href="https://maps.google.com/?q=Las+Orquideas+Guatemala"
+                  href="https://maps.google.com/?q=CC+Plaza+Real+Chimaltenango"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 bg-brand-forest text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-brand-forest-dark transition shadow-md active:scale-95 cursor-pointer"
@@ -587,8 +587,8 @@
                         <MapPin className="w-5 h-5 text-emerald-300" />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-brand-forest uppercase tracking-wider">Garita Principal</p>
-                        <p className="text-xs sm:text-sm font-extrabold text-slate-900">Km. 24.5 Carretera Residencial, Las Orquídeas</p>
+                        <p className="text-xs font-semibold text-brand-forest uppercase tracking-wider">Sala de Ventas</p>
+                        <p className="text-xs sm:text-sm font-extrabold text-slate-900">{{ CONTACT.salesOffice }}</p>
                       </div>
                     </div>
                   </div>
@@ -983,6 +983,7 @@ import VideoModal from '../../components/modals/VideoModal.vue';
 import LightboxModal from '../../components/modals/LightboxModal.vue';
 
 import { LOTS_DATA, GALLERY_ITEMS } from '../../data/lotData.js';
+import { CONTACT } from '../../data/siteConfig.js';
 import logoUrl from '../../assets/images/Logo.jpg';
 
 import {

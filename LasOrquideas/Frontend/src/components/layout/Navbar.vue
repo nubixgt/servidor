@@ -70,7 +70,7 @@
 
           <!-- Contact WhatsApp Button -->
           <a
-            href="https://wa.me/50255555555?text=Hola,%20deseo%20información%20sobre%20los%20lotes%20disponibles%20en%20Las%20Orquídeas"
+            :href="whatsappLink('Hola, deseo información sobre los lotes disponibles en Las Orquídeas')"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-brand-forest hover:bg-brand-forest-dark text-white px-3.5 md:px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all hover:shadow-lg transform active:scale-95 whitespace-nowrap"
@@ -140,6 +140,7 @@
 import { ref } from 'vue';
 import { Menu, X, MessageCircle, Eye, LayoutGrid } from 'lucide-vue-next';
 import logoUrl from '../../assets/images/Logo.jpg';
+import { whatsappLink } from '../../data/siteConfig.js';
 
 const props = defineProps({
   activeScreen: { type: String, default: 'inicio' },

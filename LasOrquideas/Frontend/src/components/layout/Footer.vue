@@ -93,9 +93,10 @@
             Oficina de Ventas
           </h4>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Km. 24.5 Carretera Residencial,
+            {{ CONTACT.salesOffice }}
             <br />
-            Guatemala, C.A.
+            <br />
+            <strong className="text-slate-800">Teléfono:</strong> {{ CONTACT.phoneDisplay }}
             <br />
             <br />
             <strong className="text-slate-800">Horarios de atención:</strong>
@@ -126,7 +127,7 @@
   <!-- Floating WhatsApp Button -->
   <aside className="fixed bottom-6 right-6 z-50">
     <a
-      href="https://wa.me/50255555555?text=Hola,%20quisiera%20más%20información%20sobre%20Las%20Orquídeas"
+      :href="whatsappLink('Hola, quisiera más información sobre Las Orquídeas')"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar por WhatsApp"
@@ -149,6 +150,7 @@
 <script setup>
 import { MessageCircle } from 'lucide-vue-next';
 import logoUrl from '../../assets/images/Logo.jpg';
+import { CONTACT, whatsappLink } from '../../data/siteConfig.js';
 
 defineEmits(['navigate']);
 </script>

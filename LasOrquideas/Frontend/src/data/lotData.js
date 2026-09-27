@@ -1,3 +1,10 @@
+import foto1 from '../assets/images/foto1.jpeg';
+import foto2 from '../assets/images/foto2.jpeg';
+import foto3 from '../assets/images/foto3.jpeg';
+import foto4 from '../assets/images/foto4.jpeg';
+import foto5 from '../assets/images/foto5.jpeg';
+import foto6 from '../assets/images/foto6.jpeg';
+
 export const LOTS_DATA = [
   {
     id: 'l-01',
@@ -177,51 +184,51 @@ export const LOTS_DATA = [
 
 export const GALLERY_ITEMS = [
   {
-    id: 'garita-monumental',
-    title: 'Garita de Entrada Monumental',
-    tag: 'Seguridad',
-    category: 'seguridad',
-    description: 'Doble carril de ingreso y salida rápida con control biométrico y cámaras 24/7.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3mfKzUNp-D4qQZaCTKJAEgPt_ZC6I4_hNRZZm4kjfe893Xdi_bUjNSdqBKgzlAZBP7Tj_O-5GweK0mrnXlo9AvuWPpCh6KaXwtUzviogP6NHUBoiwOCmkuY53NocHaz07uH9iyi29XuEUGR5qUWiQGMhVK3W2g-YfSpOXjhVeDAaCNxvwhrxdQw2QlIhpyCqFrdZy6uNeFZiETuV4UHWAcNpm8rv6LRMXMWJDBLVRK6VfevfLgw',
+    id: 'sala-de-ventas',
+    title: 'Nuestra Sala de Ventas',
+    tag: 'Contáctanos',
+    category: 'contacto',
+    description: 'Visítanos en el Local 21A, CC Plaza Real, Chimaltenango y resuelve todas tus dudas en persona.',
+    imageUrl: foto4,
   },
   {
-    id: 'senderos-ecologicos',
-    title: 'Parques y Senderos Ecológicos',
-    tag: 'Naturaleza',
-    category: 'naturaleza',
-    description: 'Más de 8,000 m² destinados a recreación al aire libre, juegos y pistas de trote.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCldD1RwgYzHxWdmFSs4bv8P-CYhYU4Ic_cZ2MwGyKojBf5352iB70blZ6SiVY0pKe-5E2hdQ1mfDkZibACblcr0QcAhU3G328pSIgE-tC2tb4aQFjfLtazV5voH13D9itiIr56vFyZu3ZpUQqzn1SjrLK1WlibZJIYO07wDtXrP1GBNTKZz4K7Lq_2xW1Cu-68PQjV5M3EH65xbyahtMMpykHg60jiM3YTFZyCzPNEy5KpGjYMNg',
+    id: 'casas-modelo',
+    title: 'Casas Modelo Ya Construidas',
+    tag: 'Construcción Real',
+    category: 'construccion',
+    description: 'Muestra de las viviendas terminadas por Las Orquídeas, S.A. en su desarrollo Los Naranjales.',
+    imageUrl: foto2,
   },
   {
-    id: 'vistas-montanas',
-    title: 'Vistas a las Montañas',
-    tag: 'Vistas 360°',
-    category: 'vistas',
-    description: 'Atardeceres dorados y clima templado en un entorno natural libre de contaminación acústica.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDTKVKxv0Zu6bjoexlhKYL6yMIHwtNjrD3zsxIg4dyj4hXLeKjcJLu1RW3taJPHzyrs-A0N8yylu-fUBXhqLzjQjGbDM_NcaXuqqJAAcJbqbSiV4XhhvwtN0HPOMmC2ckD3MZDjix8T8wcOPSb2oYM4u-q9k6RMeHXeMaeoCo8Or_G5dFye8oDTb-9Bp9wZ_8aPkeeP9xVveCTHbLzbPCa0IY61X1mF_Bph_HSFY-dAA-BFwjbuzQ',
+    id: 'acabados-fachada',
+    title: 'Calidad en Cada Detalle',
+    tag: 'Acabados',
+    category: 'construccion',
+    description: 'Fachadas y acabados de nuestros proyectos residenciales, respaldados por años de experiencia.',
+    imageUrl: foto1,
   },
   {
-    id: 'bulevares-asfaltados',
-    title: 'Bulevares Principales y Banquetas',
+    id: 'calles-amplias',
+    title: 'Calles Principales Amplias',
     tag: 'Infraestructura',
     category: 'infraestructura',
-    description: 'Calles amplias de 14 metros con bordillos de concreto y cableado subterráneo.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8xKPRr1gDdhvOa-9Mo5O9RE9T9t8raftSAfhHh4qP4vExV5lfS7_eBc-g22XIRZe2rGNAyslT4GX_RCy_OerFvQxZKoO9bSm--f8-O8CEvo6oN47lcC00KFaBQ_MxL38aG3Dmb57QK0VvD8g7YqGfYmzz2SVBODd93tFnky-RGe1wnX-Urao8nqXX4yJ_-sfufPRMe16EeXlNQxFEVm1Q8OJnlyMBhb7tYaFffKmEgP8gcf8fBA',
+    description: 'Calles de 10 metros de ancho, bien trazadas y señalizadas desde la entrega del lote.',
+    imageUrl: foto3,
   },
   {
-    id: 'casa-club',
-    title: 'Casa Club y Salón Social',
-    tag: 'Amenidades',
+    id: 'trazado-lotificacion',
+    title: 'Trazado de Calles Empedradas',
+    tag: 'Infraestructura',
+    category: 'infraestructura',
+    description: 'Vista aérea del trazado vial de uno de nuestros desarrollos, con calles empedradas de 10 metros.',
+    imageUrl: foto5,
+  },
+  {
+    id: 'beneficios-familia',
+    title: 'Pensado para tu Familia',
+    tag: 'Beneficios',
     category: 'amenidades',
-    description: 'Espacio exclusivo para eventos sociales, pérgolas para barbacoas y piscina residencial.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDy4vudjlYYCO2h6N2_FRLRd1G5sgRYU_9fuwdEOlEr-GQC44fF48Ra455wWaqjh7h9H75Acn_GQdZkO5hWQIYu91fi8jUiNUW_D_BIRTkenc0HmP6jxfptHrWePtcOX9-lkIWmawMIWjVvAOoIOzq8nMZZVeI2TiUsia5Pi-THTLcevCJJeGc_kBIt75Q7nC68oCo_abKMQEvduuoQKvL4T-Psh6zpnh4Z5GYdIXppazM5ZyiIhg',
-  },
-  {
-    id: 'entorno-atardecer',
-    title: 'Atardeceres en Las Orquídeas',
-    tag: 'Naturaleza',
-    category: 'vistas',
-    description: 'Un horizonte verde que garantiza la paz y armonía de tu próximo hogar campestre.',
-    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjQ4T8cH4OErX3z8O8lBggXHva1VH79T0Xsn3hoZkd3-6slkwAeK1qav1t0gPYUJqBlebNxd25tHVQIMKbV9vmekiIBqx0VYxwZhmBzCR2dx9Pga0mZdk1ZwGFhDPIpsLdZxcRDiygcISByaOx5ZnVudcdulntJZQqGuGGmmAZenNzPxm3BXpgVDiRlgNnghLiA1x82rZAZs6HVd5sCfW5d8GYLV56D-BW28WzcHPZHZm_49b37g',
+    description: 'Agua potable, drenajes y calles empedradas de 10 metros: la base de una mejor calidad de vida.',
+    imageUrl: foto6,
   },
 ];
