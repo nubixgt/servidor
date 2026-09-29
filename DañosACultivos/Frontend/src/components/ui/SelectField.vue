@@ -1,9 +1,5 @@
 <template>
-    <select
-        :value="modelValue"
-        class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-        @change="$emit('update:modelValue', $event.target.value)"
-    >
+    <select :value="modelValue" class="field" @change="$emit('update:modelValue', $event.target.value)">
         <option v-if="placeholder" value="">{{ placeholder }}</option>
         <option v-for="o in normalized" :key="o.value" :value="o.value">{{ o.label }}</option>
     </select>

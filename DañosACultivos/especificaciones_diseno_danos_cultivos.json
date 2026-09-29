@@ -1,0 +1,441 @@
+{
+  "project": {
+    "name": "Daños a Cultivos",
+    "type": "Formulario web responsive para captura de afectaciones agrícolas en campo",
+    "language": "es-GT",
+    "primary_goal": "Permitir registrar de forma rápida, intuitiva y visual los daños observados en cultivos, incluyendo ubicación, productor, cultivo, tipo y nivel de daño, descripción y evidencia fotográfica.",
+    "design_direction": [
+      "moderno",
+      "profesional",
+      "agrícola",
+      "glassmorphism",
+      "mobile-first",
+      "intuitivo",
+      "alta legibilidad"
+    ]
+  },
+  "visual_system": {
+    "concept": "Interfaz institucional-agrotecnológica con superficies translúcidas sobre fotografía agrícola desenfocada, acentos verdes para acciones y estados positivos, azul para geolocalización/información, naranja para advertencias y morado para indicadores.",
+    "colors": {
+      "primary_green": "#079447",
+      "primary_green_dark": "#056B37",
+      "primary_green_light": "#DDF6E8",
+      "location_blue": "#1677FF",
+      "warning_orange": "#FF7A00",
+      "impact_purple": "#7C3AED",
+      "danger_red": "#EF3340",
+      "navy_text": "#0B1F4D",
+      "secondary_text": "#60708D",
+      "surface": "rgba(255,255,255,0.88)",
+      "surface_glass": "rgba(255,255,255,0.72)",
+      "border": "rgba(255,255,255,0.65)",
+      "input_border": "#DCE5EF",
+      "background_fallback": "#EEF6F0"
+    },
+    "typography": {
+      "recommended_fonts": [
+        "Inter",
+        "SF Pro Display",
+        "Manrope",
+        "system-ui"
+      ],
+      "title": {
+        "weight": 800,
+        "desktop_size_px": 34,
+        "mobile_size_px": 28
+      },
+      "section_title": {
+        "weight": 750,
+        "desktop_size_px": 21,
+        "mobile_size_px": 19
+      },
+      "body": {
+        "weight": 400,
+        "size_px": 15
+      },
+      "label": {
+        "weight": 500,
+        "size_px": 13
+      },
+      "button": {
+        "weight": 700,
+        "size_px": 15
+      }
+    },
+    "radius_px": {
+      "large_card": 24,
+      "card": 18,
+      "input": 12,
+      "button": 14,
+      "pill": 999
+    },
+    "effects": {
+      "glass_blur_px": 18,
+      "card_shadow": "0 12px 35px rgba(13,43,31,0.10)",
+      "floating_shadow": "0 10px 30px rgba(11,31,77,0.14)",
+      "selected_glow": "0 0 0 3px rgba(7,148,71,0.12)"
+    },
+    "background": {
+      "type": "photographic",
+      "subject": "cultivo agrícola saludable, montañas y paisaje rural guatemalteco",
+      "treatment": "desenfoque suave y degradado claro para conservar legibilidad",
+      "rule": "La fotografía nunca debe competir visualmente con el formulario."
+    }
+  },
+  "layout": {
+    "desktop": {
+      "max_width_px": 1480,
+      "grid_columns": "280px minmax(620px, 1fr) 390px",
+      "gap_px": 18,
+      "padding_px": 24,
+      "regions": [
+        "panel informativo izquierdo",
+        "formulario principal",
+        "evidencia y resumen derecho"
+      ]
+    },
+    "tablet": {
+      "grid_columns": "1fr 340px",
+      "behavior": "Ocultar o compactar panel informativo izquierdo; formulario al centro y resumen/evidencia a la derecha."
+    },
+    "mobile": {
+      "grid_columns": "1fr",
+      "padding_px": 14,
+      "behavior": "Flujo vertical por pasos; barra de progreso sticky superior y acciones sticky inferiores.",
+      "recommended_max_content_width_px": 620
+    }
+  },
+  "header": {
+    "title": "Daños a Cultivos",
+    "subtitle": "Registro de afectaciones en campo",
+    "icon": "hojas/cultivo",
+    "progress_stepper": {
+      "enabled": true,
+      "steps": [
+        {
+          "id": 1,
+          "label": "Ubicación",
+          "icon": "map-pin"
+        },
+        {
+          "id": 2,
+          "label": "Productor",
+          "icon": "user"
+        },
+        {
+          "id": 3,
+          "label": "Cultivo",
+          "icon": "sprout"
+        },
+        {
+          "id": 4,
+          "label": "Daños",
+          "icon": "alert-triangle"
+        },
+        {
+          "id": 5,
+          "label": "Evidencia",
+          "icon": "camera"
+        }
+      ],
+      "states": {
+        "completed": "verde con check",
+        "active": "verde o azul intenso con halo",
+        "pending": "gris azulado"
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "location",
+      "title": "1. Ubicación",
+      "description": "Registra el lugar donde se observa el daño.",
+      "accent": "location_blue",
+      "fields": [
+        {
+          "name": "departamento",
+          "type": "select",
+          "required": true
+        },
+        {
+          "name": "municipio",
+          "type": "select",
+          "required": true,
+          "depends_on": "departamento"
+        },
+        {
+          "name": "comunidad",
+          "type": "select_or_text",
+          "required": true,
+          "depends_on": "municipio"
+        },
+        {
+          "name": "coordinates",
+          "type": "geolocation",
+          "required": true
+        }
+      ],
+      "map": {
+        "enabled": true,
+        "height_px": 180,
+        "show_current_position": true,
+        "allow_manual_pin": true,
+        "actions": [
+          "Usar mi ubicación",
+          "Cambiar ubicación",
+          "Ampliar mapa"
+        ],
+        "display_coordinates": true
+      }
+    },
+    {
+      "id": "producer",
+      "title": "2. Productor",
+      "description": "Datos de la persona productora afectada.",
+      "fields": [
+        {
+          "name": "nombre_productor",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "dpi",
+          "type": "text",
+          "required": false,
+          "mask": "0000 00000 0000"
+        }
+      ]
+    },
+    {
+      "id": "crop",
+      "title": "3. Cultivo",
+      "description": "Información del cultivo afectado.",
+      "accent": "primary_green",
+      "fields": [
+        {
+          "name": "cultivo",
+          "type": "visual_select",
+          "required": true,
+          "show_thumbnail": true
+        },
+        {
+          "name": "variedad",
+          "type": "select_or_text",
+          "required": false
+        },
+        {
+          "name": "area_cultivada",
+          "type": "number",
+          "required": true,
+          "unit": "ha",
+          "min": 0
+        },
+        {
+          "name": "area_afectada",
+          "type": "number",
+          "required": true,
+          "unit": "ha",
+          "min": 0,
+          "validation": "No puede superar el área cultivada."
+        }
+      ]
+    },
+    {
+      "id": "damage",
+      "title": "4. Tipo de daño",
+      "description": "Selecciona uno o más tipos de daño.",
+      "selection": "multiple",
+      "options": [
+        {
+          "id": "sequia",
+          "label": "Sequía",
+          "icon": "sun",
+          "visual": "suelo seco"
+        },
+        {
+          "id": "inundacion",
+          "label": "Inundación",
+          "icon": "waves",
+          "visual": "cultivo inundado"
+        },
+        {
+          "id": "plaga",
+          "label": "Plaga",
+          "icon": "bug",
+          "visual": "insecto en cultivo"
+        },
+        {
+          "id": "enfermedad",
+          "label": "Enfermedad",
+          "icon": "leaf",
+          "visual": "hoja afectada"
+        },
+        {
+          "id": "viento",
+          "label": "Viento",
+          "icon": "wind",
+          "visual": "cultivo doblado"
+        },
+        {
+          "id": "granizo",
+          "label": "Granizo",
+          "icon": "cloud-hail",
+          "visual": "granizo sobre cultivo"
+        },
+        {
+          "id": "otro",
+          "label": "Otro",
+          "icon": "ellipsis",
+          "visual": "imagen genérica"
+        }
+      ],
+      "interaction": "Cada opción se presenta como tarjeta visual seleccionable. Al seleccionarse, mostrar borde verde, fondo verde tenue y check."
+    },
+    {
+      "id": "impact",
+      "title": "Nivel de afectación",
+      "type": "single_choice",
+      "options": [
+        {
+          "id": "low",
+          "label": "Bajo",
+          "color": "#079447",
+          "suggested_range": "1-25%"
+        },
+        {
+          "id": "medium",
+          "label": "Medio",
+          "color": "#F5A000",
+          "suggested_range": "26-50%"
+        },
+        {
+          "id": "high",
+          "label": "Alto",
+          "color": "#FF5A1F",
+          "suggested_range": "51-75%"
+        },
+        {
+          "id": "total",
+          "label": "Pérdida total",
+          "color": "#EF3340",
+          "suggested_range": "76-100%"
+        }
+      ],
+      "ui": "Botones segmentados grandes con icono de barras de intensidad."
+    },
+    {
+      "id": "description",
+      "title": "Descripción del daño",
+      "field": {
+        "type": "textarea",
+        "max_length": 500,
+        "show_counter": true,
+        "placeholder": "Describe la situación observada en el cultivo..."
+      }
+    },
+    {
+      "id": "evidence",
+      "title": "5. Evidencia fotográfica",
+      "description": "Adjunta fotografías claras del daño observado.",
+      "min_photos": 1,
+      "max_photos": 10,
+      "sources": [
+        "camera",
+        "gallery"
+      ],
+      "features": [
+        "thumbnail preview",
+        "remove photo",
+        "reorder",
+        "compression",
+        "offline queue"
+      ],
+      "upload_card": {
+        "icon": "camera",
+        "title": "Agregar fotografías",
+        "subtitle": "Toca para capturar o seleccionar"
+      }
+    }
+  ],
+  "summary_panel": {
+    "title": "Resumen del registro",
+    "desktop_position": "right_sidebar",
+    "mobile_position": "before_final_submit",
+    "items": [
+      "ubicación",
+      "cultivo y variedad",
+      "área afectada",
+      "tipo(s) de daño",
+      "nivel de afectación",
+      "cantidad de fotografías"
+    ],
+    "update_behavior": "Actualizar en tiempo real conforme el usuario completa el formulario."
+  },
+  "actions": {
+    "primary": {
+      "label": "Enviar registro",
+      "icon": "send",
+      "style": "solid_green"
+    },
+    "secondary": {
+      "label": "Guardar borrador",
+      "icon": "file",
+      "style": "white_outline"
+    },
+    "step_action": {
+      "label": "Continuar",
+      "icon": "arrow-right"
+    },
+    "autosave": {
+      "enabled": true,
+      "interval_seconds": 30,
+      "status_messages": [
+        "Guardando...",
+        "Borrador guardado",
+        "Pendiente de sincronización"
+      ]
+    }
+  },
+  "offline_mode": {
+    "required": true,
+    "behavior": "El formulario debe funcionar sin conexión y guardar localmente texto, coordenadas y fotografías pendientes.",
+    "indicator": "Chip visible 'Sin conexión' / 'Se sincronizará después'.",
+    "sync": "Sincronización automática al recuperar conexión, con estado por registro."
+  },
+  "interactions": {
+    "validation": "Validación contextual al salir del campo y validación completa antes de continuar.",
+    "errors": "Mostrar texto corto bajo el campo, icono y borde rojo; nunca depender únicamente del color.",
+    "success": "Usar checks discretos y mensajes de confirmación.",
+    "loading": "Skeletons y spinners pequeños; evitar bloquear toda la interfaz.",
+    "transitions_ms": 180,
+    "touch_target_min_px": 44
+  },
+  "responsive_rules": [
+    "No usar scroll horizontal.",
+    "En móvil, mostrar una sección principal por vez cuando mejore la velocidad de captura.",
+    "Las tarjetas de tipos de daño deben formar 2 columnas en móvil y 3-4 en tablet/desktop.",
+    "El mapa debe ocupar el ancho completo en móvil.",
+    "Los botones principales deben ocupar todo el ancho en móvil.",
+    "Mantener acciones finales visibles mediante barra sticky inferior sin tapar campos."
+  ],
+  "accessibility": {
+    "minimum_contrast": "WCAG AA",
+    "keyboard_navigation": true,
+    "visible_focus": true,
+    "labels_always_visible": true,
+    "icons_need_text": true,
+    "minimum_touch_target_px": 44,
+    "rule": "No comunicar estado exclusivamente mediante color."
+  },
+  "implementation_notes": [
+    "Priorizar velocidad de captura sobre efectos decorativos.",
+    "Evitar exceso de blur en dispositivos de gama baja; usar fallback sólido.",
+    "Comprimir fotografías antes de subirlas sin perder evidencia útil.",
+    "Separar visualmente captura, validación y envío.",
+    "Persistir borradores localmente para evitar pérdida de datos.",
+    "Solicitar permisos de ubicación y cámara solo cuando sean necesarios.",
+    "El diseño debe sentirse como una herramienta profesional de campo, no como una landing page.",
+    "Usar fotografías agrícolas únicamente como apoyo visual; los controles y datos deben conservar máxima legibilidad."
+  ],
+  "design_prompt": "Diseñar una interfaz web responsive y mobile-first llamada 'Daños a Cultivos' para registrar afectaciones agrícolas en campo. Utilizar un lenguaje visual moderno agrotecnológico con glassmorphism moderado, superficies blancas translúcidas, bordes redondeados, sombras suaves, tipografía Inter/Manrope, verde agrícola como color principal, azul para ubicación, naranja para alertas y rojo para pérdida total. Organizar la captura en cinco pasos: Ubicación, Productor, Cultivo, Daños y Evidencia. Incorporar geolocalización con mapa, selectores visuales de tipos de daño con fotografías, nivel de afectación mediante controles segmentados, carga de hasta 10 fotografías, descripción, resumen dinámico, autoguardado y funcionamiento offline. En escritorio usar una composición de tres áreas; en móvil convertirla en un flujo vertical por pasos con navegación y acciones sticky. Priorizar claridad, velocidad de captura, accesibilidad y facilidad de uso en campo."
+}
