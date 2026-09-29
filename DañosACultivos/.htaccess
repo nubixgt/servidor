@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. API: Backend/.htaccess la enruta a api/v1/index.php
+    RewriteRule ^Backend/ - [L]
+
+    # 2. SPA: cualquier ruta que no sea archivo/carpeta abre el formulario (Vue Router).
+    #    El deploy publica el build de Frontend/dist en la raíz de esta carpeta.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . index.html [L]
+</IfModule>

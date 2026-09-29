@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Daños a Cultivos</title>
+<style>
+  :root {
+    --verde: #2e7d32;
+    --verde-claro: #e8f5e9;
+    --marron: #5d4037;
+    --rojo: #c62828;
+    --gris: #757575;
+    --borde: #c8d6c9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f7f4;
+    color: #2c3e2c;
+    padding: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header {
+    background: var(--verde);
+    color: #fff;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+  }
+  header h1 { font-size: 1.4em; }
+  header p { font-size: 0.9em; opacity: 0.9; margin-top: 4px; }
+  section {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  h2 {
+    color: var(--verde);
+    font-size: 1.05em;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--verde-claro);
+    padding-bottom: 6px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--marron);
+    margin-bottom: 4px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    font-size: 0.95em;
+    background: #fbfdfb;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--verde);
+    border-color: var(--verde);
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .btn {
+    display: inline-block;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 4px 6px 4px 0;
+  }
+  .btn-primary { background: var(--verde); color: #fff; }
+  .btn-secondary { background: #fff; color: var(--verde); border: 2px solid var(--verde); }
+  .btn-danger { background: var(--rojo); color: #fff; }
+  .btn:hover { filter: brightness(1.08); }
+  .fila-btns { margin-top: 12px; }
+  .coord-box {
+    background: var(--verde-claro);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9em;
+  }
+  .coord-box span { font-weight: 700; color: var(--verde); }
+  .punto-severidad {
+    border: 1px dashed var(--borde);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #fafcfa;
+  }
+  .punto-severidad .titulo-punto {
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--marron);
+    margin-bottom: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82em;
+  }
+  th {
+    background: var(--verde);
+    color: #fff;
+    padding: 8px 6px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+  }
+  td {
+    padding: 7px 6px;
+    border-bottom: 1px solid #e5ece5;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f6faf6; }
+  .contenedor-tabla { overflow-x: auto; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; font-weight: 600; }
+  .badge-grave { background: #ffcdd2; color: #b71c1c; }
+  .badge-moderado { background: #ffe0b2; color: #e65100; }
+  .badge-leve { background: #c8e6c9; color: #1b5e20; }
+  .oculto { display: none; }
+  .ayuda { font-size: 0.78em; color: var(--gris); margin-top: 3px; }
+  .fotos-lista { font-size: 0.85em; color: var(--verde); margin-top: 6px; }
+  .miniatura { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; margin: 4px 4px 0 0; border: 1px solid var(--borde); }
+  .totales { font-size: 0.9em; color: var(--marron); margin-bottom: 10px; }
+  .totales strong { color: var(--verde); }
+  footer { text-align: center; font-size: 0.78em; color: var(--gris); padding: 10px; }
+  @media print { .btn, .fila-btns { display: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌱 Registro de Daños a Cultivos</h1>
+  <p>Herramienta de campo — funciona sin internet. Los datos se guardan en este dispositivo y se exportan a CSV/Excel.</p>
+</header>
+
+<!-- ============ FORMULARIO ============ -->
+<section id="seccion-formulario">
+  <h2>📋 Nuevo registro de daño</h2>
+  <form id="form-dano">
+
+    <div class="grid">
+      <div>
+        <label for="f-fecha">Fecha de levantamiento *</label>
+        <input type="date" id="f-fecha" required>
+      </div>
+      <div>
+        <label for="f-tecnico">Nombre del técnico / productor *</label>
+        <input type="text" id="f-tecnico" placeholder="Ej: Juan Pérez" required>
+      </div>
+      <div>
+        <label for="f-lote">Lote / Parcela *</label>
+        <input type="text" id="f-lote" placeholder="Ej: Lote 3 - El Potrero" required>
+      </div>
+      <div>
+        <label for="f-cultivo">Cultivo *</label>
+        <select id="f-cultivo" required>
+          <option value="">— Seleccione —</option>
+          <option>Maíz</option><option>Trigo</option><option>Soja</option>
+          <option>Arroz</option><option>Algodón</option><option>Caña de azúcar</option>
+          <option>Papa</option><option>Tomate</option><option>Cebolla</option>
+          <option>Frijol / Poroto</option><option>Girasol</option><option>Sorgo</option>
+          <option>Cebada</option><option>Avena</option><option>Maní</option>
+          <option>Frutales</option><option>Hortalizas</option><option>Pasturas</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div>
+        <label for="f-cultivo-otro">Cultivo (si eligió "Otro")</label>
+        <input type="text" id="f-cultivo-otro" placeholder="Escriba el cultivo">
+      </div>
+      <div>
+        <label for="f-etapa">Estado fenológico</label>
+        <select id="f-etapa">
+          <option value="">— Seleccione —</option>
+          <option>Siembra / Emergencia</option>
+          <option>Vegetativo</option>
+          <option>Floración</option>
+          <option>Llenado de grano / Fructificación</option>
+          <option>Madurez</option>
+          <option>Cosechado</option>
+        </select>
+      </div>
+      <div>
+        <label for="f-causa">Causa del daño *</label>
+        <select id="f-causa" required>
+          <option value="">— Seleccione —</option>
+          <option>Granizo</option>
+          <option>Helada</option>
+          <option>Sequía / Estrés hídrico</option>
+          <option>Inundación / Exceso de lluvia</option>
+          <option>Viento / Tormenta</option>
+          <option>Plaga (insectos)</option>
+          <option>Enfermedad</option>
+          <option>Fauna silvestre / Aves</option>
+          <option>Incendio</option>
+          <option>Malezas (competencia)</option>
+          <option>Fitoitoxicidad / Error de aplicación</option>
+          <option>Otra</option>
+        </select>
+      </div>
+      <div>
+        <label for="f-causa-otra">Causa (si eligió "Otra")</label>
+        <input type="text" id="f-causa-otra" placeholder="Describa la causa">
+      </div>
+      <div>
+        <label for="f-area-lote">Superficie total del lote (ha)</label>
+        <input type="number" id="f-area-lote" min="0" step="0.01" placeholder="Ej: 25.5">
+      </div>
+      <div>
+        <label for="f-area-afectada">Superficie afectada (ha) *</label>
+        <input type="number" id="f-area-afectada" min="0" step="0.01" placeholder="Ej: 8.2" required>
+      </div>
+      <div>
+        <label for="f-dano-porc">% de daño promedio del lote *</label>
+        <input type="number" id="f-dano-porc" min="0" max="100" step="1" placeholder="0–100" required>
+      </div>
+      <div>
+        <label for="f-rend-esp">Rendimiento esperado sin daño</label>
+        <input type="number" id="f-rend-esp" min="0" step="0.01" placeholder="Ej: 8.5">
+        <select id="f-unidad" style="margin-top:5px;">
+          <option value="t/ha">t/ha</option>
+          <option value="kg/ha">kg/ha</option>
+        </select>
+        <p class="ayuda">Elija la unidad y manténgala en todo el relevamiento.</p>
+      </div>
+      <div>
+        <label for="f-perdida-est">Pérdida de rendimiento estimada</label>
+        <input type="number" id="f-perdida-est" min="0" step="0.01" placeholder="Calculada automáticamente si completa lo anterior">
+        <p class="ayuda">= Superficie afectada × Rend. esperado × (% daño ÷ 100). Puede editarla.</p>
+      </div>
+    </div>
+
+    <!-- Puntos de muestreo -->
+    <h2 style="margin-top:18px;">📍 Puntos de muestreo — severidad</h2>
+    <div id="contenedor-puntos"></div>
+    <button type="button" class="btn btn-secondary" onclick="agregarPunto()">➕ Agregar punto de muestreo</button>
+
+    <!-- Geolocalización -->
+    <h2 style="margin-top:18px;">🗺️ Ubicación GPS</h2>
+    <div class="coord-box">
+      Latitud: <span id="gps-lat">—</span> &nbsp;|&nbsp; Longitud: <span id="gps-lon">—</span> &nbsp;|&nbsp; Precisión: <span id="gps-acc">—</span> m
+      <div class="fila-btns" style="margin-top:8px;">
+        <button type="button" class="btn btn-primary" onclick="capturarGPS()">📡 Capturar ubicación actual</button>
+        <label class="ayuda" style="display:inline;">En campo, espere a que la precisión sea menor a 10 m.</label>
+      </div>
+    </div>
+
+    <!-- Fotos -->
+    <h2 style="margin-top:18px;">📷 Fotografías</h2>
+    <input type="file" id="f-fotos" accept="image/*" multiple capture="environment">
+    <div id="lista-fotos" class="fotos-lista"></div>
+
+    <!-- Observaciones -->
+    <div style="margin-top:14px;">
+      <label for="f-notas">Observaciones / Descripción del daño</label>
+      <textarea id="f-notas" placeholder="Ej: Granizo de 2 cm el 15/09, daño en hojas y tallo en el sector norte del lote, plantas resembradas en 10% de la superficie..."></textarea>
+    </div>
+
+    <div class="fila-btns">
+      <button type="submit" class="btn btn-primary">💾 Guardar registro</button>
+      <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">🧹 Limpiar formulario</button>
+    </div>
+  </form>
+</section>
+
+<!-- ============ REGISTROS ============ -->
+<section>
+  <h2>📊 Registros guardados</h2>
+  <p class="totales" id="totales"></p>
+  <div class="contenedor-tabla">
+    <table id="tabla-registros">
+      <thead>
+        <tr>
+          <th>Fecha</th><th>Lote</th><th>Cultivo</th><th>Etapa</th><th>Causa</th>
+          <th>ha afect.</th><th>% daño</th><th>Pérdida est.</th><th>Severidad puntos</th>
+          <th>GPS</th><th>Fotos</th><th>Técnico</th><th>Notas</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla"></tbody>
+    </table>
+  </div>
+  <div class="fila-btns">
+    <button class="btn btn-primary" onclick="exportarCSV()">⬇️ Exportar CSV (Excel)</button>
+    <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir resumen</button>
+    <button class="btn btn-danger" onclick="borrarTodo()">🗑️ Borrar todos los registros</button>
+  </div>
+</section>
+
+<footer>Herramienta de evaluación de daños a cultivos · Los datos se almacenan localmente en este navegador · Funciona sin conexión</footer>
+
+<script>
+"use strict";
+var CLAVE = "registros_dano_cultivos";
+var fotosActuales = [];   // {nombre, dataUrl}
+var gpsActual = { lat: null, lon: null, acc: null };
+
+// ---------- Inicialización ----------
+document.addEventListener("DOMContentLoaded", function () {
+  var hoy = new Date().toISOString().slice(0, 10);
+  document.getElementById("f-fecha").value = hoy;
+  document.getElementById("f-fotos").addEventListener("change", manejarFotos);
+  document.getElementById("form-dano").addEventListener("submit", guardarRegistro);
+  document.getElementById("f-rend-esp").addEventListener("input", calcularPerdida);
+  document.getElementById("f-area-afectada").addEventListener("input", calcularPerdida);
+  document.getElementById("f-dano-porc").addEventListener("input", calcularPerdida);
+  agregarPunto(); // un punto por defecto
+  mostrarRegistros();
+});
+
+// ---------- Puntos de muestreo ----------
+function agregarPunto() {
+  var cont = document.getElementById("contenedor-puntos");
+  var n = cont.children.length + 1;
+  var div = document.createElement("div");
+  div.className = "punto-severidad";
+  div.innerHTML =
+    '<div class="titulo-punto">Punto de muestreo ' + n + ' <button type="button" class="btn btn-danger" style="padding:3px 10px;font-size:0.75em;float:right;" onclick="this.parentElement.parentElement.remove();renumerarPuntos();">Quitar</button></div>' +
+    '<div class="grid">' +
+    '<div><label>Ubicación / referencia del punto</label><input type="text" class="p-ref" placeholder="Ej: sector norte, a 200 m del camino"></div>' +
+    '<div><label>% de plantas afectadas (incidencia)</label><input type="number" class="p-inc" min="0" max="100" placeholder="0–100"></div>' +
+    '<div><label>Severidad (0 = nada, 1 = leve, 2 = moderado, 3 = grave)</label>' +
+    '<select class="p-sev"><option value="">—</option><option value="0">0 — Sin daño</option><option value="1">1 — Leve</option><option value="2">2 — Moderado</option><option value="3">3 — Grave</option></select></div>' +
+    '<div><label>Observación del punto</label><input type="text" class="p-obs" placeholder="Ej: rotura de tallo, defoliación 50%"></div>' +
+    '</div>';
+  cont.appendChild(div);
+}
+function renumerarPuntos() {
+  var puntos = document.querySelectorAll("#contenedor-puntos .punto-severidad .titulo-punto");
+  for (var i = 0; i < puntos.length; i++) {
+    puntos[i].childNodes[0].textContent = "Punto de muestreo " + (i + 1) + " ";
+  }
+}
+function leerPuntos() {
+  var puntos = [];
+  var divs = document.querySelectorAll("#contenedor-puntos .punto-severidad");
+  divs.forEach(function (d) {
+    puntos.push({
+      ref: d.querySelector(".p-ref").value,
+      incidencia: d.querySelector(".p-inc").value,
+      severidad: d.querySelector(".p-sev").value,
+      obs: d.querySelector(".p-obs").value
+    });
+  });
+  return puntos;
+}
+
+// ---------- GPS ----------
+function capturarGPS() {
+  if (!navigator.geolocation) { alert("Este navegador no soporta geolocalización."); return; }
+  document.getElementById("gps-lat").textContent = "buscando...";
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    gpsActual = {
+      lat: pos.coords.latitude.toFixed(6),
+      lon: pos.coords.longitude.toFixed(6),
+      acc: Math.round(pos.coords.accuracy)
+    };
+    document.getElementById("gps-lat").textContent = gpsActual.lat;
+    document.getElementById("gps-lon").textContent = gpsActual.lon;
+    document.getElementById("gps-acc").textContent = gpsActual.acc;
+  }, function (err) {
+    alert("No se pudo obtener la ubicación: " + err.message);
+    document.getElementById("gps-lat").textContent = "—";
+  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+}
+
+// ---------- Fotos ----------
+function manejarFotos(e) {
+  var archivos = e.target.files;
+  for (var i = 0; i < archivos.length; i++) {
+    (function (f) {
+      var lector = new FileReader();
+      lector.onload = function (ev) {
+        fotosActuales.push({ nombre: f.name, dataUrl: ev.target.result });
+        mostrarFotos();
+      };
+      lector.readAsDataURL(f);
+    })(archivos[i]);
+  }
+}
+function mostrarFotos() {
+  var cont = document.getElementById("lista-fotos");
+  cont.innerHTML = fotosActuales.length ? fotosActuales.length + " foto(s) adjunta(s):" : "";
+  fotosActuales.forEach(function (f) {
+    var img = document.createElement("img");
+    img.src = f.dataUrl; img.className = "miniatura"; img.title = f.nombre;
+    cont.appendChild(img);
+  });
+}
+
+// ---------- Cálculo de pérdida ----------
+function calcularPerdida() {
+  var sup = parseFloat(document.getElementById("f-area-afectada").value) || 0;
+  var rend = parseFloat(document.getElementById("f-rend-esp").value) || 0;
+  var porc = parseFloat(document.getElementById("f-dano-porc").value) || 0;
+  if (sup > 0 && rend > 0 && porc > 0) {
+    document.getElementById("f-perdida-est").value = (sup * rend * porc / 100).toFixed(2);
+  }
+}
+
+// ---------- Guardar ----------
+function guardarRegistro(e) {
+  e.preventDefault();
+  var cultivo = document.getElementById("f-cultivo").value;
+  if (cultivo === "Otro") cultivo = document.getElementById("f-cultivo-otro").value || "Otro";
+  var causa = document.getElementById("f-causa").value;
+  if (causa === "Otra") causa = document.getElementById("f-causa-otra").value || "Otra";
+
+  var reg = {
+    fecha: document.getElementById("f-fecha").value,
+    tecnico: document.getElementById("f-tecnico").value,
+    lote: document.getElementById("f-lote").value,
+    cultivo: cultivo,
+    etapa: document.getElementById("f-etapa").value,
+    causa: causa,
+    area_lote: document.getElementById("f-area-lote").value,
+    area_afectada: document.getElementById("f-area-afectada").value,
+    dano_porc: document.getElementById("f-dano-porc").value,
+    rend_esperado: document.getElementById("f-rend-esp").value,
+    unidad: document.getElementById("f-unidad").value,
+    perdida_estimada: document.getElementById("f-perdida-est").value,
+    puntos: leerPuntos(),
+    gps: gpsActual.lat ? gpsActual.lat + ", " + gpsActual.lon + " (±" + gpsActual.acc + " m)" : "",
+    fotos: fotosActuales.map(function (f) { return f.nombre; }),
+    fotosData: fotosActuales.slice(),
+    notas: document.getElementById("f-notas").value
+  };
+  var regs = leerRegistros();
+  regs.push(reg);
+  localStorage.setItem(CLAVE, JSON.stringify(regs));
+  limpiarFormulario();
+  mostrarRegistros();
+  alert("✅ Registro guardado (" + regs.length + " en total).");
+}
+
+function leerRegistros() {
+  try { return JSON.parse(localStorage.getItem(CLAVE)) || []; }
+  catch (e) { return []; }
+}
+
+function limpiarFormulario() {
+  document.getElementById("form-dano").reset();
+  document.getElementById("f-fecha").value = new Date().toISOString().slice(0, 10);
+  fotosActuales = []; mostrarFotos();
+  gpsActual = { lat: null, lon: null, acc: null };
+  document.getElementById("gps-lat").textContent = "—";
+  document.getElementById("gps-lon").textContent = "—";
+  document.getElementById("gps-acc").textContent = "—";
+  document.getElementById("contenedor-puntos").innerHTML = "";
+  agregarPunto();
+}
+
+// ---------- Mostrar tabla ----------
+function badgeSev(s) {
+  if (s === "3" || s === 3) return '<span class="badge badge-grave">Grave</span>';
+  if (s === "2" || s === 2) return '<span class="badge badge-moderado">Moderado</span>';
+  if (s === "1" || s === 1) return '<span class="badge badge-leve">Leve</span>';
+  return "—";
+}
+function mostrarRegistros() {
+  var regs = leerRegistros();
+  var cuerpo = document.getElementById("cuerpo-tabla");
+  cuerpo.innerHTML = "";
+  var totalHa = 0, totalPerdida = 0;
+  regs.forEach(function (r, i) {
+    totalHa += parseFloat(r.area_afectada) || 0;
+    totalPerdida += parseFloat(r.perdida_estimada) || 0;
+    var sevMax = "—";
+    var pts = (r.puntos || []).filter(function (p) { return p.severidad !== ""; });
+    if (pts.length) {
+      var max = Math.max.apply(null, pts.map(function (p) { return parseInt(p.severidad); }));
+      sevMax = badgeSev(max) + " (" + pts.length + " pts)";
+    }
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td>" + esc(r.fecha) + "</td>" +
+      "<td>" + esc(r.lote) + "</td>" +
+      "<td>" + esc(r.cultivo) + "</td>" +
+      "<td>" + esc(r.etapa || "—") + "</td>" +
+      "<td>" + esc(r.causa) + "</td>" +
+      "<td>" + esc(r.area_afectada) + "</td>" +
+      "<td>" + esc(r.dano_porc) + "%</td>" +
+      "<td>" + esc(r.perdida_estimada ? r.perdida_estimada + " " + (r.unidad || "") : "—") + "</td>" +
+      "<td>" + sevMax + "</td>" +
+      "<td>" + (r.gps ? "📍" + esc(r.gps) : "—") + "</td>" +
+      "<td>" + ((r.fotos && r.fotos.length) ? "📷 " + r.fotos.length : "—") + "</td>" +
+      "<td>" + esc(r.tecnico) + "</td>" +
+      "<td>" + esc(r.notas || "—") + "</td>" +
+      '<td><button type="button" class="btn btn-danger" style="padding:3px 8px;font-size:0.75em;" onclick="eliminarRegistro(' + i + ')">✕</button></td>';
+    cuerpo.appendChild(tr);
+  });
+  document.getElementById("totales").innerHTML =
+    "Registros: <strong>" + regs.length + "</strong> &nbsp;·&nbsp; " +
+    "Superficie afectada total: <strong>" + totalHa.toFixed(2) + " ha</strong> &nbsp;·&nbsp; " +
+    "Pérdida estimada acumulada: <strong>" + totalPerdida.toFixed(2) + "</strong>";
+}
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function eliminarRegistro(i) {
+  if (!confirm("¿Eliminar este registro?")) return;
+  var regs = leerRegistros();
+  regs.splice(i, 1);
+  localStorage.setItem(CLAVE, JSON.stringify(regs));
+  mostrarRegistros();
+}
+function borrarTodo() {
+  if (!confirm("¿Eliminar TODOS los registros guardados? Esta acción no se puede deshacer. Exporte primero si lo necesita.")) return;
+  localStorage.removeItem(CLAVE);
+  mostrarRegistros();
+}
+
+// ---------- Exportar CSV ----------
+function exportarCSV() {
+  var regs = leerRegistros();
+  if (!regs.length) { alert("No hay registros para exportar."); return; }
+  var filas = [];
+  // Encabezado general
+  filas.push(["REPORTE DE DAÑOS A CULTIVOS"]);
+  filas.push(["Generado", new Date().toLocaleString("es")]);
+  filas.push([]);
+  filas.push(["N°", "Fecha", "Técnico/Productor", "Lote/Parcela", "Cultivo", "Etapa fenológica",
+    "Causa del daño", "Sup. total lote (ha)", "Sup. afectada (ha)", "% daño",
+    "Rend. esperado", "Unidad rend.", "Pérdida estimada", "Latitud, Longitud (precisión m)",
+    "N° puntos muestreo", "Detalles de puntos (ref | % incidencia | severidad | obs)",
+    "N° fotos", "Nombres de fotos", "Notas"]);
+  regs.forEach(function (r, i) {
+    var ptsTxt = (r.puntos || []).filter(function (p) { return p.ref || p.incidencia || p.severidad !== "" || p.obs; })
+      .map(function (p) { return [p.ref, p.incidencia, p.severidad, p.obs].filter(Boolean).join(" | "); }).join(" ;; ");
+    filas.push([
+      i + 1, r.fecha, r.tecnico, r.lote, r.cultivo, r.etapa, r.causa,
+      r.area_lote, r.area_afectada, r.dano_porc, r.rend_esperado, r.unidad, r.perdida_estimada,
+      r.gps, (r.puntos || []).length, ptsTxt,
+      (r.fotos || []).length, (r.fotos || []).join(" ; "), r.notas
+    ]);
+  });
+  // Totales
+  var tHa = 0, tPer = 0;
+  regs.forEach(function (r) { tHa += parseFloat(r.area_afectada) || 0; tPer += parseFloat(r.perdida_estimada) || 0; });
+  filas.push([]);
+  filas.push(["", "", "", "TOTALES", "", "", "", "", tHa.toFixed(2), "", "", "", tPer.toFixed(2)]);
+
+  var csv = "\uFEFF" + filas.map(function (f) {
+    return f.map(function (c) {
+      c = (c === undefined || c === null) ? "" : String(c);
+      return '"' + c.replace(/"/g, '""') + '"';
+    }).join(";");
+  }).join("\r\n");
+
+  var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "danos_cultivos_" + new Date().toISOString().slice(0, 10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
