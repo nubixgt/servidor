@@ -18,10 +18,7 @@
                         <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Registro de afectaciones en campo</p>
                     </div>
                 </div>
-                <div class="glass hidden xl:flex items-center gap-3 px-4 py-3 max-w-[330px]" style="border-radius: 18px;">
-                    <span class="icon-badge" style="background: var(--green);"><SparklesIcon class="w-5 h-5" /></span>
-                    <p class="text-[13px] leading-snug" style="color: var(--navy);">Tu reporte ayuda a tomar decisiones más oportunas para apoyar al sector agrícola.</p>
-                </div>
+                <router-link to="/dashboard" class="btn btn-outline btn-sm flex-shrink-0"><ChartBarIcon class="w-5 h-5" />Ver registros</router-link>
             </header>
 
             <!-- Progreso -->
@@ -347,7 +344,7 @@ import { toastSuccess, toastError, toastInfo, alertError, confirmDialog } from '
 import {
     MapPinIcon, ViewfinderCircleIcon, CameraIcon, PlusIcon, TrashIcon, XMarkIcon, CheckIcon,
     ArrowPathIcon, TableCellsIcon, ArrowDownTrayIcon, ExclamationTriangleIcon, ChartBarIcon,
-    DocumentTextIcon, PaperAirplaneIcon, SparklesIcon, BeakerIcon,
+    DocumentTextIcon, PaperAirplaneIcon, BeakerIcon,
 } from '@heroicons/vue/24/outline';
 
 const CULTIVOS = [
