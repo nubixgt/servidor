@@ -1,22 +1,11 @@
 <template>
-    <div class="min-h-screen">
-        <div class="app-bg" aria-hidden="true"></div>
-
+    <div>
         <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-10">
             <!-- Encabezado -->
             <header class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/80 flex items-center justify-center flex-shrink-0" style="box-shadow: 0 10px 30px rgba(11,31,77,.14);">
-                        <svg viewBox="0 0 48 48" class="w-9 h-9 sm:w-10 sm:h-10" fill="none" aria-hidden="true">
-                            <path d="M24 42V22" stroke="#056B37" stroke-width="3" stroke-linecap="round" />
-                            <path d="M24 26C24 15 15 9 6 9c0 11 7 17 18 17Z" fill="#079447" />
-                            <path d="M24 22C24 13 31 7 42 7c0 10-7 15-18 15Z" fill="#35B96B" />
-                        </svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Daños a Cultivos</h1>
-                        <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Dashboard · Registro de afectaciones en campo</p>
-                    </div>
+                <div class="min-w-0">
+                    <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Dashboard</h1>
+                    <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Resumen de afectaciones en campo</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -28,7 +17,7 @@
                         <button v-if="filtros.desde || filtros.hasta" class="p-1" aria-label="Limpiar fechas" @click="filtros.desde = filtros.hasta = ''"><XMarkIcon class="w-4 h-4" /></button>
                     </div>
                     <button class="btn btn-outline btn-sm" :disabled="loading" @click="cargar"><ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': loading }" /></button>
-                    <router-link to="/" class="btn btn-primary btn-sm"><PlusIcon class="w-5 h-5" />Nuevo registro</router-link>
+                    <router-link to="/registros" class="btn btn-primary btn-sm"><PlusIcon class="w-5 h-5" />Nuevo registro</router-link>
                 </div>
             </header>
 
