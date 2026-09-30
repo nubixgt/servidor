@@ -136,6 +136,7 @@
                             <tr class="text-left" style="color: var(--muted);">
                                 <th class="py-2 px-2 font-medium">Fecha</th>
                                 <th class="py-2 px-2 font-medium">Lote / Técnico</th>
+                                <th v-if="verRegistrante" class="py-2 px-2 font-medium">Registrado por</th>
                                 <th class="py-2 px-2 font-medium">Cultivo</th>
                                 <th class="py-2 px-2 font-medium">Tipo de daño</th>
                                 <th class="py-2 px-2 font-medium text-right">Área (ha)</th>
@@ -149,6 +150,7 @@
                             <tr v-for="d in visibles" :key="d.id" class="border-t cursor-pointer hover:bg-white/60" style="border-color: var(--input-border);" @click="detalle = d">
                                 <td class="py-2.5 px-2 whitespace-nowrap">{{ fechaCorta(d.fecha) }}</td>
                                 <td class="py-2.5 px-2"><b>{{ d.lote }}</b><br /><span style="color: var(--muted);">{{ d.tecnico }}</span></td>
+                                <td v-if="verRegistrante" class="py-2.5 px-2">{{ d.registradoPor || '—' }}</td>
                                 <td class="py-2.5 px-2">{{ d.cultivo }}</td>
                                 <td class="py-2.5 px-2 font-semibold">{{ d.causa }}</td>
                                 <td class="py-2.5 px-2 text-right">{{ num(d.areaAfectada) }}</td>
@@ -226,6 +228,7 @@ const NIVELES = [
 const PALETA = ['#079447', '#F5B800', '#FF7A00', '#1677FF', '#7C3AED', '#0EA5A5', '#94A3B8'];
 
 const puedeEliminar = ['admin', 'supervisor'].includes(authService.user()?.rol);
+const verRegistrante = authService.user()?.rol !== 'tecnico';
 const todos = ref([]);
 const loading = ref(false);
 const error = ref('');
@@ -341,7 +344,7 @@ const filasDetalle = computed(() => {
         ['Área del lote', d.areaLote != null ? num(d.areaLote) + ' ha' : '—'], ['Área afectada', num(d.areaAfectada) + ' ha'],
         ['Rendimiento esperado', d.rendEsperado != null ? num(d.rendEsperado) + ' ' + d.unidad : '—'],
         ['Pérdida estimada', d.perdidaEstimada != null ? num(d.perdidaEstimada) : '—'],
-        ['GPS', d.gps || '—', true], ['Notas', d.notas || '—', true],
+        ['Registrado por', d.registradoPor || '—'], ['GPS', d.gps || '—', true], ['Notas', d.notas || '—', true],
     ];
 });
 

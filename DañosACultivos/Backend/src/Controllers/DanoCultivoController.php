@@ -14,7 +14,7 @@ class DanoCultivoController extends Controller
     public function index()
     {
         try {
-            $danos = (new DanoCultivoService())->listar($_GET);
+            $danos = (new DanoCultivoService())->listar($_GET, $this->authUser());
             $data = array_map(fn($d) => $d->toArray(), $danos);
             $this->json(['danos' => $data, 'total' => count($data)]);
         } catch (\Exception $e) {
@@ -29,7 +29,7 @@ class DanoCultivoController extends Controller
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
         $dto = DanoCultivoDTO::fromRequest($data);
         try {
-            $dano = (new DanoCultivoService())->crear($dto);
+            $dano = (new DanoCultivoService())->crear($dto, $this->authUser());
             $this->json(['dano' => $dano->toArray()], 201);
         } catch (\Exception $e) {
             $this->json(['error' => $e->getMessage()], $this->statusFor($e));
@@ -53,7 +53,7 @@ class DanoCultivoController extends Controller
     public function subirFotos($id)
     {
         try {
-            $fotos = (new DanoCultivoService())->subirFotos((int)$id, $_FILES['fotos'] ?? []);
+            $fotos = (new DanoCultivoService())->subirFotos((int)$id, $_FILES['fotos'] ?? [], $this->authUser());
             $this->json(['fotos' => $fotos], 201);
         } catch (\Exception $e) {
             $this->json(['error' => $e->getMessage()], $this->statusFor($e));

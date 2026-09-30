@@ -22,17 +22,21 @@ class DanoCultivoService
     }
 
     /** @return DanoCultivo[] */
-    public function listar(array $query): array
+    public function listar(array $query, array $user = []): array
     {
         $criteria = [
             'q' => $query['q'] ?? null,
             'desde' => $query['desde'] ?? null,
             'hasta' => $query['hasta'] ?? null,
         ];
+        // El técnico solo ve sus propios registros; admin y supervisor ven todos.
+        if (($user['role'] ?? '') === 'tecnico') {
+            $criteria['usuarioId'] = (int)($user['sub'] ?? 0);
+        }
         return $this->repository->findByFilters($criteria);
     }
 
-    public function crear(DanoCultivoDTO $dto): DanoCultivo
+    public function crear(DanoCultivoDTO $dto, array $user = []): DanoCultivo
     {
         $f = $dto->fields;
         if ($f['fecha'] === '' || $f['responsable'] === '' || $f['lote'] === '' || $f['cultivo'] === '' || $f['causa'] === '') {
@@ -77,7 +81,7 @@ class DanoCultivoService
             fn($p) => $p['ref'] !== '' || $p['incidencia'] !== null || $p['severidad'] !== null || $p['obs'] !== ''
         ));
 
-        $id = $this->repository->create($f, $puntos, null, null);
+        $id = $this->repository->create($f, $puntos, isset($user['sub']) ? (int)$user['sub'] : null, $user['usuario'] ?? null);
         return $this->repository->findById($id);
     }
 
@@ -88,9 +92,12 @@ class DanoCultivoService
         $this->borrarCarpeta($dano->id);
     }
 
-    public function subirFotos(int $id, array $files): array
+    public function subirFotos(int $id, array $files, array $user = []): array
     {
         $dano = $this->obtener($id);
+        if (($user['role'] ?? '') === 'tecnico' && $dano->usuarioId !== (int)($user['sub'] ?? 0)) {
+            throw new \Exception('No puedes modificar registros de otro usuario.', 403);
+        }
         $normalized = $this->normalizeFilesArray($files);
         if (!$normalized) {
             throw new \Exception('No se recibió ninguna foto.', 400);
