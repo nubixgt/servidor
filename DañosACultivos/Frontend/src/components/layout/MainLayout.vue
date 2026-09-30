@@ -50,10 +50,16 @@ import { h } from 'vue';
 import { useRouter } from 'vue-router';
 import { Squares2X2Icon, DocumentTextIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
 import authService from '../../services/authService';
+import { confirmDialog, toastSuccess } from '../../utils/alerts';
 
 const router = useRouter();
 const user = authService.user();
-const salir = () => { authService.logout(); router.replace({ name: 'Login' }); };
+const salir = async () => {
+    if (!(await confirmDialog('Se cerrará tu sesión actual.', { title: '¿Cerrar sesión?', confirmText: 'Cerrar sesión' }))) return;
+    authService.logout();
+    await router.replace({ name: 'Login' });
+    toastSuccess('Sesión cerrada correctamente');
+};
 
 const items = [
     { to: '/', label: 'Dashboard', icon: Squares2X2Icon },
