@@ -3,12 +3,14 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Attributes\Route;
+use App\Attributes\Authorize;
 use App\DTOs\DanoCultivoDTO;
 use App\Services\DanoCultivoService;
 
 class DanoCultivoController extends Controller
 {
     #[Route('/danos-cultivos', 'GET')]
+    #[Authorize(['admin', 'supervisor', 'tecnico'])]
     public function index()
     {
         try {
@@ -21,6 +23,7 @@ class DanoCultivoController extends Controller
     }
 
     #[Route('/danos-cultivos', 'POST')]
+    #[Authorize(['admin', 'supervisor', 'tecnico'])]
     public function create()
     {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
@@ -34,6 +37,7 @@ class DanoCultivoController extends Controller
     }
 
     #[Route('/danos-cultivos/{id}', 'DELETE')]
+    #[Authorize(['admin', 'supervisor'])]
     public function delete($id)
     {
         try {
@@ -45,6 +49,7 @@ class DanoCultivoController extends Controller
     }
 
     #[Route('/danos-cultivos/{id}/fotos', 'POST')]
+    #[Authorize(['admin', 'supervisor', 'tecnico'])]
     public function subirFotos($id)
     {
         try {

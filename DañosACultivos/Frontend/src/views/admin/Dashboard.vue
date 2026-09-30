@@ -176,7 +176,7 @@
                 <div class="flex items-center justify-between gap-2 mb-4">
                     <h2 class="section-title">{{ detalle.cultivo }} · {{ detalle.lote }}</h2>
                     <div class="flex gap-2">
-                        <button class="btn btn-outline btn-sm" aria-label="Eliminar" @click="eliminar(detalle)"><TrashIcon class="w-5 h-5" style="color: var(--red);" /></button>
+                        <button v-if="puedeEliminar" class="btn btn-outline btn-sm" aria-label="Eliminar" @click="eliminar(detalle)"><TrashIcon class="w-5 h-5" style="color: var(--red);" /></button>
                         <button class="btn btn-outline btn-sm" aria-label="Cerrar" @click="detalle = null"><XMarkIcon class="w-5 h-5" /></button>
                     </div>
                 </div>
@@ -210,6 +210,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } 
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import danoCultivoService from '../../services/danoCultivoService';
+import authService from '../../services/authService';
 import { toastSuccess, toastError, confirmDialog } from '../../utils/alerts';
 import {
     ArrowPathIcon, ArrowRightIcon, PlusIcon, TrashIcon, XMarkIcon, TableCellsIcon, CalendarDaysIcon,
@@ -224,6 +225,7 @@ const NIVELES = [
 ];
 const PALETA = ['#079447', '#F5B800', '#FF7A00', '#1677FF', '#7C3AED', '#0EA5A5', '#94A3B8'];
 
+const puedeEliminar = ['admin', 'supervisor'].includes(authService.user()?.rol);
 const todos = ref([]);
 const loading = ref(false);
 const error = ref('');

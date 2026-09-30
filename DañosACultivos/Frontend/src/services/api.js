@@ -22,4 +22,18 @@ api.interceptors.request.use(
     }
 );
 
+// Sesión vencida o token inválido: limpia la sesión y vuelve al login (excepto en el propio login).
+api.interceptors.response.use(
+    response => response,
+    error => {
+        const url = error.config?.url || '';
+        if (error.response?.status === 401 && !url.includes('/auth/login')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = import.meta.env.BASE_URL + 'login';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;

@@ -3,6 +3,7 @@
 use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\DanoCultivoController;
+use App\Controllers\AuthController;
 
 // Backend/api/v1/index.php
 
@@ -32,6 +33,7 @@ $router = new Router();
 
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
+$router->registerController(AuthController::class);
 $router->registerController(DanoCultivoController::class);
 // $router->registerController(YourController::class);
 

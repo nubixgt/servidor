@@ -3,7 +3,7 @@ namespace App\Utils;
 
 class JwtUtils
 {
-    private static $secret = 'YOUR_SECRET_KEY_CHANGE_ME'; // In production, use ENV
+    private static $secret = '54c9a1d67d8b7ed6cd9f08d866950cc5cbd772034841e225e8e065e07f59a4e6';
     private static $algo = 'HS256';
 
     public static function generate($payload)

@@ -16,7 +16,13 @@
                     <component :is="i.icon" class="w-6 h-6" />{{ i.label }}
                 </router-link>
             </nav>
-            <p class="side p-3 text-[13px] leading-snug text-white/90">Información en tiempo real para un campo más resiliente</p>
+            <div class="side p-3 flex items-center gap-3 text-white">
+                <div class="min-w-0 flex-1 leading-tight">
+                    <p class="font-semibold truncate">{{ user?.usuario }}</p>
+                    <p class="text-[12px] text-white/70 capitalize">{{ user?.rol }}</p>
+                </div>
+                <button class="p-2 rounded-xl hover:bg-white/15" title="Cerrar sesión" aria-label="Cerrar sesión" @click="salir"><ArrowRightOnRectangleIcon class="w-5 h-5" /></button>
+            </div>
         </aside>
 
         <!-- Barra superior (pantallas menores) -->
@@ -28,6 +34,7 @@
                     <router-link v-for="i in items" :key="i.to" :to="i.to" class="top-link" exact-active-class="top-link-active">
                         <component :is="i.icon" class="w-5 h-5" />{{ i.label }}
                     </router-link>
+                    <button class="top-link" aria-label="Cerrar sesión" @click="salir"><ArrowRightOnRectangleIcon class="w-5 h-5" /></button>
                 </nav>
             </div>
         </header>
@@ -40,7 +47,13 @@
 
 <script setup>
 import { h } from 'vue';
-import { Squares2X2Icon, DocumentTextIcon } from '@heroicons/vue/24/outline';
+import { useRouter } from 'vue-router';
+import { Squares2X2Icon, DocumentTextIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import authService from '../../services/authService';
+
+const router = useRouter();
+const user = authService.user();
+const salir = () => { authService.logout(); router.replace({ name: 'Login' }); };
 
 const items = [
     { to: '/', label: 'Dashboard', icon: Squares2X2Icon },
