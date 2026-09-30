@@ -11,6 +11,7 @@ const routes = [
         children: [
             { path: '', name: 'Dashboard', component: () => import('../views/admin/Dashboard.vue') },
             { path: 'registros', name: 'DanosCultivos', component: () => import('../views/admin/DanosCultivos.vue') },
+            { path: 'usuarios', name: 'Usuarios', component: () => import('../views/admin/Usuarios.vue'), meta: { roles: ['admin'] } },
         ],
     },
     { path: '/login', name: 'Login', component: () => import('../views/auth/Login.vue') },
@@ -26,6 +27,7 @@ const router = createRouter({
 router.beforeEach((to) => {
     const autenticado = authService.isAuthenticated();
     if (to.meta.requiresAuth && !autenticado) return { name: 'Login' };
+    if (to.meta.roles && !to.meta.roles.includes(authService.user()?.rol)) return { name: 'Dashboard' };
     if (to.name === 'Login' && autenticado) return { name: 'Dashboard' };
 });
 

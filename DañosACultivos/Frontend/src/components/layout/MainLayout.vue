@@ -48,12 +48,10 @@
 <script setup>
 import { h } from 'vue';
 import { useRouter } from 'vue-router';
-import { Squares2X2Icon, DocumentTextIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { Squares2X2Icon, DocumentTextIcon, UsersIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
 import authService from '../../services/authService';
 import { confirmDialog, toastSuccess } from '../../utils/alerts';
 
-const router = useRouter();
-const user = authService.user();
 const salir = async () => {
     if (!(await confirmDialog('Se cerrará tu sesión actual.', { title: '¿Cerrar sesión?', confirmText: 'Cerrar sesión' }))) return;
     authService.logout();
@@ -61,10 +59,15 @@ const salir = async () => {
     toastSuccess('Sesión cerrada correctamente');
 };
 
-const items = [
+const router = useRouter();
+const user = authService.user();
+
+const todosItems = [
     { to: '/', label: 'Dashboard', icon: Squares2X2Icon },
     { to: '/registros', label: 'Registros', icon: DocumentTextIcon },
+    { to: '/usuarios', label: 'Usuarios', icon: UsersIcon, roles: ['admin'] },
 ];
+const items = todosItems.filter((i) => !i.roles || i.roles.includes(user?.rol));
 
 const LogoLeaf = () => h('svg', { viewBox: '0 0 48 48', class: 'w-3/5 h-3/5', fill: 'none', 'aria-hidden': 'true' }, [
     h('path', { d: 'M24 42V22', stroke: '#fff', 'stroke-width': 3, 'stroke-linecap': 'round' }),
