@@ -1,0 +1,82 @@
+name: 🚀 Deploy concretosdeoriente.com
+
+# Despliega SOLO la carpeta concretos-oriente/ a su propio servidor (AWS EC2).
+# El resto del repo sigue desplegándose a m.nubix.gt con deploy.yml.
+#
+# En el servidor, nginx sirve:
+#   /                                -> /var/www/concretos/frontend  (SPA)
+#   /concretos-oriente/Backend/...   -> /var/www/concretos/backend   (API PHP)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'concretos-oriente/**'
+      - '.github/workflows/deploy-concretos-oriente.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-concretos-oriente
+  cancel-in-progress: false
+
+env:
+  FRONT_DIR: /var/www/concretos/frontend
+  BACK_DIR: /var/www/concretos/backend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install & Build Frontend (concretos-oriente)
+        run: |
+          cd concretos-oriente/Frontend
+          npm install
+          npm run build
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.CO_SSH_PRIVATE_KEY }}" > ~/.ssh/id_concretos
+          chmod 600 ~/.ssh/id_concretos
+          ssh-keyscan ${{ secrets.CO_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # Las carpetas son de www-data: se escribe con "sudo rsync" y al final se
+      # devuelve la propiedad a www-data.
+      # Uploads/ y los archivos de config/ del servidor nunca se tocan.
+      - name: 🚀 Deploy Backend
+        run: |
+          rsync -rlptvz --delete \
+            --rsync-path="sudo rsync" \
+            --exclude 'Uploads/' \
+            --exclude 'uploads/' \
+            --exclude 'config/database.php' \
+            --exclude 'config/jwt.php' \
+            --exclude '*.log' \
+            --chmod=D775,F664 \
+            -e "ssh -i ~/.ssh/id_concretos" \
+            concretos-oriente/Backend/ \
+            ${{ secrets.CO_SSH_USER }}@${{ secrets.CO_SSH_HOST }}:$BACK_DIR/
+
+      # .well-known/ lo usa certbot para renovar el certificado SSL.
+      - name: 🚀 Deploy Frontend
+        run: |
+          rsync -rlptvz --delete \
+            --rsync-path="sudo rsync" \
+            --exclude '.well-known/' \
+            --chmod=D775,F664 \
+            -e "ssh -i ~/.ssh/id_concretos" \
+            concretos-oriente/Frontend/dist/ \
+            ${{ secrets.CO_SSH_USER }}@${{ secrets.CO_SSH_HOST }}:$FRONT_DIR/
+
+      - name: 🔑 Restaurar propietario www-data
+        run: |
+          ssh -i ~/.ssh/id_concretos ${{ secrets.CO_SSH_USER }}@${{ secrets.CO_SSH_HOST }} \
+            "sudo chown -R www-data:www-data $FRONT_DIR $BACK_DIR"

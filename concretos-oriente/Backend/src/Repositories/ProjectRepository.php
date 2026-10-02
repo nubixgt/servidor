@@ -29,6 +29,8 @@ class ProjectRepository
                 'excel_presupuesto'         => 'VARCHAR(255) NULL',
                 'especificaciones_tecnicas' => 'VARCHAR(255) NULL',
                 'convenios_archivos'        => 'TEXT NULL',
+                'departamento'              => 'VARCHAR(100) NULL',
+                'planos_archivos'           => 'TEXT NULL',
             ];
             foreach ($newCols as $col => $type) {
                 if (!in_array($col, $cols)) {
@@ -66,12 +68,12 @@ class ProjectRepository
                     (codigo, nombre, cliente_id, ubicacion, coordenadas, presupuesto, 
                      fecha_inicio, fecha_fin_estimada, fecha_fin_real, estado, 
                      numero_contrato, descripcion, contactos, gerente_id,
-                     snip, nog, monto_cocode, monto_muni, monto_comunidad, tipo_inversion) 
+                     snip, nog, monto_cocode, monto_muni, monto_comunidad, tipo_inversion, departamento) 
                 VALUES 
                     (:codigo, :nombre, :cliente_id, :ubicacion, :coordenadas, :presupuesto, 
                      :fecha_inicio, :fecha_fin_estimada, :fecha_fin_real, :estado, 
                      :numero_contrato, :descripcion, :contactos, :gerente_id,
-                     :snip, :nog, :monto_cocode, :monto_muni, :monto_comunidad, :tipo_inversion)";
+                     :snip, :nog, :monto_cocode, :monto_muni, :monto_comunidad, :tipo_inversion, :departamento)";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -95,6 +97,7 @@ class ProjectRepository
             ':monto_muni'         => $data['monto_muni'] ?? 0,
             ':monto_comunidad'    => $data['monto_comunidad'] ?? 0,
             ':tipo_inversion'     => $data['tipo_inversion'] ?? null,
+            ':departamento'       => $data['departamento'] ?? null,
         ]);
 
         return (int) $this->pdo->lastInsertId();
@@ -111,7 +114,7 @@ class ProjectRepository
                     descripcion = :descripcion, contactos = :contactos, gerente_id = :gerente_id,
                     snip = :snip, nog = :nog, monto_cocode = :monto_cocode,
                     monto_muni = :monto_muni, monto_comunidad = :monto_comunidad,
-                    tipo_inversion = :tipo_inversion,
+                    tipo_inversion = :tipo_inversion, departamento = :departamento,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = :id";
 
@@ -153,6 +156,12 @@ class ProjectRepository
     {
         $this->pdo->prepare("UPDATE projects SET convenios_archivos = :convenios_archivos WHERE id = :id")
              ->execute([':convenios_archivos' => $conveniosJson, ':id' => $id]);
+    }
+
+    public function updatePlanos(int $id, ?string $planosJson): void
+    {
+        $this->pdo->prepare("UPDATE projects SET planos_archivos = :planos_archivos WHERE id = :id")
+             ->execute([':planos_archivos' => $planosJson, ':id' => $id]);
     }
 
     public function updateDocuments(int $id, string $docsJson): void

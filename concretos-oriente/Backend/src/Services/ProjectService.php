@@ -25,7 +25,8 @@ class ProjectService
         ?array $fotoContratoFile = null,
         ?array $excelPresupuestoFile = null,
         ?array $especificacionesFile = null,
-        ?array $conveniosFiles = null
+        ?array $conveniosFiles = null,
+        ?array $planosFiles = null
     ): void {
         $pdo = $this->projectRepository->getPDO();
         $pdo->beginTransaction();
@@ -78,6 +79,14 @@ class ProjectService
                 }
             }
 
+            // Planos (Múltiples archivos)
+            if ($planosFiles && isset($planosFiles['name']) && is_array($planosFiles['name'])) {
+                $planos = $this->handleMultipleFilesUpload($newId, $planosFiles, 'planos', $baseDir);
+                if (!empty($planos)) {
+                    $this->projectRepository->updatePlanos($newId, json_encode($planos));
+                }
+            }
+
             // Archivos de Contrato legado / general
             if ($contratosFiles && isset($contratosFiles['name']) && is_array($contratosFiles['name'])) {
                 $docs = $this->handleMultipleFilesUpload($newId, $contratosFiles, 'docs', $baseDir);
@@ -101,7 +110,8 @@ class ProjectService
         ?array $fotoContratoFile = null,
         ?array $excelPresupuestoFile = null,
         ?array $especificacionesFile = null,
-        ?array $conveniosFiles = null
+        ?array $conveniosFiles = null,
+        ?array $planosFiles = null
     ): void {
         $project = $this->projectRepository->findById($id);
         if (!$project) {
@@ -129,6 +139,7 @@ class ProjectService
         $data['monto_muni']         = array_key_exists('monto_muni', $data) ? $data['monto_muni'] : ($project['monto_muni'] ?? 0);
         $data['monto_comunidad']    = array_key_exists('monto_comunidad', $data) ? $data['monto_comunidad'] : ($project['monto_comunidad'] ?? 0);
         $data['tipo_inversion']     = array_key_exists('tipo_inversion', $data) ? $data['tipo_inversion'] : ($project['tipo_inversion'] ?? null);
+        $data['departamento']       = ($data['departamento'] ?? false) !== false ? $data['departamento'] : ($project['departamento'] ?? null);
 
         $pdo = $this->projectRepository->getPDO();
         $pdo->beginTransaction();
@@ -193,6 +204,15 @@ class ProjectService
                 }
             }
 
+            // Planos (se agregan a los existentes)
+            if ($planosFiles && isset($planosFiles['error']) && is_array($planosFiles['error']) && ($planosFiles['error'][0] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $nuevos = $this->handleMultipleFilesUpload($id, $planosFiles, 'planos', $baseDir);
+                if (!empty($nuevos)) {
+                    $existentes = json_decode($project['planos_archivos'] ?? '', true) ?: [];
+                    $this->projectRepository->updatePlanos($id, json_encode(array_merge($existentes, $nuevos)));
+                }
+            }
+
             // Contratos generales
             if ($contratosFiles && isset($contratosFiles['error']) && is_array($contratosFiles['error']) && ($contratosFiles['error'][0] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                 $docs = $this->handleMultipleFilesUpload($id, $contratosFiles, 'docs', $baseDir, true);
@@ -220,6 +240,27 @@ class ProjectService
         $dirPath = __DIR__ . "/../../Uploads/Projects/$id";
         if (is_dir($dirPath)) {
             $this->deleteDirectory($dirPath);
+        }
+    }
+
+    public function deletePlano(int $id, string $path): void
+    {
+        $project = $this->projectRepository->findById($id);
+        if (!$project) {
+            throw new Exception("Proyecto no encontrado", 404);
+        }
+
+        $planos = json_decode($project['planos_archivos'] ?? '', true) ?: [];
+        if (!in_array($path, $planos, true)) {
+            throw new Exception("Plano no encontrado", 404);
+        }
+
+        $restantes = array_values(array_filter($planos, fn($p) => $p !== $path));
+        $this->projectRepository->updatePlanos($id, count($restantes) > 0 ? json_encode($restantes) : null);
+
+        $fullPath = __DIR__ . "/../../" . $path;
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
         }
     }
 

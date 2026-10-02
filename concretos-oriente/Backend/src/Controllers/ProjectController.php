@@ -65,6 +65,7 @@ class ProjectController extends Controller
                 'monto_muni'         => $monto_muni,
                 'monto_comunidad'    => $monto_comunidad,
                 'tipo_inversion'     => trim($_POST['tipo_inversion'] ?? '') ?: null,
+                'departamento'       => trim($_POST['departamento'] ?? '') ?: null,
             ];
 
             $fotoFile             = $_FILES['foto'] ?? null;
@@ -73,6 +74,7 @@ class ProjectController extends Controller
             $excelPresupuestoFile = $_FILES['excel_presupuesto'] ?? null;
             $especificacionesFile = $_FILES['especificaciones_tecnicas'] ?? null;
             $conveniosFiles       = $_FILES['convenios'] ?? null;
+            $planosFiles          = $_FILES['planos'] ?? null;
 
             $this->projectService->createProject(
                 $data,
@@ -81,7 +83,8 @@ class ProjectController extends Controller
                 $fotoContratoFile,
                 $excelPresupuestoFile,
                 $especificacionesFile,
-                $conveniosFiles
+                $conveniosFiles,
+                $planosFiles
             );
 
             $this->json([
@@ -130,6 +133,7 @@ class ProjectController extends Controller
                 'monto_muni'         => $monto_muni,
                 'monto_comunidad'    => $monto_comunidad,
                 'tipo_inversion'     => isset($_POST['tipo_inversion']) ? (trim($_POST['tipo_inversion']) ?: null) : null,
+                'departamento'       => isset($_POST['departamento']) ? (trim($_POST['departamento']) ?: null) : false,
             ];
 
             $fotoFile             = $_FILES['foto'] ?? null;
@@ -138,6 +142,7 @@ class ProjectController extends Controller
             $excelPresupuestoFile = $_FILES['excel_presupuesto'] ?? null;
             $especificacionesFile = $_FILES['especificaciones_tecnicas'] ?? null;
             $conveniosFiles       = $_FILES['convenios'] ?? null;
+            $planosFiles          = $_FILES['planos'] ?? null;
 
             $this->projectService->updateProject(
                 (int)$id,
@@ -147,7 +152,8 @@ class ProjectController extends Controller
                 $fotoContratoFile,
                 $excelPresupuestoFile,
                 $especificacionesFile,
-                $conveniosFiles
+                $conveniosFiles,
+                $planosFiles
             );
 
             $this->json([
@@ -183,6 +189,33 @@ class ProjectController extends Controller
             $this->json([
                 "status" => "error",
                 "message" => "Error al eliminar: " . $e->getMessage()
+            ], $code);
+        }
+    }
+
+    // POST /projects/{id}/planos/delete
+    #[Route('/projects/{id}/planos/delete', 'POST')]
+    public function deletePlano($id)
+    {
+        try {
+            $input = json_decode(file_get_contents('php://input'), true) ?? [];
+            $path = trim($input['path'] ?? '');
+            if ($path === '') {
+                throw new Exception("Debe indicar el plano a eliminar.", 400);
+            }
+
+            $this->projectService->deletePlano((int)$id, $path);
+
+            $this->json([
+                "status" => "success",
+                "message" => "Plano eliminado"
+            ]);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json([
+                "status" => "error",
+                "message" => "Error al eliminar plano: " . $e->getMessage()
             ], $code);
         }
     }

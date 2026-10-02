@@ -61,6 +61,12 @@
                 <option value="Extraordinario">Extraordinario</option>
               </select>
 
+              <!-- Departamento -->
+              <select v-model="filterDepartamento" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer w-full md:w-auto md:min-w-[160px]">
+                <option value="">Todos los departamentos</option>
+                <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
+              </select>
+
               <!-- Cliente -->
               <select v-model="filterCliente" class="bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-sm font-bold text-white focus:border-primary transition-all appearance-none cursor-pointer w-full md:w-auto md:min-w-[160px]">
                 <option value="">Todos los clientes</option>
@@ -202,10 +208,10 @@
                 </div>
                 <h3 class="text-2xl font-black text-white mb-2 leading-tight uppercase italic line-clamp-2">{{ proj.nombre }}</h3>
 
-                <div v-if="proj.ubicacion || proj.coordenadas" class="flex items-center justify-between text-xs text-white/60 mb-4 gap-2">
+                <div v-if="proj.ubicacion || proj.coordenadas || proj.departamento" class="flex items-center justify-between text-xs text-white/60 mb-4 gap-2">
                   <p class="flex items-center gap-1.5 truncate">
                     <MapPinIcon class="w-3.5 h-3.5 text-primary shrink-0" />
-                    <span class="truncate">{{ proj.ubicacion || proj.coordenadas }}</span>
+                    <span class="truncate">{{ proj.ubicacion || proj.coordenadas }}<template v-if="proj.departamento"> · {{ proj.departamento }}</template></span>
                   </p>
                   <button
                     v-if="getProjectMapsUrl(proj)"
@@ -346,12 +352,12 @@
                   </div>
                 </div>
 
-                <!-- Desglose de Fondos: COCODE, MUNI, COMUNIDAD -->
+                <!-- Desglose de Fondos: CODEDE, MUNI, COMUNIDAD -->
                 <div>
                   <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Desglose de Aportes y Financiamiento</p>
                   <div class="grid grid-cols-3 gap-2">
                     <div class="bg-black/30 p-3 rounded-xl border border-white/5">
-                      <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Monto COCODE</p>
+                      <p class="text-[9px] font-black text-white/40 uppercase tracking-widest">Monto CODEDE</p>
                       <p class="text-xs md:text-sm font-bold text-emerald-400">Q {{ formatCurrency(selectedProject.monto_cocode) }}</p>
                     </div>
                     <div class="bg-black/30 p-3 rounded-xl border border-white/5">
@@ -452,6 +458,7 @@
                   </div>
                 </div>
                 <p class="text-sm font-bold text-white">{{ selectedProject.ubicacion || 'Sin dirección especificada' }}</p>
+                <p v-if="selectedProject.departamento" class="text-xs font-bold text-primary">Departamento: {{ selectedProject.departamento }}</p>
                 <div class="flex items-center gap-4 text-xs font-medium pt-1">
                   <a v-if="getProjectMapsUrl(selectedProject)" :href="getProjectMapsUrl(selectedProject)" target="_blank" class="text-primary hover:underline flex items-center gap-1 font-bold">
                     Abrir en Google Maps ({{ selectedProject.coordenadas || selectedProject.ubicacion }}) ↗
@@ -542,6 +549,34 @@
                       </a>
                     </div>
                     <p v-else class="text-xs text-white/30 italic">No hay convenios adjuntos.</p>
+                  </div>
+
+                  <!-- Planos -->
+                  <div class="bg-white/5 p-4 rounded-2xl border border-white/5 flex flex-col justify-center col-span-full">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <MapIcon class="w-5 h-5 text-violet-400" />
+                        <p class="text-[10px] font-black text-white/40 uppercase tracking-wider">Planos</p>
+                      </div>
+                      <span class="text-[10px] font-bold text-violet-400 bg-violet-400/10 px-2.5 py-0.5 rounded-full border border-violet-400/20">
+                        {{ parseJson(selectedProject.planos_archivos).length }} archivo(s)
+                      </span>
+                    </div>
+                    <div v-if="parseJson(selectedProject.planos_archivos).length > 0" class="flex flex-wrap gap-2 pt-1">
+                      <a
+                        v-for="(plano, idx) in parseJson(selectedProject.planos_archivos)"
+                        :key="plano"
+                        :href="`/concretos-oriente/Backend/${plano}`"
+                        target="_blank"
+                        :title="getFileLabel(plano)"
+                        class="flex items-center gap-2 bg-black/40 hover:bg-violet-500/20 border border-white/10 hover:border-violet-400/30 px-3 py-2 rounded-xl text-xs font-bold text-white transition-all group max-w-full"
+                      >
+                        <DocumentIcon class="w-4 h-4 text-violet-400 shrink-0 group-hover:scale-110 transition-transform" />
+                        <span class="truncate max-w-[220px]">{{ getFileLabel(plano) }}</span>
+                        <ArrowDownTrayIcon class="w-3.5 h-3.5 shrink-0 text-white/40 group-hover:text-white" />
+                      </a>
+                    </div>
+                    <p v-else class="text-xs text-white/30 italic">No hay planos adjuntos.</p>
                   </div>
                 </div>
               </div>
@@ -778,7 +813,7 @@
               </div>
             </div>
 
-            <!-- Fila 4: Presupuesto Total y Desglose de Valores (COCODE, MUNI, COMUNIDAD) -->
+            <!-- Fila 4: Presupuesto Total y Desglose de Valores (CODEDE, MUNI, COMUNIDAD) -->
             <div class="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
               <div class="flex items-center justify-between pb-3 border-b border-white/10">
                 <label class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -793,7 +828,7 @@
                   <input type="text" :value="getDisplayValue(Number(formData.monto_cocode || 0) + Number(formData.monto_muni || 0) + Number(formData.monto_comunidad || 0))" readonly class="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3.5 text-white/50 cursor-not-allowed transition-all font-bold" placeholder="Q 0.00" />
                 </div>
                 <div>
-                  <label class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 block">Monto COCODE (Q)</label>
+                  <label class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 block">Monto CODEDE (Q)</label>
                   <input type="text" :value="getDisplayValue(formData.monto_cocode)" @input="e => updateCurrencyField(formData, 'monto_cocode', e)" class="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3.5 text-white placeholder-white/20 focus:border-emerald-400 transition-all font-bold" placeholder="Q 0.00" />
                 </div>
                 <div>
@@ -834,6 +869,12 @@
 
             <!-- Fila 7: Ubicación y Mapa GPS -->
             <div>
+              <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Departamento</label>
+              <select v-model="formData.departamento" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold appearance-none mb-4">
+                <option value="">Sin especificar</option>
+                <option v-for="d in DEPARTAMENTOS" :key="d" :value="d">{{ d }}</option>
+              </select>
+
               <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Nombre de la Ubicación / Dirección</label>
               <input v-model="formData.ubicacion" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold mb-4" placeholder="Ej. Caserío Los Ángeles, Aldea El Progreso, Zacapa" />
 
@@ -995,6 +1036,43 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Planos (múltiples archivos, se agregan a los existentes) -->
+              <div class="pt-4 border-t border-white/10">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-[10px] font-black text-violet-400 uppercase tracking-widest block">
+                    Planos (PDF / Imágenes / AutoCAD)
+                  </label>
+                  <span class="text-[10px] font-bold text-white/40">{{ formData.planos.length }} archivo(s) nuevo(s)</span>
+                </div>
+                <input @change="handlePlanosChange" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.dwg,.dxf" class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-violet-500/20 file:text-violet-400 hover:file:bg-violet-500/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
+
+                <!-- Planos ya guardados (solo edición) -->
+                <div v-if="isEditing && existingPlanos.length > 0" class="mt-3 space-y-2">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">Planos guardados</p>
+                  <div v-for="plano in existingPlanos" :key="plano" class="flex items-center justify-between bg-black/30 p-3 rounded-xl border border-white/5">
+                    <a :href="`/concretos-oriente/Backend/${plano}`" target="_blank" class="flex items-center gap-2 truncate flex-1 hover:text-violet-300">
+                      <MapIcon class="w-4 h-4 text-violet-400 shrink-0" />
+                      <span class="text-xs text-white/80 font-medium truncate">{{ getFileLabel(plano) }}</span>
+                    </a>
+                    <button type="button" @click="deleteExistingPlano(plano)" class="p-1 hover:bg-rose-500/20 hover:text-rose-400 text-white/40 rounded-lg transition-all ml-2" title="Eliminar plano">
+                      <TrashIcon class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div v-if="formData.planos.length > 0" class="mt-3 space-y-2">
+                  <div v-for="(file, i) in formData.planos" :key="i" class="flex items-center justify-between bg-black/30 p-3 rounded-xl border border-white/5">
+                    <div class="flex items-center gap-2 truncate flex-1">
+                      <MapIcon class="w-4 h-4 text-violet-400 shrink-0" />
+                      <span class="text-xs text-white/80 font-medium truncate">{{ file.name }}</span>
+                    </div>
+                    <button type="button" @click="removePlano(i)" class="p-1 hover:bg-rose-500/20 hover:text-rose-400 text-white/40 rounded-lg transition-all ml-2">
+                      <XMarkIcon class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Acciones -->
@@ -1024,7 +1102,7 @@ import {
   ChartBarIcon, BriefcaseIcon, CurrencyDollarIcon, UserIcon, UsersIcon,
   PencilIcon, TrashIcon, DocumentTextIcon, PaperClipIcon, DocumentIcon, ArrowDownTrayIcon,
   MagnifyingGlassIcon, FunnelIcon, AdjustmentsHorizontalIcon, ArrowsUpDownIcon,
-  FolderIcon, TableCellsIcon, DocumentCheckIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon
+  FolderIcon, MapIcon, TableCellsIcon, DocumentCheckIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
 
@@ -1043,6 +1121,7 @@ const searchQuery = ref('');
 const filterEstado = ref('');
 const filterTipoInversion = ref('');
 const filterCliente = ref('');
+const filterDepartamento = ref('');
 const filterGerente = ref('');
 const sortBy = ref('fecha_inicio_desc');
 const showAdvancedFilters = ref(false);
@@ -1241,6 +1320,7 @@ const emptyForm = () => ({
   nombre: '',
   cliente_id: '',
   ubicacion: '',
+  departamento: '',
   coordenadas: '',
   presupuesto: '',
   fecha_inicio: '',
@@ -1262,10 +1342,20 @@ const emptyForm = () => ({
   excel_presupuesto: null,
   especificaciones_tecnicas: null,
   convenios: [],
+  planos: [],
   contratos: []
 });
 
 const formData = ref(emptyForm());
+
+const DEPARTAMENTOS = [
+  'Alta Verapaz', 'Baja Verapaz', 'Chimaltenango', 'Chiquimula', 'El Progreso', 'Escuintla',
+  'Guatemala', 'Huehuetenango', 'Izabal', 'Jalapa', 'Jutiapa', 'Petén', 'Quetzaltenango',
+  'Quiché', 'Retalhuleu', 'Sacatepéquez', 'San Marcos', 'Santa Rosa', 'Sololá',
+  'Suchitepéquez', 'Totonicapán', 'Zacapa'
+];
+
+const normalizeText = (txt) => String(txt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 const filteredProjects = computed(() => {
   let result = [...projects.value];
@@ -1291,6 +1381,15 @@ const filteredProjects = computed(() => {
   // Filtro por tipo de inversión
   if (filterTipoInversion.value) {
     result = result.filter(p => p.tipo_inversion === filterTipoInversion.value);
+  }
+
+  // Filtro por departamento (proyectos antiguos sin departamento: se busca en la ubicación)
+  if (filterDepartamento.value) {
+    const dep = normalizeText(filterDepartamento.value);
+    result = result.filter(p => p.departamento
+      ? p.departamento === filterDepartamento.value
+      : normalizeText(p.ubicacion).includes(dep)
+    );
   }
 
   // Filtro por cliente
@@ -1344,6 +1443,7 @@ const activeFiltersCount = computed(() => {
   if (filterEstado.value)         count++;
   if (filterTipoInversion.value)  count++;
   if (filterCliente.value)        count++;
+  if (filterDepartamento.value)   count++;
   if (filterGerente.value)        count++;
   if (filterPresupuestoMin.value) count++;
   if (filterPresupuestoMax.value) count++;
@@ -1357,6 +1457,7 @@ const resetFilters = () => {
   filterEstado.value        = '';
   filterTipoInversion.value = '';
   filterCliente.value       = '';
+  filterDepartamento.value  = '';
   filterGerente.value       = '';
   filterPresupuestoMin.value = '';
   filterPresupuestoMax.value = '';
@@ -1556,6 +1657,7 @@ const openEditModal = (proj) => {
     nombre: proj.nombre || '',
     cliente_id: proj.cliente_id || '',
     ubicacion: proj.ubicacion || '',
+    departamento: proj.departamento || '',
     coordenadas: proj.coordenadas || '',
     presupuesto: proj.presupuesto || '',
     fecha_inicio: proj.fecha_inicio || '',
@@ -1577,6 +1679,7 @@ const openEditModal = (proj) => {
     excel_presupuesto: null,
     especificaciones_tecnicas: null,
     convenios: [],
+    planos: [],
     contratos: []
   };
   isEditing.value = true;
@@ -1691,6 +1794,51 @@ const removeConvenio = (index) => {
   formData.value.convenios.splice(index, 1);
 };
 
+const handlePlanosChange = (e) => {
+  formData.value.planos = [...formData.value.planos, ...Array.from(e.target.files)];
+  e.target.value = '';
+};
+
+const removePlano = (index) => {
+  formData.value.planos.splice(index, 1);
+};
+
+// Nombre legible del archivo guardado (quita el prefijo de timestamp)
+const getFileLabel = (path) => String(path || '').split('/').pop().replace(/^\d+_/, '');
+
+const existingPlanos = computed(() => {
+  const proj = projects.value.find(p => p.id === editingId.value);
+  return proj ? parseJson(proj.planos_archivos) : [];
+});
+
+const deleteExistingPlano = async (path) => {
+  const confirm = await Swal.fire({
+    title: '¿Eliminar plano?',
+    text: getFileLabel(path),
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    background: '#0f172a',
+    color: '#fff',
+    confirmButtonColor: '#e11d48'
+  });
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const response = await fetch(`${BASE_URL}/projects/${editingId.value}/planos/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    });
+    const result = await response.json();
+    if (result.status !== 'success') throw new Error(result.message);
+    await fetchProjects();
+  } catch (error) {
+    Swal.fire({ title: 'Error', text: error.message || 'No se pudo eliminar el plano', icon: 'error', background: '#0f172a', color: '#fff', confirmButtonColor: '#6366f1' });
+  }
+};
+
 const toggleMapFullscreen = () => {
   mapFullscreen.value = !mapFullscreen.value;
   setTimeout(() => {
@@ -1733,6 +1881,7 @@ const submitForm = async () => {
   data.append('nombre', formData.value.nombre);
   data.append('cliente_id', formData.value.cliente_id || 0);
   data.append('ubicacion', formData.value.ubicacion || '');
+  data.append('departamento', formData.value.departamento || '');
   data.append('coordenadas', formData.value.coordenadas || '');
   data.append('presupuesto', formData.value.presupuesto || 0);
   data.append('fecha_inicio', formData.value.fecha_inicio);
@@ -1765,6 +1914,11 @@ const submitForm = async () => {
   if (formData.value.convenios && formData.value.convenios.length > 0) {
     formData.value.convenios.forEach(file => {
       data.append('convenios[]', file);
+    });
+  }
+  if (formData.value.planos && formData.value.planos.length > 0) {
+    formData.value.planos.forEach(file => {
+      data.append('planos[]', file);
     });
   }
 
