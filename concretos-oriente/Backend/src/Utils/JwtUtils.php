@@ -46,7 +46,7 @@ class JwtUtils
         $validSignature = hash_hmac('sha256', $header . "." . $payload, self::$secret, true);
         $base64UrlSignature = self::base64UrlEncode($validSignature);
 
-        if ($base64UrlSignature === $signature) {
+        if (hash_equals($base64UrlSignature, $signature)) {
             return json_decode(self::base64UrlDecode($payload), true);
         }
 

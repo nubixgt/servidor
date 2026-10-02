@@ -13,6 +13,17 @@ class Router
 {
     private $controllers = [];
 
+    // Rutas accesibles sin sesión. Todo lo demás exige un JWT válido.
+    private const PUBLIC_ROUTES = [
+        'POST /login',
+    ];
+
+    // Módulos donde las escrituras exigen permiso de edición del módulo aunque
+    // el método no tenga #[Authorize] (gestión de usuarios y roles). Las
+    // lecturas quedan libres para usuarios con sesión: otras pantallas listan
+    // usuarios (p. ej. el selector de gerente en Proyectos).
+    private const PERMISSION_MODULES = ['users', 'roles'];
+
     public function registerController(string $controllerClass)
     {
         $this->controllers[] = $controllerClass;
@@ -61,11 +72,19 @@ class Router
                     if ($route->method === $method && preg_match($pattern, $uri, $matches)) {
                         array_shift($matches); // Remove full match
 
+                        // Autenticación obligatoria salvo rutas públicas
+                        if (!in_array($method . ' ' . $route->path, self::PUBLIC_ROUTES, true)) {
+                            $this->validateToken();
+                        }
+
                         // Handle Authorization (Roles and Granular Permissions)
                         $authAttrs = $methodRef->getAttributes(Authorize::class);
+                        $firstSegment = explode('/', trim($route->path, '/'))[0] ?? '';
                         if (!empty($authAttrs)) {
                             $auth = $authAttrs[0]->newInstance();
                             $this->checkPermissions($auth->roles, $method, $route->path);
+                        } elseif (in_array($firstSegment, self::PERMISSION_MODULES, true) && $method !== 'GET') {
+                            $this->checkPermissions([], $method, $route->path);
                         }
 
                         // Handle Privileges (Specific Capabilities)
@@ -172,6 +191,7 @@ class Router
             'viaticos' => 'viaticos',
             'contractors' => 'contractors',
             'users' => 'users',
+            'roles' => 'users',
         ];
 
         return $map[$first] ?? null;

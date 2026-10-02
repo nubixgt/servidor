@@ -20,8 +20,10 @@ const originalFetch = window.fetch;
 window.fetch = async (...args) => {
     let [resource, config] = args;
     const token = localStorage.getItem('token');
-    
-    if (token) {
+    const url = resource instanceof Request ? resource.url : String(resource);
+    const sameOrigin = new URL(url, window.location.href).origin === window.location.origin;
+
+    if (token && sameOrigin) {
         config = config || {};
         // Manejar tanto Headers object como un plain object
         if (config.headers instanceof Headers) {

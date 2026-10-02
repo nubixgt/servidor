@@ -77,6 +77,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// 3.1 Rechazar subidas de archivos ejecutables o que el navegador interpreta (anti-webshell / XSS)
+$blockedExt = '/\.(php\d*|phtml|phar|pht|phps|cgi|pl|py|sh|bash|exe|bat|cmd|js|mjs|html?|xhtml|shtml|svgz?|htaccess|htpasswd|ini|user\.ini)$/i';
+foreach ($_FILES as $file) {
+    $names = [];
+    if (is_array($file['name'] ?? null)) {
+        array_walk_recursive($file['name'], function ($n) use (&$names) { $names[] = (string)$n; });
+    } else {
+        $names[] = (string)($file['name'] ?? '');
+    }
+    foreach ($names as $name) {
+        if (preg_match($blockedExt, trim($name)) || strpos($name, "\0") !== false) {
+            http_response_code(400);
+            echo json_encode(["status" => "error", "message" => "Tipo de archivo no permitido."]);
+            exit;
+        }
+    }
+}
+
 // 4. Initialize Router
 $router = new Router();
 
