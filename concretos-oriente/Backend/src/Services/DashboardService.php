@@ -199,14 +199,18 @@ class DashboardService
 
     private function getRecentActivity(): array
     {
+        // Las tablas pueden tener collations distintas según el servidor; se
+        // normalizan los textos para que el UNION no falle (error 1271).
+        $txt = fn(string $col) => "CONVERT($col USING utf8mb4) COLLATE utf8mb4_unicode_ci";
+
         $sql = "SELECT * FROM (
-                    (SELECT 'income' as type, monto as amount, tipo_ingreso as label, pagador as who, proyecto_id, created_at as date FROM incomes)
+                    (SELECT {$txt("'income'")} as type, monto as amount, {$txt('tipo_ingreso')} as label, {$txt('pagador')} as who, proyecto_id, created_at as date FROM incomes)
                     UNION ALL
-                    (SELECT 'expense' as type, monto as amount, tipo_egreso as label, beneficiario as who, proyecto_id, created_at as date FROM expenses)
+                    (SELECT {$txt("'expense'")} as type, monto as amount, {$txt('tipo_egreso')} as label, {$txt('beneficiario')} as who, proyecto_id, created_at as date FROM expenses)
                     UNION ALL
-                    (SELECT 'project' as type, NULL as amount, estado as label, nombre as who, id as proyecto_id, COALESCE(updated_at, created_at) as date FROM projects)
+                    (SELECT {$txt("'project'")} as type, NULL as amount, {$txt('estado')} as label, {$txt('nombre')} as who, id as proyecto_id, COALESCE(updated_at, created_at) as date FROM projects)
                     UNION ALL
-                    (SELECT 'document' as type, NULL as amount, tipo_documento as label, nombre_documento as who, project_id as proyecto_id, created_at as date FROM digital_documents)
+                    (SELECT {$txt("'document'")} as type, NULL as amount, {$txt('tipo_documento')} as label, {$txt('nombre_documento')} as who, project_id as proyecto_id, created_at as date FROM digital_documents)
                 ) t
                 WHERE date IS NOT NULL
                 ORDER BY date DESC
