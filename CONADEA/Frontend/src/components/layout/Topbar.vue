@@ -19,9 +19,8 @@
       </button>
 
       <button class="chip-usuario" @click="emit('irA', 'perfil')">
-        <span class="avatar" :style="avatarStyle">
-          <img v-if="!store.config.datos" :src="avatarUrl" :alt="store.usuario?.nombre" class="avatar-img" />
-          <span v-else>{{ iniciales }}</span>
+        <span class="avatar">
+          <span>{{ iniciales }}</span>
         </span>
         <span>
           <b>{{ store.usuario?.nombre?.split(' ').slice(0, 2).join(' ') }}</b>
@@ -51,18 +50,6 @@ const iniciales = computed(() => {
   return store.usuario.nombre.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
 });
 
-const avatarUrl = computed(() => {
-  if (!store.usuario?.nombre) return '';
-  const isFemale = /ana|maria|garcia|sofia|lucia|laura|elena|claudia|garcía|maría/i.test(store.usuario.nombre);
-  return isFemale
-    ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
-    : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80';
-});
-
-const avatarStyle = computed(() => {
-  if (store.config.datos) return '';
-  return 'background: none;';
-});
 </script>
 
 <style scoped>
@@ -155,13 +142,6 @@ const avatarStyle = computed(() => {
   overflow: hidden;
 }
 
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
-}
 
 .chip-usuario b {
   display: block;

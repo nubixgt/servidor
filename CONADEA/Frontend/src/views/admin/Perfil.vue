@@ -6,8 +6,7 @@
     <div class="vidrio" style="margin-bottom:16px;">
       <div class="cab-perfil">
         <div class="avatar-grande">
-          <img v-if="!store.config.datos" :src="avatarUrl" :alt="store.usuario?.nombre" class="avatar-img" />
-          <span v-else>{{ iniciales }}</span>
+          <span>{{ iniciales }}</span>
         </div>
         <div>
           <h3>{{ store.usuario?.nombre }}</h3>
@@ -74,14 +73,6 @@ const iniciales = computed(() => {
   return store.usuario.nombre.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
 });
 
-const avatarUrl = computed(() => {
-  if (!store.usuario?.nombre) return '';
-  const isFemale = /ana|maria|garcia|sofia|lucia|laura|elena|claudia|garcía|maría/i.test(store.usuario.nombre);
-  return isFemale
-    ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
-    : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80';
-});
-
 // Estadísticas reales — mismas fórmulas que
 // app_conadea/lib/data/state/progreso_controller.dart. La racha sigue
 // siendo local: ningún backend la registra todavía (ni en la app ni acá).
@@ -128,7 +119,6 @@ async function cargarUbicacion() {
 <style scoped>
 .cab-perfil { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
 .avatar-grande { width: 82px; height: 82px; border-radius: 50%; flex: none; font-size: 1.9rem; font-weight: 800; color: #06281A; background: linear-gradient(135deg, var(--verde), #16A34A); display: flex; align-items: center; justify-content: center; border: 3px solid var(--oro); box-shadow: 0 4px 16px rgba(244,197,66,0.35); overflow: hidden; }
-.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 .cab-perfil h3 { font-size: 1.15rem; font-family: 'Outfit', sans-serif; font-weight: 700; }
 .cab-perfil p  { font-size: 0.82rem; color: var(--texto-suave); margin-top: 4px; line-height: 1.6; }
 .estadisticas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
