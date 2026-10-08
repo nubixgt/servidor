@@ -8,6 +8,7 @@ use App\Controllers\CursoController;
 use App\Controllers\ProgresoController;
 use App\Controllers\AsistenteController;
 use App\Controllers\RutaController;
+use App\Controllers\HorarioController;
 
 // Backend/api/v1/index.php
 
@@ -43,6 +44,7 @@ $router->registerController(CursoController::class);
 $router->registerController(ProgresoController::class);
 $router->registerController(AsistenteController::class);
 $router->registerController(RutaController::class);
+$router->registerController(HorarioController::class);
 // $router->registerController(YourController::class);
 
 

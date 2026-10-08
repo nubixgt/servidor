@@ -160,61 +160,6 @@ const List<Novedad> novedades = [
   ),
 ];
 
-/// Evento del calendario — equivalente a EVENTOS en Frontend/src/data/local.js.
-class EventoCalendario {
-  const EventoCalendario({
-    required this.dia,
-    required this.mes,
-    required this.titulo,
-    required this.hora,
-    required this.icono,
-  });
-
-  final int dia;
-  final String mes;
-  final String titulo;
-  final String hora;
-  final String icono;
-}
-
-const List<EventoCalendario> eventos = [
-  EventoCalendario(
-    dia: 10,
-    mes: 'JUN',
-    titulo: 'Webinar en vivo: Innovaciones en riego tecnificado',
-    hora: '10:00 a.m.',
-    icono: '💻',
-  ),
-  EventoCalendario(
-    dia: 12,
-    mes: 'JUN',
-    titulo: 'Cierre de inscripción: facilitadores digitales (2.ª cohorte)',
-    hora: '5:00 p.m.',
-    icono: '📝',
-  ),
-  EventoCalendario(
-    dia: 17,
-    mes: 'JUN',
-    titulo: 'Jornada de campo: sistemas silvopastoriles · TNC Guatemala',
-    hora: '8:00 a.m.',
-    icono: '🌳',
-  ),
-  EventoCalendario(
-    dia: 24,
-    mes: 'JUN',
-    titulo: 'Charla: precios y mercados de granos básicos',
-    hora: '3:00 p.m.',
-    icono: '📊',
-  ),
-  EventoCalendario(
-    dia: 30,
-    mes: 'JUN',
-    titulo: 'Entrega de reportes territoriales a CONADEA',
-    hora: 'Todo el día',
-    icono: '📑',
-  ),
-];
-
 /// Publicación de foro — equivalente a FOROS en Frontend/src/data/local.js.
 class PublicacionForo {
   const PublicacionForo({
