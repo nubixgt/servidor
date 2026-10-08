@@ -31,7 +31,7 @@
           <span v-if="aprobado(c.id)" class="listo">✓ Completado</span>
         </div>
         <div class="cuerpo-carta">
-          <h4>{{ c.titulo }}</h4>
+          <h4 :title="c.titulo">{{ c.titulo }}</h4>
           <p class="desc">{{ c.descripcion }}</p>
           <div class="pista" style="margin-bottom:6px;"><div class="pista-fill" :style="{ width: pctCurso(c) + '%' }"></div></div>
           <div class="meta-curso">
@@ -86,7 +86,7 @@ function portadaStyle(c) {
 .num { position: absolute; top: 10px; left: 12px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; background: rgba(0,0,0,0.55); padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
 .listo { position: absolute; top: 10px; right: 12px; font-size: 0.68rem; font-weight: 800; background: var(--oro); color: #3A2A00; padding: 4px 10px; border-radius: 20px; }
 .cuerpo-carta { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-.cuerpo-carta h4 { font-size: 1rem; font-family: 'Outfit', sans-serif; font-weight: 700; }
-.desc { font-size: 0.8rem; color: var(--texto-suave); line-height: 1.5; flex: 1; }
+.cuerpo-carta h4 { font-size: 1rem; font-family: 'Outfit', sans-serif; font-weight: 700; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.desc { font-size: 0.8rem; color: var(--texto-suave); line-height: 1.5; flex: 1; display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
 .meta-curso { display: flex; gap: 12px; font-size: 0.74rem; color: var(--texto-suave); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px; margin-top: 4px; flex-wrap: wrap; }
 </style>

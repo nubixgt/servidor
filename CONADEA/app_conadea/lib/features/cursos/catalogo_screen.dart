@@ -262,9 +262,9 @@ class _CursoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(curso.titulo, style: AppTextStyles.subtitulo(size: 15)),
+                  Text(curso.titulo, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.subtitulo(size: 15)),
                   const SizedBox(height: 6),
-                  Text(curso.descripcion, style: AppTextStyles.cuerpo(size: 12)),
+                  Text(curso.descripcion, maxLines: 4, overflow: TextOverflow.ellipsis, style: AppTextStyles.cuerpo(size: 12)),
                   const SizedBox(height: 10),
                   ProgressTrack(pct: pct),
                   const SizedBox(height: 10),
