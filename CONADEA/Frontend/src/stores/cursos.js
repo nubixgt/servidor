@@ -62,6 +62,17 @@ export const useCursosStore = defineStore('cursosReales', () => {
     }
   }
 
+  // Olvida lo cargado (cursos y progreso). Se llama al cerrar e iniciar
+  // sesión: esta store vive mientras la pestaña esté abierta, así que sin
+  // esto el siguiente usuario vería (y no guardaría) el avance del anterior.
+  function reiniciar() {
+    cursos.value = [];
+    progreso.value = {};
+    cargado.value = false;
+    cargando.value = false;
+    error.value = '';
+  }
+
   function progresoDe(cursoId) {
     return progreso.value[cursoId] || { leccionesCompletadas: new Set(), aprobado: false, nota: null, fechaAprobado: null };
   }
@@ -127,7 +138,7 @@ export const useCursosStore = defineStore('cursosReales', () => {
   }
 
   return {
-    cursos, cargando, cargado, error, cargar,
+    cursos, cargando, cargado, error, cargar, reiniciar,
     progresoDe, pctCurso, aprobado, enProgreso, todasLeccionesHechas,
     completarLeccion
   };

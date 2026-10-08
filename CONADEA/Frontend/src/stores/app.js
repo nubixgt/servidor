@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { MODULOS, INSIGNIAS } from '../data/local.js';
+import { useCursosStore } from './cursos.js';
 import authService from '../services/authService.js';
 
 /**
@@ -186,6 +187,7 @@ export const useAppStore = defineStore('app', () => {
       const u = data.data.usuario;
 
       localStorage.setItem('token', data.data.token);
+      useCursosStore().reiniciar();
 
       usuario.value = {
         id: u.id,
@@ -228,6 +230,7 @@ export const useAppStore = defineStore('app', () => {
     guardar();
     localStorage.removeItem('token');
     localStorage.removeItem('conadea_usuario');
+    useCursosStore().reiniciar();
     usuario.value    = null;
     prog.value       = {};
     insignias.value  = [];
