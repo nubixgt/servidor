@@ -550,7 +550,7 @@ INSERT INTO `fuel_records` (`id`, `fecha`, `piloto_id`, `placa`, `tipo_unidad`, 
 CREATE TABLE `heavy_transport` (
   `id` int(11) UNSIGNED NOT NULL,
   `placa` varchar(20) NOT NULL,
-  `tipo_transporte` enum('Volteo','Pipa','Trailer Concreto') NOT NULL,
+  `tipo_transporte` varchar(50) NOT NULL,
   `tipo_seguro` enum('Full Cover','Danos a Terceros') DEFAULT NULL,
   `ubicacion` varchar(150) DEFAULT NULL,
   `estado` enum('Nuevo','En Funcionamiento','Inactivo') NOT NULL,
