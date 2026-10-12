@@ -13,3 +13,15 @@
 
 ALTER TABLE `heavy_transport`
   MODIFY `tipo_transporte` VARCHAR(50) NOT NULL;
+
+-- ----------------------------------------------------------------------------
+-- Mismo problema en `estado` y `tipo_seguro`:
+--   estado      ENUM('Nuevo','En Funcionamiento','Inactivo') pero el formulario
+--               y el backend usan 'Activo' / 'Inactivo' (commit bafadb45).
+--   tipo_seguro ENUM('Full Cover','Danos a Terceros') pero el formulario
+--               también ofrece 'Responsabilidad Civil'.
+-- ----------------------------------------------------------------------------
+
+ALTER TABLE `heavy_transport`
+  MODIFY `estado` VARCHAR(30) NOT NULL DEFAULT 'Activo',
+  MODIFY `tipo_seguro` VARCHAR(50) NULL DEFAULT NULL;
