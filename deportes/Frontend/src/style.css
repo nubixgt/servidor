@@ -612,3 +612,12 @@ input[type=color]{height:42px;padding:4px}
   .football-backdrop img{transition:none}
   .football-story:hover .football-backdrop img{transform:none}
 }
+
+/* Paginación de las tablas del panel */
+.pagination{justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:16px;display:flex}
+.pagination-pages{align-items:center;gap:6px;display:flex}
+.pagination-pages button:not(.icon-btn){color:#9bac9f;background:0 0;border:1px solid #2b3831;border-radius:5px;min-width:34px;height:34px;padding:0 8px;font-size:12px}
+.pagination-pages button:not(.icon-btn):hover{border-color:var(--lime);color:#fff}
+.pagination-pages button.active{color:#15220a;background:var(--lime);border-color:var(--lime);font-weight:750}
+.pagination-pages .icon-btn:disabled{opacity:.35;cursor:not-allowed}
+.pagination-gap{color:#6c7a70;padding:0 2px}

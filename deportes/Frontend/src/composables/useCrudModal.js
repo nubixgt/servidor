@@ -1,19 +1,17 @@
 import { ref } from 'vue'
+import { alertaError, confirmarEliminar, toastExito } from '../utils/alertas'
 
-// Estado común de las pantallas de administración: modal (formulario / eliminar / eventos),
-// aviso de éxito y errores. `guardar`/`eliminar` reciben la función que llama a useAdminData.
+// Estado común de las pantallas del panel: modal (formulario / baja / eventos) y avisos con SweetAlert.
+// Los errores de validación por campo (`campos`) se siguen mostrando bajo cada input del formulario.
 export function useCrudModal() {
-  const modo = ref(null) // null | 'form' | 'delete' | 'events'
+  const modo = ref(null) // null | 'form' | 'baja' | 'events'
   const item = ref(null)
   const ocupado = ref(false)
-  const error = ref('')
   const campos = ref({})
-  const aviso = ref('')
 
   function abrir(nuevoModo, registro = null) {
     item.value = registro ? { ...registro } : null
     modo.value = nuevoModo
-    error.value = ''
     campos.value = {}
   }
 
@@ -21,25 +19,39 @@ export function useCrudModal() {
     if (ocupado.value) return
     modo.value = null
     item.value = null
-    error.value = ''
   }
 
-  async function ejecutar(accion, mensaje) {
+  // Ejecuta una acción del API: éxito -> aviso y se cierra el modal; error -> alerta con el motivo.
+  async function ejecutar(accion, mensaje, tituloError = 'No se pudo guardar') {
     ocupado.value = true
-    error.value = ''
     campos.value = {}
     try {
       await accion()
       modo.value = null
       item.value = null
-      aviso.value = mensaje
+      toastExito(mensaje)
     } catch (e) {
-      error.value = e.message
       campos.value = e.fields || {}
+      await alertaError(tituloError, e.message)
     } finally {
       ocupado.value = false
     }
   }
 
-  return { modo, item, ocupado, error, campos, aviso, abrir, cerrar, ejecutar }
+  // Pregunta con SweetAlert antes de eliminar y avisa el resultado.
+  async function eliminar({ title, text, accion, mensaje }) {
+    const { isConfirmed } = await confirmarEliminar({ title, text })
+    if (!isConfirmed) return
+    ocupado.value = true
+    try {
+      await accion()
+      toastExito(mensaje)
+    } catch (e) {
+      await alertaError('No se pudo eliminar', e.message)
+    } finally {
+      ocupado.value = false
+    }
+  }
+
+  return { modo, item, ocupado, campos, abrir, cerrar, ejecutar, eliminar }
 }

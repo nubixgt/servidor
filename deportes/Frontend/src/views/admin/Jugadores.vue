@@ -6,9 +6,10 @@ import { useAuth } from '../../composables/useAuth'
 import { useAdminData } from '../../composables/useAdminData'
 import { useCrudModal } from '../../composables/useCrudModal'
 import { imgUrl } from '../../services/api'
+import Paginacion from '../../components/admin/Paginacion.vue'
+import { usePaginacion } from '../../composables/usePaginacion'
 import AdminHeading from '../../components/admin/AdminHeading.vue'
 import ModalDialog from '../../components/admin/ModalDialog.vue'
-import ConfirmDelete from '../../components/admin/ConfirmDelete.vue'
 import PlayerForm from '../../components/admin/PlayerForm.vue'
 
 // Lo usan el admin (todos los equipos) y el encargado (el servidor ya devuelve solo su equipo).
@@ -33,6 +34,16 @@ const filas = computed(() =>
   )
 )
 
+const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda, equipo, estado] })
+
+const eliminar = (j) =>
+  m.eliminar({
+    title: `¿Eliminar a ${j.full_name}?`,
+    text: 'Esta acción no se puede deshacer.',
+    accion: () => admin.eliminarJugador(j.id),
+    mensaje: 'Jugador eliminado.',
+  })
+
 function abrirBaja(j) {
   razon.value = ''
   m.abrir('baja', j)
@@ -42,7 +53,6 @@ function abrirBaja(j) {
 <template>
   <div class="page-enter">
     <AdminHeading :title="esAdmin ? 'Jugadores' : 'Mis jugadores'" add-label="Añadir jugador" @add="m.abrir('form')" />
-    <p v-if="m.aviso.value" class="notice" role="status">{{ m.aviso.value }}</p>
 
     <div class="filter-bar">
       <label class="search-field">Buscar en jugadores<input v-model="busqueda" type="search" placeholder="Escribe un nombre…" /></label>
@@ -59,7 +69,7 @@ function abrirBaja(j) {
       <table class="data-table">
         <thead><tr><th>Jugador</th><th v-if="esAdmin" class="hide-mobile">Equipo</th><th>Posición</th><th>Dorsal</th><th>Acciones</th></tr></thead>
         <tbody>
-          <tr v-for="j in filas" :key="j.id">
+          <tr v-for="j in pag.visibles.value" :key="j.id">
             <td>
               <span class="table-person">
                 <img v-if="j.photo_url" :src="imgUrl(j.photo_url)" alt="" loading="lazy" />
@@ -74,7 +84,7 @@ function abrirBaja(j) {
                 <button class="icon-btn" :aria-label="'Editar ' + j.full_name" title="Editar" @click="m.abrir('form', j)"><PencilIcon :size="14" /></button>
                 <button v-if="j.status === 'activo'" class="icon-btn" :aria-label="'Dar de baja a ' + j.full_name" title="Dar de baja" @click="abrirBaja(j)"><UserMinusIcon :size="14" /></button>
                 <button v-else class="icon-btn" :aria-label="'Reactivar a ' + j.full_name" title="Reactivar" @click="m.ejecutar(() => admin.altaJugador(j.id), 'Jugador reactivado.')"><UserCheckIcon :size="14" /></button>
-                <button v-if="esAdmin" class="icon-btn" :aria-label="'Eliminar ' + j.full_name" title="Eliminar" @click="m.abrir('delete', j)"><Trash2Icon :size="14" /></button>
+                <button v-if="esAdmin" class="icon-btn" :aria-label="'Eliminar ' + j.full_name" title="Eliminar" @click="eliminar(j)"><Trash2Icon :size="14" /></button>
               </div>
             </td>
           </tr>
@@ -82,9 +92,9 @@ function abrirBaja(j) {
         </tbody>
       </table>
     </div>
+    <Paginacion v-model:pagina="pag.pagina.value" :total-paginas="pag.totalPaginas.value" :desde="pag.desde.value" :hasta="pag.hasta.value" :total="pag.total.value" />
 
     <ModalDialog v-if="m.modo.value === 'form'" :title="m.item.value ? 'Editar jugador' : 'Añadir jugador'" :busy="m.ocupado.value" @close="m.cerrar">
-      <p v-if="m.error.value" class="error-text" role="alert">{{ m.error.value }}</p>
       <PlayerForm
         :player="m.item.value"
         :teams="state.teams"
@@ -97,7 +107,6 @@ function abrirBaja(j) {
     </ModalDialog>
 
     <ModalDialog v-if="m.modo.value === 'baja'" title="Dar de baja al jugador" :busy="m.ocupado.value" @close="m.cerrar">
-      <p v-if="m.error.value" class="error-text" role="alert">{{ m.error.value }}</p>
       <form @submit.prevent="m.ejecutar(() => admin.bajaJugador(m.item.value.id, razon), 'Jugador dado de baja.')">
         <p class="confirm-copy">{{ m.item.value.full_name }} dejará de aparecer entre los jugadores activos. Puedes reactivarlo después.</p>
         <label>Motivo de la baja<input v-model.trim="razon" required minlength="3" maxlength="500" placeholder="Ej.: lesión, cambio de ciudad…" /></label>
@@ -108,14 +117,5 @@ function abrirBaja(j) {
       </form>
     </ModalDialog>
 
-    <ModalDialog v-if="m.modo.value === 'delete'" title="Confirmar eliminación" :busy="m.ocupado.value" @close="m.cerrar">
-      <ConfirmDelete
-        :texto="`¿Eliminar ${m.item.value.full_name}? Esta acción no se puede deshacer.`"
-        :busy="m.ocupado.value"
-        :error="m.error.value"
-        @cancelar="m.cerrar"
-        @confirmar="m.ejecutar(() => admin.eliminarJugador(m.item.value.id), 'Jugador eliminado.')"
-      />
-    </ModalDialog>
   </div>
 </template>

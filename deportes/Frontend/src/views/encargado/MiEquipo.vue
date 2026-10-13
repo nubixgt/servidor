@@ -38,7 +38,6 @@ const datos = computed(() => [
     <AdminHeading title="Mi equipo">
       <template #actions><button class="btn btn-primary" @click="m.abrir('form', equipo)"><PencilIcon :size="16" />Editar equipo</button></template>
     </AdminHeading>
-    <p v-if="m.aviso.value" class="notice" role="status">{{ m.aviso.value }}</p>
 
     <section class="profile-header" :style="{ '--team-color': equipo.primary_color }">
       <TeamBadge :team="equipo" :size="110" />
@@ -59,7 +58,6 @@ const datos = computed(() => [
     </div>
 
     <ModalDialog v-if="m.modo.value === 'form'" title="Editar mi equipo" :busy="m.ocupado.value" @close="m.cerrar">
-      <p v-if="m.error.value" class="error-text" role="alert">{{ m.error.value }}</p>
       <TeamForm
         :team="m.item.value"
         restringido

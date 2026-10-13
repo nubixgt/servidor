@@ -6,9 +6,10 @@ import { useAuth } from '../../composables/useAuth'
 import { useAdminData } from '../../composables/useAdminData'
 import { useCrudModal } from '../../composables/useCrudModal'
 import { STATUS_LABEL, formatFecha } from '../../utils/pulseFormat'
+import Paginacion from '../../components/admin/Paginacion.vue'
+import { usePaginacion } from '../../composables/usePaginacion'
 import AdminHeading from '../../components/admin/AdminHeading.vue'
 import ModalDialog from '../../components/admin/ModalDialog.vue'
-import ConfirmDelete from '../../components/admin/ConfirmDelete.vue'
 import MatchForm from '../../components/admin/MatchForm.vue'
 import EventEditor from '../../components/admin/EventEditor.vue'
 
@@ -22,13 +23,22 @@ const busqueda = ref('')
 const filas = computed(() =>
   state.matches.filter((p) => `${p.home_name} ${p.away_name}`.toLowerCase().includes(busqueda.value.toLowerCase()))
 )
+const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
+
+const eliminar = (p) =>
+  m.eliminar({
+    title: `¿Eliminar ${p.home_short} vs ${p.away_short}?`,
+    text: 'Se eliminarán también sus eventos y se recalcularán las estadísticas. Esta acción no se puede deshacer.',
+    accion: () => admin.eliminarPartido(p.id),
+    mensaje: 'Partido eliminado.',
+  })
+
 const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : ${p.away_score}`)
 </script>
 
 <template>
   <div class="page-enter">
     <AdminHeading :title="esAdmin ? 'Partidos' : 'Mis partidos'" add-label="Añadir partido" @add="m.abrir('form')" />
-    <p v-if="m.aviso.value" class="notice" role="status">{{ m.aviso.value }}</p>
 
     <div class="filter-bar">
       <label class="search-field">Buscar en partidos<input v-model="busqueda" type="search" placeholder="Escribe un equipo…" /></label>
@@ -39,7 +49,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
       <table class="data-table">
         <thead><tr><th>Encuentro</th><th>Fecha / estado</th><th>Marcador</th><th>Acciones</th></tr></thead>
         <tbody>
-          <tr v-for="p in filas" :key="p.id">
+          <tr v-for="p in pag.visibles.value" :key="p.id">
             <td>
               <b>{{ p.home_short }} vs {{ p.away_short }}</b><small class="block muted mt-1">Jornada {{ p.round_number }}</small>
             </td>
@@ -49,7 +59,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
               <div class="admin-tools">
                 <button class="icon-btn" title="Eventos del partido" aria-label="Gestionar eventos del partido" @click="m.abrir('events', p)"><ListVideoIcon :size="15" /></button>
                 <button class="icon-btn" :aria-label="`Editar ${p.home_short} vs ${p.away_short}`" title="Editar" @click="m.abrir('form', p)"><PencilIcon :size="14" /></button>
-                <button v-if="esAdmin" class="icon-btn" :aria-label="`Eliminar ${p.home_short} vs ${p.away_short}`" title="Eliminar" @click="m.abrir('delete', p)"><Trash2Icon :size="14" /></button>
+                <button v-if="esAdmin" class="icon-btn" :aria-label="`Eliminar ${p.home_short} vs ${p.away_short}`" title="Eliminar" @click="eliminar(p)"><Trash2Icon :size="14" /></button>
               </div>
             </td>
           </tr>
@@ -57,9 +67,9 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
         </tbody>
       </table>
     </div>
+    <Paginacion v-model:pagina="pag.pagina.value" :total-paginas="pag.totalPaginas.value" :desde="pag.desde.value" :hasta="pag.hasta.value" :total="pag.total.value" />
 
     <ModalDialog v-if="m.modo.value === 'form'" :title="m.item.value ? 'Editar partido' : 'Añadir partido'" :busy="m.ocupado.value" @close="m.cerrar">
-      <p v-if="m.error.value" class="error-text" role="alert">{{ m.error.value }}</p>
       <MatchForm
         :match="m.item.value"
         :teams="state.teams"
@@ -75,15 +85,5 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
       <EventEditor :match="m.item.value" @busy="m.ocupado.value = $event" />
     </ModalDialog>
 
-    <ModalDialog v-if="m.modo.value === 'delete'" title="Confirmar eliminación" :busy="m.ocupado.value" @close="m.cerrar">
-      <ConfirmDelete
-        :texto="`¿Eliminar ${m.item.value.home_short} vs ${m.item.value.away_short}? Esta acción no se puede deshacer.`"
-        extra="Se eliminarán también sus eventos y se recalcularán las estadísticas."
-        :busy="m.ocupado.value"
-        :error="m.error.value"
-        @cancelar="m.cerrar"
-        @confirmar="m.ejecutar(() => admin.eliminarPartido(m.item.value.id), 'Partido eliminado.')"
-      />
-    </ModalDialog>
   </div>
 </template>

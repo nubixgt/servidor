@@ -5,6 +5,7 @@ import { usePanel } from '../../composables/usePanel'
 import { useAdminData } from '../../composables/useAdminData'
 import { panelApi } from '../../services/panelApi'
 import { EVENT_LABEL } from '../../utils/pulseFormat'
+import { alertaError, confirmarEliminar, toastExito } from '../../utils/alertas'
 
 const props = defineProps({ match: { type: Object, required: true } })
 const emit = defineEmits(['busy'])
@@ -15,10 +16,7 @@ const admin = useAdminData()
 const eventos = ref([])
 const jugadores = ref([])
 const cargando = ref(true)
-const error = ref('')
-const aviso = ref('')
 const ocupado = ref(false)
-const confirmando = ref(null)
 const editando = ref(null)
 const form = reactive({ player_id: '', assist_player_id: '', type: 'goal', minute: 1 })
 
@@ -37,7 +35,7 @@ onMounted(async () => {
   try {
     ;[jugadores.value] = await Promise.all([panelApi.jugadoresDePartido(props.match.id), recargar()])
   } catch (e) {
-    error.value = e.message
+    alertaError('No se pudieron cargar los eventos', e.message)
   } finally {
     cargando.value = false
   }
@@ -49,24 +47,20 @@ function limpiar() {
 }
 
 function editar(e) {
-  confirmando.value = null
   editando.value = e.id
   Object.assign(form, { player_id: +e.player_id, assist_player_id: e.assist_player_id ? +e.assist_player_id : '', type: e.type, minute: +e.minute })
 }
 
-async function ejecutar(accion, mensaje) {
+async function ejecutar(accion, mensaje, tituloError = 'No se pudo guardar el evento') {
   ocupado.value = true
   emit('busy', true)
-  error.value = ''
-  aviso.value = ''
   try {
     await accion()
     await recargar()
     limpiar()
-    confirmando.value = null
-    aviso.value = mensaje
+    toastExito(mensaje)
   } catch (e) {
-    error.value = e.message
+    await alertaError(tituloError, e.message)
   } finally {
     ocupado.value = false
     emit('busy', false)
@@ -84,7 +78,13 @@ const guardar = () =>
     'Evento guardado. Marcador y estadísticas actualizados.'
   )
 
-const eliminar = (id) => ejecutar(() => admin.eliminarEvento(props.match.id, id), 'Evento eliminado. Estadísticas actualizadas.')
+async function eliminar(e) {
+  const { isConfirmed } = await confirmarEliminar({
+    title: '¿Eliminar este evento?',
+    text: `${EVENT_LABEL[e.type]} de ${e.player_name} (min. ${e.minute}). Las estadísticas se recalculan.`,
+  })
+  if (isConfirmed) await ejecutar(() => admin.eliminarEvento(props.match.id, e.id), 'Evento eliminado.', 'No se pudo eliminar el evento')
+}
 </script>
 
 <template>
@@ -95,8 +95,6 @@ const eliminar = (id) => ejecutar(() => admin.eliminarEvento(props.match.id, id)
     </div>
 
     <p v-if="actual.status === 'scheduled'" class="notice info">Edita el partido y cambia su estado a «En juego» para registrar eventos.</p>
-    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
-    <p v-if="aviso" class="notice" role="status">{{ aviso }}</p>
 
     <form v-if="actual.status !== 'scheduled'" @submit.prevent="guardar">
       <h3>{{ editando ? 'Corregir evento' : 'Registrar evento' }}</h3>
@@ -138,13 +136,9 @@ const eliminar = (id) => ejecutar(() => admin.eliminarEvento(props.match.id, id)
               <p v-if="e.assist_name" class="muted small">Asistencia: {{ e.assist_name }}</p>
             </td>
             <td>
-              <div v-if="confirmando === e.id" class="admin-tools">
-                <button class="text-link" :disabled="ocupado" @click="eliminar(e.id)">Confirmar eliminación</button>
-                <button class="text-link" :disabled="ocupado" @click="confirmando = null">Cancelar</button>
-              </div>
-              <div v-else class="admin-tools">
+              <div class="admin-tools">
                 <button class="icon-btn" :disabled="ocupado" :aria-label="'Editar evento de ' + e.player_name" @click="editar(e)"><PencilIcon :size="14" /></button>
-                <button class="icon-btn" :disabled="ocupado" :aria-label="'Eliminar evento de ' + e.player_name" @click="confirmando = e.id"><Trash2Icon :size="14" /></button>
+                <button class="icon-btn" :disabled="ocupado" :aria-label="'Eliminar evento de ' + e.player_name" @click="eliminar(e)"><Trash2Icon :size="14" /></button>
               </div>
             </td>
           </tr>
