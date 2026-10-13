@@ -129,7 +129,7 @@ img{max-width:100%;display:block}
 .card-stats span+span{border-left:1px solid #394034}
 .card-stats b{color:#e6eedf;letter-spacing:-.03em;margin-bottom:2px;font-size:21px;font-weight:700;display:block}
 .card-bottom{color:#a8b5a5;justify-content:space-between;align-items:center;margin-top:10px;font-size:8px;display:flex}
-.standings-layout{grid-template-columns:1fr 2fr;align-items:center;gap:45px;display:grid}
+.standings-layout{grid-template-columns:1fr 2fr;align-items:start;gap:45px;display:grid}
 .section-side .eyebrow{margin-bottom:12px}
 .section-side p.muted{margin:18px 0;font-size:12px;line-height:1.8}
 .section-side .btn{padding:11px 14px;font-size:10px}
@@ -654,3 +654,7 @@ input[type=color]{height:42px;padding:4px}
 .detalle-fotos figure{text-align:center;margin:0}
 .detalle-fotos img{object-fit:cover;border-radius:12px;width:110px;height:130px;display:block}
 .detalle-fotos figcaption{color:#8fa095;margin-top:6px;font-size:11px}
+
+/* Paginación dentro de un panel (inicio y estadísticas) */
+.panel + .pagination,.panel .pagination{margin-top:0}
+.panel > .table-scroll + .pagination{padding:12px 16px;border-top:1px solid var(--line)}

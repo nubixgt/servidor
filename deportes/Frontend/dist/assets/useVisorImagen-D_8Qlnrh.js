@@ -1,0 +1,1 @@
+import{n as e}from"./api-CPRIrfCI.js";import{O as t}from"./runtime-core.esm-bundler-BW8xg50l.js";var n=t({abierta:!1,url:``,titulo:``});function r(){return{visor:n,verFoto:(t,r=``)=>{t&&Object.assign(n,{abierta:!0,url:e(t),titulo:r})},cerrarVisor:()=>n.abierta=!1}}export{r as t};

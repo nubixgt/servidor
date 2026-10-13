@@ -126,7 +126,7 @@ const lider = computed(() => state.standings[0])
         <p class="muted">Una liga. Una pasión.<br />Así se mueve la clasificación.</p>
         <RouterLink to="/estadisticas" class="btn btn-secondary">Estadísticas completas <ArrowUpRightIcon :size="18" /></RouterLink>
       </div>
-      <div class="panel"><StandingsTable :rows="state.standings" compact /></div>
+      <div class="panel"><StandingsTable :rows="state.standings" compact :page-size="10" /></div>
     </section>
 
     <div class="end-banner football-finale">

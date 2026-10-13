@@ -55,8 +55,8 @@ const records = computed(() => [
     </div>
 
     <div class="panel">
-      <StandingsTable v-if="tab === 'standings'" :rows="state.standings" />
-      <ScorersTable v-else :players="state.players" :metric="tab" />
+      <StandingsTable v-if="tab === 'standings'" :rows="state.standings" :page-size="20" />
+      <ScorersTable v-else :players="state.players" :metric="tab" :page-size="20" />
     </div>
     <p class="small muted mt-5">
       Solo partidos finalizados. Victoria: 3 pts · Empate: 1 pt. Desempate: puntos → DG → GF → nombre (orden provisional si persiste la igualdad).
