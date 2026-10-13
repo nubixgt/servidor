@@ -120,6 +120,7 @@ jobs:
             --exclude 'VISAN_SYS/storage/' \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
+            --exclude '**/config.local.php' \
             --exclude '**/node_modules/' \
             --exclude '.git/' \
             --exclude '.github/' \
