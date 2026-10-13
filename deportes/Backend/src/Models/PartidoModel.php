@@ -96,6 +96,11 @@ class PartidoModel {
         return $stmt->fetchAll();
     }
 
+    // Todos los eventos de la liga (para el sitio público).
+    public static function todosEventos() {
+        return Database::connection()->query(self::selectEventos() . ' ORDER BY ev.partido_id, ev.minuto, ev.id')->fetchAll();
+    }
+
     public static function eventoPorId($id) {
         $stmt = Database::connection()->prepare(self::selectEventos() . ' WHERE ev.id = ?');
         $stmt->execute([$id]);

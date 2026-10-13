@@ -1,13 +1,10 @@
 import { reactive } from 'vue'
-import { league, teams, players, matches, events } from '../data/pulseMock'
+import api from '../services/api'
 
-// Fuente de datos del sitio público: por ahora datos de ejemplo (el público se conecta al API en la etapa 3).
-// Cuando exista, solo cambia `cargarFuente()`; las vistas leen siempre `state`.
-function cargarFuente() {
-  return { league, teams, players, matches, events }
-}
+// Datos del sitio público: API de solo lectura (/api/public/overview), sin datos privados.
 
 const edad = (fechaNacimiento, hoy = new Date()) => {
+  if (!fechaNacimiento) return null
   const [y, m, d] = fechaNacimiento.split('-').map(Number)
   const mes = hoy.getUTCMonth() + 1
   const cumplio = mes > m || (mes === m && hoy.getUTCDate() >= d)
@@ -15,7 +12,7 @@ const edad = (fechaNacimiento, hoy = new Date()) => {
 }
 
 // Construye partidos con marcador, jugadores con estadísticas y tabla de posiciones.
-export function construirOverview(raw) {
+function construirOverview(raw) {
   const equipo = (id) => raw.teams.find((t) => +t.id === +id)
   const esGol = (e) => e.type === 'goal' || e.type === 'own_goal'
 
@@ -91,27 +88,17 @@ export function construirOverview(raw) {
     })
     .sort((a, b) => b.points - a.points || b.goal_difference - a.goal_difference || b.goals_for - a.goals_for || a.name.localeCompare(b.name))
 
-  return { league: raw.league, teams: raw.teams, players: jugadores, matches: partidos, standings: posiciones }
+  return { league: raw.league, teams: raw.teams, players: jugadores, matches: partidos, standings: posiciones, events: raw.events }
 }
 
-// Eventos de un partido con nombres resueltos, ordenados por minuto.
-export function eventosDePartido(matchId) {
-  const raw = cargarFuente()
-  const nombre = (id) => raw.players.find((j) => +j.id === +id)?.full_name
-  return raw.events
-    .filter((e) => +e.match_id === +matchId)
-    .map((e) => ({
-      ...e,
-      player_name: nombre(e.player_id),
-      assist_name: nombre(e.assist_player_id),
-      team_name: raw.teams.find((t) => +t.id === +e.team_id)?.name,
-    }))
-    .sort((a, b) => a.minute - b.minute)
+// Eventos de un partido (el API ya trae los nombres), ordenados por minuto.
+function eventosDePartido(matchId) {
+  return state.events.filter((e) => +e.match_id === +matchId).sort((a, b) => a.minute - b.minute || a.id - b.id)
 }
 
 const state = reactive({
   league: { name: 'LIGA PULSE', season: '' },
-  teams: [], players: [], matches: [], standings: [],
+  teams: [], players: [], matches: [], standings: [], events: [],
   loading: false, error: '', loaded: false,
 })
 
@@ -119,9 +106,10 @@ async function load() {
   state.loading = true
   state.error = ''
   try {
-    Object.assign(state, construirOverview(cargarFuente()), { loaded: true })
+    const { data } = await api.get('/public/overview')
+    Object.assign(state, construirOverview(data), { loaded: true })
   } catch (e) {
-    state.error = e.message
+    state.error = e.response ? 'El servidor no pudo entregar los datos de la liga.' : 'No se pudo conectar con el servidor.'
   } finally {
     state.loading = false
   }

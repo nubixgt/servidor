@@ -23,6 +23,9 @@ use Core\Router;
 
 $router = new Router();
 
+// Público (sin sesión, solo lectura)
+$router->add('GET', '/api/public/overview', 'PublicController', 'overview');
+
 // Sesión
 $router->add('POST', '/api/login', 'AuthController', 'login');
 $router->add('GET', '/api/me', 'AuthController', 'me');

@@ -35,7 +35,7 @@ const ranking = computed(() =>
           <td>
             <RouterLink class="table-person" :to="`/jugadores/${p.id}`">
               <img v-if="p.photo_url" :src="imgUrl(p.photo_url)" alt="" />
-              <span>{{ p.full_name }}<small>{{ p.position }} · #{{ p.jersey_number }}</small></span>
+              <span>{{ p.full_name }}<small>{{ [p.position, p.jersey_number ? '#' + p.jersey_number : ''].filter(Boolean).join(' · ') }}</small></span>
             </RouterLink>
           </td>
           <td class="hide-mobile muted">{{ p.team_name }}</td>

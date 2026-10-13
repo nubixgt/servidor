@@ -24,7 +24,7 @@ const resumen = [
     <section class="player-profile">
       <PlayerCard :player="jugador" featured />
       <div class="profile-details">
-        <p class="eyebrow">{{ jugador.position }} · DORSAL {{ jugador.jersey_number }}</p>
+        <p class="eyebrow">{{ [jugador.position, jugador.jersey_number ? 'DORSAL ' + jugador.jersey_number : ''].filter(Boolean).join(' · ') || 'JUGADOR' }}</p>
         <h1>{{ jugador.full_name }}<span class="lime">.</span></h1>
         <RouterLink class="text-link" :to="`/equipos/${jugador.team_id}`">{{ jugador.team_name }} ↗</RouterLink>
 
@@ -36,12 +36,12 @@ const resumen = [
         </div>
 
         <dl class="bio-grid">
-          <div><dt>Nacionalidad</dt><dd>{{ jugador.nationality }}</dd></div>
-          <div><dt>Edad</dt><dd>{{ jugador.age }} años</dd></div>
-          <div><dt>Nacimiento</dt><dd>{{ jugador.birth_date.split('-').reverse().join('/') }}</dd></div>
-          <div><dt>Altura</dt><dd>{{ jugador.height_cm }} cm</dd></div>
-          <div><dt>Peso</dt><dd>{{ jugador.weight_kg }} kg</dd></div>
-          <div><dt>Pie hábil</dt><dd>{{ jugador.preferred_foot }}</dd></div>
+          <div><dt>Nacionalidad</dt><dd>{{ jugador.nationality || '—' }}</dd></div>
+          <div><dt>Edad</dt><dd>{{ jugador.age != null ? jugador.age + ' años' : '—' }}</dd></div>
+          <div><dt>Nacimiento</dt><dd>{{ jugador.birth_date ? jugador.birth_date.split('-').reverse().join('/') : '—' }}</dd></div>
+          <div><dt>Altura</dt><dd>{{ jugador.height_cm ? jugador.height_cm + ' cm' : '—' }}</dd></div>
+          <div><dt>Peso</dt><dd>{{ jugador.weight_kg ? jugador.weight_kg + ' kg' : '—' }}</dd></div>
+          <div><dt>Pie hábil</dt><dd>{{ jugador.preferred_foot || '—' }}</dd></div>
         </dl>
         <p class="muted small">Estadísticas oficiales de partidos finalizados en {{ state.league.season }}.</p>
       </div>

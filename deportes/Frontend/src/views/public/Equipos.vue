@@ -9,7 +9,7 @@ const { state } = usePulse()
 const busqueda = ref('')
 
 const equipos = computed(() =>
-  state.teams.filter((t) => `${t.name} ${t.city}`.toLowerCase().includes(busqueda.value.toLowerCase()))
+  state.teams.filter((t) => `${t.name} ${t.city || ''}`.toLowerCase().includes(busqueda.value.toLowerCase()))
 )
 const jugadoresDe = (id) => state.players.filter((j) => +j.team_id === +id).length
 const puntosDe = (id) => state.standings.find((f) => +f.team_id === +id)?.points || 0
@@ -34,13 +34,13 @@ const puntosDe = (id) => state.standings.find((f) => +f.team_id === +id)?.points
 
     <div class="team-grid">
       <RouterLink v-for="t in equipos" :key="t.id" :to="`/equipos/${t.id}`" class="club-card" :style="{ '--team-color': t.primary_color }">
-        <div class="club-top"><span>EST. {{ t.founded_year }}</span><ArrowUpRightIcon :size="22" /></div>
+        <div class="club-top"><span>{{ t.founded_year ? 'EST. ' + t.founded_year : 'EQUIPO' }}</span><ArrowUpRightIcon :size="22" /></div>
         <div class="club-emblem">
           <span>{{ t.short_name }}</span>
           <TeamBadge :team="t" :size="112" />
         </div>
         <h2>{{ t.name }}</h2>
-        <p class="inline-row muted"><MapPinIcon :size="14" />{{ t.city }}</p>
+        <p v-if="t.city" class="inline-row muted"><MapPinIcon :size="14" />{{ t.city }}</p>
         <div class="club-bottom">
           <span>{{ jugadoresDe(t.id) }} jugadores</span>
           <span>{{ puntosDe(t.id) }} puntos</span>

@@ -22,9 +22,9 @@ class JugadorModel {
             'height_cm' => $j['estatura_cm'] === null ? null : (int)$j['estatura_cm'],
             'weight_kg' => $j['peso_kg'] === null ? null : (float)$j['peso_kg'],
             'preferred_foot' => $j['pie_habil'], 'photo_url' => $j['foto_ruta'] ?: null,
-            'status' => $j['estado'], 'razon_baja' => $j['razon_baja'], 'fecha_baja' => $j['fecha_baja'],
+            'status' => $j['estado'],
         ];
-        if ($conPrivados) $s += ['dpi' => $j['dpi'], 'telefono' => $j['telefono']];
+        if ($conPrivados) $s += ['dpi' => $j['dpi'], 'telefono' => $j['telefono'], 'razon_baja' => $j['razon_baja'], 'fecha_baja' => $j['fecha_baja']];
         return $s;
     }
 

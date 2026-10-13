@@ -31,9 +31,9 @@ const resumen = [
     <section class="profile-header" :style="{ '--team-color': equipo.primary_color }">
       <TeamBadge :team="equipo" :size="135" />
       <div>
-        <p class="eyebrow">{{ equipo.city }} · DESDE {{ equipo.founded_year }}</p>
+        <p class="eyebrow">{{ [equipo.city, equipo.founded_year ? 'DESDE ' + equipo.founded_year : ''].filter(Boolean).join(' · ') || 'EQUIPO DE LA LIGA' }}</p>
         <h1>{{ equipo.name }}</h1>
-        <p class="muted">{{ equipo.stadium }} · Entrenador: {{ equipo.coach }}</p>
+        <p v-if="equipo.stadium || equipo.coach" class="muted">{{ [equipo.stadium, equipo.coach ? 'Entrenador: ' + equipo.coach : ''].filter(Boolean).join(' · ') }}</p>
       </div>
     </section>
 

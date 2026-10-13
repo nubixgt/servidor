@@ -25,6 +25,6 @@ defineProps({ match: { type: Object, required: true } })
         <strong>{{ match.away_short }}</strong>
       </div>
     </div>
-    <div class="match-footer">{{ formatFecha(match.kickoff_at, true) }} · {{ match.stadium }}</div>
+    <div class="match-footer">{{ [formatFecha(match.kickoff_at, true), match.stadium].filter(Boolean).join(' · ') }}</div>
   </RouterLink>
 </template>

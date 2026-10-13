@@ -20,7 +20,7 @@ defineProps({
       <div class="card-grid"></div>
       <span class="card-season">PULSE / 26</span>
       <div class="card-number">
-        <strong>{{ player.jersey_number }}</strong>
+        <strong>{{ player.jersey_number ?? '–' }}</strong>
         <span>{{ player.position }}</span>
       </div>
       <img v-if="player.photo_url" :src="imgUrl(player.photo_url)" :alt="player.full_name" loading="lazy" @error="$event.target.style.visibility = 'hidden'" />
@@ -33,11 +33,11 @@ defineProps({
       <div class="card-stats">
         <span><b>{{ player.goals }}</b>GOL</span>
         <span><b>{{ player.assists }}</b>ASI</span>
-        <span><b>{{ player.age }}</b>AÑOS</span>
+        <span><b>{{ player.age ?? '–' }}</b>AÑOS</span>
       </div>
       <div class="card-bottom">
         <span>
-          {{ player.nationality }} ·
+          {{ player.nationality ? player.nationality + ' ·' : '' }}
           <span title="Tarjetas amarillas">🟨 {{ player.yellow_cards }}</span>
           <span title="Tarjetas rojas">🟥 {{ player.red_cards }}</span>
         </span>
