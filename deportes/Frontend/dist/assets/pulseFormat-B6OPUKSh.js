@@ -1,0 +1,1 @@
+var e={scheduled:`Programado`,live:`En juego`,finished:`Finalizado`},t={goal:`Gol`,own_goal:`Autogol`,yellow:`Amarilla`,red:`Roja`},n=(e,t=!1)=>new Intl.DateTimeFormat(`es-GT`,{timeZone:`America/Guatemala`,day:`2-digit`,month:`short`,...t?{hour:`2-digit`,minute:`2-digit`}:{}}).format(new Date(e.replace(` `,`T`)+`Z`));export{e as n,n as r,t};

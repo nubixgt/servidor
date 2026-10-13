@@ -1,99 +1,49 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import InscripcionEquipo from '../views/InscripcionEquipo.vue'
-import MiEquipo from '../views/MiEquipo.vue'
-import InscripcionJugador from '../views/InscripcionJugador.vue'
-import Estadisticas from '../views/Estadisticas.vue'
+import PublicLayout from '../layouts/PublicLayout.vue'
+
+const titulo = (t) => ({ title: t })
 
 const routes = [
   {
     path: '/',
-    redirect: '/inicio'
-  },
-  {
-    path: '/inicio',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/inscripcion-equipo',
-    name: 'InscripcionEquipo',
-    component: InscripcionEquipo
-  },
-  {
-    path: '/mi-equipo',
-    name: 'MiEquipo',
-    component: MiEquipo,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/inscripcion-jugador',
-    name: 'InscripcionJugador',
-    component: InscripcionJugador,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/mi-equipo/inactivos',
-    name: 'JugadoresInactivos',
-    component: () => import('../views/MiEquipo/JugadoresInactivos.vue'),
-    meta: { requiresAuth: true }
+    component: PublicLayout,
+    children: [
+      { path: '', name: 'Inicio', component: () => import('../views/public/Inicio.vue'), meta: titulo('Inicio') },
+      { path: 'equipos', name: 'Equipos', component: () => import('../views/public/Equipos.vue'), meta: titulo('Equipos') },
+      { path: 'equipos/:id', name: 'Equipo', component: () => import('../views/public/EquipoDetalle.vue'), meta: titulo('Equipo') },
+      { path: 'jugadores', name: 'Jugadores', component: () => import('../views/public/Jugadores.vue'), meta: titulo('Jugadores') },
+      { path: 'jugadores/:id', name: 'Jugador', component: () => import('../views/public/JugadorDetalle.vue'), meta: titulo('Jugador') },
+      { path: 'estadisticas', name: 'Estadisticas', component: () => import('../views/public/Estadisticas.vue'), meta: titulo('Estadísticas') },
+      { path: 'partidos', name: 'Partidos', component: () => import('../views/public/Partidos.vue'), meta: titulo('Partidos') },
+      { path: 'partidos/:id', name: 'Partido', component: () => import('../views/public/PartidoDetalle.vue'), meta: titulo('Partido') },
+      { path: 'login', name: 'Login', component: () => import('../views/public/Login.vue'), meta: titulo('Acceso') },
+      { path: ':pathMatch(.*)*', name: 'NotFound', component: () => import('../views/public/NotFound.vue'), meta: titulo('Página no encontrada') },
+    ],
   },
   {
     path: '/admin',
-    name: 'AdminPanel',
-    component: () => import('../views/AdminPanel.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true }
+    component: () => import('../layouts/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      { path: '', name: 'AdminResumen', component: () => import('../views/admin/Resumen.vue'), meta: titulo('Administración') },
+      { path: 'equipos', name: 'AdminEquipos', component: () => import('../views/admin/Equipos.vue'), meta: titulo('Admin · Equipos') },
+      { path: 'jugadores', name: 'AdminJugadores', component: () => import('../views/admin/Jugadores.vue'), meta: titulo('Admin · Jugadores') },
+      { path: 'partidos', name: 'AdminPartidos', component: () => import('../views/admin/Partidos.vue'), meta: titulo('Admin · Partidos') },
+    ],
   },
-  {
-    path: '/estadisticas',
-    name: 'Estadisticas',
-    component: Estadisticas
-  },
-  {
-    path: '/registrar-partido',
-    name: 'RegistrarPartido',
-    component: () => import('../views/RegistrarPartido.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/historial-partidos',
-    name: 'HistorialPartidos',
-    component: () => import('../views/HistorialPartidos.vue')
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/inicio'
-  }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior: () => ({ top: 0 }),
 })
 
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('deportes_token')
-  const rol = localStorage.getItem('deportes_rol')
-  
-  if (to.meta.requiresAuth && !token) {
-    next('/login')
-  } else if (to.meta.requiresAdmin && rol !== 'admin') {
-    next('/mi-equipo')
-  } else if (to.name === 'Login' && token) {
-    if (rol === 'admin') {
-      next('/admin')
-    } else {
-      next('/mi-equipo')
-    }
-  } else {
-    next()
-  }
+router.beforeEach((to) => {
+  document.title = `${to.meta.title || 'Liga Pulse'} · Liga Pulse`
+  const haySesion = !!localStorage.getItem('deportes_token')
+  if (to.matched.some((r) => r.meta.requiresAuth) && !haySesion) return '/login'
+  if (to.name === 'Login' && haySesion) return '/admin'
 })
 
 export default router
