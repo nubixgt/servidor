@@ -16,6 +16,7 @@ spl_autoload_register(function ($clase) {
     if (file_exists($archivo)) require_once $archivo;
 });
 
+use Core\Config;
 use Core\HttpException;
 use Core\Response;
 use Core\Router;
@@ -66,5 +67,6 @@ try {
     Response::error($e->getMessage(), $e->getCode(), $e->fields);
 } catch (Throwable $e) {
     error_log('[deportes] ' . $e);
-    Response::error('Error interno del servidor.', 500);
+    // Con 'debug' => true en config.local.php se muestra la causa (solo para diagnosticar; apágalo después).
+    Response::error(Config::get('debug') ? get_class($e) . ': ' . $e->getMessage() : 'Error interno del servidor.', 500);
 }

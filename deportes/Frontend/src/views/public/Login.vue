@@ -2,25 +2,26 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../../composables/useAuth'
+import { alertaError, toastExito } from '../../utils/alertas'
 import { ShieldCheckIcon, ArrowUpRightIcon, EyeIcon, EyeOffIcon } from 'lucide-vue-next'
 import FootballBackdrop from '../../components/pulse/FootballBackdrop.vue'
 
 const usuario = ref('')
 const clave = ref('')
 const verClave = ref(false)
-const mensaje = ref('')
 
 const router = useRouter()
 const { login } = useAuth()
 const enviando = ref(false)
 
 async function entrar() {
-  mensaje.value = ''
   enviando.value = true
   try {
-    router.push(await login(usuario.value, clave.value))
+    const destino = await login(usuario.value, clave.value)
+    await router.push(destino)
+    toastExito('Inicio de sesión correcto')
   } catch (e) {
-    mensaje.value = e.message
+    alertaError('No se pudo iniciar sesión', e.message)
   } finally {
     enviando.value = false
   }
@@ -55,8 +56,6 @@ async function entrar() {
           </button>
         </div>
       </label>
-
-      <p v-if="mensaje" class="error-text" role="alert">{{ mensaje }}</p>
 
       <button class="btn btn-primary" :disabled="enviando">{{ enviando ? 'Accediendo…' : 'Entrar al panel' }} <ArrowUpRightIcon :size="19" /></button>
       <p class="login-note">¿No tienes acceso? Solicita una cuenta a la persona responsable de la liga.</p>

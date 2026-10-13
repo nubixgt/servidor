@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import AdminSidebar from '../components/admin/AdminSidebar.vue'
 import { useAuth } from '../composables/useAuth'
 import { usePanel } from '../composables/usePanel'
+import { confirmarAccion, toastExito } from '../utils/alertas'
 
 const router = useRouter()
 const { logout } = useAuth()
@@ -11,10 +12,18 @@ const { state, load, reset } = usePanel()
 
 onMounted(load)
 
-function salir() {
+async function salir() {
+  const { isConfirmed } = await confirmarAccion({
+    title: '¿Cerrar sesión?',
+    text: 'Tendrás que iniciar sesión de nuevo para volver al panel.',
+    confirmButtonText: 'Sí, cerrar sesión',
+    icon: 'question',
+  })
+  if (!isConfirmed) return
   logout()
   reset()
-  router.push('/login')
+  await router.push('/login')
+  toastExito('Cerraste sesión correctamente')
 }
 </script>
 

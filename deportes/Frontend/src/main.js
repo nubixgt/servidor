@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import { useAuth } from './composables/useAuth'
 import { usePanel } from './composables/usePanel'
+import { alertaAdvertencia } from './utils/alertas'
 
 const app = createApp(App)
 app.use(router)
@@ -13,5 +14,8 @@ app.mount('#app')
 window.addEventListener('sesion-expirada', () => {
   useAuth().logout()
   usePanel().reset()
-  if (router.currentRoute.value.path !== '/login') router.push('/login')
+  if (router.currentRoute.value.path !== '/login') {
+    router.push('/login')
+    alertaAdvertencia('Tu sesión expiró', 'Inicia sesión de nuevo para continuar.')
+  }
 })

@@ -12,4 +12,6 @@ return [
     'jwt_secret' => 'CAMBIAR',
     // Duración de la sesión en segundos (7 días).
     'jwt_ttl' => 604800,
+    // true solo para diagnosticar un error 500 (muestra la causa en la respuesta). Déjalo en false.
+    'debug' => false,
 ];
