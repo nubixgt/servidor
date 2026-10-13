@@ -12,15 +12,18 @@ const mensaje = ref('')
 
 const router = useRouter()
 const { login } = useAuth()
+const enviando = ref(false)
 
-// Sin backend: cualquier usuario y contraseña no vacíos entran (se conectará al API en una etapa posterior).
-function entrar() {
-  if (!usuario.value || !clave.value) {
-    mensaje.value = 'Escribe tu usuario y contraseña.'
-    return
+async function entrar() {
+  mensaje.value = ''
+  enviando.value = true
+  try {
+    router.push(await login(usuario.value, clave.value))
+  } catch (e) {
+    mensaje.value = e.message
+  } finally {
+    enviando.value = false
   }
-  login(usuario.value)
-  router.push('/admin')
 }
 </script>
 
@@ -36,7 +39,7 @@ function entrar() {
     <form class="login-panel panel" @submit.prevent="entrar">
       <p class="eyebrow lime">BIENVENIDO A PULSE</p>
       <h2>Inicia sesión</h2>
-      <p>Acceso exclusivo para administradores de la liga.</p>
+      <p>Acceso para administradores y encargados de equipo.</p>
 
       <label>
         Usuario
@@ -55,7 +58,7 @@ function entrar() {
 
       <p v-if="mensaje" class="error-text" role="alert">{{ mensaje }}</p>
 
-      <button class="btn btn-primary">Entrar al panel <ArrowUpRightIcon :size="19" /></button>
+      <button class="btn btn-primary" :disabled="enviando">{{ enviando ? 'Accediendo…' : 'Entrar al panel' }} <ArrowUpRightIcon :size="19" /></button>
       <p class="login-note">¿No tienes acceso? Solicita una cuenta a la persona responsable de la liga.</p>
       <RouterLink to="/" class="text-link">← Volver a la liga</RouterLink>
     </form>

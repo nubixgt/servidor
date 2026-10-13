@@ -2,122 +2,79 @@
 namespace Models;
 
 use Core\Database;
-use PDO;
 
 class EquipoModel {
-    private $conn;
-    private $table_name = "equipos";
-
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
-    }
-
-    public function create($nombre, $representante, $telefono, $dpi, $foto_ruta, $foto_representante_ruta = null, $usuario = null, $password_hash = null, $rol = 'encargado') {
-        $query = "INSERT INTO " . $this->table_name . " (nombre, representante, telefono, dpi, foto_ruta, foto_representante_ruta, usuario, password_hash, rol) VALUES (:nombre, :representante, :telefono, :dpi, :foto_ruta, :foto_representante_ruta, :usuario, :password_hash, :rol)";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":representante", $representante);
-        $stmt->bindParam(":telefono", $telefono);
-        $stmt->bindParam(":dpi", $dpi);
-        $stmt->bindParam(":foto_ruta", $foto_ruta);
-        $stmt->bindParam(":foto_representante_ruta", $foto_representante_ruta);
-        $stmt->bindParam(":usuario", $usuario);
-        $stmt->bindParam(":password_hash", $password_hash);
-        $stmt->bindParam(":rol", $rol);
-
-        if($stmt->execute()) {
-            return $this->conn->lastInsertId();
+    // Forma Pulse + datos oficiales de contacto. Las rutas de foto son relativas ("uploads/...").
+    public static function serializar(array $e, $conContacto = true) {
+        $s = [
+            'id' => (int)$e['id'],
+            'name' => $e['nombre'],
+            'short_name' => $e['abreviatura'] ?: strtoupper(mb_substr(preg_replace('/\s+/', '', $e['nombre']), 0, 3)),
+            'city' => $e['ciudad'], 'stadium' => $e['estadio'], 'coach' => $e['entrenador'],
+            'primary_color' => $e['color_principal'], 'secondary_color' => $e['color_secundario'],
+            'founded_year' => $e['anio_fundacion'] === null ? null : (int)$e['anio_fundacion'],
+            'logo_url' => $e['foto_ruta'] ?: null,
+            'players_count' => isset($e['jugadores_activos']) ? (int)$e['jugadores_activos'] : null,
+        ];
+        if ($conContacto) {
+            $s += [
+                'representante' => $e['representante'], 'telefono' => $e['telefono'], 'dpi' => $e['dpi'],
+                'foto_representante_url' => $e['foto_representante_ruta'] ?: null,
+                'sub_representante_nombre' => $e['sub_representante_nombre'],
+                'sub_representante_dpi' => $e['sub_representante_dpi'],
+                'sub_representante_telefono' => $e['sub_representante_telefono'],
+                'sub_representante_foto_url' => $e['sub_representante_foto_ruta'] ?: null,
+                'usuario' => $e['usuario'] ?? null,
+            ];
         }
-        return false;
+        return $s;
     }
 
-    public function updateFoto($id, $foto_ruta) {
-        $query = "UPDATE " . $this->table_name . " SET foto_ruta = :foto_ruta WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":foto_ruta", $foto_ruta);
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    private static function select() {
+        return "SELECT e.*, (SELECT COUNT(*) FROM jugadores j WHERE j.equipo_id = e.id AND j.estado = 'activo') AS jugadores_activos,
+                       (SELECT u.usuario FROM usuarios u WHERE u.equipo_id = e.id AND u.rol = 'encargado' LIMIT 1) AS usuario
+                FROM equipos e";
     }
 
-    public function updateFotoRepresentante($id, $foto_ruta) {
-        $query = "UPDATE " . $this->table_name . " SET foto_representante_ruta = :foto_ruta WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":foto_ruta", $foto_ruta);
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    public static function todos() {
+        return Database::connection()->query(self::select() . ' ORDER BY e.nombre')->fetchAll();
     }
 
-    public function updateSubRepresentante($id, $nombre, $dpi, $telefono, $foto_ruta = null) {
-        if ($foto_ruta) {
-            $query = "UPDATE " . $this->table_name . " SET sub_representante_nombre = :nombre, sub_representante_dpi = :dpi, sub_representante_telefono = :telefono, sub_representante_foto_ruta = :foto_ruta WHERE id = :id";
-        } else {
-            $query = "UPDATE " . $this->table_name . " SET sub_representante_nombre = :nombre, sub_representante_dpi = :dpi, sub_representante_telefono = :telefono WHERE id = :id";
-        }
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":dpi", $dpi);
-        $stmt->bindParam(":telefono", $telefono);
-        if ($foto_ruta) {
-            $stmt->bindParam(":foto_ruta", $foto_ruta);
-        }
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    public static function porId($id) {
+        $stmt = Database::connection()->prepare(self::select() . ' WHERE e.id = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
     }
 
-    public function getAll() {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE rol = 'encargado' ORDER BY fecha_creacion DESC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function nombreRepetido($nombre, $exceptoId = 0) {
+        $stmt = Database::connection()->prepare('SELECT 1 FROM equipos WHERE LOWER(nombre) = LOWER(?) AND id <> ?');
+        $stmt->execute([$nombre, $exceptoId]);
+        return (bool)$stmt->fetchColumn();
     }
 
-    public function getById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 0,1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    // $datos: columna => valor. Devuelve el id.
+    public static function crear(array $datos) {
+        $pdo = Database::connection();
+        $cols = array_keys($datos);
+        $pdo->prepare('INSERT INTO equipos (' . implode(',', $cols) . ', foto_ruta) VALUES (' . implode(',', array_fill(0, count($cols), '?')) . ", '')")
+            ->execute(array_values($datos));
+        return (int)$pdo->lastInsertId();
     }
 
-    public function findByUsuario($usuario) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE usuario = :usuario LIMIT 0,1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":usuario", $usuario);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    public static function actualizar($id, array $datos) {
+        if (!$datos) return;
+        $set = implode(', ', array_map(function ($c) { return "$c = ?"; }, array_keys($datos)));
+        Database::connection()->prepare("UPDATE equipos SET $set WHERE id = ?")->execute(array_merge(array_values($datos), [$id]));
     }
 
-    public function countEquipos() {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE rol = 'encargado'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'];
+    public static function tieneRelaciones($id) {
+        $pdo = Database::connection();
+        $j = $pdo->prepare('SELECT COUNT(*) FROM jugadores WHERE equipo_id = ?'); $j->execute([$id]);
+        $p = $pdo->prepare('SELECT COUNT(*) FROM partidos WHERE equipo_local_id = ? OR equipo_visitante_id = ?'); $p->execute([$id, $id]);
+        return ((int)$j->fetchColumn() + (int)$p->fetchColumn()) > 0;
     }
 
-    public function getEquiposIncompletos() {
-        $query = "SELECT e.id, e.nombre, e.foto_ruta, COUNT(j.id) as cantidad_jugadores 
-                  FROM " . $this->table_name . " e 
-                  LEFT JOIN jugadores j ON e.id = j.equipo_id AND j.estado = 'activo'
-                  WHERE e.rol = 'encargado' 
-                  GROUP BY e.id 
-                  HAVING cantidad_jugadores < 10";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getEncargados() {
-        $query = "SELECT e.id as equipo_id, e.nombre as equipo_nombre, e.representante, e.telefono, e.foto_representante_ruta, e.dpi, e.foto_ruta,
-                  (SELECT COUNT(*) FROM jugadores j WHERE j.equipo_id = e.id AND j.estado = 'activo') as cantidad_jugadores
-                  FROM " . $this->table_name . " e
-                  WHERE e.rol = 'encargado'
-                  ORDER BY e.nombre ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function eliminar($id) {
+        Database::connection()->prepare('DELETE FROM equipos WHERE id = ?')->execute([$id]); // usuarios: ON DELETE CASCADE
     }
 }

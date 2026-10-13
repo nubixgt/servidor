@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
-import { usePulse } from '../../composables/usePulse'
+import { usePanel } from '../../composables/usePanel'
 import { useAdminData } from '../../composables/useAdminData'
 import { useCrudModal } from '../../composables/useCrudModal'
 import AdminHeading from '../../components/admin/AdminHeading.vue'
@@ -10,12 +10,15 @@ import ConfirmDelete from '../../components/admin/ConfirmDelete.vue'
 import TeamForm from '../../components/admin/TeamForm.vue'
 import TeamBadge from '../../components/pulse/TeamBadge.vue'
 
-const { state } = usePulse()
+const { state } = usePanel()
 const admin = useAdminData()
 const m = useCrudModal()
 const busqueda = ref('')
 
-const filas = computed(() => state.teams.filter((t) => t.name.toLowerCase().includes(busqueda.value.toLowerCase())))
+const filas = computed(() => {
+  const q = busqueda.value.toLowerCase()
+  return state.teams.filter((t) => `${t.name} ${t.representante} ${t.city || ''}`.toLowerCase().includes(q))
+})
 </script>
 
 <template>
@@ -24,18 +27,19 @@ const filas = computed(() => state.teams.filter((t) => t.name.toLowerCase().incl
     <p v-if="m.aviso.value" class="notice" role="status">{{ m.aviso.value }}</p>
 
     <div class="filter-bar">
-      <label class="search-field">Buscar en equipos<input v-model="busqueda" type="search" placeholder="Escribe un nombre…" /></label>
+      <label class="search-field">Buscar en equipos<input v-model="busqueda" type="search" placeholder="Nombre, representante o ciudad…" /></label>
       <span>{{ filas.length }} registros</span>
     </div>
 
     <div class="panel table-scroll">
       <table class="data-table">
-        <thead><tr><th>Nombre</th><th>Ciudad</th><th>Estadio</th><th>Acciones</th></tr></thead>
+        <thead><tr><th>Equipo</th><th>Representante</th><th class="hide-mobile">Teléfono</th><th>Jugadores</th><th>Acciones</th></tr></thead>
         <tbody>
           <tr v-for="t in filas" :key="t.id">
-            <td><RouterLink :to="`/equipos/${t.id}`" class="table-person"><TeamBadge :team="t" :size="30" />{{ t.name }}</RouterLink></td>
-            <td class="muted">{{ t.city }}</td>
-            <td>{{ t.stadium }}</td>
+            <td><span class="table-person"><TeamBadge :team="t" :size="30" />{{ t.name }}</span></td>
+            <td class="muted">{{ t.representante }}</td>
+            <td class="hide-mobile muted">{{ t.telefono }}</td>
+            <td>{{ t.players_count }}</td>
             <td>
               <div class="admin-tools">
                 <button class="icon-btn" :aria-label="'Editar ' + t.name" title="Editar" @click="m.abrir('form', t)"><PencilIcon :size="14" /></button>
@@ -43,7 +47,7 @@ const filas = computed(() => state.teams.filter((t) => t.name.toLowerCase().incl
               </div>
             </td>
           </tr>
-          <tr v-if="!filas.length"><td colspan="4" class="empty">No hay registros que mostrar.</td></tr>
+          <tr v-if="!filas.length"><td colspan="5" class="empty">No hay registros que mostrar.</td></tr>
         </tbody>
       </table>
     </div>
@@ -55,13 +59,13 @@ const filas = computed(() => state.teams.filter((t) => t.name.toLowerCase().incl
         :busy="m.ocupado.value"
         :errors="m.campos.value"
         @cancel="m.cerrar"
-        @save="(d) => m.ejecutar(() => admin.guardarEquipo(d), 'Cambios guardados correctamente.')"
+        @save="(d, f) => m.ejecutar(() => admin.guardarEquipo(d, f), 'Cambios guardados correctamente.')"
       />
     </ModalDialog>
 
     <ModalDialog v-if="m.modo.value === 'delete'" title="Confirmar eliminación" :busy="m.ocupado.value" @close="m.cerrar">
       <ConfirmDelete
-        :texto="`¿Eliminar ${m.item.value.name}? Esta acción no se puede deshacer.`"
+        :texto="`¿Eliminar ${m.item.value.name}? Se elimina también el acceso de su encargado. Esta acción no se puede deshacer.`"
         :busy="m.ocupado.value"
         :error="m.error.value"
         @cancelar="m.cerrar"

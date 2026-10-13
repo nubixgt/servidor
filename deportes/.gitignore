@@ -1,0 +1,4 @@
+Backend/config.local.php
+Database/visionwe_deportes.sql
+Database/*.sql.bak
+*.log

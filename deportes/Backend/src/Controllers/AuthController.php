@@ -1,54 +1,42 @@
 <?php
 namespace Controllers;
 
+use Core\HttpException;
+use Core\Request;
 use Core\Response;
-use Models\EquipoModel;
+use Models\UsuarioModel;
 use Utils\JwtUtils;
 
-class AuthController {
+class AuthController extends BaseController {
     public function login() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            Response::error('Method not allowed', 405);
+        $in = Request::input();
+        $usuario = trim((string)($in['usuario'] ?? ''));
+        $password = (string)($in['password'] ?? '');
+        if ($usuario === '' || $password === '') throw new HttpException('Usuario y contraseña son requeridos.', 400);
+
+        $u = UsuarioModel::findByUsuario($usuario);
+        // Mismo mensaje para usuario inexistente, inactivo o clave errónea (no revela cuál falló).
+        if (!$u || !(int)$u['activo'] || !password_verify($password, $u['password_hash'])) {
+            throw new HttpException('Credenciales inválidas.', 401);
         }
+        UsuarioModel::tocarAcceso($u['id']);
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        
-        $usuario = $input['usuario'] ?? $_POST['usuario'] ?? '';
-        $password = $input['password'] ?? $_POST['password'] ?? '';
+        Response::json([
+            'token' => JwtUtils::generateToken(['usuario_id' => (int)$u['id']]),
+            'user' => $this->datosUsuario($u),
+        ]);
+    }
 
-        if (empty($usuario) || empty($password)) {
-            Response::error('Usuario y contraseña son requeridos', 400);
-        }
+    public function me() {
+        $sesion = $this->autenticar();
+        $u = UsuarioModel::findByUsuario($sesion['usuario']);
+        Response::json(['user' => $this->datosUsuario($u)]);
+    }
 
-        $equipoModel = new EquipoModel();
-        $equipo = $equipoModel->findByUsuario($usuario);
-
-        if (!$equipo) {
-            Response::error('Credenciales inválidas', 401);
-        }
-
-        if (password_verify($password, $equipo['password_hash'])) {
-            // Generate token
-            $payload = [
-                'equipo_id' => $equipo['id'],
-                'usuario' => $equipo['usuario'],
-                'rol' => $equipo['rol'] ?? 'encargado',
-                'exp' => time() + (86400 * 7) // 7 days expiration
-            ];
-            $token = JwtUtils::generateToken($payload);
-
-            Response::json([
-                'message' => 'Login exitoso',
-                'token' => $token,
-                'rol' => $equipo['rol'] ?? 'encargado',
-                'equipo' => [
-                    'id' => $equipo['id'],
-                    'nombre' => $equipo['nombre'],
-                    'representante' => $equipo['representante']
-                ]
-            ]);
-        } else {
-            Response::error('Credenciales inválidas', 401);
-        }
+    private function datosUsuario(array $u) {
+        return [
+            'id' => (int)$u['id'], 'usuario' => $u['usuario'], 'rol' => $u['rol'],
+            'equipo_id' => $u['equipo_id'] === null ? null : (int)$u['equipo_id'], 'equipo_nombre' => $u['equipo_nombre'],
+        ];
     }
 }

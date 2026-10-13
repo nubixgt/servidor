@@ -1,35 +1,10 @@
 import { reactive } from 'vue'
 import { league, teams, players, matches, events } from '../data/pulseMock'
 
-// Fuente de datos (etapas 1-2): datos de ejemplo + cambios del admin guardados en localStorage.
-// Cuando exista el backend, solo cambia esta sección; las vistas leen siempre `state`.
-const CLAVE = 'pulse-datos-v1'
-
-const copiar = (o) => JSON.parse(JSON.stringify(o))
-const originales = () => copiar({ league, teams, players, matches, events })
-
-function leerGuardado() {
-  try {
-    return JSON.parse(localStorage.getItem(CLAVE)) || originales()
-  } catch {
-    return originales()
-  }
-}
-
-// Datos "crudos" editables (los modifica useAdminData).
-export const raw = reactive(leerGuardado())
-
-export function guardarRaw() {
-  localStorage.setItem(CLAVE, JSON.stringify(raw))
-}
-
-export function restablecerRaw() {
-  Object.assign(raw, originales())
-  guardarRaw()
-}
-
+// Fuente de datos del sitio público: por ahora datos de ejemplo (el público se conecta al API en la etapa 3).
+// Cuando exista, solo cambia `cargarFuente()`; las vistas leen siempre `state`.
 function cargarFuente() {
-  return raw
+  return { league, teams, players, matches, events }
 }
 
 const edad = (fechaNacimiento, hoy = new Date()) => {

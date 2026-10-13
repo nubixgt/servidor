@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { imgUrl } from '../../services/api'
 
 const props = defineProps({
   players: { type: Array, default: () => [] },
@@ -33,7 +34,7 @@ const ranking = computed(() =>
           <td class="muted">{{ i + 1 }}</td>
           <td>
             <RouterLink class="table-person" :to="`/jugadores/${p.id}`">
-              <img v-if="p.photo_url" :src="p.photo_url" alt="" />
+              <img v-if="p.photo_url" :src="imgUrl(p.photo_url)" alt="" />
               <span>{{ p.full_name }}<small>{{ p.position }} · #{{ p.jersey_number }}</small></span>
             </RouterLink>
           </td>

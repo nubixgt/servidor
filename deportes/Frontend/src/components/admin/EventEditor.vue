@@ -1,17 +1,20 @@
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { PencilIcon, Trash2Icon } from 'lucide-vue-next'
-import { usePulse } from '../../composables/usePulse'
+import { usePanel } from '../../composables/usePanel'
 import { useAdminData } from '../../composables/useAdminData'
+import { panelApi } from '../../services/panelApi'
 import { EVENT_LABEL } from '../../utils/pulseFormat'
 
 const props = defineProps({ match: { type: Object, required: true } })
 const emit = defineEmits(['busy'])
 
-const { state, eventosDePartido } = usePulse()
+const { state } = usePanel()
 const admin = useAdminData()
 
-const eventos = ref(eventosDePartido(props.match.id))
+const eventos = ref([])
+const jugadores = ref([])
+const cargando = ref(true)
 const error = ref('')
 const aviso = ref('')
 const ocupado = ref(false)
@@ -19,11 +22,25 @@ const confirmando = ref(null)
 const editando = ref(null)
 const form = reactive({ player_id: '', assist_player_id: '', type: 'goal', minute: 1 })
 
+// Marcador siempre calculado por el servidor (se refresca al recargar el panel).
 const actual = computed(() => state.matches.find((p) => +p.id === +props.match.id) || props.match)
-const candidatos = computed(() => state.players.filter((j) => [+props.match.home_team_id, +props.match.away_team_id].includes(+j.team_id)))
 const asistentes = computed(() => {
-  const j = candidatos.value.find((x) => +x.id === +form.player_id)
-  return candidatos.value.filter((x) => +x.team_id === +j?.team_id && +x.id !== +form.player_id)
+  const j = jugadores.value.find((x) => +x.id === +form.player_id)
+  return jugadores.value.filter((x) => +x.team_id === +j?.team_id && +x.id !== +form.player_id)
+})
+
+async function recargar() {
+  eventos.value = await panelApi.eventos(props.match.id)
+}
+
+onMounted(async () => {
+  try {
+    ;[jugadores.value] = await Promise.all([panelApi.jugadoresDePartido(props.match.id), recargar()])
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    cargando.value = false
+  }
 })
 
 function limpiar() {
@@ -44,7 +61,7 @@ async function ejecutar(accion, mensaje) {
   aviso.value = ''
   try {
     await accion()
-    eventos.value = eventosDePartido(props.match.id)
+    await recargar()
     limpiar()
     confirmando.value = null
     aviso.value = mensaje
@@ -67,7 +84,7 @@ const guardar = () =>
     'Evento guardado. Marcador y estadísticas actualizados.'
   )
 
-const eliminar = (id) => ejecutar(() => admin.eliminarEvento(id), 'Evento eliminado. Estadísticas actualizadas.')
+const eliminar = (id) => ejecutar(() => admin.eliminarEvento(props.match.id, id), 'Evento eliminado. Estadísticas actualizadas.')
 </script>
 
 <template>
@@ -93,7 +110,7 @@ const eliminar = (id) => ejecutar(() => admin.eliminarEvento(id), 'Evento elimin
         <label class="full">Jugador
           <select v-model.number="form.player_id" required @change="form.assist_player_id = ''">
             <option value="" disabled>Seleccionar jugador</option>
-            <option v-for="j in candidatos" :key="j.id" :value="j.id">{{ j.full_name }} · {{ j.short_name }} #{{ j.jersey_number }}</option>
+            <option v-for="j in jugadores" :key="j.id" :value="j.id">{{ j.full_name }} · {{ j.short_name }}<template v-if="j.jersey_number"> #{{ j.jersey_number }}</template></option>
           </select>
         </label>
         <label v-if="form.type === 'goal'" class="full">Asistencia (opcional)
@@ -109,7 +126,8 @@ const eliminar = (id) => ejecutar(() => admin.eliminarEvento(id), 'Evento elimin
       </div>
     </form>
 
-    <div class="table-scroll">
+    <p v-if="cargando" class="empty" role="status">Cargando eventos…</p>
+    <div v-else class="table-scroll">
       <table class="data-table">
         <thead><tr><th>Min.</th><th>Evento / jugador</th><th>Acciones</th></tr></thead>
         <tbody>

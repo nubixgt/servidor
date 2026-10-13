@@ -4,14 +4,15 @@ import { reactive, ref } from 'vue'
 const props = defineProps({
   match: Object,
   teams: { type: Array, default: () => [] },
+  equipoPropio: Number, // encargado: su equipo queda como local por defecto
   busy: Boolean,
   errors: { type: Object, default: () => ({}) },
 })
 const emit = defineEmits(['save', 'cancel'])
 
 const form = reactive({
-  home_team_id: props.teams[0]?.id || '',
-  away_team_id: props.teams[1]?.id || '',
+  home_team_id: props.equipoPropio || props.teams[0]?.id || '',
+  away_team_id: props.teams.find((t) => t.id !== (props.equipoPropio || props.teams[0]?.id))?.id || '',
   round_number: 1,
   status: 'scheduled',
   ...props.match,

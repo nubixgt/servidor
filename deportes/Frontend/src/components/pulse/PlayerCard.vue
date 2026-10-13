@@ -1,5 +1,6 @@
 <script setup>
 import { ArrowUpRightIcon } from 'lucide-vue-next'
+import { imgUrl } from '../../services/api'
 
 defineProps({
   player: { type: Object, required: true },
@@ -22,7 +23,7 @@ defineProps({
         <strong>{{ player.jersey_number }}</strong>
         <span>{{ player.position }}</span>
       </div>
-      <img v-if="player.photo_url" :src="player.photo_url" :alt="player.full_name" loading="lazy" @error="$event.target.style.visibility = 'hidden'" />
+      <img v-if="player.photo_url" :src="imgUrl(player.photo_url)" :alt="player.full_name" loading="lazy" @error="$event.target.style.visibility = 'hidden'" />
       <div v-else class="portrait-fallback">{{ player.full_name.split(' ').map((n) => n[0]).slice(0, 2).join('') }}</div>
       <span class="card-club">{{ player.short_name }}</span>
     </div>

@@ -1,7 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { ListVideoIcon, PencilIcon, Trash2Icon } from 'lucide-vue-next'
-import { usePulse } from '../../composables/usePulse'
+import { usePanel } from '../../composables/usePanel'
+import { useAuth } from '../../composables/useAuth'
 import { useAdminData } from '../../composables/useAdminData'
 import { useCrudModal } from '../../composables/useCrudModal'
 import { STATUS_LABEL, formatFecha } from '../../utils/pulseFormat'
@@ -11,7 +12,9 @@ import ConfirmDelete from '../../components/admin/ConfirmDelete.vue'
 import MatchForm from '../../components/admin/MatchForm.vue'
 import EventEditor from '../../components/admin/EventEditor.vue'
 
-const { state } = usePulse()
+const { state } = usePanel()
+const { sesion } = useAuth()
+const esAdmin = computed(() => sesion.rol === 'admin')
 const admin = useAdminData()
 const m = useCrudModal()
 const busqueda = ref('')
@@ -24,7 +27,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
 
 <template>
   <div class="page-enter">
-    <AdminHeading title="Partidos" add-label="Añadir partido" @add="m.abrir('form')" />
+    <AdminHeading :title="esAdmin ? 'Partidos' : 'Mis partidos'" add-label="Añadir partido" @add="m.abrir('form')" />
     <p v-if="m.aviso.value" class="notice" role="status">{{ m.aviso.value }}</p>
 
     <div class="filter-bar">
@@ -38,7 +41,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
         <tbody>
           <tr v-for="p in filas" :key="p.id">
             <td>
-              <RouterLink :to="`/partidos/${p.id}`">{{ p.home_short }} vs {{ p.away_short }}<small class="block muted mt-1">Jornada {{ p.round_number }}</small></RouterLink>
+              <b>{{ p.home_short }} vs {{ p.away_short }}</b><small class="block muted mt-1">Jornada {{ p.round_number }}</small>
             </td>
             <td class="muted">{{ formatFecha(p.kickoff_at, true) }}<small class="block mt-1">{{ STATUS_LABEL[p.status] }}</small></td>
             <td>{{ marcador(p) }}</td>
@@ -46,7 +49,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
               <div class="admin-tools">
                 <button class="icon-btn" title="Eventos del partido" aria-label="Gestionar eventos del partido" @click="m.abrir('events', p)"><ListVideoIcon :size="15" /></button>
                 <button class="icon-btn" :aria-label="`Editar ${p.home_short} vs ${p.away_short}`" title="Editar" @click="m.abrir('form', p)"><PencilIcon :size="14" /></button>
-                <button class="icon-btn" :aria-label="`Eliminar ${p.home_short} vs ${p.away_short}`" title="Eliminar" @click="m.abrir('delete', p)"><Trash2Icon :size="14" /></button>
+                <button v-if="esAdmin" class="icon-btn" :aria-label="`Eliminar ${p.home_short} vs ${p.away_short}`" title="Eliminar" @click="m.abrir('delete', p)"><Trash2Icon :size="14" /></button>
               </div>
             </td>
           </tr>
@@ -60,6 +63,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
       <MatchForm
         :match="m.item.value"
         :teams="state.teams"
+        :equipo-propio="esAdmin ? undefined : sesion.equipo_id"
         :busy="m.ocupado.value"
         :errors="m.campos.value"
         @cancel="m.cerrar"

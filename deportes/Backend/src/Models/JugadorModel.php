@@ -2,88 +2,81 @@
 namespace Models;
 
 use Core\Database;
-use PDO;
 
 class JugadorModel {
-    private $conn;
-    private $table_name = "jugadores";
+    const POS_A_API = ['Portero' => 'POR', 'Defensa' => 'DEF', 'Mediocampo' => 'MED', 'Delantero' => 'DEL'];
 
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
+    public static function posicionBD($api) {
+        $inv = array_flip(self::POS_A_API);
+        return $inv[$api] ?? null;
     }
 
-    public function create($equipo_id, $nombre, $dpi, $foto_ruta, $telefono, $posicion) {
-        $query = "INSERT INTO " . $this->table_name . " (equipo_id, nombre, dpi, foto_ruta, telefono, posicion) VALUES (:equipo_id, :nombre, :dpi, :foto_ruta, :telefono, :posicion)";
-        $stmt = $this->conn->prepare($query);
+    public static function serializar(array $j, $conPrivados = true) {
+        $s = [
+            'id' => (int)$j['id'], 'team_id' => (int)$j['equipo_id'], 'team_name' => $j['equipo_nombre'],
+            'short_name' => $j['abreviatura'] ?: strtoupper(mb_substr(preg_replace('/\s+/', '', $j['equipo_nombre']), 0, 3)),
+            'primary_color' => $j['color_principal'],
+            'full_name' => $j['nombre'], 'position' => self::POS_A_API[$j['posicion']] ?? null,
+            'jersey_number' => $j['dorsal'] === null ? null : (int)$j['dorsal'],
+            'birth_date' => $j['fecha_nacimiento'], 'nationality' => $j['nacionalidad'],
+            'height_cm' => $j['estatura_cm'] === null ? null : (int)$j['estatura_cm'],
+            'weight_kg' => $j['peso_kg'] === null ? null : (float)$j['peso_kg'],
+            'preferred_foot' => $j['pie_habil'], 'photo_url' => $j['foto_ruta'] ?: null,
+            'status' => $j['estado'], 'razon_baja' => $j['razon_baja'], 'fecha_baja' => $j['fecha_baja'],
+        ];
+        if ($conPrivados) $s += ['dpi' => $j['dpi'], 'telefono' => $j['telefono']];
+        return $s;
+    }
 
-        $stmt->bindParam(":equipo_id", $equipo_id);
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":dpi", $dpi);
-        $stmt->bindParam(":foto_ruta", $foto_ruta);
-        $stmt->bindParam(":telefono", $telefono);
-        $stmt->bindParam(":posicion", $posicion);
+    private static function select() {
+        return 'SELECT j.*, e.nombre AS equipo_nombre, e.abreviatura, e.color_principal FROM jugadores j JOIN equipos e ON e.id = j.equipo_id';
+    }
 
-        if($stmt->execute()) {
-            return $this->conn->lastInsertId();
+    public static function lista($equipoId = null) {
+        $pdo = Database::connection();
+        if ($equipoId) {
+            $stmt = $pdo->prepare(self::select() . ' WHERE j.equipo_id = ? ORDER BY j.estado, j.nombre');
+            $stmt->execute([$equipoId]);
+            return $stmt->fetchAll();
         }
-        return false;
+        return $pdo->query(self::select() . ' ORDER BY e.nombre, j.estado, j.nombre')->fetchAll();
     }
 
-    public function updateFoto($id, $foto_ruta) {
-        $query = "UPDATE " . $this->table_name . " SET foto_ruta = :foto_ruta WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":foto_ruta", $foto_ruta);
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    // Jugadores activos de varios equipos (para armar eventos de un partido). Sin datos privados.
+    public static function deEquipos(array $ids) {
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = Database::connection()->prepare(self::select() . " WHERE j.equipo_id IN ($in) AND j.estado = 'activo' ORDER BY e.nombre, j.nombre");
+        $stmt->execute($ids);
+        return $stmt->fetchAll();
     }
 
-    public function updateJugador($id, $nombre, $dpi, $foto_ruta = null) {
-        if ($foto_ruta) {
-            $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, dpi = :dpi, foto_ruta = :foto_ruta WHERE id = :id";
-        } else {
-            $query = "UPDATE " . $this->table_name . " SET nombre = :nombre, dpi = :dpi WHERE id = :id";
-        }
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":nombre", $nombre);
-        $stmt->bindParam(":dpi", $dpi);
-        if ($foto_ruta) {
-            $stmt->bindParam(":foto_ruta", $foto_ruta);
-        }
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    public static function porId($id) {
+        $stmt = Database::connection()->prepare(self::select() . ' WHERE j.id = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
     }
 
-    public function getByEquipo($equipo_id, $estado = 'activo') {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE equipo_id = :equipo_id AND estado = :estado ORDER BY fecha_creacion DESC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":equipo_id", $equipo_id);
-        $stmt->bindParam(":estado", $estado);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public static function crear(array $datos) {
+        $pdo = Database::connection();
+        $cols = array_keys($datos);
+        $pdo->prepare('INSERT INTO jugadores (' . implode(',', $cols) . ', foto_ruta) VALUES (' . implode(',', array_fill(0, count($cols), '?')) . ", '')")
+            ->execute(array_values($datos));
+        return (int)$pdo->lastInsertId();
     }
 
-    public function getById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id", $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    public static function actualizar($id, array $datos) {
+        if (!$datos) return;
+        $set = implode(', ', array_map(function ($c) { return "$c = ?"; }, array_keys($datos)));
+        Database::connection()->prepare("UPDATE jugadores SET $set WHERE id = ?")->execute(array_merge(array_values($datos), [$id]));
     }
 
-    public function darDeBaja($id, $razon) {
-        $query = "UPDATE " . $this->table_name . " SET estado = 'inactivo', razon_baja = :razon, fecha_baja = NOW() WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":razon", $razon);
-        $stmt->bindParam(":id", $id);
-        return $stmt->execute();
+    public static function tieneEventos($id) {
+        $stmt = Database::connection()->prepare('SELECT COUNT(*) FROM eventos_partido WHERE jugador_id = ? OR asistente_id = ?');
+        $stmt->execute([$id, $id]);
+        return (int)$stmt->fetchColumn() > 0;
     }
 
-    public function countActivos() {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE estado = 'activo'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'];
+    public static function eliminar($id) {
+        Database::connection()->prepare('DELETE FROM jugadores WHERE id = ?')->execute([$id]);
     }
 }

@@ -1,92 +1,70 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Max-Age: 3600");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json; charset=UTF-8');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 3600');
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-require_once __DIR__ . '/../src/Core/Database.php';
-require_once __DIR__ . '/../src/Core/Response.php';
-require_once __DIR__ . '/../src/Core/Router.php';
+// Autocarga: Core\X, Controllers\X, Models\X, Utils\X -> src/<Espacio>/<X>.php
+spl_autoload_register(function ($clase) {
+    $archivo = __DIR__ . '/../src/' . str_replace('\\', '/', $clase) . '.php';
+    if (file_exists($archivo)) require_once $archivo;
+});
 
-// Controllers
-require_once __DIR__ . '/../src/Controllers/EquipoController.php';
-require_once __DIR__ . '/../src/Controllers/JugadorController.php';
-require_once __DIR__ . '/../src/Controllers/StatsController.php';
-require_once __DIR__ . '/../src/Controllers/PartidoController.php';
-require_once __DIR__ . '/../src/Controllers/EstadisticasController.php';
-require_once __DIR__ . '/../src/Controllers/AuthController.php';
-
-// Utils
-require_once __DIR__ . '/../src/Utils/JwtUtils.php';
-
-// Models
-require_once __DIR__ . '/../src/Models/EquipoModel.php';
-require_once __DIR__ . '/../src/Models/JugadorModel.php';
-require_once __DIR__ . '/../src/Models/PartidoModel.php';
-require_once __DIR__ . '/../src/Models/EstadisticaModel.php';
-
+use Core\HttpException;
+use Core\Response;
 use Core\Router;
 
 $router = new Router();
 
-// Define routes
-$router->add('GET', '/api/equipos', 'EquipoController', 'getAll');
-$router->add('GET', '/api/equipos/{id}', 'EquipoController', 'getById');
-$router->add('POST', '/api/equipos', 'EquipoController', 'create');
-
+// Sesión
 $router->add('POST', '/api/login', 'AuthController', 'login');
-$router->add('GET', '/api/mi-equipo', 'JugadorController', 'getByToken');
-$router->add('POST', '/api/mi-equipo/sub-representante', 'EquipoController', 'updateSubRepresentante');
+$router->add('GET', '/api/me', 'AuthController', 'me');
 
-// Keeping this for reference, though mi-equipo handles players now
-$router->add('GET', '/api/jugadores', 'JugadorController', 'getAll');
-$router->add('POST', '/api/jugadores', 'JugadorController', 'create');
-$router->add('POST', '/api/jugadores/{id}/edit', 'JugadorController', 'update');
-$router->add('PATCH', '/api/jugadores/{id}/baja', 'JugadorController', 'darDeBaja');
-$router->add('GET', '/api/mi-equipo/inactivos', 'JugadorController', 'getInactivosByToken');
+// Panel (admin y encargado): el servidor limita por rol — el encargado solo ve y toca su equipo.
+$router->add('GET', '/api/panel/resumen', 'PanelController', 'resumen');
 
-// Admin Routes
-require_once __DIR__ . '/../src/Controllers/AdminController.php';
-$router->add('GET', '/api/admin/equipos', 'AdminController', 'getEquipos');
-$router->add('GET', '/api/admin/equipos/{id}/jugadores', 'AdminController', 'getEquipoJugadores');
-$router->add('GET', '/api/admin/estadisticas-generales', 'AdminController', 'getEstadisticasGenerales');
-$router->add('GET', '/api/admin/encargados', 'AdminController', 'getEncargados');
+$router->add('GET', '/api/panel/equipos', 'EquiposController', 'lista');
+$router->add('GET', '/api/panel/equipos/{id}', 'EquiposController', 'ver');
+$router->add('POST', '/api/panel/equipos', 'EquiposController', 'crear');            // solo admin
+$router->add('POST', '/api/panel/equipos/{id}', 'EquiposController', 'actualizar');  // multipart (fotos)
+$router->add('DELETE', '/api/panel/equipos/{id}', 'EquiposController', 'eliminar');  // solo admin
 
-$router->add('GET', '/api/stats', 'StatsController', 'getStats');
+$router->add('GET', '/api/panel/jugadores', 'JugadoresController', 'lista');
+$router->add('GET', '/api/panel/jugadores/{id}', 'JugadoresController', 'ver');
+$router->add('POST', '/api/panel/jugadores', 'JugadoresController', 'crear');
+$router->add('POST', '/api/panel/jugadores/{id}', 'JugadoresController', 'actualizar'); // multipart (foto)
+$router->add('PATCH', '/api/panel/jugadores/{id}/baja', 'JugadoresController', 'baja');
+$router->add('PATCH', '/api/panel/jugadores/{id}/alta', 'JugadoresController', 'alta');
+$router->add('DELETE', '/api/panel/jugadores/{id}', 'JugadoresController', 'eliminar'); // solo admin
 
-// Partidos
-$router->add('POST', '/api/partidos', 'PartidoController', 'create');
-$router->add('GET', '/api/partidos', 'PartidoController', 'getAll');
-$router->add('GET', '/api/partidos/{id}', 'PartidoController', 'getById');
-$router->add('POST', '/api/partidos/{id}/eliminar', 'PartidoController', 'delete');
+$router->add('GET', '/api/panel/partidos', 'PartidosController', 'lista');
+$router->add('GET', '/api/panel/partidos/{id}', 'PartidosController', 'ver');
+$router->add('POST', '/api/panel/partidos', 'PartidosController', 'crear');
+$router->add('PUT', '/api/panel/partidos/{id}', 'PartidosController', 'actualizar');
+$router->add('DELETE', '/api/panel/partidos/{id}', 'PartidosController', 'eliminar'); // solo admin
+$router->add('GET', '/api/panel/partidos/{id}/jugadores', 'PartidosController', 'jugadores');
+$router->add('GET', '/api/panel/partidos/{id}/eventos', 'PartidosController', 'eventos');
+$router->add('POST', '/api/panel/partidos/{id}/eventos', 'PartidosController', 'crearEvento');
+$router->add('PUT', '/api/panel/partidos/{id}/eventos/{eid}', 'PartidosController', 'actualizarEvento');
+$router->add('DELETE', '/api/panel/partidos/{id}/eventos/{eid}', 'PartidosController', 'eliminarEvento');
 
-// Estadisticas Rankings
-$router->add('GET', '/api/rankings/goleadores', 'EstadisticasController', 'getGoleadores');
-$router->add('GET', '/api/rankings/porteros', 'EstadisticasController', 'getPorteros');
-$router->add('GET', '/api/rankings/tarjetas-equipos', 'EstadisticasController', 'getTarjetasEquipos');
-$router->add('GET', '/api/rankings/tarjetas-jugadores', 'EstadisticasController', 'getTarjetasJugadores');
-$router->add('GET', '/api/rankings/goleadores-por-equipo', 'EstadisticasController', 'getGoleadoresPorEquipo');
-$router->add('GET', '/api/rankings/porteros-por-equipo', 'EstadisticasController', 'getPorterosPorEquipo');
-
-// Get request URI and Method
+// Normaliza la URI (php -S local, cPanel con /deportes/Backend/api, o index.php directo)
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = str_replace(['/deportes/Backend/api', '/api/index.php'], '', $uri);
+$uri = preg_replace('#^/api#', '', $uri);
+$uri = '/api' . (($uri === '' || $uri === '/') ? '' : $uri);
 
-// Clean up URI for local php built-in server or cPanel
-$uri = str_replace('/deportes/Backend/api', '', $uri);
-$uri = str_replace('/api/index.php', '', $uri);
-$uri = str_replace('/api', '', $uri);
-
-if (empty($uri) || $uri === '/') {
-    $uri = '';
+try {
+    $router->dispatch($_SERVER['REQUEST_METHOD'], $uri);
+} catch (HttpException $e) {
+    Response::error($e->getMessage(), $e->getCode(), $e->fields);
+} catch (Throwable $e) {
+    error_log('[deportes] ' . $e);
+    Response::error('Error interno del servidor.', 500);
 }
-$uri = '/api' . $uri;
-
-$method = $_SERVER['REQUEST_METHOD'];
-
-$router->dispatch($method, $uri);
