@@ -16,8 +16,8 @@ const cerrar = () => {
 const SELECTOR = 'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex="0"]'
 
 function teclado(e) {
-  // Si hay una alerta de SweetAlert encima, ella maneja el teclado.
-  if (document.querySelector('.swal2-container')) return
+  // Si hay una alerta de SweetAlert o el visor de fotos encima, ellos manejan el teclado.
+  if (document.querySelector('.swal2-container, .visor-imagen')) return
   if (e.key === 'Escape') {
     e.preventDefault()
     cerrar()

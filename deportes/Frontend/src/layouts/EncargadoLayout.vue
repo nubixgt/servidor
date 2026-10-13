@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import EncargadoSidebar from '../components/admin/EncargadoSidebar.vue'
 import { useAuth } from '../composables/useAuth'
 import { usePanel } from '../composables/usePanel'
+import VisorImagen from '../components/admin/VisorImagen.vue'
 import { confirmarAccion, toastExito } from '../utils/alertas'
 
 const router = useRouter()
@@ -42,4 +43,5 @@ async function salir() {
       </section>
     </div>
   </div>
+  <VisorImagen />
 </template>

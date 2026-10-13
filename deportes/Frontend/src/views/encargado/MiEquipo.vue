@@ -10,11 +10,13 @@ import AdminHeading from '../../components/admin/AdminHeading.vue'
 import ModalDialog from '../../components/admin/ModalDialog.vue'
 import TeamForm from '../../components/admin/TeamForm.vue'
 import TeamBadge from '../../components/pulse/TeamBadge.vue'
+import { useVisorImagen } from '../../composables/useVisorImagen'
 
 const { state } = usePanel()
 const { sesion } = useAuth()
 const admin = useAdminData()
 const m = useCrudModal()
+const { verFoto } = useVisorImagen()
 
 const equipo = computed(() => state.teams.find((t) => +t.id === +sesion.equipo_id))
 
@@ -40,7 +42,7 @@ const datos = computed(() => [
     </AdminHeading>
 
     <section class="profile-header" :style="{ '--team-color': equipo.primary_color }">
-      <TeamBadge :team="equipo" :size="110" />
+      <span :class="{ zoomable: equipo.logo_url }" @click="verFoto(equipo.logo_url, 'Escudo · ' + equipo.name)"><TeamBadge :team="equipo" :size="110" /></span>
       <div>
         <p class="eyebrow">{{ equipo.players_count }} jugadores activos</p>
         <h1>{{ equipo.name }}</h1>
@@ -52,8 +54,8 @@ const datos = computed(() => [
         <div v-for="[nombre, valor] in datos" :key="nombre"><dt>{{ nombre }}</dt><dd>{{ valor || '—' }}</dd></div>
       </dl>
       <div v-if="equipo.foto_representante_url || equipo.sub_representante_foto_url" class="upload-field">
-        <img v-if="equipo.foto_representante_url" :src="imgUrl(equipo.foto_representante_url)" alt="Foto del representante" class="upload-preview" />
-        <img v-if="equipo.sub_representante_foto_url" :src="imgUrl(equipo.sub_representante_foto_url)" alt="Foto del sub‑representante" class="upload-preview" />
+        <img v-if="equipo.foto_representante_url" :src="imgUrl(equipo.foto_representante_url)" alt="Foto del representante" class="upload-preview zoomable" @click="verFoto(equipo.foto_representante_url, 'Representante')" />
+        <img v-if="equipo.sub_representante_foto_url" :src="imgUrl(equipo.sub_representante_foto_url)" alt="Foto del sub‑representante" class="upload-preview zoomable" @click="verFoto(equipo.sub_representante_foto_url, 'Sub‑representante')" />
       </div>
     </div>
 

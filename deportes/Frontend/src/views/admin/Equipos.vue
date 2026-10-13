@@ -9,11 +9,14 @@ import { usePaginacion } from '../../composables/usePaginacion'
 import AdminHeading from '../../components/admin/AdminHeading.vue'
 import ModalDialog from '../../components/admin/ModalDialog.vue'
 import TeamForm from '../../components/admin/TeamForm.vue'
+import EquipoDetalle from '../../components/admin/EquipoDetalle.vue'
 import TeamBadge from '../../components/pulse/TeamBadge.vue'
+import { useVisorImagen } from '../../composables/useVisorImagen'
 
 const { state } = usePanel()
 const admin = useAdminData()
 const m = useCrudModal()
+const { verFoto } = useVisorImagen()
 const busqueda = ref('')
 
 const eliminar = (t) =>
@@ -45,13 +48,18 @@ const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
       <table class="data-table">
         <thead><tr><th>Equipo</th><th>Representante</th><th class="hide-mobile">Teléfono</th><th>Jugadores</th><th>Acciones</th></tr></thead>
         <tbody>
-          <tr v-for="t in pag.visibles.value" :key="t.id">
-            <td><span class="table-person"><TeamBadge :team="t" :size="30" />{{ t.name }}</span></td>
+          <tr v-for="t in pag.visibles.value" :key="t.id" class="fila-click" tabindex="0" @click="m.abrir('detalle', t)" @keydown.enter="m.abrir('detalle', t)">
+            <td>
+              <span class="table-person">
+                <span :class="{ zoomable: t.logo_url }" :title="t.logo_url ? 'Ver escudo' : undefined" @click.stop="verFoto(t.logo_url, 'Escudo · ' + t.name)"><TeamBadge :team="t" :size="30" /></span>
+                {{ t.name }}
+              </span>
+            </td>
             <td class="muted">{{ t.representante }}</td>
             <td class="hide-mobile muted">{{ t.telefono }}</td>
             <td>{{ t.players_count }}</td>
             <td>
-              <div class="admin-tools">
+              <div class="admin-tools" @click.stop>
                 <button class="icon-btn" :aria-label="'Editar ' + t.name" title="Editar" @click="m.abrir('form', t)"><PencilIcon :size="14" /></button>
                 <button class="icon-btn" :aria-label="'Eliminar ' + t.name" title="Eliminar" @click="eliminar(t)"><Trash2Icon :size="14" /></button>
               </div>
@@ -62,6 +70,10 @@ const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
       </table>
     </div>
     <Paginacion v-model:pagina="pag.pagina.value" :total-paginas="pag.totalPaginas.value" :desde="pag.desde.value" :hasta="pag.hasta.value" :total="pag.total.value" />
+
+    <ModalDialog v-if="m.modo.value === 'detalle'" title="Detalle del equipo" @close="m.cerrar">
+      <EquipoDetalle :equipo="m.item.value" @editar="m.abrir('form', m.item.value)" />
+    </ModalDialog>
 
     <ModalDialog v-if="m.modo.value === 'form'" :title="m.item.value ? 'Editar equipo' : 'Añadir equipo'" :busy="m.ocupado.value" @close="m.cerrar">
       <TeamForm

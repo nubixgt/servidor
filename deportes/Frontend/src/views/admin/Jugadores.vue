@@ -11,12 +11,15 @@ import { usePaginacion } from '../../composables/usePaginacion'
 import AdminHeading from '../../components/admin/AdminHeading.vue'
 import ModalDialog from '../../components/admin/ModalDialog.vue'
 import PlayerForm from '../../components/admin/PlayerForm.vue'
+import JugadorDetalle from '../../components/admin/JugadorDetalle.vue'
+import { useVisorImagen } from '../../composables/useVisorImagen'
 
 // Lo usan el admin (todos los equipos) y el encargado (el servidor ya devuelve solo su equipo).
 const { state } = usePanel()
 const { sesion } = useAuth()
 const admin = useAdminData()
 const m = useCrudModal()
+const { verFoto } = useVisorImagen()
 const esAdmin = computed(() => sesion.rol === 'admin')
 const busqueda = ref('')
 const equipo = ref('')
@@ -69,10 +72,10 @@ function abrirBaja(j) {
       <table class="data-table">
         <thead><tr><th>Jugador</th><th v-if="esAdmin" class="hide-mobile">Equipo</th><th>Posición</th><th>Dorsal</th><th>Acciones</th></tr></thead>
         <tbody>
-          <tr v-for="j in pag.visibles.value" :key="j.id">
+          <tr v-for="j in pag.visibles.value" :key="j.id" class="fila-click" tabindex="0" @click="m.abrir('detalle', j)" @keydown.enter="m.abrir('detalle', j)">
             <td>
               <span class="table-person">
-                <img v-if="j.photo_url" :src="imgUrl(j.photo_url)" alt="" loading="lazy" />
+                <img v-if="j.photo_url" class="zoomable" title="Ver foto" :src="imgUrl(j.photo_url)" alt="" loading="lazy" @click.stop="verFoto(j.photo_url, j.full_name)" />
                 <span>{{ j.full_name }}<small>{{ j.status === 'inactivo' ? 'Baja: ' + (j.razon_baja || '—') : j.telefono }}</small></span>
               </span>
             </td>
@@ -80,7 +83,7 @@ function abrirBaja(j) {
             <td class="muted">{{ POS[j.position] || '—' }}</td>
             <td>{{ j.jersey_number ? '#' + j.jersey_number : '—' }}</td>
             <td>
-              <div class="admin-tools">
+              <div class="admin-tools" @click.stop>
                 <button class="icon-btn" :aria-label="'Editar ' + j.full_name" title="Editar" @click="m.abrir('form', j)"><PencilIcon :size="14" /></button>
                 <button v-if="j.status === 'activo'" class="icon-btn" :aria-label="'Dar de baja a ' + j.full_name" title="Dar de baja" @click="abrirBaja(j)"><UserMinusIcon :size="14" /></button>
                 <button v-else class="icon-btn" :aria-label="'Reactivar a ' + j.full_name" title="Reactivar" @click="m.ejecutar(() => admin.altaJugador(j.id), 'Jugador reactivado.')"><UserCheckIcon :size="14" /></button>
@@ -93,6 +96,10 @@ function abrirBaja(j) {
       </table>
     </div>
     <Paginacion v-model:pagina="pag.pagina.value" :total-paginas="pag.totalPaginas.value" :desde="pag.desde.value" :hasta="pag.hasta.value" :total="pag.total.value" />
+
+    <ModalDialog v-if="m.modo.value === 'detalle'" title="Detalle del jugador" @close="m.cerrar">
+      <JugadorDetalle :jugador="m.item.value" @editar="m.abrir('form', m.item.value)" />
+    </ModalDialog>
 
     <ModalDialog v-if="m.modo.value === 'form'" :title="m.item.value ? 'Editar jugador' : 'Añadir jugador'" :busy="m.ocupado.value" @close="m.cerrar">
       <PlayerForm
