@@ -140,6 +140,66 @@ class _SearchSheetState extends State<_SearchSheet> {
   }
 }
 
+/// Botones de selección única (ej. Sí / No). Solo se puede elegir uno.
+class ChoiceButtons extends FormField<String> {
+  ChoiceButtons({
+    super.key,
+    required String value,
+    required List<String> options,
+    required ValueChanged<String> onChanged,
+    bool required = true,
+  }) : super(
+          initialValue: value,
+          validator: (v) => required && (v == null || v.isEmpty) ? 'Selecciona una opción' : null,
+          builder: (state) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                for (var i = 0; i < options.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(
+                    child: Semantics(
+                      button: true,
+                      selected: state.value == options[i],
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          state.didChange(options[i]);
+                          onChanged(options[i]);
+                        },
+                        child: Container(
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            gradient: state.value == options[i] ? const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF08A766), Color(0xFF00734E)]) : null,
+                            color: state.value == options[i] ? null : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: state.hasError ? AppColors.red : (state.value == options[i] ? const Color(0xFF32B782) : const Color(0xFFD2E4DF))),
+                          ),
+                          child: Text(options[i], style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: state.value == options[i] ? Colors.white : AppColors.navy)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ]),
+              if (state.hasError) Padding(padding: const EdgeInsets.only(top: 6, left: 4), child: Text(state.errorText!, style: const TextStyle(fontSize: 12, color: AppColors.red))),
+            ]);
+          },
+        );
+
+  @override
+  FormFieldState<String> createState() => _ChoiceState();
+}
+
+class _ChoiceState extends FormFieldState<String> {
+  @override
+  void didUpdateWidget(covariant ChoiceButtons oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final nv = widget.initialValue ?? '';
+    if (nv != (value ?? '')) setValue(nv);
+  }
+}
+
 /// Lista desplegable simple (equivale a SelectField.vue).
 class SelectBox extends StatelessWidget {
   final String value;

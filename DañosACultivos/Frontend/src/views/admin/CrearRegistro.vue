@@ -50,7 +50,14 @@
                             </div>
                             <div>
                                 <label class="label">Agricultor en RUA *</label>
-                                <SelectField v-model="form.agricultorRua" :options="['Sí', 'No']" placeholder="Seleccione..." />
+                                <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Agricultor en RUA">
+                                    <button
+                                        v-for="op in ['Sí', 'No']" :key="op" type="button" role="radio"
+                                        :aria-checked="form.agricultorRua === op"
+                                        class="btn" :class="form.agricultorRua === op ? 'btn-primary' : 'btn-outline'"
+                                        @click="form.agricultorRua = op"
+                                    >{{ op }}</button>
+                                </div>
                             </div>
                             <div v-if="form.agricultorRua === 'Sí'">
                                 <label class="label" for="f-rua">Código de RUA *</label>

@@ -452,7 +452,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
         ),
       ),
       LabeledField(label: 'Centro poblado *', child: TextFormField(controller: _centro, validator: _req, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(hintText: 'Ej. Aldea El Rosario'), onChanged: (_) => setState(() {}))),
-      LabeledField(label: 'Agricultor en RUA *', child: SelectBox(value: _rua, options: const ['Sí', 'No'], required: true, onChanged: (v) => setState(() => _rua = v))),
+      LabeledField(label: 'Agricultor en RUA *', child: ChoiceButtons(value: _rua, options: const ['Sí', 'No'], onChanged: (v) => setState(() => _rua = v))),
       if (_rua == 'Sí') LabeledField(label: 'Código de RUA *', child: TextFormField(controller: _codigoRua, validator: _req, decoration: const InputDecoration(hintText: 'Escriba el código de RUA'))),
       LabeledField(label: 'Lote / parcela *', child: TextFormField(controller: _lote, validator: _req, decoration: const InputDecoration(hintText: 'Ej. Lote 3 - El Potrero'), onChanged: (_) => setState(() {}))),
       _gpsBox(),
