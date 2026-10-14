@@ -4,12 +4,8 @@
 
         <!-- Sidebar (escritorio ancho) -->
         <aside class="hidden xl:flex fixed left-4 top-4 bottom-4 w-[230px] z-40 flex-col gap-4">
-            <div class="flex items-center gap-3 px-1">
-                <span class="logo"><LogoLeaf /></span>
-                <div class="leading-none">
-                    <p class="text-[22px] font-extrabold" style="color: var(--navy);">Daños a</p>
-                    <p class="text-[26px] font-extrabold" style="color: var(--green);">Cultivos</p>
-                </div>
+            <div class="px-1">
+                <img :src="logo" alt="Daños a Cultivos" class="w-full h-auto" />
             </div>
             <nav class="side flex-1 p-3 space-y-2" aria-label="Navegación principal">
                 <router-link v-for="i in items" :key="i.to" :to="i.to" class="side-link" active-class="" exact-active-class="side-link-active">
@@ -28,7 +24,7 @@
         <!-- Barra superior (pantallas menores) -->
         <header class="xl:hidden px-3.5 sm:px-6 pt-4">
             <div class="glass flex items-center gap-3 px-3 py-2" style="border-radius: 999px;">
-                <span class="logo" style="width: 40px; height: 40px;"><LogoLeaf /></span>
+                <img :src="logo" alt="Daños a Cultivos" class="h-11 w-auto flex-shrink-0" />
                 <p class="font-extrabold hidden sm:block" style="color: var(--green-dark);">Daños a Cultivos</p>
                 <nav class="ml-auto flex gap-1" aria-label="Navegación principal">
                     <router-link v-for="i in items" :key="i.to" :to="i.to" class="top-link" exact-active-class="top-link-active">
@@ -46,7 +42,7 @@
 </template>
 
 <script setup>
-import { h } from 'vue';
+import logo from '../../assets/images/DC sin fondo.png';
 import { useRouter } from 'vue-router';
 import { Squares2X2Icon, DocumentTextIcon, PencilSquareIcon, UsersIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
 import authService from '../../services/authService';
@@ -69,21 +65,9 @@ const todosItems = [
     { to: '/usuarios', label: 'Usuarios', icon: UsersIcon, roles: ['admin'] },
 ];
 const items = todosItems.filter((i) => !i.roles || i.roles.includes(user?.rol));
-
-const LogoLeaf = () => h('svg', { viewBox: '0 0 48 48', class: 'w-3/5 h-3/5', fill: 'none', 'aria-hidden': 'true' }, [
-    h('path', { d: 'M24 42V22', stroke: '#fff', 'stroke-width': 3, 'stroke-linecap': 'round' }),
-    h('path', { d: 'M24 26C24 15 15 9 6 9c0 11 7 17 18 17Z', fill: '#fff' }),
-    h('path', { d: 'M24 22C24 13 31 7 42 7c0 10-7 15-18 15Z', fill: '#BFEBD0' }),
-]);
 </script>
 
 <style scoped>
-.logo {
-    width: 64px; height: 64px; border-radius: 20px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(180deg, #0a9a4c, #056B37);
-    box-shadow: 0 10px 25px rgba(5, 107, 55, .35);
-}
 .side {
     background: rgba(9, 60, 40, .55);
     border: 1px solid rgba(255, 255, 255, .25);

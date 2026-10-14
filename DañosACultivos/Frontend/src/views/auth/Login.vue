@@ -4,14 +4,8 @@
 
         <div class="glass w-full max-w-[420px] p-6 sm:p-8">
             <div class="flex flex-col items-center text-center mb-6">
-                <div class="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center mb-3" style="box-shadow: 0 10px 30px rgba(11,31,77,.14);">
-                    <svg viewBox="0 0 48 48" class="w-10 h-10" fill="none" aria-hidden="true">
-                        <path d="M24 42V22" stroke="#056B37" stroke-width="3" stroke-linecap="round" />
-                        <path d="M24 26C24 15 15 9 6 9c0 11 7 17 18 17Z" fill="#079447" />
-                        <path d="M24 22C24 13 31 7 42 7c0 10-7 15-18 15Z" fill="#35B96B" />
-                    </svg>
-                </div>
-                <h1 class="text-[28px] font-extrabold leading-tight" style="color: var(--green-dark);">Daños a Cultivos</h1>
+                <img :src="logoLogin" alt="Daños a Cultivos - Ministerio de Agricultura, Ganadería y Alimentación" class="w-full max-w-[260px] h-auto mb-3" />
+                <h1 class="sr-only">Daños a Cultivos</h1>
                 <p class="section-desc">Inicia sesión para continuar</p>
             </div>
 
@@ -43,6 +37,7 @@
 </template>
 
 <script setup>
+import logoLogin from '../../assets/images/DClogin.png';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
