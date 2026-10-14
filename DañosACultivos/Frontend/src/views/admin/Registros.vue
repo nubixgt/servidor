@@ -144,7 +144,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.tabla thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #60708D; font-weight: 600; padding: 10px; border-bottom: 1px solid #DCE5EF; background: rgba(255,255,255,.55); white-space: nowrap; }
-.tabla tbody td { padding: 12px 10px; font-size: 13px; color: #0B1F4D; border-bottom: 1px solid rgba(96,112,141,.16); }
+.tabla thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7a928b; font-weight: 600; padding: 12px 13px; border-bottom: 1px solid #d8e6e4; background: #f0f6f2; white-space: nowrap; }
+.tabla tbody td { padding: 15px 13px; font-size: 12px; color: #0b3446; border-bottom: 1px solid #e0eae4; }
+.tabla tbody tr:hover { background: rgba(238,247,241,.43); }
 .tabla tbody tr:last-child td { border-bottom: none; }
 </style>

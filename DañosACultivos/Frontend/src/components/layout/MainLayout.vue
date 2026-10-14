@@ -69,22 +69,23 @@ const items = todosItems.filter((i) => !i.roles || i.roles.includes(user?.rol));
 
 <style scoped>
 .side {
-    background: rgba(9, 60, 40, .55);
-    border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 24px;
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 12px 35px rgba(13, 43, 31, .25);
+    background: linear-gradient(160deg, rgba(10, 57, 55, .91), rgba(13, 66, 51, .81));
+    border: 1px solid rgba(255, 255, 255, .46);
+    border-radius: 26px;
+    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 14px 40px rgba(6, 39, 26, .15);
 }
 .side-link {
-    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-    border-radius: 14px; color: rgba(255, 255, 255, .9); font-weight: 500; transition: background .18s;
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    border-radius: 13px; color: #d2e7e0; font-size: 14px; transition: background .18s;
 }
-.side-link:hover { background: rgba(255, 255, 255, .12); }
-.side-link-active { background: linear-gradient(180deg, #14a857, #079447); color: #fff; font-weight: 700; box-shadow: 0 8px 20px rgba(7, 148, 71, .35); }
+.side-link:hover { background: rgba(255, 255, 255, .08); }
+.side-link-active { background: linear-gradient(130deg, #01975b, #007a57); color: #fff; box-shadow: inset 0 1px rgba(255, 255, 255, .25), 0 5px 20px rgba(0, 45, 41, .15); }
+.side-link-active::after { content: ''; width: 5px; height: 5px; background: #a6eeba; border-radius: 50%; margin-left: auto; }
 .top-link {
     display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px;
     font-size: 13px; font-weight: 600; color: var(--navy);
 }
-.top-link-active { background: var(--green); color: #fff; }
+.top-link-active { background: linear-gradient(130deg, #01975b, #007a57); color: #fff; }
 </style>
