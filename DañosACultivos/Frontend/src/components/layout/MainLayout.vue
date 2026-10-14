@@ -48,7 +48,7 @@
 <script setup>
 import { h } from 'vue';
 import { useRouter } from 'vue-router';
-import { Squares2X2Icon, DocumentTextIcon, UsersIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { Squares2X2Icon, DocumentTextIcon, PencilSquareIcon, UsersIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline';
 import authService from '../../services/authService';
 import { confirmDialog, toastSuccess } from '../../utils/alerts';
 
@@ -64,6 +64,7 @@ const user = authService.user();
 
 const todosItems = [
     { to: '/', label: 'Dashboard', icon: Squares2X2Icon },
+    { to: '/registros/crear', label: 'Crear Registros', icon: PencilSquareIcon },
     { to: '/registros', label: 'Registros', icon: DocumentTextIcon },
     { to: '/usuarios', label: 'Usuarios', icon: UsersIcon, roles: ['admin'] },
 ];

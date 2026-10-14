@@ -17,7 +17,7 @@
                         <button v-if="filtros.desde || filtros.hasta" class="p-1" aria-label="Limpiar fechas" @click="filtros.desde = filtros.hasta = ''"><XMarkIcon class="w-4 h-4" /></button>
                     </div>
                     <button class="btn btn-outline btn-sm" :disabled="loading" @click="cargar"><ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': loading }" /></button>
-                    <router-link to="/registros" class="btn btn-primary btn-sm"><PlusIcon class="w-5 h-5" />Nuevo registro</router-link>
+                    <router-link to="/registros/crear" class="btn btn-primary btn-sm"><PlusIcon class="w-5 h-5" />Nuevo registro</router-link>
                 </div>
             </header>
 
@@ -194,12 +194,6 @@
                         <a v-for="f in detalle.fotos" :key="f.id" :href="fotoUrl(detalle, f)" target="_blank" rel="noopener" :title="f.nombre">
                             <img :src="fotoUrl(detalle, f)" :alt="f.nombre" loading="lazy" class="w-full aspect-square object-cover rounded-xl" style="border: 1px solid var(--input-border);" />
                         </a>
-                    </div>
-                </div>
-                <div v-if="detalle.puntos.length" class="mt-4">
-                    <p class="label">Puntos de muestreo</p>
-                    <div v-for="(p, i) in detalle.puntos" :key="i" class="card-inner px-3 py-2 mb-2 text-[13px]">
-                        <b>{{ p.ref || 'Punto ' + (i + 1) }}</b> — incidencia {{ p.incidencia }}, severidad {{ p.severidad }}<span v-if="p.obs"> · {{ p.obs }}</span>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,8 @@ const routes = [
         meta: { requiresAuth: true },
         children: [
             { path: '', name: 'Dashboard', component: () => import('../views/admin/Dashboard.vue') },
-            { path: 'registros', name: 'DanosCultivos', component: () => import('../views/admin/DanosCultivos.vue') },
+            { path: 'registros', name: 'Registros', component: () => import('../views/admin/Registros.vue') },
+            { path: 'registros/crear', name: 'CrearRegistro', component: () => import('../views/admin/CrearRegistro.vue') },
             { path: 'usuarios', name: 'Usuarios', component: () => import('../views/admin/Usuarios.vue'), meta: { roles: ['admin'] } },
         ],
     },

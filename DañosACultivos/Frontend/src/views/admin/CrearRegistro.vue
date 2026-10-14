@@ -3,7 +3,7 @@
         <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-32 lg:pb-8">
             <!-- Encabezado -->
             <header class="mb-4">
-                <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Registros</h1>
+                <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Crear Registros</h1>
                 <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Registro de afectaciones en campo</p>
             </header>
 
@@ -47,7 +47,7 @@
                     <p class="mt-auto pt-8 text-lg font-bold leading-snug" style="color: var(--green-dark);">Juntos por un campo más resiliente</p>
                 </aside>
 
-                <!-- Columna central: secciones 1 a 4 -->
+                <!-- Columna central: secciones 1 a 3 -->
                 <div class="space-y-[18px] min-w-0">
                     <!-- 1. Ubicación -->
                     <section id="sec-1" class="glass p-5 sm:p-6 scroll-mt-28">
@@ -64,8 +64,28 @@
                                 <input id="f-fecha" v-model="form.fecha" type="date" required class="field" />
                             </div>
                             <div>
-                                <label class="label" for="f-tecnico">Técnico / productor *</label>
+                                <label class="label" for="f-tecnico">Productor *</label>
                                 <input id="f-tecnico" v-model="form.tecnico" required placeholder="Ej. Juan Pérez" class="field" />
+                            </div>
+                            <div>
+                                <label class="label">Departamento *</label>
+                                <SearchSelect v-model="form.departamento" :options="DEPARTAMENTOS" placeholder="Buscar departamento…" required />
+                            </div>
+                            <div>
+                                <label class="label">Municipio *</label>
+                                <SearchSelect v-model="form.municipio" :options="municipios" :placeholder="form.departamento ? 'Buscar municipio…' : 'Seleccione primero el departamento'" required />
+                            </div>
+                            <div>
+                                <label class="label" for="f-centro">Centro poblado *</label>
+                                <input id="f-centro" v-model="form.centroPoblado" required placeholder="Ej. Aldea El Rosario" class="field" />
+                            </div>
+                            <div>
+                                <label class="label">Agricultor en RUA *</label>
+                                <SelectField v-model="form.agricultorRua" :options="['Sí', 'No']" placeholder="Seleccione..." />
+                            </div>
+                            <div v-if="form.agricultorRua === 'Sí'">
+                                <label class="label" for="f-rua">Código de RUA *</label>
+                                <input id="f-rua" v-model="form.codigoRua" required placeholder="Escriba el código de RUA" class="field" />
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="label" for="f-lote">Lote / parcela *</label>
@@ -78,9 +98,9 @@
                             <span>Precisión: <b class="font-mono" style="color: var(--navy);">{{ gps.acc ?? '—' }}</b> m</span>
                             <button type="button" class="btn btn-outline btn-sm sm:ml-auto" :disabled="gpsBuscando" @click="capturarGPS">
                                 <ViewfinderCircleIcon class="w-5 h-5" style="color: var(--blue);" />
-                                {{ gpsBuscando ? 'Buscando…' : 'Usar mi ubicación actual' }}
+                                {{ gpsBuscando ? 'Buscando…' : 'Usar mi ubicación actual *' }}
                             </button>
-                            <p class="hint w-full !mt-0">En campo, espere a que la precisión sea menor a 10 m.</p>
+                            <p class="hint w-full !mt-0">En campo, espere a que la precisión sea menor a 10 m. La ubicación actual es obligatoria.</p>
                         </div>
                     </section>
 
@@ -90,19 +110,16 @@
                             <span class="icon-badge" style="background: var(--green);">
                                 <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor" aria-hidden="true"><path d="M12 21v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /><path d="M12 14C12 8.5 8 5 3 5c0 5.5 3.5 9 9 9Z" /><path d="M12 12c0-4.5 3-7.500 8-7.500 0 4.500-3 7.500-8 7.500Z" opacity=".8" /></svg>
                             </span>
-                            <div>
+                            <div class="min-w-0 flex-1">
                                 <h2 class="section-title">2. Cultivo</h2>
                                 <p class="section-desc">Información del cultivo afectado.</p>
                             </div>
+                            <button type="button" class="btn btn-outline btn-sm flex-shrink-0" @click="agregarAsociado"><PlusIcon class="w-5 h-5" /> Agregar cultivo asociado</button>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="label">Cultivo *</label>
-                                <SelectField v-model="form.cultivo" :options="CULTIVOS" placeholder="Seleccione..." />
-                            </div>
-                            <div v-if="form.cultivo === 'Otro'">
-                                <label class="label" for="f-cultivo-otro">Especifique el cultivo *</label>
-                                <input id="f-cultivo-otro" v-model="form.cultivoOtro" required placeholder="Escriba el cultivo" class="field" />
+                                <SearchSelect v-model="form.cultivo" :options="CULTIVOS" placeholder="Buscar cultivo…" required />
                             </div>
                             <div>
                                 <label class="label">Estado fenológico</label>
@@ -115,6 +132,33 @@
                             <div>
                                 <label class="label" for="f-area-afectada">Superficie afectada (ha) *</label>
                                 <input id="f-area-afectada" v-model="form.areaAfectada" type="number" min="0" step="0.01" required placeholder="Ej. 8.2" class="field" />
+                            </div>
+                        </div>
+
+                        <div v-for="(a, i) in form.asociados" :key="a.uid" class="card-inner mt-4 p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-bold" style="color: var(--navy);">Cultivo asociado {{ i + 1 }}</span>
+                                <button type="button" class="flex items-center gap-1 text-[13px] font-semibold min-h-[44px] px-2" style="color: var(--red);" @click="quitarAsociado(i)">
+                                    <TrashIcon class="w-4 h-4" /> Quitar
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="label">Cultivo *</label>
+                                    <SearchSelect v-model="a.cultivo" :options="CULTIVOS" placeholder="Buscar cultivo…" required />
+                                </div>
+                                <div>
+                                    <label class="label">Estado fenológico</label>
+                                    <SelectField v-model="a.etapa" :options="ETAPAS" placeholder="Seleccione..." />
+                                </div>
+                                <div>
+                                    <label class="label">Superficie total del lote (ha)</label>
+                                    <input v-model="a.areaLote" type="number" min="0" step="0.01" placeholder="Ej. 25.5" class="field" />
+                                </div>
+                                <div>
+                                    <label class="label">Superficie afectada (ha) *</label>
+                                    <input v-model="a.areaAfectada" type="number" min="0" step="0.01" required placeholder="Ej. 8.2" class="field" />
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -131,7 +175,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="label">Causa del daño *</label>
-                                <SelectField v-model="form.causa" :options="CAUSAS" placeholder="Seleccione..." />
+                                <SearchSelect v-model="form.causa" :options="CAUSAS" placeholder="Buscar causa…" required />
                             </div>
                             <div v-if="form.causa === 'Otra'">
                                 <label class="label" for="f-causa-otra">Especifique la causa *</label>
@@ -158,55 +202,15 @@
                             </div>
                         </div>
                     </section>
-
-                    <!-- 4. Muestreo -->
-                    <section id="sec-4" class="glass p-5 sm:p-6 scroll-mt-28">
-                        <div class="flex items-center gap-3 mb-5">
-                            <span class="icon-badge" style="background: var(--purple);"><ChartBarIcon class="w-6 h-6" /></span>
-                            <div>
-                                <h2 class="section-title">4. Puntos de muestreo</h2>
-                                <p class="section-desc">Severidad observada en cada punto.</p>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <div v-for="(p, i) in form.puntos" :key="p.uid" class="card-inner p-4 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold" style="color: var(--navy);">Punto de muestreo {{ i + 1 }}</span>
-                                    <button v-if="form.puntos.length > 1" type="button" class="flex items-center gap-1 text-[13px] font-semibold min-h-[44px] px-2" style="color: var(--red);" @click="quitarPunto(i)">
-                                        <TrashIcon class="w-4 h-4" /> Quitar
-                                    </button>
-                                </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="label">Ubicación / referencia</label>
-                                        <input v-model="p.ref" placeholder="Ej. sector norte" class="field" />
-                                    </div>
-                                    <div>
-                                        <label class="label">% plantas afectadas</label>
-                                        <input v-model="p.incidencia" type="number" min="0" max="100" placeholder="0–100" class="field" />
-                                    </div>
-                                    <div>
-                                        <label class="label">Severidad</label>
-                                        <SelectField v-model="p.severidad" :options="SEVERIDADES" placeholder="—" />
-                                    </div>
-                                    <div>
-                                        <label class="label">Observación</label>
-                                        <input v-model="p.obs" placeholder="Ej. rotura de tallo" class="field" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-outline btn-sm mt-4" @click="agregarPunto"><PlusIcon class="w-5 h-5" /> Agregar punto de muestreo</button>
-                    </section>
                 </div>
 
                 <!-- Columna derecha: evidencia, resumen, acciones -->
                 <div class="space-y-[18px] min-w-0 lg:sticky lg:top-28">
-                    <section id="sec-5" class="glass p-5 sm:p-6 scroll-mt-28">
+                    <section id="sec-4" class="glass p-5 sm:p-6 scroll-mt-28">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="icon-badge" style="background: var(--green);"><CameraIcon class="w-6 h-6" /></span>
                             <div class="min-w-0 flex-1">
-                                <h2 class="section-title">5. Evidencia fotográfica</h2>
+                                <h2 class="section-title">4. Evidencia fotográfica</h2>
                                 <p class="section-desc">Adjunta fotografías del daño observado.</p>
                             </div>
                             <span class="text-sm font-semibold self-start" style="color: var(--muted);">{{ fotos.length }}/{{ MAX_FOTOS }}</span>
@@ -260,105 +264,35 @@
                     </div>
                 </div>
             </form>
-
-            <!-- Registros guardados -->
-            <section class="glass p-5 sm:p-6 mt-[18px]">
-                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-3">
-                        <span class="icon-badge" style="background: var(--green-dark);"><TableCellsIcon class="w-6 h-6" /></span>
-                        <div>
-                            <h2 class="section-title">Registros guardados</h2>
-                            <p class="section-desc">
-                                {{ registros.length }} registro(s) · {{ totalHa.toFixed(2) }} ha afectadas · Pérdida estimada acumulada {{ totalPerdida.toFixed(2) }}
-                            </p>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-sm" @click="exportarCSV"><ArrowDownTrayIcon class="w-5 h-5" /> Exportar CSV</button>
-                </div>
-
-                <div v-if="loading" class="py-10 text-center text-sm" style="color: var(--muted);">Cargando…</div>
-                <div v-else-if="!registros.length" class="py-10 text-center text-sm" style="color: var(--muted);">Aún no hay registros guardados.</div>
-                <div v-else class="overflow-x-auto">
-                    <table class="tabla w-full">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th><th>Lote</th><th>Cultivo</th><th>Etapa</th><th>Causa</th>
-                                <th>ha afect.</th><th>% daño</th><th>Pérdida est.</th><th>Severidad</th>
-                                <th>GPS</th><th>Fotos</th><th>Técnico</th><th>Notas</th><th><span class="sr-only">Eliminar</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="r in registros" :key="r.id">
-                                <td class="whitespace-nowrap">{{ r.fecha }}</td>
-                                <td>{{ r.lote }}</td>
-                                <td>{{ r.cultivo }}</td>
-                                <td>{{ r.etapa || '—' }}</td>
-                                <td>{{ r.causa }}</td>
-                                <td>{{ r.areaAfectada }}</td>
-                                <td>{{ r.danoPorc }}%</td>
-                                <td class="whitespace-nowrap">{{ r.perdidaEstimada ? `${r.perdidaEstimada} ${r.unidad}` : '—' }}</td>
-                                <td class="whitespace-nowrap">
-                                    <template v-if="sevMax(r) !== null">
-                                        <span class="badge" :class="SEV_CLASE[sevMax(r)]">{{ SEV_LABEL[sevMax(r)] }}</span>
-                                        <span class="text-[11px] ml-1" style="color: var(--muted);">({{ r.puntos.filter((p) => p.severidad !== '').length }} pts)</span>
-                                    </template>
-                                    <template v-else>—</template>
-                                </td>
-                                <td class="whitespace-nowrap font-mono text-[11px]">{{ r.gps || '—' }}</td>
-                                <td>{{ r.fotos?.length || '—' }}</td>
-                                <td>{{ r.tecnico }}</td>
-                                <td class="max-w-[220px] truncate" :title="r.notas">{{ r.notas || '—' }}</td>
-                                <td>
-                                    <button type="button" class="p-2 rounded-lg hover:bg-red-50" title="Eliminar" @click="eliminar(r)">
-                                        <TrashIcon class="w-5 h-5" style="color: var(--red);" />
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, reactive, computed, watch, onBeforeUnmount } from 'vue';
 import SelectField from '../../components/ui/SelectField.vue';
+import SearchSelect from '../../components/ui/SearchSelect.vue';
 import danoCultivoService from '../../services/danoCultivoService';
-import { toastSuccess, toastError, toastInfo, alertError, confirmDialog } from '../../utils/alerts';
+import { CULTIVOS, CAUSAS_DANO } from '../../data/catalogos';
+import { DEPARTAMENTOS, MUNICIPIOS } from '../../data/guatemala';
+import { toastSuccess, toastError, toastInfo, alertError } from '../../utils/alerts';
 import {
     MapPinIcon, ViewfinderCircleIcon, CameraIcon, PlusIcon, TrashIcon, XMarkIcon, CheckIcon,
-    ArrowPathIcon, TableCellsIcon, ArrowDownTrayIcon, ExclamationTriangleIcon, ChartBarIcon,
+    ArrowPathIcon, ArrowDownTrayIcon, ExclamationTriangleIcon, ChartBarIcon,
     DocumentTextIcon, PaperAirplaneIcon, BeakerIcon,
 } from '@heroicons/vue/24/outline';
 
-const CULTIVOS = [
-    'Maíz', 'Frijol', 'Arroz', 'Sorgo', 'Trigo', 'Papa', 'Tomate', 'Cebolla', 'Chile', 'Café',
-    'Caña de azúcar', 'Banano / Plátano', 'Cardamomo', 'Palma africana', 'Hortalizas', 'Frutales', 'Pasturas', 'Otro',
-];
 const ETAPAS = ['Siembra / Emergencia', 'Vegetativo', 'Floración', 'Llenado de grano / Fructificación', 'Madurez', 'Cosechado'];
-const CAUSAS = [
-    'Granizo', 'Helada', 'Sequía / Estrés hídrico', 'Inundación / Exceso de lluvia', 'Viento / Tormenta',
-    'Plaga (insectos)', 'Enfermedad', 'Fauna silvestre / Aves', 'Incendio', 'Malezas (competencia)',
-    'Fitotoxicidad / Error de aplicación', 'Otra',
-];
-const SEVERIDADES = [
-    { value: '0', label: '0 — Sin daño' },
-    { value: '1', label: '1 — Leve' },
-    { value: '2', label: '2 — Moderado' },
-    { value: '3', label: '3 — Grave' },
-];
-const SEV_LABEL = { 0: 'Sin daño', 1: 'Leve', 2: 'Moderado', 3: 'Grave' };
-const SEV_CLASE = { 0: 'ok', 1: 'ok', 2: 'mid', 3: 'high' };
+const CAUSAS = [...CAUSAS_DANO, 'Otra'];
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 let uidSeq = 0;
-const nuevoPunto = () => ({ uid: ++uidSeq, ref: '', incidencia: '', severidad: '', obs: '' });
+const nuevoAsociado = () => ({ uid: ++uidSeq, cultivo: '', etapa: '', areaLote: '', areaAfectada: '' });
 const formVacio = () => ({
-    fecha: hoy(), tecnico: '', lote: '', cultivo: '', cultivoOtro: '', etapa: '',
+    fecha: hoy(), tecnico: '', departamento: '', municipio: '', centroPoblado: '', agricultorRua: '', codigoRua: '',
+    lote: '', cultivo: '', etapa: '', asociados: [],
     causa: '', causaOtra: '', areaLote: '', areaAfectada: '', danoPorc: '', rendEsperado: '',
-    unidad: 't/ha', perdidaEstimada: '', notas: '', puntos: [nuevoPunto()],
+    unidad: 't/ha', perdidaEstimada: '', notas: '',
 });
 
 const form = reactive(formVacio());
@@ -368,12 +302,12 @@ const fotos = ref([]); // { nombre, url }
 const fotosInput = ref(null);
 const MAX_FOTOS = 10;
 const perdidaManual = ref(false);
-const registros = ref([]);
-const loading = ref(true);
 const guardando = ref(false);
 
-const totalHa = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.areaAfectada) || 0), 0));
-const totalPerdida = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.perdidaEstimada) || 0), 0));
+const municipios = computed(() => MUNICIPIOS[form.departamento] || []);
+// Al cambiar de departamento, el municipio elegido deja de ser válido.
+watch(() => form.departamento, () => { form.municipio = ''; });
+watch(() => form.agricultorRua, (v) => { if (v !== 'Sí') form.codigoRua = ''; });
 
 // Pérdida = ha afectadas × rendimiento × %daño, salvo que el usuario la haya editado.
 watch(() => [form.areaAfectada, form.rendEsperado, form.danoPorc], ([sup, rend, porc]) => {
@@ -382,8 +316,8 @@ watch(() => [form.areaAfectada, form.rendEsperado, form.danoPorc], ([sup, rend, 
     form.perdidaEstimada = s > 0 && r > 0 && p > 0 ? (s * r * p / 100).toFixed(2) : '';
 });
 
-function agregarPunto() { form.puntos.push(nuevoPunto()); }
-function quitarPunto(i) { form.puntos.splice(i, 1); }
+function agregarAsociado() { form.asociados.push(nuevoAsociado()); }
+function quitarAsociado(i) { form.asociados.splice(i, 1); }
 
 function capturarGPS() {
     if (!navigator.geolocation) return alertError('Este navegador no soporta geolocalización.');
@@ -430,34 +364,44 @@ function limpiar() {
 }
 
 async function guardar() {
+    if (!form.departamento || !MUNICIPIOS[form.departamento]?.includes(form.municipio)) return alertError('Selecciona el departamento y el municipio de la lista.', 'Falta un dato');
+    if (!form.agricultorRua) return alertError('Indica si el agricultor está en RUA.', 'Falta un dato');
+    if (!CULTIVOS.includes(form.cultivo)) return alertError('Selecciona el cultivo de la lista.', 'Falta un dato');
+    if (form.asociados.some((a) => !CULTIVOS.includes(a.cultivo))) return alertError('Selecciona el cultivo asociado de la lista.', 'Falta un dato');
+    if (!CAUSAS.includes(form.causa)) return alertError('Selecciona la causa del daño de la lista.', 'Falta un dato');
+    if (gps.lat === null) return alertError('Captura tu ubicación actual con el botón "Usar mi ubicación actual".', 'Ubicación obligatoria');
+
     const reg = {
         fecha: form.fecha,
         tecnico: form.tecnico,
+        departamento: form.departamento,
+        municipio: form.municipio,
+        centroPoblado: form.centroPoblado,
+        agricultorRua: form.agricultorRua === 'Sí',
+        codigoRua: form.agricultorRua === 'Sí' ? form.codigoRua : '',
         lote: form.lote,
-        cultivo: form.cultivo === 'Otro' ? (form.cultivoOtro || 'Otro') : form.cultivo,
+        cultivo: form.cultivo,
         etapa: form.etapa,
-        causa: form.causa === 'Otra' ? (form.causaOtra || 'Otra') : form.causa,
+        asociados: form.asociados.map(({ uid, ...a }) => a),
+        causa: form.causa,
+        causaOtra: form.causa === 'Otra' ? form.causaOtra : '',
         areaLote: form.areaLote,
         areaAfectada: form.areaAfectada,
         danoPorc: form.danoPorc,
         rendEsperado: form.rendEsperado,
         unidad: form.unidad,
         perdidaEstimada: form.perdidaEstimada,
-        puntos: form.puntos.map(({ uid, ...p }) => p),
         gpsLat: gps.lat,
         gpsLon: gps.lon,
         gpsPrecision: gps.acc,
         notas: form.notas,
     };
-    if (!reg.cultivo) return alertError('Selecciona el cultivo.', 'Falta un dato');
-    if (!reg.causa) return alertError('Selecciona la causa del daño.', 'Falta un dato');
     guardando.value = true;
     try {
         const creado = await danoCultivoService.create(reg, fotos.value.map((f) => f.file));
-        registros.value = await danoCultivoService.list();
         limpiar();
         if (creado.fotosError) toastInfo(`Registro guardado, pero las fotos no se subieron: ${creado.fotosError}`);
-        else toastSuccess(`Registro guardado (${registros.value.length} en total).`);
+        else toastSuccess('Registro guardado. Puedes verlo en el apartado Registros.');
     } catch (e) {
         toastError(e.message);
     } finally {
@@ -465,63 +409,6 @@ async function guardar() {
     }
 }
 
-function sevMax(r) {
-    const s = (r.puntos || []).filter((p) => p.severidad !== '').map((p) => parseInt(p.severidad, 10));
-    return s.length ? Math.max(...s) : null;
-}
-
-async function eliminar(r) {
-    if (!(await confirmDialog('Este registro se eliminará.', { title: '¿Eliminar registro?', danger: true, confirmText: 'Eliminar' }))) return;
-    try {
-        await danoCultivoService.remove(r.id);
-        registros.value = await danoCultivoService.list();
-    } catch (e) {
-        toastError(e.message);
-    }
-}
-
-function exportarCSV() {
-    if (!registros.value.length) return toastError('No hay registros para exportar.');
-    const filas = [
-        ['REPORTE DE DAÑOS A CULTIVOS'],
-        ['Generado', new Date().toLocaleString('es')],
-        [],
-        ['N°', 'Fecha', 'Técnico/Productor', 'Lote/Parcela', 'Cultivo', 'Etapa fenológica', 'Causa del daño',
-            'Sup. total lote (ha)', 'Sup. afectada (ha)', '% daño', 'Rend. esperado', 'Unidad rend.', 'Pérdida estimada',
-            'Latitud, Longitud (precisión m)', 'N° puntos muestreo', 'Detalles de puntos (ref | % incidencia | severidad | obs)',
-            'N° fotos', 'Nombres de fotos', 'Notas'],
-    ];
-    registros.value.forEach((r, i) => {
-        const pts = (r.puntos || [])
-            .filter((p) => p.ref || p.incidencia || p.severidad !== '' || p.obs)
-            .map((p) => [p.ref, p.incidencia, p.severidad, p.obs].filter(Boolean).join(' | ')).join(' ;; ');
-        filas.push([
-            i + 1, r.fecha, r.tecnico, r.lote, r.cultivo, r.etapa, r.causa, r.areaLote, r.areaAfectada, r.danoPorc,
-            r.rendEsperado, r.unidad, r.perdidaEstimada, r.gps, (r.puntos || []).length, pts,
-            (r.fotos || []).length, (r.fotos || []).join(' ; '), r.notas,
-        ]);
-    });
-    filas.push([], ['', '', '', 'TOTALES', '', '', '', '', totalHa.value.toFixed(2), '', '', '', totalPerdida.value.toFixed(2)]);
-
-    const csv = '﻿' + filas.map((f) => f.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-    a.download = `danos_cultivos_${hoy()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-}
-
-onMounted(async () => {
-    try {
-        registros.value = await danoCultivoService.list();
-    } catch (e) {
-        toastError(e.message);
-    } finally {
-        loading.value = false;
-    }
-});
 onBeforeUnmount(liberarFotos);
 
 // ---------- Solo presentación: progreso, resumen y panel informativo ----------
@@ -533,11 +420,10 @@ const features = [
 ];
 
 const steps = computed(() => [
-    { id: 1, label: 'Ubicación', icon: MapPinIcon, hecho: !!(form.fecha && form.tecnico && form.lote) },
+    { id: 1, label: 'Ubicación', icon: MapPinIcon, hecho: !!(form.fecha && form.tecnico && form.lote && form.departamento && form.municipio && form.centroPoblado && form.agricultorRua && gps.lat !== null) },
     { id: 2, label: 'Cultivo', icon: BeakerIcon, hecho: !!(form.cultivo && form.areaAfectada !== '') },
     { id: 3, label: 'Daños', icon: ExclamationTriangleIcon, hecho: !!(form.causa && form.danoPorc !== '') },
-    { id: 4, label: 'Muestreo', icon: ChartBarIcon, hecho: form.puntos.some((p) => p.severidad !== '') },
-    { id: 5, label: 'Evidencia', icon: CameraIcon, hecho: fotos.value.length > 0 },
+    { id: 4, label: 'Evidencia', icon: CameraIcon, hecho: fotos.value.length > 0 },
 ]);
 // Paso activo = primer paso pendiente (o el último si todos están completos).
 const pasoActivo = computed(() => {
@@ -549,28 +435,17 @@ function irA(id) {
 }
 
 const resumen = computed(() => {
-    const sev = sevMax({ puntos: form.puntos });
-    const cultivo = form.cultivo === 'Otro' ? (form.cultivoOtro || 'Otro') : form.cultivo;
     const causa = form.causa === 'Otra' ? (form.causaOtra || 'Otra') : form.causa;
+    const cultivos = [form.cultivo, ...form.asociados.map((a) => a.cultivo)].filter(Boolean).join(', ');
     return [
         { label: 'Lote', icon: MapPinIcon, color: '#1677FF', value: form.lote },
+        { label: 'Municipio', icon: MapPinIcon, color: '#1677FF', value: form.municipio ? `${form.municipio}, ${form.departamento}` : '' },
         { label: 'GPS', icon: ViewfinderCircleIcon, color: '#1677FF', value: gps.lat ? `${gps.lat}, ${gps.lon}` : '' },
-        { label: 'Cultivo', icon: BeakerIcon, color: '#079447', value: cultivo },
+        { label: 'Cultivo', icon: BeakerIcon, color: '#079447', value: cultivos },
         { label: 'Área afectada', icon: ChartBarIcon, color: '#079447', value: form.areaAfectada !== '' ? `${form.areaAfectada} ha` : '' },
         { label: 'Causa', icon: ExclamationTriangleIcon, color: '#FF7A00', value: causa },
         { label: '% de daño', icon: ChartBarIcon, color: '#7C3AED', value: form.danoPorc !== '' ? `${form.danoPorc}%` : '' },
-        { label: 'Severidad', icon: ChartBarIcon, color: '#7C3AED', value: sev !== null ? SEV_LABEL[sev] : '' },
         { label: 'Fotografías', icon: CameraIcon, color: '#079447', value: fotos.value.length ? String(fotos.value.length) : '' },
     ];
 });
 </script>
-
-<style scoped>
-.tabla thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #60708D; font-weight: 600; padding: 10px; border-bottom: 1px solid #DCE5EF; background: rgba(255,255,255,.55); white-space: nowrap; }
-.tabla tbody td { padding: 12px 10px; font-size: 13px; color: #0B1F4D; border-bottom: 1px solid rgba(96,112,141,.16); }
-.tabla tbody tr:last-child td { border-bottom: none; }
-.badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
-.badge.ok { background: #DDF6E8; color: #056B37; }
-.badge.mid { background: #FFF1D6; color: #8A5A00; }
-.badge.high { background: #FDE2E4; color: #B0202B; }
-</style>

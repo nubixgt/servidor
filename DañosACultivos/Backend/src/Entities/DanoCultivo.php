@@ -9,10 +9,16 @@ class DanoCultivo
         public ?string $registradoPor = null,
         public string $fecha = '',
         public string $responsable = '',
+        public ?string $departamento = null,
+        public ?string $municipio = null,
+        public ?string $centroPoblado = null,
+        public bool $agricultorRua = false,
+        public ?string $codigoRua = null,
         public string $lote = '',
         public string $cultivo = '',
         public ?string $etapa = null,
         public string $causa = '',
+        public ?string $causaOtra = null,
         public $areaLote = null,
         public $areaAfectada = 0,
         public $danoPorc = 0,
@@ -24,10 +30,10 @@ class DanoCultivo
         public $gpsPrecision = null,
         public ?string $notas = null,
         public ?string $createdAt = null,
-        /** @var array<int, array{ref:string,incidencia:mixed,severidad:mixed,obs:string}> */
-        public array $puntos = [],
         /** @var array<int, array> */
         public array $fotos = [],
+        /** @var array<int, array{cultivo:string,etapa:string,areaLote:mixed,areaAfectada:mixed}> */
+        public array $asociados = [],
     ) {
     }
 
@@ -43,10 +49,17 @@ class DanoCultivo
             'registradoPor' => $this->registradoPor,
             'fecha' => $this->fecha,
             'tecnico' => $this->responsable,
+            'departamento' => $this->departamento ?? '',
+            'municipio' => $this->municipio ?? '',
+            'centroPoblado' => $this->centroPoblado ?? '',
+            'agricultorRua' => $this->agricultorRua,
+            'codigoRua' => $this->codigoRua ?? '',
             'lote' => $this->lote,
             'cultivo' => $this->cultivo,
             'etapa' => $this->etapa ?? '',
             'causa' => $this->causa,
+            'causaOtra' => $this->causaOtra ?? '',
+            'asociados' => $this->asociados,
             'areaLote' => $this->areaLote,
             'areaAfectada' => $this->areaAfectada,
             'danoPorc' => $this->danoPorc,
@@ -59,7 +72,6 @@ class DanoCultivo
             'gpsPrecision' => $this->gpsPrecision,
             'notas' => $this->notas ?? '',
             'creadoEn' => $this->createdAt,
-            'puntos' => $this->puntos,
             'fotos' => $this->fotos,
         ];
     }

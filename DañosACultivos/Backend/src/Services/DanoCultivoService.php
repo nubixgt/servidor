@@ -7,7 +7,7 @@ use App\Repositories\DanoCultivoRepository;
 
 class DanoCultivoService
 {
-    private const MAX_PUNTOS = 50;
+    private const MAX_ASOCIADOS = 20;
     private const MAX_FOTOS = 10;
     private const MAX_SIZE = 12 * 1024 * 1024; // 12MB
     private const ALLOWED_MIME = ['image/jpeg' => '.jpg', 'image/png' => '.png', 'image/webp' => '.webp'];
@@ -40,7 +40,32 @@ class DanoCultivoService
     {
         $f = $dto->fields;
         if ($f['fecha'] === '' || $f['responsable'] === '' || $f['lote'] === '' || $f['cultivo'] === '' || $f['causa'] === '') {
-            throw new \Exception('Fecha, técnico/productor, lote, cultivo y causa son obligatorios.', 400);
+            throw new \Exception('Fecha, productor, lote, cultivo y causa son obligatorios.', 400);
+        }
+        if ($f['departamento'] === '' || $f['municipio'] === '' || $f['centroPoblado'] === '') {
+            throw new \Exception('Departamento, municipio y centro poblado son obligatorios.', 400);
+        }
+        if ($f['agricultorRua'] && $f['codigoRua'] === '') {
+            throw new \Exception('El código de RUA es obligatorio cuando el agricultor está en RUA.', 400);
+        }
+        if ($f['causa'] === 'Otra' && $f['causaOtra'] === '') {
+            throw new \Exception('Especifica la causa del daño.', 400);
+        }
+        if ($f['gpsLat'] === null || $f['gpsLon'] === null) {
+            throw new \Exception('La ubicación actual (GPS) es obligatoria.', 400);
+        }
+        if (count($dto->asociados) > self::MAX_ASOCIADOS) {
+            throw new \Exception('Máximo ' . self::MAX_ASOCIADOS . ' cultivos asociados.', 400);
+        }
+        foreach ($dto->asociados as $a) {
+            if ($a['cultivo'] === '') {
+                throw new \Exception('Cada cultivo asociado necesita un cultivo.', 400);
+            }
+            foreach (['areaLote', 'areaAfectada'] as $k) {
+                if ($a[$k] !== null && $a[$k] < 0) {
+                    throw new \Exception('Los valores numéricos no pueden ser negativos.', 400);
+                }
+            }
         }
         $fecha = \DateTime::createFromFormat('Y-m-d', $f['fecha']);
         if (!$fecha || $fecha->format('Y-m-d') !== $f['fecha']) {
@@ -63,25 +88,7 @@ class DanoCultivoService
         if (($f['gpsLat'] !== null && abs($f['gpsLat']) > 90) || ($f['gpsLon'] !== null && abs($f['gpsLon']) > 180)) {
             throw new \Exception('Coordenadas GPS inválidas.', 400);
         }
-        if (count($dto->puntos) > self::MAX_PUNTOS) {
-            throw new \Exception('Máximo ' . self::MAX_PUNTOS . ' puntos de muestreo.', 400);
-        }
-        foreach ($dto->puntos as $p) {
-            if ($p['severidad'] !== null && ($p['severidad'] < 0 || $p['severidad'] > 3)) {
-                throw new \Exception('La severidad debe ser un valor de 0 a 3.', 400);
-            }
-            if ($p['incidencia'] !== null && ($p['incidencia'] < 0 || $p['incidencia'] > 100)) {
-                throw new \Exception('El % de plantas afectadas debe estar entre 0 y 100.', 400);
-            }
-        }
-
-        // Se descartan los puntos completamente vacíos.
-        $puntos = array_values(array_filter(
-            $dto->puntos,
-            fn($p) => $p['ref'] !== '' || $p['incidencia'] !== null || $p['severidad'] !== null || $p['obs'] !== ''
-        ));
-
-        $id = $this->repository->create($f, $puntos, isset($user['sub']) ? (int)$user['sub'] : null, $user['usuario'] ?? null);
+        $id = $this->repository->create($f, $dto->asociados, isset($user['sub']) ? (int)$user['sub'] : null, $user['usuario'] ?? null);
         return $this->repository->findById($id);
     }
 

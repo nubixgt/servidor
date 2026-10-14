@@ -4,13 +4,13 @@ namespace App\DTOs;
 class DanoCultivoDTO
 {
     public array $fields;
-    /** @var array<int, array{ref:string,incidencia:?float,severidad:?int,obs:string}> */
-    public array $puntos;
+    /** @var array<int, array{cultivo:string,etapa:?string,areaLote:?float,areaAfectada:?float}> */
+    public array $asociados;
 
-    public function __construct(array $fields, array $puntos)
+    public function __construct(array $fields, array $asociados = [])
     {
         $this->fields = $fields;
-        $this->puntos = $puntos;
+        $this->asociados = $asociados;
     }
 
     public static function fromRequest(array $data): self
@@ -18,10 +18,16 @@ class DanoCultivoDTO
         $fields = [
             'fecha' => self::str($data['fecha'] ?? ''),
             'responsable' => self::str($data['tecnico'] ?? ''),
+            'departamento' => self::str($data['departamento'] ?? ''),
+            'municipio' => self::str($data['municipio'] ?? ''),
+            'centroPoblado' => self::str($data['centroPoblado'] ?? ''),
+            'agricultorRua' => filter_var($data['agricultorRua'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            'codigoRua' => self::str($data['codigoRua'] ?? ''),
             'lote' => self::str($data['lote'] ?? ''),
             'cultivo' => self::str($data['cultivo'] ?? ''),
             'etapa' => self::str($data['etapa'] ?? '') ?: null,
             'causa' => self::str($data['causa'] ?? ''),
+            'causaOtra' => self::str($data['causaOtra'] ?? ''),
             'areaLote' => self::num($data['areaLote'] ?? null),
             'areaAfectada' => self::num($data['areaAfectada'] ?? null),
             'danoPorc' => self::num($data['danoPorc'] ?? null),
@@ -34,21 +40,20 @@ class DanoCultivoDTO
             'notas' => self::str($data['notas'] ?? '') ?: null,
         ];
 
-        $puntos = [];
-        foreach (is_array($data['puntos'] ?? null) ? $data['puntos'] : [] as $p) {
-            if (!is_array($p)) {
+        $asociados = [];
+        foreach (is_array($data['asociados'] ?? null) ? $data['asociados'] : [] as $a) {
+            if (!is_array($a)) {
                 continue;
             }
-            $sev = $p['severidad'] ?? '';
-            $puntos[] = [
-                'ref' => self::str($p['ref'] ?? ''),
-                'incidencia' => self::num($p['incidencia'] ?? null),
-                'severidad' => ($sev === '' || $sev === null || !is_numeric($sev)) ? null : (int)$sev,
-                'obs' => self::str($p['obs'] ?? ''),
+            $asociados[] = [
+                'cultivo' => self::str($a['cultivo'] ?? ''),
+                'etapa' => self::str($a['etapa'] ?? '') ?: null,
+                'areaLote' => self::num($a['areaLote'] ?? null),
+                'areaAfectada' => self::num($a['areaAfectada'] ?? null),
             ];
         }
 
-        return new self($fields, $puntos);
+        return new self($fields, $asociados);
     }
 
     private static function str($v): string

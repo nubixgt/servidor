@@ -65,17 +65,19 @@ class DanoCultivoRepository
         return $dano;
     }
 
-    /** Inserta el registro y sus puntos de muestreo en una sola transacción. */
-    public function create(array $f, array $puntos, ?int $usuarioId, ?string $registradoPor): int
+    /** Inserta el registro y sus cultivos asociados en una sola transacción. */
+    public function create(array $f, array $asociados, ?int $usuarioId, ?string $registradoPor): int
     {
         $this->pdo->beginTransaction();
         try {
             $stmt = $this->pdo->prepare(
                 'INSERT INTO danos_cultivos
-                    (usuario_id, registrado_por, fecha, responsable, lote, cultivo, etapa, causa, area_lote, area_afectada, dano_porc,
+                    (usuario_id, registrado_por, fecha, responsable, departamento, municipio, centro_poblado, agricultor_rua, codigo_rua,
+                     lote, cultivo, etapa, causa, causa_otra, area_lote, area_afectada, dano_porc,
                      rend_esperado, unidad, perdida_estimada, gps_lat, gps_lon, gps_precision, notas)
                  VALUES
-                    (:usuario_id, :registrado_por, :fecha, :responsable, :lote, :cultivo, :etapa, :causa, :area_lote, :area_afectada, :dano_porc,
+                    (:usuario_id, :registrado_por, :fecha, :responsable, :departamento, :municipio, :centro_poblado, :agricultor_rua, :codigo_rua,
+                     :lote, :cultivo, :etapa, :causa, :causa_otra, :area_lote, :area_afectada, :dano_porc,
                      :rend_esperado, :unidad, :perdida_estimada, :gps_lat, :gps_lon, :gps_precision, :notas)'
             );
             $stmt->execute([
@@ -83,10 +85,16 @@ class DanoCultivoRepository
                 'registrado_por' => $registradoPor,
                 'fecha' => $f['fecha'],
                 'responsable' => $f['responsable'],
+                'departamento' => $f['departamento'],
+                'municipio' => $f['municipio'],
+                'centro_poblado' => $f['centroPoblado'],
+                'agricultor_rua' => $f['agricultorRua'] ? 1 : 0,
+                'codigo_rua' => $f['agricultorRua'] ? $f['codigoRua'] : null,
                 'lote' => $f['lote'],
                 'cultivo' => $f['cultivo'],
                 'etapa' => $f['etapa'],
                 'causa' => $f['causa'],
+                'causa_otra' => $f['causa'] === 'Otra' ? $f['causaOtra'] : null,
                 'area_lote' => $f['areaLote'],
                 'area_afectada' => $f['areaAfectada'],
                 'dano_porc' => $f['danoPorc'],
@@ -100,18 +108,18 @@ class DanoCultivoRepository
             ]);
             $id = (int)$this->pdo->lastInsertId();
 
-            $ins = $this->pdo->prepare(
-                'INSERT INTO danos_cultivos_puntos (dano_id, orden, referencia, incidencia, severidad, observacion)
-                 VALUES (:dano_id, :orden, :referencia, :incidencia, :severidad, :observacion)'
+            $insA = $this->pdo->prepare(
+                'INSERT INTO danos_cultivos_asociados (dano_id, orden, cultivo, etapa, area_lote, area_afectada)
+                 VALUES (:dano_id, :orden, :cultivo, :etapa, :area_lote, :area_afectada)'
             );
-            foreach ($puntos as $i => $p) {
-                $ins->execute([
+            foreach ($asociados as $i => $a) {
+                $insA->execute([
                     'dano_id' => $id,
                     'orden' => $i + 1,
-                    'referencia' => $p['ref'] ?: null,
-                    'incidencia' => $p['incidencia'],
-                    'severidad' => $p['severidad'],
-                    'observacion' => $p['obs'] ?: null,
+                    'cultivo' => $a['cultivo'],
+                    'etapa' => $a['etapa'],
+                    'area_lote' => $a['areaLote'],
+                    'area_afectada' => $a['areaAfectada'] ?? 0,
                 ]);
             }
             $this->pdo->commit();
@@ -154,7 +162,7 @@ class DanoCultivoRepository
         return (int)$stmt->fetchColumn();
     }
 
-    /** Carga puntos y fotos de varios registros con 2 consultas (evita N+1). */
+    /** Carga fotos y cultivos asociados de varios registros con 2 consultas (evita N+1). */
     private function cargarHijos(array $danos): void
     {
         if (!$danos) {
@@ -162,18 +170,6 @@ class DanoCultivoRepository
         }
         $ids = array_map(fn($d) => $d->id, $danos);
         $in = implode(',', array_fill(0, count($ids), '?'));
-
-        $puntos = [];
-        $stmt = $this->pdo->prepare("SELECT * FROM danos_cultivos_puntos WHERE dano_id IN ($in) ORDER BY dano_id, orden");
-        $stmt->execute($ids);
-        foreach ($stmt->fetchAll() as $r) {
-            $puntos[(int)$r['dano_id']][] = [
-                'ref' => (string)$r['referencia'],
-                'incidencia' => $r['incidencia'] === null ? '' : $r['incidencia'],
-                'severidad' => $r['severidad'] === null ? '' : (string)$r['severidad'],
-                'obs' => (string)$r['observacion'],
-            ];
-        }
 
         $fotos = [];
         $stmt = $this->pdo->prepare("SELECT * FROM danos_cultivos_fotos WHERE dano_id IN ($in) ORDER BY dano_id, id");
@@ -186,8 +182,20 @@ class DanoCultivoRepository
             ];
         }
 
+        $asociados = [];
+        $stmt = $this->pdo->prepare("SELECT * FROM danos_cultivos_asociados WHERE dano_id IN ($in) ORDER BY dano_id, orden");
+        $stmt->execute($ids);
+        foreach ($stmt->fetchAll() as $r) {
+            $asociados[(int)$r['dano_id']][] = [
+                'cultivo' => $r['cultivo'],
+                'etapa' => (string)$r['etapa'],
+                'areaLote' => $r['area_lote'],
+                'areaAfectada' => $r['area_afectada'],
+            ];
+        }
+
         foreach ($danos as $d) {
-            $d->puntos = $puntos[$d->id] ?? [];
+            $d->asociados = $asociados[$d->id] ?? [];
             $d->fotos = $fotos[$d->id] ?? [];
         }
     }
@@ -200,10 +208,16 @@ class DanoCultivoRepository
             registradoPor: $row['registrado_por'],
             fecha: $row['fecha'],
             responsable: $row['responsable'],
+            departamento: $row['departamento'] ?? null,
+            municipio: $row['municipio'] ?? null,
+            centroPoblado: $row['centro_poblado'] ?? null,
+            agricultorRua: (bool)($row['agricultor_rua'] ?? false),
+            codigoRua: $row['codigo_rua'] ?? null,
             lote: $row['lote'],
             cultivo: $row['cultivo'],
             etapa: $row['etapa'],
             causa: $row['causa'],
+            causaOtra: $row['causa_otra'] ?? null,
             areaLote: $row['area_lote'],
             areaAfectada: $row['area_afectada'],
             danoPorc: $row['dano_porc'],
