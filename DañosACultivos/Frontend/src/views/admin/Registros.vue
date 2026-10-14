@@ -59,7 +59,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="r in filtrados" :key="r.id">
+                            <tr v-for="r in filtrados" :key="r.id" class="cursor-pointer" tabindex="0" @click="detalle = r" @keydown.enter="detalle = r">
                                 <td>{{ r.fecha }}</td>
                                 <td>{{ r.registradoPor || '—' }}</td>
                                 <td>{{ r.tecnico }}</td>
@@ -76,7 +76,7 @@
                                 <td>{{ r.fotos?.length || '—' }}</td>
                                 <td class="max-w-[220px] truncate" :title="r.notas">{{ r.notas || '—' }}</td>
                                 <td v-if="puedeEliminar">
-                                    <button type="button" class="iconbtn" title="Eliminar" @click="eliminar(r)"><TrashIcon class="w-4 h-4" style="color: var(--red);" /></button>
+                                    <button type="button" class="iconbtn" title="Eliminar" @click.stop="eliminar(r)"><TrashIcon class="w-4 h-4" style="color: var(--red);" /></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -84,7 +84,7 @@
                 </div>
 
                 <div v-else class="cards">
-                    <article v-for="r in filtrados" :key="r.id" class="record-card">
+                    <article v-for="r in filtrados" :key="r.id" class="record-card cursor-pointer" tabindex="0" @click="detalle = r" @keydown.enter="detalle = r">
                         <div class="card-scenic" :style="{ backgroundImage: `url(${fondo})` }">
                             <div class="flex items-center gap-2"><SparklesIcon class="w-4 h-4" /><b class="text-[12px]">{{ cultivos(r) }}</b></div>
                             <span class="badge" :class="nivelClase(r)">{{ nivel(r) }}</span>
@@ -99,7 +99,10 @@
                             </div>
                             <div class="flex items-center justify-between gap-2">
                                 <small style="color: var(--muted);">{{ r.fecha }}</small>
-                                <button v-if="puedeEliminar" type="button" class="linkbtn" style="color: var(--red);" @click="eliminar(r)">Eliminar</button>
+                                <span class="flex items-center gap-3">
+                                    <button v-if="puedeEliminar" type="button" class="linkbtn" style="color: var(--red);" @click.stop="eliminar(r)">Eliminar</button>
+                                    <button type="button" class="linkbtn" @click.stop="detalle = r">Ver detalle →</button>
+                                </span>
                             </div>
                         </div>
                     </article>
@@ -111,11 +114,14 @@
                 </div>
             </article>
         </section>
+
+        <RegistroDetalle v-if="detalle" :d="detalle" :puede-eliminar="puedeEliminar" @close="detalle = null" @eliminar="eliminarDetalle" />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import RegistroDetalle from '../../components/ui/RegistroDetalle.vue';
 import danoCultivoService from '../../services/danoCultivoService';
 import authService from '../../services/authService';
 import { toastError, confirmDialog } from '../../utils/alerts';
@@ -130,6 +136,7 @@ const esTecnico = rol === 'tecnico';
 const puedeEliminar = rol === 'admin' || rol === 'supervisor';
 
 const registros = ref([]);
+const detalle = ref(null);
 const loading = ref(true);
 
 const totalHa = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.areaAfectada) || 0), 0));
@@ -172,6 +179,12 @@ const causa = (r) => (r.causa === 'Otra' && r.causaOtra ? `Otra: ${r.causaOtra}`
 
 async function cargar() {
     registros.value = await danoCultivoService.list();
+}
+
+async function eliminarDetalle() {
+    const r = detalle.value;
+    detalle.value = null;
+    await eliminar(r);
 }
 
 async function eliminar(r) {

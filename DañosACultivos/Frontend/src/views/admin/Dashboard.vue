@@ -165,33 +165,7 @@
         </section>
 
         <!-- Detalle -->
-        <div v-if="detalle" class="fixed inset-0 z-[1000] flex items-center justify-center p-4" style="background: rgba(8, 42, 58, .53); backdrop-filter: blur(5px);" @click.self="detalle = null">
-            <div class="modal-box w-full max-w-[680px] max-h-[88vh] overflow-y-auto">
-                <div class="modal-head">
-                    <h2>{{ detalle.cultivo }} · {{ detalle.lote }}</h2>
-                    <div class="flex gap-2">
-                        <button v-if="puedeEliminar" class="iconbtn" aria-label="Eliminar" @click="eliminar(detalle)"><TrashIcon class="w-5 h-5" style="color: var(--red);" /></button>
-                        <button class="iconbtn" aria-label="Cerrar" @click="detalle = null"><XMarkIcon class="w-5 h-5" /></button>
-                    </div>
-                </div>
-                <div class="modal-content">
-                    <dl class="grid grid-cols-2 gap-x-5 gap-y-5">
-                        <div v-for="r in filasDetalle" :key="r[0]" :class="r[2] ? 'col-span-2' : ''">
-                            <dt class="text-[10px]" style="color: #809689;">{{ r[0] }}</dt>
-                            <dd class="text-[12px] font-bold break-words mt-1">{{ r[1] }}</dd>
-                        </div>
-                    </dl>
-                    <div v-if="detalle.fotos.length" class="mt-5">
-                        <p class="label">Fotos</p>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            <a v-for="f in detalle.fotos" :key="f.id" :href="fotoUrl(detalle, f)" target="_blank" rel="noopener" :title="f.nombre">
-                                <img :src="fotoUrl(detalle, f)" :alt="f.nombre" loading="lazy" class="w-full aspect-square object-cover rounded-xl" style="border: 1px solid var(--input-border);" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <RegistroDetalle v-if="detalle" :d="detalle" :puede-eliminar="puedeEliminar" @close="detalle = null" @eliminar="eliminar(detalle)" />
     </div>
 </template>
 
@@ -199,6 +173,7 @@
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import RegistroDetalle from '../../components/ui/RegistroDetalle.vue';
 import danoCultivoService from '../../services/danoCultivoService';
 import authService from '../../services/authService';
 import { toastSuccess, toastError, confirmDialog } from '../../utils/alerts';
@@ -332,23 +307,6 @@ const donut = computed(() => {
         return `${n.color} ${ini}% ${acc}%`;
     });
     return `conic-gradient(${partes.join(', ')})`;
-});
-
-const filasDetalle = computed(() => {
-    const d = detalle.value;
-    if (!d) return [];
-    return [
-        ['Fecha', d.fecha], ['Productor', d.tecnico],
-        ['Ubicación', [d.centroPoblado, d.municipio, d.departamento].filter(Boolean).join(', ') || '—', true],
-        ['Agricultor en RUA', d.agricultorRua ? `Sí (${d.codigoRua || '—'})` : 'No'],
-        ['Cultivo', d.cultivo], ['Etapa', d.etapa || '—'],
-        ...(d.asociados || []).map((a, i) => [`Cultivo asociado ${i + 1}`, `${a.cultivo}${a.etapa ? ' · ' + a.etapa : ''} · ${num(a.areaAfectada)} ha afectadas`, true]),
-        ['Causa', d.causa === 'Otra' && d.causaOtra ? `Otra: ${d.causaOtra}` : d.causa], ['Daño', num(d.danoPorc) + '% · ' + nivelDe(d).label],
-        ['Área del lote', d.areaLote != null ? num(d.areaLote) + ' ha' : '—'], ['Área afectada', num(d.areaAfectada) + ' ha'],
-        ['Rendimiento esperado', d.rendEsperado != null ? num(d.rendEsperado) + ' ' + d.unidad : '—'],
-        ['Pérdida estimada', d.perdidaEstimada != null ? num(d.perdidaEstimada) : '—'],
-        ['Registrado por', d.registradoPor || '—'], ['GPS', d.gps || '—', true], ['Notas', d.notas || '—', true],
-    ];
 });
 
 const cargar = async () => {
