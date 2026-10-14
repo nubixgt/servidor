@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../models/dano_cultivo.dart';
 import '../models/usuario.dart';
 import '../services/api_client.dart';
 import '../services/dano_service.dart';
+import '../services/offline_queue.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/common.dart';
@@ -34,11 +36,29 @@ class _RegistrosScreenState extends State<RegistrosScreen> {
   String _cultivo = '';
   String _nivel = '';
   bool _tabla = false;
+  late final OfflineQueue _queue = OfflineQueue.instance;
+  int _exitos = 0;
 
   @override
   void initState() {
     super.initState();
+    _exitos = _queue.exitos;
+    _queue.addListener(_onQueue);
     _cargar();
+  }
+
+  @override
+  void dispose() {
+    _queue.removeListener(_onQueue);
+    super.dispose();
+  }
+
+  // Cuando se envía un pendiente, el listado se actualiza solo.
+  void _onQueue() {
+    if (_queue.exitos != _exitos) {
+      _exitos = _queue.exitos;
+      _cargar();
+    }
   }
 
   @override
@@ -121,6 +141,7 @@ class _RegistrosScreenState extends State<RegistrosScreen> {
     final cultivos = l.map((r) => r.cultivo).toSet().toList()..sort();
     final deptos = l.map((r) => r.departamento).where((e) => e.isNotEmpty).toSet().length;
     final puedeEliminar = widget.user.puedeEliminarRegistros;
+    final queue = context.watch<OfflineQueue>();
 
     return PageScroll(
       heroKey: 'registros',
@@ -140,6 +161,7 @@ class _RegistrosScreenState extends State<RegistrosScreen> {
           StatCard(index: 3, title: 'Afectación alta o total', value: '${l.where((r) => r.danoPorc >= 50).length}', icon: Icons.warning_amber_rounded, foot: 'Más del 50% de daño reportado'),
         ]),
         const SizedBox(height: 16),
+        if (queue.items.isNotEmpty) ...[_Pendientes(queue: queue), const SizedBox(height: 16)],
         Panel(
           padding: const EdgeInsets.all(20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -344,6 +366,62 @@ class _Tabla extends StatelessWidget {
             ]),
         ],
       ),
+    );
+  }
+}
+
+/// Registros guardados en el teléfono que aún no se envían al servidor.
+class _Pendientes extends StatelessWidget {
+  final OfflineQueue queue;
+  const _Pendientes({required this.queue});
+
+  @override
+  Widget build(BuildContext context) {
+    final items = queue.items;
+    return Panel(
+      padding: const EdgeInsets.all(20),
+      color: const Color(0xFFFFF8E8),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(width: 36, height: 36, decoration: BoxDecoration(color: const Color(0xFFFFEBC4), borderRadius: BorderRadius.circular(11)), child: const Icon(Icons.cloud_off_outlined, size: 19, color: Color(0xFFAA6B17))),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('${items.length} registro(s) pendiente(s) de envío', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 3),
+            const Text('Se enviarán solos cuando tengas internet.', style: TextStyle(fontSize: 11, color: AppColors.muted)),
+          ])),
+        ]),
+        const SizedBox(height: 14),
+        for (final p in items)
+          Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFF0DFB6))),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Expanded(child: Text('${p.lote.isEmpty ? 'Registro' : p.lote} · ${p.cultivo}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                AppBadge(p.error != null ? 'Con error' : (p.danoId != null ? 'Faltan fotos' : 'Pendiente'), kind: p.error != null ? BadgeKind.red : BadgeKind.amber),
+              ]),
+              const SizedBox(height: 6),
+              Text('${p.fecha} · ${p.fotos.length} foto(s)', style: const TextStyle(fontSize: 10, color: AppColors.muted)),
+              if (p.error != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(p.error!, style: const TextStyle(fontSize: 11, color: Color(0xFFBD4E3C)))),
+              const SizedBox(height: 10),
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                AppButton('Eliminar', icon: Icons.delete_outline, danger: true, onPressed: () async {
+                  if (await confirmDialog(context, 'Este registro no se ha enviado y se perderá.', title: '¿Eliminar pendiente?', danger: true, confirmText: 'Eliminar')) queue.eliminar(p);
+                }),
+                if (p.error != null) ...[const SizedBox(width: 8), AppButton('Reintentar', icon: Icons.refresh, onPressed: () => queue.reintentar(p))],
+              ]),
+            ]),
+          ),
+        AppButton(queue.sincronizando ? 'Enviando…' : 'Enviar ahora', primary: true, icon: Icons.cloud_upload_outlined, expand: true, loading: queue.sincronizando, onPressed: () async {
+          if (!await OfflineQueue.hayRed()) {
+            if (context.mounted) showMsg(context, 'Aún no hay conexión a internet.', error: true);
+            return;
+          }
+          await queue.sincronizar();
+        }),
+      ]),
     );
   }
 }

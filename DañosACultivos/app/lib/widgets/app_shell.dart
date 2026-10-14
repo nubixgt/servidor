@@ -115,7 +115,8 @@ class NavItem {
   final String key;
   final String label;
   final IconData icon;
-  const NavItem(this.key, this.label, this.icon);
+  final int badge;
+  const NavItem(this.key, this.label, this.icon, {this.badge = 0});
 }
 
 /// Barra de navegación flotante inferior (equivale al .sidebar en móvil).
@@ -153,7 +154,12 @@ class BottomNav extends StatelessWidget {
                           boxShadow: const [BoxShadow(color: Color(0x25002D29), blurRadius: 20, offset: Offset(0, 5))])
                       : null,
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(items[i].icon, size: 20, color: i == index ? Colors.white : const Color(0xFFD2E7E0)),
+                    Badge(
+                      isLabelVisible: items[i].badge > 0,
+                      label: Text('${items[i].badge}'),
+                      backgroundColor: const Color(0xFFFF7A00),
+                      child: Icon(items[i].icon, size: 20, color: i == index ? Colors.white : const Color(0xFFD2E7E0)),
+                    ),
                     const SizedBox(height: 4),
                     Text(items[i].label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 9, color: i == index ? Colors.white : const Color(0xFFD2E7E0))),
                   ]),

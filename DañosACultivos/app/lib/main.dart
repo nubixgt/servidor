@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_screen.dart';
 import 'services/auth_service.dart';
+import 'services/offline_queue.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -15,7 +16,13 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light, statusBarBrightness: Brightness.dark));
   final auth = AuthService();
   await auth.restaurar();
-  runApp(ChangeNotifierProvider.value(value: auth, child: const DanosApp()));
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(value: auth),
+      ChangeNotifierProvider.value(value: OfflineQueue.instance),
+    ],
+    child: const DanosApp(),
+  ));
 }
 
 class DanosApp extends StatelessWidget {

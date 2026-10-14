@@ -9,7 +9,10 @@ import '../config/api_config.dart';
 class ApiException implements Exception {
   final String message;
   final int? status;
-  ApiException(this.message, [this.status]);
+
+  /// true cuando no hubo conexión con el servidor (sin internet): el registro puede guardarse para enviarlo después.
+  final bool sinConexion;
+  ApiException(this.message, [this.status, this.sinConexion = false]);
   @override
   String toString() => message;
 }
@@ -57,11 +60,11 @@ class ApiClient {
     try {
       res = await fn().timeout(timeout);
     } on SocketException {
-      throw ApiException('No se pudo conectar con el servidor.');
+      throw ApiException('No se pudo conectar con el servidor.', null, true);
     } on TimeoutException {
       throw ApiException('El servidor tardó demasiado en responder.');
     } on http.ClientException {
-      throw ApiException('No se pudo conectar con el servidor.');
+      throw ApiException('No se pudo conectar con el servidor.', null, true);
     }
 
     dynamic data;

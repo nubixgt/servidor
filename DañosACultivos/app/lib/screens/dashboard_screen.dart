@@ -9,6 +9,7 @@ import '../models/dano_cultivo.dart';
 import '../models/usuario.dart';
 import '../services/api_client.dart';
 import '../services/dano_service.dart';
+import '../services/offline_queue.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/common.dart';
@@ -35,11 +36,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime? _desde;
   DateTime? _hasta;
   bool _verTodos = false;
+  final OfflineQueue _queue = OfflineQueue.instance;
+  int _exitos = 0;
 
   @override
   void initState() {
     super.initState();
+    _exitos = _queue.exitos;
+    _queue.addListener(_onQueue);
     _cargar();
+  }
+
+  @override
+  void dispose() {
+    _queue.removeListener(_onQueue);
+    super.dispose();
+  }
+
+  void _onQueue() {
+    if (_queue.exitos != _exitos) {
+      _exitos = _queue.exitos;
+      _cargar();
+    }
   }
 
   @override

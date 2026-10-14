@@ -11,6 +11,7 @@ import '../data/guatemala.dart';
 import '../models/usuario.dart';
 import '../services/api_client.dart';
 import '../services/dano_service.dart';
+import '../services/offline_queue.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/common.dart';
@@ -242,19 +243,49 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       'notas': _notas.text.trim(),
     };
     setState(() => _guardando = true);
+    final fotos = _fotos.map((f) => File(f.path)).toList();
+    final queue = OfflineQueue.instance;
     try {
-      final r = await _service.create(reg, _fotos.map((f) => File(f.path)).toList());
+      // Sin internet: el registro se guarda en el teléfono y se envía solo cuando vuelva la conexión.
+      if (!await OfflineQueue.hayRed()) {
+        await _guardarPendiente(reg, fotos, queue);
+        return;
+      }
+      final r = await _service.create(reg, fotos);
       if (!mounted) return;
-      _limpiar();
-      if (r.fotosError != null) {
+      if (r.fotosError != null && r.fotosSinConexion) {
+        // El registro ya está en el servidor; solo faltan las fotos.
+        await queue.encolar(reg, fotos, widget.user.id, danoId: r.dano.id);
+        if (!mounted) return;
+        _limpiar();
+        showMsg(context, 'Registro guardado. Las fotos se enviarán cuando vuelvas a tener internet.');
+      } else if (r.fotosError != null) {
+        _limpiar();
         showMsg(context, 'Registro guardado, pero las fotos no se subieron: ${r.fotosError}');
       } else {
+        _limpiar();
         showMsg(context, 'Registro guardado. Puedes verlo en el apartado Registros.');
       }
     } on ApiException catch (e) {
-      if (mounted) showMsg(context, e.message, error: true);
+      if (!mounted) return;
+      if (e.sinConexion) {
+        await _guardarPendiente(reg, fotos, queue);
+      } else {
+        showMsg(context, e.message, error: true);
+      }
     } finally {
       if (mounted) setState(() => _guardando = false);
+    }
+  }
+
+  Future<void> _guardarPendiente(Map<String, dynamic> reg, List<File> fotos, OfflineQueue queue) async {
+    try {
+      await queue.encolar(reg, fotos, widget.user.id);
+      if (!mounted) return;
+      _limpiar();
+      showMsg(context, 'Sin conexión: el registro se guardó en el teléfono y se enviará cuando tengas internet.');
+    } catch (_) {
+      if (mounted) errorDialog(context, 'No se pudo guardar el registro en el teléfono. Revisa el espacio disponible.', title: 'No se pudo guardar');
     }
   }
 
