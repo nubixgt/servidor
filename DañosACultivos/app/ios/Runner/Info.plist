@@ -2,12 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Daños a Cultivos usa la cámara para tomar fotografías como evidencia del daño en el cultivo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Daños a Cultivos necesita acceso a tus fotos para adjuntar evidencia del daño en el cultivo.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Daños a Cultivos puede guardar fotografías de la evidencia en tu galería.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Daños a Cultivos usa tu ubicación para registrar el lugar exacto de la afectación en campo.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Daños a Cultivos usa tu ubicación para registrar el lugar exacto de la afectación en campo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>El micrófono solo se usa si grabas video con la cámara.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>App Danosacultivos</string>
+	<string>Daños a Cultivos</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

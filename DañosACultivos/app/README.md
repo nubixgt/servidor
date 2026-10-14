@@ -1,17 +1,48 @@
-# app_danosacultivos
+# Daños a Cultivos · App móvil (Flutter)
 
-A new Flutter project.
+Misma lógica y mismos apartados que la web (`Frontend/`), conectada al mismo backend (`Backend/api/v1`).
 
-## Getting Started
+## Apartados y roles
 
-This project is a starting point for a Flutter application.
+| Apartado | admin | supervisor | técnico |
+|---|---|---|---|
+| Dashboard | todos los registros | todos los registros | solo los suyos |
+| Crear registro | sí | sí | sí |
+| Registros | todos (puede eliminar) | todos (puede eliminar) | solo los suyos |
+| Usuarios | sí | no | no |
 
-A few resources to get you started if this is your first Flutter project:
+El filtro por rol de los registros lo hace el backend (`DanoCultivoService::listar`).
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Backend
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+No requiere cambios: la app usa la misma API REST con JWT (`Authorization: Bearer`).
+URL base por defecto: `https://m.nubix.gt/Da%C3%B1osACultivos/Backend`.
+Para apuntar a otro servidor sin tocar el código:
+
+```bash
+flutter run --dart-define=API_BASE=https://mi-servidor/DañosACultivos/Backend
+```
+
+Recuerda ejecutar las migraciones de `Database/` (002 y 003) en el servidor.
+
+## Permisos
+
+- **Android** (`android/app/src/main/AndroidManifest.xml`): INTERNET, ACCESS_NETWORK_STATE,
+  ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, CAMERA, READ_MEDIA_IMAGES,
+  READ_EXTERNAL_STORAGE (hasta Android 12), WRITE_EXTERNAL_STORAGE (hasta Android 9).
+- **iOS** (`ios/Runner/Info.plist`): cámara, fotos (lectura y escritura), ubicación en uso, micrófono.
+
+## Estructura (`lib/`)
+
+- `config/` URL del backend · `theme/` colores, tipografía y diálogos
+- `data/` catálogos de cultivos, causas y municipios (mismos que la web)
+- `models/` · `services/` (API, sesión, registros, usuarios)
+- `widgets/` componentes compartidos (paneles, botones, buscador, barra inferior)
+- `screens/` login, dashboard, crear registro (4 pasos), registros, usuarios
+
+## Ejecutar
+
+```bash
+flutter pub get
+flutter run
+```
