@@ -28,7 +28,7 @@ function formData(campos, fotos = {}) {
 }
 
 const EQUIPO = {
-  name: 'nombre', short_name: 'abreviatura', city: 'ciudad', stadium: 'estadio', coach: 'entrenador',
+  name: 'nombre', category: 'categoria', short_name: 'abreviatura', city: 'ciudad', stadium: 'estadio', coach: 'entrenador',
   primary_color: 'color_principal', secondary_color: 'color_secundario', founded_year: 'anio_fundacion',
   representante: 'representante', telefono: 'telefono', dpi: 'dpi',
   sub_representante_nombre: 'sub_representante_nombre', sub_representante_dpi: 'sub_representante_dpi', sub_representante_telefono: 'sub_representante_telefono',

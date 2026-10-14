@@ -18,6 +18,7 @@ const datos = computed(() => {
     ['Sub‑representante', e.sub_representante_nombre],
     ['DPI del sub‑representante', e.sub_representante_dpi],
     ['Teléfono del sub‑representante', e.sub_representante_telefono],
+    ['Categoría', e.category],
     ['Abreviatura', e.short_name],
     ['Ciudad', e.city],
     ['Estadio', e.stadium],

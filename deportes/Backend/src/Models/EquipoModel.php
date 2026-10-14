@@ -10,6 +10,7 @@ class EquipoModel {
             'id' => (int)$e['id'],
             'name' => $e['nombre'],
             'short_name' => $e['abreviatura'] ?: strtoupper(mb_substr(preg_replace('/\s+/', '', $e['nombre']), 0, 3)),
+            'category' => $e['categoria'] ?? 'A',
             'city' => $e['ciudad'], 'stadium' => $e['estadio'], 'coach' => $e['entrenador'],
             'primary_color' => $e['color_principal'], 'secondary_color' => $e['color_secundario'],
             'founded_year' => $e['anio_fundacion'] === null ? null : (int)$e['anio_fundacion'],

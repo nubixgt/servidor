@@ -46,7 +46,7 @@ const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
 
     <div class="panel table-scroll">
       <table class="data-table">
-        <thead><tr><th>Equipo</th><th>Representante</th><th class="hide-mobile">Teléfono</th><th>Jugadores</th><th>Acciones</th></tr></thead>
+        <thead><tr><th>Equipo</th><th>Categoría</th><th>Representante</th><th class="hide-mobile">Teléfono</th><th>Jugadores</th><th>Acciones</th></tr></thead>
         <tbody>
           <tr v-for="t in pag.visibles.value" :key="t.id" class="fila-click" tabindex="0" @click="m.abrir('detalle', t)" @keydown.enter="m.abrir('detalle', t)">
             <td>
@@ -55,6 +55,7 @@ const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
                 {{ t.name }}
               </span>
             </td>
+            <td>{{ t.category }}</td>
             <td class="muted">{{ t.representante }}</td>
             <td class="hide-mobile muted">{{ t.telefono }}</td>
             <td>{{ t.players_count }}</td>
@@ -65,7 +66,7 @@ const pag = usePaginacion(filas, { por: 20, reiniciarCon: [busqueda] })
               </div>
             </td>
           </tr>
-          <tr v-if="!filas.length"><td colspan="5" class="empty">No hay registros que mostrar.</td></tr>
+          <tr v-if="!filas.length"><td colspan="6" class="empty">No hay registros que mostrar.</td></tr>
         </tbody>
       </table>
     </div>

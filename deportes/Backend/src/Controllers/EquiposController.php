@@ -17,7 +17,7 @@ class EquiposController extends BaseController {
         'foto_sub_representante' => ['sub_representante_foto_ruta', 'sub_representante', 'eliminar_foto_sub_representante', 'foto del sub-representante'],
     ];
     // Campos que un encargado NO puede cambiar (identidad del equipo).
-    private $soloAdmin = ['nombre', 'representante', 'dpi'];
+    private $soloAdmin = ['nombre', 'representante', 'dpi', 'categoria'];
 
     public function lista() {
         $this->autenticar();
@@ -120,6 +120,7 @@ class EquiposController extends BaseController {
         $d['dpi'] = $this->texto($in, 'dpi', 20, $crear, 'DPI');
         $d['abreviatura'] = $this->texto($in, 'abreviatura', 4);
         if ($d['abreviatura'] !== null) $d['abreviatura'] = strtoupper($d['abreviatura']);
+        $d['categoria'] = $this->enumerado($in, 'categoria', ['A', 'B'], $crear);
         $d['ciudad'] = $this->texto($in, 'ciudad', 100);
         $d['estadio'] = $this->texto($in, 'estadio', 100);
         $d['entrenador'] = $this->texto($in, 'entrenador', 100);

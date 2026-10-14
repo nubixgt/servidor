@@ -8,7 +8,7 @@ const emit = defineEmits(['save', 'cancel'])
 
 const form = reactive({
   name: '', representante: '', telefono: '', dpi: '', sub_representante_nombre: '', sub_representante_dpi: '', sub_representante_telefono: '',
-  short_name: '', city: '', stadium: '', coach: '', primary_color: '#c6ff3b', secondary_color: '#101518', founded_year: null,
+  short_name: '', category: 'A', city: '', stadium: '', coach: '', primary_color: '#c6ff3b', secondary_color: '#101518', founded_year: null,
   ...props.team,
 })
 const fotos = reactive({
@@ -27,6 +27,10 @@ const guardar = () => emit('save', { ...form }, { ...fotos })
     <div class="form-grid">
       <div class="full"><ImageUpload v-model="fotos.foto" :current="team?.logo_url" label="Escudo del equipo" /></div>
       <label>Nombre<input v-model.trim="form.name" maxlength="100" required :disabled="restringido" /><small class="field-error">{{ errors.nombre }}</small></label>
+      <label>Categoría
+        <select v-model="form.category" required :disabled="restringido"><option value="A">A</option><option value="B">B</option></select>
+        <small class="field-error">{{ errors.categoria }}</small>
+      </label>
       <label>Abreviatura<input v-model.trim="form.short_name" maxlength="4" placeholder="AUR" /></label>
 
       <label>Representante<input v-model.trim="form.representante" maxlength="100" required :disabled="restringido" /></label>
