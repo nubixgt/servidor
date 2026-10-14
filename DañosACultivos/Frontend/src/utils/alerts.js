@@ -23,5 +23,5 @@ export const confirmDialog = (message, { title = '¿Estás seguro?', danger = fa
         showCancelButton: true,
         confirmButtonText: confirmText,
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: danger ? '#ef4444' : '#2563eb',
+        confirmButtonColor: danger ? '#b94444' : '#00865d',
     }).then((r) => r.isConfirmed);

@@ -1,79 +1,110 @@
 <template>
     <div>
-        <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-10">
-            <header class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <section>
+            <div class="content-head">
                 <div>
-                    <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Usuarios</h1>
-                    <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Administra quién puede acceder al sistema</p>
+                    <h2>Equipo de trabajo</h2>
+                    <p>Administra los usuarios y sus roles en el sistema.</p>
                 </div>
-                <button class="btn btn-primary btn-sm" @click="abrirNuevo"><PlusIcon class="w-5 h-5" />Nuevo usuario</button>
-            </header>
+                <button class="btn btn-primary" @click="abrirNuevo"><PlusIcon class="w-5 h-5" />Nuevo usuario</button>
+            </div>
 
-            <section class="glass p-4 sm:p-5">
-                <p v-if="loading && !usuarios.length" class="py-10 text-center section-desc">Cargando…</p>
-                <p v-else-if="error" class="py-10 text-center" style="color: var(--red);">{{ error }}</p>
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-[14px] min-w-[560px]">
-                        <thead>
-                            <tr class="text-left text-[13px]" style="color: var(--muted);">
-                                <th class="py-2 px-2 font-medium">Usuario</th>
-                                <th class="py-2 px-2 font-medium">Rol</th>
-                                <th class="py-2 px-2 font-medium">Estado</th>
-                                <th class="py-2 px-2 font-medium">Creado</th>
-                                <th class="py-2 px-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="u in usuarios" :key="u.id" class="border-t" style="border-color: var(--input-border);">
-                                <td class="py-3 px-2 font-semibold">{{ u.usuario }}<span v-if="u.id === yo" class="ml-2 text-[11px] font-normal" style="color: var(--muted);">(tú)</span></td>
-                                <td class="py-3 px-2"><span class="px-2 py-1 rounded-full text-[12px] font-bold capitalize" :style="rolStyle(u.rol)">{{ u.rol }}</span></td>
-                                <td class="py-3 px-2">
-                                    <span class="px-2 py-1 rounded-full text-[12px] font-bold" :style="u.activo ? { background: 'var(--green-light)', color: 'var(--green-dark)' } : { background: '#EDF0F4', color: 'var(--muted)' }">{{ u.activo ? 'Activo' : 'Inactivo' }}</span>
-                                </td>
-                                <td class="py-3 px-2 whitespace-nowrap" style="color: var(--muted);">{{ (u.creadoEn || '').slice(0, 10) }}</td>
-                                <td class="py-3 px-2">
-                                    <div class="flex justify-end gap-2">
-                                        <button class="btn btn-outline btn-sm" style="min-height: 36px; padding: 4px 10px;" title="Editar" @click="abrirEditar(u)"><PencilSquareIcon class="w-4 h-4" /></button>
-                                        <button class="btn btn-outline btn-sm" style="min-height: 36px; padding: 4px 10px;" title="Eliminar" :disabled="u.id === yo" @click="eliminar(u)"><TrashIcon class="w-4 h-4" style="color: var(--red);" /></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="stats">
+                <div v-for="st in stats" :key="st.title" class="panel stat">
+                    <div class="stat-icon"><component :is="st.icon" class="w-5 h-5" /></div>
+                    <div class="stat-title">{{ st.title }}</div>
+                    <strong>{{ st.value }}</strong>
+                    <div class="stat-foot">{{ st.foot }}</div>
                 </div>
-            </section>
-        </div>
+            </div>
 
-        <!-- Crear / editar -->
-        <div v-if="form" class="fixed inset-0 z-[1000] flex items-center justify-center p-4" style="background: rgba(11,31,77,.35);" @click.self="form = null">
-            <form class="glass w-full max-w-[440px] max-h-[90vh] overflow-y-auto p-5 space-y-4" style="background: rgba(255,255,255,.94);" @submit.prevent="guardar">
-                <div class="flex items-center justify-between">
-                    <h2 class="section-title">{{ form.id ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
-                    <button type="button" class="btn btn-outline btn-sm" aria-label="Cerrar" @click="form = null"><XMarkIcon class="w-5 h-5" /></button>
+            <article class="panel">
+                <div class="panel-head">
+                    <div><h3>Personas y accesos</h3><p>Una vista clara del equipo y su estado.</p></div>
                 </div>
-                <div>
-                    <label class="label" for="u-usuario">Usuario</label>
-                    <input id="u-usuario" v-model.trim="form.usuario" class="field" autocomplete="off" />
-                </div>
-                <div>
-                    <label class="label" for="u-pass">Contraseña</label>
-                    <input id="u-pass" v-model="form.password" type="password" class="field" autocomplete="new-password" :placeholder="form.id ? 'Dejar vacío para no cambiarla' : 'Mínimo 6 caracteres'" />
-                </div>
-                <div>
-                    <label class="label" for="u-rol">Rol</label>
-                    <select id="u-rol" v-model="form.rol" class="field" :disabled="form.id === yo">
-                        <option value="admin">Admin</option>
+
+                <div class="filters">
+                    <div class="searchbox">
+                        <MagnifyingGlassIcon />
+                        <input v-model="busqueda" type="search" class="field" placeholder="Buscar por nombre de usuario…" aria-label="Buscar usuarios" />
+                    </div>
+                    <select v-model="filtroRol" class="field" aria-label="Filtrar por rol">
+                        <option value="">Todos los roles</option>
+                        <option value="admin">Administrador</option>
                         <option value="supervisor">Supervisor</option>
                         <option value="tecnico">Técnico</option>
                     </select>
+                    <select v-model="filtroEstado" class="field" aria-label="Filtrar por estado">
+                        <option value="">Todos los estados</option>
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
                 </div>
-                <label class="flex items-center gap-2 text-[14px]">
-                    <input v-model="form.activo" type="checkbox" class="w-4 h-4" :disabled="form.id === yo" />
-                    Usuario activo
-                </label>
-                <div class="flex justify-end gap-2 pt-1">
-                    <button type="button" class="btn btn-outline btn-sm" @click="form = null">Cancelar</button>
-                    <button type="submit" class="btn btn-primary btn-sm" :disabled="guardando">{{ guardando ? 'Guardando…' : 'Guardar' }}</button>
+
+                <p v-if="loading && !usuarios.length" class="empty">Cargando…</p>
+                <p v-else-if="error" class="empty" style="color: var(--red);">{{ error }}</p>
+                <div v-else class="usergrid">
+                    <article v-for="u in filtrados" :key="u.id" class="usercard">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="avatar" :style="{ background: avatarBg(u.rol) }">{{ u.usuario.slice(0, 2).toUpperCase() }}</div>
+                            <span class="badge" :class="u.activo ? '' : 'gray'">{{ u.activo ? 'Activo' : 'Inactivo' }}</span>
+                        </div>
+                        <h3>{{ u.usuario }}<span v-if="u.id === yo" class="ml-2 text-[11px] font-normal" style="color: var(--muted);">(tú)</span></h3>
+                        <span class="badge" :class="rolBadge(u.rol)" style="text-transform: capitalize;">{{ u.rol }}</span>
+                        <div class="userfoot">
+                            <small>Creado el {{ fecha(u.creadoEn) }}</small>
+                            <div class="flex gap-2">
+                                <button class="iconbtn" title="Editar" :aria-label="`Editar ${u.usuario}`" @click="abrirEditar(u)"><PencilSquareIcon class="w-4 h-4" /></button>
+                                <button class="iconbtn" title="Eliminar" :aria-label="`Eliminar ${u.usuario}`" :disabled="u.id === yo" :style="u.id === yo ? 'opacity:.45;cursor:not-allowed' : ''" @click="eliminar(u)"><TrashIcon class="w-4 h-4" style="color: var(--red);" /></button>
+                            </div>
+                        </div>
+                    </article>
+                    <div v-if="!filtrados.length" class="empty">No se encontraron usuarios.</div>
+                </div>
+            </article>
+
+            <article class="panel mt-5">
+                <h3 class="text-[14px] font-bold">Roles del sistema</h3>
+                <div class="permissions">
+                    <div><ShieldCheckIcon /><h3>Administrador</h3><p>Gestión del equipo, acceso a registros y configuración general.</p></div>
+                    <div><Squares2X2Icon /><h3>Supervisor</h3><p>Consulta de indicadores, seguimiento y revisión de registros.</p></div>
+                    <div><PencilSquareIcon /><h3>Técnico</h3><p>Captura de información, ubicación y evidencia de campo.</p></div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Crear / editar -->
+        <div v-if="form" class="fixed inset-0 z-[1000] flex items-center justify-center p-4" style="background: rgba(8, 42, 58, .53); backdrop-filter: blur(5px);" @click.self="form = null">
+            <form class="modal-box w-full max-w-[480px] max-h-[90vh] overflow-y-auto" @submit.prevent="guardar">
+                <div class="modal-head">
+                    <h2>{{ form.id ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+                    <button type="button" class="iconbtn" aria-label="Cerrar" @click="form = null"><XMarkIcon class="w-5 h-5" /></button>
+                </div>
+                <div class="modal-content space-y-4">
+                    <div>
+                        <label class="label" for="u-usuario">Usuario</label>
+                        <input id="u-usuario" v-model.trim="form.usuario" class="field" autocomplete="off" />
+                    </div>
+                    <div>
+                        <label class="label" for="u-pass">Contraseña</label>
+                        <input id="u-pass" v-model="form.password" type="password" class="field" autocomplete="new-password" :placeholder="form.id ? 'Dejar vacío para no cambiarla' : 'Mínimo 6 caracteres'" />
+                    </div>
+                    <div>
+                        <label class="label" for="u-rol">Rol</label>
+                        <select id="u-rol" v-model="form.rol" class="field" :disabled="form.id === yo">
+                            <option value="admin">Admin</option>
+                            <option value="supervisor">Supervisor</option>
+                            <option value="tecnico">Técnico</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-2 text-[13px]">
+                        <input v-model="form.activo" type="checkbox" class="w-4 h-4" :disabled="form.id === yo" />
+                        Usuario activo
+                    </label>
+                    <div class="flex justify-end gap-2 pt-1">
+                        <button type="button" class="btn" @click="form = null">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" :disabled="guardando">{{ guardando ? 'Guardando…' : 'Guardar' }}</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -81,8 +112,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { PlusIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { ref, computed, onMounted } from 'vue';
+import {
+    PlusIcon, PencilSquareIcon, TrashIcon, XMarkIcon, MagnifyingGlassIcon, UsersIcon, CheckCircleIcon, ShieldCheckIcon,
+    Squares2X2Icon, SparklesIcon,
+} from '@heroicons/vue/24/outline';
 import usuarioService from '../../services/usuarioService';
 import authService from '../../services/authService';
 import { toastSuccess, alertError, confirmDialog } from '../../utils/alerts';
@@ -93,6 +127,29 @@ const loading = ref(false);
 const error = ref('');
 const form = ref(null);
 const guardando = ref(false);
+
+const busqueda = ref('');
+const filtroRol = ref('');
+const filtroEstado = ref('');
+const filtrados = computed(() => {
+    const q = busqueda.value.trim().toLowerCase();
+    return usuarios.value.filter((u) =>
+        (!q || u.usuario.toLowerCase().includes(q))
+        && (!filtroRol.value || u.rol === filtroRol.value)
+        && (!filtroEstado.value || String(!!u.activo) === filtroEstado.value));
+});
+const stats = computed(() => {
+    const l = usuarios.value;
+    return [
+        { title: 'Integrantes del equipo', value: l.length, foot: 'Usuarios registrados', icon: UsersIcon },
+        { title: 'Usuarios activos', value: l.filter((u) => u.activo).length, foot: 'Con acceso habilitado', icon: CheckCircleIcon },
+        { title: 'Supervisores', value: l.filter((u) => u.rol === 'supervisor').length, foot: 'Seguimiento del trabajo en campo', icon: ShieldCheckIcon },
+        { title: 'Personal técnico', value: l.filter((u) => u.rol === 'tecnico').length, foot: 'Captura de información', icon: SparklesIcon },
+    ];
+});
+const avatarBg = (rol) => ({ admin: '#e7eaf5', supervisor: '#e3eff4', tecnico: '#e0eddf' }[rol]);
+const rolBadge = (rol) => ({ admin: 'purple', supervisor: 'blue', tecnico: '' }[rol]);
+const fecha = (f) => (f ? new Date(String(f).slice(0, 10) + 'T12:00:00').toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
 
 const rolStyle = (rol) => ({
     admin: { background: '#FDE3E5', color: '#B4232F' },

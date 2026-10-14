@@ -1,67 +1,116 @@
 <template>
     <div>
-        <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-10">
-            <header class="mb-4">
-                <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Registros</h1>
-                <p class="text-[13px] sm:text-sm" style="color: var(--navy);">{{ esTecnico ? 'Los registros que has realizado' : 'Registros realizados por cada técnico' }}</p>
-            </header>
+        <section>
+            <div class="content-head">
+                <div>
+                    <h2>Registros de campo</h2>
+                    <p>{{ esTecnico ? 'Los registros que has realizado.' : 'Consulta y organiza cada afectación reportada por los técnicos.' }}</p>
+                </div>
+                <router-link to="/registros/crear" class="btn btn-primary"><PlusIcon class="w-5 h-5" />Crear registro</router-link>
+            </div>
 
-            <section class="glass p-5 sm:p-6">
-                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-3">
-                        <span class="icon-badge" style="background: var(--green-dark);"><TableCellsIcon class="w-6 h-6" /></span>
-                        <div>
-                            <h2 class="section-title">Registros guardados</h2>
-                            <p class="section-desc">
-                                {{ registros.length }} registro(s) · {{ totalHa.toFixed(2) }} ha afectadas · Pérdida estimada acumulada {{ totalPerdida.toFixed(2) }}
-                            </p>
-                        </div>
+            <div class="stats">
+                <div v-for="s in stats" :key="s.title" class="panel stat">
+                    <div class="stat-icon"><component :is="s.icon" class="w-5 h-5" /></div>
+                    <div class="stat-title">{{ s.title }}</div>
+                    <strong>{{ s.value }}<span v-if="s.unit">{{ s.unit }}</span></strong>
+                    <div class="stat-foot" v-html="s.foot"></div>
+                </div>
+            </div>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h3>Bitácora de afectaciones</h3>
+                        <p>Encuentra un registro y consulta toda su información · Pérdida estimada acumulada {{ totalPerdida.toFixed(2) }}</p>
                     </div>
-                    <div class="flex gap-2">
-                        <router-link to="/registros/crear" class="btn btn-outline btn-sm"><PlusIcon class="w-5 h-5" /> Crear registro</router-link>
-                        <button type="button" class="btn btn-primary btn-sm" @click="exportarCSV"><ArrowDownTrayIcon class="w-5 h-5" /> Exportar CSV</button>
+                    <button type="button" class="btn" @click="exportarCSV"><ArrowDownTrayIcon class="w-5 h-5" />Exportar CSV</button>
+                </div>
+
+                <div class="filters">
+                    <div class="searchbox">
+                        <MagnifyingGlassIcon />
+                        <input v-model="busqueda" type="search" class="field" placeholder="Buscar lote, productor o municipio…" aria-label="Buscar registros" />
+                    </div>
+                    <select v-model="filtroCultivo" class="field" aria-label="Filtrar por cultivo">
+                        <option value="">Todos los cultivos</option>
+                        <option v-for="c in cultivosLista" :key="c">{{ c }}</option>
+                    </select>
+                    <select v-model="filtroNivel" class="field" aria-label="Filtrar por nivel">
+                        <option value="">Todos los niveles</option>
+                        <option v-for="n in NIVELES" :key="n">{{ n }}</option>
+                    </select>
+                    <div class="viewtoggle" aria-label="Vista de registros">
+                        <button type="button" :class="{ active: vista === 'tabla' }" aria-label="Vista de tabla" :aria-pressed="vista === 'tabla'" @click="vista = 'tabla'"><TableCellsIcon class="w-5 h-5" /></button>
+                        <button type="button" :class="{ active: vista === 'tarjetas' }" aria-label="Vista de tarjetas" :aria-pressed="vista === 'tarjetas'" @click="vista = 'tarjetas'"><Squares2X2Icon class="w-5 h-5" /></button>
                     </div>
                 </div>
 
-                <div v-if="loading" class="py-10 text-center text-sm" style="color: var(--muted);">Cargando…</div>
-                <div v-else-if="!registros.length" class="py-10 text-center text-sm" style="color: var(--muted);">Aún no hay registros guardados.</div>
-                <div v-else class="overflow-x-auto">
-                    <table class="tabla w-full">
+                <div v-if="loading" class="empty">Cargando…</div>
+                <div v-else-if="!filtrados.length" class="empty">{{ registros.length ? 'No se encontraron registros con estos filtros.' : 'Aún no hay registros guardados.' }}</div>
+
+                <div v-else-if="vista === 'tabla'" class="tablewrap">
+                    <table class="tbl">
                         <thead>
                             <tr>
                                 <th>Fecha</th><th>Técnico</th><th>Productor</th><th>Ubicación</th><th>RUA</th><th>Lote</th><th>Cultivo</th><th>Etapa</th><th>Causa</th>
-                                <th>ha afect.</th><th>% daño</th><th>Pérdida est.</th>
+                                <th>ha afect.</th><th>Afectación</th><th>Pérdida est.</th>
                                 <th>GPS</th><th>Fotos</th><th>Notas</th><th v-if="puedeEliminar"><span class="sr-only">Eliminar</span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="r in registros" :key="r.id">
-                                <td class="whitespace-nowrap">{{ r.fecha }}</td>
+                            <tr v-for="r in filtrados" :key="r.id">
+                                <td>{{ r.fecha }}</td>
                                 <td>{{ r.registradoPor || '—' }}</td>
                                 <td>{{ r.tecnico }}</td>
                                 <td>{{ ubicacion(r) }}</td>
-                                <td class="whitespace-nowrap">{{ r.agricultorRua ? `Sí (${r.codigoRua || '—'})` : 'No' }}</td>
+                                <td>{{ r.agricultorRua ? `Sí (${r.codigoRua || '—'})` : 'No' }}</td>
                                 <td>{{ r.lote }}</td>
-                                <td>{{ cultivos(r) }}</td>
+                                <td><div class="cellcrop"><span class="record-indicator"><SparklesIcon class="w-4 h-4" /></span>{{ cultivos(r) }}</div></td>
                                 <td>{{ r.etapa || '—' }}</td>
                                 <td>{{ causa(r) }}</td>
-                                <td>{{ r.areaAfectada }}</td>
-                                <td>{{ r.danoPorc }}%</td>
-                                <td class="whitespace-nowrap">{{ r.perdidaEstimada ? `${r.perdidaEstimada} ${r.unidad}` : '—' }}</td>
-                                <td class="whitespace-nowrap font-mono text-[11px]">{{ r.gps || '—' }}</td>
+                                <td><b>{{ r.areaAfectada }}</b></td>
+                                <td><span class="badge" :class="nivelClase(r)">{{ nivel(r) }}</span><small>{{ r.danoPorc }}% de daño</small></td>
+                                <td>{{ r.perdidaEstimada ? `${r.perdidaEstimada} ${r.unidad}` : '—' }}</td>
+                                <td class="font-mono text-[11px]">{{ r.gps || '—' }}</td>
                                 <td>{{ r.fotos?.length || '—' }}</td>
                                 <td class="max-w-[220px] truncate" :title="r.notas">{{ r.notas || '—' }}</td>
                                 <td v-if="puedeEliminar">
-                                    <button type="button" class="p-2 rounded-lg hover:bg-red-50" title="Eliminar" @click="eliminar(r)">
-                                        <TrashIcon class="w-5 h-5" style="color: var(--red);" />
-                                    </button>
+                                    <button type="button" class="iconbtn" title="Eliminar" @click="eliminar(r)"><TrashIcon class="w-4 h-4" style="color: var(--red);" /></button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
-        </div>
+
+                <div v-else class="cards">
+                    <article v-for="r in filtrados" :key="r.id" class="record-card">
+                        <div class="card-scenic" :style="{ backgroundImage: `url(${fondo})` }">
+                            <div class="flex items-center gap-2"><SparklesIcon class="w-4 h-4" /><b class="text-[12px]">{{ cultivos(r) }}</b></div>
+                            <span class="badge" :class="nivelClase(r)">{{ nivel(r) }}</span>
+                        </div>
+                        <div class="cardbody">
+                            <small style="color: var(--muted);">{{ ubicacion(r) }}</small>
+                            <h3>{{ r.lote }}</h3>
+                            <span class="text-[12px]" style="color: var(--muted);">{{ r.tecnico }}<template v-if="r.registradoPor"> · registrado por {{ r.registradoPor }}</template></span>
+                            <div class="card-metrics">
+                                <div><strong>{{ r.areaAfectada }} <span class="text-[12px]">ha</span></strong><small>Área afectada</small></div>
+                                <div><strong>{{ r.danoPorc }}%</strong><small>{{ causa(r) }}</small></div>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <small style="color: var(--muted);">{{ r.fecha }}</small>
+                                <button v-if="puedeEliminar" type="button" class="linkbtn" style="color: var(--red);" @click="eliminar(r)">Eliminar</button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="list-footer">
+                    <span>{{ filtrados.length }} de {{ registros.length }} registro(s)</span>
+                    <button type="button" class="linkbtn" @click="limpiarFiltros">Restablecer filtros</button>
+                </div>
+            </article>
+        </section>
     </div>
 </template>
 
@@ -70,7 +119,11 @@ import { ref, computed, onMounted } from 'vue';
 import danoCultivoService from '../../services/danoCultivoService';
 import authService from '../../services/authService';
 import { toastError, confirmDialog } from '../../utils/alerts';
-import { TableCellsIcon, ArrowDownTrayIcon, TrashIcon, PlusIcon } from '@heroicons/vue/24/outline';
+import fondo from '../../assets/images/Fondo.jpeg';
+import {
+    ArrowDownTrayIcon, TrashIcon, PlusIcon, MagnifyingGlassIcon, TableCellsIcon, Squares2X2Icon, ArrowRightIcon, SparklesIcon,
+    DocumentTextIcon, MapPinIcon, UserGroupIcon, ExclamationTriangleIcon,
+} from '@heroicons/vue/24/outline';
 
 const rol = authService.user()?.rol;
 const esTecnico = rol === 'tecnico';
@@ -81,6 +134,36 @@ const loading = ref(true);
 
 const totalHa = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.areaAfectada) || 0), 0));
 const totalPerdida = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.perdidaEstimada) || 0), 0));
+
+const busqueda = ref('');
+const filtroCultivo = ref('');
+const filtroNivel = ref('');
+const vista = ref('tabla');
+const NIVELES = ['Bajo', 'Medio', 'Alto', 'Pérdida total'];
+const nivel = (r) => {
+    const p = Number(r.danoPorc) || 0;
+    return NIVELES[p >= 100 ? 3 : p >= 50 ? 2 : p >= 25 ? 1 : 0];
+};
+const nivelClase = (r) => ({ Bajo: '', Medio: 'amber', Alto: 'red', 'Pérdida total': 'purple' }[nivel(r)]);
+const cultivosLista = computed(() => [...new Set(registros.value.map((r) => r.cultivo))].sort());
+const filtrados = computed(() => {
+    const q = busqueda.value.trim().toLowerCase();
+    return registros.value.filter((r) =>
+        (!q || [r.lote, r.tecnico, r.registradoPor, r.municipio, r.departamento, r.cultivo, r.causa].join(' ').toLowerCase().includes(q))
+        && (!filtroCultivo.value || r.cultivo === filtroCultivo.value)
+        && (!filtroNivel.value || nivel(r) === filtroNivel.value));
+});
+const limpiarFiltros = () => { busqueda.value = ''; filtroCultivo.value = ''; filtroNivel.value = ''; };
+const dep = (r) => r.departamento || '';
+const stats = computed(() => {
+    const l = registros.value;
+    return [
+        { title: 'Registros', value: l.length, foot: `<b>${new Set(l.map(dep).filter(Boolean)).size} depto(s).</b> con reportes`, icon: DocumentTextIcon },
+        { title: 'Superficie afectada', value: totalHa.value.toFixed(2), unit: 'ha', foot: 'Área acumulada reportada', icon: MapPinIcon },
+        { title: 'Productores', value: new Set(l.map((r) => (r.tecnico || '').trim().toLowerCase())).size, foot: 'Personas en los registros', icon: UserGroupIcon },
+        { title: 'Afectación alta o total', value: l.filter((r) => Number(r.danoPorc) >= 50).length, foot: 'Más del 50% de daño reportado', icon: ExclamationTriangleIcon },
+    ];
+});
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const ubicacion = (r) => [r.centroPoblado, r.municipio, r.departamento].filter(Boolean).join(', ') || '—';
@@ -102,7 +185,7 @@ async function eliminar(r) {
 }
 
 function exportarCSV() {
-    if (!registros.value.length) return toastError('No hay registros para exportar.');
+    if (!filtrados.value.length) return toastError('No hay registros para exportar.');
     const filas = [
         ['REPORTE DE DAÑOS A CULTIVOS'],
         ['Generado', new Date().toLocaleString('es')],
@@ -112,7 +195,7 @@ function exportarCSV() {
             'Sup. total lote (ha)', 'Sup. afectada (ha)', '% daño', 'Rend. esperado', 'Unidad rend.', 'Pérdida estimada',
             'Latitud, Longitud (precisión m)', 'N° fotos', 'Nombres de fotos', 'Notas'],
     ];
-    registros.value.forEach((r, i) => {
+    filtrados.value.forEach((r, i) => {
         const aso = (r.asociados || []).map((a) => [a.cultivo, a.etapa, a.areaLote, a.areaAfectada].join(' | ')).join(' ;; ');
         filas.push([
             i + 1, r.fecha, r.registradoPor, r.tecnico, r.departamento, r.municipio, r.centroPoblado, r.agricultorRua ? 'Sí' : 'No', r.codigoRua,
@@ -142,10 +225,3 @@ onMounted(async () => {
     }
 });
 </script>
-
-<style scoped>
-.tabla thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #7a928b; font-weight: 600; padding: 12px 13px; border-bottom: 1px solid #d8e6e4; background: #f0f6f2; white-space: nowrap; }
-.tabla tbody td { padding: 15px 13px; font-size: 12px; color: #0b3446; border-bottom: 1px solid #e0eae4; }
-.tabla tbody tr:hover { background: rgba(238,247,241,.43); }
-.tabla tbody tr:last-child td { border-bottom: none; }
-</style>

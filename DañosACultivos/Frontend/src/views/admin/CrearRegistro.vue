@@ -1,64 +1,33 @@
 <template>
     <div>
-        <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-32 lg:pb-8">
-            <!-- Encabezado -->
-            <header class="mb-4">
-                <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Crear Registros</h1>
-                <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Registro de afectaciones en campo</p>
-            </header>
+        <section>
+            <div class="content-head">
+                <div>
+                    <h2>Nuevo registro de afectación</h2>
+                    <p>Completa la información del levantamiento en campo.</p>
+                </div>
+                <button type="button" class="btn" @click="limpiar"><ArrowPathIcon class="w-5 h-5" />Limpiar formulario</button>
+            </div>
 
-            <!-- Progreso -->
-            <nav class="glass sticky top-2 z-30 mb-4 lg:mb-5 px-3 sm:px-6 py-3" style="border-radius: 999px;" aria-label="Progreso del registro">
-                <ol class="flex items-center">
-                    <template v-for="(st, i) in steps" :key="st.id">
-                        <li class="flex-shrink-0">
-                            <button type="button" class="flex flex-col items-center gap-1 min-w-[48px]" :aria-current="i === pasoActivo ? 'step' : undefined" @click="irA(st.id)">
-                                <span
-                                    class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all"
-                                    :style="st.hecho
-                                        ? 'background: var(--green); color:#fff;'
-                                        : i === pasoActivo
-                                            ? 'background: #fff; color: var(--green); border: 2px solid var(--green); box-shadow: 0 0 0 4px rgba(7,148,71,.14);'
-                                            : 'background: #fff; color: #7C8DA8; border: 1px solid var(--input-border);'"
-                                >
-                                    <CheckIcon v-if="st.hecho" class="w-5 h-5" />
-                                    <component :is="st.icon" v-else class="w-5 h-5" />
-                                </span>
-                                <span class="text-[11px] sm:text-[13px] font-semibold" :style="{ color: st.hecho || i === pasoActivo ? 'var(--navy)' : 'var(--muted)' }">{{ st.label }}</span>
-                            </button>
-                        </li>
-                        <li v-if="i < steps.length - 1" class="flex-1 h-[3px] rounded-full mx-1.5 sm:mx-3 -mt-5" :style="{ background: st.hecho ? 'var(--green)' : '#D5DEEA' }" aria-hidden="true"></li>
-                    </template>
-                </ol>
-            </nav>
+            <div class="page-tabs" role="tablist" aria-label="Pasos del registro">
+                <button v-for="(st, i) in steps" :key="st.id" type="button" class="step" :class="{ active: i === paso, done: st.hecho && i !== paso }" role="tab" :aria-selected="i === paso" @click="irA(i)">
+                    <span><CheckIcon v-if="st.hecho && i !== paso" class="w-4 h-4" /><template v-else>0{{ st.id }}</template></span>
+                    <div><b>{{ st.label }}</b><small>{{ st.sub }}</small></div>
+                </button>
+            </div>
 
-            <!-- Formulario -->
-            <form class="grid gap-[18px] lg:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[280px_minmax(0,1fr)_390px] items-start" @submit.prevent="guardar">
-                <!-- Panel informativo (solo escritorio ancho) -->
-                <aside class="glass hidden 2xl:flex flex-col p-6 min-h-[560px] sticky top-28">
-                    <h2 class="text-[30px] leading-[1.1] font-extrabold" style="color: var(--navy);">Registra y monitorea los daños en cultivos</h2>
-                    <p class="mt-4 text-[15px]" style="color: var(--navy);">Información real para una mejor respuesta en el campo.</p>
-                    <ul class="mt-6 space-y-4">
-                        <li v-for="f in features" :key="f.text" class="flex items-center gap-3">
-                            <span class="icon-badge" :style="{ background: f.color }"><component :is="f.icon" class="w-5 h-5" /></span>
-                            <span class="text-[14px] font-medium leading-snug" style="color: var(--navy);">{{ f.text }}</span>
-                        </li>
-                    </ul>
-                    <p class="mt-auto pt-8 text-lg font-bold leading-snug" style="color: var(--green-dark);">Juntos por un campo más resiliente</p>
-                </aside>
-
-                <!-- Columna central: secciones 1 a 3 -->
-                <div class="space-y-[18px] min-w-0">
+            <div class="form-grid">
+                <form ref="formEl" class="panel form-panel" novalidate @submit.prevent="enviar">
                     <!-- 1. Ubicación -->
-                    <section id="sec-1" class="glass p-5 sm:p-6 scroll-mt-28">
-                        <div class="flex items-center gap-3 mb-5">
-                            <span class="icon-badge" style="background: var(--blue);"><MapPinIcon class="w-6 h-6" /></span>
+                    <div v-show="paso === 0" data-formstep="0">
+                        <div class="section-head">
+                            <div class="round-icon"><MapPinIcon class="w-5 h-5" /></div>
                             <div>
-                                <h2 class="section-title">1. Ubicación</h2>
-                                <p class="section-desc">Fecha, responsable, lote y ubicación GPS.</p>
+                                <h2>Ubicación del registro</h2>
+                                <p>Identifica al productor y el lugar de la afectación.</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="fieldgrid">
                             <div>
                                 <label class="label" for="f-fecha">Fecha de levantamiento *</label>
                                 <input id="f-fecha" v-model="form.fecha" type="date" required class="field" />
@@ -87,36 +56,41 @@
                                 <label class="label" for="f-rua">Código de RUA *</label>
                                 <input id="f-rua" v-model="form.codigoRua" required placeholder="Escriba el código de RUA" class="field" />
                             </div>
-                            <div class="sm:col-span-2">
+                            <div class="full">
                                 <label class="label" for="f-lote">Lote / parcela *</label>
                                 <input id="f-lote" v-model="form.lote" required placeholder="Ej. Lote 3 - El Potrero" class="field" />
                             </div>
                         </div>
-                        <div class="card-inner mt-4 p-4 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px]" style="color: var(--muted);">
-                            <span>Latitud: <b class="font-mono" style="color: var(--navy);">{{ gps.lat ?? '—' }}</b></span>
-                            <span>Longitud: <b class="font-mono" style="color: var(--navy);">{{ gps.lon ?? '—' }}</b></span>
-                            <span>Precisión: <b class="font-mono" style="color: var(--navy);">{{ gps.acc ?? '—' }}</b> m</span>
-                            <button type="button" class="btn btn-outline btn-sm sm:ml-auto" :disabled="gpsBuscando" @click="capturarGPS">
-                                <ViewfinderCircleIcon class="w-5 h-5" style="color: var(--blue);" />
-                                {{ gpsBuscando ? 'Buscando…' : 'Usar mi ubicación actual *' }}
+
+                        <div class="gps-box">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2"><ViewfinderCircleIcon class="w-5 h-5" style="color: var(--green);" /><b class="text-[12px]">Ubicación GPS *</b></div>
+                                <span class="badge" :class="gps.lat !== null ? '' : 'gray'">{{ gps.lat !== null ? 'Capturada' : 'Sin capturar' }}</span>
+                            </div>
+                            <div class="gps-values">
+                                <div><small>Latitud</small><b>{{ gps.lat ?? '—' }}</b></div>
+                                <div><small>Longitud</small><b>{{ gps.lon ?? '—' }}</b></div>
+                                <div><small>Precisión</small><b>{{ gps.acc ?? '—' }} m</b></div>
+                            </div>
+                            <button type="button" class="btn w-full" :disabled="gpsBuscando" @click="capturarGPS">
+                                <ViewfinderCircleIcon class="w-5 h-5" />
+                                {{ gpsBuscando ? 'Buscando…' : 'Usar mi ubicación actual' }}
                             </button>
-                            <p class="hint w-full !mt-0">En campo, espere a que la precisión sea menor a 10 m. La ubicación actual es obligatoria.</p>
+                            <p class="hint">En campo, espere a que la precisión sea menor a 10 m. La ubicación actual es obligatoria.</p>
                         </div>
-                    </section>
+                    </div>
 
                     <!-- 2. Cultivo -->
-                    <section id="sec-2" class="glass p-5 sm:p-6 scroll-mt-28">
-                        <div class="flex items-center gap-3 mb-5">
-                            <span class="icon-badge" style="background: var(--green);">
-                                <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor" aria-hidden="true"><path d="M12 21v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /><path d="M12 14C12 8.5 8 5 3 5c0 5.5 3.5 9 9 9Z" /><path d="M12 12c0-4.5 3-7.500 8-7.500 0 4.500-3 7.500-8 7.500Z" opacity=".8" /></svg>
-                            </span>
+                    <div v-show="paso === 1" data-formstep="1">
+                        <div class="section-head">
+                            <div class="round-icon"><SparklesIcon class="w-5 h-5" /></div>
                             <div class="min-w-0 flex-1">
-                                <h2 class="section-title">2. Cultivo</h2>
-                                <p class="section-desc">Información del cultivo afectado.</p>
+                                <h2>Información del cultivo</h2>
+                                <p>Registra el cultivo y la superficie observada.</p>
                             </div>
-                            <button type="button" class="btn btn-outline btn-sm flex-shrink-0" @click="agregarAsociado"><PlusIcon class="w-5 h-5" /> Agregar cultivo asociado</button>
+                            <button type="button" class="btn btn-sm flex-shrink-0" @click="agregarAsociado"><PlusIcon class="w-5 h-5" />Agregar cultivo asociado</button>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="fieldgrid">
                             <div>
                                 <label class="label">Cultivo *</label>
                                 <SearchSelect v-model="form.cultivo" :options="CULTIVOS" placeholder="Buscar cultivo…" required />
@@ -135,14 +109,12 @@
                             </div>
                         </div>
 
-                        <div v-for="(a, i) in form.asociados" :key="a.uid" class="card-inner mt-4 p-4 space-y-3">
+                        <div v-for="(a, i) in form.asociados" :key="a.uid" class="card-inner mt-5 p-4 space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm font-bold" style="color: var(--navy);">Cultivo asociado {{ i + 1 }}</span>
-                                <button type="button" class="flex items-center gap-1 text-[13px] font-semibold min-h-[44px] px-2" style="color: var(--red);" @click="quitarAsociado(i)">
-                                    <TrashIcon class="w-4 h-4" /> Quitar
-                                </button>
+                                <span class="text-[13px] font-bold">Cultivo asociado {{ i + 1 }}</span>
+                                <button type="button" class="btn danger btn-sm" @click="quitarAsociado(i)"><TrashIcon class="w-4 h-4" />Quitar</button>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="fieldgrid">
                                 <div>
                                     <label class="label">Cultivo *</label>
                                     <SearchSelect v-model="a.cultivo" :options="CULTIVOS" placeholder="Buscar cultivo…" required />
@@ -161,18 +133,18 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </div>
 
-                    <!-- 3. Daño -->
-                    <section id="sec-3" class="glass p-5 sm:p-6 scroll-mt-28">
-                        <div class="flex items-center gap-3 mb-5">
-                            <span class="icon-badge" style="background: var(--orange);"><ExclamationTriangleIcon class="w-6 h-6" /></span>
+                    <!-- 3. Daños -->
+                    <div v-show="paso === 2" data-formstep="2">
+                        <div class="section-head">
+                            <div class="round-icon" style="background: #fff0d8; color: #af7d2b;"><ExclamationTriangleIcon class="w-5 h-5" /></div>
                             <div>
-                                <h2 class="section-title">3. Daños</h2>
-                                <p class="section-desc">Causa, porcentaje de daño y pérdida estimada.</p>
+                                <h2>Evaluación de daños</h2>
+                                <p>Causa, porcentaje de daño y pérdida estimada.</p>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="fieldgrid">
                             <div>
                                 <label class="label">Causa del daño *</label>
                                 <SearchSelect v-model="form.causa" :options="CAUSAS" placeholder="Buscar causa…" required />
@@ -195,81 +167,83 @@
                                 </div>
                                 <p class="hint">Mantenga la misma unidad en todo el relevamiento.</p>
                             </div>
-                            <div class="sm:col-span-2">
+                            <div class="full">
                                 <label class="label" for="f-perdida">Pérdida de rendimiento estimada</label>
                                 <input id="f-perdida" v-model="form.perdidaEstimada" type="number" min="0" step="0.01" placeholder="Se calcula automáticamente" class="field" @input="perdidaManual = true" />
                                 <p class="hint">= Sup. afectada × Rend. esperado × (% daño ÷ 100). Puede editarla.</p>
                             </div>
                         </div>
-                    </section>
-                </div>
+                    </div>
 
-                <!-- Columna derecha: evidencia, resumen, acciones -->
-                <div class="space-y-[18px] min-w-0 lg:sticky lg:top-28">
-                    <section id="sec-4" class="glass p-5 sm:p-6 scroll-mt-28">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="icon-badge" style="background: var(--green);"><CameraIcon class="w-6 h-6" /></span>
+                    <!-- 4. Evidencia -->
+                    <div v-show="paso === 3" data-formstep="3">
+                        <div class="section-head">
+                            <div class="round-icon"><CameraIcon class="w-5 h-5" /></div>
                             <div class="min-w-0 flex-1">
-                                <h2 class="section-title">4. Evidencia fotográfica</h2>
-                                <p class="section-desc">Adjunta fotografías del daño observado.</p>
+                                <h2>Evidencia del daño</h2>
+                                <p>Agrega fotografías y describe lo observado.</p>
                             </div>
-                            <span class="text-sm font-semibold self-start" style="color: var(--muted);">{{ fotos.length }}/{{ MAX_FOTOS }}</span>
+                            <span class="text-[12px] font-semibold" style="color: var(--muted);">{{ fotos.length }}/{{ MAX_FOTOS }}</span>
                         </div>
                         <input ref="fotosInput" type="file" accept="image/*" multiple capture="environment" class="hidden" @change="onFotos" />
-                        <button type="button" class="w-full rounded-[18px] py-6 px-4 flex flex-col items-center gap-1 transition-colors hover:bg-white/70" style="border: 2px dashed #7CCBA0; background: rgba(255,255,255,.5);" @click="fotosInput.click()">
-                            <CameraIcon class="w-8 h-8" style="color: var(--green-dark);" />
-                            <span class="font-bold" style="color: var(--navy);">Agregar fotografías</span>
-                            <span class="text-[13px]" style="color: var(--muted);">Toca para capturar o seleccionar</span>
+                        <button type="button" class="uploadbox" @click="fotosInput.click()">
+                            <CameraIcon />
+                            <b>Agregar fotografías</b>
+                            <small>Toca para capturar o seleccionar · hasta {{ MAX_FOTOS }} imágenes</small>
                         </button>
-                        <div v-if="fotos.length" class="grid grid-cols-3 gap-2.5 mt-3">
+                        <div v-if="fotos.length" class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 mt-3.5">
                             <div v-for="(f, i) in fotos" :key="f.url" class="relative aspect-square">
-                                <img :src="f.url" :title="f.nombre" class="w-full h-full object-cover rounded-[14px]" />
-                                <button type="button" class="absolute top-1 right-1 w-7 h-7 rounded-full flex items-center justify-center text-white" style="background: rgba(11,31,77,.72);" title="Quitar foto" @click="quitarFoto(i)">
+                                <img :src="f.url" :title="f.nombre" class="w-full h-full object-cover rounded-[10px]" />
+                                <button type="button" class="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-white" style="color: #a03737;" title="Quitar foto" @click="quitarFoto(i)">
                                     <XMarkIcon class="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
-
-                        <div class="card-inner mt-4 p-4">
-                            <label class="label flex items-center gap-2" for="f-notas" style="color: var(--navy); font-weight: 700;">
-                                <DocumentTextIcon class="w-5 h-5" /> Descripción del daño
-                            </label>
-                            <textarea id="f-notas" v-model="form.notas" rows="4" placeholder="Describe la situación observada en el cultivo…" class="field" style="resize: vertical;"></textarea>
-                        </div>
-                    </section>
-
-                    <section class="glass p-5 sm:p-6" aria-live="polite">
-                        <h2 class="flex items-center gap-2.5 text-lg font-bold mb-3" style="color: var(--navy);">
-                            <span class="icon-badge !w-9 !h-9" style="background: var(--green);"><CheckIcon class="w-5 h-5" /></span>
-                            Resumen del registro
-                        </h2>
-                        <dl class="text-[14px]">
-                            <div v-for="r in resumen" :key="r.label" class="flex items-start gap-3 py-2.5 border-t first:border-t-0" style="border-color: rgba(96,112,141,.16);">
-                                <dt class="w-[38%] flex-shrink-0 flex items-center gap-2" style="color: var(--muted);">
-                                    <component :is="r.icon" class="w-4 h-4 flex-shrink-0" :style="{ color: r.color }" /> {{ r.label }}
-                                </dt>
-                                <dd class="font-semibold min-w-0 break-words" style="color: var(--navy);">{{ r.value || '—' }}</dd>
-                            </div>
-                        </dl>
-                    </section>
-
-                    <!-- Acciones (fijas abajo en móvil) -->
-                    <div class="fixed bottom-0 inset-x-0 z-40 p-3 lg:static lg:p-0" style="background: linear-gradient(180deg, rgba(238,246,240,0), rgba(238,246,240,.95) 40%);">
-                        <div class="grid grid-cols-2 gap-3 max-w-[620px] mx-auto lg:max-w-none">
-                            <button type="button" class="btn btn-outline" @click="limpiar"><ArrowPathIcon class="w-5 h-5" /> Limpiar</button>
-                            <button type="submit" class="btn btn-primary" :disabled="guardando">
-                                <PaperAirplaneIcon class="w-5 h-5" /> {{ guardando ? 'Enviando…' : 'Enviar registro' }}
-                            </button>
+                        <div class="mt-5">
+                            <label class="label" for="f-notas">Descripción del daño</label>
+                            <textarea id="f-notas" v-model="form.notas" rows="5" placeholder="Describe los daños observados, las condiciones del cultivo y cualquier información relevante…" class="field" style="resize: vertical;"></textarea>
                         </div>
                     </div>
-                </div>
-            </form>
-        </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn" :disabled="paso === 0" @click="irA(paso - 1)"><ArrowLeftIcon class="w-5 h-5" />Anterior</button>
+                        <button v-if="paso < 3" type="button" class="btn btn-primary" @click="siguiente">Continuar<ArrowRightIcon class="w-5 h-5" /></button>
+                        <button v-else type="submit" class="btn btn-primary" :disabled="guardando">
+                            <PaperAirplaneIcon class="w-5 h-5" />{{ guardando ? 'Enviando…' : 'Enviar registro' }}
+                        </button>
+                    </div>
+                </form>
+
+                <aside class="summary">
+                    <div class="panel" aria-live="polite">
+                        <div class="flex items-center gap-2.5">
+                            <DocumentTextIcon class="w-5 h-5" style="color: var(--green);" />
+                            <h3 class="text-[14px] font-bold">Resumen del registro</h3>
+                        </div>
+                        <div class="progressline"><i :style="{ width: ((paso + 1) / 4 * 100) + '%' }"></i></div>
+                        <small class="text-[9px]" style="color: #829687;">Paso {{ paso + 1 }} de 4</small>
+                        <div class="summary-list">
+                            <div v-for="r in resumen" :key="r.label"><span>{{ r.label }}</span><b>{{ r.value || '—' }}</b></div>
+                        </div>
+                        <div class="summary-score">
+                            <div class="flex items-center justify-between"><small>ÁREA AFECTADA</small><ChartBarIcon class="w-5 h-5" style="color: #3b9165;" /></div>
+                            <strong>{{ form.areaAfectada !== '' ? form.areaAfectada : 0 }} <span class="text-[13px]">ha</span></strong>
+                            <small>Superficie registrada en hectáreas</small>
+                        </div>
+                    </div>
+                    <div class="field-note">
+                        <SparklesIcon />
+                        <h3>Un buen registro hace la diferencia.</h3>
+                        <p>Verifica la ubicación, conserva la misma unidad de medida y toma fotografías claras del daño.</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onBeforeUnmount } from 'vue';
+import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import SelectField from '../../components/ui/SelectField.vue';
 import SearchSelect from '../../components/ui/SearchSelect.vue';
 import danoCultivoService from '../../services/danoCultivoService';
@@ -279,7 +253,7 @@ import { toastSuccess, toastError, toastInfo, alertError } from '../../utils/ale
 import {
     MapPinIcon, ViewfinderCircleIcon, CameraIcon, PlusIcon, TrashIcon, XMarkIcon, CheckIcon,
     ArrowPathIcon, ArrowDownTrayIcon, ExclamationTriangleIcon, ChartBarIcon,
-    DocumentTextIcon, PaperAirplaneIcon, BeakerIcon,
+    DocumentTextIcon, PaperAirplaneIcon, BeakerIcon, ArrowRightIcon, ArrowLeftIcon, SparklesIcon,
 } from '@heroicons/vue/24/outline';
 
 const ETAPAS = ['Siembra / Emergencia', 'Vegetativo', 'Floración', 'Llenado de grano / Fructificación', 'Madurez', 'Cosechado'];
@@ -357,6 +331,7 @@ function liberarFotos() {
 }
 
 function limpiar() {
+    paso.value = 0;
     Object.assign(form, formVacio());
     perdidaManual.value = false;
     Object.assign(gps, { lat: null, lon: null, acc: null });
@@ -420,18 +395,35 @@ const features = [
 ];
 
 const steps = computed(() => [
-    { id: 1, label: 'Ubicación', icon: MapPinIcon, hecho: !!(form.fecha && form.tecnico && form.lote && form.departamento && form.municipio && form.centroPoblado && form.agricultorRua && gps.lat !== null) },
-    { id: 2, label: 'Cultivo', icon: BeakerIcon, hecho: !!(form.cultivo && form.areaAfectada !== '') },
-    { id: 3, label: 'Daños', icon: ExclamationTriangleIcon, hecho: !!(form.causa && form.danoPorc !== '') },
-    { id: 4, label: 'Evidencia', icon: CameraIcon, hecho: fotos.value.length > 0 },
+    { id: 1, sub: 'Datos del levantamiento', label: 'Ubicación', icon: MapPinIcon, hecho: !!(form.fecha && form.tecnico && form.lote && form.departamento && form.municipio && form.centroPoblado && form.agricultorRua && gps.lat !== null) },
+    { id: 2, sub: 'Superficie y etapa', label: 'Cultivo', icon: BeakerIcon, hecho: !!(form.cultivo && form.areaAfectada !== '') },
+    { id: 3, sub: 'Causa e impacto', label: 'Daños', icon: ExclamationTriangleIcon, hecho: !!(form.causa && form.danoPorc !== '') },
+    { id: 4, sub: 'Fotografías y notas', label: 'Evidencia', icon: CameraIcon, hecho: fotos.value.length > 0 },
 ]);
-// Paso activo = primer paso pendiente (o el último si todos están completos).
-const pasoActivo = computed(() => {
-    const i = steps.value.findIndex((s) => !s.hecho);
-    return i === -1 ? steps.value.length - 1 : i;
-});
-function irA(id) {
-    document.getElementById(`sec-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+// Navegación por pasos (una sección visible a la vez).
+const paso = ref(0);
+const formEl = ref(null);
+const ULTIMO = 3;
+const pasoEl = (i) => formEl.value?.querySelector(`[data-formstep="${i}"]`);
+const invalido = (i) => [...(pasoEl(i)?.querySelectorAll('input, select, textarea') || [])].find((el) => !el.checkValidity());
+function irA(i) { paso.value = Math.max(0, Math.min(ULTIMO, i)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function siguiente() {
+    const el = invalido(paso.value);
+    if (el) return el.reportValidity();
+    if (paso.value === 0 && gps.lat === null) return alertError('Captura tu ubicación actual con el botón "Usar mi ubicación actual".', 'Ubicación obligatoria');
+    irA(paso.value + 1);
+}
+// Antes de enviar se revisan todos los pasos; si falta algo se vuelve a ese paso.
+async function enviar() {
+    for (let i = 0; i <= ULTIMO; i++) {
+        const el = invalido(i);
+        if (el) {
+            paso.value = i;
+            await nextTick();
+            return el.reportValidity();
+        }
+    }
+    guardar();
 }
 
 const resumen = computed(() => {

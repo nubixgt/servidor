@@ -1,199 +1,193 @@
 <template>
     <div>
-        <div class="mx-auto max-w-[1480px] px-3.5 sm:px-6 py-4 sm:py-6 pb-10">
-            <!-- Encabezado -->
-            <header class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <div class="min-w-0">
-                    <h1 class="text-[28px] sm:text-[34px] leading-tight font-extrabold" style="color: var(--green-dark);">Dashboard</h1>
-                    <p class="text-[13px] sm:text-sm" style="color: var(--navy);">Resumen de afectaciones en campo</p>
+        <section>
+            <div class="content-head">
+                <div>
+                    <h2>Panorama del campo</h2>
+                    <p>Una mirada a los registros y las áreas afectadas.</p>
                 </div>
-
                 <div class="flex flex-wrap items-center gap-2">
-                    <div class="glass flex items-center gap-2 px-3 py-1.5" style="border-radius: 14px;">
-                        <CalendarDaysIcon class="w-5 h-5" style="color: var(--green-dark);" />
-                        <input v-model="filtros.desde" type="date" class="bg-transparent text-[13px] outline-none" aria-label="Desde" />
+                    <div class="panel flex items-center gap-2 !px-3 !py-1.5" style="border-radius: 12px;">
+                        <CalendarDaysIcon class="w-5 h-5" style="color: var(--green);" />
+                        <input v-model="filtros.desde" type="date" class="bg-transparent text-[12px] outline-none" aria-label="Desde" />
                         <span style="color: var(--muted);">–</span>
-                        <input v-model="filtros.hasta" type="date" class="bg-transparent text-[13px] outline-none" aria-label="Hasta" />
+                        <input v-model="filtros.hasta" type="date" class="bg-transparent text-[12px] outline-none" aria-label="Hasta" />
                         <button v-if="filtros.desde || filtros.hasta" class="p-1" aria-label="Limpiar fechas" @click="filtros.desde = filtros.hasta = ''"><XMarkIcon class="w-4 h-4" /></button>
                     </div>
-                    <button class="btn btn-outline btn-sm" :disabled="loading" @click="cargar"><ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': loading }" /></button>
-                    <router-link to="/registros/crear" class="btn btn-primary btn-sm"><PlusIcon class="w-5 h-5" />Nuevo registro</router-link>
+                    <button class="btn btn-outline btn-sm" :disabled="loading" aria-label="Actualizar" @click="cargar"><ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': loading }" /></button>
                 </div>
-            </header>
+            </div>
 
-            <p v-if="error" class="glass p-4 mb-4 text-center" style="color: var(--red);">{{ error }}</p>
+            <p v-if="error" class="panel mb-4 text-center" style="color: var(--red);">{{ error }}</p>
 
             <!-- KPIs -->
-            <section class="grid grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-4 mb-4">
-                <div v-for="k in kpis" :key="k.label" class="glass p-4 flex items-center gap-3" style="border-radius: 20px;">
-                    <span class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center flex-shrink-0" :style="{ background: k.bg, color: k.color }"><component :is="k.icon" class="w-7 h-7" /></span>
-                    <div class="min-w-0">
-                        <p class="text-[12px] sm:text-[13px] leading-tight" style="color: var(--navy);">{{ k.label }}</p>
-                        <p class="text-[24px] sm:text-[30px] font-extrabold leading-tight">{{ k.value }}</p>
-                        <p v-if="k.trend != null" class="text-[11px] font-semibold" :style="{ color: k.trend >= 0 ? 'var(--green)' : 'var(--red)' }">
-                            {{ k.trend >= 0 ? '↑' : '↓' }} {{ Math.abs(k.trend) }}% <span class="font-normal" style="color: var(--muted);">vs. periodo anterior</span>
-                        </p>
+            <div class="stats">
+                <div v-for="k in kpis" :key="k.label" class="panel stat">
+                    <div class="stat-icon"><component :is="k.icon" class="w-5 h-5" /></div>
+                    <div class="stat-title">{{ k.label }}</div>
+                    <strong>{{ k.value }}</strong>
+                    <div v-if="k.trend != null" class="stat-foot">
+                        <b :style="{ color: k.trend >= 0 ? '#008359' : 'var(--red)' }">{{ k.trend >= 0 ? '↑' : '↓' }} {{ Math.abs(k.trend) }}%</b> vs. periodo anterior
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Mapa + tipo de daño + cultivos -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 mb-4">
-                <div class="glass p-4 flex flex-col">
-                    <h2 class="section-title">Ubicación de registros</h2>
-                    <p class="section-desc mb-3">Registros con GPS · {{ conGps }} de {{ lista.length }}</p>
-                    <div class="relative flex-1 min-h-[280px] rounded-2xl overflow-hidden" style="border: 1px solid var(--input-border);">
-                        <div ref="mapaEl" class="absolute inset-0"></div>
-                        <div class="absolute left-2 bottom-2 z-[500] card-inner px-3 py-2 text-[12px]">
-                            <p class="font-semibold mb-1">Nivel de afectación</p>
-                            <p v-for="n in NIVELES" :key="n.id" class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" :style="{ background: n.color }"></span>{{ n.label }}</p>
-                        </div>
+            <div class="dashboard-grid">
+                <article class="panel">
+                    <div class="panel-head">
+                        <div><h3>Área afectada en el tiempo</h3><p>Superficie reportada por mes · hectáreas</p></div>
+                        <span class="badge">Seguimiento</span>
                     </div>
-                </div>
-
-                <div class="glass p-4">
-                    <h2 class="section-title">Tipo de daño</h2>
-                    <p class="section-desc mb-4">Registros por causa de afectación</p>
-                    <p v-if="!porCausa.length" class="py-8 text-center section-desc">Sin datos</p>
-                    <div v-for="(r, i) in porCausa" :key="r.nombre" class="flex items-center gap-2 mb-3 text-[13px]">
-                        <span class="w-[38%] truncate" :title="r.nombre">{{ r.nombre }}</span>
-                        <div class="flex-1 h-2.5 rounded-full bg-black/5"><div class="h-full rounded-full" :style="{ width: r.pct + '%', background: PALETA[i % PALETA.length] }"></div></div>
-                        <span class="w-7 text-right font-semibold">{{ r.n }}</span>
-                        <span class="w-9 text-right" style="color: var(--muted);">{{ r.share }}%</span>
-                    </div>
-                </div>
-
-                <div class="glass p-4">
-                    <h2 class="section-title">Cultivos más afectados</h2>
-                    <p class="section-desc mb-4">Registros por tipo de cultivo</p>
-                    <p v-if="!porCultivo.length" class="py-8 text-center section-desc">Sin datos</p>
-                    <div v-for="(r, i) in porCultivo" :key="r.nombre" class="flex items-center gap-2 mb-3 text-[13px]">
-                        <span class="w-[38%] truncate" :title="r.nombre">{{ r.nombre }}</span>
-                        <div class="flex-1 h-2.5 rounded-full bg-black/5"><div class="h-full rounded-full" :style="{ width: r.pct + '%', background: PALETA[(i + 2) % PALETA.length] }"></div></div>
-                        <span class="w-7 text-right font-semibold">{{ r.n }}</span>
-                        <span class="w-9 text-right" style="color: var(--muted);">{{ r.share }}%</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Área por mes + nivel -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 mb-4">
-                <div class="glass p-4 lg:col-span-2">
-                    <h2 class="section-title">Área afectada por mes</h2>
-                    <p class="section-desc mb-3">Hectáreas registradas</p>
                     <p v-if="!porMes.length" class="py-10 text-center section-desc">Sin datos</p>
-                    <div v-else class="flex items-end gap-1.5 sm:gap-3 h-[190px] overflow-x-auto pb-1">
-                        <div v-for="m in porMes" :key="m.key" class="group relative flex-1 min-w-[26px] h-full flex flex-col justify-end items-center" >
-                            <div class="absolute bottom-full mb-1 hidden group-hover:block z-10 rounded-lg px-2 py-1 text-[12px] text-white whitespace-nowrap" style="background: var(--navy);">
-                                <b>{{ m.label }}</b> · {{ num(m.ha) }} ha · {{ m.n }} reg.
+                    <div v-else class="chart-area" role="img" aria-label="Área afectada por mes">
+                        <div class="gridlines"><span>{{ num(maxHa) }}</span><span>{{ num(maxHa / 2) }}</span><span>0</span></div>
+                        <div class="bars">
+                            <div v-for="m in porMes" :key="m.key" class="monthbar" :style="{ height: Math.max(m.pct, 3) + '%' }" :title="`${m.label}: ${num(m.ha)} ha · ${m.n} reg.`">
+                                <span class="barvalue">{{ num(m.ha) }}</span>
+                                <span class="monthlabel">{{ m.corto }}</span>
                             </div>
-                            <span class="text-[11px] mb-1" style="color: var(--muted);">{{ num(m.ha) }}</span>
-                            <div class="w-full rounded-t-lg" :style="{ height: Math.max(m.pct, 3) + '%', background: 'linear-gradient(180deg,#4C9BFF,#1677FF)' }"></div>
-                            <span class="text-[11px] mt-1" style="color: var(--muted);">{{ m.corto }}</span>
                         </div>
                     </div>
-                </div>
+                    <div class="chart-caption"><span class="dot"></span>Superficie de los registros seleccionados</div>
+                </article>
 
-                <div class="glass p-4">
-                    <h2 class="section-title mb-3">Nivel de afectación</h2>
-                    <div class="flex items-center gap-4">
-                        <div class="relative w-[130px] h-[130px] flex-shrink-0">
-                            <div class="w-full h-full rounded-full" :style="{ background: donut }"></div>
-                            <div class="absolute inset-[22px] rounded-full bg-white flex flex-col items-center justify-center">
-                                <b class="text-[22px] leading-none">{{ lista.length }}</b>
-                                <span class="text-[11px]" style="color: var(--muted);">registros</span>
-                            </div>
+                <article class="panel">
+                    <div class="panel-head">
+                        <div><h3>Nivel de afectación</h3><p>Distribución de los registros</p></div>
+                    </div>
+                    <div class="distribution">
+                        <div class="donut" :style="{ background: donut }">
+                            <div class="center"><strong>{{ lista.length }}</strong><small>registros</small></div>
                         </div>
-                        <ul class="flex-1 text-[13px] space-y-1.5">
-                            <li v-for="n in porNivel" :key="n.id" class="flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full flex-shrink-0" :style="{ background: n.color }"></span>
-                                <span class="flex-1">{{ n.label }}</span>
-                                <b>{{ n.n }}</b><span style="color: var(--muted);">({{ n.share }}%)</span>
-                            </li>
-                        </ul>
+                        <div class="legend">
+                            <div v-for="n in porNivel" :key="n.id"><i class="dot" :style="{ background: n.color }"></i><span>{{ n.label }}</span><b>{{ n.n }}</b></div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="lower-grid">
+                <article class="panel">
+                    <div class="panel-head"><div><h3>Principales causas</h3><p>Registros por tipo de daño</p></div></div>
+                    <p v-if="!porCausa.length" class="small muted section-desc">Sin datos en este período.</p>
+                    <div v-for="r in porCausa.slice(0, 5)" :key="r.nombre" class="rankrow">
+                        <div class="ranktop"><span class="truncate" :title="r.nombre">{{ r.nombre }}</span><b>{{ r.n }} <small style="color: var(--muted); font-weight: 400;">· {{ r.share }}%</small></b></div>
+                        <div class="track"><i :style="{ width: r.pct + '%' }"></i></div>
+                    </div>
+                </article>
+
+                <article class="panel">
+                    <div class="panel-head"><div><h3>Cultivos afectados</h3><p>Registros por tipo de cultivo</p></div></div>
+                    <p v-if="!porCultivo.length" class="section-desc">Sin cultivos reportados.</p>
+                    <div v-for="r in porCultivo.slice(0, 5)" :key="r.nombre" class="crop-row">
+                        <div class="crop-symbol"><SparklesIcon class="w-4 h-4" /></div>
+                        <div><strong>{{ r.nombre }}</strong><small>{{ r.n }} registros</small></div>
+                        <span class="amount">{{ r.share }}<small> %</small></span>
+                    </div>
+                </article>
+
+                <article class="panel coverage-panel">
+                    <div class="panel-head"><div><h3>Cobertura territorial</h3><p>Departamentos con reportes</p></div></div>
+                    <p v-if="!porDepartamento.length" class="section-desc">Sin departamentos reportados.</p>
+                    <div class="coverage-grid">
+                        <div v-for="t in porDepartamento" :key="t.nombre" class="territory">
+                            <MapPinIcon />
+                            <strong>{{ t.nombre }}</strong>
+                            <span>{{ t.n }} reportes · {{ num(t.ha) }} ha</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Mapa -->
+            <article class="panel mt-5 flex flex-col">
+                <div class="panel-head">
+                    <div><h3>Ubicación de registros</h3><p>Registros con GPS · {{ conGps }} de {{ lista.length }}</p></div>
+                    <MapPinIcon class="w-5 h-5" style="color: var(--muted);" />
+                </div>
+                <div class="relative min-h-[320px] rounded-2xl overflow-hidden" style="border: 1px solid var(--input-border);">
+                    <div ref="mapaEl" class="absolute inset-0"></div>
+                    <div class="absolute left-2 bottom-2 z-[500] card-inner px-3 py-2 text-[12px]">
+                        <p class="font-semibold mb-1">Nivel de afectación</p>
+                        <p v-for="n in NIVELES" :key="n.id" class="flex items-center gap-2"><span class="w-3 h-3 rounded-full" :style="{ background: n.color }"></span>{{ n.label }}</p>
                     </div>
                 </div>
-            </section>
+            </article>
 
             <!-- Registros recientes -->
-            <section class="glass p-4 sm:p-5">
-                <div class="flex items-center justify-between gap-3 mb-3">
-                    <div class="flex items-center gap-3">
-                        <span class="icon-badge" style="background: var(--green-dark);"><TableCellsIcon class="w-6 h-6" /></span>
-                        <h2 class="section-title">{{ verTodos ? 'Todos los registros' : 'Registros recientes' }}</h2>
-                    </div>
-                    <button v-if="lista.length > 5" class="btn btn-sm text-white" style="background: var(--green-dark);" @click="verTodos = !verTodos">
-                        {{ verTodos ? 'Ver menos' : 'Ver todos los registros' }}<ArrowRightIcon class="w-4 h-4" />
-                    </button>
+            <article class="panel mt-5">
+                <div class="panel-head">
+                    <div><h3>{{ verTodos ? 'Todos los registros' : 'Últimos registros' }}</h3><p>Lo más reciente del trabajo en campo</p></div>
+                    <button v-if="lista.length > 5" class="linkbtn" @click="verTodos = !verTodos">{{ verTodos ? 'Ver menos' : 'Ver todos →' }}</button>
                 </div>
 
                 <p v-if="loading && !lista.length" class="py-10 text-center section-desc">Cargando…</p>
                 <p v-else-if="!lista.length" class="py-10 text-center section-desc">No hay registros para mostrar.</p>
 
-                <div v-else class="overflow-x-auto">
-                    <table class="w-full text-[13px] min-w-[860px]">
+                <div v-else class="tablewrap">
+                    <table class="tbl">
                         <thead>
-                            <tr class="text-left" style="color: var(--muted);">
-                                <th class="py-2 px-2 font-medium">Fecha</th>
-                                <th class="py-2 px-2 font-medium">Lote / Técnico</th>
-                                <th v-if="verRegistrante" class="py-2 px-2 font-medium">Registrado por</th>
-                                <th class="py-2 px-2 font-medium">Cultivo</th>
-                                <th class="py-2 px-2 font-medium">Tipo de daño</th>
-                                <th class="py-2 px-2 font-medium text-right">Área (ha)</th>
-                                <th class="py-2 px-2 font-medium">Nivel</th>
-                                <th class="py-2 px-2 font-medium">Descripción</th>
-                                <th class="py-2 px-2 font-medium">Evidencia</th>
-                                <th></th>
+                            <tr>
+                                <th>Lote / Productor</th>
+                                <th v-if="verRegistrante">Registrado por</th>
+                                <th>Cultivo</th>
+                                <th>Causa</th>
+                                <th>Área</th>
+                                <th>Afectación</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Evidencia</th>
+                                <th><span class="sr-only">Detalle</span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="d in visibles" :key="d.id" class="border-t cursor-pointer hover:bg-white/60" style="border-color: var(--input-border);" @click="detalle = d">
-                                <td class="py-2.5 px-2 whitespace-nowrap">{{ fechaCorta(d.fecha) }}</td>
-                                <td class="py-2.5 px-2"><b>{{ d.lote }}</b><br /><span style="color: var(--muted);">{{ d.tecnico }}</span></td>
-                                <td v-if="verRegistrante" class="py-2.5 px-2">{{ d.registradoPor || '—' }}</td>
-                                <td class="py-2.5 px-2">{{ d.cultivo }}</td>
-                                <td class="py-2.5 px-2 font-semibold">{{ d.causa }}</td>
-                                <td class="py-2.5 px-2 text-right">{{ num(d.areaAfectada) }}</td>
-                                <td class="py-2.5 px-2">
-                                    <span class="px-2 py-1 rounded-full text-[12px] font-bold whitespace-nowrap" :style="{ background: nivelDe(d).color + '26', color: nivelDe(d).texto }">● {{ nivelDe(d).label }}</span>
-                                </td>
-                                <td class="py-2.5 px-2 max-w-[240px] truncate" :title="d.notas">{{ d.notas || '—' }}</td>
-                                <td class="py-2.5 px-2">
+                            <tr v-for="d in visibles" :key="d.id" class="cursor-pointer" @click="detalle = d">
+                                <td><strong>{{ d.lote }}</strong><small>{{ d.tecnico }}</small></td>
+                                <td v-if="verRegistrante">{{ d.registradoPor || '—' }}</td>
+                                <td><div class="cellcrop"><span class="record-indicator"><SparklesIcon class="w-4 h-4" /></span>{{ d.cultivo }}</div></td>
+                                <td>{{ d.causa }}</td>
+                                <td><b>{{ num(d.areaAfectada) }}</b> <small style="display: inline;">ha</small></td>
+                                <td><span class="badge" :class="nivelClase(d)">{{ nivelDe(d).label }}</span><small>{{ num(d.danoPorc) }}% de daño</small></td>
+                                <td>{{ fechaCorta(d.fecha) }}</td>
+                                <td class="max-w-[220px] truncate" :title="d.notas">{{ d.notas || '—' }}</td>
+                                <td>
                                     <div class="flex gap-1">
                                         <img v-for="f in d.fotos.slice(0, 3)" :key="f.id" :src="fotoUrl(d, f)" :alt="f.nombre" loading="lazy" class="w-9 h-9 rounded-md object-cover" />
                                         <span v-if="!d.fotos.length" style="color: var(--muted);">—</span>
                                     </div>
                                 </td>
-                                <td class="py-2.5 px-2"><ChevronRightIcon class="w-4 h-4" style="color: var(--muted);" /></td>
+                                <td><span class="iconbtn" aria-hidden="true"><ArrowRightIcon class="w-4 h-4" /></span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </section>
-        </div>
+            </article>
+        </section>
 
         <!-- Detalle -->
-        <div v-if="detalle" class="fixed inset-0 z-[1000] flex items-center justify-center p-4" style="background: rgba(11,31,77,.35);" @click.self="detalle = null">
-            <div class="glass w-full max-w-[560px] max-h-[90vh] overflow-y-auto p-5" style="background: rgba(255,255,255,.94);">
-                <div class="flex items-center justify-between gap-2 mb-4">
-                    <h2 class="section-title">{{ detalle.cultivo }} · {{ detalle.lote }}</h2>
+        <div v-if="detalle" class="fixed inset-0 z-[1000] flex items-center justify-center p-4" style="background: rgba(8, 42, 58, .53); backdrop-filter: blur(5px);" @click.self="detalle = null">
+            <div class="modal-box w-full max-w-[680px] max-h-[88vh] overflow-y-auto">
+                <div class="modal-head">
+                    <h2>{{ detalle.cultivo }} · {{ detalle.lote }}</h2>
                     <div class="flex gap-2">
-                        <button v-if="puedeEliminar" class="btn btn-outline btn-sm" aria-label="Eliminar" @click="eliminar(detalle)"><TrashIcon class="w-5 h-5" style="color: var(--red);" /></button>
-                        <button class="btn btn-outline btn-sm" aria-label="Cerrar" @click="detalle = null"><XMarkIcon class="w-5 h-5" /></button>
+                        <button v-if="puedeEliminar" class="iconbtn" aria-label="Eliminar" @click="eliminar(detalle)"><TrashIcon class="w-5 h-5" style="color: var(--red);" /></button>
+                        <button class="iconbtn" aria-label="Cerrar" @click="detalle = null"><XMarkIcon class="w-5 h-5" /></button>
                     </div>
                 </div>
-                <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-[14px]">
-                    <div v-for="r in filasDetalle" :key="r[0]" :class="r[2] ? 'col-span-2' : ''">
-                        <dt class="label" style="margin-bottom: 0;">{{ r[0] }}</dt>
-                        <dd class="font-medium">{{ r[1] }}</dd>
-                    </div>
-                </dl>
-                <div v-if="detalle.fotos.length" class="mt-4">
-                    <p class="label">Fotos</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        <a v-for="f in detalle.fotos" :key="f.id" :href="fotoUrl(detalle, f)" target="_blank" rel="noopener" :title="f.nombre">
-                            <img :src="fotoUrl(detalle, f)" :alt="f.nombre" loading="lazy" class="w-full aspect-square object-cover rounded-xl" style="border: 1px solid var(--input-border);" />
-                        </a>
+                <div class="modal-content">
+                    <dl class="grid grid-cols-2 gap-x-5 gap-y-5">
+                        <div v-for="r in filasDetalle" :key="r[0]" :class="r[2] ? 'col-span-2' : ''">
+                            <dt class="text-[10px]" style="color: #809689;">{{ r[0] }}</dt>
+                            <dd class="text-[12px] font-bold break-words mt-1">{{ r[1] }}</dd>
+                        </div>
+                    </dl>
+                    <div v-if="detalle.fotos.length" class="mt-5">
+                        <p class="label">Fotos</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <a v-for="f in detalle.fotos" :key="f.id" :href="fotoUrl(detalle, f)" target="_blank" rel="noopener" :title="f.nombre">
+                                <img :src="fotoUrl(detalle, f)" :alt="f.nombre" loading="lazy" class="w-full aspect-square object-cover rounded-xl" style="border: 1px solid var(--input-border);" />
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -210,7 +204,7 @@ import authService from '../../services/authService';
 import { toastSuccess, toastError, confirmDialog } from '../../utils/alerts';
 import {
     ArrowPathIcon, ArrowRightIcon, PlusIcon, TrashIcon, XMarkIcon, TableCellsIcon, CalendarDaysIcon,
-    ChevronRightIcon, DocumentTextIcon, MapPinIcon, UserGroupIcon, ExclamationTriangleIcon,
+    ChevronRightIcon, DocumentTextIcon, MapPinIcon, UserGroupIcon, ExclamationTriangleIcon, SparklesIcon,
 } from '@heroicons/vue/24/outline';
 
 const NIVELES = [
@@ -290,6 +284,18 @@ const agrupar = (campo) => {
     return filas.map(([nombre, n]) => ({ nombre, n, pct: (n / max) * 100, share: Math.round((n / total) * 100) }));
 };
 const porCausa = computed(() => agrupar('causa'));
+const nivelClase = (d) => ({ bajo: '', medio: 'amber', alto: 'red', total: 'purple' }[nivelDe(d).id]);
+const maxHa = computed(() => Math.max(...porMes.value.map((m) => m.ha), 0));
+const porDepartamento = computed(() => {
+    const m = {};
+    lista.value.forEach((d) => {
+        if (!d.departamento) return;
+        m[d.departamento] ||= { nombre: d.departamento, n: 0, ha: 0 };
+        m[d.departamento].n++;
+        m[d.departamento].ha += Number(d.areaAfectada) || 0;
+    });
+    return Object.values(m).sort((a, b) => b.n - a.n).slice(0, 4);
+});
 const porCultivo = computed(() => agrupar('cultivo'));
 
 const porMes = computed(() => {
@@ -332,9 +338,12 @@ const filasDetalle = computed(() => {
     const d = detalle.value;
     if (!d) return [];
     return [
-        ['Fecha', d.fecha], ['Técnico / Productor', d.tecnico],
+        ['Fecha', d.fecha], ['Productor', d.tecnico],
+        ['Ubicación', [d.centroPoblado, d.municipio, d.departamento].filter(Boolean).join(', ') || '—', true],
+        ['Agricultor en RUA', d.agricultorRua ? `Sí (${d.codigoRua || '—'})` : 'No'],
         ['Cultivo', d.cultivo], ['Etapa', d.etapa || '—'],
-        ['Causa', d.causa], ['Daño', num(d.danoPorc) + '% · ' + nivelDe(d).label],
+        ...(d.asociados || []).map((a, i) => [`Cultivo asociado ${i + 1}`, `${a.cultivo}${a.etapa ? ' · ' + a.etapa : ''} · ${num(a.areaAfectada)} ha afectadas`, true]),
+        ['Causa', d.causa === 'Otra' && d.causaOtra ? `Otra: ${d.causaOtra}` : d.causa], ['Daño', num(d.danoPorc) + '% · ' + nivelDe(d).label],
         ['Área del lote', d.areaLote != null ? num(d.areaLote) + ' ha' : '—'], ['Área afectada', num(d.areaAfectada) + ' ha'],
         ['Rendimiento esperado', d.rendEsperado != null ? num(d.rendEsperado) + ' ' + d.unidad : '—'],
         ['Pérdida estimada', d.perdidaEstimada != null ? num(d.perdidaEstimada) : '—'],
