@@ -24,9 +24,8 @@ class PartidosController extends BaseController {
     }
 
     public function crear() {
-        $this->autenticar();
+        $this->soloAdmin();
         $d = $this->validar(Request::input());
-        $this->exigirParticipacion($d);
         $id = PartidoModel::crear($d, $this->usuario['id']);
         Response::json(PartidoModel::serializar(PartidoModel::porId($id)), 201);
     }

@@ -38,7 +38,7 @@ const marcador = (p) => (p.status === 'scheduled' ? '—' : `${p.home_score} : $
 
 <template>
   <div class="page-enter">
-    <AdminHeading :title="esAdmin ? 'Partidos' : 'Mis partidos'" add-label="Añadir partido" @add="m.abrir('form')" />
+    <AdminHeading :title="esAdmin ? 'Partidos' : 'Mis partidos'" :add-label="esAdmin ? 'Añadir partido' : undefined" @add="m.abrir('form')" />
 
     <div class="filter-bar">
       <label class="search-field">Buscar en partidos<input v-model="busqueda" type="search" placeholder="Escribe un equipo…" /></label>

@@ -49,14 +49,9 @@ function guardar() {
         <select v-model.number="form.away_team_id" required><option v-for="t in teams" :key="t.id" :value="t.id">{{ t.name }}</option></select>
       </label>
       <label>Fecha y hora en Guatemala<input v-model="fecha" type="datetime-local" required /><small class="field-error">{{ errors.kickoff_at }}</small></label>
-      <label>Jornada<input v-model.number="form.round_number" type="number" min="1" max="99" required /></label>
-      <label class="full">Estado
-        <select v-model="form.status">
-          <option value="scheduled">Programado</option><option value="live">En juego</option><option value="finished">Finalizado</option>
-        </select>
-      </label>
+      <label class="full">Jornada<input v-model.number="form.round_number" type="number" min="1" max="99" required /></label>
     </div>
-    <p class="form-help">Finalizar el partido incorpora sus resultados y eventos a los rankings. Un 0–0 no necesita eventos de gol.</p>
+    <p class="form-help">El partido se inicia y se finaliza desde «Eventos», donde también se registran los goles.</p>
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
     <div class="form-actions">
       <button type="button" class="btn btn-secondary" :disabled="busy" @click="emit('cancel')">Cancelar</button>

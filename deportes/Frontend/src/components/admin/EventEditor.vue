@@ -5,7 +5,7 @@ import { usePanel } from '../../composables/usePanel'
 import { useAdminData } from '../../composables/useAdminData'
 import { panelApi } from '../../services/panelApi'
 import { EVENT_LABEL } from '../../utils/pulseFormat'
-import { alertaError, confirmarEliminar, toastExito } from '../../utils/alertas'
+import { alertaError, confirmarAccion, confirmarEliminar, toastExito } from '../../utils/alertas'
 
 const props = defineProps({ match: { type: Object, required: true } })
 const emit = defineEmits(['busy'])
@@ -78,6 +78,30 @@ const guardar = () =>
     'Evento guardado. Marcador y estadísticas actualizados.'
   )
 
+// Cambia el estado del partido (iniciar, finalizar o reabrir) conservando el resto de sus datos.
+async function cambiarEstado(status, { title, text, confirmButtonText, mensaje }) {
+  const { isConfirmed } = await confirmarAccion({ title, text, confirmButtonText, icon: 'question' })
+  if (!isConfirmed) return
+  ocupado.value = true
+  emit('busy', true)
+  try {
+    await admin.guardarPartido({ ...actual.value, status })
+    toastExito(mensaje)
+  } catch (e) {
+    await alertaError('No se pudo cambiar el estado del partido', e.message)
+  } finally {
+    ocupado.value = false
+    emit('busy', false)
+  }
+}
+
+const iniciar = () =>
+  cambiarEstado('live', { title: '¿Iniciar el partido?', text: 'Podrás registrar goles y demás eventos.', confirmButtonText: 'Sí, iniciar', mensaje: 'Partido en juego.' })
+const finalizar = () =>
+  cambiarEstado('finished', { title: '¿Finalizar el partido?', text: 'El resultado y los eventos se incorporarán a los rankings.', confirmButtonText: 'Sí, finalizar', mensaje: 'Partido finalizado.' })
+const reabrir = () =>
+  cambiarEstado('live', { title: '¿Reabrir el partido?', text: 'Volverá a «En juego» y dejará de contar para los rankings hasta finalizarlo.', confirmButtonText: 'Sí, reabrir', mensaje: 'Partido reabierto.' })
+
 async function eliminar(e) {
   const { isConfirmed } = await confirmarEliminar({
     title: '¿Eliminar este evento?',
@@ -94,7 +118,10 @@ async function eliminar(e) {
       <p class="form-help">{{ actual.status === 'finished' ? 'Este resultado ya cuenta para los rankings.' : 'Los rankings se actualizarán al finalizar el partido.' }}</p>
     </div>
 
-    <p v-if="actual.status === 'scheduled'" class="notice info">Edita el partido y cambia su estado a «En juego» para registrar eventos.</p>
+    <p v-if="actual.status === 'scheduled'" class="notice info">Inicia el partido para registrar eventos.</p>
+    <div v-if="actual.status === 'scheduled'" class="form-actions">
+      <button type="button" class="btn btn-primary" :disabled="ocupado" @click="iniciar">Iniciar partido</button>
+    </div>
 
     <form v-if="actual.status !== 'scheduled'" @submit.prevent="guardar">
       <h3>{{ editando ? 'Corregir evento' : 'Registrar evento' }}</h3>
@@ -123,6 +150,11 @@ async function eliminar(e) {
         <button class="btn btn-primary" :disabled="ocupado">{{ ocupado ? 'Guardando…' : editando ? 'Guardar corrección' : 'Añadir evento' }}</button>
       </div>
     </form>
+
+    <div v-if="actual.status !== 'scheduled'" class="form-actions">
+      <button v-if="actual.status === 'live'" type="button" class="btn btn-primary" :disabled="ocupado" @click="finalizar">Finalizar partido</button>
+      <button v-else type="button" class="btn btn-secondary" :disabled="ocupado" @click="reabrir">Reabrir partido</button>
+    </div>
 
     <p v-if="cargando" class="empty" role="status">Cargando eventos…</p>
     <div v-else class="table-scroll">
