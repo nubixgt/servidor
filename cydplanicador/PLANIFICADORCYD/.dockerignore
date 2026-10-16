@@ -1,0 +1,10 @@
+node_modules
+.env
+data
+backups
+.git
+.DS_Store
+tests
+docs
+*.pdf
+*.md

@@ -28,3 +28,8 @@ Thumbs.db
 
 # Builds del Frontend (se compilan en producción)
 VisarSistema/Frontend/dist/
+
+# cydplanicador: base de datos, respaldos y restos de zip de macOS (nunca al repositorio)
+cydplanicador/**/data/
+cydplanicador/**/backups/
+**/__MACOSX/

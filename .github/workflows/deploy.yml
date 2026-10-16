@@ -118,6 +118,7 @@ jobs:
             --include 'unificacion_maga/uploads/congresistas/' \
             --include 'unificacion_maga/uploads/congresistas/**' \
             --exclude 'VISAN_SYS/storage/' \
+            --exclude 'cydplanicador/' \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
             --exclude '**/config.local.php' \
@@ -157,4 +158,4 @@ jobs:
               echo "Publicando $dist_dir -> $app_dir/"
               cp -R "$dist_dir/." "$app_dir/"
             done
-          '
+          '

@@ -1,0 +1,85 @@
+name: 🚀 Deploy cydplanicador (m.nubix.gt/cydplanicador)
+
+# Despliega SOLO cydplanicador/PLANIFICADORCYD (app Node.js) al cPanel de m.nubix.gt.
+# deploy.yml lo excluye a propósito. La app corre con "Setup Node.js App" de cPanel
+# (Passenger), con la subruta BASE_PATH=/cydplanicador definida en las variables de
+# entorno de esa pantalla.
+#
+# Secretos usados: SSH_PRIVATE_KEY, SSH_PORT, SSH_HOST, SSH_USER (los mismos de deploy.yml)
+# y CYD_APP_PATH: ruta absoluta de la "Application root" en el servidor,
+# p. ej. /home/USUARIO/cydplanicador (fuera de public_html).
+#
+# Nunca se tocan en el servidor: .env, data/, backups/ y node_modules/ (cPanel enlaza
+# node_modules a su entorno virtual). La base de datos debe vivir fuera de esta carpeta
+# (DB_FILE en las variables de entorno de cPanel).
+#
+# Si cambia package.json hay que pulsar "Run NPM Install" en cPanel después del deploy.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cydplanicador/**'
+      - '.github/workflows/deploy-cydplanicador.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-cydplanicador
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Antes de subir nada: instala dependencias y corre las pruebas de aceptación.
+      - name: 🧪 Pruebas
+        run: |
+          cd cydplanicador/PLANIFICADORCYD
+          npm ci
+          npm test
+
+      - name: 🔐 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # Con el secreto vacío el rsync --delete apuntaría a la raíz del servidor: se aborta antes.
+      - name: 🛑 Verificar CYD_APP_PATH
+        env:
+          APP_PATH: ${{ secrets.CYD_APP_PATH }}
+        run: |
+          case "$APP_PATH" in
+            /home/*/*) ;;
+            *) echo "CYD_APP_PATH no está definido o no parece una ruta de la app (/home/USUARIO/carpeta)"; exit 1 ;;
+          esac
+
+      - name: 🚀 Deploy via rsync
+        run: |
+          rsync -rlptvz --delete \
+            --exclude '.env' \
+            --exclude 'data/' \
+            --exclude 'backups/' \
+            --exclude 'node_modules/' \
+            --exclude 'tmp/' \
+            --exclude 'tests/' \
+            --exclude '.DS_Store' \
+            --chmod=D755,F644 \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            cydplanicador/PLANIFICADORCYD/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.CYD_APP_PATH }}/
+
+      # Passenger reinicia la app al cambiar tmp/restart.txt
+      - name: ♻️ Reiniciar la app
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "mkdir -p '${{ secrets.CYD_APP_PATH }}/tmp' && touch '${{ secrets.CYD_APP_PATH }}/tmp/restart.txt'"

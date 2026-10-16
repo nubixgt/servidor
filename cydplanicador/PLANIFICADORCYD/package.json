@@ -1,0 +1,28 @@
+{
+  "name": "cyd-planificacion-docente",
+  "version": "1.0.0",
+  "description": "Sistema de Planificación Docente — Colegio CyD",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "create-admin": "node scripts/create-admin.js",
+    "import-catalog": "node scripts/import-catalog.js",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js",
+    "test": "node tests/acceptance.test.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@foliojs-fork/pdfkit": "^0.15.3",
+    "better-sqlite3": "^12.11.1",
+    "express": "^4.22.3",
+    "nodemailer": "^10.1.2",
+    "pdfmake": "^0.2.23",
+    "sharp": "^0.35.5",
+    "vue": "^3.5.44"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true
+}
