@@ -9,8 +9,12 @@ name: 🚀 Deploy cydplanicador (m.nubix.gt/cydplanicador)
 # y CYD_APP_PATH: ruta absoluta de la "Application root" en el servidor,
 # p. ej. /home/USUARIO/cydplanicador (fuera de public_html).
 #
-# Nunca se tocan en el servidor: .env, data/, backups/ y node_modules/ (cPanel enlaza
-# node_modules a su entorno virtual). La base de datos debe vivir fuera de esta carpeta
+# Nunca se tocan en el servidor: .env, data/, backups/ y node_modules (cPanel lo deja como
+# ENLACE SIMBÓLICO a su entorno virtual, por eso se excluye sin "/" final: con "node_modules/"
+# el enlace no coincide y --delete lo borraría, rompiendo la app).
+# better-sqlite3 se compiló a mano en el servidor (cPanel no bajó el binario):
+#   cd ~/cydplanicador/node_modules/better-sqlite3 && npx --yes node-gyp rebuild --release
+# Si algún día se reinstala o actualiza ese paquete hay que repetirlo. La base de datos debe vivir fuera de esta carpeta
 # (DB_FILE en las variables de entorno de cPanel).
 #
 # Si cambia package.json hay que pulsar "Run NPM Install" en cPanel después del deploy.
@@ -71,8 +75,9 @@ jobs:
             --exclude '.env' \
             --exclude 'data/' \
             --exclude 'backups/' \
-            --exclude 'node_modules/' \
+            --exclude 'node_modules' \
             --exclude 'tmp/' \
+            --exclude 'stderr.log' \
             --exclude 'tests/' \
             --exclude '.DS_Store' \
             --chmod=D755,F644 \
