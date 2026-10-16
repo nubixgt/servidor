@@ -40,8 +40,10 @@ jobs:
           node-version: '20'
 
       # Antes de subir nada: instala dependencias y corre las pruebas de aceptación.
+      # pdftotext (poppler-utils) lo usan las pruebas que leen el texto de los PDF.
       - name: 🧪 Pruebas
         run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
           cd cydplanicador/PLANIFICADORCYD
           npm ci
           npm test
