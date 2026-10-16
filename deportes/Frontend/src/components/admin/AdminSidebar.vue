@@ -1,11 +1,12 @@
 <script setup>
-import { LayoutDashboardIcon, ShieldIcon, UsersIcon, CalendarDaysIcon, LogOutIcon } from 'lucide-vue-next'
+import { LayoutDashboardIcon, ShieldIcon, UsersIcon, CalendarDaysIcon, TrophyIcon, LogOutIcon } from 'lucide-vue-next'
 
 const enlaces = [
   { ruta: '/admin', nombre: 'Resumen', icono: LayoutDashboardIcon, exacta: true },
   { ruta: '/admin/equipos', nombre: 'Equipos', icono: ShieldIcon },
   { ruta: '/admin/jugadores', nombre: 'Jugadores', icono: UsersIcon },
   { ruta: '/admin/partidos', nombre: 'Partidos', icono: CalendarDaysIcon },
+  { ruta: '/admin/posiciones', nombre: 'Posiciones', icono: TrophyIcon },
 ]
 
 defineEmits(['salir'])

@@ -67,7 +67,7 @@ function construirOverview(raw) {
   const posiciones = raw.teams
     .map((t) => {
       const fila = {
-        team_id: t.id, name: t.name, short_name: t.short_name, primary_color: t.primary_color, logo_url: t.logo_url,
+        team_id: t.id, name: t.name, short_name: t.short_name, category: t.category || 'A', primary_color: t.primary_color, logo_url: t.logo_url,
         played: 0, won: 0, drawn: 0, lost: 0, goals_for: 0, goals_against: 0, goal_difference: 0, points: 0,
       }
       partidos

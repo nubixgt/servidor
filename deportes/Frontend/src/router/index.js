@@ -34,6 +34,7 @@ const routes = [
       { path: '', name: 'AdminResumen', component: Resumen, meta: titulo('Administración') },
       { path: 'equipos', name: 'AdminEquipos', component: () => import('../views/admin/Equipos.vue'), meta: titulo('Admin · Equipos') },
       { path: 'jugadores', name: 'AdminJugadores', component: Jugadores, meta: titulo('Admin · Jugadores') },
+      { path: 'posiciones', name: 'AdminPosiciones', component: () => import('../views/admin/Posiciones.vue'), meta: titulo('Admin · Posiciones') },
       { path: 'partidos', name: 'AdminPartidos', component: Partidos, meta: titulo('Admin · Partidos') },
     ],
   },
