@@ -21,6 +21,8 @@ const mejorAtaque = computed(() => [...state.standings].sort((a, b) => b.goals_f
 const mejorDefensa = computed(() =>
   [...state.standings].filter((f) => +f.played > 0).sort((a, b) => a.goals_against - b.goals_against)[0]
 )
+// `standings` ya viene ordenado; al filtrar por categoría se conserva el orden y la numeración reinicia en 1.
+const categorias = computed(() => ['A', 'B'].map((c) => [c, state.standings.filter((f) => f.category === c)]))
 const records = computed(() => [
   [mejorAtaque.value, 'MEJOR ATAQUE', 'goals_for'],
   [mejorDefensa.value, 'MENOS GOLES RECIBIDOS', 'goals_against'],
@@ -54,9 +56,14 @@ const records = computed(() => [
       </button>
     </div>
 
-    <div class="panel">
-      <StandingsTable v-if="tab === 'standings'" :rows="state.standings" :page-size="20" />
-      <ScorersTable v-else :players="state.players" :metric="tab" :page-size="20" />
+    <template v-if="tab === 'standings'">
+      <section v-for="[cat, filas] in categorias" :key="cat" class="mb-6">
+        <div class="section-heading"><h2>Categoría {{ cat }}</h2></div>
+        <div class="panel"><StandingsTable :rows="filas" :page-size="20" /></div>
+      </section>
+    </template>
+    <div v-else class="panel">
+      <ScorersTable :players="state.players" :metric="tab" :page-size="20" />
     </div>
     <p class="small muted mt-5">
       Solo partidos finalizados. Victoria: 3 pts · Empate: 1 pt. Desempate: puntos → DG → GF → nombre (orden provisional si persiste la igualdad).
