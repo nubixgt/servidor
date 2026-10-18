@@ -263,6 +263,7 @@
               <ChartBarIcon class="w-5 h-5" />
             </button>
             <button
+              v-if="canEdit"
               @click="openEditModal(selectedProject)"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-primary/40"
               title="Editar"
@@ -270,6 +271,7 @@
               <PencilIcon class="w-5 h-5" />
             </button>
             <button
+              v-if="canEdit"
               @click="deleteProject(selectedProject.id)"
               class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-tertiary flex items-center justify-center transition-all border border-white/10 text-white shadow-xl hover:shadow-tertiary/40"
               title="Eliminar"
@@ -581,6 +583,101 @@
                 </div>
               </div>
 
+              <!-- Galería de Fotos del Proyecto (Soporta 100+ fotos, lightbox y subida directa) -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <PhotoIcon class="w-4 h-4 text-primary" />
+                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest">
+                      Galería de Fotos del Proyecto
+                    </p>
+                    <span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                      {{ getGaleriaList(selectedProject).length }} fotos
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="file"
+                      ref="galleryDirectInput"
+                      @change="handleDirectGalleryUpload"
+                      multiple
+                      accept="image/*"
+                      class="hidden"
+                    />
+                    <button
+                      v-if="canEdit"
+                      type="button"
+                      @click="$refs.galleryDirectInput.click()"
+                      :disabled="isUploadingGallery"
+                      class="px-3.5 py-1.5 rounded-xl bg-primary/20 hover:bg-primary text-primary hover:text-white text-[10px] font-black uppercase tracking-wider border border-primary/30 transition-all flex items-center gap-1.5 disabled:opacity-50 shadow-lg shadow-primary/20"
+                    >
+                      <CameraIcon class="w-3.5 h-3.5" />
+                      <span>{{ isUploadingGallery ? 'Subiendo...' : '+ Adjuntar Fotos' }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Estado de subida -->
+                <div v-if="isUploadingGallery" class="bg-primary/10 border border-primary/20 p-4 rounded-2xl flex items-center justify-center gap-3 text-primary text-xs font-bold animate-pulse">
+                  <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <span>Subiendo fotos a la galería... Por favor espera un momento.</span>
+                </div>
+
+                <!-- Grid de Fotos -->
+                <div v-if="getGaleriaList(selectedProject).length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 max-h-[360px] overflow-y-auto p-1 custom-scrollbar">
+                  <div
+                    v-for="(foto, fIdx) in getGaleriaList(selectedProject)"
+                    :key="fIdx"
+                    class="group relative aspect-square rounded-2xl overflow-hidden bg-black/40 border border-white/10 hover:border-primary/50 transition-all shadow-md cursor-pointer"
+                    @click="openLightbox(fIdx, getGaleriaList(selectedProject), selectedProject.nombre)"
+                  >
+                    <img
+                      :src="getPhotoUrl(foto)"
+                      :alt="`Foto ${fIdx + 1}`"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2.5">
+                      <div class="flex justify-end">
+                        <button
+                          v-if="canEdit"
+                          type="button"
+                          @click.stop="confirmDeleteGalleryPhoto(selectedProject.id, foto)"
+                          class="p-1.5 rounded-lg bg-rose-500/80 hover:bg-rose-600 text-white shadow-lg transition-all"
+                          title="Eliminar de la galería"
+                        >
+                          <TrashIcon class="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <div class="flex items-center justify-between text-[10px] font-bold text-white/90">
+                        <span class="flex items-center gap-1">
+                          <EyeIcon class="w-3.5 h-3.5 text-primary" /> Ampliar
+                        </span>
+                        <span class="text-white/50">#{{ fIdx + 1 }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Estado vacío -->
+                <div v-else-if="!isUploadingGallery" class="bg-white/5 border border-white/5 rounded-2xl p-6 text-center">
+                  <PhotoIcon class="w-10 h-10 text-white/20 mx-auto mb-2" />
+                  <p class="text-xs font-bold text-white/60 mb-1">Sin fotos en la galería</p>
+                  <p class="text-[11px] text-white/30 max-w-sm mx-auto mb-3">
+                    Adjunta fotos del avance de la obra, maquinaria, materiales o personal (permite más de 100 fotos).
+                  </p>
+                  <button
+                    v-if="canEdit"
+                    type="button"
+                    @click="$refs.galleryDirectInput.click()"
+                    class="px-4 py-2 rounded-xl bg-primary/20 hover:bg-primary text-primary hover:text-white text-xs font-bold border border-primary/30 transition-all inline-flex items-center gap-1.5"
+                  >
+                    <CameraIcon class="w-4 h-4" /> Adjuntar Primeras Fotos
+                  </button>
+                </div>
+              </div>
+
               <!-- Contactos -->
               <div v-if="selectedProject.contactos">
                 <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2"><UsersIcon class="w-4 h-4" /> Contactos del Proyecto</p>
@@ -735,7 +832,7 @@
     </Teleport>
 
     <!-- Modal para Agregar/Editar Proyecto -->
-    <button @click="openModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 h-14 w-14 md:h-20 md:w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
+    <button v-if="canEdit" @click="openModal" class="fixed bottom-6 right-6 md:bottom-12 md:right-12 h-14 w-14 md:h-20 md:w-20 rounded-[32px] glass-button-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40 group">
       <PlusIcon class="w-10 h-10 group-hover:rotate-90 transition-transform duration-500 shadow-[0_0_20px_rgba(99,102,241,0.5)]" />
     </button>
 
@@ -808,7 +905,9 @@
                 </select>
               </div>
               <div>
-                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">Número de Contrato</label>
+                <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">
+                  Número de Contrato <span class="text-white/40 normal-case font-normal">(Opcional)</span>
+                </label>
                 <input v-model="formData.numero_contrato" type="text" class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold" placeholder="Ej. CONTRATO-01-2025" />
               </div>
             </div>
@@ -992,7 +1091,7 @@
                 <!-- Foto de Contrato -->
                 <div>
                   <label class="text-[10px] font-black text-white/50 uppercase tracking-widest mb-2 block">
-                    Foto de Contrato (PDF o Imagen) <span v-if="isEditing" class="text-primary normal-case font-normal">(Opcional)</span>
+                    Foto de Contrato (PDF o Imagen) <span class="text-white/40 normal-case font-normal">(Opcional)</span>
                   </label>
                   <input @change="handleFotoContratoChange" type="file" accept="image/*,.pdf" class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2" />
                 </div>
@@ -1073,6 +1172,64 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Galería de Fotos del Proyecto (Múltiples fotos) -->
+              <div class="pt-4 border-t border-white/10">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-[10px] font-black text-primary uppercase tracking-widest block flex items-center gap-1.5">
+                    <PhotoIcon class="w-4 h-4" />
+                    Galería de Fotos del Proyecto (Múltiples fotos de obra / avance)
+                  </label>
+                  <span class="text-[10px] font-bold text-white/40">{{ (formData.galeria || []).length }} foto(s) nueva(s) seleccionada(s)</span>
+                </div>
+                <input
+                  @change="handleGaleriaChange"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  class="w-full text-white/60 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:transition-all cursor-pointer bg-black/40 border border-white/10 rounded-2xl p-2"
+                />
+
+                <!-- Fotos ya guardadas en la galería (solo en edición) -->
+                <div v-if="isEditing && existingGaleria.length > 0" class="mt-4 space-y-2">
+                  <p class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center justify-between">
+                    <span>Fotos guardadas en galería ({{ existingGaleria.length }})</span>
+                  </p>
+                  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 max-h-[220px] overflow-y-auto p-1 custom-scrollbar">
+                    <div
+                      v-for="(foto, gIdx) in existingGaleria"
+                      :key="gIdx"
+                      class="group relative aspect-square rounded-xl overflow-hidden bg-black/40 border border-white/10"
+                    >
+                      <img :src="getPhotoUrl(foto)" class="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        @click="confirmDeleteGalleryPhoto(editingId, foto)"
+                        class="absolute top-1 right-1 p-1 bg-rose-500/80 hover:bg-rose-600 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Eliminar de galería"
+                      >
+                        <TrashIcon class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fotos nuevas seleccionadas pendientes de subir -->
+                <div v-if="formData.galeria && formData.galeria.length > 0" class="mt-4 space-y-2">
+                  <p class="text-[10px] font-black text-primary uppercase tracking-widest">Fotos nuevas a subir ({{ formData.galeria.length }})</p>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[180px] overflow-y-auto p-1 custom-scrollbar">
+                    <div v-for="(file, i) in formData.galeria" :key="i" class="flex items-center justify-between bg-black/30 p-2.5 rounded-xl border border-white/5 text-xs">
+                      <div class="flex items-center gap-1.5 truncate flex-1">
+                        <PhotoIcon class="w-4 h-4 text-primary shrink-0" />
+                        <span class="text-white/80 font-medium truncate">{{ file.name }}</span>
+                      </div>
+                      <button type="button" @click="removeGaleriaPending(i)" class="p-1 hover:bg-rose-500/20 hover:text-rose-400 text-white/40 rounded-lg transition-all ml-1">
+                        <XMarkIcon class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Acciones -->
@@ -1091,22 +1248,136 @@
     </transition>
     </Teleport>
 
+    <!-- Modal Lightbox (Visor de fotos ampliado) -->
+    <Teleport to="body">
+      <transition name="fade">
+        <div
+          v-if="lightbox.open"
+          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 select-none"
+          @click="closeLightbox"
+        >
+          <!-- Botón Cerrar -->
+          <button
+            @click.stop="closeLightbox"
+            class="absolute top-5 right-5 z-20 w-12 h-12 rounded-2xl bg-white/10 hover:bg-rose-500 text-white flex items-center justify-center transition-all border border-white/10"
+            title="Cerrar (Esc)"
+          >
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+
+          <!-- Botón Descargar -->
+          <a
+            v-if="lightbox.images[lightbox.index]"
+            :href="getPhotoUrl(lightbox.images[lightbox.index])"
+            download
+            target="_blank"
+            @click.stop
+            class="absolute top-5 right-20 z-20 w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all border border-white/10"
+            title="Descargar Foto"
+          >
+            <ArrowDownTrayIcon class="w-5 h-5" />
+          </a>
+
+          <!-- Botón Anterior -->
+          <button
+            v-if="lightbox.images.length > 1"
+            @click.stop="prevLightboxImage"
+            class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all border border-white/10"
+            title="Foto Anterior (Flecha izquierda)"
+          >
+            <ChevronLeftIcon class="w-6 h-6" />
+          </button>
+
+          <!-- Botón Siguiente -->
+          <button
+            v-if="lightbox.images.length > 1"
+            @click.stop="nextLightboxImage"
+            class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-2xl bg-white/10 hover:bg-primary text-white flex items-center justify-center transition-all border border-white/10"
+            title="Foto Siguiente (Flecha derecha)"
+          >
+            <ChevronRightIcon class="w-6 h-6" />
+          </button>
+
+          <!-- Contenedor Imagen Central -->
+          <div class="relative max-w-5xl max-h-[85vh] flex flex-col items-center" @click.stop>
+            <img
+              :src="getPhotoUrl(lightbox.images[lightbox.index])"
+              :alt="lightbox.title"
+              class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+            />
+            <div class="mt-4 flex items-center gap-3 text-xs font-bold text-white/70">
+              <span class="text-white uppercase tracking-wider">{{ lightbox.title }}</span>
+              <span class="w-1 h-1 rounded-full bg-white/30"></span>
+              <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-primary border border-white/10">
+                Foto {{ lightbox.index + 1 }} de {{ lightbox.images.length }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import {
-  BuildingOfficeIcon, ChevronRightIcon,
+  BuildingOfficeIcon, ChevronRightIcon, ChevronLeftIcon,
   PlusIcon, XMarkIcon, MapPinIcon,
   ChartBarIcon, BriefcaseIcon, CurrencyDollarIcon, UserIcon, UsersIcon,
   PencilIcon, TrashIcon, DocumentTextIcon, PaperClipIcon, DocumentIcon, ArrowDownTrayIcon,
   MagnifyingGlassIcon, FunnelIcon, AdjustmentsHorizontalIcon, ArrowsUpDownIcon,
-  FolderIcon, MapIcon, TableCellsIcon, DocumentCheckIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon
+  FolderIcon, MapIcon, TableCellsIcon, DocumentCheckIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon,
+  PhotoIcon, EyeIcon, CameraIcon
 } from '@heroicons/vue/24/outline';
 import Swal from 'sweetalert2';
+import { useAuthStore } from '../../stores/auth';
 
 const BASE_URL = '/concretos-oriente/Backend/api/v1';
+
+const authStore = useAuthStore();
+const canEdit = computed(() => authStore.canEdit('projects') || authStore.canEdit('proyectos'));
+
+const isUploadingGallery = ref(false);
+const galleryDirectInput = ref(null);
+
+const lightbox = ref({
+  open: false,
+  index: 0,
+  images: [],
+  title: ''
+});
+
+const openLightbox = (index, images, title = 'Galería de Fotos') => {
+  lightbox.value = {
+    open: true,
+    index,
+    images: images || [],
+    title: title || 'Galería de Fotos'
+  };
+};
+
+const closeLightbox = () => {
+  lightbox.value.open = false;
+};
+
+const prevLightboxImage = () => {
+  if (!lightbox.value.images.length) return;
+  lightbox.value.index = (lightbox.value.index - 1 + lightbox.value.images.length) % lightbox.value.images.length;
+};
+
+const nextLightboxImage = () => {
+  if (!lightbox.value.images.length) return;
+  lightbox.value.index = (lightbox.value.index + 1) % lightbox.value.images.length;
+};
+
+const handleLightboxKeydown = (e) => {
+  if (!lightbox.value.open) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') prevLightboxImage();
+  if (e.key === 'ArrowRight') nextLightboxImage();
+};
 
 // Lista de clientes
 const CLIENTES = ref([]);
@@ -1343,7 +1614,8 @@ const emptyForm = () => ({
   especificaciones_tecnicas: null,
   convenios: [],
   planos: [],
-  contratos: []
+  contratos: [],
+  galeria: []
 });
 
 const formData = ref(emptyForm());
@@ -1468,13 +1740,20 @@ const resetFilters = () => {
 };
 
 onMounted(async () => {
+  window.addEventListener('keydown', handleLightboxKeydown);
   await Promise.all([fetchProjects(), fetchUsers(), fetchClients()]);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleLightboxKeydown);
 });
 
 const fetchProjects = async () => {
   loading.value = true;
   try {
-    const response = await fetch(`${BASE_URL}/projects`);
+    const response = await fetch(`${BASE_URL}/projects`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
     const result = await response.json();
     if (result.status === 'success') {
       const fetchTime = Date.now();
@@ -1489,7 +1768,9 @@ const fetchProjects = async () => {
 
 const fetchUsers = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/users`);
+    const response = await fetch(`${BASE_URL}/users`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
     const result = await response.json();
     if (result.status === 'success') {
       users.value = result.data;
@@ -1501,7 +1782,9 @@ const fetchUsers = async () => {
 
 const fetchClients = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/clients`);
+    const response = await fetch(`${BASE_URL}/clients`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
     const result = await response.json();
     if (result.status === 'success') {
       CLIENTES.value = result.data;
@@ -1542,10 +1825,15 @@ const formatDate = (value) => {
   }
 };
 
-const getPhotoUrl = (proj) => {
-  if (!proj || !proj.foto) return 'https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=2070';
-  const timestamp = proj._t || Date.now();
-  return `/concretos-oriente/Backend/${proj.foto}?t=${timestamp}`;
+const getPhotoUrl = (item) => {
+  if (!item) return 'https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=2070';
+  if (typeof item === 'string') {
+    if (item.startsWith('http://') || item.startsWith('https://')) return item;
+    return `/concretos-oriente/Backend/${item.replace(/^\/+/, '')}`;
+  }
+  if (!item.foto) return 'https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=2070';
+  const timestamp = item._t || Date.now();
+  return `/concretos-oriente/Backend/${item.foto}?t=${timestamp}`;
 };
 
 const getClienteName = (id) => {
@@ -1591,7 +1879,7 @@ const fetchProjectFinances = async (id) => {
   projectFinances.value = [];
   try {
     const res = await fetch(`${BASE_URL}/projects/${id}/finances`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
     const data = await res.json();
     if (data.status === 'success') {
@@ -1620,7 +1908,7 @@ const openHistoryModal = async (proj) => {
   historyData.value = [];
   try {
     const res = await fetch(`${BASE_URL}/projects/${proj.id}/finances`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
     const data = await res.json();
     if (data.status === 'success') {
@@ -1680,7 +1968,8 @@ const openEditModal = (proj) => {
     especificaciones_tecnicas: null,
     convenios: [],
     planos: [],
-    contratos: []
+    contratos: [],
+    galeria: []
   };
   isEditing.value = true;
   editingId.value = proj.id;
@@ -1828,7 +2117,10 @@ const deleteExistingPlano = async (path) => {
   try {
     const response = await fetch(`${BASE_URL}/projects/${editingId.value}/planos/delete`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
       body: JSON.stringify({ path })
     });
     const result = await response.json();
@@ -1836,6 +2128,138 @@ const deleteExistingPlano = async (path) => {
     await fetchProjects();
   } catch (error) {
     Swal.fire({ title: 'Error', text: error.message || 'No se pudo eliminar el plano', icon: 'error', background: '#0f172a', color: '#fff', confirmButtonColor: '#6366f1' });
+  }
+};
+
+// Galería de fotos
+const getGaleriaList = (proj) => {
+  if (!proj || !proj.galeria_fotos) return [];
+  return parseJson(proj.galeria_fotos);
+};
+
+const existingGaleria = computed(() => {
+  const proj = projects.value.find(p => p.id === editingId.value);
+  return proj ? getGaleriaList(proj) : [];
+});
+
+const handleGaleriaChange = (e) => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  formData.value.galeria = [...(formData.value.galeria || []), ...files];
+  e.target.value = '';
+};
+
+const removeGaleriaPending = (index) => {
+  if (formData.value.galeria) {
+    formData.value.galeria.splice(index, 1);
+  }
+};
+
+const handleDirectGalleryUpload = async (e) => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length || !selectedProject.value) return;
+
+  isUploadingGallery.value = true;
+  try {
+    const fd = new FormData();
+    files.forEach(f => fd.append('fotos[]', f));
+
+    const res = await fetch(`${BASE_URL}/projects/${selectedProject.value.id}/gallery`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: fd
+    });
+    const result = await res.json();
+    if (result.status !== 'success') throw new Error(result.message);
+
+    await fetchProjects();
+    const updated = projects.value.find(p => p.id === selectedProject.value.id);
+    if (updated) {
+      selectedProject.value = { ...updated };
+    }
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: `${files.length} foto(s) agregada(s) a la galería`,
+      showConfirmButton: false,
+      timer: 2000,
+      background: '#0f172a',
+      color: '#fff'
+    });
+  } catch (error) {
+    Swal.fire({
+      title: 'Error al subir fotos',
+      text: error.message || 'Ocurrió un error al subir las fotos.',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1'
+    });
+  } finally {
+    isUploadingGallery.value = false;
+    if (e.target) e.target.value = '';
+  }
+};
+
+const confirmDeleteGalleryPhoto = async (projectId, photoPath) => {
+  const confirm = await Swal.fire({
+    title: '¿Eliminar foto?',
+    text: 'Esta acción eliminará la foto de la galería permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    background: '#0f172a',
+    color: '#fff',
+    confirmButtonColor: '#e11d48'
+  });
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/projects/${projectId}/gallery/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ path: photoPath })
+    });
+    const result = await res.json();
+    if (result.status !== 'success') throw new Error(result.message);
+
+    await fetchProjects();
+    if (selectedProject.value && selectedProject.value.id === projectId) {
+      const updated = projects.value.find(p => p.id === projectId);
+      if (updated) {
+        selectedProject.value = { ...updated };
+      }
+    }
+    if (lightbox.value.open) {
+      closeLightbox();
+    }
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Foto eliminada de la galería',
+      showConfirmButton: false,
+      timer: 1500,
+      background: '#0f172a',
+      color: '#fff'
+    });
+  } catch (error) {
+    Swal.fire({
+      title: 'Error',
+      text: error.message || 'No se pudo eliminar la foto',
+      icon: 'error',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1'
+    });
   }
 };
 
@@ -1874,12 +2298,24 @@ const getLocation = () => {
 };
 
 const submitForm = async () => {
+  if (!canEdit.value) {
+    Swal.fire({
+      title: 'Acceso Denegado',
+      text: 'Tu usuario solo tiene permisos de visualización en este módulo.',
+      icon: 'warning',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1'
+    });
+    return;
+  }
+
   isSubmitting.value = true;
 
   const data = new FormData();
   data.append('codigo', formData.value.codigo);
   data.append('nombre', formData.value.nombre);
-  data.append('cliente_id', formData.value.cliente_id || 0);
+  data.append('cliente_id', formData.value.cliente_id ? formData.value.cliente_id : '');
   data.append('ubicacion', formData.value.ubicacion || '');
   data.append('departamento', formData.value.departamento || '');
   data.append('coordenadas', formData.value.coordenadas || '');
@@ -1891,7 +2327,7 @@ const submitForm = async () => {
   data.append('numero_contrato', formData.value.numero_contrato || '');
   data.append('descripcion', formData.value.descripcion || '');
   data.append('contactos', JSON.stringify(formData.value.contactos));
-  data.append('gerente_id', formData.value.gerente_id || 0);
+  data.append('gerente_id', formData.value.gerente_id ? formData.value.gerente_id : '');
   data.append('snip', formData.value.snip || '');
   data.append('nog', formData.value.nog || '');
   data.append('monto_cocode', formData.value.monto_cocode || 0);
@@ -1921,13 +2357,24 @@ const submitForm = async () => {
       data.append('planos[]', file);
     });
   }
+  if (formData.value.galeria && formData.value.galeria.length > 0) {
+    formData.value.galeria.forEach(file => {
+      data.append('galeria[]', file);
+    });
+  }
 
   try {
     const url = isEditing.value
       ? `${BASE_URL}/projects/${editingId.value}`
       : `${BASE_URL}/projects`;
 
-    const response = await fetch(url, { method: 'POST', body: data });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: data
+    });
     const result = await response.json();
 
     if (result.status === 'success') {
@@ -1962,6 +2409,18 @@ const submitForm = async () => {
 };
 
 const deleteProject = async (id) => {
+  if (!canEdit.value) {
+    Swal.fire({
+      title: 'Acceso Denegado',
+      text: 'Tu usuario solo tiene permisos de visualización en este módulo.',
+      icon: 'warning',
+      background: '#0f172a',
+      color: '#fff',
+      confirmButtonColor: '#6366f1'
+    });
+    return;
+  }
+
   const result = await Swal.fire({
     title: '¿Estás seguro?',
     text: 'Se eliminará el proyecto y todos sus archivos. Esta acción es irreversible.',
@@ -1983,7 +2442,12 @@ const deleteProject = async (id) => {
   if (!result.isConfirmed) return;
 
   try {
-    const response = await fetch(`${BASE_URL}/projects/${id}`, { method: 'DELETE' });
+    const response = await fetch(`${BASE_URL}/projects/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
     const res = await response.json();
 
     if (res.status === 'success') {

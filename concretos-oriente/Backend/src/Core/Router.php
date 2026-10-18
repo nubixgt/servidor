@@ -127,8 +127,27 @@ class Router
             $moduleKey = $this->getModuleKeyFromUri($routePath);
             if ($moduleKey) {
                 $isWrite = in_array(strtoupper($method), ['POST', 'PUT', 'DELETE']);
-                $hasEdit = in_array($moduleKey . '_edit', $userPermisos) || in_array($moduleKey, $userPermisos);
-                $hasView = in_array($moduleKey . '_view', $userPermisos) || $hasEdit;
+                
+                // Resolver claves equivalentes para compatibilidad
+                $keys = [$moduleKey];
+                if ($moduleKey === 'transporte-pesado' || $moduleKey === 'heavy-transport') {
+                    $keys = ['transporte-pesado', 'heavy-transport'];
+                } elseif ($moduleKey === 'maquinaria-especial' || $moduleKey === 'special-machinery') {
+                    $keys = ['maquinaria-especial', 'special-machinery'];
+                }
+
+                $hasEdit = false;
+                $hasView = false;
+                foreach ($keys as $k) {
+                    if (in_array($k . '_edit', $userPermisos, true) || in_array($k, $userPermisos, true)) {
+                        $hasEdit = true;
+                        $hasView = true;
+                        break;
+                    }
+                    if (in_array($k . '_view', $userPermisos, true)) {
+                        $hasView = true;
+                    }
+                }
 
                 if ($isWrite && !$hasEdit) {
                     http_response_code(403);

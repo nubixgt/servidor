@@ -26,7 +26,8 @@ class ProjectService
         ?array $excelPresupuestoFile = null,
         ?array $especificacionesFile = null,
         ?array $conveniosFiles = null,
-        ?array $planosFiles = null
+        ?array $planosFiles = null,
+        ?array $galeriaFiles = null
     ): void {
         $pdo = $this->projectRepository->getPDO();
         $pdo->beginTransaction();
@@ -87,6 +88,14 @@ class ProjectService
                 }
             }
 
+            // Galería de Fotos (Múltiples fotos)
+            if ($galeriaFiles && isset($galeriaFiles['name']) && is_array($galeriaFiles['name'])) {
+                $fotos = $this->handleMultipleFilesUpload($newId, $galeriaFiles, 'galeria', $baseDir);
+                if (!empty($fotos)) {
+                    $this->projectRepository->updateGaleria($newId, json_encode($fotos));
+                }
+            }
+
             // Archivos de Contrato legado / general
             if ($contratosFiles && isset($contratosFiles['name']) && is_array($contratosFiles['name'])) {
                 $docs = $this->handleMultipleFilesUpload($newId, $contratosFiles, 'docs', $baseDir);
@@ -111,7 +120,8 @@ class ProjectService
         ?array $excelPresupuestoFile = null,
         ?array $especificacionesFile = null,
         ?array $conveniosFiles = null,
-        ?array $planosFiles = null
+        ?array $planosFiles = null,
+        ?array $galeriaFiles = null
     ): void {
         $project = $this->projectRepository->findById($id);
         if (!$project) {
@@ -213,6 +223,15 @@ class ProjectService
                 }
             }
 
+            // Galería de Fotos (se agregan a las existentes)
+            if ($galeriaFiles && isset($galeriaFiles['error']) && is_array($galeriaFiles['error']) && ($galeriaFiles['error'][0] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $nuevasFotos = $this->handleMultipleFilesUpload($id, $galeriaFiles, 'galeria', $baseDir);
+                if (!empty($nuevasFotos)) {
+                    $existentes = json_decode($project['galeria_fotos'] ?? '', true) ?: [];
+                    $this->projectRepository->updateGaleria($id, json_encode(array_values(array_unique(array_merge($existentes, $nuevasFotos)))));
+                }
+            }
+
             // Contratos generales
             if ($contratosFiles && isset($contratosFiles['error']) && is_array($contratosFiles['error']) && ($contratosFiles['error'][0] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
                 $docs = $this->handleMultipleFilesUpload($id, $contratosFiles, 'docs', $baseDir, true);
@@ -226,6 +245,43 @@ class ProjectService
             $pdo->rollBack();
             throw $e;
         }
+    }
+
+    public function addGalleryPhotos(int $id, array $filesData): array
+    {
+        $project = $this->projectRepository->findById($id);
+        if (!$project) {
+            throw new Exception("Proyecto no encontrado", 404);
+        }
+
+        $baseDir = __DIR__ . "/../../Uploads/Projects/$id";
+        if (!file_exists($baseDir)) {
+            mkdir($baseDir, 0777, true);
+        }
+
+        $uploaded = $this->handleMultipleFilesUpload($id, $filesData, 'galeria', $baseDir);
+        if (empty($uploaded)) {
+            return json_decode($project['galeria_fotos'] ?? '', true) ?: [];
+        }
+
+        return $this->projectRepository->addGaleriaPhotos($id, $uploaded);
+    }
+
+    public function deleteGalleryPhoto(int $id, string $photoPath): bool
+    {
+        $project = $this->projectRepository->findById($id);
+        if (!$project) {
+            throw new Exception("Proyecto no encontrado", 404);
+        }
+
+        $this->projectRepository->removeGaleriaPhoto($id, $photoPath);
+
+        $fullPath = __DIR__ . "/../../" . $photoPath;
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
+
+        return true;
     }
 
     public function deleteProject(int $id): void

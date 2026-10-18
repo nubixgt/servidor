@@ -204,6 +204,7 @@
                   <option value="Cabezal">Cabezal</option>
                   <option value="Camion 5 toneladas">Camión 5 toneladas</option>
                   <option value="Camion 10 toneladas">Camión 10 toneladas</option>
+                  <option value="Camion Mezclador">Camión Mezclador</option>
                 </select>
               </div>
 

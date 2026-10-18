@@ -31,6 +31,7 @@ class ProjectRepository
                 'convenios_archivos'        => 'TEXT NULL',
                 'departamento'              => 'VARCHAR(100) NULL',
                 'planos_archivos'           => 'TEXT NULL',
+                'galeria_fotos'             => 'LONGTEXT NULL',
             ];
             foreach ($newCols as $col => $type) {
                 if (!in_array($col, $cols)) {
@@ -79,7 +80,7 @@ class ProjectRepository
         $stmt->execute([
             ':codigo'             => $data['codigo'],
             ':nombre'             => $data['nombre'],
-            ':cliente_id'         => $data['cliente_id'],
+            ':cliente_id'         => !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null,
             ':ubicacion'          => $data['ubicacion'],
             ':coordenadas'        => $data['coordenadas'],
             ':presupuesto'        => $data['presupuesto'],
@@ -87,10 +88,10 @@ class ProjectRepository
             ':fecha_fin_estimada' => $data['fecha_fin_estimada'],
             ':fecha_fin_real'     => $data['fecha_fin_real'],
             ':estado'             => $data['estado'],
-            ':numero_contrato'    => $data['numero_contrato'],
-            ':descripcion'        => $data['descripcion'],
-            ':contactos'          => $data['contactos'],
-            ':gerente_id'         => $data['gerente_id'],
+            ':numero_contrato'    => !empty($data['numero_contrato']) ? $data['numero_contrato'] : null,
+            ':descripcion'        => $data['descripcion'] ?? null,
+            ':contactos'          => (!empty($data['contactos']) && is_string($data['contactos'])) ? $data['contactos'] : '[]',
+            ':gerente_id'         => !empty($data['gerente_id']) ? (int)$data['gerente_id'] : null,
             ':snip'               => $data['snip'] ?? null,
             ':nog'                => $data['nog'] ?? null,
             ':monto_cocode'       => $data['monto_cocode'] ?? 0,
@@ -119,6 +120,10 @@ class ProjectRepository
                 WHERE id = :id";
 
         $data['id'] = $id;
+        $data['cliente_id'] = !empty($data['cliente_id']) ? (int)$data['cliente_id'] : null;
+        $data['gerente_id'] = !empty($data['gerente_id']) ? (int)$data['gerente_id'] : null;
+        $data['numero_contrato'] = !empty($data['numero_contrato']) ? $data['numero_contrato'] : null;
+        $data['contactos'] = (!empty($data['contactos']) && is_string($data['contactos'])) ? $data['contactos'] : '[]';
         
         $params = [];
         foreach ($data as $key => $value) {
@@ -134,25 +139,25 @@ class ProjectRepository
              ->execute([':foto' => $fotoPath, ':id' => $id]);
     }
 
-    public function updateFotoContrato(int $id, string $fotoPath): void
+    public function updateFotoContrato(int $id, ?string $fotoPath): void
     {
         $this->pdo->prepare("UPDATE projects SET foto_contrato = :foto WHERE id = :id")
              ->execute([':foto' => $fotoPath, ':id' => $id]);
     }
 
-    public function updateExcelPresupuesto(int $id, string $filePath): void
+    public function updateExcelPresupuesto(int $id, ?string $filePath): void
     {
         $this->pdo->prepare("UPDATE projects SET excel_presupuesto = :path WHERE id = :id")
              ->execute([':path' => $filePath, ':id' => $id]);
     }
 
-    public function updateEspecificacionesTecnicas(int $id, string $filePath): void
+    public function updateEspecificacionesTecnicas(int $id, ?string $filePath): void
     {
         $this->pdo->prepare("UPDATE projects SET especificaciones_tecnicas = :path WHERE id = :id")
              ->execute([':path' => $filePath, ':id' => $id]);
     }
 
-    public function updateConvenios(int $id, string $conveniosJson): void
+    public function updateConvenios(int $id, ?string $conveniosJson): void
     {
         $this->pdo->prepare("UPDATE projects SET convenios_archivos = :convenios_archivos WHERE id = :id")
              ->execute([':convenios_archivos' => $conveniosJson, ':id' => $id]);
@@ -162,6 +167,32 @@ class ProjectRepository
     {
         $this->pdo->prepare("UPDATE projects SET planos_archivos = :planos_archivos WHERE id = :id")
              ->execute([':planos_archivos' => $planosJson, ':id' => $id]);
+    }
+
+    public function updateGaleria(int $id, ?string $galeriaJson): void
+    {
+        $this->pdo->prepare("UPDATE projects SET galeria_fotos = :galeria_fotos WHERE id = :id")
+             ->execute([':galeria_fotos' => $galeriaJson, ':id' => $id]);
+    }
+
+    public function addGaleriaPhotos(int $id, array $newPaths): array
+    {
+        $project = $this->findById($id);
+        if (!$project) return [];
+        $existing = json_decode($project['galeria_fotos'] ?? '', true) ?: [];
+        $merged = array_values(array_unique(array_merge($existing, $newPaths)));
+        $this->updateGaleria($id, count($merged) > 0 ? json_encode($merged) : null);
+        return $merged;
+    }
+
+    public function removeGaleriaPhoto(int $id, string $photoPath): bool
+    {
+        $project = $this->findById($id);
+        if (!$project || empty($project['galeria_fotos'])) return false;
+        $photos = json_decode($project['galeria_fotos'], true) ?: [];
+        $filtered = array_values(array_filter($photos, fn($p) => $p !== $photoPath));
+        $this->updateGaleria($id, count($filtered) > 0 ? json_encode($filtered) : null);
+        return true;
     }
 
     public function updateDocuments(int $id, string $docsJson): void

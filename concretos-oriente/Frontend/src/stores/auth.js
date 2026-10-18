@@ -78,7 +78,13 @@ export const useAuthStore = defineStore('auth', () => {
             return true;
         }
         const perms = userPermisos.value || [];
-        return perms.includes(moduleId + '_edit') || perms.includes(moduleId);
+        const keys = [moduleId];
+        if (moduleId === 'transporte-pesado' || moduleId === 'heavy-transport') {
+            keys.push('transporte-pesado', 'heavy-transport');
+        } else if (moduleId === 'maquinaria-especial' || moduleId === 'special-machinery') {
+            keys.push('maquinaria-especial', 'special-machinery');
+        }
+        return keys.some(k => perms.includes(k + '_edit') || perms.includes(k));
     };
 
     const canView = (moduleId) => {
@@ -86,7 +92,13 @@ export const useAuthStore = defineStore('auth', () => {
             return true;
         }
         const perms = userPermisos.value || [];
-        return perms.includes(moduleId + '_view') || perms.includes(moduleId + '_edit') || perms.includes(moduleId);
+        const keys = [moduleId];
+        if (moduleId === 'transporte-pesado' || moduleId === 'heavy-transport') {
+            keys.push('transporte-pesado', 'heavy-transport');
+        } else if (moduleId === 'maquinaria-especial' || moduleId === 'special-machinery') {
+            keys.push('maquinaria-especial', 'special-machinery');
+        }
+        return keys.some(k => perms.includes(k + '_view') || perms.includes(k + '_edit') || perms.includes(k));
     };
 
     return { userRole, userName, token, userPermisos, userProyectos, login, logout, canEdit, canView };

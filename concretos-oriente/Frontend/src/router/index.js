@@ -115,4 +115,27 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+router.onError((error, to) => {
+    const isChunkError = 
+        error.message?.includes('Failed to fetch dynamically imported module') ||
+        error.message?.includes('Importing a module script failed') ||
+        error.message?.includes('error loading dynamically imported module');
+
+    if (isChunkError) {
+        const reloadKey = 'chunk_reload_' + (to?.path || 'app');
+        if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, 'true');
+            window.location.reload();
+        }
+    }
+});
+
+router.afterEach(() => {
+    Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('chunk_reload_')) {
+            sessionStorage.removeItem(key);
+        }
+    });
+});
+
 export default router;

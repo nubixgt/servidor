@@ -47,7 +47,7 @@ class ProjectController extends Controller
             $data = [
                 'codigo'             => trim($_POST['codigo'] ?? ''),
                 'nombre'             => trim($_POST['nombre'] ?? ''),
-                'cliente_id'         => !empty($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : 0,
+                'cliente_id'         => !empty($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : null,
                 'ubicacion'          => trim($_POST['ubicacion'] ?? ''),
                 'coordenadas'        => trim($_POST['coordenadas'] ?? ''),
                 'presupuesto'        => $presupuesto,
@@ -55,10 +55,10 @@ class ProjectController extends Controller
                 'fecha_fin_estimada' => !empty($_POST['fecha_fin_estimada']) ? $_POST['fecha_fin_estimada'] : null,
                 'fecha_fin_real'     => !empty($_POST['fecha_fin_real']) ? $_POST['fecha_fin_real'] : null,
                 'estado'             => $_POST['estado'] ?? 'Borrador',
-                'numero_contrato'    => trim($_POST['numero_contrato'] ?? ''),
+                'numero_contrato'    => trim($_POST['numero_contrato'] ?? '') ?: null,
                 'descripcion'        => trim($_POST['descripcion'] ?? ''),
                 'contactos'          => $_POST['contactos'] ?? null,
-                'gerente_id'         => !empty($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : 0,
+                'gerente_id'         => !empty($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : null,
                 'snip'               => trim($_POST['snip'] ?? '') ?: null,
                 'nog'                => trim($_POST['nog'] ?? '') ?: null,
                 'monto_cocode'       => $monto_cocode,
@@ -75,6 +75,7 @@ class ProjectController extends Controller
             $especificacionesFile = $_FILES['especificaciones_tecnicas'] ?? null;
             $conveniosFiles       = $_FILES['convenios'] ?? null;
             $planosFiles          = $_FILES['planos'] ?? null;
+            $galeriaFiles         = $_FILES['galeria'] ?? null;
 
             $this->projectService->createProject(
                 $data,
@@ -84,7 +85,8 @@ class ProjectController extends Controller
                 $excelPresupuestoFile,
                 $especificacionesFile,
                 $conveniosFiles,
-                $planosFiles
+                $planosFiles,
+                $galeriaFiles
             );
 
             $this->json([
@@ -115,7 +117,7 @@ class ProjectController extends Controller
             $data = [
                 'codigo'             => isset($_POST['codigo']) ? trim($_POST['codigo']) : null,
                 'nombre'             => isset($_POST['nombre']) ? trim($_POST['nombre']) : null,
-                'cliente_id'         => isset($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : null,
+                'cliente_id'         => !empty($_POST['cliente_id']) ? (int)$_POST['cliente_id'] : null,
                 'ubicacion'          => isset($_POST['ubicacion']) ? trim($_POST['ubicacion']) : null,
                 'coordenadas'        => isset($_POST['coordenadas']) ? trim($_POST['coordenadas']) : null,
                 'presupuesto'        => $presupuesto,
@@ -123,10 +125,10 @@ class ProjectController extends Controller
                 'fecha_fin_estimada' => isset($_POST['fecha_fin_estimada']) ? ($_POST['fecha_fin_estimada'] ?: null) : false,
                 'fecha_fin_real'     => isset($_POST['fecha_fin_real']) ? ($_POST['fecha_fin_real'] ?: null) : false,
                 'estado'             => isset($_POST['estado']) ? $_POST['estado'] : null,
-                'numero_contrato'    => isset($_POST['numero_contrato']) ? trim($_POST['numero_contrato']) : null,
+                'numero_contrato'    => isset($_POST['numero_contrato']) ? (trim($_POST['numero_contrato']) ?: null) : null,
                 'descripcion'        => isset($_POST['descripcion']) ? trim($_POST['descripcion']) : null,
                 'contactos'          => isset($_POST['contactos']) ? $_POST['contactos'] : null,
-                'gerente_id'         => isset($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : null,
+                'gerente_id'         => !empty($_POST['gerente_id']) ? (int)$_POST['gerente_id'] : null,
                 'snip'               => isset($_POST['snip']) ? (trim($_POST['snip']) ?: null) : null,
                 'nog'                => isset($_POST['nog']) ? (trim($_POST['nog']) ?: null) : null,
                 'monto_cocode'       => $monto_cocode,
@@ -143,6 +145,7 @@ class ProjectController extends Controller
             $especificacionesFile = $_FILES['especificaciones_tecnicas'] ?? null;
             $conveniosFiles       = $_FILES['convenios'] ?? null;
             $planosFiles          = $_FILES['planos'] ?? null;
+            $galeriaFiles         = $_FILES['galeria'] ?? null;
 
             $this->projectService->updateProject(
                 (int)$id,
@@ -153,7 +156,8 @@ class ProjectController extends Controller
                 $excelPresupuestoFile,
                 $especificacionesFile,
                 $conveniosFiles,
-                $planosFiles
+                $planosFiles,
+                $galeriaFiles
             );
 
             $this->json([
@@ -167,6 +171,60 @@ class ProjectController extends Controller
             $this->json([
                 "status" => "error",
                 "message" => "Error al actualizar: " . $e->getMessage()
+            ], $code);
+        }
+    }
+
+    // POST /projects/{id}/gallery
+    #[Route('/projects/{id}/gallery', 'POST')]
+    public function uploadGallery($id)
+    {
+        try {
+            $galeriaFiles = $_FILES['fotos'] ?? $_FILES['galeria'] ?? null;
+            if (!$galeriaFiles || empty($galeriaFiles['name'])) {
+                throw new Exception("No se enviaron fotografías para subir a la galería.", 400);
+            }
+
+            $photos = $this->projectService->addGalleryPhotos((int)$id, $galeriaFiles);
+
+            $this->json([
+                "status" => "success",
+                "message" => "Fotografías subidas a la galería exitosamente",
+                "data" => $photos
+            ]);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json([
+                "status" => "error",
+                "message" => "Error al subir a la galería: " . $e->getMessage()
+            ], $code);
+        }
+    }
+
+    // POST /projects/{id}/gallery/delete
+    #[Route('/projects/{id}/gallery/delete', 'POST')]
+    public function deleteGalleryPhoto($id)
+    {
+        try {
+            $input = json_decode(file_get_contents('php://input'), true) ?? [];
+            $path = trim($input['path'] ?? '');
+            if ($path === '') {
+                throw new Exception("Debe indicar la foto a eliminar.", 400);
+            }
+
+            $this->projectService->deleteGalleryPhoto((int)$id, $path);
+
+            $this->json([
+                "status" => "success",
+                "message" => "Fotografía eliminada de la galería"
+            ]);
+        } catch (Exception $e) {
+            $code = $e->getCode() ?: 500;
+            $code = $code >= 400 && $code < 600 ? $code : 500;
+            $this->json([
+                "status" => "error",
+                "message" => "Error al eliminar fotografía: " . $e->getMessage()
             ], $code);
         }
     }
@@ -240,3 +298,5 @@ class ProjectController extends Controller
         }
     }
 }
+
+

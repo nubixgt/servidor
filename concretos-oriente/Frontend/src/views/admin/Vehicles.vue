@@ -275,6 +275,7 @@
                   <option value="Sedan">Sedan</option>
                   <option value="Pickup">Pickup</option>
                   <option value="Camioncito menor a 5T">Camioncito menor a 5T</option>
+                  <option value="Camion Mezclador">Camión Mezclador</option>
                 </select>
               </div>
 
