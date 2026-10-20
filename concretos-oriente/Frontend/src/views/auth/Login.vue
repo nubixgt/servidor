@@ -14,6 +14,18 @@
           <p class="text-white/40 text-[10px] font-bold tracking-[0.4em] uppercase">Gestión Empresarial</p>
         </div>
 
+        <transition name="fade-in">
+          <div v-if="isExpiredSession" class="mb-6 p-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-xs font-semibold flex items-center gap-3 shadow-lg">
+            <div class="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+              <ClockIcon class="w-5 h-5" />
+            </div>
+            <div class="text-left">
+              <p class="font-bold text-amber-300 uppercase tracking-wider text-[10px]">Sesión Caducada</p>
+              <p class="text-white/80 text-[11px] mt-0.5 leading-tight">{{ sessionExpiredMessage }}</p>
+            </div>
+          </div>
+        </transition>
+
         <form class="space-y-8" @submit.prevent="handleSubmit">
           <div class="space-y-6">
             <div class="space-y-2">
@@ -78,22 +90,49 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import Swal from 'sweetalert2';
 import Logo from '../../assets/images/Logo.png';
 import {
   WrenchScrewdriverIcon, UserIcon, LockClosedIcon, EyeIcon, ArrowRightIcon, 
-  ShieldCheckIcon, UserGroupIcon, WrenchIcon, PlusIcon 
+  ShieldCheckIcon, UserGroupIcon, WrenchIcon, PlusIcon, ClockIcon 
 } from '@heroicons/vue/24/outline';
 
 const username = ref("");
 const password = ref("");
 const errorMessage = ref("");
 const isLoading = ref(false);
+const isExpiredSession = ref(false);
+const sessionExpiredMessage = ref("");
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
+
+onMounted(() => {
+  if (route.query.expired === '1' || sessionStorage.getItem('session_expired_notice')) {
+    isExpiredSession.value = true;
+    sessionExpiredMessage.value = sessionStorage.getItem('session_expired_message') || 'Tu sesión ha caducado por seguridad. Ingresa tus credenciales para continuar.';
+    sessionStorage.removeItem('session_expired_notice');
+    sessionStorage.removeItem('session_expired_message');
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 4500,
+      timerProgressBar: true,
+      background: '#0f172a',
+      color: '#fff'
+    });
+
+    Toast.fire({
+      icon: 'warning',
+      title: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.'
+    });
+  }
+});
 
 const autofill = (u, p) => {
   username.value = u;
@@ -124,8 +163,11 @@ const handleSubmit = async () => {
       title: `Bienvenido, ${data.user.nombre}`
     });
     
-    // Redirect based on role
-    if (data.user.rol === "tecnico") {
+    // Redirect based on previous route or role
+    const redirectUrl = route.query.redirect;
+    if (redirectUrl && typeof redirectUrl === 'string' && redirectUrl.startsWith('/') && !redirectUrl.includes('/login')) {
+      router.push(redirectUrl);
+    } else if (data.user.rol === "tecnico") {
       router.push("/tech-machinery");
     } else {
       router.push("/dashboard");

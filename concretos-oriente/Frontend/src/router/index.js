@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { isTokenExpired } from '../utils/auth';
 
 // Layouts
 import MainLayout from '../components/layout/MainLayout.vue';
@@ -66,18 +67,39 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
-    
-    if (to.meta.requiresAuth && !authStore.userRole) {
-        next('/login');
-        return;
+    const token = authStore.token || localStorage.getItem('token');
+    const isExpired = isTokenExpired(token);
+
+    if (to.meta.requiresAuth) {
+        if (!token || isExpired || !authStore.userRole) {
+            // Si había token pero expiró, limpiar sesión y marcar como expirada
+            if (token && isExpired) {
+                authStore.logout();
+                next({
+                    path: '/login',
+                    query: { expired: '1', redirect: to.fullPath }
+                });
+            } else {
+                authStore.logout();
+                next({
+                    path: '/login',
+                    query: { redirect: to.fullPath }
+                });
+            }
+            return;
+        }
     }
     
-    if (to.path === '/login' && authStore.userRole) {
-        if (authStore.userRole === 'tecnico') {
-            next('/tech-machinery');
-        } else {
-            next('/dashboard');
+    if (to.path === '/login') {
+        if (token && !isExpired && authStore.userRole) {
+            if (authStore.userRole === 'tecnico') {
+                next('/tech-machinery');
+            } else {
+                next('/dashboard');
+            }
+            return;
         }
+        next();
         return;
     }
     

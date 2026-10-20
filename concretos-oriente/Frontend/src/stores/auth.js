@@ -1,15 +1,28 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { isTokenExpired } from '../utils/auth';
 
 const API_URL = '/concretos-oriente/Backend/api/v1';
 
 export const useAuthStore = defineStore('auth', () => {
     // Inicializar leyendo del localStorage si existe
-    const userRole = ref(localStorage.getItem('userRole') || null);
-    const userName = ref(localStorage.getItem('userName') || null);
-    const token = ref(localStorage.getItem('token') || null);
-    const userPermisos = ref(JSON.parse(localStorage.getItem('userPermisos') || '[]'));
-    const userProyectos = ref(JSON.parse(localStorage.getItem('userProyectos') || '[]'));
+    const storedToken = localStorage.getItem('token') || null;
+    const isStoredExpired = storedToken ? isTokenExpired(storedToken) : true;
+
+    // Si el token almacenado ya expiró, limpiar el almacenamiento inmediatamente
+    if (storedToken && isStoredExpired) {
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userPermisos');
+        localStorage.removeItem('userProyectos');
+    }
+
+    const userRole = ref((!isStoredExpired ? localStorage.getItem('userRole') : null) || null);
+    const userName = ref((!isStoredExpired ? localStorage.getItem('userName') : null) || null);
+    const token = ref((!isStoredExpired ? storedToken : null) || null);
+    const userPermisos = ref(JSON.parse((!isStoredExpired ? localStorage.getItem('userPermisos') : '[]') || '[]'));
+    const userProyectos = ref(JSON.parse((!isStoredExpired ? localStorage.getItem('userProyectos') : '[]') || '[]'));
 
     const login = async (username, password) => {
         try {
@@ -101,5 +114,25 @@ export const useAuthStore = defineStore('auth', () => {
         return keys.some(k => perms.includes(k + '_view') || perms.includes(k + '_edit') || perms.includes(k));
     };
 
-    return { userRole, userName, token, userPermisos, userProyectos, login, logout, canEdit, canView };
+    const isTokenValid = () => {
+        return !!token.value && !isTokenExpired(token.value);
+    };
+
+    const isAuthenticated = computed(() => {
+        return !!token.value && !isTokenExpired(token.value) && !!userRole.value;
+    });
+
+    return { 
+        userRole, 
+        userName, 
+        token, 
+        userPermisos, 
+        userProyectos, 
+        isAuthenticated,
+        isTokenValid,
+        login, 
+        logout, 
+        canEdit, 
+        canView 
+    };
 });
