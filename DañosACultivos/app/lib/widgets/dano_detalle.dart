@@ -22,12 +22,16 @@ class _Detalle extends StatelessWidget {
 
   List<(String, String, bool)> get filas => [
         ('Fecha', d.fecha, false),
+        ('Fecha de informe', d.fechaInforme.isEmpty ? '—' : d.fechaInforme, false),
+        ('Período de monitoreo', d.periodoTexto.isEmpty ? '—' : d.periodoTexto, false),
+        ('Semana', d.semana != null ? '${d.semana} (${d.anioSemana})' : '—', false),
         ('Productor', d.productor, false),
         ('Ubicación', d.ubicacion.isEmpty ? '—' : d.ubicacion, true),
         ('Agricultor en RUA', d.agricultorRua ? 'Sí (${d.codigoRua.isEmpty ? '—' : d.codigoRua})' : 'No', false),
         ('Lote', d.lote, false),
         ('Cultivo', d.cultivo, false),
         ('Etapa', d.etapa.isEmpty ? '—' : d.etapa, false),
+        ('Fecha de siembra', d.fechaSiembra.isEmpty ? '—' : d.fechaSiembra, false),
         for (var i = 0; i < d.asociados.length; i++)
           (
             'Cultivo asociado ${i + 1}',
@@ -35,6 +39,11 @@ class _Detalle extends StatelessWidget {
             true
           ),
         ('Causa', d.causaTexto, false),
+        ('Evento reportado', d.eventoReportado.isEmpty ? '—' : d.eventoReportado, false),
+        ('Familias afectadas', d.famAfectadas?.toString() ?? '—', false),
+        ('Autoconsumo', d.famAutoconsumo?.toString() ?? '—', false),
+        ('Agricultura intermedia', d.famIntermedia?.toString() ?? '—', false),
+        ('Agricultura consolidada', d.famConsolidada?.toString() ?? '—', false),
         ('Daño', '${fmtNum(d.danoPorc)}% · ${d.nivel.label}', false),
         ('Área del lote', d.areaLote != null ? '${fmtNum(d.areaLote)} ha' : '—', false),
         ('Área afectada', '${fmtNum(d.areaAfectada)} ha', false),

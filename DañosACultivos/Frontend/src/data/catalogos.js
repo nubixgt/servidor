@@ -135,3 +135,31 @@ export const CAUSAS_DANO = [
     "Plagas y enfermedades",
     "Incendio"
 ];
+
+// Módulos Pecuario e Infraestructura (Afectaciones 2026). "Otra" habilita un campo para especificar.
+export const ESPECIES = [
+    "Aves de traspatio",
+    "Gallinas",
+    "Gallinas ponedoras",
+    "Patos",
+    "Cerdos",
+    "Bovinos",
+    "Cabras",
+    "Chivos",
+    "Ovinos",
+    "Tilapia",
+    "Peces",
+    "Otra"
+];
+
+export const TIPOS_INFRAESTRUCTURA = [
+    "Sala de ordeño",
+    "Canal principal de riego",
+    "Sistema de riego",
+    "Estanque",
+    "Corral para bovinos",
+    "Gallinero",
+    "Bodega",
+    "Invernadero",
+    "Otra"
+];

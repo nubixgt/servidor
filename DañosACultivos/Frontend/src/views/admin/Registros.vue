@@ -140,6 +140,7 @@ const detalle = ref(null);
 const loading = ref(true);
 
 const totalHa = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.areaAfectada) || 0), 0));
+const totalFamilias = computed(() => registros.value.reduce((s, r) => s + (Number(r.famAfectadas) || 0), 0));
 const totalPerdida = computed(() => registros.value.reduce((s, r) => s + (parseFloat(r.perdidaEstimada) || 0), 0));
 
 const busqueda = ref('');
@@ -203,20 +204,22 @@ function exportarCSV() {
         ['REPORTE DE DAÑOS A CULTIVOS'],
         ['Generado', new Date().toLocaleString('es')],
         [],
-        ['N°', 'Fecha', 'Registrado por', 'Productor', 'Departamento', 'Municipio', 'Centro poblado', 'Agricultor en RUA', 'Código RUA',
-            'Lote/Parcela', 'Cultivo', 'Etapa fenológica', 'Cultivos asociados (cultivo | etapa | sup. lote | sup. afectada)', 'Causa del daño',
+        ['N°', 'Fecha', 'Fecha de informe', 'Monitoreo inicio', 'Monitoreo fin', 'Semana', 'Registrado por', 'Productor', 'Departamento', 'Municipio', 'Centro poblado', 'Agricultor en RUA', 'Código RUA',
+            'Lote/Parcela', 'Cultivo', 'Etapa fenológica', 'Fecha de siembra', 'Cultivos asociados (cultivo | etapa | sup. lote | sup. afectada)', 'Causa del daño', 'Evento reportado',
+            'Familias afectadas', 'Autoconsumo', 'Intermedia', 'Consolidada',
             'Sup. total lote (ha)', 'Sup. afectada (ha)', '% daño', 'Rend. esperado', 'Unidad rend.', 'Pérdida estimada',
             'Latitud, Longitud (precisión m)', 'N° fotos', 'Nombres de fotos', 'Notas'],
     ];
     filtrados.value.forEach((r, i) => {
         const aso = (r.asociados || []).map((a) => [a.cultivo, a.etapa, a.areaLote, a.areaAfectada].join(' | ')).join(' ;; ');
         filas.push([
-            i + 1, r.fecha, r.registradoPor, r.tecnico, r.departamento, r.municipio, r.centroPoblado, r.agricultorRua ? 'Sí' : 'No', r.codigoRua,
-            r.lote, r.cultivo, r.etapa, aso, causa(r), r.areaLote, r.areaAfectada, r.danoPorc,
+            i + 1, r.fecha, r.fechaInforme, r.monitoreoInicio, r.monitoreoFin, r.semana ? `${r.semana}/${r.anioSemana}` : '', r.registradoPor, r.tecnico, r.departamento, r.municipio, r.centroPoblado, r.agricultorRua ? 'Sí' : 'No', r.codigoRua,
+            r.lote, r.cultivo, r.etapa, r.fechaSiembra, aso, causa(r), r.eventoReportado,
+            r.famAfectadas, r.famAutoconsumo, r.famIntermedia, r.famConsolidada, r.areaLote, r.areaAfectada, r.danoPorc,
             r.rendEsperado, r.unidad, r.perdidaEstimada, r.gps, (r.fotos || []).length, (r.fotos || []).map((f) => f.nombre).join(' ; '), r.notas,
         ]);
     });
-    filas.push([], ['', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTALES', '', totalHa.value.toFixed(2), '', '', '', totalPerdida.value.toFixed(2)]);
+    filas.push([], [...Array(18).fill(''), 'TOTALES', '', totalFamilias.value, '', '', '', '', totalHa.value.toFixed(2), '', '', '', totalPerdida.value.toFixed(2)]);
 
     const csv = '﻿' + filas.map((f) => f.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
     const a = document.createElement('a');

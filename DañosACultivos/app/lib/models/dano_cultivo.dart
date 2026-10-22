@@ -67,6 +67,18 @@ class DanoCultivo {
   final double? gpsLon;
   final String notas;
   final List<FotoDano> fotos;
+  // Afectaciones 2026
+  final String fechaInforme;
+  final String monitoreoInicio;
+  final String monitoreoFin;
+  final int? semana;
+  final int? anioSemana;
+  final String fechaSiembra;
+  final String eventoReportado;
+  final int? famAfectadas;
+  final int? famAutoconsumo;
+  final int? famIntermedia;
+  final int? famConsolidada;
 
   DanoCultivo({
     required this.id,
@@ -96,6 +108,17 @@ class DanoCultivo {
     this.gpsLon,
     this.notas = '',
     this.fotos = const [],
+    this.fechaInforme = '',
+    this.monitoreoInicio = '',
+    this.monitoreoFin = '',
+    this.semana,
+    this.anioSemana,
+    this.fechaSiembra = '',
+    this.eventoReportado = '',
+    this.famAfectadas,
+    this.famAutoconsumo,
+    this.famIntermedia,
+    this.famConsolidada,
   });
 
   factory DanoCultivo.fromJson(Map<String, dynamic> j) {
@@ -128,6 +151,17 @@ class DanoCultivo {
       gpsLon: _num(j['gpsLon']),
       notas: s('notas'),
       fotos: ((j['fotos'] as List?) ?? []).map((e) => FotoDano.fromJson(Map<String, dynamic>.from(e))).toList(),
+      fechaInforme: s('fechaInforme'),
+      monitoreoInicio: s('monitoreoInicio'),
+      monitoreoFin: s('monitoreoFin'),
+      semana: int.tryParse('${j['semana']}'),
+      anioSemana: int.tryParse('${j['anioSemana']}'),
+      fechaSiembra: s('fechaSiembra'),
+      eventoReportado: s('eventoReportado'),
+      famAfectadas: int.tryParse('${j['famAfectadas']}'),
+      famAutoconsumo: int.tryParse('${j['famAutoconsumo']}'),
+      famIntermedia: int.tryParse('${j['famIntermedia']}'),
+      famConsolidada: int.tryParse('${j['famConsolidada']}'),
     );
   }
 
@@ -137,6 +171,9 @@ class DanoCultivo {
   String get causaTexto => causa == 'Otra' && causaOtra.isNotEmpty ? 'Otra: $causaOtra' : causa;
 
   String get ubicacion => [centroPoblado, municipio, departamento].where((e) => e.isNotEmpty).join(', ');
+
+  /// "2026-07-01 al 2026-07-07" o vacío si no se registró período de monitoreo.
+  String get periodoTexto => monitoreoInicio.isEmpty ? '' : '$monitoreoInicio al $monitoreoFin';
 
   String get cultivosTexto => [cultivo, ...asociados.map((a) => a.cultivo)].where((e) => e.isNotEmpty).join(', ');
 }

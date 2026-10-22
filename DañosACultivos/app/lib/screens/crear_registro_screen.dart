@@ -15,6 +15,7 @@ import '../services/offline_queue.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/common.dart';
+import '../widgets/fecha_field.dart';
 import '../widgets/search_select.dart';
 
 class _Asociado {
@@ -32,7 +33,8 @@ class _Asociado {
 class CrearRegistroScreen extends StatefulWidget {
   final AuthUser user;
   final VoidCallback onLogout;
-  const CrearRegistroScreen({super.key, required this.user, required this.onLogout});
+  final Widget? selector; // selector de tipo de registro (Cultivos / Pecuario / Infraestructura)
+  const CrearRegistroScreen({super.key, required this.user, required this.onLogout, this.selector});
 
   @override
   State<CrearRegistroScreen> createState() => _CrearRegistroScreenState();
@@ -49,6 +51,8 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
 
   // Ubicación
   late DateTime _fecha;
+  late DateTime _informe;
+  DateTime? _inicio, _fin;
   final _productor = TextEditingController();
   String _departamento = '';
   String _municipio = '';
@@ -62,6 +66,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
   // Cultivo
   String _cultivo = '';
   String _etapa = '';
+  DateTime? _siembra;
   final _areaLote = TextEditingController();
   final _areaAfectada = TextEditingController();
   final List<_Asociado> _asociados = [];
@@ -74,6 +79,11 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
   String _unidad = 't/ha';
   final _perdida = TextEditingController();
   bool _perdidaManual = false;
+  final _evento = TextEditingController();
+  final _famAfectadas = TextEditingController();
+  final _famAuto = TextEditingController();
+  final _famInter = TextEditingController();
+  final _famCons = TextEditingController();
 
   // Evidencia
   final List<XFile> _fotos = [];
@@ -83,6 +93,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
   void initState() {
     super.initState();
     _fecha = DateTime.now();
+    _informe = _fecha;
     for (final c in [_areaAfectada, _rend, _danoPorc]) {
       c.addListener(_calcPerdida);
     }
@@ -90,7 +101,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
 
   @override
   void dispose() {
-    for (final c in [_productor, _centro, _codigoRua, _lote, _areaLote, _areaAfectada, _causaOtra, _danoPorc, _rend, _perdida, _notas]) {
+    for (final c in [_productor, _centro, _codigoRua, _lote, _areaLote, _areaAfectada, _causaOtra, _danoPorc, _rend, _perdida, _notas, _evento, _famAfectadas, _famAuto, _famInter, _famCons]) {
       c.dispose();
     }
     for (final a in _asociados) {
@@ -112,7 +123,9 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       _paso = 0;
       _version++;
       _fecha = DateTime.now();
-      for (final c in [_productor, _centro, _codigoRua, _lote, _areaLote, _areaAfectada, _causaOtra, _danoPorc, _rend, _perdida, _notas]) {
+      _informe = _fecha;
+      _inicio = _fin = _siembra = null;
+      for (final c in [_productor, _centro, _codigoRua, _lote, _areaLote, _areaAfectada, _causaOtra, _danoPorc, _rend, _perdida, _notas, _evento, _famAfectadas, _famAuto, _famInter, _famCons]) {
         c.clear();
       }
       _departamento = _municipio = _rua = _cultivo = _etapa = _causa = '';
@@ -215,8 +228,29 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       errorDialog(context, 'Captura tu ubicación actual con el botón "Usar mi ubicación actual".', title: 'Ubicación obligatoria');
       return;
     }
+    final errPeriodo = validarPeriodo(_inicio, _fin);
+    if (errPeriodo != null) {
+      _ir(0);
+      showMsg(context, errPeriodo, error: true);
+      return;
+    }
+    final errFam = _errorFamilias();
+    if (errFam != null) {
+      _ir(2);
+      showMsg(context, errFam, error: true);
+      return;
+    }
     final reg = <String, dynamic>{
       'fecha': DateFormat('yyyy-MM-dd').format(_fecha),
+      'fechaInforme': fechaIso(_informe),
+      'monitoreoInicio': fechaIso(_inicio),
+      'monitoreoFin': fechaIso(_fin),
+      'fechaSiembra': fechaIso(_siembra),
+      'eventoReportado': _evento.text.trim(),
+      'famAfectadas': _famAfectadas.text.trim(),
+      'famAutoconsumo': _famAuto.text.trim(),
+      'famIntermedia': _famInter.text.trim(),
+      'famConsolidada': _famCons.text.trim(),
       'tecnico': _productor.text.trim(),
       'departamento': _departamento,
       'municipio': _municipio,
@@ -278,6 +312,16 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
     }
   }
 
+  /// Las familias por tipo de agricultor deben sumar las familias afectadas.
+  String? _errorFamilias() {
+    final partes = [_famAuto, _famInter, _famCons].map((c) => c.text.trim()).toList();
+    if (partes.every((t) => t.isEmpty)) return null;
+    final suma = partes.fold<int>(0, (a, t) => a + (int.tryParse(t) ?? 0));
+    final total = int.tryParse(_famAfectadas.text.trim());
+    if (total == null) return 'Indica las familias afectadas para usar el desglose por tipo de agricultor.';
+    return suma == total ? null : 'El desglose suma $suma y las familias afectadas son $total; deben coincidir.';
+  }
+
   Future<void> _guardarPendiente(Map<String, dynamic> reg, List<File> fotos, OfflineQueue queue) async {
     try {
       await queue.encolar(reg, fotos, widget.user.id);
@@ -312,6 +356,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       onLogout: widget.onLogout,
       children: [
         ContentHead(title: 'Nuevo registro de afectación', subtitle: 'Completa la información del levantamiento en campo.', action: AppButton('Limpiar', icon: Icons.refresh, onPressed: _limpiar)),
+        if (widget.selector != null) widget.selector!,
         _tabs(),
         const SizedBox(height: 16),
         Panel(
@@ -410,6 +455,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
   String? _optNum(String? v) => (v == null || v.trim().isEmpty) ? null : (double.tryParse(v.trim()) == null || double.parse(v.trim()) < 0 ? 'Valor inválido' : null);
 
   static final _decimal = [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))];
+  static final _entero = [FilteringTextInputFormatter.digitsOnly];
   static const _numKb = TextInputType.numberWithOptions(decimal: true);
 
   Widget _paso0() {
@@ -426,6 +472,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
           child: InputDecorator(decoration: const InputDecoration(suffixIcon: Icon(Icons.calendar_month_outlined, size: 20)), child: Text(DateFormat('dd/MM/yyyy').format(_fecha), style: const TextStyle(fontSize: 14))),
         ),
       ),
+      PeriodoSection(informe: _informe, inicio: _inicio, fin: _fin, informeLabel: 'Fecha de informe', onInforme: (d) => setState(() => _informe = d), onInicio: (d) => setState(() => _inicio = d), onFin: (d) => setState(() => _fin = d)),
       LabeledField(label: 'Productor *', child: TextFormField(controller: _productor, validator: _req, textCapitalization: TextCapitalization.words, decoration: const InputDecoration(hintText: 'Ej. Juan Pérez'), onChanged: (_) => setState(() {}))),
       LabeledField(
         label: 'Departamento *',
@@ -509,6 +556,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
         child: SearchSelectField(value: _cultivo, options: kCultivos, title: 'Cultivo', placeholder: 'Buscar cultivo…', onChanged: (v) => setState(() => _cultivo = v)),
       ),
       LabeledField(label: 'Estado fenológico', child: SelectBox(value: _etapa, options: kEtapas, onChanged: (v) => setState(() => _etapa = v))),
+      LabeledField(label: 'Fecha de siembra', child: FechaField(value: _siembra, clearable: true, onChanged: (d) => setState(() => _siembra = d))),
       LabeledField(label: 'Superficie total del lote (ha)', child: TextFormField(controller: _areaLote, validator: _optNum, keyboardType: _numKb, inputFormatters: _decimal, decoration: const InputDecoration(hintText: 'Ej. 25.5'))),
       LabeledField(label: 'Superficie afectada (ha) *', child: TextFormField(controller: _areaAfectada, validator: _reqNum, keyboardType: _numKb, inputFormatters: _decimal, decoration: const InputDecoration(hintText: 'Ej. 8.2'), onChanged: (_) => setState(() {}))),
       Align(alignment: Alignment.centerLeft, child: AppButton('Agregar cultivo asociado', icon: Icons.add, onPressed: () => setState(() => _asociados.add(_Asociado())))),
@@ -546,6 +594,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       _sectionHead(Icons.warning_amber_rounded, 'Evaluación de daños', 'Causa, porcentaje de daño y pérdida estimada.', bg: const Color(0xFFFFF0D8), fg: const Color(0xFFAF7D2B)),
       LabeledField(label: 'Causa del daño *', child: SearchSelectField(value: _causa, options: kCausasDano, title: 'Causa del daño', placeholder: 'Buscar causa…', onChanged: (v) => setState(() => _causa = v))),
       if (_causa == 'Otra') LabeledField(label: 'Especifique la causa *', child: TextFormField(controller: _causaOtra, validator: _req, decoration: const InputDecoration(hintText: 'Describa la causa'))),
+      LabeledField(label: 'Evento reportado', child: TextFormField(controller: _evento, maxLength: 150, decoration: const InputDecoration(hintText: 'Como lo reportó el técnico (ej. Canícula)', counterText: ''))),
       LabeledField(label: '% de daño promedio del lote *', child: TextFormField(controller: _danoPorc, validator: (v) => _reqNum(v, max: 100), keyboardType: _numKb, inputFormatters: _decimal, decoration: const InputDecoration(hintText: '0–100'), onChanged: (_) => setState(() {}))),
       LabeledField(
         label: 'Rendimiento esperado sin daño',
@@ -561,6 +610,12 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
         hint: '= Sup. afectada × Rend. esperado × (% daño ÷ 100). Puede editarla.',
         child: TextFormField(controller: _perdida, validator: _optNum, keyboardType: _numKb, inputFormatters: _decimal, decoration: const InputDecoration(hintText: 'Se calcula automáticamente'), onChanged: (_) => _perdidaManual = true),
       ),
+      LabeledField(label: 'Familias afectadas', child: TextFormField(controller: _famAfectadas, keyboardType: TextInputType.number, inputFormatters: _entero, decoration: const InputDecoration(hintText: 'Ej. 25'), onChanged: (_) => setState(() {}))),
+      LabeledField(label: 'Familias de autoconsumo', child: TextFormField(controller: _famAuto, keyboardType: TextInputType.number, inputFormatters: _entero, decoration: const InputDecoration(hintText: '0'), onChanged: (_) => setState(() {}))),
+      LabeledField(label: 'Familias de agricultura intermedia', child: TextFormField(controller: _famInter, keyboardType: TextInputType.number, inputFormatters: _entero, decoration: const InputDecoration(hintText: '0'), onChanged: (_) => setState(() {}))),
+      LabeledField(label: 'Familias de agricultura consolidada', child: TextFormField(controller: _famCons, keyboardType: TextInputType.number, inputFormatters: _entero, decoration: const InputDecoration(hintText: '0'), onChanged: (_) => setState(() {}))),
+      if ([_famAuto, _famInter, _famCons].any((c) => c.text.trim().isNotEmpty))
+        Text(_errorFamilias() ?? 'Desglose completo.', style: TextStyle(fontSize: 11, color: _errorFamilias() == null ? AppColors.green : AppColors.red)),
     ]);
   }
 
@@ -623,6 +678,7 @@ class _CrearRegistroScreenState extends State<CrearRegistroScreen> {
       ('Cultivo', cultivos),
       ('Causa', causa),
       ('Daño promedio', _danoPorc.text.isEmpty ? '' : '${_danoPorc.text}%'),
+      ('Familias afectadas', _famAfectadas.text),
       ('Fotografías', '${_fotos.length} / $_maxFotos'),
     ];
     return Panel(

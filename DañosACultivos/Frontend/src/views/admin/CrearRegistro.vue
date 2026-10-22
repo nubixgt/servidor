@@ -33,6 +33,19 @@
                                 <input id="f-fecha" v-model="form.fecha" type="date" required class="field" />
                             </div>
                             <div>
+                                <label class="label" for="f-fecha-informe">Fecha de informe</label>
+                                <input id="f-fecha-informe" v-model="form.fechaInforme" type="date" class="field" />
+                                <p class="hint">Semana {{ semanaInforme }} del año. Si la deja vacía se usa la fecha de levantamiento.</p>
+                            </div>
+                            <div>
+                                <label class="label" for="f-mon-ini">Monitoreo: inicio</label>
+                                <input id="f-mon-ini" v-model="form.monitoreoInicio" type="date" :required="!!form.monitoreoFin" :max="form.monitoreoFin || undefined" class="field" />
+                            </div>
+                            <div>
+                                <label class="label" for="f-mon-fin">Monitoreo: fin</label>
+                                <input id="f-mon-fin" v-model="form.monitoreoFin" type="date" :required="!!form.monitoreoInicio" :min="form.monitoreoInicio || undefined" class="field" />
+                            </div>
+                            <div>
                                 <label class="label" for="f-tecnico">Productor *</label>
                                 <input id="f-tecnico" v-model="form.tecnico" required placeholder="Ej. Juan Pérez" class="field" />
                             </div>
@@ -107,6 +120,10 @@
                                 <SelectField v-model="form.etapa" :options="ETAPAS" placeholder="Seleccione..." />
                             </div>
                             <div>
+                                <label class="label" for="f-siembra">Fecha de siembra</label>
+                                <input id="f-siembra" v-model="form.fechaSiembra" type="date" class="field" />
+                            </div>
+                            <div>
                                 <label class="label" for="f-area-lote">Superficie total del lote (ha)</label>
                                 <input id="f-area-lote" v-model="form.areaLote" type="number" min="0" step="0.01" placeholder="Ej. 25.5" class="field" />
                             </div>
@@ -161,6 +178,10 @@
                                 <input id="f-causa-otra" v-model="form.causaOtra" required placeholder="Describa la causa" class="field" />
                             </div>
                             <div>
+                                <label class="label" for="f-evento-rep">Evento reportado</label>
+                                <input id="f-evento-rep" v-model="form.eventoReportado" maxlength="150" placeholder="Como lo reportó el técnico (ej. Canícula)" class="field" />
+                            </div>
+                            <div>
                                 <label class="label" for="f-dano-porc">% de daño promedio del lote *</label>
                                 <input id="f-dano-porc" v-model="form.danoPorc" type="number" min="0" max="100" step="1" required placeholder="0–100" class="field" />
                             </div>
@@ -179,6 +200,23 @@
                                 <input id="f-perdida" v-model="form.perdidaEstimada" type="number" min="0" step="0.01" placeholder="Se calcula automáticamente" class="field" @input="perdidaManual = true" />
                                 <p class="hint">= Sup. afectada × Rend. esperado × (% daño ÷ 100). Puede editarla.</p>
                             </div>
+                            <div>
+                                <label class="label" for="f-fam">Familias afectadas</label>
+                                <input id="f-fam" v-model="form.famAfectadas" type="number" min="0" step="1" placeholder="Ej. 25" class="field" />
+                            </div>
+                            <div>
+                                <label class="label" for="f-fam-auto">Familias de autoconsumo</label>
+                                <input id="f-fam-auto" v-model="form.famAutoconsumo" type="number" min="0" step="1" placeholder="0" class="field" />
+                            </div>
+                            <div>
+                                <label class="label" for="f-fam-int">Familias de agricultura intermedia</label>
+                                <input id="f-fam-int" v-model="form.famIntermedia" type="number" min="0" step="1" placeholder="0" class="field" />
+                            </div>
+                            <div>
+                                <label class="label" for="f-fam-con">Familias de agricultura consolidada</label>
+                                <input id="f-fam-con" v-model="form.famConsolidada" type="number" min="0" step="1" placeholder="0" class="field" />
+                            </div>
+                            <p v-if="desgloseFamilias" class="hint full" :style="desgloseFamilias.ok ? '' : 'color: #a03737;'">{{ desgloseFamilias.texto }}</p>
                         </div>
                     </div>
 
@@ -270,7 +308,8 @@ const hoy = () => new Date().toISOString().slice(0, 10);
 let uidSeq = 0;
 const nuevoAsociado = () => ({ uid: ++uidSeq, cultivo: '', etapa: '', areaLote: '', areaAfectada: '' });
 const formVacio = () => ({
-    fecha: hoy(), tecnico: '', departamento: '', municipio: '', centroPoblado: '', agricultorRua: '', codigoRua: '',
+    fecha: hoy(), fechaInforme: '', monitoreoInicio: '', monitoreoFin: '', fechaSiembra: '', eventoReportado: '',
+    famAfectadas: '', famAutoconsumo: '', famIntermedia: '', famConsolidada: '', tecnico: '', departamento: '', municipio: '', centroPoblado: '', agricultorRua: '', codigoRua: '',
     lote: '', cultivo: '', etapa: '', asociados: [],
     causa: '', causaOtra: '', areaLote: '', areaAfectada: '', danoPorc: '', rendEsperado: '',
     unidad: 't/ha', perdidaEstimada: '', notas: '',
@@ -284,6 +323,27 @@ const fotosInput = ref(null);
 const MAX_FOTOS = 10;
 const perdidaManual = ref(false);
 const guardando = ref(false);
+
+// Semana ISO de la fecha de informe (o de la de levantamiento): el servidor guarda el mismo dato.
+const semanaInforme = computed(() => {
+    const d = new Date((form.fechaInforme || form.fecha || hoy()) + 'T00:00:00');
+    if (isNaN(d)) return '—';
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const inicio = new Date(d.getFullYear(), 0, 1);
+    return Math.ceil(((d - inicio) / 86400000 + 1) / 7);
+});
+
+// Las familias por tipo de agricultor deben sumar las familias afectadas.
+const desgloseFamilias = computed(() => {
+    const partes = [form.famAutoconsumo, form.famIntermedia, form.famConsolidada];
+    if (partes.every((v) => v === '' || v === null)) return null;
+    const suma = partes.reduce((s, v) => s + (parseInt(v, 10) || 0), 0);
+    const total = parseInt(form.famAfectadas, 10);
+    if (isNaN(total)) return { ok: false, texto: `Suma del desglose: ${suma}. Indique también las familias afectadas.` };
+    return suma === total
+        ? { ok: true, texto: `Desglose completo: ${suma} de ${total} familias.` }
+        : { ok: false, texto: `El desglose suma ${suma} y las familias afectadas son ${total}; deben coincidir.` };
+});
 
 const municipios = computed(() => MUNICIPIOS[form.departamento] || []);
 // Al cambiar de departamento, el municipio elegido deja de ser válido.
@@ -352,9 +412,19 @@ async function guardar() {
     if (form.asociados.some((a) => !CULTIVOS.includes(a.cultivo))) return alertError('Selecciona el cultivo asociado de la lista.', 'Falta un dato');
     if (!CAUSAS.includes(form.causa)) return alertError('Selecciona la causa del daño de la lista.', 'Falta un dato');
     if (gps.lat === null) return alertError('Captura tu ubicación actual con el botón "Usar mi ubicación actual".', 'Ubicación obligatoria');
+    if (desgloseFamilias.value && !desgloseFamilias.value.ok) return alertError(desgloseFamilias.value.texto, 'Familias afectadas');
 
     const reg = {
         fecha: form.fecha,
+        fechaInforme: form.fechaInforme,
+        monitoreoInicio: form.monitoreoInicio,
+        monitoreoFin: form.monitoreoFin,
+        fechaSiembra: form.fechaSiembra,
+        eventoReportado: form.eventoReportado,
+        famAfectadas: form.famAfectadas,
+        famAutoconsumo: form.famAutoconsumo,
+        famIntermedia: form.famIntermedia,
+        famConsolidada: form.famConsolidada,
         tecnico: form.tecnico,
         departamento: form.departamento,
         municipio: form.municipio,
@@ -442,6 +512,7 @@ const resumen = computed(() => {
         { label: 'GPS', icon: ViewfinderCircleIcon, color: '#1677FF', value: gps.lat ? `${gps.lat}, ${gps.lon}` : '' },
         { label: 'Cultivo', icon: BeakerIcon, color: '#079447', value: cultivos },
         { label: 'Área afectada', icon: ChartBarIcon, color: '#079447', value: form.areaAfectada !== '' ? `${form.areaAfectada} ha` : '' },
+        { label: 'Familias afectadas', icon: ChartBarIcon, color: '#079447', value: form.famAfectadas !== '' ? String(form.famAfectadas) : '' },
         { label: 'Causa', icon: ExclamationTriangleIcon, color: '#FF7A00', value: causa },
         { label: '% de daño', icon: ChartBarIcon, color: '#7C3AED', value: form.danoPorc !== '' ? `${form.danoPorc}%` : '' },
         { label: 'Fotografías', icon: CameraIcon, color: '#079447', value: fotos.value.length ? String(fotos.value.length) : '' },

@@ -145,3 +145,31 @@ const List<String> kEtapas = [
   'Madurez',
   'Cosechado',
 ];
+
+// Módulos Pecuario e Infraestructura (Afectaciones 2026). "Otra" habilita un campo para especificar.
+const List<String> kEspecies = [
+  'Aves de traspatio',
+  'Gallinas',
+  'Gallinas ponedoras',
+  'Patos',
+  'Cerdos',
+  'Bovinos',
+  'Cabras',
+  'Chivos',
+  'Ovinos',
+  'Tilapia',
+  'Peces',
+  'Otra',
+];
+
+const List<String> kTiposInfraestructura = [
+  'Sala de ordeño',
+  'Canal principal de riego',
+  'Sistema de riego',
+  'Estanque',
+  'Corral para bovinos',
+  'Gallinero',
+  'Bodega',
+  'Invernadero',
+  'Otra',
+];

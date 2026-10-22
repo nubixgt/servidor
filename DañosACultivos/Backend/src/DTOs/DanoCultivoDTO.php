@@ -38,6 +38,15 @@ class DanoCultivoDTO
             'gpsLon' => self::num($data['gpsLon'] ?? null),
             'gpsPrecision' => self::num($data['gpsPrecision'] ?? null),
             'notas' => self::str($data['notas'] ?? '') ?: null,
+            'fechaInforme' => self::str($data['fechaInforme'] ?? '') ?: null,
+            'monitoreoInicio' => self::str($data['monitoreoInicio'] ?? '') ?: null,
+            'monitoreoFin' => self::str($data['monitoreoFin'] ?? '') ?: null,
+            'fechaSiembra' => self::str($data['fechaSiembra'] ?? '') ?: null,
+            'eventoReportado' => self::str($data['eventoReportado'] ?? '') ?: null,
+            'famAfectadas' => self::num($data['famAfectadas'] ?? null),
+            'famAutoconsumo' => self::num($data['famAutoconsumo'] ?? null),
+            'famIntermedia' => self::num($data['famIntermedia'] ?? null),
+            'famConsolidada' => self::num($data['famConsolidada'] ?? null),
         ];
 
         $asociados = [];

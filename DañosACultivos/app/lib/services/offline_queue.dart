@@ -7,7 +7,13 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'api_client.dart';
+import 'dano_otros_service.dart';
 import 'dano_service.dart';
+
+/// Tipos de registro que puede guardar la cola.
+const kTipoCultivo = 'cultivo';
+const kTipoPecuario = 'pecuario';
+const kTipoInfraestructura = 'infraestructura';
 
 /// Registro guardado en el teléfono a la espera de enviarse al servidor.
 class PendingItem {
@@ -15,11 +21,12 @@ class PendingItem {
   final int usuarioId;
   final DateTime creado;
   final Map<String, dynamic> registro;
+  final String tipo; // cultivo | pecuario | infraestructura (los pendientes antiguos son de cultivo)
   final List<String> fotos; // rutas dentro del almacenamiento de la app
   int? danoId; // si ya se creó en el servidor, solo faltan las fotos
   String? error; // rechazo del servidor (no se reintenta solo)
 
-  PendingItem({required this.id, required this.usuarioId, required this.creado, required this.registro, required this.fotos, this.danoId, this.error});
+  PendingItem({required this.id, required this.usuarioId, required this.creado, required this.registro, required this.fotos, this.tipo = kTipoCultivo, this.danoId, this.error});
 
   factory PendingItem.fromJson(Map<String, dynamic> j) => PendingItem(
         id: j['id'],
@@ -27,15 +34,23 @@ class PendingItem {
         creado: DateTime.parse(j['creado']),
         registro: Map<String, dynamic>.from(j['registro']),
         fotos: List<String>.from(j['fotos']),
+        tipo: (j['tipo'] ?? kTipoCultivo).toString(),
         danoId: j['danoId'],
         error: j['error'],
       );
 
-  Map<String, dynamic> toJson() => {'id': id, 'usuarioId': usuarioId, 'creado': creado.toIso8601String(), 'registro': registro, 'fotos': fotos, 'danoId': danoId, 'error': error};
+  Map<String, dynamic> toJson() => {'id': id, 'usuarioId': usuarioId, 'creado': creado.toIso8601String(), 'registro': registro, 'fotos': fotos, 'tipo': tipo, 'danoId': danoId, 'error': error};
 
   String get lote => (registro['lote'] ?? '').toString();
   String get cultivo => (registro['cultivo'] ?? '').toString();
-  String get fecha => (registro['fecha'] ?? '').toString();
+  String get fecha => (registro[tipo == kTipoCultivo ? 'fecha' : 'fechaInforme'] ?? '').toString();
+
+  /// Título para la lista de pendientes.
+  String get titulo => switch (tipo) {
+        kTipoPecuario => 'Pecuario · ${registro['especie'] ?? ''}',
+        kTipoInfraestructura => 'Infraestructura · ${registro['tipoInfraestructura'] ?? ''}',
+        _ => '${lote.isEmpty ? 'Registro' : lote} · $cultivo',
+      };
 }
 
 /// Cola de registros sin enviar. Se guarda en disco (sobrevive a cerrar la app) y se envía sola
@@ -116,7 +131,7 @@ class OfflineQueue extends ChangeNotifier {
 
   /// Guarda un registro (y copia sus fotos) para enviarlo después.
   /// Si [danoId] viene informado, el registro ya existe en el servidor y solo faltan las fotos.
-  Future<void> encolar(Map<String, dynamic> registro, List<File> fotos, int usuarioId, {int? danoId}) async {
+  Future<void> encolar(Map<String, dynamic> registro, List<File> fotos, int usuarioId, {int? danoId, String tipo = kTipoCultivo}) async {
     final id = DateTime.now().microsecondsSinceEpoch.toString();
     final carpeta = Directory('${(await _dir()).path}/$id');
     await carpeta.create(recursive: true);
@@ -125,7 +140,7 @@ class OfflineQueue extends ChangeNotifier {
       final ext = fotos[i].path.contains('.') ? fotos[i].path.split('.').last : 'jpg';
       copias.add((await fotos[i].copy('${carpeta.path}/$i.$ext')).path);
     }
-    _items.add(PendingItem(id: id, usuarioId: usuarioId, creado: DateTime.now(), registro: registro, fotos: copias, danoId: danoId));
+    _items.add(PendingItem(id: id, usuarioId: usuarioId, creado: DateTime.now(), registro: registro, fotos: copias, tipo: tipo, danoId: danoId));
     await _guardar();
     notifyListeners();
   }
@@ -162,7 +177,11 @@ class OfflineQueue extends ChangeNotifier {
       for (final item in List<PendingItem>.from(items)) {
         if (item.error != null) continue;
         try {
-          if (item.danoId == null) {
+          if (item.tipo == kTipoPecuario) {
+            await pecuarioService.create(item.registro);
+          } else if (item.tipo == kTipoInfraestructura) {
+            await infraestructuraService.create(item.registro);
+          } else if (item.danoId == null) {
             final r = await _service.create(item.registro, item.fotos.map((p) => File(p)).toList());
             item.danoId = r.dano.id;
             await _guardar();

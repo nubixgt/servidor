@@ -4,6 +4,7 @@ namespace App\Services;
 use App\DTOs\DanoCultivoDTO;
 use App\Entities\DanoCultivo;
 use App\Repositories\DanoCultivoRepository;
+use App\Utils\Periodo;
 
 class DanoCultivoService
 {
@@ -88,8 +89,32 @@ class DanoCultivoService
         if (($f['gpsLat'] !== null && abs($f['gpsLat']) > 90) || ($f['gpsLon'] !== null && abs($f['gpsLon']) > 180)) {
             throw new \Exception('Coordenadas GPS inválidas.', 400);
         }
+        $f = $this->normalizarAfectaciones($f);
         $id = $this->repository->create($f, $dto->asociados, isset($user['sub']) ? (int)$user['sub'] : null, $user['usuario'] ?? null);
         return $this->repository->findById($id);
+    }
+
+    /** Valida y completa los campos de Afectaciones 2026 (período, semana ISO, familias por tipo de agricultor). */
+    private function normalizarAfectaciones(array $f): array
+    {
+        Periodo::fecha($f['fechaInforme'], 'La fecha de informe');
+        Periodo::fecha($f['fechaSiembra'], 'La fecha de siembra');
+        Periodo::rango($f['monitoreoInicio'], $f['monitoreoFin']);
+        foreach (['famAfectadas' => 'Familias afectadas', 'famAutoconsumo' => 'Familias de autoconsumo', 'famIntermedia' => 'Familias de agricultura intermedia', 'famConsolidada' => 'Familias de agricultura consolidada'] as $k => $etiqueta) {
+            Periodo::noNegativo($f[$k], $etiqueta);
+            $f[$k] = Periodo::entero($f[$k]);
+        }
+        $desglose = [$f['famAutoconsumo'], $f['famIntermedia'], $f['famConsolidada']];
+        if (array_filter($desglose, fn($v) => $v !== null)) {
+            if ($f['famAfectadas'] === null) {
+                throw new \Exception('Indica las familias afectadas para usar el desglose por tipo de agricultor.', 400);
+            }
+            if (array_sum($desglose) !== $f['famAfectadas']) {
+                throw new \Exception('Autoconsumo + Intermedia + Consolidada debe sumar las familias afectadas.', 400);
+            }
+        }
+        [$f['semana'], $f['anioSemana']] = Periodo::semana($f['fechaInforme'] ?? $f['fecha']);
+        return $f;
     }
 
     public function eliminar(int $id): void

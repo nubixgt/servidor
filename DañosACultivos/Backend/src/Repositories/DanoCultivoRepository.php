@@ -74,11 +74,15 @@ class DanoCultivoRepository
                 'INSERT INTO danos_cultivos
                     (usuario_id, registrado_por, fecha, responsable, departamento, municipio, centro_poblado, agricultor_rua, codigo_rua,
                      lote, cultivo, etapa, causa, causa_otra, area_lote, area_afectada, dano_porc,
-                     rend_esperado, unidad, perdida_estimada, gps_lat, gps_lon, gps_precision, notas)
+                     rend_esperado, unidad, perdida_estimada, gps_lat, gps_lon, gps_precision, notas,
+                     fecha_informe, monitoreo_inicio, monitoreo_fin, semana, anio_semana, fecha_siembra, evento_reportado,
+                     fam_afectadas, fam_autoconsumo, fam_intermedia, fam_consolidada)
                  VALUES
                     (:usuario_id, :registrado_por, :fecha, :responsable, :departamento, :municipio, :centro_poblado, :agricultor_rua, :codigo_rua,
                      :lote, :cultivo, :etapa, :causa, :causa_otra, :area_lote, :area_afectada, :dano_porc,
-                     :rend_esperado, :unidad, :perdida_estimada, :gps_lat, :gps_lon, :gps_precision, :notas)'
+                     :rend_esperado, :unidad, :perdida_estimada, :gps_lat, :gps_lon, :gps_precision, :notas,
+                     :fecha_informe, :monitoreo_inicio, :monitoreo_fin, :semana, :anio_semana, :fecha_siembra, :evento_reportado,
+                     :fam_afectadas, :fam_autoconsumo, :fam_intermedia, :fam_consolidada)'
             );
             $stmt->execute([
                 'usuario_id' => $usuarioId,
@@ -105,6 +109,17 @@ class DanoCultivoRepository
                 'gps_lon' => $f['gpsLon'],
                 'gps_precision' => $f['gpsPrecision'],
                 'notas' => $f['notas'],
+                'fecha_informe' => $f['fechaInforme'],
+                'monitoreo_inicio' => $f['monitoreoInicio'],
+                'monitoreo_fin' => $f['monitoreoFin'],
+                'semana' => $f['semana'],
+                'anio_semana' => $f['anioSemana'],
+                'fecha_siembra' => $f['fechaSiembra'],
+                'evento_reportado' => $f['eventoReportado'],
+                'fam_afectadas' => $f['famAfectadas'],
+                'fam_autoconsumo' => $f['famAutoconsumo'],
+                'fam_intermedia' => $f['famIntermedia'],
+                'fam_consolidada' => $f['famConsolidada'],
             ]);
             $id = (int)$this->pdo->lastInsertId();
 
@@ -228,6 +243,17 @@ class DanoCultivoRepository
             gpsLon: $row['gps_lon'],
             gpsPrecision: $row['gps_precision'],
             notas: $row['notas'],
+            fechaInforme: $row['fecha_informe'] ?? null,
+            monitoreoInicio: $row['monitoreo_inicio'] ?? null,
+            monitoreoFin: $row['monitoreo_fin'] ?? null,
+            semana: isset($row['semana']) ? (int)$row['semana'] : null,
+            anioSemana: isset($row['anio_semana']) ? (int)$row['anio_semana'] : null,
+            fechaSiembra: $row['fecha_siembra'] ?? null,
+            eventoReportado: $row['evento_reportado'] ?? null,
+            famAfectadas: isset($row['fam_afectadas']) ? (int)$row['fam_afectadas'] : null,
+            famAutoconsumo: isset($row['fam_autoconsumo']) ? (int)$row['fam_autoconsumo'] : null,
+            famIntermedia: isset($row['fam_intermedia']) ? (int)$row['fam_intermedia'] : null,
+            famConsolidada: isset($row['fam_consolidada']) ? (int)$row['fam_consolidada'] : null,
             createdAt: $row['created_at'],
         );
     }

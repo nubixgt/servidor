@@ -6,9 +6,9 @@ import '../services/offline_queue.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_shell.dart';
 import '../widgets/common.dart';
-import 'crear_registro_screen.dart';
+import 'crear_hub_screen.dart';
 import 'dashboard_screen.dart';
-import 'registros_screen.dart';
+import 'registros_hub_screen.dart';
 import 'usuarios_screen.dart';
 
 /// Pantalla principal con navegación inferior. Los apartados dependen del rol:
@@ -85,9 +85,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         case 'dashboard':
           return DashboardScreen(user: user, onLogout: _logout, active: activo == key, onCrear: () => setState(() => _index = 1));
         case 'crear':
-          return CrearRegistroScreen(user: user, onLogout: _logout);
+          return CrearHubScreen(user: user, onLogout: _logout);
         case 'registros':
-          return RegistrosScreen(user: user, onLogout: _logout, active: activo == key, onCrear: () => setState(() => _index = 1));
+          return RegistrosHubScreen(user: user, onLogout: _logout, active: activo == key, onCrear: () => setState(() => _index = 1));
         default:
           return UsuariosScreen(user: user, onLogout: _logout, active: activo == key);
       }

@@ -66,7 +66,7 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import {
-    Squares2X2Icon, DocumentTextIcon, PencilSquareIcon, UsersIcon, ArrowRightOnRectangleIcon,
+    Squares2X2Icon, DocumentTextIcon, PencilSquareIcon, UsersIcon, ArrowRightOnRectangleIcon, BugAntIcon, BuildingStorefrontIcon,
     PlusIcon, ArrowRightIcon, SparklesIcon as LeafIcon,
 } from '@heroicons/vue/24/outline';
 import logo from '../../assets/images/DC sin fondo.png';
@@ -91,6 +91,8 @@ const todosItems = [
     { to: '/', label: 'Dashboard', icon: Squares2X2Icon },
     { to: '/registros/crear', label: 'Crear Registros', icon: PencilSquareIcon },
     { to: '/registros', label: 'Registros', icon: DocumentTextIcon },
+    { to: '/pecuario', label: 'Pecuario', icon: BugAntIcon },
+    { to: '/infraestructura', label: 'Infraestructura', icon: BuildingStorefrontIcon },
     { to: '/usuarios', label: 'Usuarios', icon: UsersIcon, roles: ['admin'] },
 ];
 const items = todosItems.filter((i) => !i.roles || i.roles.includes(user?.rol));
@@ -100,6 +102,10 @@ const HEROES = {
     Dashboard: ['Un campo mejor protegido<br>empieza con información.', 'Registra, analiza y da seguimiento a las afectaciones en cultivos desde un solo lugar.'],
     CrearRegistro: ['Cada detalle cuenta.<br>Registra lo que ocurre en campo.', 'Ubicación, cultivo, daños y evidencia: toda la información en un proceso claro.'],
     Registros: ['La historia del campo,<br>en cada registro.', 'Explora las afectaciones reportadas y encuentra la información que necesitas.'],
+    Pecuario: ['Cuidar al ganado<br>también es cuidar al campo.', 'Registra los animales y las familias afectadas por cada evento.'],
+    CrearPecuario: ['Cada animal cuenta.<br>Registra lo que ocurre en campo.', 'Especie, evento, familias y pérdidas en un proceso claro.'],
+    Infraestructura: ['Lo que sostiene la producción,<br>bajo seguimiento.', 'Consulta la infraestructura productiva afectada y su impacto en las familias.'],
+    CrearInfraestructura: ['Cada daño queda<br>documentado.', 'Tipo de infraestructura, ubicación y pérdidas en un solo lugar.'],
     Usuarios: ['Un equipo conectado<br>con el campo.', 'Organiza a las personas que convierten las observaciones en información útil.'],
 };
 const hero = computed(() => HEROES[route.name] || HEROES.Dashboard);

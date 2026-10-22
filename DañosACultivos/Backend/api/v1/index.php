@@ -3,6 +3,8 @@
 use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\DanoCultivoController;
+use App\Controllers\DanoPecuarioController;
+use App\Controllers\DanoInfraestructuraController;
 use App\Controllers\AuthController;
 use App\Controllers\UsuarioController;
 
@@ -37,6 +39,8 @@ $router->registerController(ExampleController::class);
 $router->registerController(AuthController::class);
 $router->registerController(UsuarioController::class);
 $router->registerController(DanoCultivoController::class);
+$router->registerController(DanoPecuarioController::class);
+$router->registerController(DanoInfraestructuraController::class);
 // $router->registerController(YourController::class);
 
 

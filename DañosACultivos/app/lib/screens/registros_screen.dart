@@ -22,7 +22,8 @@ class RegistrosScreen extends StatefulWidget {
   final VoidCallback onLogout;
   final VoidCallback onCrear;
   final bool active;
-  const RegistrosScreen({super.key, required this.user, required this.onLogout, required this.onCrear, required this.active});
+  final Widget? selector; // selector de tipo de registro (Cultivos / Pecuario / Infraestructura)
+  const RegistrosScreen({super.key, required this.user, required this.onLogout, required this.onCrear, required this.active, this.selector});
 
   @override
   State<RegistrosScreen> createState() => _RegistrosScreenState();
@@ -104,22 +105,23 @@ class _RegistrosScreenState extends State<RegistrosScreen> {
       ['REPORTE DE DAÑOS A CULTIVOS'],
       ['Generado', DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())],
       [],
-      ['N°', 'Fecha', 'Registrado por', 'Productor', 'Departamento', 'Municipio', 'Centro poblado', 'Agricultor en RUA', 'Código RUA', 'Lote/Parcela', 'Cultivo', 'Etapa fenológica',
-        'Cultivos asociados (cultivo | etapa | sup. lote | sup. afectada)', 'Causa del daño', 'Sup. total lote (ha)', 'Sup. afectada (ha)', '% daño', 'Rend. esperado', 'Unidad rend.',
+      ['N°', 'Fecha', 'Fecha de informe', 'Monitoreo inicio', 'Monitoreo fin', 'Semana', 'Registrado por', 'Productor', 'Departamento', 'Municipio', 'Centro poblado', 'Agricultor en RUA', 'Código RUA', 'Lote/Parcela', 'Cultivo', 'Etapa fenológica', 'Fecha de siembra',
+        'Cultivos asociados (cultivo | etapa | sup. lote | sup. afectada)', 'Causa del daño', 'Evento reportado', 'Familias afectadas', 'Autoconsumo', 'Intermedia', 'Consolidada', 'Sup. total lote (ha)', 'Sup. afectada (ha)', '% daño', 'Rend. esperado', 'Unidad rend.',
         'Pérdida estimada', 'Latitud, Longitud (precisión m)', 'N° fotos', 'Nombres de fotos', 'Notas'],
     ];
     for (var i = 0; i < l.length; i++) {
       final r = l[i];
       filas.add([
-        i + 1, r.fecha, r.registradoPor, r.productor, r.departamento, r.municipio, r.centroPoblado, r.agricultorRua ? 'Sí' : 'No', r.codigoRua, r.lote, r.cultivo, r.etapa,
-        r.asociados.map((a) => [a.cultivo, a.etapa, a.areaLote ?? '', a.areaAfectada].join(' | ')).join(' ;; '), r.causaTexto, r.areaLote ?? '', r.areaAfectada, r.danoPorc,
+        i + 1, r.fecha, r.fechaInforme, r.monitoreoInicio, r.monitoreoFin, r.semana != null ? '${r.semana}/${r.anioSemana}' : '', r.registradoPor, r.productor, r.departamento, r.municipio, r.centroPoblado, r.agricultorRua ? 'Sí' : 'No', r.codigoRua, r.lote, r.cultivo, r.etapa, r.fechaSiembra,
+        r.asociados.map((a) => [a.cultivo, a.etapa, a.areaLote ?? '', a.areaAfectada].join(' | ')).join(' ;; '), r.causaTexto, r.eventoReportado, r.famAfectadas ?? '', r.famAutoconsumo ?? '', r.famIntermedia ?? '', r.famConsolidada ?? '', r.areaLote ?? '', r.areaAfectada, r.danoPorc,
         r.rendEsperado ?? '', r.unidad, r.perdidaEstimada ?? '', r.gps, r.fotos.length, r.fotos.map((f) => f.nombre).join(' ; '), r.notas,
       ]);
     }
     final totalHa = l.fold<double>(0, (a, r) => a + r.areaAfectada);
     final totalPerdida = l.fold<double>(0, (a, r) => a + (r.perdidaEstimada ?? 0));
     filas.add([]);
-    filas.add(['', '', '', '', '', '', '', '', '', '', '', '', '', 'TOTALES', '', totalHa.toStringAsFixed(2), '', '', '', totalPerdida.toStringAsFixed(2)]);
+    final totalFam = l.fold<int>(0, (a, r) => a + (r.famAfectadas ?? 0));
+    filas.add([...List.filled(18, ''), 'TOTALES', '', totalFam, '', '', '', '', totalHa.toStringAsFixed(2), '', '', '', totalPerdida.toStringAsFixed(2)]);
 
     final csv = '﻿${filas.map((f) => f.map(c).join(';')).join('\r\n')}';
     try {
@@ -154,6 +156,7 @@ class _RegistrosScreenState extends State<RegistrosScreen> {
           subtitle: widget.user.esTecnico ? 'Los registros que has realizado.' : 'Consulta cada afectación reportada por los técnicos.',
           action: AppButton('Crear', primary: true, icon: Icons.add, onPressed: widget.onCrear),
         ),
+        if (widget.selector != null) widget.selector!,
         StatsGrid(cards: [
           StatCard(index: 0, title: 'Registros', value: '${l.length}', icon: Icons.description_outlined, foot: '$deptos depto(s). con reportes', footColor: const Color(0xFF008359)),
           StatCard(index: 1, title: 'Superficie afectada', value: fmtNum(totalHa), unit: 'ha', icon: Icons.layers_outlined, foot: 'Área acumulada reportada'),
@@ -399,11 +402,11 @@ class _Pendientes extends StatelessWidget {
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFF0DFB6))),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                Expanded(child: Text('${p.lote.isEmpty ? 'Registro' : p.lote} · ${p.cultivo}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(p.titulo, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 AppBadge(p.error != null ? 'Con error' : (p.danoId != null ? 'Faltan fotos' : 'Pendiente'), kind: p.error != null ? BadgeKind.red : BadgeKind.amber),
               ]),
               const SizedBox(height: 6),
-              Text('${p.fecha} · ${p.fotos.length} foto(s)', style: const TextStyle(fontSize: 10, color: AppColors.muted)),
+              Text(p.tipo == kTipoCultivo ? '${p.fecha} · ${p.fotos.length} foto(s)' : p.fecha, style: const TextStyle(fontSize: 10, color: AppColors.muted)),
               if (p.error != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(p.error!, style: const TextStyle(fontSize: 11, color: Color(0xFFBD4E3C)))),
               const SizedBox(height: 10),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [

@@ -70,6 +70,9 @@ const grupos = computed(() => {
             titulo: 'Ubicación',
             filas: [
                 ['Fecha de levantamiento', vacio(d.fecha)],
+                ['Fecha de informe', vacio(d.fechaInforme)],
+                ['Período de monitoreo', d.monitoreoInicio ? `${d.monitoreoInicio} al ${d.monitoreoFin}` : '—'],
+                ['Semana', d.semana ? `${d.semana} (${d.anioSemana})` : '—'],
                 ['Productor', vacio(d.tecnico)],
                 ['Departamento', vacio(d.departamento)],
                 ['Municipio', vacio(d.municipio)],
@@ -85,6 +88,7 @@ const grupos = computed(() => {
             filas: [
                 ['Cultivo', vacio(d.cultivo)],
                 ['Estado fenológico', vacio(d.etapa)],
+                ['Fecha de siembra', vacio(d.fechaSiembra)],
                 ['Superficie total del lote', d.areaLote != null ? `${num(d.areaLote)} ha` : '—'],
                 ['Superficie afectada', `${num(d.areaAfectada)} ha`],
                 ...(d.asociados || []).map((a, i) => [
@@ -98,7 +102,12 @@ const grupos = computed(() => {
             titulo: 'Daños',
             filas: [
                 ['Causa del daño', d.causa === 'Otra' && d.causaOtra ? `Otra: ${d.causaOtra}` : vacio(d.causa)],
+                ['Evento reportado', vacio(d.eventoReportado)],
                 ['% de daño promedio', `${num(d.danoPorc)}%`],
+                ['Familias afectadas', d.famAfectadas != null ? num(d.famAfectadas) : '—'],
+                ['Autoconsumo', d.famAutoconsumo != null ? num(d.famAutoconsumo) : '—'],
+                ['Agricultura intermedia', d.famIntermedia != null ? num(d.famIntermedia) : '—'],
+                ['Agricultura consolidada', d.famConsolidada != null ? num(d.famConsolidada) : '—'],
                 ['Rendimiento esperado sin daño', unidad(d.rendEsperado)],
                 ['Pérdida de rendimiento estimada', d.perdidaEstimada != null && d.perdidaEstimada !== '' ? num(d.perdidaEstimada) : '—'],
                 ['Descripción del daño', vacio(d.notas), true],
