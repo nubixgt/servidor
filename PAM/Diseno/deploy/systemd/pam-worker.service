@@ -1,0 +1,17 @@
+[Unit]
+Description=PAM · Worker de importaciones y refresco del tablero
+After=network.target postgresql.service pam-api.service
+
+[Service]
+User=pam
+Group=pam
+EnvironmentFile=/etc/pam.env
+WorkingDirectory=/opt/pam/app/backend
+ExecStart=/opt/pam/venv/bin/python -m pam.cli worker
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

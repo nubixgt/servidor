@@ -101,6 +101,12 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (PAM)
+        run: |
+          cd PAM/Frontend
+          npm install
+          npm run build
+
 
 
       - name: 🔐 Setup SSH
@@ -122,6 +128,8 @@ jobs:
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
             --exclude '**/config.local.php' \
+            --exclude 'PAM/Backend/.env' \
+            --exclude 'PAM/Backend/storage/' \
             --exclude '**/node_modules/' \
             --exclude '.git/' \
             --exclude '.github/' \

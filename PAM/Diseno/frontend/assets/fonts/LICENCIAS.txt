@@ -1,0 +1,4 @@
+Montserrat — Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)
+IBM Plex Sans / IBM Plex Mono — Copyright © 2017 IBM Corp.
+Ambas familias se distribuyen bajo la SIL Open Font License 1.1 (https://openfontlicense.org).
+Archivos obtenidos del paquete @fontsource (subconjunto latino).

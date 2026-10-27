@@ -1,0 +1,264 @@
+<?php
+namespace App\Repositories;
+
+use App\Services\FiltroService;
+use App\Utils\Database;
+use App\Utils\Security;
+
+class ExpedienteRepository
+{
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+
+    // ---------------------------------------------------------------- lectura
+    /** Página de resultados; $col viene de una lista cerrada del servicio. Los nulos van siempre al final. */
+    public function buscar(string $where, array $params, string $col, bool $desc, ?array $cursor, int $limite): array
+    {
+        $op = $desc ? '<' : '>';
+        $dir = $desc ? 'DESC' : 'ASC';
+        $pag = '';
+        if ($cursor) {
+            [$ultimoValor, $ultimoId] = $cursor;
+            if ($ultimoValor === null) {
+                $pag = " AND ($col IS NULL AND v.id $op ?)";
+                $params[] = $ultimoId;
+            } else {
+                $pag = " AND (($col, v.id) $op (?, ?) OR $col IS NULL)";
+                array_push($params, $ultimoValor, $ultimoId);
+            }
+        }
+        $params[] = $limite;
+        return $this->db->all(
+            "SELECT v.* FROM core_v_expediente v WHERE 1=1 $where $pag ORDER BY ($col IS NULL), $col $dir, v.id $dir LIMIT ?",
+            $params
+        );
+    }
+
+    /** Total de coincidencias, con tope en 10.001 para no recorrer toda la base. */
+    public function contar(string $where, array $params): int
+    {
+        return (int) $this->db->scalar("SELECT COUNT(*) FROM (SELECT 1 FROM core_v_expediente v WHERE 1=1 $where LIMIT 10001) x", $params);
+    }
+
+    public function obtener(int $eid, string $amb, array $ap): ?array
+    {
+        return $this->db->one("SELECT v.* FROM core_v_expediente v WHERE v.id = ? $amb", array_merge([$eid], $ap));
+    }
+
+    public function visitas(int $eid): array
+    {
+        return $this->db->all(
+            'SELECT v.id, v.fecha, c.codigo AS resultado, v.observacion, v.tecnico, v.origen, v.creado_en
+             FROM core_visita v JOIN ref_cat_resultado_visita c ON c.id = v.resultado_id
+             WHERE v.expediente_id = ? ORDER BY v.fecha DESC, v.id DESC', [$eid]);
+    }
+
+    public function resoluciones(int $eid): array
+    {
+        return $this->db->all(
+            'SELECT s.id, s.fecha, t.codigo, t.nombre AS tipo, f.nombre AS familia, s.numero, s.descripcion, s.origen
+             FROM core_resolucion s JOIN ref_cat_tipo_resolucion t ON t.id = s.tipo_id
+             JOIN ref_cat_familia_resolucion f ON f.id = t.familia_id
+             WHERE s.expediente_id = ? ORDER BY s.fecha IS NULL, s.fecha DESC, s.id DESC', [$eid]);
+    }
+
+    public function observaciones(int $eid): array
+    {
+        return $this->db->all(
+            'SELECT o.id, o.fecha, o.texto, o.origen, u.usuario
+             FROM core_observacion o LEFT JOIN seg_usuario u ON u.id = o.usuario_id
+             WHERE o.expediente_id = ? ORDER BY o.fecha DESC, o.id DESC', [$eid]);
+    }
+
+    public function nomina(int $eid): array
+    {
+        return $this->db->all('SELECT m.id, m.tipo, m.fecha, m.motivo, m.origen FROM core_movimiento_nomina m WHERE m.expediente_id = ? ORDER BY m.fecha, m.id', [$eid]);
+    }
+
+    public function estados(int $eid): array
+    {
+        $filas = $this->db->all(
+            'SELECT x.id, c.nombre AS estado, c.orden, x.fecha, x.vigente, x.motivo, x.origen, x.creado_en, u.usuario
+             FROM core_estado_expediente x JOIN ref_cat_estado c ON c.id = x.estado_id
+             LEFT JOIN seg_usuario u ON u.id = x.usuario_id
+             WHERE x.expediente_id = ? ORDER BY x.creado_en DESC, x.id DESC', [$eid]);
+        foreach ($filas as &$f) {
+            $f['vigente'] = (bool) $f['vigente'];
+        }
+        return $filas;
+    }
+
+    public function eventos(int $eid): array
+    {
+        return $this->db->all('SELECT * FROM core_v_evento WHERE expediente_id = ? ORDER BY fecha IS NULL, fecha, creado_en', [$eid]);
+    }
+
+    public function apoderado(int $id): ?array
+    {
+        return $this->db->one('SELECT tipo_id, numero_id, nombre FROM core_apoderado WHERE id = ?', [$id]);
+    }
+
+    public function otrosExpedientes(int $personaId, int $eid): array
+    {
+        return $this->db->all('SELECT id, numero, fecha_solicitud, estado_id FROM core_expediente WHERE persona_id = ? AND id <> ? ORDER BY fecha_solicitud', [$personaId, $eid]);
+    }
+
+    public function casos(int $eid): array
+    {
+        return $this->db->all('SELECT regla, estado, comentario, actualizado_en FROM core_caso_revision WHERE expediente_id = ?', [$eid]);
+    }
+
+    /** Reglas de alerta y calidad que cumple el expediente: clave => bool. */
+    public function reglasAplicables(int $eid): array
+    {
+        $conds = [];
+        foreach (FiltroService::REGLAS as $clave => [$cond]) {
+            $conds[] = "($cond) AS $clave";
+        }
+        $r = $this->db->one('SELECT ' . implode(', ', $conds) . ' FROM core_v_expediente v WHERE v.id = ?', [$eid]);
+        return array_map('boolval', $r ?? []);
+    }
+
+    // ---------------------------------------------------------------- escritura
+    public function crearObservacion(int $eid, string $fecha, string $texto, int $uid): int
+    {
+        return $this->db->insert('INSERT INTO core_observacion(expediente_id, fecha, texto, usuario_id) VALUES (?, ?, ?, ?)', [$eid, $fecha, $texto, $uid]);
+    }
+
+    public function crearVisita(int $eid, string $fecha, string $resultado, ?string $observacion, ?string $tecnico, int $uid): ?int
+    {
+        $id = $this->db->insert(
+            'INSERT INTO core_visita(expediente_id, fecha, resultado_id, observacion, tecnico, usuario_id)
+             SELECT ?, ?, id, ?, ?, ? FROM ref_cat_resultado_visita WHERE codigo = ?',
+            [$eid, $fecha, $observacion, $tecnico, $uid, $resultado]
+        );
+        return $id ?: null;
+    }
+
+    public function tipoResolucionId(string $codigo): ?int
+    {
+        $id = $this->db->scalar('SELECT id FROM ref_cat_tipo_resolucion WHERE codigo = ? AND activo = 1', [$codigo]);
+        return $id === null ? null : (int) $id;
+    }
+
+    public function crearResolucion(int $eid, string $fecha, int $tipoId, ?string $numero, ?string $descripcion, int $uid): int
+    {
+        return $this->db->insert(
+            'INSERT INTO core_resolucion(expediente_id, fecha, tipo_id, numero, descripcion, usuario_id) VALUES (?, ?, ?, ?, ?, ?)',
+            [$eid, $fecha, $tipoId, $numero, $descripcion, $uid]
+        );
+    }
+
+    public function estadoId(string $codigo): ?int
+    {
+        $id = $this->db->scalar('SELECT id FROM ref_cat_estado WHERE codigo = ?', [$codigo]);
+        return $id === null ? null : (int) $id;
+    }
+
+    public function cerrarEstadoVigente(int $eid): void
+    {
+        $this->db->execute('UPDATE core_estado_expediente SET vigente = 0 WHERE expediente_id = ? AND vigente = 1', [$eid]);
+    }
+
+    public function crearEstado(int $eid, int $estadoId, string $fecha, string $motivo, int $uid): void
+    {
+        $this->db->execute(
+            'INSERT INTO core_estado_expediente(expediente_id, estado_id, fecha, vigente, motivo, usuario_id) VALUES (?, ?, ?, 1, ?, ?)',
+            [$eid, $estadoId, $fecha, $motivo, $uid]
+        );
+    }
+
+    public function marcarFallecimiento(int $eid, string $fecha): void
+    {
+        $this->db->execute('UPDATE core_expediente SET fecha_fallecimiento = COALESCE(fecha_fallecimiento, ?) WHERE id = ?', [$fecha, $eid]);
+    }
+
+    public function marcarSuspension(int $eid, string $fecha): void
+    {
+        $this->db->execute('UPDATE core_expediente SET fecha_suspension = ? WHERE id = ?', [$fecha, $eid]);
+    }
+
+    public function crearMovimientoNomina(int $eid, string $tipo, string $fecha, ?string $motivo, int $uid): void
+    {
+        $this->db->execute(
+            'INSERT INTO core_movimiento_nomina(expediente_id, tipo, fecha, motivo, usuario_id) VALUES (?, ?, ?, ?, ?)',
+            [$eid, $tipo, $fecha, $motivo, $uid]
+        );
+    }
+
+    public function actualizarContacto(int $personaId, ?string $telefono, ?string $direccion): void
+    {
+        $this->db->execute('UPDATE core_persona SET telefono = ?, direccion = ? WHERE id = ?', [$telefono, $direccion, $personaId]);
+    }
+
+    public function cuiValido(string $dpi): bool
+    {
+        return (bool) $this->db->scalar('SELECT ref_f_cui_valido(?)', [$dpi]);
+    }
+
+    public function municipioExiste(int $id): bool
+    {
+        return $this->db->scalar('SELECT 1 FROM ref_municipio WHERE id = ?', [$id]) !== null;
+    }
+
+    /** Crea la persona o completa los datos de contacto de la existente (misma clave). Devuelve su id. */
+    public function guardarPersona(string $clave, string $nombre, string $nombreNorm, string $tipoDoc, ?string $dpi, bool $cuiValido,
+        string $fechaNacimiento, ?string $telefono, ?string $direccion, int $municipioId): int
+    {
+        $this->db->execute(
+            'INSERT INTO core_persona(clave, nombre, nombre_norm, documento_tipo, documento_numero, cui_valido, fecha_nacimiento, telefono, direccion, municipio_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+                telefono = COALESCE(VALUES(telefono), core_persona.telefono),
+                direccion = COALESCE(VALUES(direccion), core_persona.direccion)',
+            [$clave, $nombre, $nombreNorm, $tipoDoc, $dpi, (int) $cuiValido, $fechaNacimiento, $telefono, $direccion, $municipioId]
+        );
+        return (int) $this->db->scalar('SELECT id FROM core_persona WHERE clave = ?', [$clave]);
+    }
+
+    public function tieneExpedienteVigente(int $personaId): bool
+    {
+        return (int) $this->db->scalar('SELECT COUNT(*) FROM core_expediente WHERE persona_id = ? AND estado_id IN (1, 2)', [$personaId]) > 0;
+    }
+
+    public function crearExpediente(?string $numero, int $personaId, int $municipioId, string $fechaSolicitud): int
+    {
+        return $this->db->insert(
+            "INSERT INTO core_expediente(numero, persona_id, municipio_id, fecha_solicitud, estado_id, fecha_estado, origen)
+             VALUES (?, ?, ?, ?, 2, ?, 'SISTEMA')",
+            [$numero, $personaId, $municipioId, $fechaSolicitud, $fechaSolicitud]
+        );
+    }
+
+    public function asignarNumero(int $eid, string $numero): void
+    {
+        $this->db->execute('UPDATE core_expediente SET numero = ? WHERE id = ?', [$numero, $eid]);
+    }
+
+    public function guardarCaso(string $regla, int $eid, string $estado, ?string $comentario, int $uid): void
+    {
+        $this->db->execute(
+            'INSERT INTO core_caso_revision(regla, expediente_id, estado, comentario, usuario_id) VALUES (?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE estado = VALUES(estado), comentario = VALUES(comentario), usuario_id = VALUES(usuario_id)',
+            [$regla, $eid, $estado, $comentario, $uid]
+        );
+    }
+
+    /** Recalcula el resumen (última visita, resolución, estado, nómina…) y avisa que el tablero quedó desactualizado. */
+    public function recalcularResumen(int $eid): void
+    {
+        $token = Security::uuid();
+        $this->db->execute('INSERT INTO core_resumen_scope(token, expediente_id) VALUES (?, ?)', [$token, $eid]);
+        $this->db->execute('CALL core_recalcular_resumen(?)', [$token]);
+        $this->marcarRefrescoPendiente();
+    }
+
+    public function marcarRefrescoPendiente(): void
+    {
+        $this->db->execute("INSERT INTO mart_meta(clave, valor) VALUES ('pendiente_refresco', '1') ON DUPLICATE KEY UPDATE valor = '1'");
+    }
+}

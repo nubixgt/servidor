@@ -1,0 +1,8 @@
+/* Diseño del sistema (PAM · MINTRAB): fuentes locales y hoja de estilos original */
+@import './assets/css/fuentes.css';
+@import './assets/css/app.css';
+
+/* Tailwind queda disponible, pero sin su reset (preflight) para no alterar el diseño */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,1 @@
+Coloque aquí pam.crt y pam.key (certificado institucional o Let's Encrypt).

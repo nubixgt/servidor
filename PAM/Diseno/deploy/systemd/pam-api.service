@@ -1,0 +1,19 @@
+[Unit]
+Description=PAM · API
+After=network.target postgresql.service
+
+[Service]
+User=pam
+Group=pam
+EnvironmentFile=/etc/pam.env
+WorkingDirectory=/opt/pam/app/backend
+ExecStartPre=/opt/pam/venv/bin/python -m pam.cli migrar
+ExecStart=/opt/pam/venv/bin/uvicorn pam.api.main:app --host 127.0.0.1 --port 8000 --workers 4 --proxy-headers
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

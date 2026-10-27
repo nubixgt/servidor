@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PAM · Centro de Monitoreo · MINTRAB</title>
+<meta name="description" content="Sistema Integral de Gestión y Monitoreo del Programa del Adulto Mayor">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/fuentes.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+<!-- Acceso -->
+<section class="login" id="login" hidden>
+  <form class="panel gl" id="loginForm" autocomplete="on" novalidate>
+    <img class="lg" src="assets/img/logo-mintrab.png" alt="Ministerio de Trabajo y Previsión Social">
+    <div><h1 id="loginTitulo">Programa del Adulto Mayor</h1><p id="loginSub">Sistema Integral de Gestión y Monitoreo. Ingrese con su usuario institucional.</p></div>
+    <div id="loginCampos">
+      <div class="field"><label for="lu">Usuario</label><input id="lu" name="username" autocomplete="username" required></div>
+      <div class="field" style="margin-top:10px"><label for="lc">Contraseña</label><input id="lc" name="password" type="password" autocomplete="current-password" required></div>
+    </div>
+    <div id="cambioCampos" hidden>
+      <div class="field"><label for="ca">Contraseña actual</label><input id="ca" type="password" autocomplete="current-password"></div>
+      <div class="field" style="margin-top:10px"><label for="cn">Nueva contraseña <small>· 10+ caracteres, mayúsculas, minúsculas y números</small></label><input id="cn" type="password" autocomplete="new-password"></div>
+      <div class="field" style="margin-top:10px"><label for="cc">Repita la nueva contraseña</label><input id="cc" type="password" autocomplete="new-password"></div>
+    </div>
+    <div class="err" id="loginErr" role="alert"></div>
+    <button class="btn pri lg" id="loginBtn" type="submit">Ingresar</button>
+    <div class="pie">Uso exclusivo del personal autorizado. Toda acción queda registrada en la bitácora de auditoría.</div>
+  </form>
+</section>
+
+<div class="app" id="app" hidden>
+  <aside class="side" id="side" aria-label="Navegación principal">
+    <div class="brand"><img class="lg-full" src="assets/img/logo-mintrab-blanco.png" alt="Ministerio de Trabajo y Previsión Social"><img class="lg-em" src="assets/img/escudo-blanco.png" alt="Ministerio de Trabajo y Previsión Social"><div class="sysname"><b>Programa del Adulto Mayor</b><small>Centro de Monitoreo</small></div></div>
+    <nav id="nav"></nav>
+    <div class="sidefoot"><button id="collapse" aria-label="Contraer menú"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span>Contraer menú</span></button></div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <button class="ibtn menu-m" id="menuM" aria-label="Abrir menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="search" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        <input id="q" type="search" autocomplete="off" placeholder="Buscar por nombre, DPI, expediente o teléfono…" aria-label="Buscar beneficiario o expediente">
+        <kbd>/</kbd>
+        <div class="suggest" id="sugg" hidden></div>
+      </div>
+      <div class="topr">
+        <span class="live" id="live"><i></i><span id="liveTxt">Datos</span></span>
+        <button class="ask" id="askBtn" aria-label="Preguntar en lenguaje natural"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17l.8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z"/></svg><span>Preguntar</span><kbd>Ctrl K</kbd></button>
+        <button class="ibtn" id="bell" aria-label="Alertas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="dot"></span></button>
+        <button class="ibtn" id="theme" aria-label="Cambiar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <div class="user"><div class="ava" id="ava">··</div><div><b id="uNombre">—</b><small id="uRol">—</small></div><button class="salir" id="salir" title="Cerrar sesión" aria-label="Cerrar sesión"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button></div>
+      </div>
+    </header>
+    <div class="fbar" id="fbar"></div>
+    <div class="chips" id="chips"></div>
+    <main class="view" id="view"><div class="loading"><img class="lg-load" src="assets/img/logo-mintrab.png" alt="" width="280"><span>Cargando…</span></div></main>
+  </div>
+</div>
+<div class="tt" id="tt" hidden></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/base.js"></script>
+<script src="assets/js/componentes.js"></script>
+<script src="assets/js/vistas.js"></script>
+<script src="assets/js/asistente.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

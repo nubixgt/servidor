@@ -33,3 +33,9 @@ VisarSistema/Frontend/dist/
 cydplanicador/**/data/
 cydplanicador/**/backups/
 **/__MACOSX/
+
+# PAM: datos personales de la matriz (nunca al repositorio) y archivos de ejecución
+PAM/*.csv
+PAM/*.xlsx
+PAM/*.zip
+PAM/Backend/storage/

@@ -1,0 +1,21 @@
+# Nada de código, configuración ni secretos se entrega por URL: solo api/v1 responde.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+RewriteEngine On
+RewriteRule ^(src|config|bin|storage)(/|$) - [F,L]
+RewriteRule ^(autoload\.php|README\.md)$ - [F,L]
+
+
+# El header Authorization no siempre llega a PHP (CGI/FastCGI): se pasa como variable de entorno
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Handle Preflight OPTIONS requests for CORS (if server config allows it, otherwise handle in PHP)
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ api/v1/index.php [L,QSA]
+
+# API Routing
+# If the file/dir doesn't exist, route to api/v1/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api/v1/index.php [QSA,L]

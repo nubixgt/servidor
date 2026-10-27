@@ -1,0 +1,19 @@
+<IfModule mod_headers.c>
+    # El HTML nunca se guarda en caché: así cada visita carga los archivos nuevos tras un deploy.
+    <FilesMatch "\.(html)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+    # Los archivos de /assets llevan hash en el nombre (cambian en cada build): se pueden guardar un año.
+    <FilesMatch "^.+-[A-Za-z0-9_-]{8}\.(js|css|woff2?|png|jpe?g|webp|svg)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /PAM/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /PAM/index.html [L]
+</IfModule>

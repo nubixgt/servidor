@@ -1,0 +1,8 @@
+.git
+respaldos
+**/__pycache__
+**/.pytest_cache
+*.csv
+*.xlsx
+frontend
+docs
