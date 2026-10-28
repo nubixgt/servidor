@@ -109,7 +109,40 @@ class ExpedienteRepository
 
     public function eventos(int $eid): array
     {
-        return $this->db->all('SELECT * FROM core_v_evento WHERE expediente_id = ? ORDER BY fecha IS NULL, fecha, creado_en', [$eid]);
+        // Mismo contenido que core_v_evento, pero con el filtro dentro de cada parte del UNION: con consultas preparadas
+        // el servidor no lo empuja desde la vista y arma la línea de tiempo de todos los expedientes antes de filtrar.
+        return $this->db->all(
+            "SELECT * FROM (
+                SELECT e.id AS expediente_id, e.fecha_solicitud AS fecha, 'SOLICITUD' AS tipo, 'Solicitud recibida' AS titulo,
+                       CONCAT('Expediente ', COALESCE(e.numero, 's/n')) AS detalle, e.origen, e.creado_en
+                  FROM core_expediente e WHERE e.id = ? AND e.fecha_solicitud IS NOT NULL
+                UNION ALL
+                SELECT v.expediente_id, v.fecha, CONCAT('VISITA_', r.codigo), CONCAT('Visita ', LOWER(r.nombre)),
+                       CONCAT_WS(' · ', v.observacion, v.tecnico), v.origen, v.creado_en
+                  FROM core_visita v JOIN ref_cat_resultado_visita r ON r.id = v.resultado_id WHERE v.expediente_id = ?
+                UNION ALL
+                SELECT o.expediente_id, o.fecha, 'OBSERVACION', 'Observación', o.texto, o.origen, o.creado_en
+                  FROM core_observacion o WHERE o.expediente_id = ?
+                UNION ALL
+                SELECT s.expediente_id, s.fecha, 'RESOLUCION', CONCAT('Resolución ', t.codigo COLLATE utf8mb4_unicode_ci),
+                       CONCAT_WS(' · ', t.nombre, s.numero, s.descripcion), s.origen, s.creado_en
+                  FROM core_resolucion s JOIN ref_cat_tipo_resolucion t ON t.id = s.tipo_id WHERE s.expediente_id = ?
+                UNION ALL
+                SELECT m.expediente_id, m.fecha, CONCAT('NOMINA_', m.tipo),
+                       CASE m.tipo WHEN 'ALTA' THEN 'Ingreso a nómina' ELSE 'Salida de nómina' END, m.motivo, m.origen, m.creado_en
+                  FROM core_movimiento_nomina m WHERE m.expediente_id = ?
+                UNION ALL
+                SELECT e.id, e.fecha_suspension, 'SUSPENSION', 'Suspensión registrada', NULL, e.origen, e.creado_en
+                  FROM core_expediente e WHERE e.id = ? AND e.fecha_suspension IS NOT NULL
+                UNION ALL
+                SELECT e.id, e.fecha_fallecimiento, 'FALLECIMIENTO', 'Fallecimiento registrado', NULL, e.origen, e.creado_en
+                  FROM core_expediente e WHERE e.id = ? AND e.fecha_fallecimiento IS NOT NULL
+                UNION ALL
+                SELECT x.expediente_id, x.fecha, 'ESTADO', CONCAT('Estado: ', c.nombre), x.motivo, x.origen, x.creado_en
+                  FROM core_estado_expediente x JOIN ref_cat_estado c ON c.id = x.estado_id WHERE x.expediente_id = ?
+             ) ev ORDER BY fecha IS NULL, fecha, creado_en",
+            array_fill(0, 8, $eid)
+        );
     }
 
     public function apoderado(int $id): ?array
