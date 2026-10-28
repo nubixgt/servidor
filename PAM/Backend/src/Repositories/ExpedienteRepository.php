@@ -21,16 +21,31 @@ class ExpedienteRepository
         $op = $desc ? '<' : '>';
         $dir = $desc ? 'DESC' : 'ASC';
         $pag = '';
+        $pagPrm = [];
         if ($cursor) {
             [$ultimoValor, $ultimoId] = $cursor;
             if ($ultimoValor === null) {
                 $pag = " AND ($col IS NULL AND v.id $op ?)";
-                $params[] = $ultimoId;
+                $pagPrm = [$ultimoId];
             } else {
                 $pag = " AND (($col, v.id) $op (?, ?) OR $col IS NULL)";
-                array_push($params, $ultimoValor, $ultimoId);
+                $pagPrm = [$ultimoValor, $ultimoId];
             }
         }
+
+        // Sin filtros y en orden descendente (los nulos ya quedan al final): se eligen los ids directo del índice de
+        // core_expediente y solo entonces se une con el resto de tablas; evita unir y ordenar todos los expedientes.
+        if ($where === '' && $desc && in_array($col, ['v.fecha_solicitud', 'v.numero'], true)) {
+            $ec = 'e.' . substr($col, 2);
+            $pagE = str_replace(['v.id', $col], ['e.id', $ec], $pag);
+            return $this->db->all(
+                "SELECT v.* FROM (SELECT e.id FROM core_expediente e WHERE 1=1 $pagE ORDER BY $ec DESC, e.id DESC LIMIT ?) t
+                 JOIN core_v_expediente v ON v.id = t.id ORDER BY ($col IS NULL), $col DESC, v.id DESC",
+                array_merge($pagPrm, [$limite])
+            );
+        }
+
+        $params = array_merge($params, $pagPrm);
         $params[] = $limite;
         return $this->db->all(
             "SELECT v.* FROM core_v_expediente v WHERE 1=1 $where $pag ORDER BY ($col IS NULL), $col $dir, v.id $dir LIMIT ?",
