@@ -35,7 +35,7 @@ class PuestosController extends Controller
             if (empty($nombre)) {
                 throw new Exception('El nombre del puesto es obligatorio.', 400);
             }
-            if (mb_strlen($nombre) > 100) {
+            if (preg_match_all('/./us', $nombre) > 100) {
                 throw new Exception('El nombre del puesto no puede exceder 100 caracteres.', 400);
             }
             if ($this->repository->existsByName($nombre)) {

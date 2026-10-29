@@ -34,6 +34,7 @@ use App\Controllers\ContractorController;
 use App\Controllers\ViaticoController;
 use App\Controllers\RoleController;
 use App\Controllers\DashboardController;
+use App\Controllers\StatementController;
 
 // Backend/api/v1/index.php
 
@@ -132,6 +133,7 @@ $router->registerController(ContractorController::class);
 $router->registerController(ViaticoController::class);
 $router->registerController(RoleController::class);
 $router->registerController(DashboardController::class);
+$router->registerController(StatementController::class);
 
 
 
