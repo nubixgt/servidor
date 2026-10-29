@@ -39,3 +39,4 @@ PAM/*.csv
 PAM/*.xlsx
 PAM/*.zip
 PAM/Backend/storage/
+concretos-oriente/.claude/settings.local.json
