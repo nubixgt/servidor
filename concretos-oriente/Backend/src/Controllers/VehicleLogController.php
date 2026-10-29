@@ -21,7 +21,7 @@ class VehicleLogController extends Controller
     public function index()
     {
         try {
-            $user = $this->request->getAttribute('user');
+            $user = $this->getUser();
             $logs = $this->logService->getAllLogs($user);
 
             $this->json([
@@ -40,7 +40,7 @@ class VehicleLogController extends Controller
     {
         try {
             $input = json_decode(file_get_contents('php://input'), true) ?? [];
-            $user = $this->request->getAttribute('user');
+            $user = $this->getUser();
 
             $data = [
                 'vehiculo_id'           => $input['vehiculo_id'] ?? null,
