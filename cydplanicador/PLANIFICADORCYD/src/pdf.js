@@ -32,9 +32,12 @@ const printer = new PdfPrinter({
 
 const ORDINAL = { 1: 'PRIMER', 2: 'SEGUNDO', 3: 'TERCER', 4: 'CUARTO' };
 const C = {
-  headerGreen: '#C5E0B3', banner: '#2E74B5', aspectsHead: '#FFD966', totalGreen: '#00B050',
-  lineBlue: '#3B6FC4', lineYellow: '#F2C230', highlight: '#00FFFF', grid: '#000000',
+  headerGreen: '#1F3A5F', banner: '#1F3A5F', bannerLine: '#F2C230', aspectsHead: '#FBE7A1', totalGreen: '#2E8B57',
+  lineBlue: '#1F3A5F', lineYellow: '#F2C230', noteFill: '#FFF6D6', noteLine: '#E0B100', grid: '#9AA5B1',
+  infoFill: '#F2F5F9', infoLine: '#C9D3DF',
 };
+// Tinte suave por bloque en la celda «Contenido» (separa visualmente cada actividad de evaluación)
+const BLOCK_TINTS = ['#EAF6EF', '#EAF1FC', '#FFF4E0', '#F3EBFC', '#FDEBF0', '#E4F6F8'];
 const PAGE = { width: 612, height: 1008 };            // oficio en puntos
 const MARGINS = [51, 104, 51, 46];                     // izq, sup, der, inf
 // Proporción de la plantilla con la columna «Recepción de Tareas» (mismo ancho que «Fecha de entrega»).
@@ -61,8 +64,9 @@ function topicsCell(block, topics, { continuation, includePages }) {
   const head = continuation
     ? { text: [{ text: 'Temas ', bold: true }, { text: `(continuación${block.label ? ' — ' + block.label : ''}):`, italics: true }], fontSize: 9.5 }
     : { text: 'Temas:', bold: true, fontSize: 10 };
-  return { stack: [head, items.length ? { ul: items, fontSize: 9, margin: [2, 1, 0, 0] } : ''] };
+  return { stack: [head, items.length ? { ul: items, fontSize: 9, margin: [2, 1, 0, 0] } : ''], fillColor: tint(block) };
 }
+const tint = block => BLOCK_TINTS[(block.colorIndex || 0) % BLOCK_TINTS.length];
 
 function aspectsCell(criteria, scoringMode, total, note) {
   const out = [];
@@ -74,8 +78,8 @@ function aspectsCell(criteria, scoringMode, total, note) {
     ]];
     crit.forEach(c => body.push([{ text: c.text, fontSize: 8 }, { text: fmtPts(c.points), fontSize: 8 }]));
     body.push([
-      { text: 'Total', bold: true, fillColor: C.totalGreen, fontSize: 8 },
-      { text: fmtPts(total), bold: true, fillColor: C.totalGreen, alignment: 'center', fontSize: 8 },
+      { text: 'Total', bold: true, fillColor: C.totalGreen, color: '#FFFFFF', fontSize: 8 },
+      { text: fmtPts(total), bold: true, fillColor: C.totalGreen, color: '#FFFFFF', alignment: 'center', fontSize: 8 },
     ]);
     out.push({
       table: { widths: ['56%', '44%'], body, dontBreakRows: true },
@@ -204,9 +208,9 @@ function buildDoc(snap, chunksByBlock) {
   });
 
   const headRow = () => ['Contenido', 'Actividades de evaluación', 'Aspectos a evaluar', 'Fecha de entrega', 'Recepción de Tareas']
-    .map(t => ({ text: t, bold: true, alignment: 'center', fillColor: C.headerGreen, fontSize: 10 }));
+    .map(t => ({ text: t, bold: true, alignment: 'center', fillColor: C.headerGreen, color: '#FFFFFF', fontSize: 10 }));
   const rows = [];
-  for (const b of p.blocks) rows.push(...blockRows(b, p.include_pages, chunksByBlock[b.id]));
+  p.blocks.forEach((b, bi) => rows.push(...blockRows({ ...b, colorIndex: bi }, p.include_pages, chunksByBlock[b.id])));
   rows.push(...extrasRows(p.extras));
   // Columna «Recepción de Tareas»: siempre vacía (se llena a mano en la hoja impresa)
   for (const r of rows) r.push({ text: '' });
@@ -234,17 +238,18 @@ function buildDoc(snap, chunksByBlock) {
     { text: `${h.sheet_title} ${ORDINAL[h.bimester_number] || ''} BIMESTRE`.replace(/\s+/g, ' '), bold: true, alignment: 'center', fontSize: 11, margin: [0, 0, 0, 1] },
     { text: `Ciclo escolar ${h.school_year_name}`, alignment: 'center', fontSize: 9, margin: [0, 0, 0, 10] },
     {
-      margin: [30, 0, 0, 0], fontSize: 9.5,
-      stack: [
+      margin: [0, 0, 0, 0], fontSize: 9.5,
+      table: { widths: ['*'], body: [[{ fillColor: C.infoFill, margin: [8, 4, 8, 4], stack: [
         { text: [{ text: 'DOCENTE: ', bold: true }, h.teacher_name, { text: '    GRADO: ', bold: true }, h.grade_name, { text: '    SECCIÓN: ', bold: true }, `“${h.section_name}”`] },
         { text: [{ text: 'ASIGNATURA: ', bold: true }, h.course_name] },
         { text: [{ text: 'NOMBRE DEL ALUMNO: ', bold: true }, '_'.repeat(54), { text: 'CLAVE: ', bold: true }, '_'.repeat(10)] },
-      ],
+      ] }]] },
+      layout: { hLineWidth: () => 0.6, vLineWidth: () => 0.6, hLineColor: () => C.infoLine, vLineColor: () => C.infoLine },
     },
     {
-      table: { widths: [440], body: [[{ text: h.contents_banner, bold: true, color: '#FFFFFF', fontSize: 15, alignment: 'center', fillColor: C.banner, margin: [0, 2, 0, 2] }]] },
-      layout: { hLineWidth: () => 0.8, vLineWidth: () => 0.8, hLineColor: () => '#1F4E79', vLineColor: () => '#1F4E79' },
-      margin: [35, 6, 0, 10],
+      table: { widths: [440], body: [[{ text: h.contents_banner, bold: true, color: '#FFFFFF', fontSize: 15, alignment: 'center', fillColor: C.banner, margin: [0, 2, 0, 2], characterSpacing: 1.5 }]] },
+      layout: { hLineWidth: (i) => (i === 1 ? 3 : 0), vLineWidth: () => 0, hLineColor: () => C.bannerLine },
+      margin: [35, 8, 0, 10],
       id: 'banner',
     },
     ...tables,
@@ -252,7 +257,11 @@ function buildDoc(snap, chunksByBlock) {
       unbreakable: true,
       stack: [
         obs ? { text: [{ text: 'Observaciones: ', bold: true }, obs], fontSize: 9.5, margin: [30, 8, 0, 0] } : '',
-        h.note_text ? { text: [{ text: 'NOTA: ', bold: true, background: C.highlight }, { text: h.note_text, background: C.highlight }], fontSize: 10, alignment: 'center', margin: [0, 8, 0, 0] } : '',
+        h.note_text ? {
+          table: { widths: ['*'], body: [[{ text: h.note_text, bold: true, fontSize: 10, alignment: 'center', fillColor: C.noteFill, margin: [8, 5, 8, 5] }]] },
+          layout: { hLineWidth: () => 1, vLineWidth: () => 1, hLineColor: () => C.noteLine, vLineColor: () => C.noteLine },
+          margin: [30, 10, 30, 0],
+        } : '',
         {
           columns: [
             { stack: [{ text: `F. ${line}`, fontSize: 8 }, { text: h.sign_teacher, fontSize: 8, alignment: 'center' }], width: '*' },

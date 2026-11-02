@@ -571,6 +571,30 @@ function createApp() {
     res.status(201).json({ id, existed: false });
   }));
 
+  // Duplicar una planificación hacia otros grupos del mismo docente (mismo bimestre). Cada copia nace como borrador.
+  api.post('/plans/:id/duplicate', teacherOnly, wrap((req, res) => {
+    const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'), { write: true });
+    const ids = Array.isArray(req.body.assignment_ids) ? [...new Set(req.body.assignment_ids.map(Number))] : [];
+    if (!ids.length || ids.length > 50 || ids.some(n => !Number.isInteger(n))) throw new HttpError(400, 'Seleccione al menos un grupo destino.');
+    const source = P.loadTree(ctx.id);
+    const created = [], skipped = [];
+    db().transaction(() => {
+      for (const aid of ids) {
+        const a = db().prepare('SELECT id, school_year_id, active FROM assignments WHERE id = ? AND user_id = ?').get(aid, req.user.id);
+        if (!a || a.school_year_id !== ctx.school_year_id) { skipped.push({ assignment_id: aid, reason: 'El grupo no es válido.' }); continue; }
+        if (a.id === ctx.assignment_id) { skipped.push({ assignment_id: aid, reason: 'Es el mismo grupo de origen.' }); continue; }
+        if (!a.active) { skipped.push({ assignment_id: aid, reason: 'La asignación está desactivada.' }); continue; }
+        if (db().prepare('SELECT id FROM plans WHERE assignment_id = ? AND bimester_id = ?').get(aid, ctx.bimester_id)) { skipped.push({ assignment_id: aid, reason: 'Ya tiene una planificación en este bimestre.' }); continue; }
+        const info = db().prepare('INSERT INTO plans(assignment_id, school_year_id, bimester_id, updated_by) VALUES (?,?,?,?)').run(aid, ctx.school_year_id, ctx.bimester_id, req.user.id);
+        const newId = info.lastInsertRowid;
+        P.saveTree(newId, P.sanitize(P.cloneTree(source)), 1, req.user);
+        P.audit(req.user, 'duplicar', 'plan', newId, newId, { origen: ctx.id });
+        created.push({ assignment_id: aid, plan_id: newId });
+      }
+    })();
+    res.status(201).json({ created, skipped });
+  }));
+
   function planPayload(ctx, user) {
     const tree = P.loadTree(ctx.id);
     const v = P.validate(tree, ctx);

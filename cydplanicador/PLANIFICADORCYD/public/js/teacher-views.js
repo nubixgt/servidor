@@ -5,7 +5,7 @@
 
   // ================================================================ Resumen
   CYD.components['view-dashboard'] = {
-    data: () => ({ store, ORD, data: null, loading: true, error: '', q: { assignment: '', bimester: '' }, busy: false }),
+    data: () => ({ store, ORD, data: null, loading: true, error: '', q: { assignment: '', bimester: '' }, busy: false, dup: null }),
     computed: {
       year() { return store.years.find(y => y.id === store.yearId); },
       rows() { return this.data ? this.data.rows : []; },
@@ -42,6 +42,20 @@
         try {
           const r = await api('POST', '/api/plans', { assignment_id: assignmentId, bimester_id: bimesterId });
           go(`/plan/${r.id}${target}`);
+        } catch (e) { toast(e.message, 'error'); }
+        finally { this.busy = false; }
+      },
+      // Duplicar: panel para elegir los grupos destino (mismo bimestre; los que ya tienen plan quedan deshabilitados)
+      startDup(r, b, c) { this.dup = { plan_id: c.plan_id, assignment_id: r.assignment_id, bimester: b, selected: [] }; },
+      canDup(r) { return r.assignment_id !== this.dup.assignment_id && r.active; },
+      dupBlocked(r) { const c = this.cell(r, this.dup.bimester); return c && c.plan_id ? 'Ya tiene plan' : ''; },
+      async doDup() {
+        if (!this.dup.selected.length) return;
+        this.busy = true;
+        try {
+          const r = await api('POST', `/api/plans/${this.dup.plan_id}/duplicate`, { assignment_ids: this.dup.selected });
+          toast(`Planificación duplicada en ${r.created.length} grupo(s).${r.skipped.length ? ' Omitidos: ' + r.skipped.length + '.' : ''}`, 'ok');
+          this.dup = null; await this.load();
         } catch (e) { toast(e.message, 'error'); }
         finally { this.busy = false; }
       },
@@ -87,6 +101,21 @@
             </form>
           </section>
 
+          <section v-if="dup" class="card card-pad" style="margin-bottom:18px" aria-label="Duplicar planificación">
+            <h3 style="margin:0 0 4px">Duplicar planificación ({{ ORD[dup.bimester.number] }} bimestre)</h3>
+            <p class="hint" style="margin:0 0 10px">Elija los grupos que recibirán una copia como borrador. Después puede ajustarla en cada grupo.</p>
+            <div class="stack" style="gap:6px">
+              <label v-for="r in activeRows.filter(canDup)" :key="r.assignment_id" class="row" style="gap:8px">
+                <input type="checkbox" :value="r.assignment_id" v-model="dup.selected" :disabled="!!dupBlocked(r)">
+                <span>{{ label(r) }} <small v-if="dupBlocked(r)" class="muted">— {{ dupBlocked(r) }}</small></span>
+              </label>
+            </div>
+            <div class="row" style="gap:8px;margin-top:12px">
+              <button class="btn primary" :disabled="busy || !dup.selected.length" @click="doDup">Duplicar en {{ dup.selected.length }} grupo(s)</button>
+              <button class="btn" @click="dup = null">Cancelar</button>
+            </div>
+          </section>
+
           <div class="stack">
             <article v-for="r in rows" :key="r.assignment_id" class="card assign-card">
               <div class="assign-head">
@@ -110,6 +139,7 @@
                         <a class="btn sm" :class="c.status === 'listo' ? '' : 'soft'" :href="'#/plan/' + c.plan_id">{{ c.status === 'listo' ? 'Consultar plan' : 'Continuar' }}</a>
                         <a class="btn sm" :href="'#/plan/' + c.plan_id + '/hoja'">📄 Hoja de actividades</a>
                         <a class="btn sm" :href="'#/plan/' + c.plan_id + '/plan-bimestral'">📘 Plan bimestral</a>
+                        <button v-if="r.active && activeRows.length > 1" class="btn sm" @click="startDup(r, b, c)">⧉ Duplicar a otros grupos</button>
                       </div>
                     </template>
                     <div v-else-if="r.active" class="actions"><button class="btn sm soft" :disabled="busy" @click="open(r.assignment_id, b.id)">＋ Crear plan</button></div>

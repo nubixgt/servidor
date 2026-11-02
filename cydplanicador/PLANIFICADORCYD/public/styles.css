@@ -549,3 +549,18 @@ table.data tr:last-child td { border-bottom: 0; }
 .reg-submit .btn.primary { height: 58px; border: 0; border-radius: 14px; background: linear-gradient(110deg, #4FA37E 0%, #006A45 50%, #04B46C 100%); background-size: 170% 100%;
   box-shadow: 0 14px 28px -12px rgba(0,106,69,.7); transition: background-position .45s, box-shadow .2s; }
 .reg-submit .btn.primary:hover { background-position: 100% 0; }
+
+/* Color distinto por bloque (separa visualmente cada actividad de evaluación) */
+.block { --bc: #1E8A57; --bc-soft: #EAF6EF; --bc-line: #9FD2B3; border-left: 6px solid var(--bc); }
+.block.bc0 { --bc: #1E8A57; --bc-soft: #EAF6EF; --bc-line: #9FD2B3; }
+.block.bc1 { --bc: #2F6FD0; --bc-soft: #EAF1FC; --bc-line: #A9C4EE; }
+.block.bc2 { --bc: #D98A0B; --bc-soft: #FFF4E0; --bc-line: #F0CB86; }
+.block.bc3 { --bc: #8248C8; --bc-soft: #F3EBFC; --bc-line: #CDB2EE; }
+.block.bc4 { --bc: #D6456B; --bc-soft: #FDEBF0; --bc-line: #F1AEC0; }
+.block.bc5 { --bc: #0F8F9E; --bc-soft: #E4F6F8; --bc-line: #94D3DA; }
+.block > .block-head { background: var(--bc-soft); }
+.block > .block-head:hover { filter: brightness(.97); background: var(--bc-soft); }
+.block > .block-head .ttl b { color: var(--bc); }
+.block .eval-panel { border-color: var(--bc-line); background: linear-gradient(180deg, var(--bc-soft), #FFFFFF 70%); }
+.block .eval-panel .eval-tag { color: var(--bc); }
+.fixed-val { padding: 9px 12px; background: #F4F6F5; border: 1px solid var(--line); border-radius: 8px; }

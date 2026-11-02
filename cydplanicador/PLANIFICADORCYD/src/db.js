@@ -52,7 +52,7 @@ function seed(d) {
     title: 'HOJA DE ACTIVIDADES',
     banner: 'CONTENIDOS',
     obs: 'las fechas están sujetas a cambios, debido a imprevistos que puedan surgir.',
-    note: 'Las fichas de calificación deberán subirse a la APP del CyD, únicamente en formato PDF.',
+    note: 'Subir fotografía de la hoja firmada y sellada por cada tarea entregada. Si no sube se le restarán 3 pts. de la tarea.',
     s1: 'CATEDRÁTICO',
     s2: 'PADRE DE FAMILIA',
     s3: 'DIRECCIÓN',

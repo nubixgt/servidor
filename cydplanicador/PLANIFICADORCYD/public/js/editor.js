@@ -6,8 +6,8 @@
 
   const EXTRAS = [
     { kind: 'mejoramiento', title: 'Actividad de mejoramiento', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción de la actividad', needsActivity: true },
-    { kind: 'afectivo', title: 'Afectivo', detailLabel: 'Desglose junto al título (opcional)', detailHint: 'Aparece entre paréntesis después de “Afectivo”. Escriba aquí el desglose que defina el colegio.', activityLabel: 'Descripción (opcional)' },
-    { kind: 'asistencia', title: 'Asistencia', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción (opcional)' },
+    { kind: 'afectivo', title: 'Afectivo', fixed: true, fixedText: 'Comportamiento y participación en clase' },
+    { kind: 'asistencia', title: 'Asistencia', fixed: true, fixedText: '' },
     { kind: 'examen_final', title: 'Examen final', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción o temario (opcional)' },
   ];
   const TABS = [
@@ -18,6 +18,7 @@
     { id: 'revision', label: 'Revisión y PDF', sections: [] },
   ];
 
+  const FIXED_POINTS = 5;  // Afectivo y Asistencia: punteo predeterminado definido por el colegio
   const newCriterion = () => ({ id: uuid(), text: '', points: null });
   const newActivity = () => ({ id: uuid(), text: '' });
   const newContent = () => ({ id: uuid(), topic: '', pages: '', periods: null, activities: [newActivity()] });
@@ -90,6 +91,7 @@
       },
       apply(p) {
         this.suppress = true;
+        for (const e of EXTRAS) if (e.fixed && p.tree.extras[e.kind]) this.fixExtra(p.tree.extras[e.kind], e);
         this.general = p.general; this.tree = p.tree; this.version = p.general.version; this.status = p.general.status;
         this.readyAt = p.general.ready_at; this.validation = p.validation; this.documents = p.documents; this.readonly = p.readonly;
         this.save = { state: 'idle', at: p.general.updated_at, message: '' };
@@ -216,6 +218,12 @@
           return true;
         }).map(i => i.message);
       },
+      blockTitle(bi) { return `Bloque ${bi + 1} (Actividad de evaluación ${bi + 1})`; },
+      // Afectivo y Asistencia: contenido predeterminado por el colegio (el servidor lo vuelve a imponer al guardar).
+      fixExtra(x, e) {
+        x.scoring_mode = 'total'; x.total_points = FIXED_POINTS; x.criteria = [];
+        x.detail = ''; x.aspects_note = ''; x.activity = e.fixedText;
+      },
       blockPending(b) { return this.validation.issues.filter(i => i.level === 'error' && i.target && i.target.blockId === b.id).length; },
       targetId(t) {
         if (!t) return null;
@@ -269,7 +277,7 @@
         const b = newBlock();
         this.tree.blocks.push(b);
         this.openBlocks[b.id] = true;
-        this.focus(`b-${b.id}-label`);
+        this.focus(`b-${b.id}-start`);
         this.$nextTick(() => { const el = document.getElementById(`blk-${b.id}`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
       },
       finishBlock(b, i) {
@@ -360,6 +368,8 @@
           if (!await confirm({ title: 'Marcar como “No aplica”', body: ['La información escrita en este apartado se conservará, pero no aparecerá en la hoja mientras esté marcado como “No aplica”.'], confirmText: 'Marcar “No aplica”' })) return;
         }
         x.applies = val;
+        const def = EXTRAS.find(e => e.kind === Object.keys(this.tree.extras).find(k => this.tree.extras[k] === x));
+        if (val && def && def.fixed) this.fixExtra(x, def);
       },
     },
     template: `
@@ -475,11 +485,11 @@
         <h3>Organice el bimestre en bloques mensuales</h3><p>Cada bloque tiene sus semanas, contenidos y <b>una única actividad de evaluación</b>.</p>
         <button class="btn primary" @click="addBlock">＋ Agregar primer bloque</button></div></div>
 
-      <article v-for="(b, bi) in tree.blocks" :key="b.id" :id="'blk-' + b.id" class="block" :class="{ open: openBlocks[b.id] }">
+      <article v-for="(b, bi) in tree.blocks" :key="b.id" :id="'blk-' + b.id" class="block" :class="['bc' + (bi % 6), { open: openBlocks[b.id] }]">
         <div class="block-head" @click="toggleBlock(b)">
           <span class="chev" aria-hidden="true">▶</span>
           <div class="ttl">
-            <span role="button" tabindex="0" :aria-expanded="!!openBlocks[b.id]" @keydown.enter.prevent="toggleBlock(b)" @keydown.space.prevent="toggleBlock(b)"><b>{{ b.label || 'Bloque ' + (bi + 1) + ' (sin nombre)' }}</b></span>
+            <span role="button" tabindex="0" :aria-expanded="!!openBlocks[b.id]" @keydown.enter.prevent="toggleBlock(b)" @keydown.space.prevent="toggleBlock(b)"><b>{{ blockTitle(bi) }}</b></span>
             <div class="block-summary">
               <span>📅 {{ b.start_date ? fmtDate(b.start_date) : '—' }} – {{ b.end_date ? fmtDate(b.end_date) : '—' }}</span>
               <span>{{ b.weeks.length }} semana(s)</span><span>{{ blockContents(b) }} contenido(s)</span><span>{{ blockPeriods(b) }} período(s)</span>
@@ -488,16 +498,13 @@
             </div>
           </div>
           <div class="row" @click.stop>
-            <button class="btn sm icon ghost" @click="moveBlock(bi, -1)" :disabled="bi === 0" :aria-label="'Subir bloque ' + (b.label || bi + 1)">↑</button>
-            <button class="btn sm icon ghost" @click="moveBlock(bi, 1)" :disabled="bi === tree.blocks.length - 1" :aria-label="'Bajar bloque ' + (b.label || bi + 1)">↓</button>
-            <button class="btn sm ghost danger" @click="removeBlock(b, bi)" :aria-label="'Eliminar bloque ' + (b.label || bi + 1)">✕ Eliminar</button>
+            <button class="btn sm icon ghost" @click="moveBlock(bi, -1)" :disabled="bi === 0" :aria-label="'Subir ' + blockTitle(bi)">↑</button>
+            <button class="btn sm icon ghost" @click="moveBlock(bi, 1)" :disabled="bi === tree.blocks.length - 1" :aria-label="'Bajar ' + blockTitle(bi)">↓</button>
+            <button class="btn sm ghost danger" @click="removeBlock(b, bi)" :aria-label="'Eliminar ' + blockTitle(bi)">✕ Eliminar</button>
           </div>
         </div>
         <div v-if="openBlocks[b.id]" class="block-body stack">
-          <div class="grid g3">
-            <div class="field"><label :for="'b-' + b.id + '-label'">Nombre o etiqueta del mes</label>
-              <input :id="'b-' + b.id + '-label'" type="text" v-model.trim="b.label" maxlength="80" :aria-invalid="issuesWhere({ section: 'bloques', blockId: b.id, field: 'label' }).length > 0">
-              <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, field: 'label' })" :msg="m"></field-err></div>
+          <div class="grid g2">
             <div class="field" :id="'b-' + b.id + '-dates'"><label :for="'b-' + b.id + '-start'">Fecha de inicio</label>
               <input :id="'b-' + b.id + '-start'" type="date" v-model="b.start_date" :min="general.bimester_start" :max="general.bimester_end"></div>
             <div class="field"><label :for="'b-' + b.id + '-end'">Fecha de finalización</label>
@@ -509,7 +516,7 @@
           <!-- Evaluación única del bloque -->
           <div class="eval-panel" :id="'b-' + b.id + '-ev'">
             <div class="row between" style="margin-bottom:8px">
-              <div><div class="eval-tag">Actividad de evaluación del bloque · única</div>
+              <div><div class="eval-tag">Actividad de evaluación {{ bi + 1 }} · única del bloque</div>
                 <div class="hint">Se aplica a todos los contenidos y semanas de este bloque. No se registra evaluación por contenido ni por semana.</div></div>
               <span class="pill">Total: <b>{{ evalTotal(b.evaluation) ?? '—' }}</b> pts</span>
             </div>
@@ -647,6 +654,18 @@
               <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'applies' })" :msg="m"></field-err>
               <p v-if="x.applies === null" class="hint" style="margin:0">Sin definir: indique si este apartado aplica.</p>
               <p v-else-if="x.applies === false" class="hint" style="margin:0">Marcado como “No aplica”. En la hoja se indicará “No aplica”.</p>
+              <template v-else-if="e.fixed">
+                <div v-if="e.fixedText" class="field"><span class="label">Descripción</span><div class="fixed-val">{{ e.fixedText }}</div></div>
+                <div class="field"><span class="label">Punteo total</span><div class="fixed-val"><b>5</b> puntos <small class="muted">(predeterminado)</small></div></div>
+                <div class="grid g2" :id="'x-' + e.kind + '-due'">
+                  <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
+                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date"></div>
+                  <div class="field"><label :for="'x-' + e.kind + '-duetext'">o período en texto</label>
+                    <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre">
+                    <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>
+                </div>
+                <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>
+              </template>
               <template v-else>
                 <div class="field"><label :for="'x-' + e.kind + '-detail'">{{ e.detailLabel }}</label>
                   <input :id="'x-' + e.kind + '-detail'" type="text" v-model="x.detail" maxlength="300"><span v-if="e.detailHint" class="hint">{{ e.detailHint }}</span></div>
@@ -682,13 +701,7 @@
                     <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>
                 </div>
                 <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>
-                <div v-if="e.kind === 'mejoramiento'" class="grid g2">
-                  <div class="field"><label :for="'x-mej-strategies'">Acciones / estrategias <span class="muted">(plan bimestral)</span></label>
-                    <textarea id="x-mej-strategies" v-model="x.strategies" rows="2"></textarea></div>
-                  <div class="field"><label :for="'x-mej-students'">Estudiantes atendidos <span class="muted">(plan bimestral)</span></label>
-                    <textarea id="x-mej-students" v-model="x.students" rows="2" placeholder="Nombres o cantidad"></textarea></div>
-                </div>
-                <div class="field"><label :for="'x-' + e.kind + '-obs'">Observaciones internas <span class="muted">(no aparecen en la hoja)</span></label>
+                <div v-if="e.kind === 'examen_final'" class="field"><label :for="'x-' + e.kind + '-obs'">Observaciones internas <span class="muted">(no aparecen en la hoja)</span></label>
                   <textarea :id="'x-' + e.kind + '-obs'" v-model="x.observations" rows="2"></textarea></div>
               </template>
             </div>

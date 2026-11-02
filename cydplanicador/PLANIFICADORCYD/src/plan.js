@@ -14,6 +14,11 @@ const EXTRA_LABELS = {
   asistencia: 'Asistencia',
   examen_final: 'Examen final',
 };
+// Afectivo y Asistencia: contenido y punteo predeterminados por el colegio (no editables).
+const FIXED_EXTRAS = {
+  afectivo: { activity: 'Comportamiento y participación en clase', points: 5 },
+  asistencia: { activity: '', points: 5 },
+};
 const MAX_TEXT = 8000;
 const MAX_ITEMS = 2000; // límite de seguridad por lista (no es un límite pedagógico)
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -208,7 +213,25 @@ function sanitize(input) {
       })),
     };
   }
+  for (const [k, f] of Object.entries(FIXED_EXTRAS)) {
+    const x = out.extras[k];
+    Object.assign(x, { scoring_mode: 'total', total_points: f.points, criteria: [], detail: '', aspects_note: '', activity: f.activity });
+  }
   return out;
+}
+
+/** Copia profunda de un árbol de plan asignando identificadores nuevos (para duplicar una planificación). */
+function cloneTree(tree) {
+  const walk = v => {
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') {
+      const o = {};
+      for (const [k, x] of Object.entries(v)) o[k] = k === 'id' ? uuid() : walk(x);
+      return o;
+    }
+    return v;
+  };
+  return walk(tree);
 }
 
 // ------------------------------------------------------------------ guardado
@@ -343,9 +366,8 @@ function validate(tree, ctx) {
   const allWeeks = [];
   let weekNo = 0;
   tree.blocks.forEach((b, bi) => {
-    const name = filled(b.label) ? `Bloque “${b.label}”` : `Bloque ${bi + 1}`;
+    const name = `Bloque ${bi + 1}`;
     const tB = { section: 'bloques', blockId: b.id };
-    req(filled(b.label), `${name}: escriba el nombre o etiqueta del mes.`, { ...tB, field: 'label' });
     const hasDates = req(!!b.start_date && !!b.end_date, `${name}: indique fecha de inicio y de finalización.`, { ...tB, field: 'dates' });
     if (hasDates) {
       if (b.start_date > b.end_date) err(`${name}: la fecha de inicio es posterior a la de finalización.`, { ...tB, field: 'dates' });
@@ -464,6 +486,6 @@ function pdfHash(tree) {
 }
 
 module.exports = {
-  EXTRA_KINDS, EXTRA_LABELS, planContext, assertAccess, loadTree, sanitize, saveTree, validate,
+  EXTRA_KINDS, EXTRA_LABELS, planContext, assertAccess, loadTree, sanitize, cloneTree, saveTree, validate,
   periodTotals, evaluationTotal, pdfProjection, pdfHash, audit, fmt,
 };
