@@ -344,7 +344,10 @@
   // ================================================================ Usuarios
   CYD.components['view-admin-users'] = {
     data: () => ({ store, list: [], q: '', f: { full_name: '', username: '', role: 'docente' } }),
-    computed: { filtered() { const k = this.q.toLowerCase(); return this.list.filter(u => !k || `${u.full_name} ${u.username}`.toLowerCase().includes(k)); } },
+    computed: {
+      filtered() { const k = this.q.toLowerCase(); return this.list.filter(u => !k || `${u.full_name} ${u.username}`.toLowerCase().includes(k)); },
+      pending() { return this.list.filter(u => u.reset_requested_at); },
+    },
     mounted() { this.load(); },
     methods: {
       fmtDateTime,
@@ -370,6 +373,11 @@
     <div>
       <div class="page-head"><div><h1>Usuarios</h1><p>Activar o desactivar cuentas y apoyar el restablecimiento de acceso.</p></div></div>
       ${adminNav}
+      <section v-if="pending.length" class="alert warn" style="margin-bottom:16px" role="status"><span class="ic">🔑</span>
+        <div><b>{{ pending.length }} solicitud(es) de restablecimiento de contraseña:</b>
+          <div v-for="u in pending" :key="u.id" style="margin-top:4px">{{ u.full_name }} ({{ u.username }}) · {{ fmtDateTime(u.reset_requested_at) }}<span v-if="u.reset_note"> · contacto: {{ u.reset_note }}</span>
+            <button class="btn sm" style="margin-left:8px" @click="reset(u)">Restablecer</button></div>
+          <div class="hint" style="margin-top:6px">Confirme la identidad de la persona antes de entregarle la contraseña temporal.</div></div></section>
       <section class="card card-pad" style="margin-bottom:16px">
         <form class="grid g4" style="align-items:end" @submit.prevent="create">
           <div class="field"><label for="un">Nombre completo</label><input id="un" type="text" v-model="f.full_name"></div>
@@ -387,7 +395,7 @@
             <td data-label="Nombre"><b>{{ u.full_name }}</b><div class="muted" style="font-size:.78rem">Desde {{ fmtDateTime(u.created_at) }}</div></td>
             <td data-label="Usuario">{{ u.username }}</td><td data-label="Rol">{{ u.role === 'admin' ? 'Administrador' : 'Docente' }}</td>
             <td data-label="Correo">{{ u.recovery_email || '—' }} <span v-if="u.recovery_email" class="badge" :class="u.email_verified ? 'ready' : 'draft'">{{ u.email_verified ? 'Verificado' : 'Sin verificar' }}</span></td>
-            <td data-label="Estado"><span class="badge" :class="u.active ? 'ready' : 'none'">{{ u.active ? '✓ Activa' : '⏸ Desactivada' }}</span><span v-if="u.must_change_password" class="badge info" style="margin-left:4px">Clave temporal</span></td>
+            <td data-label="Estado"><span class="badge" :class="u.active ? 'ready' : 'none'">{{ u.active ? '✓ Activa' : '⏸ Desactivada' }}</span><span v-if="u.must_change_password" class="badge info" style="margin-left:4px">Clave temporal</span><span v-if="u.reset_requested_at" class="badge draft" style="margin-left:4px">Solicitó restablecer</span></td>
             <td><div class="row end"><button class="btn sm" @click="reset(u)">Restablecer acceso</button>
               <button class="btn sm" :class="u.active ? 'danger' : ''" @click="toggle(u)" :disabled="u.id === store.user.id">{{ u.active ? 'Desactivar' : 'Activar' }}</button></div></td>
           </tr></tbody></table></div>

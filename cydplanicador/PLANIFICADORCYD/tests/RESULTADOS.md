@@ -1,8 +1,8 @@
 # Resultado de las pruebas de aceptación
 
-Fecha: 2026-11-02T19:52:13.019Z
+Fecha: 2026-11-02T22:25:33.904Z
 
-**66 de 66 pruebas aprobadas.**
+**67 de 67 pruebas aprobadas.**
 
 
 ## Configuración institucional
@@ -92,5 +92,6 @@ Fecha: 2026-11-02T19:52:13.019Z
 ## Recuperación y restablecimiento de acceso
 
 - ✅ Sin correo configurado no se simula ningún envío de recuperación
+- ✅ Solicitud de restablecimiento: queda para la administración, es uniforme y se cierra al restablecer
 - ✅ Restablecimiento administrativo: contraseña temporal de un solo uso y cambio obligatorio
 - ✅ Cuenta desactivada no puede ingresar

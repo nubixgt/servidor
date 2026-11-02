@@ -318,11 +318,11 @@
   };
 
   CYD.components['view-forgot'] = {
-    data: () => ({ store, username: '', result: null, error: '', busy: false }),
+    data: () => ({ store, username: '', note: '', result: null, error: '', busy: false }),
     methods: {
       async submit() {
         this.error = ''; this.busy = true;
-        try { this.result = await api('POST', '/api/auth/forgot', { username: this.username }); }
+        try { this.result = await api('POST', '/api/auth/forgot', { username: this.username, note: this.note }); }
         catch (e) { this.error = e.message; }
         finally { this.busy = false; }
       },
@@ -332,10 +332,14 @@
       ${brand}
       <h1 style="margin-bottom:6px">Recuperar acceso</h1>
       <template v-if="!store.mailEnabled">
-        <div class="alert warn"><span class="ic">ℹ</span><div>
-          La recuperación por correo <b>no está configurada</b> en este servidor.
-          Solicite a la administración del colegio que restablezca su acceso: recibirá una contraseña temporal que deberá cambiar al ingresar.
-          Por seguridad, nadie puede ver su contraseña anterior.</div></div>
+        <p class="muted">Escriba su usuario y la administración del colegio recibirá su solicitud. Le entregarán una contraseña temporal que deberá cambiar al ingresar. Por seguridad, nadie puede ver su contraseña anterior.</p>
+        <form v-if="!result" @submit.prevent="submit" class="stack">
+          <div class="field"><label for="fg-u">Nombre de usuario</label><input id="fg-u" type="text" v-model.trim="username" autocapitalize="none" required></div>
+          <div class="field"><label for="fg-n">Teléfono o dato de contacto <span class="muted">(opcional)</span></label><input id="fg-n" type="text" v-model.trim="note" maxlength="300" placeholder="Para que la administración pueda confirmar que es usted"></div>
+          <div v-if="error" class="alert error" role="alert"><span class="ic">⚠</span>{{ error }}</div>
+          <button class="btn primary" :disabled="busy || !username">{{ busy ? 'Enviando…' : 'Solicitar restablecimiento' }}</button>
+        </form>
+        <div v-else class="alert ok"><span class="ic">✓</span><span>{{ result.message }}</span></div>
       </template>
       <template v-else>
         <p class="muted">Si su cuenta tiene un correo de recuperación verificado, le enviaremos un enlace para crear una nueva contraseña.</p>

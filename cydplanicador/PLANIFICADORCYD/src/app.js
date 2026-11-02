@@ -272,7 +272,16 @@ function createApp() {
 
   api.post('/auth/forgot', wrap(async (req, res) => {
     if (!mail.enabled()) {
-      return res.json({ mailEnabled: false, message: 'La recuperación por correo no está configurada en este servidor. Solicite a la administración del colegio el restablecimiento de su acceso.' });
+      // Sin correo: se registra una solicitud para la administración (no cambia ninguna contraseña por sí sola).
+      const uname = str(req.body.username, 60).toLowerCase();
+      const note = str(req.body.note, 300);
+      const usr = uname ? db().prepare('SELECT id, active FROM users WHERE username_key = ?').get(uname) : null;
+      if (usr && usr.active && !db().prepare('SELECT 1 FROM reset_requests WHERE user_id = ? AND resolved_at IS NULL').get(usr.id)) {
+        db().prepare('INSERT INTO reset_requests(user_id, note) VALUES (?, ?)').run(usr.id, note);
+        P.audit({ id: usr.id, role: null }, 'solicitar_restablecimiento', 'usuario', usr.id, null, null);
+      }
+      // Respuesta uniforme para no revelar qué cuentas existen.
+      return res.json({ mailEnabled: false, requested: true, message: 'Si el usuario existe, la solicitud fue enviada a la administración del colegio. Cuando la atiendan le entregarán una contraseña temporal que deberá cambiar al ingresar.' });
     }
     const username = str(req.body.username, 60).toLowerCase();
     const u = db().prepare('SELECT id, recovery_email, email_verified, active FROM users WHERE username_key = ?').get(username);
@@ -975,7 +984,10 @@ function createApp() {
   // Usuarios
   admin.get('/users', (req, res) => {
     res.json(db().prepare(`SELECT id, username, full_name, role, active, recovery_email, email_verified, must_change_password, created_at,
-      (SELECT COUNT(*) FROM assignments a WHERE a.user_id = users.id) AS assignments FROM users ORDER BY role, full_name`).all());
+      (SELECT COUNT(*) FROM assignments a WHERE a.user_id = users.id) AS assignments,
+      (SELECT created_at FROM reset_requests r WHERE r.user_id = users.id AND r.resolved_at IS NULL) AS reset_requested_at,
+      (SELECT note FROM reset_requests r WHERE r.user_id = users.id AND r.resolved_at IS NULL) AS reset_note
+      FROM users ORDER BY (reset_requested_at IS NULL), role, full_name`).all());
   });
   admin.post('/users', wrap((req, res) => {
     const full_name = U.cleanName(str(req.body.full_name, 150));
@@ -1009,6 +1021,7 @@ function createApp() {
     db().transaction(() => {
       db().prepare("UPDATE users SET password_hash = ?, must_change_password = 1, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id = ?").run(U.hashPassword(temp), id);
       db().prepare('DELETE FROM sessions WHERE user_id = ?').run(id);
+      db().prepare("UPDATE reset_requests SET resolved_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE user_id = ? AND resolved_at IS NULL").run(id);
     })();
     P.audit(req.user, 'restablecer_contrasena_admin', 'usuario', id, null, null);
     res.json({ temporary_password: temp });

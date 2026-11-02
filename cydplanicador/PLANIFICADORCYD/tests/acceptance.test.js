@@ -688,10 +688,21 @@ function extras(over = {}) {
     const r = await anon.post('/api/auth/forgot', { username: 'docente.dos' });
     assert.strictEqual(r.data.mailEnabled, false);
   });
+  await test('Solicitud de restablecimiento: queda para la administración, es uniforme y se cierra al restablecer', async () => {
+    const uid = d.prepare("SELECT id FROM users WHERE username_key = 'docente.dos'").get().id;
+    const r1 = await anon.post('/api/auth/forgot', { username: 'docente.dos', note: '5555-1234' });
+    const r2 = await anon.post('/api/auth/forgot', { username: 'no.existe.nadie' });
+    assert.strictEqual(r1.data.message, r2.data.message, 'misma respuesta exista o no la cuenta');
+    await anon.post('/api/auth/forgot', { username: 'docente.dos' });
+    assert.strictEqual(d.prepare('SELECT COUNT(*) n FROM reset_requests WHERE user_id = ? AND resolved_at IS NULL').get(uid).n, 1, 'una sola solicitud pendiente por usuario');
+    const list = (await admin.get('/api/admin/users')).data;
+    assert.ok(list.find(u => u.id === uid).reset_requested_at, 'el administrador ve la solicitud');
+  });
   await test('Restablecimiento administrativo: contraseña temporal de un solo uso y cambio obligatorio', async () => {
     const uid = d.prepare("SELECT id FROM users WHERE username_key = 'docente.dos'").get().id;
     const r = await admin.post(`/api/admin/users/${uid}/reset-password`, {});
     assert.ok(r.data.temporary_password);
+    assert.strictEqual(d.prepare('SELECT COUNT(*) n FROM reset_requests WHERE user_id = ? AND resolved_at IS NULL').get(uid).n, 0, 'la solicitud queda atendida');
     assert.strictEqual((await B.get('/api/me/dashboard?school_year_id=' + yearId)).status, 401, 'sesiones anteriores cerradas');
     assert.strictEqual((await B.post('/api/auth/login', { username: 'docente.dos', password: 'Clave5678' })).status, 401, 'la contraseña anterior ya no funciona');
     assert.strictEqual((await B.post('/api/auth/login', { username: 'docente.dos', password: r.data.temporary_password })).status, 200);
