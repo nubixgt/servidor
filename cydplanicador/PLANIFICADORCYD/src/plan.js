@@ -213,6 +213,8 @@ function sanitize(input) {
       })),
     };
   }
+  // Mejoramiento: sin texto adicional junto al título ni nota en «Aspectos a evaluar»
+  Object.assign(out.extras.mejoramiento, { detail: '', aspects_note: '' });
   for (const [k, f] of Object.entries(FIXED_EXTRAS)) {
     const x = out.extras[k];
     Object.assign(x, { scoring_mode: 'total', total_points: f.points, criteria: [], detail: '', aspects_note: '', activity: f.activity });

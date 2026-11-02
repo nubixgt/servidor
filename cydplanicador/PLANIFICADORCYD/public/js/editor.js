@@ -5,7 +5,7 @@
   const { store, api, toast, confirm, alert, fmtDate, fmtDateTime, uuid, ORD } = CYD;
 
   const EXTRAS = [
-    { kind: 'mejoramiento', title: 'Actividad de mejoramiento', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción de la actividad', needsActivity: true },
+    { kind: 'mejoramiento', title: 'Actividad de mejoramiento', activityLabel: 'Descripción de la actividad', needsActivity: true, defaultPoints: 20 },
     { kind: 'afectivo', title: 'Afectivo', fixed: true, fixedText: 'Comportamiento y participación en clase' },
     { kind: 'asistencia', title: 'Asistencia', fixed: true, fixedText: '' },
     { kind: 'examen_final', title: 'Examen final', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción o temario (opcional)' },
@@ -370,6 +370,7 @@
         x.applies = val;
         const def = EXTRAS.find(e => e.kind === Object.keys(this.tree.extras).find(k => this.tree.extras[k] === x));
         if (val && def && def.fixed) this.fixExtra(x, def);
+        else if (val && def && def.defaultPoints && x.scoring_mode === 'total' && (x.total_points === null || x.total_points === undefined || x.total_points === '')) x.total_points = def.defaultPoints;
       },
     },
     template: `
@@ -655,7 +656,6 @@
               <p v-if="x.applies === null" class="hint" style="margin:0">Sin definir: indique si este apartado aplica.</p>
               <p v-else-if="x.applies === false" class="hint" style="margin:0">Marcado como “No aplica”. En la hoja se indicará “No aplica”.</p>
               <template v-else-if="e.fixed">
-                <div v-if="e.fixedText" class="field"><span class="label">Descripción</span><div class="fixed-val">{{ e.fixedText }}</div></div>
                 <div class="field"><span class="label">Punteo total</span><div class="fixed-val"><b>5</b> puntos <small class="muted">(predeterminado)</small></div></div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
@@ -667,7 +667,7 @@
                 <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>
               </template>
               <template v-else>
-                <div class="field"><label :for="'x-' + e.kind + '-detail'">{{ e.detailLabel }}</label>
+                <div v-if="e.detailLabel" class="field"><label :for="'x-' + e.kind + '-detail'">{{ e.detailLabel }}</label>
                   <input :id="'x-' + e.kind + '-detail'" type="text" v-model="x.detail" maxlength="300"><span v-if="e.detailHint" class="hint">{{ e.detailHint }}</span></div>
                 <div class="field"><label :for="'x-' + e.kind + '-activity'">{{ e.activityLabel }}</label>
                   <textarea :id="'x-' + e.kind + '-activity'" v-model="x.activity" rows="2"></textarea>
@@ -691,7 +691,7 @@
                     <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'total_points' })" :msg="m"></field-err></div>
                   <div v-else class="field"><span class="label">Punteo total</span><div style="padding:9px 0;font-weight:600">{{ evalTotal(x) ?? '—' }}</div></div>
                 </div>
-                <div class="field"><label :for="'x-' + e.kind + '-note'">Nota en “Aspectos a evaluar” <span class="muted">(opcional)</span></label>
+                <div v-if="e.kind === 'examen_final'" class="field"><label :for="'x-' + e.kind + '-note'">Nota en “Aspectos a evaluar” <span class="muted">(opcional)</span></label>
                   <textarea :id="'x-' + e.kind + '-note'" v-model="x.aspects_note" rows="2"></textarea></div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
