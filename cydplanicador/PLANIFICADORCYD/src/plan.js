@@ -215,6 +215,8 @@ function sanitize(input) {
   }
   // Mejoramiento: sin texto adicional junto al título ni nota en «Aspectos a evaluar»
   Object.assign(out.extras.mejoramiento, { detail: '', aspects_note: '' });
+  // Examen final: sólo punteo total (sin aspectos, nota ni observaciones internas)
+  Object.assign(out.extras.examen_final, { scoring_mode: 'total', criteria: [], aspects_note: '', observations: '' });
   for (const [k, f] of Object.entries(FIXED_EXTRAS)) {
     const x = out.extras[k];
     Object.assign(x, { scoring_mode: 'total', total_points: f.points, criteria: [], detail: '', aspects_note: '', activity: f.activity });

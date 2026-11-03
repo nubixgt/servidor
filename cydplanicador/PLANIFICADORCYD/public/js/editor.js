@@ -8,7 +8,7 @@
     { kind: 'mejoramiento', title: 'Actividad de mejoramiento', activityLabel: 'Descripción de la actividad', needsActivity: true, defaultPoints: 20 },
     { kind: 'afectivo', title: 'Afectivo', fixed: true, fixedText: 'Comportamiento y participación en clase' },
     { kind: 'asistencia', title: 'Asistencia', fixed: true, fixedText: '' },
-    { kind: 'examen_final', title: 'Examen final', detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción o temario (opcional)' },
+    { kind: 'examen_final', title: 'Examen final', noAspects: true, defaultPoints: 30, detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción o temario (opcional)' },
   ];
   const TABS = [
     { id: 'generales', label: 'Datos generales', sections: ['generales'] },
@@ -91,7 +91,17 @@
       },
       apply(p) {
         this.suppress = true;
-        for (const e of EXTRAS) if (e.fixed && p.tree.extras[e.kind]) this.fixExtra(p.tree.extras[e.kind], e);
+        for (const e of EXTRAS) {
+          const x = p.tree.extras[e.kind];
+          if (!x) continue;
+          if (e.fixed) this.fixExtra(x, e);
+          else if (e.noAspects) {
+            // Sin aspectos: si había criterios con punteo, su suma pasa a ser el punteo total
+            if (x.scoring_mode === 'criterios' && x.criteria.some(c => c.points != null)) x.total_points = x.criteria.reduce((a, c) => a + (c.points || 0), 0);
+            x.scoring_mode = 'total'; x.criteria = []; x.aspects_note = ''; x.observations = '';
+            if (x.applies && (x.total_points === null || x.total_points === undefined)) x.total_points = e.defaultPoints;
+          }
+        }
         this.general = p.general; this.tree = p.tree; this.version = p.general.version; this.status = p.general.status;
         this.readyAt = p.general.ready_at; this.validation = p.validation; this.documents = p.documents; this.readonly = p.readonly;
         this.save = { state: 'idle', at: p.general.updated_at, message: '' };
@@ -369,6 +379,7 @@
         }
         x.applies = val;
         const def = EXTRAS.find(e => e.kind === Object.keys(this.tree.extras).find(k => this.tree.extras[k] === x));
+        if (val && def && def.noAspects) { x.scoring_mode = 'total'; x.criteria = []; }
         if (val && def && def.fixed) this.fixExtra(x, def);
         else if (val && def && def.defaultPoints && x.scoring_mode === 'total' && (x.total_points === null || x.total_points === undefined || x.total_points === '')) x.total_points = def.defaultPoints;
       },
@@ -672,7 +683,7 @@
                 <div class="field"><label :for="'x-' + e.kind + '-activity'">{{ e.activityLabel }}</label>
                   <textarea :id="'x-' + e.kind + '-activity'" v-model="x.activity" rows="2"></textarea>
                   <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'activity' })" :msg="m"></field-err></div>
-                <div class="field" :id="'x-' + e.kind + '-criteria'">
+                <div v-if="!e.noAspects" class="field" :id="'x-' + e.kind + '-criteria'">
                   <div class="row between"><span class="label">Aspectos y punteo</span>
                     <div class="seg" role="group" aria-label="Forma de punteo">
                       <button type="button" :aria-pressed="x.scoring_mode === 'total'" @click="setMode(x, 'total')">Solo punteo total</button>
@@ -691,8 +702,6 @@
                     <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'total_points' })" :msg="m"></field-err></div>
                   <div v-else class="field"><span class="label">Punteo total</span><div style="padding:9px 0;font-weight:600">{{ evalTotal(x) ?? '—' }}</div></div>
                 </div>
-                <div v-if="e.kind === 'examen_final'" class="field"><label :for="'x-' + e.kind + '-note'">Nota en “Aspectos a evaluar” <span class="muted">(opcional)</span></label>
-                  <textarea :id="'x-' + e.kind + '-note'" v-model="x.aspects_note" rows="2"></textarea></div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
                     <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date"></div>
@@ -701,8 +710,6 @@
                     <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>
                 </div>
                 <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>
-                <div v-if="e.kind === 'examen_final'" class="field"><label :for="'x-' + e.kind + '-obs'">Observaciones internas <span class="muted">(no aparecen en la hoja)</span></label>
-                  <textarea :id="'x-' + e.kind + '-obs'" v-model="x.observations" rows="2"></textarea></div>
               </template>
             </div>
           </template>
