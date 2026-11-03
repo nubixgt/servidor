@@ -147,7 +147,15 @@ function createApp() {
   // index.html se sirve con la subruta pública (BASE_PATH) incorporada en sus rutas absolutas
   const indexHtml = require('fs').readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf8')
     .replace(/(href|src)="\//g, `$1="${config.basePath}/`)
-    .replace('content="__BASE__"', `content="${config.basePath}"`);
+    .replace('content="__BASE__"', `content="${config.basePath}"`)
+    // Versión por contenido: cada despliegue cambia la URL de los JS/CSS y ningún caché (navegador, LiteSpeed, Cloudflare) reutiliza uno viejo.
+    .replace(/(href|src)="([^"]+\.(?:js|css))"/g, (m, attr, url) => {
+      try {
+        const f = path.join(__dirname, '..', 'public', url.slice(config.basePath.length));
+        const v = require('crypto').createHash('md5').update(require('fs').readFileSync(f)).digest('hex').slice(0, 10);
+        return `${attr}="${url}?v=${v}"`;
+      } catch { return m; }
+    });
   app.get(['/', '/index.html'], (req, res) => { res.type('html').set('Cache-Control', 'no-cache').send(indexHtml); });
   app.use(express.static(path.join(__dirname, '..', 'public'), { index: false, maxAge: 0 }));
 
