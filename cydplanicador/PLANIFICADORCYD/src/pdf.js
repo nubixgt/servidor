@@ -177,11 +177,8 @@ function extrasRows(extras) {
 }
 
 // ------------------------------------------------------------------ documento
-function buildDoc(snap, chunksByBlock) {
-  const h = snap.header, p = snap.projection;
-  const logo = h.logo ? `data:${h.logo_mime};base64,${h.logo}` : null;
-
-  const headerFn = () => ({
+function headerFor(h, logo) {
+  return () => ({
     margin: [0, 0, 0, 0],
     stack: [
       {
@@ -206,6 +203,13 @@ function buildDoc(snap, chunksByBlock) {
       },
     ],
   });
+}
+
+function buildDoc(snap, chunksByBlock) {
+  const h = snap.header, p = snap.projection;
+  const logo = h.logo ? `data:${h.logo_mime};base64,${h.logo}` : null;
+
+  const headerFn = headerFor(h, logo);
 
   const headRow = () => ['Contenido', 'Actividades de evaluación', 'Aspectos a evaluar', 'Fecha de entrega', 'Recepción de Tareas']
     .map(t => ({ text: t, bold: true, alignment: 'center', fillColor: C.headerGreen, color: '#FFFFFF', fontSize: 10 }));
@@ -359,4 +363,59 @@ async function generate(snapshot) {
   return result.buffer;
 }
 
-module.exports = { generate, ORDINAL };
+// ------------------------------------------------------------------ Hoja de sellos
+/** Hoja de sellos: sólo datos del docente, grado y curso; el resto se llena a mano. Mismo diseño que la hoja de actividades. */
+function buildSellosDoc(snap) {
+  const h = snap.header;
+  const logo = h.logo ? `data:${h.logo_mime};base64,${h.logo}` : null;
+  const ROWS = 12;
+  const head = ['No.', 'Nombre de la actividad', 'Fecha', 'Firma o sello docente']
+    .map(t => ({ text: t, bold: true, alignment: 'center', fillColor: C.headerGreen, color: '#FFFFFF', fontSize: 10, margin: [0, 2, 0, 2] }));
+  const body = [head];
+  for (let i = 1; i <= ROWS; i++) body.push([{ text: String(i), alignment: 'center', fontSize: 9, color: '#555555', margin: [0, 16, 0, 0] }, '', '', '']);
+  const line = '_'.repeat(34);
+  return {
+    pageSize: { width: PAGE.width, height: PAGE.height }, pageOrientation: 'portrait', pageMargins: MARGINS,
+    info: { title: snap.filename.replace(/\.pdf$/, ''), author: h.teacher_name, subject: `Hoja de sellos — ${h.course_name} — ${h.grade_name}`, creator: `${h.short_name} — Sistema de Planificación Docente` },
+    defaultStyle: { font: 'Roboto', fontSize: 9.5, lineHeight: 1.08 },
+    header: headerFor(h, logo),
+    footer: () => ({ text: '' }),
+    images: logo ? { logo } : {},
+    content: [
+      { text: `HOJA DE SELLOS ${ORDINAL[h.bimester_number] || ''} BIMESTRE`.replace(/\s+/g, ' '), bold: true, alignment: 'center', fontSize: 12, margin: [0, 0, 0, 1] },
+      { text: `Ciclo escolar ${h.school_year_name}`, alignment: 'center', fontSize: 9, margin: [0, 0, 0, 10] },
+      {
+        fontSize: 9.5,
+        table: { widths: ['*'], body: [[{ fillColor: C.infoFill, margin: [8, 5, 8, 5], stack: [
+          { text: [{ text: 'DOCENTE: ', bold: true }, h.teacher_name, { text: '    GRADO: ', bold: true }, h.grade_name] },
+          { text: [{ text: 'CURSO: ', bold: true }, h.course_name], margin: [0, 3, 0, 0] },
+          { text: [{ text: 'ALUMNO(A): ', bold: true }, '_'.repeat(70)], margin: [0, 8, 0, 0] },
+        ] }]] },
+        layout: { hLineWidth: () => 0.6, vLineWidth: () => 0.6, hLineColor: () => C.infoLine, vLineColor: () => C.infoLine },
+        margin: [0, 0, 0, 14],
+      },
+      {
+        table: { headerRows: 1, widths: [34, '*', 80, 120], heights: (r) => (r === 0 ? 22 : 46), body },
+        layout: { hLineWidth: () => 0.6, vLineWidth: () => 0.6, hLineColor: () => C.grid, vLineColor: () => C.grid },
+      },
+      {
+        unbreakable: true, margin: [0, 34, 0, 0],
+        columns: [
+          { stack: [{ text: `F. ${line}`, fontSize: 8, alignment: 'center' }, { text: 'Prof. ' + h.teacher_name, fontSize: 8, alignment: 'center', margin: [0, 2, 0, 0] }], width: '*' },
+          { stack: [{ text: `F. ${line}`, fontSize: 8, alignment: 'center' }, { text: 'FIRMA DEL PADRE DE FAMILIA', fontSize: 8, alignment: 'center', margin: [0, 2, 0, 0] }], width: '*' },
+        ],
+        columnGap: 30,
+      },
+    ],
+  };
+}
+function generateSellos(snapshot) {
+  return new Promise((resolve, reject) => {
+    const doc = printer.createPdfKitDocument(buildSellosDoc(snapshot));
+    const chunks = [];
+    doc.on('data', c => chunks.push(c)); doc.on('end', () => resolve(Buffer.concat(chunks))); doc.on('error', reject);
+    doc.end();
+  });
+}
+
+module.exports = { generate, generateSellos, ORDINAL };

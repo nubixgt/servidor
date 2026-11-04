@@ -772,6 +772,18 @@ function createApp() {
     res.send(buf);
   }));
 
+  // Hoja de sellos: sólo lleva docente, grado y curso (no requiere plan completo).
+  api.get('/plans/:id/sellos.pdf', wrap(async (req, res) => {
+    const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'));
+    const snap = buildSnapshot(ctx, P.loadTree(ctx.id), false);
+    snap.filename = `Hoja_Sellos_${safe(ctx.course_name)}_${safe(ctx.grade_name)}_Bimestre_${ctx.bimester_number}_${safe(ctx.school_year_name)}.pdf`;
+    const buf = await pdf.generateSellos(snap);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `${req.query.download ? 'attachment' : 'inline'}; filename="${snap.filename}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(buf);
+  }));
+
   // Documento final: sólo con plan listo, versión guardada y sin incidencias. Se conserva el PDF generado.
   api.post('/plans/:id/documents', wrap(async (req, res) => {
     const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'));

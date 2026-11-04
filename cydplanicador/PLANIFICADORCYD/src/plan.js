@@ -19,6 +19,8 @@ const FIXED_EXTRAS = {
   afectivo: { activity: 'Comportamiento y participación en clase', points: 5 },
   asistencia: { activity: '', points: 5 },
 };
+// Actividad de mejoramiento: descripción predeterminada definida por el colegio (no editable).
+const MEJORAMIENTO_TEXT = 'Consiste en la recopilación de sellos obtenidos por el alumno durante el bimestre, donde cada sello representa una actividad realizada y asignada por el docente como parte de su proceso de aprendizaje.';
 const MAX_TEXT = 8000;
 const MAX_ITEMS = 2000; // límite de seguridad por lista (no es un límite pedagógico)
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -90,6 +92,7 @@ function loadTree(planId) {
       strategies: r.strategies || '', students: r.students || '',
     } : emptyExtra();
   }
+  extras.mejoramiento.activity = MEJORAMIENTO_TEXT;
   // Acciones adicionales del plan de mejoramiento (la primera acción es el apartado «Actividad de mejoramiento»)
   const improvement_actions = d.prepare('SELECT id, description, strategies, students, action_date FROM improvement_actions WHERE plan_id = ? ORDER BY position').all(planId);
   return {
@@ -214,7 +217,7 @@ function sanitize(input) {
     };
   }
   // Mejoramiento: sin texto adicional junto al título ni nota en «Aspectos a evaluar»
-  Object.assign(out.extras.mejoramiento, { detail: '', aspects_note: '' });
+  Object.assign(out.extras.mejoramiento, { detail: '', aspects_note: '', activity: MEJORAMIENTO_TEXT });
   // Examen final: sólo punteo total (sin aspectos, nota ni observaciones internas)
   Object.assign(out.extras.examen_final, { scoring_mode: 'total', criteria: [], aspects_note: '', observations: '' });
   for (const [k, f] of Object.entries(FIXED_EXTRAS)) {
@@ -490,6 +493,6 @@ function pdfHash(tree) {
 }
 
 module.exports = {
-  EXTRA_KINDS, EXTRA_LABELS, planContext, assertAccess, loadTree, sanitize, cloneTree, saveTree, validate,
+  EXTRA_KINDS, EXTRA_LABELS, MEJORAMIENTO_TEXT, planContext, assertAccess, loadTree, sanitize, cloneTree, saveTree, validate,
   periodTotals, evaluationTotal, pdfProjection, pdfHash, audit, fmt,
 };

@@ -69,6 +69,7 @@
         <div v-else class="alert ok"><span class="ic">✓</span><div>La planificación está lista y validada. La hoja se genera con la versión guardada (v{{ g.version }}).</div></div>
         <div v-for="w in v.issues.filter(x => x.level === 'warning')" class="alert warn" style="margin-top:8px"><span class="ic">ℹ</span>{{ w.message }}</div>
         <div class="row end" style="margin-top:14px">
+          <a class="btn" :href="u('/api/plans/' + planId + '/sellos.pdf')" target="_blank" rel="noopener">🏷 Hoja de sellos (PDF)</a>
           <button v-if="docId || !previewUrl" class="btn" @click="showPreview">👁 {{ g.status === 'listo' ? 'Vista previa' : 'Vista previa de borrador' }}</button>
           <button v-if="g.status === 'listo' && !v.errors" class="btn primary" @click="generate" :disabled="busy">{{ busy ? 'Generando…' : '📄 Generar hoja de actividades' }}</button>
         </div>

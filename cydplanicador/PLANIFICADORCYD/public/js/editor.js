@@ -5,7 +5,8 @@
   const { store, api, toast, confirm, alert, fmtDate, fmtDateTime, uuid, ORD } = CYD;
 
   const EXTRAS = [
-    { kind: 'mejoramiento', title: 'Actividad de mejoramiento', activityLabel: 'Descripción de la actividad', needsActivity: true, defaultPoints: 20 },
+    { kind: 'mejoramiento', title: 'Actividad de mejoramiento', activityLabel: 'Descripción de la actividad', needsActivity: true, defaultPoints: 20,
+      fixedActivity: 'Consiste en la recopilación de sellos obtenidos por el alumno durante el bimestre, donde cada sello representa una actividad realizada y asignada por el docente como parte de su proceso de aprendizaje.' },
     { kind: 'afectivo', title: 'Afectivo', fixed: true, fixedText: 'Comportamiento y participación en clase' },
     { kind: 'asistencia', title: 'Asistencia', fixed: true, fixedText: '' },
     { kind: 'examen_final', title: 'Examen final', noAspects: true, defaultPoints: 30, detailLabel: 'Texto adicional junto al título (opcional)', activityLabel: 'Descripción o temario (opcional)' },
@@ -95,6 +96,7 @@
           const x = p.tree.extras[e.kind];
           if (!x) continue;
           if (e.fixed) this.fixExtra(x, e);
+          else if (e.fixedActivity) x.activity = e.fixedActivity;
           else if (e.noAspects) {
             // Sin aspectos: si había criterios con punteo, su suma pasa a ser el punteo total
             if (x.scoring_mode === 'criterios' && x.criteria.some(c => c.points != null)) x.total_points = x.criteria.reduce((a, c) => a + (c.points || 0), 0);
@@ -233,6 +235,11 @@
       fixExtra(x, e) {
         x.scoring_mode = 'total'; x.total_points = FIXED_POINTS; x.criteria = [];
         x.detail = ''; x.aspects_note = ''; x.activity = e.fixedText;
+      },
+      blockIssues(b) { return this.validation.issues.filter(i => i.level === 'error' && i.target && i.target.blockId === b.id); },
+      showPending(b) {
+        this.showErrors = true; this.openBlocks[b.id] = true;
+        this.$nextTick(() => { const el = document.getElementById('pend-' + b.id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
       },
       blockPending(b) { return this.validation.issues.filter(i => i.level === 'error' && i.target && i.target.blockId === b.id).length; },
       targetId(t) {
@@ -506,7 +513,7 @@
               <span>📅 {{ b.start_date ? fmtDate(b.start_date) : '—' }} – {{ b.end_date ? fmtDate(b.end_date) : '—' }}</span>
               <span>{{ b.weeks.length }} semana(s)</span><span>{{ blockContents(b) }} contenido(s)</span><span>{{ blockPeriods(b) }} período(s)</span>
               <span v-if="b.closed" class="badge ready" style="font-size:.7rem">✓ Organizado</span>
-              <span v-if="blockPending(b)" class="badge err" style="font-size:.7rem">⚠ {{ blockPending(b) }} pendiente(s)</span>
+              <button v-if="blockPending(b)" type="button" class="badge err pending-btn" style="font-size:.7rem" @click.stop="showPending(b)" title="Ver qué falta en este bloque">⚠ {{ blockPending(b) }} pendiente(s) — ver cuáles</button>
             </div>
           </div>
           <div class="row" @click.stop>
@@ -516,6 +523,9 @@
           </div>
         </div>
         <div v-if="openBlocks[b.id]" class="block-body stack">
+          <div v-if="blockPending(b)" class="alert warn pending-panel" :id="'pend-' + b.id" role="alert"><span class="ic">⚠</span><div>
+            <b>Pendiente(s) en este bloque ({{ blockPending(b) }}):</b>
+            <ul><li v-for="(i, k) in blockIssues(b)" :key="k"><a href="#" @click.prevent="goTo(i.target)">{{ i.message }}</a></li></ul></div></div>
           <div class="grid g2">
             <div class="field" :id="'b-' + b.id + '-dates'"><label :for="'b-' + b.id + '-start'">Fecha de inicio</label>
               <input :id="'b-' + b.id + '-start'" type="date" v-model="b.start_date" :min="general.bimester_start" :max="general.bimester_end"></div>
@@ -680,7 +690,9 @@
               <template v-else>
                 <div v-if="e.detailLabel" class="field"><label :for="'x-' + e.kind + '-detail'">{{ e.detailLabel }}</label>
                   <input :id="'x-' + e.kind + '-detail'" type="text" v-model="x.detail" maxlength="300"><span v-if="e.detailHint" class="hint">{{ e.detailHint }}</span></div>
-                <div class="field"><label :for="'x-' + e.kind + '-activity'">{{ e.activityLabel }}</label>
+                <div v-if="e.fixedActivity" class="field"><span class="label">{{ e.activityLabel }}</span>
+                  <div class="fixed-val">{{ e.fixedActivity }} <small class="muted">(predeterminada)</small></div></div>
+                <div v-else class="field"><label :for="'x-' + e.kind + '-activity'">{{ e.activityLabel }}</label>
                   <textarea :id="'x-' + e.kind + '-activity'" v-model="x.activity" rows="2"></textarea>
                   <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'activity' })" :msg="m"></field-err></div>
                 <div v-if="!e.noAspects" class="field" :id="'x-' + e.kind + '-criteria'">

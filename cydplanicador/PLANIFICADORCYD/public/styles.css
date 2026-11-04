@@ -564,3 +564,8 @@ table.data tr:last-child td { border-bottom: 0; }
 .block .eval-panel { border-color: var(--bc-line); background: linear-gradient(180deg, var(--bc-soft), #FFFFFF 70%); }
 .block .eval-panel .eval-tag { color: var(--bc); }
 .fixed-val { padding: 9px 12px; background: #F4F6F5; border: 1px solid var(--line); border-radius: 8px; }
+
+.badge.pending-btn { cursor: pointer; font: inherit; font-size: .7rem; }
+.badge.pending-btn:hover { filter: brightness(.96); text-decoration: underline; }
+.pending-panel ul { margin: 6px 0 0; padding-left: 18px; }
+.pending-panel a { color: inherit; text-decoration: underline; }

@@ -71,7 +71,7 @@ function content(topic, periods = 2, acts = ['Ejercicios en clase']) {
 }
 function extras(over = {}) {
   const base = {
-    mejoramiento: { id: id(), applies: true, detail: '', activity: 'Actividad de mejoramiento de prueba', scoring_mode: 'total', total_points: 20, aspects_note: 'Nota de prueba', due_date: '2027-03-26', due_text: '', observations: '', criteria: [{ id: id(), text: 'Aspecto de prueba', points: null }] },
+    mejoramiento: { id: id(), applies: true, detail: '', activity: 'x', scoring_mode: 'total', total_points: 20, aspects_note: 'Nota de prueba', due_date: '2027-03-26', due_text: '', observations: '', criteria: [{ id: id(), text: 'Aspecto de prueba', points: null }] },
     afectivo: { id: id(), applies: true, detail: 'desglose de prueba', activity: '', scoring_mode: 'total', total_points: 5, aspects_note: '', due_date: null, due_text: 'Durante el bimestre', observations: '', criteria: [] },
     asistencia: { id: id(), applies: true, detail: '', activity: '', scoring_mode: 'total', total_points: 5, aspects_note: '', due_date: null, due_text: 'Durante el bimestre', observations: '', criteria: [] },
     examen_final: { id: id(), applies: false, detail: '', activity: '', scoring_mode: 'total', total_points: null, aspects_note: '', due_date: null, due_text: '', observations: '', criteria: [] },
@@ -477,7 +477,7 @@ function extras(over = {}) {
       for (const s of ['Contenido', 'Actividades de evaluación', 'Aspectos a evaluar', 'Fecha de', 'Recepción de', 'Tareas', 'Claridad de ideas', '6 puntos', 'Total', '15 puntos', 'TOTAL 20 puntos', '05-02-2027', '05-03-2027', 'Respuesta correcta 1 punto c/']) assert.ok(text.includes(s) || text.replace(/\s+/g, '').includes(s.replace(/\s+/g, '')), `falta “${s}”`);
     });
     await test('Incluye apartados adicionales registrados (“No aplica” explícito) y textos institucionales', async () => {
-      for (const s of ['ACTIVIDAD DE MEJORAMIENTO', 'Actividad de mejoramiento de prueba', 'Afectivo', 'Comportamiento y participación en clase', 'Asistencia', 'Durante el bimestre', 'Examen final.', 'No aplica', 'Observaciones:', 'Subir fotografía de la hoja firmada y sellada', 'CATEDRÁTICO', 'PADRE DE FAMILIA', 'DIRECCIÓN']) assert.ok(text.includes(s) || text.replace(/\s+/g, '').includes(s.replace(/\s+/g, '')), `falta “${s}”`);
+      for (const s of ['ACTIVIDAD DE MEJORAMIENTO', 'recopilación de sellos', 'Afectivo', 'Comportamiento y participación en clase', 'Asistencia', 'Durante el bimestre', 'Examen final.', 'No aplica', 'Observaciones:', 'Subir fotografía de la hoja firmada y sellada', 'CATEDRÁTICO', 'PADRE DE FAMILIA', 'DIRECCIÓN']) assert.ok(text.includes(s) || text.replace(/\s+/g, '').includes(s.replace(/\s+/g, '')), `falta “${s}”`);
     });
     await test('No confunde aprendizaje con evaluación: las actividades de aprendizaje no aparecen en la hoja', async () => {
       assert.ok(!text.includes('Lluvia de ideas'), 'una actividad de aprendizaje apareció en el PDF');
