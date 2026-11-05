@@ -59,6 +59,18 @@
         } catch (e) { toast(e.message, 'error'); }
         finally { this.busy = false; }
       },
+      async remove(r, b, c) {
+        const ok = await confirm({ title: 'Eliminar planificación', body: [`¿Está seguro de eliminar la planificación del ${ORD[b.number].toLowerCase()} bimestre de ${r.course_name} (${r.grade_name} · Sección ${r.section_name})? Esta acción no se puede deshacer.`], confirmText: 'Eliminar', danger: true });
+        if (!ok) return;
+        this.busy = true;
+        try {
+          await api('DELETE', `/api/plans/${c.plan_id}`);
+          if (this.dup && this.dup.plan_id === c.plan_id) this.dup = null;
+          toast('Planificación eliminada.', 'ok');
+          await this.load();
+        } catch (e) { toast(e.message, 'error'); }
+        finally { this.busy = false; }
+      },
       cell(row, b) { return row.bimesters.find(x => x.bimester_id === b.id); },
       label(r) { return `${r.course_name} — ${r.grade_name} — ${r.section_name}`; },
       fmtDate, fmtDateTime,
@@ -140,6 +152,7 @@
                         <a class="btn sm" :href="'#/plan/' + c.plan_id + '/hoja'">📄 Hoja de actividades</a>
                         <a class="btn sm" :href="'#/plan/' + c.plan_id + '/plan-bimestral'">📘 Plan bimestral</a>
                         <button v-if="r.active && activeRows.length > 1" class="btn sm" @click="startDup(r, b, c)">⧉ Duplicar a otros grupos</button>
+                        <button class="btn sm danger" :disabled="busy" @click="remove(r, b, c)">🗑 Eliminar</button>
                       </div>
                     </template>
                     <div v-else-if="r.active" class="actions"><button class="btn sm soft" :disabled="busy" @click="open(r.assignment_id, b.id)">＋ Crear plan</button></div>

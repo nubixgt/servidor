@@ -612,6 +612,16 @@ function createApp() {
     res.status(201).json({ created, skipped });
   }));
 
+  // Eliminar una planificación propia (p. ej. las creadas de prueba). Borra en cascada su contenido y documentos generados.
+  api.delete('/plans/:id', teacherOnly, wrap((req, res) => {
+    const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'), { write: true });
+    db().transaction(() => {
+      db().prepare('DELETE FROM plans WHERE id = ?').run(ctx.id);
+      P.audit(req.user, 'eliminar', 'plan', ctx.id, null, { asignacion: ctx.assignment_id, bimestre: ctx.bimester_id, estado: ctx.status });
+    })();
+    res.json({ ok: true });
+  }));
+
   function planPayload(ctx, user) {
     const tree = P.loadTree(ctx.id);
     const v = P.validate(tree, ctx);
