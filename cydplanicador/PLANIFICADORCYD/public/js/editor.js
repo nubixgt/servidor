@@ -36,7 +36,7 @@
       validation: { issues: [], completeness: 0, errors: 0 }, documents: [], readonly: false,
       tab: 'generales', openBlocks: {}, openWeeks: {}, unlocked: false, showErrors: false,
       save: { state: 'idle', at: null, message: '' }, saving: false, savePromise: null, again: false, changeNo: 0, timer: null, suppress: false,
-      restore: null, history: null, EXTRAS, TABS, ORD,
+      restore: null, history: null, EXTRAS, TABS, ORD, u: CYD.url,
     }),
     computed: {
       planId() { return Number(store.route.params.id); },
@@ -426,6 +426,7 @@
       <div class="tabs" role="tablist" aria-label="Secciones del plan">
         <button v-for="t in TABS" :key="t.id" role="tab" :aria-selected="tab === t.id" @click="setTab(t.id)">
           {{ t.label }}<span v-if="showErrors && errorsByTab[t.id]" class="count" :aria-label="errorsByTab[t.id] + ' pendientes'">{{ errorsByTab[t.id] }}</span></button>
+        <a class="tab-sellos" :href="u('/api/plans/' + planId + '/sellos.pdf?download=1')" download>Hoja de sellos</a>
       </div>
     </div>
 

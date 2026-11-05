@@ -569,3 +569,6 @@ table.data tr:last-child td { border-bottom: 0; }
 .badge.pending-btn:hover { filter: brightness(.96); text-decoration: underline; }
 .pending-panel ul { margin: 6px 0 0; padding-left: 18px; }
 .pending-panel a { color: inherit; text-decoration: underline; }
+
+.tabs .tab-sellos { flex: none; align-self: center; margin-left: 10px; font-size: .88rem; font-weight: 700; text-decoration: none; color: #fff; background: #1d4f91; border-radius: 10px; padding: 7px 14px; text-transform: uppercase; letter-spacing: .02em; }
+.tabs .tab-sellos:hover { background: #163f75; }
