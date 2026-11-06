@@ -21,6 +21,9 @@ AiService/_runtime/
 # lineas estaban en el .gitignore hasta el 28/08 y se perdieron al reorganizar
 # el repo; sin ellas un `git add .` sube 550 ficheros de datos de salud.
 data/
+# Código fuente que se llama data (no son datos de atletas): sí van al repo.
+!Frontend/src/data/
+!Diseno/src/data/
 user_secure_data/
 .garminconnect/
 entrega-diseno/
