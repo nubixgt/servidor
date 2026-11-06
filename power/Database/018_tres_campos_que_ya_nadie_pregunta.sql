@@ -1,0 +1,56 @@
+-- v1.2 — tres campos del perfil que dejan de preguntarse.
+--
+-- Los tres seguían en la tabla y ninguno lo contestaba ya el atleta: se
+-- retiraron del alta porque otra cosa los contesta mejor, o porque no eran
+-- preguntas que el atleta pudiera contestar bien.
+--
+--   available_hours              Las horas que el atleta creía que le sobraban.
+--                                Llegaban al prompt como "Total Available
+--                                Weekly Hours: N hours net" y el planificador
+--                                las trataba como TECHO. El atleta no sabe
+--                                cuántas horas necesita su plan, sólo cuántas
+--                                cree que le sobran; el volumen sale de su
+--                                carga crónica medida en Garmin, de la fase del
+--                                macrociclo y del margen de progresión.
+--
+--                                Peor: la v1.1 sustituyó las franjas de reloj
+--                                por la rejilla, la suma se quedó sin nada que
+--                                sumar y caía en un DEFAULT 8.00. TODO atleta
+--                                con rejilla mandaba 8 h/semana dijera lo que
+--                                dijera. Verificado contra la cuenta real el
+--                                2026-09-11.
+--
+--   strength_training_preference Decía lo mismo que la fila "Fuerza" de la
+--                                rejilla, con la diferencia de que las dos
+--                                podían contradecirse — "No" aquí y tres días
+--                                de Fuerza marcados — y entonces alguien tenía
+--                                que decidir cuál ganaba. Marcar Fuerza un día
+--                                ES pedir fuerza.
+--
+--   brick_preference             Un brick dejó de ser un objeto en la v1.1:
+--                                `sport="brick"` no le llega bien a varios
+--                                relojes, así que son DOS sesiones el mismo día
+--                                y lo que las encadena va escrito en el texto.
+--                                Preguntar por una preferencia sobre algo que
+--                                ya no existe sólo podía confundir.
+--
+-- ESTA MIGRACIÓN BORRA DATOS, a propósito, igual que la 017. Lo que se pierde
+-- son tres respuestas que ningún consumidor lee desde la v1.2.
+--
+-- SE CORRE A MANO, y el código aguanta las dos situaciones. El orden importa
+-- y es éste, no el contrario:
+--
+--   1. Las tres columnas ya salieron de `ProfileFields`, así que
+--      `ProfileRepository::upsert()` construye su INSERT sin nombrarlas. Con la
+--      columna todavía presente, MySQL aplica su propio DEFAULT y el NOT NULL
+--      de `available_hours` queda satisfecho.
+--   2. Esta migración las quita cuando se pueda, sin prisa.
+--
+-- Al revés — borrar la columna con el PHP todavía nombrándola — el INSERT
+-- reventaría en producción. Por eso el código va primero siempre.
+
+-- Repetible y por columnas SUELTAS: en un solo ALTER, que una ya no exista
+-- tumba las tres. MariaDB 10.0+ entiende IF EXISTS.
+ALTER TABLE athlete_profiles DROP COLUMN IF EXISTS available_hours;
+ALTER TABLE athlete_profiles DROP COLUMN IF EXISTS strength_training_preference;
+ALTER TABLE athlete_profiles DROP COLUMN IF EXISTS brick_preference;

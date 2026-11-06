@@ -40,3 +40,10 @@ PAM/*.xlsx
 PAM/*.zip
 PAM/Backend/storage/
 concretos-oriente/.claude/settings.local.json
+
+# power (Power Coach AI): estado y datos reales que nunca van al repositorio
+power/AiService/_runtime/
+power/**/data/
+power/**/user_secure_data/
+power/.garminconnect/
+power/Diseno/node_modules/

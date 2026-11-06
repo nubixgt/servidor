@@ -1,0 +1,113 @@
+# Herramientas de análisis estático del proyecto.
+#
+# Hasta ahora no había ninguna: el CLAUDE.md lo decía expresamente ("no build
+# step, linter, or type-checker wired up in this repo"). Con 1.352 pruebas
+# corriendo y cero análisis estático, la desproporción era el hueco más grande
+# del proyecto — y no teórico: en una sola sesión aparecieron a mano tres
+# trozos de código muerto (un workflow que nadie llamaba, un cliente de
+# competiciones que sólo usa la CLI, y una acción que apuntaba a una ruta
+# inexistente mientras anunciaba éxito).
+#
+# El repo del que sale este proyecto (leonzzz435/garmin-ai-coach) sí trae este
+# tooling, con Pixi. Aquí se usa pip directamente para no meter otro gestor de
+# entornos en una máquina que ya corre XAMPP, Node y Python del sistema.
+#
+#   python -m pip install ruff vulture
+#   python -m ruff check .            # errores
+#   python -m ruff check . --fix      # los que se arreglan solos
+#   python -m ruff format .           # formateo
+#   python -m vulture                 # código muerto (SIN argumentos: las rutas
+#                                     # estan abajo en [tool.vulture], y pasarle
+#                                     # `.` las pisa. No hay whitelist.)
+#
+# NO se pone en el CI de despliegue a propósito: ese workflow publica a
+# producción, y un linter que rompe un despliegue por una línea larga es peor
+# que no tenerlo. Esto es para correrlo antes de subir.
+
+# Este repo tiene TRES raíces de imports, no una: PaginaLocal y AiService se
+# ejecutan cada uno desde su propia carpeta (`from services...`, `from
+# bridge...`), y no hay paquete que los envuelva.
+#
+# Hay que declararlo aquí porque, en cuanto existe un pyproject.toml en la
+# raíz, las herramientas deducen que la raíz de imports es ESTA carpeta y
+# marcan como no encontrado cada `from services.ai...` del proyecto. Sin estas
+# líneas, añadir el linter llenaba el editor de errores falsos.
+[tool.ty.environment]
+root = ["PaginaLocal", "AiService", "."]
+
+[tool.pyright]
+extraPaths = ["PaginaLocal", "AiService"]
+
+[tool.ruff]
+line-length = 110          # el ancho al que ya está escrito todo el repo
+target-version = "py312"
+src = ["PaginaLocal", "AiService", "."]
+extend-exclude = [
+    "PaginaLocal/venv", "PaginaLocal/.venv", "AiService/.venv",
+    "PaginaLocal/data", "AiService/_runtime",
+    "entrega-diseno", "Frontend", "node_modules",
+]
+
+[tool.ruff.lint]
+# Se arranca con lo que CAZA FALLOS y no con lo que opina de estilo. Ampliar
+# esto es fácil; empezar con 4.000 avisos de comillas garantiza que nadie lo
+# vuelva a mirar.
+select = [
+    "F",    # pyflakes: nombres sin definir, imports sin usar, f-strings rotas
+    "E9",   # errores de sintaxis y de sangría
+    "B",    # bugbear: los fallos reales de Python (mutable default, etc.)
+    "UP",   # modismos viejos que ya no hacen falta en 3.12
+    "I",    # orden de imports
+    "T20",  # print() olvidado en código de servicio
+]
+ignore = [
+    "B008",   # llamada en un default: FastAPI lo usa por diseño (Depends)
+
+]
+
+[tool.ruff.lint.per-file-ignores]
+# El CLI y el servidor imprimen a la consola a propósito: es su interfaz.
+"PaginaLocal/cli/*" = ["T20"]
+"PaginaLocal/web_app/server.py" = ["T20"]
+"PaginaLocal/scripts/*" = ["T20"]
+# El lanzador de escritorio: la consola ES su interfaz.
+"PaginaLocal/run_app.py" = ["T20"]
+# El worker corre suelto y su stdout va a worker.log, que es como se depura
+# una generacion que fallo. Un logger no lo mejoraria: ya escribe ahi.
+"AiService/worker.py" = ["T20"]
+# ConsoleInteractionProvider: le hace preguntas al atleta por consola cuando
+# el HITL esta encendido (la ruta de la CLI). Sin print no hay pregunta.
+"PaginaLocal/services/ai/langgraph/nodes/orchestrator_node.py" = ["T20"]
+# Las pruebas montan objetos falsos y reimportan a mitad de fichero.
+"**/tests/*" = ["B011", "F811"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["services", "core", "web_app", "cli", "bridge"]
+
+# ---------------------------------------------------------------------------
+# Código muerto
+# ---------------------------------------------------------------------------
+#
+# Vulture SIN configurar es inservible aquí: da 266 avisos y casi todos son
+# falsos, porque este repo es de frameworks. Las rutas de FastAPI las llama el
+# servidor, no el código; los campos de un modelo Pydantic los usa el esquema;
+# los `on_llm_end` de LangChain los llama LangChain. Ignorar los decoradores y
+# los esquemas lo baja a ~13 candidatos revisables.
+#
+#   python -m vulture PaginaLocal/services PaginaLocal/core PaginaLocal/web_app \
+#       PaginaLocal/cli PaginaLocal/scripts AiService/bridge AiService/main.py \
+#       AiService/worker.py --min-confidence 60 \
+#       --ignore-decorators "@app.*,@router.*,@staticmethod,@classmethod,@property,@dataclass"
+#
+# OJO con las rutas: hay que pasar TODAS las entradas del programa. Escaneando
+# sin `cli/` salió que `run_complete_analysis_and_planning` estaba muerta y no
+# lo está — es justo el flujo que usa la CLI. Un escaneo incompleto no da
+# falsos negativos, da falsos POSITIVOS, que es peor.
+[tool.vulture]
+min_confidence = 60
+ignore_decorators = ["@app.*", "@router.*", "@staticmethod", "@classmethod", "@property", "@dataclass"]
+paths = [
+    "PaginaLocal/services", "PaginaLocal/core", "PaginaLocal/web_app",
+    "PaginaLocal/cli", "PaginaLocal/scripts",
+    "AiService/bridge", "AiService/main.py", "AiService/worker.py",
+]

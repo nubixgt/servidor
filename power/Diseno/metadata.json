@@ -1,0 +1,7 @@
+{
+  "name": "Power Coach AI",
+  "description": "Plataforma de alto rendimiento y entrenamiento inteligente con analítica avanzada y Agente IA para triatletas y atletas de resistencia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

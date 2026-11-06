@@ -1,0 +1,515 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-surface: #121316;
+    --primary-fixed: #caf300;
+    --primary-fixed-dim: #b0d500;
+    --on-primary-fixed: #171e00;
+    --secondary-fixed: #a5eeff;
+    --secondary-fixed-dim: #00daf8;
+    --surface-container-high: #24262b;
+    --surface-container-highest: #30333a;
+    --surface-container: #1b1c20;
+    --surface-container-low: #151619;
+    --surface-container-lowest: #0c0d0e;
+    --on-surface: #f1f0ee;
+    --on-surface-variant: #c5c9ac;
+    --outline-variant: rgba(255, 255, 255, 0.08);
+    --outline: #8f9378;
+    --error: #ffb4ab;
+    --error-container: #93000a;
+  }
+
+  body {
+    background-color: #07080a;
+    color: #f1f0ee;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.font-mono-data {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Glassmorphism.
+ *
+ * ## Por qué estos números y no los de antes
+ *
+ * Estaban a 0.25 de opacidad con 14px de desenfoque, y sobre la foto de fondo
+ * el texto se leía mal. En Safari (Mac y iPhone) parecía correcto y en Chrome
+ * no, que es justo lo que reportó el atleta: **el desenfoque de `backdrop-filter`
+ * no se ve igual en los dos motores**. Safari lo aplica más fuerte y con más
+ * saturación, así que el mismo valor tapa el fondo allí y aquí no.
+ *
+ * La solución no es subir sólo el desenfoque: sobre una foto con zonas claras,
+ * cualquier desenfoque deja una superficie clara debajo de un texto claro. Hay
+ * que subir también la OPACIDAD del cristal, que es lo que garantiza contraste
+ * pase lo que pase con el fondo. El `saturate` devuelve el color que el
+ * desenfoque se lleva, para que siga pareciendo cristal y no plástico.
+ */
+.glass-card {
+  background: rgba(16, 20, 28, 0.62);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  /* SIN `will-change: transform`, por lo mismo que los `transform: none` de
+     los fotogramas: `will-change` de una propiedad que crea contexto convierte
+     al elemento en backdrop root de forma PERMANENTE, así que una tarjeta de
+     cristal dentro de otra se quedaba sin fondo que desenfocar. Y además
+     forzaba una capa de composición en cada tarjeta de cada pantalla, que es
+     justo lo que la documentación de Chrome dice que no se haga con
+     `will-change`. La `transition` de arriba anima igual de bien. */
+}
+
+.glass-card:hover {
+  border-color: rgba(202, 243, 0, 0.5);
+  background: rgba(24, 30, 42, 0.72);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.48), 0 0 28px rgba(202, 243, 0, 0.18);
+}
+
+.glass-panel {
+  background: rgba(12, 15, 21, 0.82);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+}
+
+.glass-nav {
+  background: rgba(14, 18, 26, 0.72) !important;
+  backdrop-filter: blur(18px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-pill:hover {
+  border-color: rgba(202, 243, 0, 0.45);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* 0,40 y no 0,18: el borde medía ~1,6:1 contra el fondo (revisión del 2026-10-21; WCAG pide 3:1). */
+  border: 1px solid rgba(255, 255, 255, 0.40) !important;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #caf300 !important;
+  box-shadow: 0 0 18px rgba(202, 243, 0, 0.3) !important;
+}
+
+/* Sin `backdrop-filter` no hay cristal que valga: se pinta opaco.
+ *
+ * Lo soportan todos los navegadores actuales, pero Firefox lo tuvo detrás de
+ * una bandera hasta hace poco y algunos navegadores de Android lo desactivan
+ * al ahorrar batería. Sin esta red, ahí el texto queda sobre la foto pelada y
+ * no se lee nada — que es peor que perder el efecto. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card { background: rgba(16, 20, 28, 0.94); }
+  .glass-card:hover { background: rgba(24, 30, 42, 0.96); }
+  .glass-panel { background: rgba(12, 15, 21, 0.97); }
+  .glass-nav { background: rgba(14, 18, 26, 0.96) !important; }
+  .glass-pill { background: rgba(40, 46, 56, 0.95); }
+}
+
+.neon-glow {
+  text-shadow: 0 0 16px rgba(202, 243, 0, 0.65);
+}
+
+.neon-border {
+  border-color: #caf300;
+  box-shadow: 0 0 20px rgba(202, 243, 0, 0.35);
+}
+
+.cyan-glow {
+  box-shadow: 0 0 15px rgba(0, 218, 248, 0.25);
+}
+
+/* Smooth Minimalist Micro-Animations
+   ==================================
+
+   ## Los `transform: none` del último fotograma NO son cosmética
+
+   Todas estas animaciones se aplican con `animation-fill-mode: both`, que deja
+   puesto el ÚLTIMO fotograma para siempre. Y `translateY(0) scale(1)` no es
+   "sin transformación": es una transformación identidad, o sea un `transform`
+   distinto de `none` que se queda en el elemento el resto de la sesión.
+
+   Un `transform` distinto de `none` convierte al elemento en **backdrop root**
+   (Filter Effects Level 2). Un `backdrop-filter` de cualquier descendiente
+   deja entonces de ver lo que hay detrás de la PÁGINA y sólo ve lo que se
+   pinta dentro de ese ancestro -- que es nada.
+
+   Eso es lo que rompía el cristal, y explica el sintoma exacto que se
+   reportó:
+
+       barra lateral .... se ve borrosa      (`glass-nav` y `animate-slide-left`
+                                              van en el MISMO elemento, y el
+                                              transform propio no afecta al
+                                              backdrop-filter propio)
+       tarjetas ......... NO se ven borrosas (cada vista envuelve su contenido
+                                              en un `<div class="animate-fade-
+                                              in-up">`, que es ANCESTRO de
+                                              cada `.glass-card`)
+
+   Y explica por qué en Safari sí se veía: WebKit no aísla el backdrop root en
+   estos casos, así que allí el desenfoque seguía llegando al fondo. En Chrome
+   el `blur(20px)` se aplicaba sobre nada, quedaba sólo el color semitrans-
+   parente, y el texto competía con la foto.
+
+   Terminar en `transform: none` deja el elemento sin transformación al acabar
+   la animación, el ancestro deja de ser backdrop root, y el cristal vuelve.
+   La interpolación hacia `none` funciona: el navegador lo trata como la
+   identidad. */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(202, 243, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(202, 243, 0, 0.55);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-float {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Stagger animation delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* Material Symbols configuration */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom Hide Scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(14, 16, 20, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: #30333a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #caf300;
+}
+
+/* ============ Print (Reports → Guardar como PDF) ============ */
+.report-doc {
+  color: #1a1a1a;
+  background: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+}
+.report-doc h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 .25rem; }
+.report-doc h2 { font-size: 1.15rem; font-weight: 800; margin: 1.4rem 0 .4rem; border-bottom: 1px solid #ddd; padding-bottom: .2rem; }
+.report-doc h3 { font-size: .95rem; font-weight: 800; margin: 1rem 0 .3rem; text-transform: uppercase; letter-spacing: .04em; color: #555; }
+.report-doc strong { color: #000; }
+.report-doc ul { padding-left: 1.4rem; margin: .4rem 0; list-style: disc; }
+.report-doc table { width: 100%; border-collapse: collapse; margin: .6rem 0; font-size: .85rem; }
+.report-doc th, .report-doc td { border: 1px solid #ddd; padding: .35rem .5rem; text-align: left; }
+.report-doc th { background: #f3f3f3; }
+
+@media print {
+  #app { display: none !important; }
+  .report-print-overlay { position: static !important; inset: auto !important; background: #fff !important; }
+  .report-print-overlay .no-print { display: none !important; }
+  .report-doc { padding: 0 !important; }
+  @page { margin: 1.5cm; }
+}
+
+/* ==========================================================================
+   Los diálogos (SweetAlert2), vestidos como el resto de la app.
+   ==========================================================================
+
+   SweetAlert2 trae su propio tema claro. El `Swal.mixin` de utils/swal.js sólo
+   cambia el fondo del popup y los botones, así que todo lo que la librería
+   pinta POR DENTRO se quedaba blanco: la lista de opciones (`.swal2-radio`) y
+   las casillas de texto salían como cuadros blancos en mitad de un diálogo
+   oscuro. Se ve en cuanto un diálogo usa `input: 'radio'`.
+
+   Va aquí y no en el mixin porque son estilos de elementos que la librería
+   crea sola: `customClass` no llega a ellos.
+   ========================================================================== */
+
+.swal2-popup {
+  background: rgba(12, 15, 21, 0.96) !important;
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.swal2-container {
+  background: rgba(4, 5, 7, 0.72) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.swal2-title { color: #f1f0ee !important; font-weight: 900; letter-spacing: -0.01em; }
+.swal2-html-container { color: #c5c9ac !important; }
+.swal2-html-container b, .swal2-html-container strong { color: #f1f0ee; }
+.swal2-html-container small { color: #8f9378; }
+
+/* --- La lista de opciones: el cuadro blanco ---
+
+   SIN `display` aquí, y no es un olvido.
+
+   SweetAlert2 crea SIEMPRE los contenedores de todos sus tipos de entrada
+   (`.swal2-radio`, `.swal2-checkbox`, `.swal2-input`...) y enseña sólo el que
+   el diálogo pide: `hide()` le pone `style="display: none"` en línea y
+   `show()` le pone `display: flex` (sweetalert2.js, `show`/`hide`).
+
+   Un `display: flex !important` desde la hoja de estilos gana a ese
+   `display:none` en línea, así que la casilla de verificación que ningún
+   diálogo había pedido aparecía igual: el cuadrito blanco suelto que salía
+   debajo de las opciones en "¿Qué quieres eliminar?" y en el diálogo de
+   cerrar sesión. Dejando que mande el estilo en línea, el contenedor oculto
+   se queda oculto y el visible sigue siendo flex, que es lo que estas reglas
+   de columna y separación necesitan. */
+.swal2-radio,
+.swal2-checkbox {
+  background: transparent !important;
+  gap: 0.6rem;
+  margin: 1.25rem 0 0.5rem !important;
+}
+
+/* La columna es sólo de la lista de opciones. `.swal2-checkbox` es una
+   etiqueta con la casilla y su texto AL LADO: apilarlos dejaría el cuadrito
+   encima de la frase. */
+.swal2-radio {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.swal2-checkbox {
+  align-items: center;
+  color: #e5e2e1 !important;
+}
+
+/* Cada opción como una píldora del mismo lenguaje que el resto de la app:
+   pulsable entera, no sólo el circulito, que en un teléfono es la diferencia
+   entre poder elegir y tener que apuntar. */
+.swal2-radio label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 !important;
+  padding: 0.9rem 1.1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.9rem;
+  color: #e5e2e1 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.swal2-radio label:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(202, 243, 0, 0.45);
+  transform: translateY(-1px);
+}
+
+.swal2-radio label:has(input:checked) {
+  background: rgba(202, 243, 0, 0.13);
+  border-color: #caf300;
+  color: #f1f0ee !important;
+  box-shadow: 0 0 18px rgba(202, 243, 0, 0.18);
+}
+
+.swal2-radio input[type="radio"],
+.swal2-checkbox input[type="checkbox"] {
+  accent-color: #caf300;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0 !important;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* --- Casillas de texto y contraseña --- */
+.swal2-input,
+.swal2-textarea,
+.swal2-select,
+.swal2-file {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 0.9rem !important;
+  color: #f1f0ee !important;
+  box-shadow: none !important;
+  /* 16px: por debajo de eso, iOS hace zoom solo al enfocar y descoloca el
+     diálogo entero. */
+  font-size: 16px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.swal2-input::placeholder,
+.swal2-textarea::placeholder { color: #8f9378 !important; }
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus {
+  border-color: #caf300 !important;
+  box-shadow: 0 0 18px rgba(202, 243, 0, 0.3) !important;
+  outline: none !important;
+}
+
+.swal2-validation-message {
+  background: rgba(147, 0, 10, 0.25) !important;
+  color: #ffb4ab !important;
+  border-radius: 0.75rem;
+}
+
+/* --- Botones --- */
+.swal2-styled { border-radius: 0.85rem !important; }
+.swal2-styled.swal2-confirm { box-shadow: 0 0 20px rgba(202, 243, 0, 0.35) !important; }
+.swal2-styled.swal2-cancel { color: #c5c9ac !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; }
+.swal2-styled:focus { box-shadow: 0 0 0 3px rgba(202, 243, 0, 0.35) !important; }
+
+/* --- Iconos: los colores por defecto son de otro tema --- */
+.swal2-icon.swal2-question { border-color: rgba(165, 238, 255, 0.6) !important; color: #a5eeff !important; }
+.swal2-icon.swal2-info { border-color: rgba(165, 238, 255, 0.6) !important; color: #a5eeff !important; }
+.swal2-icon.swal2-warning { border-color: rgba(202, 243, 0, 0.6) !important; color: #caf300 !important; }
+.swal2-icon.swal2-success { border-color: rgba(202, 243, 0, 0.6) !important; color: #caf300 !important; }
+.swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: #caf300 !important; }
+.swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(202, 243, 0, 0.35) !important; }
+.swal2-icon.swal2-error { border-color: rgba(255, 180, 171, 0.6) !important; color: #ffb4ab !important; }
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] { background-color: #ffb4ab !important; }
+
+/* Quien pide menos movimiento en su sistema no recibe animaciones de entrada ni transiciones (accesibilidad;
+   revisión del 2026-10-22). Los modales aparecían a medias en las capturas sin pantalla por lo mismo. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Plan Semanal — {{ payload.athlete_name }}</title>
+<style>
+  :root {
+    --bg-main: #0f1115; --bg-secondary: #1a1d24; --bg-tertiary: #252833;
+    --text-main: #e2e8f0; --text-muted: #94a3b8; --accent: #3b82f6;
+    --success: #10b981; --danger: #ef4444; --border: #334155; --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-main); color: var(--text-main); padding: 2rem; line-height: 1.5; }
+  h1 { font-family: 'Outfit', system-ui, sans-serif; font-size: 1.5rem; margin-bottom: .25rem; }
+  .subtitle { color: var(--text-muted); margin-bottom: 1.5rem; }
+  .zones { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 2rem; white-space: pre-wrap; font-size: .9rem; color: var(--text-muted); }
+  .week { margin-bottom: 2rem; }
+  .week h2 { font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: .5rem; margin-bottom: 1rem; }
+  .day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .75rem; }
+  .day-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: .9rem; }
+  .day-card.rest { opacity: .6; }
+  .day-card .date { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+  .day-card .focus { font-weight: 600; margin: .2rem 0 .4rem; }
+  .day-card .sport-badge { display: inline-block; font-size: .7rem; padding: .1rem .5rem; border-radius: 999px; background: var(--bg-tertiary); color: var(--text-muted); margin-bottom: .5rem; }
+  .steps { list-style: none; margin: .4rem 0; }
+  .steps li { display: flex; align-items: flex-start; gap: .4rem; font-size: .85rem; padding: .15rem 0; }
+  .steps input[type=checkbox] { margin-top: .2rem; accent-color: var(--success); }
+  /* A repeat block: its label, then its own indented list of substeps. */
+  .steps li:has(> .repeat-label) { flex-direction: column; gap: .1rem; }
+  .repeat-label { font-weight: 600; }
+  .repeat-label + .steps { margin: .1rem 0 .2rem .9rem; border-left: 2px solid var(--border); padding-left: .5rem; }
+  .purpose { font-size: .8rem; color: var(--text-muted); margin-top: .4rem; }
+  .adaptation { font-size: .75rem; color: var(--text-muted); font-style: italic; margin-top: .3rem; }
+</style>
+</head>
+<body>
+  <h1>Plan Semanal — {{ payload.athlete_name }}</h1>
+  <div class="subtitle">Inicio: {{ payload.start_date }}</div>
+  <div class="zones">{{ payload.zones_table }}</div>
+
+  {% for week in payload.weeks %}
+  <div class="week">
+    <h2>Semana {{ week.week_number }}</h2>
+    <div class="day-grid">
+      {% for day in week.days %}
+      <div class="day-card{% if day.is_rest %} rest{% endif %}" data-date="{{ day.date }}" data-sport="{{ day.sport }}" data-slot="{{ day.session_slot }}">
+        <div class="date">{{ day.day_name_es }} · {{ day.date }}{{ slot_suffix(day.session_slot) }}</div>
+        <div class="sport-badge">{{ day.sport }}</div>
+        <div class="focus">{{ day.focus }}</div>
+        {% if not day.is_rest %}
+        {# A repeat block's substeps are shown nested underneath it, so the
+           athlete reads "5x(...)" with the work and recovery inside it,
+           exactly as the watch will run it. #}
+        {% macro render_steps(steps, day, prefix) %}
+        <ul class="steps">
+          {% for step in steps %}
+          {% set step_id = "step_" ~ day.date ~ "_" ~ day.session_slot ~ "_" ~ prefix ~ loop.index %}
+          <li>
+            {% if step.substeps %}
+            <span class="repeat-label">{{ step.description }}</span>
+            {{ render_steps(step.substeps, day, prefix ~ loop.index ~ "_") }}
+            {% else %}
+            <input type="checkbox" id="{{ step_id }}" name="{{ step_id }}" value="done">
+            <label for="{{ step_id }}">{{ step.description }}</label>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endmacro %}
+        {{ render_steps(day.steps, day, "") }}
+        {% if day.total_duration_minutes %}<div class="purpose">{{ day.total_duration_minutes | int }} min</div>{% endif %}
+        {% endif %}
+        <div class="purpose">{{ day.purpose }}</div>
+        <div class="adaptation">{{ day.adaptation }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</body>
+</html>

@@ -1,0 +1,37 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# User credentials and profiles (contains plaintext Garmin/Intervals credentials)
+user_secure_data/
+
+# Generated runtime data (personal training data, not source)
+data/
+
+# Old generated files pulled out of data/ pending manual removal from the repo
+códigos sin uso/
+
+# Garmin OAuth token cache
+.garminconnect/
+
+# Claude Code harness runtime lock (session-specific, not project config)
+.claude/scheduled_tasks.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Paquete que se le manda al disenador: son copias de web_app/static/,
+# no una segunda fuente de verdad. Se regenera cuando haga falta.
+entrega-diseno/

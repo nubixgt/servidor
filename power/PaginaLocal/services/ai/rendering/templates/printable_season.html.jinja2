@@ -1,0 +1,248 @@
+{#
+  The macrocycle on one page: where the athlete is in the season, the shape of
+  the phases, which weeks are deloads and where the races fall. The weekly
+  plan tells them what to do on Tuesday; this tells them why.
+
+  2026-09-11 redesign: the season strip is now the hero -- one cell per week,
+  coloured by phase, with the deloads, the current week and the races marked
+  on it -- because that picture is what an athlete puts on a fridge. The long
+  narrative goes last, in two columns, as "la estrategia completa".
+#}
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tu temporada — {{ athlete_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 12mm 12mm; }
+
+{% include "_report_style.html.jinja2" %}
+
+  body { font-size: 9.4pt; }
+
+  /* Six phase tints, from the brand's lime to deep olive: a season reads as
+     one progression, not as six unrelated colours. */
+  .ph-0 { --ph: #e9f7a6; } .ph-1 { --ph: #cfe86a; } .ph-2 { --ph: #a9c93a; }
+  .ph-3 { --ph: #7fa11f; } .ph-4 { --ph: #5a7a10; } .ph-5 { --ph: #3d5507; }
+  .ph-3, .ph-4, .ph-5 { --ph-ink: #fff; }
+
+  /* --- The season at a glance ------------------------------------------- */
+  /* Una sola fila hasta 26 semanas: la temporada se lee de izquierda a derecha. */
+  .strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(24px, 1fr)); gap: 3px; margin: 8px 0 4px; }
+  .strip.one-row { grid-template-columns: repeat(var(--n), 1fr); }
+  .strip .w {
+    height: 34px; border-radius: 5px; background: var(--ph, var(--band));
+    color: var(--ph-ink, var(--brand-ink)); font-family: var(--mono); font-size: 7.5pt; font-weight: 700;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+    border: 1px solid rgba(0, 0, 0, .06);
+  }
+  .strip .w.deload { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(255, 255, 255, .55) 4px 7px); }
+  .strip .w.deload::after { content: "D"; font-size: 6pt; line-height: 1; opacity: .8; }
+  .strip .w.current { outline: 3px solid var(--ink); outline-offset: 1px; }
+  /* La competicion, dibujada: un emoji de bandera no se imprime igual en
+     todos los sistemas (en Windows salia como un cuadro gris). */
+  .strip .w .flag, .legend .flag-sw {
+    position: absolute; top: -5px; right: -3px; width: 11px; height: 11px; border-radius: 50%;
+    background: var(--bad); color: #fff; font-size: 6.5pt; line-height: 11px; text-align: center;
+    box-shadow: 0 0 0 1.5px #fff;
+  }
+  .legend .flag-sw { position: static; display: inline-block; margin-right: 4px; vertical-align: 0; }
+  .legend { font-size: 7.4pt; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+
+  /* --- Phases as a timeline -------------------------------------------- */
+  .phases { display: grid; gap: 5px; margin-top: 4px; }
+  .phase {
+    display: grid; grid-template-columns: 8px 1fr auto; gap: 10px; align-items: start;
+    border: 1px solid var(--rule); border-radius: 8px; padding: 7px 10px 7px 0; break-inside: avoid;
+  }
+  .phase .bar { background: var(--ph); border-radius: 8px 0 0 8px; align-self: stretch; margin: -7px 0; }
+  .phase.now { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .phase-name { font-weight: 800; font-size: 10pt; }
+  .phase-name .now-tag {
+    font-size: 6.5pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    background: var(--brand); color: var(--brand-ink); border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: 1px;
+  }
+  .phase-emph { font-size: 8.6pt; color: var(--ink-soft); margin-top: 1px; }
+  .phase-meta { text-align: right; font-family: var(--mono); font-size: 8pt; color: var(--ink-soft); white-space: nowrap; }
+  .phase-meta b { display: block; font-size: 10pt; color: var(--ink); }
+  .deload { color: var(--deload); font-size: 7.6pt; font-weight: 700; }
+
+  /* --- Races ---------------------------------------------------------- */
+  ul.races { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; }
+  ul.races li {
+    border: 1px solid var(--rule); border-left: 4px solid var(--brand-ink); border-radius: 6px; padding: 6px 9px;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; break-inside: avoid;
+  }
+  ul.races .rname { font-weight: 800; }
+  ul.races .when { color: var(--ink-soft); font-size: 7.8pt; text-align: right; white-space: nowrap; }
+  .priority {
+    font-size: 6.8pt; font-weight: 800; border-radius: 3px; padding: 1px 5px; margin-left: 4px;
+    background: var(--band); color: var(--ink-soft); border: 1px solid var(--rule);
+  }
+  .priority.pa { background: var(--brand); color: var(--brand-ink); border-color: transparent; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .goals table, .reference table { width: 100%; border-collapse: collapse; font-size: 8.4pt; }
+  .goals th, .goals td, .reference th, .reference td { border-bottom: 1px solid var(--rule); padding: 3px 5px; text-align: left; }
+  .goals th, .reference th {
+    font-size: 6.8pt; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); background: var(--band);
+  }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dim { color: var(--ink-faint); font-size: 7.6pt; }
+  .constraints ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+  .constraints li {
+    font-size: 8.4pt; padding: 5px 9px; border-radius: 6px; background: var(--band); border-left: 3px solid var(--brand);
+  }
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; }
+
+  .narrative { column-count: 2; column-gap: 18px; column-rule: 1px solid var(--rule); }
+  .narrative > :first-child { margin-top: 0; }
+
+  @media screen {
+    .sheet, .print-bar { max-width: 820px; }
+  }
+  @media print { .goals, .constraints, .reference, .strip { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button type="button" onclick="window.print()">Descargar PDF / Imprimir</button>
+  <span>En el diálogo elige «Guardar como PDF». Vertical, A4, con «gráficos de fondo» activado.</span>
+</div>
+
+<div class="sheet">
+  <header class="masthead">
+    <div>
+      <div class="brand">Power Coach AI · Plan de Temporada</div>
+      <h1>Tu temporada</h1>
+      <div class="who">{{ athlete_name }}{% if season_range %} · {{ season_range }}{% elif season_start_date %} · desde el {{ season_start_date }}{% endif %}</div>
+    </div>
+    <div class="facts">
+      {% if current_week %}<div class="fact"><div class="v">{{ current_week }}{% if total_weeks %}<span style="font-size:9pt;color:#a9ae9a">/{{ total_weeks }}</span>{% endif %}</div><div class="l">semana</div></div>{% endif %}
+      {% if current_phase %}<div class="fact"><div class="v" style="font-family:inherit;font-size:11pt">{{ current_phase.name }}</div><div class="l">fase actual</div></div>{% endif %}
+    </div>
+  </header>
+
+  {% if phases %}
+  <h2 class="section">La temporada de un vistazo</h2>
+  <div class="strip{% if season_strip | length <= 26 %} one-row{% endif %}" style="--n: {{ season_strip | length }}">
+    {% for week in season_strip %}
+    <div class="w{% if week.is_deload %} deload{% endif %}{% if week.is_current %} current{% endif %}{% if week.phase is not none %} ph-{{ week.phase % 6 }}{% endif %}"{% if week.race %} title="{{ week.race }}"{% endif %}>{{ week.number }}{% if week.race %}<span class="flag">★</span>{% endif %}</div>
+    {% endfor %}
+  </div>
+  <div class="legend">
+    {% for phase in phases %}<span><span class="sw ph-{{ loop.index0 % 6 }}" style="background:var(--ph)"></span>{{ phase.name }}</span>{% endfor %}
+    <span>D = descarga</span>
+    <span><span class="flag-sw">★</span>competición</span>
+    <span>▢ = semana actual</span>
+  </div>
+
+  <h2 class="section">Fases</h2>
+  <div class="phases">
+    {% for phase in phases %}
+    {% set now = current_week and phase.start_week <= current_week <= phase.end_week %}
+    <div class="phase ph-{{ loop.index0 % 6 }}{% if now %} now{% endif %}">
+      <div class="bar"></div>
+      <div>
+        <div class="phase-name">{{ phase.name }}{% if now %}<span class="now-tag">ahora</span>{% endif %}</div>
+        {% if phase.intensity_emphasis %}<div class="phase-emph">{{ phase.intensity_emphasis }}</div>{% endif %}
+        {% if phase.deload_weeks %}<div class="deload">Descarga: semana {{ phase.deload_weeks | join(', ') }}</div>{% endif %}
+      </div>
+      <div class="phase-meta">
+        <b>sem {{ phase.start_week }}–{{ phase.end_week }}</b>
+        {% if phase.weekly_load_target %}carga {{ phase.weekly_load_target | round | int }}/sem{% if phase.weekly_hours_target %}<br>~{{ phase.weekly_hours_target }} h{% endif %}{% elif phase.weekly_hours_target %}~{{ phase.weekly_hours_target }} h/sem{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if competitions %}
+  <h2 class="section">Competiciones</h2>
+  <ul class="races">
+    {% for race in competitions %}
+    <li>
+      <span><span class="rname">{{ race.name }}</span><span class="priority{% if (race.priority or '') | upper == 'A' %} pa{% endif %}">{{ race.priority or 'B' }}</span></span>
+      <span class="when">{{ race.fecha }}{% if race.cuando %}<br>{{ race.cuando }}{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if goals %}
+  <section class="goals">
+    <h2 class="section">Tus metas frente a tu condición actual</h2>
+    <table>
+      <tr><th>Carrera</th><th>Meta</th><th>Garmin predice</th><th>Ritmo que exige</th><th>Lectura</th></tr>
+      {% for goal in goals %}
+      <tr>
+        <td><b>{{ goal.name }}</b><br><span class="dim">{{ goal.fecha }}{% if goal.cuando %} · {{ goal.cuando }}{% endif %}</span></td>
+        <td class="num">{{ goal.target_clock }}</td>
+        <td class="num">{{ goal.predicted_clock or '—' }}</td>
+        <td class="num">{% set pc = goal.pace_context %}{% if pc and (pc.unit or (goal.legs|length == 1 and goal.legs[0].sport == 'run')) %}{{ pc.required_pace_clock }}{{ pc.unit or '/km' }}{% else %}—{% endif %}</td>
+        <td>{{ goal.verdict_es }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <p class="dim">Orientativo: compara tu meta con lo que tu condición actual predice. No es un veredicto.</p>
+  </section>
+  {% endif %}
+
+  <div class="grid-2">
+    {% if constraints %}
+    <section class="constraints">
+      <h2 class="section">Lo que condiciona este bloque</h2>
+      <ul>
+        {% for c in constraints %}
+        <li>{{ c.text }}{% if c.until %} <span class="dim">· revisar el {{ c.until }}</span>{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    {% if hr_zones or pace_bands or power_bands %}
+    <section class="reference">
+      <h2 class="section">Tus números</h2>
+      <div class="ref-grid">
+        {% for sport, zones in hr_zones.items() %}
+        <table>
+          <tr><th colspan="2">FC · {{ sport_labels.get(sport, sport) }}</th></tr>
+          {% for zone, bounds in zones %}<tr><td>Z{{ zone }}</td><td class="num">{{ bounds }}</td></tr>{% endfor %}
+        </table>
+        {% endfor %}
+        {% if pace_bands %}
+        <table>
+          <tr><th colspan="2">Ritmos de carrera</th></tr>
+          {% for label, band in pace_bands %}<tr><td>{{ label }}</td><td class="num">{{ band }}</td></tr>{% endfor %}
+        </table>
+        {% endif %}
+        {# La potencia también: desde el 2026-10-22 esta es la única hoja con las tablas. #}
+        {% if power_bands %}
+        <table>
+          <tr><th colspan="2">Potencia (bici)</th></tr>
+          {% for label, band in power_bands %}<tr><td>{{ label }}</td><td class="num">{{ band }}</td></tr>{% endfor %}
+        </table>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+
+  {% if narrative_html %}
+  <h2 class="section">La estrategia completa</h2>
+  <div class="narrative prose">{{ narrative_html }}</div>
+  {% endif %}
+
+  <div class="sheet-footer">
+    <span>Power Coach AI · macrociclo escrito a partir de tus datos reales de Garmin</span>
+    <span>{{ athlete_name }}</span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -125,6 +125,7 @@ jobs:
             --include 'unificacion_maga/uploads/congresistas/**' \
             --exclude 'VISAN_SYS/storage/' \
             --exclude 'cydplanicador/' \
+            --exclude 'power/' \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
             --exclude '**/config.local.php' \

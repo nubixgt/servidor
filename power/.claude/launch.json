@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cerebro",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "C:\\Users\\josec\\OneDrive\\Documentos\\App Triatlon 2\\APP Triatlon 2.0\\iniciar_cerebro.bat"
+      ],
+      "port": 8010
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "C:/xampp/php/php.exe",
+      "runtimeArgs": ["-S", "localhost:8080", "router.php"],
+      "cwd": "Backend",
+      "port": 8080
+    },
+    {
+      "name": "aiservice",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8600"],
+      "cwd": "AiService",
+      "port": 8600
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "Frontend",
+      "port": 5173
+    }
+  ]
+}

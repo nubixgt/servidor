@@ -1,0 +1,52 @@
+-- Qué deporte quiere el atleta cada día, y con cuánta firmeza.
+--
+-- Run ONCE, after 012.
+--
+-- ## El hueco que cierra
+--
+-- Hasta ahora el perfil sólo sabía decir CUÁNDO PUEDE entrenar el atleta:
+-- `day_time_blocks` guarda franjas de reloj con los deportes que esa franja
+-- permite, y el prompt del planificador lo dice con todas las letras --
+-- "UN BLOQUE ES UN PERMISO, NO UNA OBLIGACIÓN".
+--
+-- No había ningún sitio donde el atleta pudiera decir QUÉ QUIERE. En la beta
+-- de septiembre de 2026 eso salió en cuatro comentarios distintos, y el más
+-- claro fue: "quieren nadar y la IA no dejó natación para ese día". No era un
+-- fallo del modelo. Nadie se lo había pedido: el modelo vio un permiso y
+-- decidió, correctamente según sus reglas, no usarlo.
+--
+-- ## Los tres estados
+--
+--   fijo     el atleta QUIERE ese deporte ese día. El plan lo pone.
+--   posible  puede, si al entrenador le encaja. Es el permiso de siempre.
+--   (ausente) ese día no hay ese deporte.
+--
+-- El caso que lo motivó, textual: "los domingos puedo hacer bici y correr,
+-- pero para mí, bici que lo decida el coach". Correr fijo, bici posible.
+--
+-- ## Forma del JSON
+--
+--   {"Correr": {"Lunes": "fijo", "Domingo": "fijo"},
+--    "Bici":   {"Domingo": "posible"},
+--    "Nadar":  {"Martes": "fijo", "Jueves": "posible"}}
+--
+-- Indexado por DEPORTE y luego por día, no al revés, porque así se lee y se
+-- edita la rejilla: una fila por deporte, una columna por día. Sólo se guardan
+-- las casillas marcadas.
+--
+-- ## Por qué NULL y no una columna con default
+--
+-- Un perfil sin rejilla no es un perfil sin disponibilidad: es uno que todavía
+-- se rige por `day_time_blocks`. NULL dice "esto no se ha contestado" y deja
+-- que la capa de arriba caiga al camino viejo, que es exactamente lo que hace
+-- el frontend (ver `utils/profile.js`: deriva la rejilla de los bloques
+-- guardados, marcándolo todo como `posible`, que es lo que un bloque
+-- significaba).
+--
+-- `day_time_blocks` NO se borra y NO se toca. Sigue ahí con los datos de los
+-- cinco atletas de la beta, y este cambio no puede perderlos.
+
+ALTER TABLE athlete_profiles
+    ADD COLUMN sport_days JSON NULL
+        COMMENT 'Rejilla deporte x dia: fijo | posible. NULL = todavia se rige por day_time_blocks.'
+        AFTER day_time_blocks;

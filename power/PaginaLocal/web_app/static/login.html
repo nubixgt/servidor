@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar · Triatlón 2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-shell {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .login-brand { display: flex; align-items: center; gap: .75rem; }
+        .login-brand h1 { margin: 0; font-size: 1.5rem; }
+        .login-box {
+            border: 1px solid var(--border, #d8dee4);
+            border-radius: 12px;
+            padding: 1.75rem;
+            background: var(--card-bg, #fff);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .login-box h2 { margin: 0; font-size: 1.15rem; }
+        .login-field { display: flex; flex-direction: column; gap: .35rem; }
+        .login-field label { font-size: .85rem; font-weight: 600; }
+        .login-field input {
+            padding: .7rem .85rem;
+            border: 1px solid var(--border, #d8dee4);
+            border-radius: 8px;
+            font: inherit;
+            width: 100%;
+        }
+        .login-error {
+            border-left: 3px solid #b3261e;
+            background: rgba(179, 38, 30, .08);
+            padding: .7rem .85rem;
+            border-radius: 0 6px 6px 0;
+            font-size: .9rem;
+        }
+        .login-note { font-size: .85rem; line-height: 1.55; opacity: .8; }
+        .login-note code { font-size: .85em; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="login-shell">
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="logo-icon"></div>
+            <h1>Triatlón 2.0</h1>
+        </div>
+
+        <div id="setupBox" class="login-box hidden">
+            <h2>Todavía no hay usuarios</h2>
+            <p class="login-note">
+                Esta instalación no tiene ninguna cuenta creada, así que está abierta.
+                Crea la primera desde el servidor antes de exponerla:
+            </p>
+            <p class="login-note"><code>py scripts/nuevo_usuario.py --admin</code></p>
+        </div>
+
+        <form id="loginBox" class="login-box">
+            <h2>Entra a tu plan</h2>
+            <div id="loginError" class="login-error hidden"></div>
+            <div class="login-field">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" autocomplete="username" autocapitalize="none" required>
+            </div>
+            <div class="login-field">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnLogin">Entrar</button>
+            <p class="login-note">
+                ¿Todavía no tienes usuario? Escribe a
+                <a href="mailto:josecastillo.eas@gmail.com?subject=Solicitud%20de%20acceso%20a%20Triatl%C3%B3n%202.0&body=Hola%20Jose%2C%0A%0AQuiero%20probar%20la%20beta%20de%20Triatl%C3%B3n%202.0.%0A%0AMi%20nombre%3A%0AMi%20correo%3A%0AMi%20deporte%20principal%20(correr%20%2F%20nadar%20%2F%20bici%20%2F%20triatl%C3%B3n)%3A%0A%0AGracias.">josecastillo.eas@gmail.com</a>
+                pidiendo tu usuario y contraseña.
+            </p>
+        </form>
+
+        <form id="changeBox" class="login-box hidden">
+            <h2>Cambia tu contraseña temporal</h2>
+            <p class="login-note">
+                La que te enviamos por correo viajó por correo. Elige una tuya antes de continuar.
+            </p>
+            <div id="changeError" class="login-error hidden"></div>
+            <div class="login-field">
+                <label for="currentPassword">Contraseña temporal</label>
+                <input type="password" id="currentPassword" autocomplete="current-password" required>
+            </div>
+            <div class="login-field">
+                <label for="newPassword">Contraseña nueva (mínimo 8 caracteres)</label>
+                <input type="password" id="newPassword" autocomplete="new-password" minlength="8" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnChange">Guardar y entrar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function showError(boxId, message) {
+    const el = $(boxId);
+    el.textContent = message;
+    el.classList.remove('hidden');
+}
+
+function show(which) {
+    for (const id of ['loginBox', 'changeBox', 'setupBox']) {
+        $(id).classList.toggle('hidden', id !== which);
+    }
+}
+
+async function boot() {
+    try {
+        const me = await (await fetch('/api/auth/me')).json();
+        if (me.authenticated && !me.must_change_password) { location.href = '/'; return; }
+        if (me.authenticated && me.must_change_password) { show('changeBox'); return; }
+        if (me.setup_required) { show('setupBox'); return; }
+    } catch { /* sin red: se queda en el formulario, que es lo util */ }
+    show('loginBox');
+    $('username').focus();
+}
+
+$('loginBox').addEventListener('submit', async event => {
+    event.preventDefault();
+    $('loginError').classList.add('hidden');
+    $('btnLogin').disabled = true;
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: $('username').value, password: $('password').value }),
+        });
+        const data = await res.json();
+        if (!res.ok) { showError('loginError', data.detail || 'No se pudo entrar.'); return; }
+        if (data.must_change_password) {
+            // La temporal ya sirvió para entrar; se reusa para el cambio, así
+            // el atleta no la vuelve a teclear.
+            $('currentPassword').value = $('password').value;
+            show('changeBox');
+            $('newPassword').focus();
+            return;
+        }
+        location.href = '/';
+    } catch (err) {
+        showError('loginError', 'No se pudo contactar al servidor.');
+    } finally {
+        $('btnLogin').disabled = false;
+    }
+});
+
+$('changeBox').addEventListener('submit', async event => {
+    event.preventDefault();
+    $('changeError').classList.add('hidden');
+    $('btnChange').disabled = true;
+    try {
+        const res = await fetch('/api/auth/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                current_password: $('currentPassword').value,
+                new_password: $('newPassword').value,
+            }),
+        });
+        const data = await res.json();
+        if (!res.ok) { showError('changeError', data.detail || 'No se pudo cambiar.'); return; }
+        // Cambiar la contraseña cierra todas las sesiones, incluida ésta:
+        // hay que volver a entrar con la nueva. Es intencional.
+        const again = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: $('username').value, password: $('newPassword').value }),
+        });
+        if (again.ok) { location.href = '/'; return; }
+        show('loginBox');
+        showError('loginError', 'Contraseña cambiada. Entra con la nueva.');
+    } catch (err) {
+        showError('changeError', 'No se pudo contactar al servidor.');
+    } finally {
+        $('btnChange').disabled = false;
+    }
+});
+
+boot();
+</script>
+</body>
+</html>

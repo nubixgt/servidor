@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-m", "uvicorn", "web_app.server:app", "--host", "127.0.0.1", "--port", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "web-dev",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-m", "uvicorn", "web_app.server:app", "--host", "127.0.0.1", "--port", "8010", "--reload"],
+      "port": 8010
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+name: 🚀 Deploy power (m.nubix.gt/power) — Power Coach AI
+
+# Despliega SOLO power/ (Power Coach AI): Frontend Vue, Backend PHP, AiService (FastAPI) y
+# PaginaLocal (el cerebro, importado como librería por el AiService).
+# deploy.yml lo excluye a propósito (--exclude 'power/'): si no, su rsync --delete borraría
+# lo que este workflow publica.
+#
+#   Frontend  -> /home/visionwe/m.nubix.gt/power/            (https://m.nubix.gt/power/)
+#   Backend   -> /home/visionwe/m.nubix.gt/power/backend/    (API: .../power/backend/api/v1)
+#   AiService -> /home/visionwe/aiservice/app/               (uvicorn :8600 tras ai.powercoachai.pro)
+#   PaginaLocal -> /home/visionwe/aiservice/PaginaLocal/
+#
+# Nunca se tocan en el servidor: Backend/.env, AiService/_runtime/ (planes, expediente, registro de
+# subidas a Garmin, credenciales cifradas, trabajos en vuelo), el venv y los .env del AiService.
+# Secretos: SSH_PRIVATE_KEY, SSH_PORT, SSH_HOST, SSH_USER (los de deploy.yml) y, propios de Power,
+# VITE_GOOGLE_CLIENT_ID y VITE_FEEDBACK_WHATSAPP.
+# Operación (cron de keepalive, semanas automáticas, migraciones a mano): power/contexto/operacion/DEPLOYMENT.md
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'power/**'
+      - '.github/workflows/deploy-power.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-power
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: power/Frontend/package-lock.json
+
+      - name: 📦 Install deps
+        working-directory: power/Frontend
+        run: npm ci
+
+      - name: 🏗️ Build frontend
+        working-directory: power/Frontend
+        env:
+          VITE_API_BASE_URL: https://m.nubix.gt/power/backend/api/v1
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_FEEDBACK_WHATSAPP: ${{ secrets.VITE_FEEDBACK_WHATSAPP }}
+        run: npm run build
+
+      - name: 🚀 Deploy frontend (dist)
+        uses: easingthemes/ssh-deploy@v6.0.3
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "power/Frontend/dist/"
+          TARGET: "/home/visionwe/m.nubix.gt/power/"
+          ARGS: "-avzr --delete"
+          EXCLUDE: "/backend/"
+
+      - name: 🚀 Deploy backend (PHP)
+        uses: easingthemes/ssh-deploy@v6.0.3
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "power/Backend/"
+          TARGET: "/home/visionwe/m.nubix.gt/power/backend/"
+          ARGS: "-avzr --delete"
+          EXCLUDE: ".env"
+
+      # _runtime/ guarda todo el estado persistente y está en .gitignore: sin el exclude,
+      # --delete lo borraría. passenger_wsgi.py y tmp/ los creó "Setup Python App" de cPanel
+      # (sólo se conserva por su venv y sus variables): no se tocan.
+      - name: 🚀 Deploy AiService (puente)
+        uses: easingthemes/ssh-deploy@v6.0.3
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "power/AiService/"
+          TARGET: "/home/visionwe/aiservice/app/"
+          ARGS: "-avzr --delete"
+          EXCLUDE: "/_runtime/, /.venv/, /venv/, /tmp/, /public/, /passenger_wsgi.py, /__pycache__/, **/__pycache__/, *.pyc, *.log, tunnel.sh, run.sh, .env, .env.*"
+
+      - name: 🚀 Deploy PaginaLocal (librería)
+        uses: easingthemes/ssh-deploy@v6.0.3
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "power/PaginaLocal/"
+          TARGET: "/home/visionwe/aiservice/PaginaLocal/"
+          ARGS: "-avzr --delete"
+          EXCLUDE: "/venv/, /.venv/, /data/, /user_secure_data/, /.git/, /.claude/, /tests/, /__pycache__/, **/__pycache__/, *.pyc, *.log"
+          # Reinicia uvicorn para que tome el código nuevo; serve-guard.sh (también en cron) lo relanza.
+          SCRIPT_AFTER: |
+            pkill -f 'uvicorn main:app --host 127.0.0.1 --port 8600' || true
+            sleep 2
+            /bin/bash /home/visionwe/aiservice/app/serve-guard.sh || true

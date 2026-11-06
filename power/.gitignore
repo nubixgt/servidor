@@ -1,0 +1,53 @@
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# AiService bridge runtime (per-request storage, logs)
+AiService/_runtime/
+
+# Datos reales del atleta en una instalacion local de PaginaLocal. NO son
+# fuente: son planes, historial, razonamiento, prompts capturados, el ledger de
+# Garmin y el registro de facturacion de una persona concreta. Estas cinco
+# lineas estaban en el .gitignore hasta el 28/08 y se perdieron al reorganizar
+# el repo; sin ellas un `git add .` sube 550 ficheros de datos de salud.
+data/
+user_secure_data/
+.garminconnect/
+entrega-diseno/
+.claude/scheduled_tasks.lock
+
+# Node
+node_modules/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Los originales de las imagenes de ejercicio: 63 MB de JPEG a 1376x768 que
+# NO hacen falta en el repo. Lo que se sirve son las copias optimizadas de
+# Frontend/public/ejercicios/ (800 px, 4,7 MB en total), y esas si van
+# versionadas porque son las que se despliegan.
+#
+# Si algun dia hay que regenerarlas: el script de reduccion esta en el historial
+# de la conversacion y la carpeta original la conserva quien encargo el disenno.
+# Quitar esta linea si se decide versionar tambien los originales -- es mas
+# facil desactivar la exclusion que sacar 63 MB de la historia de git.
+/Imagenes_de_ejercicios/
+
+# Respaldos de la base de datos de produccion (mysqldump/phpMyAdmin). Contienen
+# datos reales de atletas y nunca deben subirse: las migraciones numeradas de
+# Database/ son las unicas que van versionadas ahi.
+Database/*.sql
+!Database/[0-9][0-9][0-9]_*.sql
+!Database/reinicio_beta_2_0.sql

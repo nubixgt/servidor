@@ -1,0 +1,83 @@
+{#
+  The athlete's analysis report.
+
+  Plan Maestro v5 Track 9. This used to be HTML written from scratch by an LLM
+  on every generation, which meant a different design each run, a model call
+  spent producing CSS, and English leaking into a Spanish product. The content
+  is the synthesis agent's own markdown; the presentation is ours, fixed, and
+  free. 2026-09-11: it carries the app's brand now, like the plan and the
+  season sheets (see _report_style).
+#}
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informe de Análisis — {{ athlete_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 13mm 13mm; }
+{% include "_report_style.html.jinja2" %}
+
+  body { font-size: 9.6pt; }
+  @media screen { .sheet, .print-bar { max-width: 860px; } }
+
+  .headline-numbers { margin-bottom: 12px; }
+  .empty-note { color: var(--ink-soft); font-size: 9.5pt; }
+  /* The synthesis opens with its own title; the masthead already says it. */
+  .prose > h1:first-child { display: none; }
+  .prose h1 { margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button type="button" onclick="window.print()">Descargar PDF / Imprimir</button>
+  <span>En el diálogo elige «Guardar como PDF». A4 vertical, con «gráficos de fondo» activado.</span>
+</div>
+
+<div class="sheet">
+  <header class="masthead">
+    <div>
+      <div class="brand">Power Coach AI · Informe de Análisis</div>
+      <h1>Cómo estás entrenando</h1>
+      <div class="who">{{ athlete_name }}{% if generated_at %} · {{ generated_at }}{% endif %}</div>
+    </div>
+  </header>
+
+  {% if headline_stats %}
+  <div class="stat-row headline-numbers">
+    {% for stat in headline_stats %}
+    <div class="stat">
+      <div class="label">{{ stat.label }}</div>
+      <div class="value">{{ stat.value }}</div>
+      {% if stat.note %}<div class="note">{{ stat.note }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if warnings %}
+  {% for warning in warnings %}
+  <div class="callout warn">{{ warning }}</div>
+  {% endfor %}
+  {% endif %}
+
+  {% if analysis_html %}
+  <div class="prose">{{ analysis_html }}</div>
+  {% else %}
+  <p class="empty-note">
+    El análisis todavía no está disponible. Puede que la generación haya fallado o que aún esté en curso.
+  </p>
+  {% endif %}
+
+  <div class="sheet-footer">
+    <span>Este informe describe tu entrenamiento; no es consejo médico ni sustituye a un profesional de la salud.</span>
+    <span>{{ athlete_name }}</span>
+  </div>
+</div>
+
+</body>
+</html>

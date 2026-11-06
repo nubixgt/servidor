@@ -1,0 +1,343 @@
+{#
+  The plan as something to put on the fridge.
+
+  Paper first, not adapted from the dark web UI: one column per DATE with that
+  day's sessions stacked inside, a colour per sport, the coach's reason for the
+  week on top, and the athlete's own zones and paces at the bottom so the sheet
+  stands on its own at the track with no phone in hand. Page breaks are
+  controlled so a week is never cut in half.
+
+  2026-09-11 redesign ("dignos de la refri"): same information, less noise --
+  the columns used to be one per SESSION ("LUN 1A SES.", "LUN 2A SES."), the
+  header claimed "4 semanas" on a one-week plan, and every step repeated its
+  block. See _report_style for the shared palette.
+
+  2026-10-22 (el responsable): «una sola página sólo con la semana de entreno; las zonas, mejor en el
+  macrociclo, que es un documento más largo y no va en la refri». UNA hoja por semana, cada una con su
+  cabecera; sin el porqué ni las tablas de zonas (cada paso ya lleva su pulso o su ritmo al lado, y las
+  tablas están en la hoja del macrociclo).
+#}
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tu semana — {{ payload.athlete_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 9mm 9mm; }
+
+{% include "_report_style.html.jinja2" %}
+
+  body { font-size: 8.6pt; line-height: 1.32; }
+
+  /* --- Why this week, and its shape at a glance -------------------------- */
+  .overview { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start; margin-bottom: 10px; }
+  .rationale {
+    margin: 0; font-size: 8.6pt; line-height: 1.4; color: #2c3038;
+    border-left: 4px solid var(--brand); background: var(--band); border-radius: 0 8px 8px 0; padding: 7px 11px;
+  }
+  .rationale b.lead {
+    display: block; font-size: 6.8pt; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px;
+  }
+  .split { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 330px; }
+  .chip {
+    font-size: 7.6pt; padding: 2px 8px 2px 6px; border-radius: 999px; white-space: nowrap;
+    background: #fff; border: 1px solid var(--rule); display: inline-flex; align-items: center; gap: 5px;
+  }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--sport, var(--other)); }
+  .chip b { font-family: var(--mono); font-weight: 700; }
+  .chip.rest-chip { color: var(--ink-soft); }
+  .chip.off-watch { border-color: var(--warn); color: var(--warn); }
+  .chip.off-watch::before { background: var(--warn); }
+
+  /* --- The calendar ------------------------------------------------------ */
+  .week { margin-bottom: 10px; break-inside: avoid; page-break-inside: avoid; }
+  .week-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 7.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--ink-soft); margin: 0 0 5px;
+  }
+  .week-label .volume { font-weight: 500; text-transform: none; letter-spacing: 0; font-family: var(--mono); }
+
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; align-items: stretch; }
+  .col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .col-head {
+    display: flex; align-items: baseline; gap: 5px; padding: 0 2px 3px; border-bottom: 2px solid var(--ink);
+  }
+  .col-head .dname { font-weight: 900; font-size: 9pt; text-transform: uppercase; letter-spacing: .02em; }
+  .col-head .dnum { font-family: var(--mono); font-size: 8pt; color: var(--ink-soft); margin-left: auto; white-space: nowrap; }
+
+  .session { display: flex; flex-direction: column; flex: 1; }
+  .day {
+    flex: 1; border: 1px solid var(--rule); border-top: 4px solid var(--sport, var(--other));
+    border-radius: 6px; padding: 5px 6px 6px; break-inside: avoid; background: #fff;
+  }
+  .day.rest {
+    border: 1px dashed var(--rule-strong); border-top-width: 1px; background: var(--band);
+    display: flex; align-items: center; justify-content: center; min-height: 60px;
+  }
+  .rest-label { font-size: 8pt; color: var(--ink-faint); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+  .tagline { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 2px; }
+  .sport {
+    font-size: 6.4pt; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+    color: #fff; background: var(--sport, var(--other)); border-radius: 3px; padding: 1px 5px;
+  }
+  .slot { font-size: 6.4pt; color: var(--ink-faint); font-weight: 700; }
+  .duration { font-family: var(--mono); font-size: 7.8pt; font-weight: 700; color: var(--ink); }
+  .focus { font-weight: 800; font-size: 9pt; line-height: 1.2; margin: 2px 0 2px; letter-spacing: -.005em; }
+  /* Dos lineas: el proposito entero esta en la app; en la nevera basta la idea. */
+  .purpose { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+  .purpose { font-size: 7.2pt; color: var(--ink-soft); margin: 0 0 4px; line-height: 1.3; }
+
+  /* Los pasos van SEGUIDOS, separados por "›", no uno por renglon. Uno por
+     renglon en una columna de 37 mm apilaba una natacion de 8 pasos hasta
+     14 cm: medido sobre la semana real del atleta 2, la hoja salia en dos
+     paginas. Seguidos se leen como un entrenador los dicta. */
+  ol.steps { list-style: none; margin: 3px 0 0; padding: 0; font-size: 7.4pt; line-height: 1.38; }
+  ol.steps li { display: inline; }
+  ol.steps li:not(:last-child)::after { content: " › "; color: var(--rule-strong); font-weight: 700; }
+  .step-numbers { font-family: var(--mono); font-size: 6.8pt; color: var(--accent); font-weight: 700; margin-left: 2px; }
+  li.repeat { display: inline; }
+  .repeat-label { font-weight: 800; }
+  .repeat-label .x {
+    font-family: var(--mono); background: var(--brand); color: var(--brand-ink); border-radius: 3px; padding: 0 3px;
+  }
+  li.repeat ol.steps { display: inline; margin: 0; }
+  li.repeat ol.steps::before { content: "("; color: var(--ink-faint); }
+  li.repeat ol.steps::after { content: ")"; color: var(--ink-faint); }
+
+  .strength { margin-top: 4px; }
+  ol.strength-list { margin: 3px 0 0; padding-left: 13px; font-size: 7.5pt; }
+  ol.strength-list li { margin-bottom: 2px; }
+  ol.strength-list li::marker { color: var(--sport); font-weight: 800; }
+  .dose { font-family: var(--mono); font-size: 7pt; color: var(--accent); font-weight: 700; }
+  .strength-cue { font-size: 6.8pt; color: var(--ink-soft); }
+  .strength-group-label { font-size: 6.8pt; font-weight: 800; color: var(--sport); margin-top: 3px; text-transform: uppercase; letter-spacing: .04em; }
+  ol.strength-list.strength-group { list-style: none; padding-left: 6px; margin-top: 1px; }
+  .strength-phase { font-size: 7pt; color: var(--ink-soft); margin-top: 3px; }
+
+  .manual, .strength .tag {
+    display: block; margin-top: 4px; font-size: 6.4pt; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--warn); font-weight: 800;
+  }
+  .manual { border: 1px solid var(--warn); border-radius: 5px; padding: 4px 5px; }
+  .manual-label { display: block; margin-bottom: 2px; }
+  .manual-body { font-size: 7.4pt; text-transform: none; letter-spacing: 0; color: var(--ink); font-weight: 400; white-space: pre-line; }
+
+  .adaptation {
+    margin-top: 5px; padding-top: 4px; border-top: 1px dotted var(--rule-strong);
+    font-size: 6.9pt; color: var(--ink-soft); line-height: 1.3;
+  }
+  .adaptation::before { content: "Si no es tu día · "; font-weight: 800; color: var(--ink); }
+
+  /* Una hoja por semana: la segunda empieza en su propia página. */
+  .page + .page { margin-top: 28px; }
+
+  /* On screen the sheet sits on a desk; on paper it fills the page. */
+  @media screen { .sheet, .print-bar { max-width: 1100px; } .sheet { padding: 18px 20px; } }
+  @media print {
+    .chip, .manual, .day { break-inside: avoid; }
+    .page + .page { break-before: page; page-break-before: always; margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <button type="button" onclick="window.print()">Descargar PDF / Imprimir</button>
+  <span>En el diálogo elige «Guardar como PDF». Orientación horizontal, tamaño A4, con «gráficos de fondo» activado.</span>
+</div>
+
+<div class="sheet">
+  {# The target comes from the step's STRUCTURED fields (v6 Track 7), not from
+     whatever the model happened to repeat in its prose. #}
+  {% macro render_steps(steps, sport) %}
+  <ol class="steps">
+    {% for step in steps %}
+    {% if step.substeps %}
+    <li class="repeat">
+      <span class="repeat-label"><span class="x">{{ step.repeat_count }}×</span>{% set extra = repeat_extra(step) %}{% if extra %} {{ extra }}{% endif %}</span>
+      {{ render_steps(step.substeps, sport) }}
+    </li>
+    {% else %}
+    <li>
+      <span class="step-text">{{ step.description }}</span>
+      {% set dur = step_duration(step) %}{% set tgt = step_target(step, sport) %}
+      {# La duracion solo si el texto no la dice ya: "10' entrada suave en Z2"
+         seguido de "10' · Z2" era la misma informacion dos veces. #}
+      {% if dur and dur in step.description %}{% set dur = '' %}{% endif %}
+      {% if dur or tgt %}<span class="step-numbers">{{ dur }}{% if dur and tgt %} · {% endif %}{{ tgt }}</span>{% endif %}
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ol>
+  {% endmacro %}
+
+
+  {% for week in payload.weeks %}
+  {% set head = week_heads.get(week.week_number) %}
+  {% set summary = week_summaries.get(week.week_number) %}
+  <section class="page">
+  <header class="masthead">
+    <div>
+      <div class="brand">Power Coach AI · Plan de Entrenamiento</div>
+      <h1>Tu semana{% if head.range %} · {{ head.range }}{% endif %}</h1>
+      <div class="who">{{ payload.athlete_name }}{% if generated_at %} · generado el {{ generated_at }}{% endif %}</div>
+    </div>
+    <div class="facts">
+      <div class="fact"><div class="v">{{ head.sessions }}</div><div class="l">sesiones</div></div>
+      <div class="fact"><div class="v">{{ head.time }}</div><div class="l">entreno</div></div>
+      <div class="fact"><div class="v">{{ head.rest_days }}</div><div class="l">descanso</div></div>
+    </div>
+  </header>
+
+  <div class="week">
+    {% if summary %}
+    <div class="overview" style="grid-template-columns: 1fr">
+      <div class="split" style="justify-content: flex-start; max-width: none">
+        {% for label, minutes in summary.by_discipline %}
+        <span class="chip s-{{ chip_sport.get(label, 'other') }}">{{ label }} <b>{{ minutes | round | int }}'</b></span>
+        {% endfor %}
+        {% if summary.rest_days %}<span class="chip rest-chip">Descanso <b>{{ summary.rest_days }}</b></span>{% endif %}
+        {% if summary.off_watch %}<span class="chip off-watch">{{ summary.off_watch }} no van al reloj</span>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="days">
+      {% for col in week_columns.get(week.week_number, []) %}
+      <div class="col">
+        <div class="col-head">
+          <span class="dname">{{ col.dia }}</span>
+          <span class="dnum">{{ col.numero }} {{ col.mes }}</span>
+        </div>
+        {% if col.descanso %}
+        <div class="day rest"><div class="rest-label">Descanso</div></div>
+        {% else %}
+        {% for day in col.sesiones %}
+        <div class="session s-{{ day.sport }}">
+        <div class="day">
+          <div class="tagline">
+            <span class="sport">{{ discipline_labels.get(day.discipline, day.sport) }}</span>
+            {% set slot = slot_label(day) %}{% if slot %}<span class="slot">{{ slot | trim }}</span>{% endif %}
+            {% if day.total_duration_minutes %}<span class="duration">{{ day.total_duration_minutes | round | int }}'</span>{% endif %}
+          </div>
+          <div class="focus">{{ day.focus }}</div>
+          {% if day.purpose %}<div class="purpose">{{ day.purpose }}</div>{% endif %}
+          {% if not (day.strength_block and day.strength_block.exercises) %}{{ render_steps(day.steps, day.sport) }}{% endif %}
+          {# A session Garmin cannot hold is handed over as written
+             instructions (v5 Track 5). If it is not on the page, the athlete
+             never sees it at all. #}
+          {% if day.manual_instructions %}
+          <div class="manual">
+            <span class="manual-label">No va al reloj — hazla desde aquí</span>
+            <div class="manual-body">{{ day.manual_instructions }}</div>
+          </div>
+          {% endif %}
+          {# La sesión de fuerza, entera y sin pasos repetidos: en el gimnasio,
+             entre serie y serie, una hoja no se apaga ni pide desbloquearse
+             con las manos sudadas. #}
+          {% if day.strength_block and day.strength_block.exercises %}
+          <div class="strength">
+            {% if day.strength_block.groups %}
+            {# Beta 3.0: superseries. Lo que va seguido, junto y con su descanso entre rondas. #}
+            {% for g in day.strength_block.groups %}
+            {% set letra = g.label or "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[loop.index0] %}
+            <div class="strength-group-label">{{ letra }}{% if g.exercises|length > 1 %} · {{ g.exercises|length }} seguidos{% endif %}{% if g.rest_between_rounds_s %} · {{ g.rest_between_rounds_s }}s entre rondas{% endif %}</div>
+            <ol class="strength-list strength-group">
+              {% for ex in g.exercises %}
+              <li>
+                <b>{{ letra }}{{ loop.index }} · {{ ex.name }}</b> <span class="dose">{{ ex.sets }}×{{ ex.reps }}{% if ex.load %} · {{ ex.load }}{% endif %}</span>{% if ex.change %} <span class="strength-cue">({{ ex.change }})</span>{% endif %}
+              </li>
+              {% endfor %}
+            </ol>
+            {% endfor %}
+            {% else %}
+            <ol class="strength-list">
+              {% for ex in day.strength_block.exercises %}
+              <li>
+                <b>{{ ex.name }}</b> <span class="dose">{{ ex.sets }}×{{ ex.reps }}{% if ex.load %} · {{ ex.load }}{% endif %}{% if ex.rest_seconds %} · {{ ex.rest_seconds }}s{% endif %}</span>
+              </li>
+              {% endfor %}
+            </ol>
+            {% endif %}
+            {# El porqué de la semana en una línea (2026-09-23: antes no salía en la hoja). #}
+            {% if day.strength_block.dose %}<div class="strength-phase">Dosis {{ "mínima" if day.strength_block.dose == "minima" else "reducida" }}{% if day.strength_block.dose_reason %}: {{ day.strength_block.dose_reason }}{% endif %}</div>{% endif %}
+            {% if day.strength_block.skipped %}<div class="strength-phase">Esta semana sin: {{ day.strength_block.skipped | map(attribute="name") | join(", ") }}</div>{% endif %}
+            {% if day.strength_block.placement_note %}<div class="strength-phase">{{ day.strength_block.placement_note }}</div>{% endif %}
+            {% if day.garmin_exportable is sameas false %}<span class="tag">No va al reloj</span>{% endif %}
+          </div>
+          {% endif %}
+          {% if day.adaptation %}<div class="adaptation">{{ day.adaptation }}</div>{% endif %}
+        </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <span>Power Coach AI · escrito a partir de tus datos reales de Garmin. Tus zonas y ritmos, en la hoja de tu temporada.</span>
+    <span>{{ payload.athlete_name }}</span>
+  </div>
+  </section>
+  {% endfor %}
+</div>
+
+<script>
+  /* Cada semana cabe en UNA hoja: justo antes de imprimir se reduce lo justo,
+     nunca por debajo del 72 % (por debajo ya no se lee en la nevera; si no
+     cabe, sigue en otra hoja). Sin esto una semana con dos dias de dos
+     sesiones salia partida en dos paginas. */
+  (function () {
+    var MM = 96 / 25.4, ALTO = (210 - 18) * MM, ANCHO = (297 - 18) * MM;
+    /* Antes de encoger, cada dia recibe el ancho que pide su contenido: con siete
+       columnas iguales la hoja media lo que el dia mas largo y un descanso ocupaba
+       lo mismo que una fuerza con bici. Semana real del atleta 2 del 26-oct (fuerza
+       y bici el martes): con columnas iguales hacia falta reducirla al 56 % (no se
+       lee); repartidas, al 82 %. La del 19-oct pasa del 73 % al 100 %. */
+    function repartir(g) {
+      var cols = Array.prototype.slice.call(g.children);
+      g.style.alignItems = 'start';
+      var dias = g.querySelectorAll('.session, .day');
+      dias.forEach(function (d) { d.style.flex = 'none'; });
+      for (var vuelta = 0; vuelta < 4; vuelta++) {
+        var descanso = cols.map(function (c) { return !c.querySelector('.day:not(.rest)'); });
+        var area = cols.map(function (c, i) {
+          var r = c.getBoundingClientRect();
+          return descanso[i] ? 0 : r.width * r.height;
+        });
+        var total = area.reduce(function (a, b) { return a + b; }, 0) || 1;
+        var n = cols.length;
+        g.style.gridTemplateColumns = area.map(function (a, i) {
+          return (descanso[i] ? 0.62 : Math.max(0.8, n * a / total)).toFixed(3) + 'fr';
+        }).join(' ');
+      }
+      g.style.alignItems = '';
+      dias.forEach(function (d) { d.style.flex = ''; });
+    }
+    function ajustar() {
+      document.querySelectorAll('.page').forEach(function (p) {
+        p.style.zoom = 1;
+        p.querySelectorAll('.days').forEach(repartir);
+        var r = p.getBoundingClientRect();
+        var z = Math.min(1, (ALTO * 0.97) / r.height, ANCHO / Math.max(r.width, 1));
+        p.style.zoom = Math.max(0.72, z);
+      });
+    }
+    function soltar() {
+      document.querySelectorAll('.page').forEach(function (p) { p.style.zoom = 1; });
+      document.querySelectorAll('.days').forEach(function (g) { g.style.gridTemplateColumns = ''; });
+    }
+    window.addEventListener('beforeprint', ajustar);
+    window.addEventListener('afterprint', soltar);
+  })();
+</script>
+
+</body>
+</html>

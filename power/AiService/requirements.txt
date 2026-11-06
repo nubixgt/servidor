@@ -1,0 +1,12 @@
+# AiService = the bridge between the PHP backend and PaginaLocal's AI pipeline.
+# It imports PaginaLocal's code as a library (PaginaLocal is never modified),
+# so it needs every one of PaginaLocal's runtime deps, plus a web server.
+
+-r ../PaginaLocal/requirements.txt
+
+fastapi>=0.115.0
+uvicorn>=0.30.0                 # plain (no [standard]): uvloop/httptools sometimes
+                               # misbehave on CloudLinux. Prod runs uvicorn standalone
+                               # behind a LiteSpeed reverse proxy (see serve.sh).
+langchain-google-genai>=2.0.0  # Gemini route used by AI_MODE=standard (was installed ad-hoc)
+langchain-core==1.6.0          # hard re-pin so langchain-google-genai can't drag in a newer core

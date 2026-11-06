@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garmin AI Coach - Triatlón 2.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Mermaid JS for LangGraph visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>Triatlón 2.0</h1>
+            </div>
+
+            <!-- The active athlete belongs here, not buried inside one tab:
+                 from any view you can see, and change, whose plan you are
+                 looking at. -->
+            <div class="sidebar-profile">
+                <label for="profileSelect">Atleta</label>
+                <select id="profileSelect">
+                    <option value="">-- Nuevo Perfil --</option>
+                </select>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active" data-view="inicio">
+                    <span class="nav-icon">🏠</span><span class="nav-text">Inicio</span>
+                </li>
+                <li data-view="perfil">
+                    <span class="nav-icon">👤</span><span class="nav-text">Perfil</span>
+                </li>
+                <li data-view="plan">
+                    <span class="nav-icon">📋</span><span class="nav-text">Plan</span>
+                </li>
+                <li data-view="historial">
+                    <span class="nav-icon">🗂️</span><span class="nav-text">Historial</span>
+                </li>
+                <li data-view="cuaderno">
+                    <span class="nav-icon">📓</span><span class="nav-text">Cuaderno</span>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <span id="saveIndicator" class="save-indicator"></span>
+                <button type="button" id="btnThemeToggle" class="theme-toggle" title="Cambiar entre tema claro y oscuro">🌗 Tema</button>
+                <button type="button" id="btnShutdown" class="theme-toggle" title="Apagar el servidor de la app">⏻ Apagar</button>
+                <!-- Beta: el feedback llega por WhatsApp con el contexto ya escrito.
+                     El texto lo completa app.js con la vista donde estaba el atleta,
+                     porque "no me funciona" sin saber dónde estaba no es accionable. -->
+                <a id="btnFeedback" class="theme-toggle" href="https://wa.me/50230965754" target="_blank" rel="noopener"
+                   title="Cuéntanos qué falla o qué mejorarías">💬 Feedback</a>
+                <button type="button" id="btnLogout" class="theme-toggle hidden" title="Cerrar sesión">🚪 Salir</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+
+            <!-- INICIO: what the athlete opens the app to see -->
+            <section id="view-inicio" class="view active">
+                <div class="section-header">
+                    <h2 id="homeGreeting">Inicio</h2>
+                    <p id="homeSubtitle">Tu entrenamiento de un vistazo.</p>
+                </div>
+                <div class="dash-actions">
+                    <button type="button" class="btn btn-primary" id="btnHomeGenerate">🚀 Generar plan nuevo</button>
+                    <button type="button" class="btn btn-outline" id="btnHomePrint">🖨️ Plan en PDF</button>
+                    <button type="button" class="btn btn-outline" id="btnHomeSeason">🗓️ Macrociclo en PDF</button>
+                    <button type="button" class="btn btn-outline" id="btnHomeAnalysis">📊 Informe de análisis</button>
+                    <button type="button" class="btn btn-outline" id="btnHomeMedical">🩺 Informe de salud</button>
+                </div>
+                <div id="homeCards" class="dash-grid"></div>
+                <div id="homeCharts"></div>
+                <div id="homeWeek" class="dash-card span-2"></div>
+            </section>
+
+            <!-- PERFIL -->
+            <section id="view-perfil" class="view">
+                <div class="section-header space-between">
+                    <div>
+                        <h2>Perfil del Atleta</h2>
+                        <p>Cuanto más sepa tu coach de IA, mejor te entrena. Completa lo que puedas — puedes volver cuando quieras.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button id="btnSaveProfile" class="btn btn-secondary">Guardar Perfil</button>
+                        <button id="btnDeleteProfile" class="btn btn-danger btn-sm">Eliminar</button>
+                    </div>
+                </div>
+
+                <div class="profile-progress">
+                    <div class="progress-bar-container">
+                        <div id="profileCompletenessBar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <span id="profileCompletenessLabel" class="subtitle">0% completo</span>
+                </div>
+
+                <div class="profile-wizard">
+                    <nav class="profile-tabs">
+                        <button type="button" class="profile-tab active" data-tab="identidad">Identidad</button>
+                        <button type="button" class="profile-tab" data-tab="objetivos">Objetivos</button>
+                        <button type="button" class="profile-tab" data-tab="historial">Historial</button>
+                        <button type="button" class="profile-tab" data-tab="fisiologia">Fisiología</button>
+                        <button type="button" class="profile-tab" data-tab="entorno">Equipo y Entorno</button>
+                        <button type="button" class="profile-tab" data-tab="estilo">Estilo de Vida</button>
+                        <button type="button" class="profile-tab" data-tab="salud">Salud <span id="reevalDot" class="reeval-dot hidden"></span></button>
+                        <button type="button" class="profile-tab" data-tab="preferencias">Preferencias</button>
+                    </nav>
+
+                    <form id="profileForm" class="cartilla-form">
+
+                        <!-- A. Identidad y Deporte -->
+                        <div class="profile-panel active" data-panel="identidad">
+                            <div class="form-group-box">
+                                <h3>Datos y Credenciales</h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Nombre del Atleta <span class="required-mark" title="Obligatorio">*</span></label>
+                                        <input type="text" id="name" required placeholder="Ej. Juan Pérez">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Deporte Principal</label>
+                                        <select id="sports_preference">
+                                            <option value="triathlon">Triatlón</option>
+                                            <option value="run">Solo Correr</option>
+                                            <option value="bike">Solo Ciclismo</option>
+                                            <option value="swim">Solo Natación</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Email Garmin Connect <span class="required-mark" title="Obligatorio">*</span></label>
+                                        <input type="email" id="garmin_email" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Contraseña Garmin <span class="required-mark" title="Obligatorio">*</span></label>
+                                        <input type="password" id="garmin_password" required>
+                                    </div>
+                                </div>
+                                <div class="garmin-import-row">
+                                    <button type="button" id="btnGarminImport" class="btn btn-outline btn-sm">🔗 Conectar y Auto-completar desde Garmin</button>
+                                    <span id="garminImportStatus" class="subtitle"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- B. Objetivos y Competiciones -->
+                        <div class="profile-panel" data-panel="objetivos">
+                            <div class="form-group-box">
+                                <h3>Objetivos y Competiciones</h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Distancia Objetivo Principal</label>
+                                        <input type="text" id="target_distance" placeholder="Ej. Olímpico, Medio Maratón">
+                                    </div>
+                                </div>
+                                <div id="competitionsContainer"></div>
+                                <button type="button" id="btnAddCompetition" class="btn btn-outline btn-sm">+ Agregar Competición</button>
+                            </div>
+                            <div class="form-group-box">
+                                <h3>Horarios y Limitaciones</h3>
+                                <p class="subtitle">Disponibilidad por Día — marca el día, y para cada uno agrega el horario real (hasta 2 bloques si entrenas dos veces el mismo día) y qué deportes permite ese horario.</p>
+                                <div id="garminDaySuggestion" class="garmin-day-suggestion hidden"></div>
+                                <div class="days-grid">
+                                    <div id="daysContainer"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- C. Historial y Nivel de Entrenamiento -->
+                        <div class="profile-panel" data-panel="historial">
+                            <div class="form-group-box">
+                                <h3>Historial y Nivel de Entrenamiento <span class="section-optional-tag">(Opcional)</span></h3>
+                                <p class="subtitle">Un coach real sabe si llevas 2 meses o 10 años entrenando — esto reemplaza esa observación.</p>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Nivel de Entrenamiento</label>
+                                        <select id="training_age_level">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="principiante">Principiante</option>
+                                            <option value="intermedio">Intermedio</option>
+                                            <option value="avanzado">Avanzado</option>
+                                            <option value="elite">Élite</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Años Entrenando</label>
+                                        <input type="number" id="years_training" min="0" step="0.5">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Volumen Semanal Actual (horas reales)</label>
+                                        <input type="number" id="current_weekly_volume_hours" min="0" step="0.5">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Sesión Más Larga Reciente (horas)</label>
+                                        <input type="number" id="longest_recent_session_hours" min="0" step="0.5">
+                                    </div>
+                                </div>
+                                <p class="subtitle">Marcas Personales Recientes (Opcional) — llena solo las que apliquen, para que la IA pueda comparar el plan contra tus tiempos reales.</p>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>5K</label>
+                                        <input type="text" id="pr_run_5k" placeholder="Ej. 22:30">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>10K</label>
+                                        <input type="text" id="pr_run_10k" placeholder="Ej. 47:00">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Media Maratón</label>
+                                        <input type="text" id="pr_run_half_marathon" placeholder="Ej. 1:45:00">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Maratón</label>
+                                        <input type="text" id="pr_run_marathon" placeholder="Ej. 3:50:00">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Mejor potencia en test de 20 min</label>
+                                        <input type="text" id="pr_ftp_test_20min" placeholder="Ej. 245W">
+                                        <span class="field-hint">Tu marca en el test. El FTP que usa el plan va en Fisiología (≈95% de esto).</span>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Nado 1500m</label>
+                                        <input type="text" id="pr_swim_1500m" placeholder="Ej. 28:00">
+                                    </div>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Otras Marcas / Notas</label>
+                                    <textarea id="recent_prs_notes" rows="2" placeholder="Cualquier otra marca que no encaje arriba"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D. Fisiología y Zonas -->
+                        <div class="profile-panel" data-panel="fisiologia">
+                            <div class="form-group-box">
+                                <h3>Fisiología <span class="section-optional-tag">(Opcional — mejora la precisión del plan)</span></h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Peso (kg)</label>
+                                        <input type="number" id="weight_kg" min="0" step="0.1">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Altura (cm)</label>
+                                        <input type="number" id="height_cm" min="0" step="0.5">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Género</label>
+                                        <select id="gender">
+                                            <option value="">-- --</option>
+                                            <option value="female">Femenino</option>
+                                            <option value="male">Masculino</option>
+                                            <option value="other">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Fecha de Nacimiento</label>
+                                        <input type="date" id="birth_date">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>FC Reposo (bpm)</label>
+                                        <input type="number" id="resting_heart_rate" min="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>VO2max Corriendo</label>
+                                        <input type="number" id="vo2max_running" min="0" step="0.1">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>VO2max Ciclismo</label>
+                                        <input type="number" id="vo2max_cycling" min="0" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-box">
+                                <h3>Zonas de Entrenamiento (para subir a Garmin con objetivos de FC/ritmo/potencia)</h3>
+                                <p class="subtitle">Si los dejas vacíos, los entrenamientos se suben sin objetivo específico (no.target).</p>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>FC Umbral (lactate threshold, bpm)</label>
+                                        <input type="number" id="lactate_threshold_hr" placeholder="Ej. 172">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Ritmo Umbral (seg/km)</label>
+                                        <input type="number" id="lactate_threshold_pace_sec_per_km" placeholder="Ej. 270 (=4:30/km)">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>FTP Ciclismo (watts)</label>
+                                        <input type="number" id="ftp_watts" placeholder="Ej. 220">
+                                        <span class="field-hint">De aquí salen los objetivos de potencia de tus entrenos de bici.</span>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Ritmo Umbral Natación (seg/100 m)</label>
+                                        <input type="number" id="swim_threshold_pace_sec_per_100m" placeholder="Ej. 105 (=1:45/100m)">
+                                        <span class="field-hint">
+                                            Nada <strong>400 m a tope</strong> y divide tu tiempo entre 4. Si hiciste 7:00,
+                                            son 105 seg/100 m.
+                                            <br>
+                                            Este número lo pones tú y no sale del reloj a propósito: Garmin cuenta los
+                                            largos por acelerómetro, y un viraje mal detectado produce parciales
+                                            imposibles (15 s en 100 m) que arruinarían la referencia. Sin él, tus series
+                                            de natación se prescriben por distancia, descanso y esfuerzo.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- E. Equipo y Entorno -->
+                        <div class="profile-panel" data-panel="entorno">
+                            <div class="form-group-box">
+                                <h3>Equipo y Entorno <span class="section-optional-tag">(Opcional)</span></h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Acceso a Piscina</label>
+                                        <select id="pool_access">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="ninguno">Ninguno</option>
+                                            <option value="limitado">Limitado</option>
+                                            <option value="completo">Completo</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Configuración de Bici</label>
+                                        <select id="bike_setup">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="outdoor">Solo Outdoor</option>
+                                            <option value="rodillo">Solo Rodillo</option>
+                                            <option value="ambos">Ambos</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="checkbox-label"><input type="checkbox" id="treadmill_access"> Acceso a Trotadora/Caminadora</label>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Altitud de Entrenamiento (m)</label>
+                                        <input type="number" id="altitude_m" min="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Clima Típico</label>
+                                        <select id="climate">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="templado">Templado</option>
+                                            <option value="calido_humedo">Cálido/Húmedo</option>
+                                            <option value="frio">Frío</option>
+                                            <option value="variable">Variable</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Terreno</label>
+                                        <select id="terrain">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="llano">Llano</option>
+                                            <option value="montanoso">Montañoso</option>
+                                            <option value="mixto">Mixto</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Entrenos brick (encadenar bici y carrera sin pausa)</label>
+                                        <select id="brick_preference">
+                                            <option value="">Que decida mi entrenador</option>
+                                            <option value="si">Sí, me gustan</option>
+                                            <option value="no">No, prefiero sesiones separadas</option>
+                                        </select>
+                                        <small style="color:var(--text-muted)">Hacer dos sesiones el mismo día no es un brick. Un brick es salir a correr nada más bajarte de la bici.</small>
+                                        <div id="brickFeasibilityWarning" class="field-warning hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- F. Estilo de Vida y Recuperación -->
+                        <div class="profile-panel" data-panel="estilo">
+                            <div class="form-group-box">
+                                <h3>Estilo de Vida y Recuperación <span class="section-optional-tag">(Opcional)</span></h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Tipo de Ocupación</label>
+                                        <select id="occupation_type">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="sedentario">Sedentario (oficina)</option>
+                                            <option value="activo_fisico">Físicamente Activo</option>
+                                            <option value="mixto">Mixto</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Horas de Sueño Promedio</label>
+                                        <input type="number" id="avg_sleep_hours" min="0" max="16" step="0.1">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Nivel de Estrés Autopercibido</label>
+                                        <select id="stress_level_self_report">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="bajo">Bajo</option>
+                                            <option value="medio">Medio</option>
+                                            <option value="alto">Alto</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Frecuencia de Viajes</label>
+                                        <select id="travel_frequency">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="nunca">Nunca</option>
+                                            <option value="ocasional">Ocasional</option>
+                                            <option value="frecuente">Frecuente</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Notas de Nutrición</label>
+                                    <textarea id="nutrition_notes" rows="2" placeholder="Ej. Vegetariano, restricciones alimentarias, horarios de comida..."></textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label class="checkbox-label"><input type="checkbox" id="menstrual_tracking_opt_in"> Quiero que el ciclo menstrual se considere en mi plan (opcional)</label>
+                                </div>
+                                <div class="input-group full-width hidden" id="menstrualNotesGroup">
+                                    <label>Notas sobre el Ciclo Menstrual</label>
+                                    <textarea id="menstrual_cycle_notes" rows="2" placeholder="Ej. Fase actual, cómo suele afectar tu energía/recuperación..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- G. Ficha de Salud y Antecedentes -->
+                        <div class="profile-panel" data-panel="salud">
+                            <div id="reevalBanner" class="reeval-banner hidden">
+                                ⚠️ Tu ficha de salud cambió o tiene más de 90 días — conviene revisarla.
+                            </div>
+                            <div class="form-group-box">
+                                <h3>Ficha de Salud y Antecedentes</h3>
+                                <p class="subtitle" id="lastMedicalEvalLabel">Aún no se ha revisado tu ficha de salud.</p>
+                                <div id="injuriesContainer"></div>
+                                <button type="button" id="btnAddInjury" class="btn btn-outline btn-sm">+ Agregar Lesión Actual</button>
+
+                                <div class="input-group full-width" style="margin-top:1.5rem;">
+                                    <label>Lesiones y Cirugías Pasadas</label>
+                                    <textarea id="past_injuries_surgeries" rows="2"></textarea>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Condiciones Crónicas</label>
+                                    <textarea id="chronic_conditions" rows="2"></textarea>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Otras limitaciones o notas (resumen libre)</label>
+                                    <textarea id="limitations" rows="3" placeholder="Ej. Dolor leve en la rodilla izquierda al correr más de 10km. No puedo nadar los martes..."></textarea>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Medicamentos</label>
+                                    <textarea id="medications" rows="2"></textarea>
+                                </div>
+
+                                <p class="subtitle">Cuestionario de Aptitud Física (estilo PAR-Q+)</p>
+                                <p class="subtitle">Estas preguntas no bloquean nada. Sirven para que tu plan tenga
+                                    en cuenta lo que nos cuentas y para recomendarte una consulta presencial cuando
+                                    corresponda.</p>
+                                <div class="parq-list">
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q1"> ¿Tu médico te ha dicho que tienes una condición cardíaca y que solo debes hacer actividad física recomendada por un médico?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q2"> ¿Sientes dolor en el pecho al hacer actividad física?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q3"> En el último mes, ¿has tenido dolor en el pecho en reposo?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q4"> ¿Pierdes el equilibrio por mareo o pierdes el conocimiento?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q5"> ¿Tienes un problema óseo o articular que podría empeorar con actividad física?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q6"> ¿Tu médico te receta actualmente medicamentos para la presión arterial o el corazón?</label>
+                                    <label class="checkbox-label"><input type="checkbox" id="parq_q7"> ¿Conoces alguna otra razón por la que no deberías hacer actividad física?</label>
+                                </div>
+
+                                <div class="health-disclaimer" id="healthDisclaimer">
+                                    <h4>Antes de continuar, lee esto</h4>
+                                    <p>Esta aplicación <strong>no es un servicio médico</strong>. El asistente de
+                                        antecedentes no diagnostica, no receta y <strong>no sustituye a un médico ni a un
+                                        fisioterapeuta</strong>. Su único fin es entender mejor tu contexto para
+                                        personalizar tu entrenamiento. Te recomendamos una consulta presencial con un
+                                        profesional de la salud antes de empezar o cambiar tu entrenamiento,
+                                        especialmente si respondiste que sí a alguna pregunta de arriba.</p>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="health_disclaimer_accepted">
+                                        Declaro que la información que di es verdadera, que no tengo ninguna condición
+                                        ni restricción conocida que me impida entrenar, que entiendo que esta
+                                        herramienta no sustituye una consulta médica ni de fisioterapia, y que entreno
+                                        bajo mi propia responsabilidad.
+                                    </label>
+                                    <p class="subtitle" id="healthDisclaimerDate"></p>
+                                </div>
+                            </div>
+
+                            <div class="chat-container">
+                                <div id="chatHistory" class="chat-history">
+                                    <div class="chat-message assistant">
+                                        <div class="msg-content">Haz clic en "Revisar mi ficha" para que el asistente repase tus antecedentes y te pregunte lo que falte.</div>
+                                    </div>
+                                </div>
+                                <div class="chat-input-area">
+                                    <textarea id="chatInput" placeholder="Escribe tu respuesta..." disabled></textarea>
+                                    <button type="button" id="btnSendChat" class="btn btn-primary" disabled>Enviar</button>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="btnStartDoctor">Revisar mi ficha con el asistente</button>
+                            </div>
+                        </div>
+
+                        <!-- H. Preferencias de Coaching -->
+                        <div class="profile-panel" data-panel="preferencias">
+                            <div class="form-group-box">
+                                <h3>Preferencias de Coaching <span class="section-optional-tag">(Opcional)</span></h3>
+                                <div class="grid-2">
+                                    <div class="input-group">
+                                        <label>Tono del Coach</label>
+                                        <select id="coaching_tone">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="directo">Directo</option>
+                                            <option value="empatico">Empático</option>
+                                            <option value="tecnico">Técnico</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>¿Incluir Entrenamiento de Fuerza?</label>
+                                        <select id="strength_training_preference">
+                                            <option value="">-- Seleccionar --</option>
+                                            <option value="si">Sí</option>
+                                            <option value="no">No</option>
+                                            <option value="indiferente">Indiferente</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Día de Descanso Preferido</label>
+                                        <select id="preferred_rest_day">
+                                            <option value="">-- Sin preferencia --</option>
+                                            <option value="Lunes">Lunes</option>
+                                            <option value="Martes">Martes</option>
+                                            <option value="Miércoles">Miércoles</option>
+                                            <option value="Jueves">Jueves</option>
+                                            <option value="Viernes">Viernes</option>
+                                            <option value="Sábado">Sábado</option>
+                                            <option value="Domingo">Domingo</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="checkbox-label"><input type="checkbox" id="cross_training_open" checked> Abierto a Entrenamiento Cruzado</label>
+                                    </div>
+                                    <div class="input-group">
+                                        <label class="checkbox-label"><input type="checkbox" id="ai_load_guardrail_enabled" checked> Reducir automáticamente el volumen si mi carga de entrenamiento reciente (ACWR) indica riesgo alto de lesión</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-box">
+                                <h3>Tu Entrenador de IA</h3>
+                                <p class="subtitle">Un mismo equipo de modelos para todos: el que mejor resultado dio
+                                    midiendo cada tarea por separado, no el más caro.</p>
+                                <ul class="info-list">
+                                    <li><strong>Tus datos</strong> los resume un modelo de contexto largo — ahí sólo hay
+                                        compresión, no hay criterio que pagar.</li>
+                                    <li><strong>Los tres expertos</strong> (métricas, fisiología, actividad) usan un modelo
+                                        de frontera. Es donde leer se convierte en juicio.</li>
+                                    <li><strong>La decisión de tu semana</strong> y <strong>el plan de temporada</strong>
+                                        usan modelos de razonamiento, cada uno con el esfuerzo que su trabajo justifica.</li>
+                                    <li><strong>Pasar esa decisión al formato del reloj</strong> es traducción, no criterio,
+                                        y va en un modelo rápido y barato.</li>
+                                </ul>
+                                <!-- El selector Lite/Pro se retiró en v7. Venía con Lite marcado por
+                                     defecto, que es exactamente por qué las tres primeras corridas reales
+                                     del producto fueron Lite y Pro no se ejecutó nunca. El campo `ai_mode`
+                                     sigue en el perfil como interruptor de emergencia de costo; lo que se
+                                     quitó es una elección que el atleta no puede tomar con criterio. -->
+
+                                <details class="advanced-settings">
+                                    <summary>Qué historial lee tu entrenador</summary>
+                                    <p class="subtitle">Ya no tienes que elegir esto: la ventana de datos depende de qué se
+                                        está construyendo, y cada una está fijada por una razón.</p>
+                                    <ul class="info-list">
+                                        <li><strong>Macrociclo:</strong> 180 días de actividades y 90 de métricas —
+                                            suficiente para ver un ciclo completo de bloques y tu estacionalidad. Más
+                                            atrás, el desentrenamiento y los cambios de vida hacen que el dato diga poco
+                                            sobre tu capacidad de hoy.</li>
+                                        <li><strong>Semana:</strong> 30 días de actividades y 15 de métricas — cubre la
+                                            ventana de 28 días con la que se mide tu carga crónica ("fitness") frente a
+                                            los 7 días agudos ("fatiga"), sin arrastrar promedios viejos.</li>
+                                    </ul>
+                                </details>
+
+                                <details class="advanced-settings">
+                                    <summary>Cómo trabaja tu entrenador</summary>
+                                    <p class="subtitle">Varios agentes analizan tus datos por separado y un orquestador integra
+                                        sus conclusiones en el plan.</p>
+                                    <div class="mermaid" id="mermaidGraph">
+graph TD
+    S([INICIO]) --&gt; AS(Resumidor Actividades)
+    S --&gt; MS(Resumidor Metricas)
+    S --&gt; PS(Resumidor Fisiologia)
+    AS --&gt; AE(Experto Actividades)
+    MS --&gt; ME(Experto Metricas)
+    PS --&gt; PE(Experto Fisiologia)
+    AE --&gt; ORC{Orquestador Maestro}
+    ME --&gt; ORC
+    PE --&gt; ORC
+    ORC --&gt; SYN(Sintesis Analisis)
+    ORC --&gt; DI(Integracion de Datos)
+    SYN --&gt; FMT(Formateador HTML)
+    DI --&gt; SP(Plan de Temporada)
+    SP --&gt; WP(Planificador Semanal)
+    WP --&gt; ORC2{Orquestador Plan}
+    ORC2 --&gt; PF(Formateador Plan)
+    PF --&gt; FIN([FIN])
+    FMT --&gt; FIN
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary btn-large" id="btnProfileToPlan">Ir al Plan ➔</button>
+                </div>
+            </section>
+
+            <!-- PLAN -->
+            <section id="view-plan" class="view">
+                <div class="section-header space-between">
+                    <div>
+                        <h2>Tu Plan de Entrenamiento</h2>
+                        <p>Revisa el plan generado basado en tus métricas reales.</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" id="btnPrintPlan">🖨️ Plan en PDF</button>
+                        <button class="btn btn-outline" id="btnPrintSeason">🗓️ Macrociclo en PDF</button>
+                        <button class="btn btn-outline" id="btnPlanAnalysis">📊 Informe de análisis</button>
+                        <button class="btn btn-outline" id="btnPlanMedical">🩺 Informe de salud</button>
+                        <select id="deleteScope" class="delete-scope" title="Qué quieres borrar">
+                            <option value="week">Solo la semana</option>
+                            <option value="season">Solo el macrociclo</option>
+                            <option value="all" selected>Todo el plan</option>
+                            <option value="reasoning">Solo el razonamiento</option>
+                        </select>
+                        <button class="btn btn-danger" id="btnDeleteRun">🗑️ Eliminar</button>
+                        <button class="btn btn-danger" id="btnRejectPlan">Rechazar / Ajustar</button>
+                        <button class="btn btn-success" id="btnUploadGarmin">📲 Subir Todo a Garmin</button>
+                    </div>
+                </div>
+                <div class="dash-actions">
+                    <button type="button" class="btn btn-primary btn-large" id="btnGeneratePlan">🚀 Generar Plan de Temporada</button>
+                    <button type="button" class="btn btn-primary btn-large" id="btnGenerateWeek">📅 Generar Semana</button>
+                </div>
+
+                <div id="executionProgress" class="execution-progress hidden">
+                    <h3 id="progressStatus">Iniciando...</h3>
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <details class="terminal-details">
+                        <summary>Ver detalle técnico</summary>
+                        <div class="terminal-logs" id="terminalLogs"></div>
+                    </details>
+                </div>
+
+                <div id="garminUploadStatus" class="subtitle"></div>
+                <div id="volumeReconciliationBanner" class="volume-reconciliation-banner hidden"></div>
+                <div id="goalRealismBanner" class="goal-realism-banner hidden"></div>
+                <details id="planAdjustmentsBanner" class="plan-adjustments-banner hidden">
+                    <summary>⚙️ La IA tuvo que ajustar automáticamente algunas cosas de tu plan — ver detalle</summary>
+                    <ul id="planAdjustmentsList"></ul>
+                </details>
+
+                <div class="plan-results" id="planResultsContainer">
+                    <div class="placeholder-text">El plan generado aparecerá aquí.</div>
+                </div>
+
+                <details class="plan-results" id="seasonPlanContainer">
+                    <summary>Plan de Temporada (estratégico)</summary>
+                    <div id="seasonPlanContent" class="placeholder-text">El plan de temporada aparecerá aquí.</div>
+                </details>
+
+                <details class="plan-results" id="costBreakdownContainer">
+                    <summary>Costo de esta generación</summary>
+                    <div id="costBreakdownContent" class="placeholder-text">Sin datos de costo.</div>
+                </details>
+            </section>
+
+            <!-- HISTORIAL -->
+            <section id="view-historial" class="view">
+                <div class="section-header">
+                    <h2>Historial de Planes</h2>
+                    <p>Cada plan que has generado queda guardado. Ninguno se pierde al generar uno nuevo.</p>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="placeholder-text">Cargando…</div>
+                </div>
+            </section>
+
+            <!-- CUADERNO: lo que el coach ha aprendido hablando con el atleta.
+                 Ocupa el lugar que tenía la pestaña de chat, porque el chat pasó
+                 a ser el widget flotante y esto sí necesita espacio: se lee y se
+                 edita, no se conversa. -->
+            <section id="view-cuaderno" class="view">
+                <div class="section-header">
+                    <h2>Cuaderno de tu entrenador</h2>
+                    <p>Lo que tu coach ha ido anotando de vuestras conversaciones. Alimenta tanto el chat
+                       como el plan de cada semana, así que lo que digas aquí cambia lo que entrenas.
+                       Puedes corregir, retirar o borrar cualquier anotación: son tus datos.</p>
+                </div>
+
+                <div class="notebook-add">
+                    <textarea id="notebookText" rows="2"
+                              placeholder="Añade algo que tu coach deba recordar. Ej: «los jueves entreno de noche por trabajo»"></textarea>
+                    <div class="notebook-add-row">
+                        <select id="notebookCategory"></select>
+                        <button type="button" class="btn btn-primary" id="btnNotebookAdd">Anotar</button>
+                    </div>
+                </div>
+
+                <div id="notebookProposals"></div>
+                <div id="notebookList" class="notebook-list">
+                    <div class="placeholder-text">Cargando…</div>
+                </div>
+            </section>
+
+            
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <h3>¿Qué deseas ajustar del plan?</h3>
+            <textarea id="rejectReason" rows="4" placeholder="Ej. Los rodajes largos del domingo son muy extensos, bájale 30 mins..."></textarea>
+            <!-- Dos caminos, y hasta v7 sólo existía el caro. Un solo botón
+                 llamado "Re-generar Plan" rehacía el análisis, el macrociclo y
+                 la semana: el atleta quería mover un miércoles y perdía su
+                 temporada, al precio completo de una generación. Es el mismo
+                 fallo que "Eliminar generación" ya tuvo, con un diálogo que
+                 tampoco lo decía. -->
+            <div class="reject-option">
+                <strong>Rehacer sólo esta semana</strong>
+                <span>Reescribe los mismos 7 días con tu ajuste y tus datos de hoy. Tu macrociclo
+                    y las semanas anteriores no se tocan. Es lo que quieres casi siempre.</span>
+            </div>
+            <div class="reject-option">
+                <strong>Regenerar todo</strong>
+                <span>Rehace también el análisis y el macrociclo, y reemplaza tu plan de temporada.
+                    Sólo si lo que falla es el rumbo, no una sesión.</span>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="document.getElementById('rejectModal').classList.remove('active')">Cancelar</button>
+                <button class="btn btn-outline" id="btnRejectAll">Regenerar todo</button>
+                <button class="btn btn-primary" id="btnConfirmReject">Rehacer sólo la semana</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkinModal" class="modal">
+        <div class="modal-content checkin-modal">
+            <h3>¿Cómo vienes esta semana?</h3>
+            <p class="subtitle">45 segundos. Le da a tu entrenador lo que el reloj no ve. Puedes saltarlo:
+                el plan se genera igual.</p>
+            <div id="checkinBody"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btnCheckinSkip">Saltar y generar</button>
+                <button class="btn btn-primary" id="btnCheckinSend">Guardar y generar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         AI Coach flotante (v7 Track 8). Esquina inferior IZQUIERDA, presente
+         en todas las vistas: preguntarle al entrenador deja de ser un sitio
+         al que ir y pasa a ser algo que se hace mirando el plan.
+         ───────────────────────────────────────────────────────────────────── -->
+    <button type="button" id="coachFab" class="coach-fab" aria-label="Abrir el chat con tu AI Coach"
+            aria-expanded="false" aria-controls="coachPanel">
+        <span class="coach-fab-icon" aria-hidden="true">💬</span>
+        <span class="coach-fab-dot" aria-hidden="true"></span>
+    </button>
+
+    <section id="coachPanel" class="coach-panel hidden" role="dialog" aria-label="Chat con tu AI Coach"
+             aria-modal="false">
+        <header class="coach-panel-head">
+            <div class="coach-avatar" aria-hidden="true">🏃</div>
+            <div class="coach-who">
+                <strong>AI Coach</strong>
+                <span class="coach-status"><span class="coach-status-dot"></span>Activo</span>
+            </div>
+            <button type="button" id="btnCoachNotebook" class="coach-head-btn"
+                    title="Ver el cuaderno">📓</button>
+            <button type="button" id="btnCoachClose" class="coach-head-btn" aria-label="Cerrar">✕</button>
+        </header>
+
+        <div id="coachHistory" class="coach-history"></div>
+
+        <div class="coach-input-area">
+            <textarea id="coachInput" rows="1" placeholder="Escríbele a tu entrenador…"
+                      aria-label="Tu mensaje"></textarea>
+            <button type="button" class="coach-send" id="btnCoachSend" aria-label="Enviar">➤</button>
+        </div>
+        <p class="coach-meta" id="coachMeta"></p>
+    </section>
+</body>
+</html>

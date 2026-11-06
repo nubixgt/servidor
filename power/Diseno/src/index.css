@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-surface: #121316;
+    --primary-fixed: #caf300;
+    --primary-fixed-dim: #b0d500;
+    --on-primary-fixed: #171e00;
+    --secondary-fixed: #a5eeff;
+    --secondary-fixed-dim: #00daf8;
+    --surface-container-high: #24262b;
+    --surface-container-highest: #30333a;
+    --surface-container: #1b1c20;
+    --surface-container-low: #151619;
+    --surface-container-lowest: #0c0d0e;
+    --on-surface: #f1f0ee;
+    --on-surface-variant: #c5c9ac;
+    --outline-variant: rgba(255, 255, 255, 0.08);
+    --outline: #8f9378;
+    --error: #ffb4ab;
+    --error-container: #93000a;
+  }
+
+  body {
+    background-color: #07080a;
+    color: #f1f0ee;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.font-mono-data {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Glassmorphism Card & Panel Styles */
+.glass-card {
+  background: rgba(16, 18, 24, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(202, 243, 0, 0.3);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 20px rgba(202, 243, 0, 0.1);
+}
+
+.glass-panel {
+  background: rgba(12, 14, 19, 0.78);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+}
+
+.glass-pill {
+  background: rgba(25, 28, 36, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.glass-pill:hover {
+  border-color: rgba(202, 243, 0, 0.35);
+  background: rgba(35, 40, 50, 0.65);
+}
+
+.glass-input {
+  background: rgba(18, 21, 28, 0.65) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #caf300 !important;
+  box-shadow: 0 0 15px rgba(202, 243, 0, 0.25) !important;
+}
+
+.neon-glow {
+  text-shadow: 0 0 16px rgba(202, 243, 0, 0.65);
+}
+
+.neon-border {
+  border-color: #caf300;
+  box-shadow: 0 0 20px rgba(202, 243, 0, 0.35);
+}
+
+.cyan-glow {
+  box-shadow: 0 0 15px rgba(0, 218, 248, 0.25);
+}
+
+/* Material Symbols configuration */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom Hide Scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(14, 16, 20, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: #30333a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #caf300;
+}

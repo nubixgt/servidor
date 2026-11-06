@@ -1,0 +1,1858 @@
+/* ==========================================================================
+   Design tokens.
+
+   Light is the base and dark is the override, in the three states a page can
+   be in: an explicit choice stamps data-theme on <html>, and the default
+   "system" setting leaves it unstamped so prefers-color-scheme decides. The
+   app used to be dark-only, which is a fine default for one developer and a
+   poor one for an athlete opening it on a phone in daylight.
+   ========================================================================== */
+:root {
+    color-scheme: light;
+
+    --bg-main: #f6f7f9;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #eceef2;
+    --text-main: #14171f;
+    --text-muted: #5b6270;
+    --border: #dde1e8;
+    --border-strong: #c3c9d4;
+
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-soft: rgba(37, 99, 235, 0.09);
+    --success: #047857;
+    --success-soft: rgba(4, 120, 87, 0.10);
+    --danger: #dc2626;
+    --danger-soft: rgba(220, 38, 38, 0.09);
+    --warning: #b45309;
+    --warning-soft: rgba(180, 83, 9, 0.10);
+
+    --brand-gradient: linear-gradient(135deg, var(--accent), #7c3aed);
+    --terminal-bg: #14171f;
+    --terminal-ink: #4ade80;
+    --overlay: rgba(20, 23, 31, 0.55);
+
+    /* Spacing scale — everything used to be an ad-hoc rem value. */
+    --s1: 0.25rem;
+    --s2: 0.5rem;
+    --s3: 0.75rem;
+    --s4: 1rem;
+    --s5: 1.5rem;
+    --s6: 2rem;
+    --s7: 3rem;
+
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 16px;
+
+    --shadow-sm: 0 1px 2px rgba(16, 20, 30, 0.05);
+    --shadow: 0 2px 10px rgba(16, 20, 30, 0.07);
+    --shadow-lg: 0 12px 32px rgba(16, 20, 30, 0.14);
+
+    --sidebar-width: 264px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+
+        --bg-main: #0f1115;
+        --bg-secondary: #1a1d24;
+        --bg-tertiary: #252833;
+        --text-main: #e2e8f0;
+        --text-muted: #94a3b8;
+        --border: #2c3442;
+        --border-strong: #3d4655;
+
+        --accent: #60a5fa;
+        --accent-hover: #93c5fd;
+        --accent-soft: rgba(96, 165, 250, 0.14);
+        --success: #34d399;
+        --success-soft: rgba(52, 211, 153, 0.14);
+        --danger: #f87171;
+        --danger-soft: rgba(248, 113, 113, 0.14);
+        --warning: #fbbf24;
+        --warning-soft: rgba(251, 191, 36, 0.14);
+
+        --terminal-bg: #05070a;
+        --terminal-ink: #4ade80;
+        --overlay: rgba(0, 0, 0, 0.66);
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+        --shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+    }
+}
+
+/* An explicit choice wins over the system in both directions. */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg-main: #0f1115;
+    --bg-secondary: #1a1d24;
+    --bg-tertiary: #252833;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border: #2c3442;
+    --border-strong: #3d4655;
+
+    --accent: #60a5fa;
+    --accent-hover: #93c5fd;
+    --accent-soft: rgba(96, 165, 250, 0.14);
+    --success: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.14);
+    --danger: #f87171;
+    --danger-soft: rgba(248, 113, 113, 0.14);
+    --warning: #fbbf24;
+    --warning-soft: rgba(251, 191, 36, 0.14);
+
+    --terminal-bg: #05070a;
+    --terminal-ink: #4ade80;
+    --overlay: rgba(0, 0, 0, 0.66);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    padding: var(--s5) var(--s4);
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s5);
+    z-index: 20;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--brand-gradient);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.logo h1 { font-size: 1.25rem; }
+
+/* Active athlete, visible from every view — you always know whose plan
+   you are looking at, which the old step-1-only switcher never told you. */
+.sidebar-profile { display: flex; flex-direction: column; gap: var(--s2); }
+.sidebar-profile label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); font-weight: 600;
+}
+.sidebar-profile select { width: 100%; }
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+    flex: 1;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+    padding: var(--s3) var(--s3);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+    font-weight: 500;
+}
+
+.nav-links li:hover { background-color: var(--bg-tertiary); color: var(--text-main); }
+
+.nav-links li.active {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.nav-icon { font-size: 1.05rem; width: 1.4rem; text-align: center; flex-shrink: 0; }
+
+/* `wrap` no es decorativo: el pie pasó de 3 a 5 elementos al añadir Feedback
+   y Salir en v7, y sin envolver medía 404 px dentro de una pantalla de 375 --
+   la página entera scrolleaba en horizontal en cualquier móvil. */
+.sidebar-footer {
+    display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: var(--s2);
+}
+.sidebar-footer .theme-toggle { flex: 0 1 auto; min-width: 0; }
+
+.theme-toggle {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    border-radius: var(--radius-sm); padding: var(--s1) var(--s2);
+    cursor: pointer; font: inherit; font-size: 0.85rem; line-height: 1.2;
+}
+.theme-toggle:hover { border-color: var(--border-strong); color: var(--text-main); }
+
+/* Main Content */
+.content-area {
+    margin-left: var(--sidebar-width);
+    padding: var(--s6) var(--s7);
+    width: calc(100% - var(--sidebar-width));
+    max-width: 1280px;
+}
+
+.view {
+    display: none;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Kept as an alias so any markup still using the old class keeps working. */
+.step-section { display: none; }
+.step-section.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+    margin-bottom: 2.5rem;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Forms */
+.form-group-box {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-group-box h3 {
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+    font-size: 1.25rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+input, select, textarea {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.subtitle {
+    margin: 1.5rem 0 1rem 0;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--border);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-muted);
+}
+
+.btn-outline:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Days Grid */
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.day-card {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.day-card.active {
+    border-color: var(--accent);
+}
+
+.day-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.day-inputs {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.day-card.active .day-inputs {
+    display: flex;
+}
+
+.day-inputs input {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.sport-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sport-chk {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 400;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+}
+
+/* Time blocks (up to 2 per day) */
+.time-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--bg-main);
+}
+
+.time-block-times {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.time-block-times input[type="time"] {
+    width: auto;
+    padding: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.time-block-times span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.block-hours-preview {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.block-hours-preview.warning {
+    color: var(--warning);
+}
+
+.btn-add-block {
+    width: 100%;
+    margin-top: 0.3rem;
+}
+
+.btn-remove-block {
+    margin-top: 0.4rem;
+}
+
+.volume-reconciliation-banner {
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.plan-adjustments-banner {
+    background-color: var(--warning-soft);
+    border: 1px solid var(--warning);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.plan-adjustments-banner summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.plan-adjustments-banner ul {
+    margin: 0.75rem 0 0 1.25rem;
+    padding: 0;
+}
+
+.plan-adjustments-banner li {
+    margin-bottom: 0.4rem;
+}
+
+.garmin-day-suggestion {
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Chat Container */
+.chat-container {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.chat-message {
+    max-width: 80%;
+    display: flex;
+}
+
+.chat-message.assistant {
+    align-self: flex-start;
+}
+
+.chat-message.user {
+    align-self: flex-end;
+}
+
+.msg-content {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+}
+
+.assistant .msg-content {
+    background-color: var(--bg-tertiary);
+    border-top-left-radius: 0;
+}
+
+.user .msg-content {
+    background-color: var(--accent);
+    color: white;
+    border-top-right-radius: 0;
+}
+
+.chat-input-area {
+    padding: 1rem;
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+}
+
+.chat-input-area textarea {
+    flex: 1;
+    background-color: var(--bg-secondary);
+    border: none;
+    resize: none;
+}
+
+/* LangGraph Visual */
+.graph-and-prompts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.langgraph-visual, .prompts-editor {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+}
+
+.mermaid {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Progress */
+.execution-progress {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--accent);
+    transition: width 0.3s ease;
+}
+
+.terminal-logs {
+    background-color: var(--terminal-bg);
+    color: var(--terminal-ink);
+    font-family: monospace;
+    padding: 1rem;
+    border-radius: 8px;
+    height: 200px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+}
+
+/* Results */
+.plan-results {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    min-height: 400px;
+}
+
+.cost-breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.cost-breakdown-table th,
+.cost-breakdown-table td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.plan-zones {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.plan-week { margin-bottom: 2rem; }
+.plan-week h3 {
+    font-size: 1rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+/* Why this week looks the way it does, in the coach's own words. Sits between
+   the week heading and its days so the athlete reads the reasoning before the
+   sessions it explains. */
+.plan-week-rationale {
+    margin: -0.5rem 0 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-subtle, rgba(127, 127, 127, 0.08));
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary, inherit);
+}
+
+/* Adherence: what the athlete actually did with the plan they were given. */
+.adherence-summary {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1rem;
+    background: var(--bg-tertiary); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: .7rem .9rem; margin-bottom: 1rem;
+}
+.adherence-summary span { color: var(--text-muted); font-size: .85rem; }
+.plan-day-adherence {
+    font-size: .75rem; padding: .15rem .4rem; border-radius: 6px;
+    margin: .2rem 0 .4rem; display: inline-block;
+}
+.plan-day-adherence.completed { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
+.plan-day-adherence.modified  { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+.plan-day-adherence.missed    { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+
+/* A repeat block, with its rounds nested underneath it. */
+.plan-step-repeat { flex-direction: column; align-items: stretch; }
+.plan-repeat-label { font-weight: 600; }
+.plan-step-repeat .plan-steps {
+    margin: .15rem 0 .2rem .6rem; padding-left: .5rem;
+    border-left: 2px solid var(--border);
+}
+
+.plan-day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+.plan-day-card {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem;
+}
+.plan-day-card.rest { opacity: 0.6; }
+.plan-day-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.plan-day-sport-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background-color: var(--bg-secondary);
+    color: var(--text-muted);
+    margin: 0.3rem 0;
+}
+.plan-day-focus { font-weight: 600; margin-bottom: 0.3rem; }
+.plan-steps { list-style: none; margin: 0.4rem 0; }
+.plan-steps li { font-size: 0.85rem; padding: 0.15rem 0; }
+.plan-steps label { display: flex; align-items: flex-start; gap: 0.4rem; cursor: pointer; }
+.plan-day-duration { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
+.plan-day-purpose { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; }
+.plan-day-adaptation { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 0.3rem; }
+.plan-day-upload-status { font-size: 0.75rem; margin-top: 0.4rem; min-height: 1em; }
+.btn-upload-day { margin-top: 0.4rem; }
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--overlay);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-secondary);
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    width: 500px;
+    max-width: 90%;
+    border: 1px solid var(--border);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Header actions (profile selector + save button) */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.header-actions select {
+    min-width: 220px;
+}
+
+.required-mark {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.section-optional-tag {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: none;
+}
+
+.save-indicator {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* Profile completeness bar */
+.profile-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.profile-progress .progress-bar-container {
+    flex: 1;
+    margin: 0;
+}
+
+.profile-progress .subtitle {
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Profile wizard: section pills + panels */
+.profile-wizard {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.profile-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 190px;
+    position: sticky;
+    top: 3rem;
+}
+
+.profile-tab {
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.profile-tab:hover {
+    color: var(--text-main);
+    background-color: var(--bg-secondary);
+}
+
+.profile-tab.active {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.cartilla-form {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-panel {
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.profile-panel.active {
+    display: block;
+}
+
+/* Garmin auto-import */
+.garmin-import-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.garmin-badge {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--success);
+    background-color: var(--success-soft);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+}
+
+/* Checkbox rows (equipo/entorno, estilo de vida, PAR-Q+) */
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    color: var(--text-main);
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.2rem;
+    accent-color: var(--accent);
+}
+
+.parq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Explanatory bullet list inside an "advanced settings" disclosure — used
+   where a setting was REMOVED and replaced by the reason it no longer needs
+   to be a setting. */
+.info-list {
+    margin: 0.75rem 0 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary, inherit);
+}
+
+/* Coach chat. Deliberately plainer than the plan views: this is a
+   conversation, not a document. */
+.coach-chat { max-width: 780px; }
+
+.coach-history {
+    min-height: 260px;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.coach-msg { display: flex; }
+.coach-msg.user { justify-content: flex-end; }
+
+.coach-msg .msg-content {
+    max-width: 82%;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.coach-msg.assistant .msg-content {
+    background: rgba(127, 127, 127, 0.1);
+    border-left: 3px solid var(--accent);
+}
+
+.coach-msg.user .msg-content {
+    background: var(--accent);
+    color: #fff;
+}
+
+.coach-input-area {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-end;
+    margin-top: 0.85rem;
+}
+
+.coach-input-area textarea { flex: 1; resize: vertical; }
+
+.coach-meta { font-variant-numeric: tabular-nums; }
+
+/* Sessions Garmin has no faithful shape for. The written text IS the session,
+   so it gets more visual weight than the step list would have had -- not less. */
+.plan-day-manual {
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--radius);
+    border-left: 3px solid var(--accent);
+    background: rgba(127, 127, 127, 0.08);
+}
+
+.plan-day-manual .manual-tag {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary, inherit);
+}
+
+.plan-day-manual .manual-body {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.plan-day-discipline {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    border: 1px dashed var(--border);
+    font-size: 0.68rem;
+    color: var(--text-secondary, inherit);
+}
+
+/* Deletion scope picker + history kind badge. Both exist so the athlete can
+   see WHAT they are about to remove, and what each archived entry actually is
+   -- a week of sessions and a 16-week macrocycle used to look identical. */
+.delete-scope {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: var(--bg-secondary);
+    color: inherit;
+    font-size: 0.85rem;
+}
+
+.history-kind {
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary, inherit);
+}
+
+/* Pre-week check-in. Taller than the other modals because it is a short form,
+   so it scrolls inside itself rather than pushing the page. */
+.checkin-modal {
+    width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.checkin-item {
+    margin-bottom: 1.1rem;
+}
+
+.checkin-item > label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.checkin-scale {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-secondary, inherit);
+}
+
+.checkin-scale input[type="range"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.checkin-scale output {
+    min-width: 1.5rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text-primary, inherit);
+}
+
+/* Goal realism read-out. Colour signals how far the declared target is from
+   the athlete's own predicted time — it is information, never a rejection. */
+.goal-realism-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.goal-row {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    border-left: 3px solid var(--border);
+    background: rgba(127, 127, 127, 0.07);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.goal-row .goal-verdict {
+    color: var(--text-secondary, inherit);
+}
+
+.goal-alcanzable { border-left-color: var(--success, #22c55e); }
+.goal-conservador { border-left-color: var(--accent); }
+.goal-exigente { border-left-color: var(--warning, #f59e0b); }
+.goal-muy_exigente { border-left-color: var(--warning, #f59e0b); }
+.goal-fuera_de_rango { border-left-color: var(--danger, #ef4444); }
+
+/* Health disclaimer — deliberately visually distinct from the form fields
+   around it: it is a statement the athlete accepts, not another input. */
+.health-disclaimer {
+    margin-top: 1.75rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warning, #f59e0b);
+    border-radius: var(--radius);
+    background-color: rgba(245, 158, 11, 0.06);
+}
+
+.health-disclaimer h4 {
+    margin: 0 0 0.6rem;
+    font-size: 0.95rem;
+}
+
+.health-disclaimer p {
+    margin: 0 0 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.health-disclaimer .checkbox-label {
+    align-items: flex-start;
+    line-height: 1.5;
+}
+
+/* Injuries (Salud) */
+.injury-row {
+    padding: 1rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+}
+
+/* Re-evaluation banner + tab indicator dot */
+.reeval-banner {
+    background-color: var(--danger-soft);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.reeval-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--danger);
+    margin-left: 0.3rem;
+}
+
+@media (max-width: 900px) {
+    .profile-wizard {
+        flex-direction: column;
+    }
+    .profile-tabs {
+        flex-direction: row;
+        flex-wrap: wrap;
+        position: static;
+        width: 100%;
+    }
+}
+
+
+/* ==========================================================================
+   Components the markup already used but the stylesheet never defined,
+   plus the dashboard.
+   ========================================================================== */
+
+.btn-danger {
+    background-color: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+.btn-danger:hover:not(:disabled) { background-color: var(--danger-soft); }
+
+.btn-success {
+    background-color: var(--success);
+    color: #fff;
+    border: 1px solid var(--success);
+}
+.btn-success:hover:not(:disabled) { filter: brightness(1.08); }
+
+/* --- Dashboard ---------------------------------------------------------- */
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--s4);
+    margin-bottom: var(--s5);
+}
+
+.dash-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s4);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+}
+.dash-card.span-2 { grid-column: span 2; }
+
+.dash-card h3 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.dash-value { font-size: 1.6rem; font-weight: 700; line-height: 1.15; font-family: 'Outfit', sans-serif; }
+.dash-sub { font-size: 0.85rem; color: var(--text-muted); }
+.dash-empty { color: var(--text-muted); font-size: 0.9rem; }
+
+.dash-actions { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+
+/* Next session, the one thing an athlete opens the app to see. */
+.next-session {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s3);
+}
+.next-session .when { font-size: 0.8rem; color: var(--text-muted); text-transform: capitalize; }
+.next-session .what { font-size: 1.15rem; font-weight: 700; font-family: 'Outfit', sans-serif; }
+.next-session .how-long { font-size: 0.85rem; color: var(--text-muted); }
+.next-session-steps { list-style: none; margin-top: var(--s2); font-size: 0.85rem; }
+.next-session-steps li { padding: 1px 0; color: var(--text-muted); }
+.next-session-steps li strong { color: var(--text-main); font-weight: 600; }
+
+/* A compact bar so a week's shape reads at a glance. */
+.week-strip { display: flex; gap: 3px; }
+.week-strip .d {
+    flex: 1; min-width: 0; text-align: center; padding: var(--s2) 2px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 0.65rem; color: var(--text-muted); overflow: hidden;
+}
+.week-strip .d.today { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.week-strip .d.rest { background-color: var(--bg-tertiary); }
+.week-strip .d .sport { display: block; font-size: 0.7rem; color: var(--text-main); font-weight: 600; }
+
+/* --- History ------------------------------------------------------------ */
+.history-list { display: flex; flex-direction: column; gap: var(--s2); }
+
+.history-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s3) var(--s4);
+}
+.history-row .when { font-weight: 600; }
+.history-row .stat { font-size: 0.85rem; color: var(--text-muted); }
+.history-row .spacer { flex: 1; }
+.history-row.current { border-color: var(--accent); }
+.history-badge {
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700;
+    color: var(--accent); background-color: var(--accent-soft);
+    border-radius: var(--radius-sm); padding: 1px var(--s2);
+}
+
+/* --- Responsive: the 280px fixed sidebar never collapsed ---------------- */
+@media (max-width: 900px) {
+    .sidebar {
+        position: static; width: 100%; height: auto;
+        border-right: 0; border-bottom: 1px solid var(--border);
+        flex-direction: column; gap: var(--s3);
+    }
+    .nav-links { flex-direction: row; flex-wrap: wrap; }
+    .nav-links li { padding: var(--s2) var(--s3); }
+    .nav-links li .nav-text { display: none; }
+    .app-container { flex-direction: column; }
+    .content-area {
+        margin-left: 0; width: 100%; padding: var(--s4);
+    }
+    .dash-card.span-2 { grid-column: span 1; }
+    .section-header.space-between { flex-direction: column; align-items: flex-start; gap: var(--s3); }
+    .action-buttons { flex-wrap: wrap; }
+}
+
+@media (max-width: 560px) {
+    .nav-links li .nav-text { display: inline; }
+    .nav-links { flex-direction: column; }
+    .week-strip { flex-wrap: wrap; }
+    .week-strip .d { flex: 1 1 13%; }
+}
+
+/* A short note under a field, for when two nearby inputs look like the same
+   question asked twice and the difference actually matters. */
+.field-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--s1);
+    line-height: 1.4;
+}
+
+.advanced-settings { margin-top: var(--s4); border-top: 1px solid var(--border); padding-top: var(--s3); }
+.advanced-settings > summary {
+    cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-muted);
+    list-style: none;
+}
+.advanced-settings > summary::before { content: "▸ "; }
+.advanced-settings[open] > summary::before { content: "▾ "; }
+.advanced-settings > summary:hover { color: var(--text-main); }
+.advanced-settings > .subtitle { margin: var(--s2) 0; }
+
+.terminal-details > summary {
+    cursor: pointer; font-size: 0.85rem; color: var(--text-muted); margin-top: var(--s2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AI Coach flotante y Cuaderno — Plan Maestro v7, tracks 7 y 8.
+
+   El chat deja de ser una pestaña a la que ir y pasa a ser un botón presente
+   en todas las vistas: la pregunta que uno le hace al entrenador casi siempre
+   nace mirando el plan, no después de navegar hasta otro sitio.
+
+   Todo sale de las variables del tema. La burbuja del atleta usa el acento; la
+   del coach, la superficie secundaria — al revés de lo habitual, para que en
+   una conversación larga lo que destaque sea lo que él preguntó y no el muro
+   de texto de las respuestas.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.coach-fab {
+    position: fixed;
+    left: var(--s4);
+    bottom: var(--s4);
+    z-index: 900;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--brand-gradient);
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.coach-fab:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0, 0, 0, .28); }
+.coach-fab:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* El punto verde del avatar: dice "está para responder", no "hay mensajes
+   sin leer". Un badge de no-leídos en algo que nunca escribe primero sería
+   mentira. */
+.coach-fab-dot {
+    position: absolute;
+    right: .28rem;
+    bottom: .28rem;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 50%;
+    background: #22c55e;
+    border: 2px solid var(--bg-main);
+}
+
+.coach-panel {
+    position: fixed;
+    left: var(--s4);
+    bottom: calc(3.5rem + var(--s4) + var(--s2));
+    z-index: 901;
+    width: min(23rem, calc(100vw - 2 * var(--s4)));
+    height: min(30rem, calc(100vh - 8rem));
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
+    overflow: hidden;
+}
+.coach-panel.hidden { display: none; }
+
+.coach-panel-head {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    padding: var(--s3);
+    background: var(--brand-gradient);
+    color: #fff;
+    flex-shrink: 0;
+}
+.coach-avatar {
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.coach-who { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; }
+.coach-who strong { font-size: .95rem; }
+.coach-status { font-size: .72rem; opacity: .9; display: flex; align-items: center; gap: .3rem; }
+.coach-status-dot {
+    width: .45rem; height: .45rem; border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 2px rgba(74, 222, 128, .3);
+}
+.coach-head-btn {
+    background: transparent; border: none; color: #fff;
+    font-size: .95rem; cursor: pointer; padding: .2rem .35rem; border-radius: 6px;
+    opacity: .85;
+}
+.coach-head-btn:hover { opacity: 1; background: rgba(255, 255, 255, .16); }
+
+.coach-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    background: var(--bg-main);
+}
+.coach-msg { max-width: 85%; }
+.coach-msg .msg-content {
+    padding: .55rem .8rem;
+    border-radius: 14px;
+    font-size: .88rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.coach-msg.assistant { align-self: flex-start; }
+.coach-msg.assistant .msg-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+.coach-msg.user { align-self: flex-end; }
+.coach-msg.user .msg-content {
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.coach-msg.pending .msg-content { opacity: .6; font-style: italic; }
+.coach-msg.error .msg-content {
+    background: var(--danger-soft);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.coach-input-area {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--s2);
+    padding: var(--s2) var(--s3);
+    border-top: 1px solid var(--border);
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+}
+.coach-input-area textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: .5rem .8rem;
+    font: inherit;
+    font-size: .88rem;
+    background: var(--bg-main);
+    color: var(--text-main);
+    max-height: 6rem;
+}
+.coach-send {
+    width: 2.1rem; height: 2.1rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.coach-send:disabled { opacity: .45; cursor: default; }
+.coach-meta {
+    font-size: .68rem;
+    color: var(--text-muted);
+    padding: 0 var(--s3) var(--s2);
+    margin: 0;
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+}
+
+/* En móvil ocupa la pantalla: un panel de 23rem sobre 375px de ancho deja el
+   chat inutilizable. */
+@media (max-width: 520px) {
+    .coach-panel {
+        left: 0; right: 0; bottom: 0;
+        width: 100vw; height: 85vh;
+        border-radius: 14px 14px 0 0;
+    }
+}
+
+/* ── Cuaderno ─────────────────────────────────────────────────────────── */
+
+.notebook-add {
+    display: flex; flex-direction: column; gap: var(--s2);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: var(--s3);
+    margin-bottom: var(--s4);
+}
+.notebook-add textarea {
+    resize: vertical; border: 1px solid var(--border); border-radius: 8px;
+    padding: var(--s2); font: inherit; background: var(--bg-main); color: var(--text-main);
+}
+.notebook-add-row { display: flex; gap: var(--s2); align-items: center; }
+.notebook-add-row select {
+    flex: 1; padding: .45rem var(--s2); border: 1px solid var(--border);
+    border-radius: 8px; background: var(--bg-main); color: var(--text-main); font: inherit;
+}
+
+.notebook-list { display: flex; flex-direction: column; gap: var(--s3); }
+.notebook-group-title {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--text-muted); margin: var(--s3) 0 var(--s1);
+}
+.notebook-entry {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: var(--s3);
+    display: flex; flex-direction: column; gap: var(--s2);
+}
+/* Una propuesta se ve DISTINTA de un hecho: el coach sugiere, el atleta
+   confirma. Si las dos se vieran igual, una frase mal entendida en un chat
+   dirigiría el entrenamiento sin que nadie lo hubiera aceptado. */
+.notebook-entry.propuesta { border-left-color: var(--warning); background: var(--warning-soft); }
+.notebook-entry.retirada { border-left-color: var(--border-strong); opacity: .62; }
+.notebook-entry.retirada .notebook-text { text-decoration: line-through; }
+.notebook-text { font-size: .93rem; line-height: 1.55; }
+.notebook-quote {
+    font-size: .82rem; color: var(--text-muted); font-style: italic;
+    border-left: 2px solid var(--border); padding-left: var(--s2);
+}
+.notebook-meta {
+    display: flex; flex-wrap: wrap; gap: var(--s2) var(--s3);
+    align-items: center; font-size: .74rem; color: var(--text-muted);
+}
+.notebook-actions { display: flex; gap: var(--s2); margin-left: auto; }
+.notebook-actions button {
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 6px; padding: .2rem .5rem; font-size: .74rem;
+    color: var(--text-muted); cursor: pointer;
+}
+.notebook-actions button:hover { border-color: var(--accent); color: var(--accent); }
+.notebook-actions button.danger:hover { border-color: var(--danger); color: var(--danger); }
+.notebook-source {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+    padding: .1rem .4rem; border-radius: 99px;
+    background: var(--bg-tertiary); color: var(--text-muted);
+}
+
+/* El aviso de "lo anoté". No es una respuesta del coach ni un mensaje del
+   atleta: es el sistema diciendo qué guardó. Se ve distinto de las dos cosas
+   a propósito -- si pareciera parte de la conversación, se leería como
+   charla y no como el momento de corregir. */
+.coach-msg.note { align-self: stretch; max-width: 100%; }
+.coach-msg.note .msg-content {
+    background: var(--accent-soft);
+    border: 1px dashed var(--accent);
+    color: var(--text-main);
+    border-radius: 10px;
+    font-size: .82rem;
+}
+
+/* Contenido de una burbuja de chat. Los márgenes por defecto de <p> y <ul>
+   dentro de una burbuja pequeña la dejan con huecos enormes arriba y abajo,
+   y una lista con la sangría del navegador se sale del ancho. */
+.msg-content > p { margin: 0 0 .45rem; }
+.msg-content > p:last-child { margin-bottom: 0; }
+.msg-content > ul,
+.msg-content > ol { margin: .2rem 0 .5rem; padding-left: 1.15rem; }
+.msg-content > ul:last-child,
+.msg-content > ol:last-child { margin-bottom: 0; }
+.msg-content li { margin: .12rem 0; }
+.msg-content code {
+    background: var(--bg-tertiary); border-radius: 4px;
+    padding: .05rem .3rem; font-size: .92em;
+}
+/* Un encabezado degradado a frase destacada: separa, sin gritar. */
+.msg-content .chat-lead { margin-top: .55rem; }
+.msg-content .chat-lead:first-child { margin-top: 0; }
+/* En la burbuja del atleta (fondo de acento) el código heredaría un fondo
+   claro ilegible. */
+.coach-msg.user .msg-content code { background: rgba(255, 255, 255, .22); color: inherit; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Gráficas — v7.
+
+   Todo con variables del tema, así que el modo oscuro sale gratis. Sin
+   librerías: barras con flexbox y una línea en SVG. Cuatro gráficas no
+   justifican 200 KB de JavaScript en una app sin proceso de compilación.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--s4);
+    margin: var(--s5) 0;
+}
+
+.chart-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s3);
+}
+.chart-head { display: flex; flex-direction: column; gap: .1rem; }
+.chart-head h3 { font-size: 1rem; margin: 0; }
+.chart-sub { font-size: .82rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.chart-note {
+    font-size: .74rem; color: var(--text-muted); margin: 0;
+    line-height: 1.45; border-top: 1px dashed var(--border); padding-top: var(--s2);
+}
+
+/* --- barras pareadas ------------------------------------------------------ */
+
+.chart-plot {
+    display: flex; align-items: flex-end; gap: var(--s2);
+    height: 140px; padding-top: var(--s2);
+}
+.chart-bar-group {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: var(--s1); height: 100%; min-width: 0;
+}
+.chart-bars {
+    flex: 1; width: 100%; display: flex; align-items: flex-end;
+    justify-content: center; gap: 2px;
+}
+.chart-bar {
+    width: 42%; max-width: 18px; border-radius: 3px 3px 0 0;
+    background: var(--accent); transition: height .2s ease;
+}
+/* La barra "fantasma" es el objetivo, no un dato: se dibuja como contorno para
+   que el ojo lea la sólida como lo que pasó de verdad. */
+.chart-bar.ghost {
+    background: transparent;
+    border: 1.5px dashed var(--border-strong);
+    border-bottom: none;
+}
+.chart-xlabel {
+    font-size: .62rem; color: var(--text-muted); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+.chart-legend {
+    display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
+    font-size: .72rem; color: var(--text-muted);
+}
+.chart-legend span { display: flex; align-items: center; gap: .35rem; }
+.swatch { width: .7rem; height: .7rem; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+.swatch.ghost { background: transparent; border: 1.5px dashed var(--border-strong); }
+.swatch.dashed { background: transparent; border-top: 2px dashed var(--danger); height: 0; border-radius: 0; }
+
+/* --- líneas de serie: ver el bloque de ejes y medidor más abajo ---------- */
+
+/* --- reparto por disciplina ----------------------------------------------- */
+
+.chart-split { display: flex; flex-direction: column; gap: var(--s2); }
+.split-row { display: grid; grid-template-columns: 5.5rem 1fr 3rem; align-items: center; gap: var(--s2); }
+.split-label { font-size: .82rem; }
+.split-track { height: .55rem; background: var(--bg-tertiary); border-radius: 99px; overflow: hidden; }
+.split-fill { display: block; height: 100%; border-radius: 99px; }
+/* Con dos unidades ("14.2 h · 132 km") la columna estrecha parte el valor en
+   dos lineas y deja la fila descuadrada. */
+.split-row.wide { grid-template-columns: 5.5rem 1fr 7rem; }
+.split-value {
+    font-size: .78rem; color: var(--text-muted); text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.chart-empty {
+    background: var(--bg-secondary); border: 1px dashed var(--border);
+    border-radius: var(--radius); padding: var(--s4);
+    color: var(--text-muted); font-size: .88rem; margin: var(--s5) 0;
+}
+
+@media (max-width: 520px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .chart-plot { height: 110px; }
+    .split-row { grid-template-columns: 4.5rem 1fr 2.6rem; }
+    .split-row.wide { grid-template-columns: 4.5rem 1fr 6rem; }
+}
+
+/* Balance de carga. La banda del rango va DETRAS de la barra, no al lado:
+   lo que se lee de un vistazo es si la barra cae dentro, y eso solo funciona
+   si comparten el mismo eje. */
+.balance-row { display: grid; grid-template-columns: 6.5rem 1fr 2.6rem; align-items: center; gap: var(--s2); }
+.balance-track {
+    position: relative; height: .7rem; background: var(--bg-tertiary);
+    border-radius: 99px; overflow: hidden;
+}
+.balance-band {
+    position: absolute; top: 0; bottom: 0;
+    background: var(--border-strong); opacity: .5;
+}
+.balance-fill {
+    position: absolute; top: .15rem; bottom: .15rem; left: 0;
+    border-radius: 99px;
+}
+@media (max-width: 520px) {
+    .balance-row { grid-template-columns: 5rem 1fr 2.4rem; }
+}
+
+/* --- ejes, cifras y medidor (v7) -----------------------------------------
+
+   Dos cosas que la primera version de las graficas no tenia y sin las que no
+   se puede analizar nada: los numeros del eje, y el valor escrito encima de
+   cada barra. Una barra sin cifra solo dice "mas que la de al lado".
+
+   El `.chart-svg` ya no se estira: el viewBox lleva la proporcion real del
+   dibujo y escala uniforme, asi que un circulo es un circulo. Antes, con
+   preserveAspectRatio="none", los puntos de la linea salian como elipses. */
+
+.chart-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart-axis {
+    font-size: 8px; fill: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+.chart-axis-note { font-size: .68rem; color: var(--text-muted); margin-left: auto; }
+
+.chart-bar-value {
+    font-size: .66rem; color: var(--text-muted); font-variant-numeric: tabular-nums;
+    line-height: 1; white-space: nowrap;
+}
+.chart-bar-value.weak { color: var(--warning); font-weight: 600; }
+
+/* Medidor: un solo valor sobre su escala. Existe porque una linea de UN punto
+   no es una grafica, y esa es exactamente la situacion de un atleta en su
+   primera semana. Lo informativo entonces no es la tendencia (no hay), es
+   DONDE cae el valor respecto al rango. */
+.gauge { display: flex; flex-direction: column; gap: var(--s2); padding-top: var(--s3); }
+.gauge-track {
+    position: relative; height: .8rem; background: var(--bg-tertiary);
+    border-radius: 99px;
+}
+.gauge-band {
+    position: absolute; top: 0; bottom: 0;
+    background: var(--success); opacity: .28; border-radius: 99px;
+}
+.gauge-limit {
+    position: absolute; top: -.2rem; bottom: -.2rem; width: 0;
+    border-left: 2px dashed var(--danger); opacity: .7;
+}
+.gauge-needle {
+    position: absolute; top: 50%; width: .95rem; height: .95rem;
+    margin-left: -.475rem; transform: translateY(-50%);
+    border-radius: 50%; border: 2px solid var(--bg-secondary);
+}
+.gauge-needle.ok { background: var(--success); }
+.gauge-needle.off { background: var(--warning); }
+.gauge-scale {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: .7rem; color: var(--text-muted); font-variant-numeric: tabular-nums;
+}
+.gauge-now { font-size: 1.05rem; font-weight: 700; }
+.gauge-now.ok { color: var(--success); }
+.gauge-now.off { color: var(--warning); }
+
+
+/* Barra de frescura del tablero. El refresco lee el reloj, no llama a ningun
+   modelo: por eso puede ofrecerse a diario sin miedo al coste. */
+.charts-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s3); margin: var(--s5) 0 calc(var(--s4) * -1 + var(--s3));
+}
+.charts-freshness { font-size: .8rem; color: var(--text-muted); }
+.charts-freshness.fresh::before { content: 'CF'; color: var(--success); margin-right: .35rem; font-size: .7em; }
+
+/* Un aviso pegado al campo que lo provoca, no arriba de la pantalla: quien
+   marca "sí, quiero bricks" tiene que leer ahí mismo por qué no va a
+   recibirlos. */
+.field-warning {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border-left: 3px solid var(--warning);
+    background: var(--warning-soft);
+    color: var(--warning);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    border-radius: 4px;
+}
+
+/* Las dos salidas del diálogo de ajuste, cada una diciendo su alcance. Antes
+   había un solo botón que rehacía la temporada entera sin avisar. */
+.reject-option {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-left: 3px solid var(--border, #d4d4d8);
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+.reject-option strong { display: block; margin-bottom: 2px; }
+.reject-option span { color: var(--text-muted); }
