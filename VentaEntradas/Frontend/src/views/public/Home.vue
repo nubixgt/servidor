@@ -11,7 +11,7 @@
                 Reservas <span class="nav-count">{{ store.groups.length }}</span>
             </button>
         </nav>
-        <button class="help" @click="modal = { kind: 'help' }"><Info :size="16" /><span>Cómo funciona</span></button>
+        <button class="help" @click="helpBox"><Info :size="16" /><span>Cómo funciona</span></button>
     </header>
 
     <main>
@@ -77,7 +77,7 @@
                         </div>
 
                         <div class="total"><span>Total de la reserva</span><strong>{{ money(total) }}<small>.00</small></strong></div>
-                        <button class="primary" :disabled="!chosen.length || store.loading || !!store.error" @click="modal = { kind: 'confirm' }">
+                        <button class="primary" :disabled="!chosen.length || store.loading || !!store.error" @click="book">
                             Reservar {{ chosen.length > 1 ? 'mesas' : 'mesa' }}<ArrowRight :size="18" />
                         </button>
                         <div class="payment-note">Reserva de mesas · No se realiza ningún cobro</div>
@@ -126,7 +126,7 @@
                     <p><Users :size="15" />{{ rs.length * 8 }} entradas · {{ money(groupTotal(rs)) }}</p>
                     <div class="booking-card-bottom">
                         <small>{{ new Date(rs[0].createdAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Guatemala' }) }}</small>
-                        <button @click="modal = { kind: 'cancel', bookingId: rs[0].bookingId, ids: rs.map((r) => r.tableId) }">
+                        <button @click="cancel(rs)">
                             <Trash2 :size="14" />Cancelar reserva
                         </button>
                     </div>
@@ -140,19 +140,6 @@
         <span>Buena música. Buena compañía. Una gran noche.</span>
         <span>BAILE SOCIAL</span>
     </footer>
-
-    <BookingDialog
-        v-model:name="name"
-        :modal="modal"
-        :selected="selected"
-        :total="total"
-        :busy="busy"
-        :error="store.error"
-        @close="modal = null"
-        @book="book"
-        @cancel="cancel"
-        @go-reservations="modal = null; tab = 'reservations'"
-    />
 </template>
 
 <script setup>
@@ -163,8 +150,7 @@ import { useReservationsStore } from '../../stores/reservations';
 const baseUrl = import.meta.env.BASE_URL;
 import { categories, money, tableById, tables, TOTAL_TABLES } from '../../utils/tables';
 import VenueMap from '../../components/sanafer/VenueMap.vue';
-import BookingDialog from '../../components/sanafer/BookingDialog.vue';
-import { notify } from '../../utils/alert';
+import { bookingBox, cancelBookingBox, helpBox, notify, successBox } from '../../utils/alert';
 import logo from '../../assets/images/sanafer-2026.png';
 
 const POLL_MS = 15000;
@@ -174,8 +160,6 @@ const store = useReservationsStore();
 const tab = ref('map');
 const selected = ref([]);
 const name = ref('');
-const modal = ref(null);
-const busy = ref(false);
 
 const chosen = computed(() => tables.filter((t) => selected.value.includes(t.id)));
 const total = computed(() => chosen.value.reduce((n, t) => n + categories[t.category].price, 0));
@@ -200,33 +184,28 @@ watch(
 );
 
 const book = async () => {
-    if (busy.value) return;
-    busy.value = true;
     const ids = [...selected.value];
-    const res = await store.book(ids, name.value);
-    busy.value = false;
-    if (res.ok) {
+    const out = await bookingBox({ ids, total: total.value, name: name.value, submit: (n) => store.book(ids, n) });
+    name.value = out.name;
+    if (out.cancelled) return;
+    if (out.result.ok) {
         selected.value = [];
         name.value = '';
-        modal.value = { kind: 'success', ids, bookingId: res.bookingId };
+        if (await successBox(ids, out.result.bookingId)) tab.value = 'reservations';
     } else {
-        // Se cierra el diálogo para que el aviso de SweetAlert quede visible
-        // (la selección y el nombre se conservan para reintentar).
-        modal.value = null;
-        notify('error', res.message);
+        // La selección y el nombre se conservan para reintentar.
+        notify('error', out.result.message);
     }
 };
 
-const cancel = async () => {
-    busy.value = true;
-    const res = await store.cancel(modal.value?.bookingId);
-    busy.value = false;
-    if (res.ok) {
-        modal.value = null;
-        notify('success', 'Reserva cancelada. Las mesas vuelven a estar disponibles.');
-    } else {
-        notify('error', res.message);
-    }
+const cancel = async (rs) => {
+    const res = await cancelBookingBox(
+        rs.map((r) => r.tableId),
+        () => store.cancel(rs[0].bookingId)
+    );
+    if (!res) return;
+    if (res.ok) notify('success', 'Reserva cancelada. Las mesas vuelven a estar disponibles.');
+    else notify('error', res.message);
 };
 
 let pollTimer;

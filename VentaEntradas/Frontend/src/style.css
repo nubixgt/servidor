@@ -35,3 +35,18 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Sans',Arial,sans-s
 .swal2-popup.swal-sanafer{border:1px solid #344d72;font-family:'DM Sans',Arial,sans-serif}
 .swal2-popup.swal2-toast.swal-sanafer{border-color:#4578b6;box-shadow:0 10px 40px #0008}
 .swal2-container{z-index:2000}
+.swal2-popup.swal-sanafer{width:30em;max-width:calc(100vw - 32px)}
+.swal2-popup.swal-sanafer .swal2-title{font-family:Georgia,serif;font-weight:400}
+.swal2-popup.swal-sanafer .swal2-input{background:#091323;border:1px solid #3a5479;color:#e1edff}
+.swal2-popup.swal-sanafer .swal2-input::placeholder{color:#8ba0be}
+.swal2-popup.swal-sanafer .swal2-input-label{font-size:12px;font-weight:600}
+.swal-text{font-size:14px;color:#a3b7d4;line-height:1.7;margin:0}
+.swal-note{font-size:12px;color:#9eb2cf;line-height:1.6;margin:14px 0 0}
+.swal-total{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;margin-top:16px;border-top:1px dashed #38506f;border-bottom:1px dashed #38506f}
+.swal-total span{font-size:12px;color:#a8bbd5}
+.swal-total strong{font-size:24px}
+.swal-code{background:#152d4e;border:1px dashed #496fa0;color:#a3c6f6;padding:16px;font-size:10px;letter-spacing:2px;margin-top:18px}
+.swal-code span{display:block;font-family:monospace;font-size:20px;color:#c8e1ff;margin-top:6px}
+.swal-steps{text-align:left}
+.swal-steps p{font-size:13px;color:#a1b5d1;line-height:1.7;margin:14px 0}
+.swal-steps strong{display:block;color:#c4dcff;margin-bottom:3px}
