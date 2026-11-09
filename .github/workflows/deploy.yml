@@ -134,6 +134,7 @@ jobs:
             --exclude 'VentaEntradas/Diseno/' \
             --exclude 'VentaEntradas/Database/' \
             --exclude 'VentaEntradas/Backend/config/database.php' \
+            --exclude 'VentaEntradas/Backend/config/jwt.php' \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
             --exclude '**/config.local.php' \

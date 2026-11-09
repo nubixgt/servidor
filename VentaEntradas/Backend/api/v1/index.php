@@ -3,6 +3,8 @@
 use App\Core\Router;
 use App\Controllers\ExampleController;
 use App\Controllers\ReservationController;
+use App\Controllers\AuthController;
+use App\Controllers\UserController;
 
 // Backend/api/v1/index.php
 
@@ -32,6 +34,8 @@ $router = new Router();
 
 // 5. Register Controllers manually 
 $router->registerController(ExampleController::class);
+$router->registerController(AuthController::class);
+$router->registerController(UserController::class);
 $router->registerController(ReservationController::class);
 // $router->registerController(YourController::class);
 

@@ -17,13 +17,25 @@ const api = axios.create({
 // Request interceptor for API calls
 api.interceptors.request.use(
     config => {
-        const token = localStorage.getItem('token');
+        const token = (() => { try { return localStorage.getItem('sanafer_token'); } catch { return null; } })();
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
         return config;
     },
     error => {
+        return Promise.reject(error);
+    }
+);
+
+// Sesión vencida o usuario desactivado: App.vue escucha este evento y vuelve al login.
+api.interceptors.response.use(
+    response => response,
+    error => {
+        const isLogin = error.config?.url?.includes('/auth/login');
+        if (error.response?.status === 401 && !isLogin) {
+            window.dispatchEvent(new CustomEvent('auth:expired', { detail: error.response.data?.error }));
+        }
         return Promise.reject(error);
     }
 );

@@ -4,6 +4,7 @@ namespace App\Services;
 use App\DTOs\ReservationDTO;
 use App\Exceptions\ReservationException;
 use App\Repositories\ReservationRepository;
+use App\Utils\Tables;
 use PDOException;
 
 class ReservationService
@@ -17,22 +18,37 @@ class ReservationService
         $this->repository = new ReservationRepository();
     }
 
-    public function getAll(): array
+    /**
+     * Admin ve todo. Vendedor ve qué mesas están ocupadas, pero los datos del
+     * cliente, quién registró y el monto solo de sus propias reservas.
+     */
+    public function getAll(array $user): array
     {
         try {
-            return array_map(fn($r) => [
-                'tableId' => $r->tableId,
-                'bookingId' => $r->bookingId,
-                'name' => $r->name,
-                'createdAt' => $r->createdAt,
-            ], $this->repository->findAll());
+            $rows = $this->repository->findAll();
         } catch (PDOException $e) {
             error_log($e->getMessage());
             throw new ReservationException('No se pudo consultar la disponibilidad. Intenta actualizar.', 503);
         }
+
+        return array_map(function ($r) use ($user) {
+            $mine = $r->userId !== null && $r->userId === $user['id'];
+            $visible = $user['role'] === 'admin' || $mine;
+            return [
+                'tableId' => $r->tableId,
+                'bookingId' => $r->bookingId,
+                'name' => $visible ? $r->name : '',
+                'createdAt' => $r->createdAt,
+                'userId' => $visible ? $r->userId : null,
+                'userName' => $visible ? $r->userName : null,
+                'category' => $visible ? $r->category : null,
+                'price' => $visible ? $r->price : null,
+                'mine' => $mine,
+            ];
+        }, $rows);
     }
 
-    public function create(ReservationDTO $dto): array
+    public function create(ReservationDTO $dto, array $user): array
     {
         $ids = $dto->tableIds;
         $name = is_string($dto->name) ? trim($dto->name) : '';
@@ -57,11 +73,21 @@ class ReservationService
             throw new ReservationException('Ingresa un nombre y selecciona al menos una mesa.', 400);
         }
 
+        // El monto lo calcula el servidor, no el navegador.
+        $rows = [];
+        $total = 0;
+        foreach ($ids as $id) {
+            $category = Tables::category($id);
+            $price = Tables::price($category);
+            $total += $price;
+            $rows[] = ['tableId' => $id, 'category' => $category, 'price' => $price];
+        }
+
         $bookingId = self::uuid();
         $createdAt = gmdate('Y-m-d H:i:s');
 
         try {
-            $this->repository->createBooking($bookingId, $ids, $name, $createdAt);
+            $this->repository->createBooking($bookingId, $rows, $name, $user['id'], $createdAt);
         } catch (PDOException $e) {
             if ($e->getCode() === '23000') {
                 throw new ReservationException('Una de las mesas acaba de ser ocupada. Actualizamos el mapa para que elijas otra.', 409);
@@ -73,25 +99,32 @@ class ReservationService
         return [
             'bookingId' => $bookingId,
             'tableIds' => array_values($ids),
+            'total' => $total,
             'createdAt' => gmdate('Y-m-d\TH:i:s.000\Z', strtotime($createdAt . ' UTC')),
         ];
     }
 
-    public function cancel(mixed $bookingId): void
+    /** Admin cancela cualquiera; vendedor solo las suyas. */
+    public function cancel(mixed $bookingId, array $user): void
     {
         if (!is_string($bookingId) || !preg_match('/^[a-f0-9-]{36}$/', $bookingId)) {
             throw new ReservationException('Reserva inválida.', 400);
         }
 
         try {
-            $deleted = $this->repository->deleteByBookingId($bookingId);
+            $owner = $this->repository->findBookingOwner($bookingId);
+            if ($owner === null) {
+                throw new ReservationException('La reserva ya no existe.', 404);
+            }
+            if ($user['role'] !== 'admin' && $owner['userId'] !== $user['id']) {
+                throw new ReservationException('Solo puedes cancelar las reservas que tú registraste.', 403);
+            }
+            if ($this->repository->deleteByBookingId($bookingId) === 0) {
+                throw new ReservationException('La reserva ya no existe.', 404);
+            }
         } catch (PDOException $e) {
             error_log($e->getMessage());
             throw new ReservationException('No se pudo cancelar la reserva.', 503);
-        }
-
-        if ($deleted === 0) {
-            throw new ReservationException('La reserva ya no existe.', 404);
         }
     }
 

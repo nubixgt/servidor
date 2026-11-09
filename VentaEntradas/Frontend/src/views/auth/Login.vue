@@ -1,26 +1,27 @@
 <template>
-    <div class="flex items-center justify-center min-h-screen bg-gray-100">
-        <div class="p-8 bg-white rounded shadow-md w-96">
-            <h1 class="mb-4 text-2xl font-bold text-center">Login</h1>
-            <form @submit.prevent="handleLogin">
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700">Email</label>
-                    <input type="email" class="w-full px-3 py-2 border rounded shadow appearance-none" placeholder="Email" />
-                </div>
-                <div class="mb-6">
-                    <label class="block mb-2 text-sm font-bold text-gray-700">Password</label>
-                    <input type="password" class="w-full px-3 py-2 border rounded shadow appearance-none" placeholder="Password" />
-                </div>
-                <button type="submit" class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
-                    Sign In
-                </button>
-            </form>
-        </div>
+    <div class="login-page">
+        <img class="login-logo" :src="logo" alt="Logo de la Feria SANAFER 2026" width="200" height="200" />
+        <h1>SANAFER <em>2026</em></h1>
+        <p>Venta de entradas · Baile Social</p>
+        <button class="primary login-open" @click="openLogin">Iniciar sesión<ArrowRight :size="18" /></button>
     </div>
 </template>
 
 <script setup>
-const handleLogin = () => {
-    console.log("Login attempt");
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { ArrowRight } from 'lucide-vue-next';
+import { useAuthStore } from '../../stores/auth';
+import { loginBox } from '../../utils/alert';
+import logo from '../../assets/images/sanafer-2026.png';
+
+const router = useRouter();
+const auth = useAuthStore();
+
+const openLogin = async () => {
+    const res = await loginBox({ submit: (u, p) => auth.login(u, p) });
+    if (res.isConfirmed) router.replace({ name: 'Home' });
 };
+
+onMounted(openLogin);
 </script>

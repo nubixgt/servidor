@@ -19,7 +19,10 @@ class ReservationRepository
     public function findAll(): array
     {
         $stmt = $this->pdo->query(
-            'SELECT table_id, booking_id, name, created_at FROM reservations ORDER BY created_at DESC, table_id ASC'
+            'SELECT r.table_id, r.booking_id, r.name, r.created_at, r.user_id, r.category, r.price, u.full_name AS user_name
+             FROM reservations r
+             LEFT JOIN users u ON u.id = r.user_id
+             ORDER BY r.created_at DESC, r.table_id ASC'
         );
 
         return array_map(
@@ -27,7 +30,11 @@ class ReservationRepository
                 (int) $r['table_id'],
                 $r['booking_id'],
                 $r['name'],
-                gmdate('Y-m-d\TH:i:s.000\Z', strtotime($r['created_at'] . ' UTC'))
+                gmdate('Y-m-d\TH:i:s.000\Z', strtotime($r['created_at'] . ' UTC')),
+                $r['user_id'] !== null ? (int) $r['user_id'] : null,
+                $r['user_name'],
+                $r['category'],
+                $r['price'] !== null ? (float) $r['price'] : null
             ),
             $stmt->fetchAll()
         );
@@ -35,17 +42,19 @@ class ReservationRepository
 
     /**
      * Inserta todas las mesas de la reserva en una transacción.
+     * $rows: [['tableId' => int, 'category' => string, 'price' => int|float], ...]
      * Lanza PDOException (SQLSTATE 23000) si alguna mesa ya está ocupada.
      */
-    public function createBooking(string $bookingId, array $tableIds, string $name, string $createdAt): void
+    public function createBooking(string $bookingId, array $rows, string $name, int $userId, string $createdAt): void
     {
         $this->pdo->beginTransaction();
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO reservations (table_id, booking_id, name, created_at) VALUES (?, ?, ?, ?)'
+                'INSERT INTO reservations (table_id, booking_id, name, user_id, category, price, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)'
             );
-            foreach ($tableIds as $id) {
-                $stmt->execute([$id, $bookingId, $name, $createdAt]);
+            foreach ($rows as $row) {
+                $stmt->execute([$row['tableId'], $bookingId, $name, $userId, $row['category'], $row['price'], $createdAt]);
             }
             $this->pdo->commit();
         } catch (PDOException $e) {
@@ -54,6 +63,18 @@ class ReservationRepository
             }
             throw $e;
         }
+    }
+
+    /**
+     * Dueño de una reserva. Devuelve null si no existe;
+     * si existe, ['userId' => ?int].
+     */
+    public function findBookingOwner(string $bookingId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT user_id FROM reservations WHERE booking_id = ? LIMIT 1');
+        $stmt->execute([$bookingId]);
+        $row = $stmt->fetch();
+        return $row ? ['userId' => $row['user_id'] !== null ? (int) $row['user_id'] : null] : null;
     }
 
     /** Cancela todas las mesas del bookingId. Devuelve las filas eliminadas. */

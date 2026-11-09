@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
 // Views
 import Login from '../views/auth/Login.vue';
@@ -12,7 +13,7 @@ const routes = [
         path: '/',
         name: 'Home',
         component: () => import('../views/public/Home.vue'),
-        meta: { requiresAuth: false }
+        meta: { requiresAuth: true }
     },
     {
         path: '/login',
@@ -35,17 +36,11 @@ const router = createRouter({
     routes
 });
 
-// Basic Guard Placeholder
-router.beforeEach((to, from, next) => {
-    // Implement Auth Check logic here
-    const isAuthenticated = false; // Replace with store check
-
-    if (to.meta.requiresAuth && !isAuthenticated) {
-        // next('/login'); // Uncomment to enable auth guard
-        next(); // Temporary allow all for template
-    } else {
-        next();
-    }
+// Sin sesión solo se puede entrar al login; con sesión, el login redirige al inicio.
+router.beforeEach((to) => {
+    const auth = useAuthStore();
+    if (to.meta.requiresAuth && !auth.isAuthenticated) return { name: 'Login' };
+    if (to.name === 'Login' && auth.isAuthenticated) return { name: 'Home' };
 });
 
 export default router;

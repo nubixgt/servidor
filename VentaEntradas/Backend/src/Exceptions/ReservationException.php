@@ -3,8 +3,8 @@ namespace App\Exceptions;
 
 /**
  * Error de reservas; el código es el HTTP status:
- * 400 inválido, 404 no existe, 409 mesa ocupada, 503 fallo de BD.
+ * 400 inválido, 403 sin permiso, 404 no existe, 409 mesa ocupada, 503 fallo de BD.
  */
-class ReservationException extends \Exception
+class ReservationException extends ApiException
 {
 }

@@ -8,10 +8,18 @@
         <nav aria-label="Navegación principal">
             <button :class="{ active: tab === 'map' }" @click="tab = 'map'">Elige tu mesa</button>
             <button :class="{ active: tab === 'reservations' }" @click="tab = 'reservations'">
-                Reservas <span class="nav-count">{{ store.groups.length }}</span>
+                Reservas <span class="nav-count">{{ visibleGroups.length }}</span>
             </button>
+            <button v-if="auth.isAdmin" :class="{ active: tab === 'users' }" @click="tab = 'users'">Usuarios</button>
         </nav>
-        <button class="help" @click="helpBox"><Info :size="16" /><span>Cómo funciona</span></button>
+        <div class="header-actions">
+            <button class="help" @click="helpBox"><Info :size="16" /><span>Cómo funciona</span></button>
+            <span class="user-chip">
+                <UserRound :size="18" />
+                <span>{{ auth.user.fullName }}<small>{{ auth.roleLabel }}</small></span>
+            </span>
+            <button class="help" @click="logout"><LogOut :size="16" /><span>Salir</span></button>
+        </div>
     </header>
 
     <main>
@@ -100,15 +108,15 @@
         </template>
 
         <!-- Pestaña: reservas -->
-        <section v-else class="reservations-view">
+        <section v-else-if="tab === 'reservations'" class="reservations-view">
             <div class="section-top">
                 <div><span class="section-number">02 /</span><h2>Reservas del evento</h2></div>
                 <button class="secondary" @click="store.load"><RefreshCw :size="16" />Actualizar</button>
             </div>
-            <p class="muted">Consulta las mesas ocupadas y libera una reserva si se cancela.</p>
+            <p class="muted">{{ auth.isAdmin ? 'Consulta todas las reservas y libera una si se cancela.' : 'Aquí aparecen las reservas que tú registraste.' }}</p>
             <p v-if="store.error" role="alert" class="error">{{ store.error }}</p>
 
-            <div v-if="!store.groups.length" class="reservations-empty">
+            <div v-if="!visibleGroups.length" class="reservations-empty">
                 <Ticket :size="44" :stroke-width="1" />
                 <h2>{{ store.loading ? 'Consultando reservas…' : 'La primera mesa puede ser la tuya.' }}</h2>
                 <p>Aquí aparecerán las reservas que confirmes.</p>
@@ -116,7 +124,7 @@
             </div>
 
             <div v-else class="booking-cards">
-                <article v-for="rs in store.groups" :key="rs[0].bookingId" class="booking-card">
+                <article v-for="rs in visibleGroups" :key="rs[0].bookingId" class="booking-card">
                     <div class="booking-card-top">
                         <span><i class="live-dot" />Confirmada</span>
                         <span>#{{ rs[0].bookingId.slice(0, 8).toUpperCase() }}</span>
@@ -124,6 +132,7 @@
                     <h3>{{ rs[0].name }}</h3>
                     <div class="booking-chips"><span v-for="r in rs" :key="r.tableId">A{{ r.tableId }}</span></div>
                     <p><Users :size="15" />{{ rs.length * 8 }} entradas · {{ money(groupTotal(rs)) }}</p>
+                    <p v-if="auth.isAdmin" class="booked-by"><UserRound :size="15" />Registró: {{ rs[0].userName || 'Sin registro' }}</p>
                     <div class="booking-card-bottom">
                         <small>{{ new Date(rs[0].createdAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Guatemala' }) }}</small>
                         <button @click="cancel(rs)">
@@ -133,6 +142,9 @@
                 </article>
             </div>
         </section>
+
+        <!-- Pestaña: usuarios (solo administrador) -->
+        <UsersPanel v-else-if="tab === 'users' && auth.isAdmin" />
     </main>
 
     <footer>
@@ -144,18 +156,23 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { ArrowRight, ChevronRight, Info, RefreshCw, Ticket, Trash2, Users, X } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
+import { ArrowRight, ChevronRight, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
+import { useAuthStore } from '../../stores/auth';
 import { useReservationsStore } from '../../stores/reservations';
 
 const baseUrl = import.meta.env.BASE_URL;
 import { categories, money, tableById, tables, TOTAL_TABLES } from '../../utils/tables';
 import VenueMap from '../../components/sanafer/VenueMap.vue';
-import { bookingBox, cancelBookingBox, helpBox, notify, successBox } from '../../utils/alert';
+import UsersPanel from '../../components/sanafer/UsersPanel.vue';
+import { bookingBox, cancelBookingBox, confirmBox, helpBox, notify, successBox } from '../../utils/alert';
 import logo from '../../assets/images/sanafer-2026.png';
 
 const POLL_MS = 15000;
 
 const store = useReservationsStore();
+const auth = useAuthStore();
+const router = useRouter();
 
 const tab = ref('map');
 const selected = ref([]);
@@ -168,7 +185,20 @@ const availabilityText = computed(() => {
     if (store.error) return 'Sin conexión';
     return `${TOTAL_TABLES - store.occupied.size} de ${TOTAL_TABLES} mesas disponibles`;
 });
-const groupTotal = (rs) => rs.reduce((n, r) => n + categories[tableById(r.tableId).category].price, 0);
+// El administrador ve todas las reservas; el vendedor, solo las suyas.
+const visibleGroups = computed(() => (auth.isAdmin ? store.groups : store.groups.filter((rs) => rs[0].mine)));
+// Monto guardado por el servidor; si la reserva es antigua (sin precio), se calcula con las categorías.
+const groupTotal = (rs) =>
+    rs.every((r) => r.price != null)
+        ? rs.reduce((n, r) => n + r.price, 0)
+        : rs.reduce((n, r) => n + categories[tableById(r.tableId).category].price, 0);
+
+const logout = async () => {
+    if (!(await confirmBox('¿Cerrar sesión?', 'Tendrás que ingresar de nuevo con tu usuario y contraseña.', 'Sí, salir'))) return;
+    auth.logout();
+    store.reset();
+    router.replace({ name: 'Login' });
+};
 
 const toggle = (id) => {
     if (store.occupied.has(id) || store.loading || store.error) return;

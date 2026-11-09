@@ -6,6 +6,8 @@ use App\Attributes\Authorize;
 use App\Attributes\HasPrivilege;
 use App\Utils\Response;
 use App\Utils\JwtUtils;
+use App\Utils\Auth;
+use App\Repositories\UserRepository;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -101,7 +103,7 @@ class Router
 
         if (!in_array($userRole, $requiredRoles)) {
             http_response_code(403);
-            echo json_encode(["status" => "error", "message" => "Forbidden: Insufficient permissions"]);
+            echo json_encode(["status" => "error", "error" => "No tienes permiso para esta acción.", "message" => "Forbidden: Insufficient permissions"]);
             exit;
         }
     }
@@ -121,12 +123,19 @@ class Router
 
     private function validateToken()
     {
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? '';
+        // Apache/FastCGI a veces no entrega Authorization en getallheaders()
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+        if ($authHeader === '' && function_exists('getallheaders')) {
+            foreach (getallheaders() as $name => $value) {
+                if (strcasecmp($name, 'Authorization') === 0) {
+                    $authHeader = $value;
+                }
+            }
+        }
 
         if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             http_response_code(401);
-            echo json_encode(["status" => "error", "message" => "Unauthorized: Missing Bearer Token"]);
+            echo json_encode(["status" => "error", "error" => "Inicia sesión para continuar.", "message" => "Unauthorized: Missing Bearer Token"]);
             exit;
         }
 
@@ -135,15 +144,40 @@ class Router
 
         if (!$payload) {
             http_response_code(401);
-            echo json_encode(["status" => "error", "message" => "Unauthorized: Invalid Token"]);
+            echo json_encode(["status" => "error", "error" => "Tu sesión no es válida. Inicia sesión de nuevo.", "message" => "Unauthorized: Invalid Token"]);
             exit;
         }
 
-        if (isset($payload['exp']) && $payload['exp'] < time()) {
+        if (!isset($payload['exp']) || $payload['exp'] < time()) {
             http_response_code(401);
-            echo json_encode(["status" => "error", "message" => "Unauthorized: Token Expired"]);
+            echo json_encode(["status" => "error", "error" => "Tu sesión expiró. Inicia sesión de nuevo.", "message" => "Unauthorized: Token Expired"]);
             exit;
         }
+
+        // El rol y el estado se leen de la base en cada petición: si se desactiva
+        // a un usuario o se le cambia el rol, aplica de inmediato.
+        try {
+            $user = (new UserRepository())->findById((int) ($payload['sub'] ?? 0));
+        } catch (\Throwable $e) {
+            error_log($e->getMessage());
+            http_response_code(503);
+            echo json_encode(["status" => "error", "error" => "No se pudo validar la sesión. Intenta de nuevo."]);
+            exit;
+        }
+
+        if (!$user || !$user->active) {
+            http_response_code(401);
+            echo json_encode(["status" => "error", "error" => "Tu usuario está inactivo. Contacta al administrador.", "message" => "Unauthorized: Inactive user"]);
+            exit;
+        }
+
+        Auth::$user = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'fullName' => $user->fullName,
+            'role' => $user->role,
+        ];
+        $payload['role'] = $user->role;
 
         return $payload;
     }

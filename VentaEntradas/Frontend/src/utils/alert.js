@@ -122,4 +122,138 @@ export const cancelBookingBox = async (ids, submit) => {
     return res.isConfirmed ? res.value : null;
 };
 
+// Inicio de sesión. `submit(usuario, contraseña)` devuelve { ok, message? };
+// si falla, el mensaje se muestra dentro de la misma ventana.
+export const loginBox = ({ submit }) =>
+    base.fire({
+        title: 'Iniciar sesión',
+        html: `<p class="swal-text">Ingresa con tu usuario y contraseña.</p>
+            <input id="swal-user" class="swal2-input" placeholder="Usuario" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="30">
+            <input id="swal-pass" class="swal2-input" type="password" placeholder="Contraseña" autocomplete="current-password" maxlength="72">`,
+        focusConfirm: false,
+        confirmButtonText: 'Entrar',
+        allowOutsideClick: () => !Swal.isLoading(),
+        allowEscapeKey: false,
+        showLoaderOnConfirm: true,
+        didOpen: () => {
+            const user = document.getElementById('swal-user');
+            const pass = document.getElementById('swal-pass');
+            [user, pass].forEach((el) =>
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') Swal.clickConfirm();
+                })
+            );
+            user.focus();
+        },
+        preConfirm: async () => {
+            const username = document.getElementById('swal-user').value.trim();
+            const password = document.getElementById('swal-pass').value;
+            if (!username || !password) {
+                Swal.showValidationMessage('Ingresa tu usuario y contraseña.');
+                return false;
+            }
+            const res = await submit(username, password);
+            if (!res.ok) {
+                Swal.showValidationMessage(res.message);
+                return false;
+            }
+            return res;
+        },
+    });
+
+const ROLE_OPTIONS = { vendedor: 'Vendedor', admin: 'Administrador' };
+
+// Crear usuario. `submit(datos)` devuelve { ok, message? }. Devuelve true si se creó.
+export const newUserBox = async (submit) => {
+    const res = await base.fire({
+        title: 'Nuevo usuario',
+        html: `<input id="swal-fullname" class="swal2-input" placeholder="Nombre completo" maxlength="100">
+            <input id="swal-username" class="swal2-input" placeholder="Usuario (para iniciar sesión)" autocapitalize="none" spellcheck="false" maxlength="30">
+            <input id="swal-newpass" class="swal2-input" type="password" placeholder="Contraseña (mínimo 8 caracteres)" autocomplete="new-password" maxlength="72">
+            <select id="swal-role" class="swal2-select">${Object.entries(ROLE_OPTIONS).map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>`,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Crear usuario',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        showLoaderOnConfirm: true,
+        preConfirm: async () => {
+            const data = {
+                fullName: document.getElementById('swal-fullname').value.trim(),
+                username: document.getElementById('swal-username').value.trim(),
+                password: document.getElementById('swal-newpass').value,
+                role: document.getElementById('swal-role').value,
+            };
+            if (!data.fullName || !data.username || !data.password) {
+                Swal.showValidationMessage('Completa todos los campos.');
+                return false;
+            }
+            const r = await submit(data);
+            if (!r.ok) {
+                Swal.showValidationMessage(r.message);
+                return false;
+            }
+            return r;
+        },
+    });
+    return res.isConfirmed;
+};
+
+// Pide una contraseña nueva. `submit(password)` devuelve { ok, message? }. Devuelve true si se guardó.
+export const passwordBox = async (fullName, submit) => {
+    const res = await base.fire({
+        title: 'Cambiar contraseña',
+        text: `Usuario: ${fullName}`,
+        input: 'password',
+        inputPlaceholder: 'Nueva contraseña (mínimo 8 caracteres)',
+        inputAttributes: { autocomplete: 'new-password', maxlength: 72 },
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        showLoaderOnConfirm: true,
+        preConfirm: async (value) => {
+            if (!value || value.length < 8) {
+                Swal.showValidationMessage('La contraseña debe tener al menos 8 caracteres.');
+                return false;
+            }
+            const r = await submit(value);
+            if (!r.ok) {
+                Swal.showValidationMessage(r.message);
+                return false;
+            }
+            return r;
+        },
+    });
+    return res.isConfirmed;
+};
+
+// Elegir rol. `submit(rol)` devuelve { ok, message? }. Devuelve true si se guardó.
+export const roleBox = async (fullName, current, submit) => {
+    const res = await base.fire({
+        title: 'Cambiar rol',
+        text: `Usuario: ${fullName}`,
+        input: 'select',
+        inputOptions: ROLE_OPTIONS,
+        inputValue: current,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        showLoaderOnConfirm: true,
+        preConfirm: async (value) => {
+            const r = await submit(value);
+            if (!r.ok) {
+                Swal.showValidationMessage(r.message);
+                return false;
+            }
+            return r;
+        },
+    });
+    return res.isConfirmed;
+};
+
 export default base;

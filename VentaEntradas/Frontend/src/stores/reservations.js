@@ -57,5 +57,12 @@ export const useReservationsStore = defineStore('reservations', () => {
         }
     }
 
-    return { reservations, loading, error, lastUpdate, occupied, groups, load, book, cancel };
+    function reset() {
+        reservations.value = [];
+        loading.value = true;
+        error.value = '';
+        lastUpdate.value = '';
+    }
+
+    return { reset, reservations, loading, error, lastUpdate, occupied, groups, load, book, cancel };
 });
