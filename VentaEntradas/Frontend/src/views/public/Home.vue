@@ -13,7 +13,7 @@
             <button v-if="auth.isAdmin" :class="{ active: tab === 'users' }" @click="tab = 'users'">Usuarios</button>
         </nav>
         <div class="header-actions">
-            <button class="help" @click="helpBox"><Info :size="16" /><span>Cómo funciona</span></button>
+            <button class="help" @click="modal = { kind: 'help' }"><Info :size="16" /><span>Cómo funciona</span></button>
             <span class="user-chip">
                 <UserRound :size="18" />
                 <span>{{ auth.user.fullName }}<small>{{ auth.roleLabel }}</small></span>
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="total"><span>Total de la reserva</span><strong>{{ money(total) }}<small>.00</small></strong></div>
-                        <button class="primary" :disabled="!chosen.length || store.loading || !!store.error" @click="book">
+                        <button class="primary" :disabled="!chosen.length || store.loading || !!store.error" @click="modal = { kind: 'confirm' }">
                             Reservar {{ chosen.length > 1 ? 'mesas' : 'mesa' }}<ArrowRight :size="18" />
                         </button>
                         <div class="payment-note">Reserva de mesas · No se realiza ningún cobro</div>
@@ -152,10 +152,21 @@
         <span>Buena música. Buena compañía. Una gran noche.</span>
         <span>BAILE SOCIAL</span>
     </footer>
+
+    <BookingDialog
+        v-model:name="name"
+        :modal="modal"
+        :selected="selected"
+        :total="total"
+        :busy="busy"
+        :error="store.error"
+        @close="modal = null"
+        @book="book"
+    />
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowRight, ChevronRight, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
 import { useAuthStore } from '../../stores/auth';
@@ -164,8 +175,9 @@ import { useReservationsStore } from '../../stores/reservations';
 const baseUrl = import.meta.env.BASE_URL;
 import { categories, money, tableById, tables, TOTAL_TABLES } from '../../utils/tables';
 import VenueMap from '../../components/sanafer/VenueMap.vue';
+import BookingDialog from '../../components/sanafer/BookingDialog.vue';
 import UsersPanel from '../../components/sanafer/UsersPanel.vue';
-import { bookingBox, cancelBookingBox, confirmBox, helpBox, notify, successBox } from '../../utils/alert';
+import { cancelBookingBox, confirmBox, notify, successBox } from '../../utils/alert';
 import logo from '../../assets/images/sanafer-2026.png';
 
 const POLL_MS = 15000;
@@ -177,6 +189,8 @@ const router = useRouter();
 const tab = ref('map');
 const selected = ref([]);
 const name = ref('');
+const modal = ref(null);
+const busy = ref(false);
 
 const chosen = computed(() => tables.filter((t) => selected.value.includes(t.id)));
 const total = computed(() => chosen.value.reduce((n, t) => n + categories[t.category].price, 0));
@@ -214,26 +228,27 @@ watch(
 );
 
 const book = async () => {
+    if (busy.value) return;
+    busy.value = true;
     const ids = [...selected.value];
-    const out = await bookingBox({ ids, total: total.value, name: name.value, submit: (n) => store.book(ids, n) });
-    name.value = out.name;
-    if (out.cancelled) return;
-    if (out.result.ok) {
+    const res = await store.book(ids, name.value);
+    busy.value = false;
+    // Se cierra el cuadro antes del aviso para que SweetAlert quede visible encima.
+    modal.value = null;
+    await nextTick();
+    if (res.ok) {
         selected.value = [];
         name.value = '';
-        if (await successBox(ids, out.result.bookingId)) tab.value = 'reservations';
+        if (await successBox(ids, res.bookingId)) tab.value = 'reservations';
     } else {
         // La selección y el nombre se conservan para reintentar.
-        notify('error', out.result.message);
+        notify('error', res.message);
     }
 };
 
 const cancel = async (rs) => {
-    const res = await cancelBookingBox(
-        rs.map((r) => r.tableId),
-        () => store.cancel(rs[0].bookingId)
-    );
-    if (!res) return;
+    if (!(await cancelBookingBox(rs.map((r) => r.tableId)))) return;
+    const res = await store.cancel(rs[0].bookingId);
     if (res.ok) notify('success', 'Reserva cancelada. Las mesas vuelven a estar disponibles.');
     else notify('error', res.message);
 };

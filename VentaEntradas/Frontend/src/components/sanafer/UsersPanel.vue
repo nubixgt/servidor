@@ -4,7 +4,7 @@
             <div><span class="section-number">03 /</span><h2>Usuarios del sistema</h2></div>
             <div class="users-actions">
                 <button class="secondary" @click="load"><RefreshCw :size="16" />Actualizar</button>
-                <button class="secondary" @click="create"><UserPlus :size="16" />Nuevo usuario</button>
+                <button class="secondary" @click="openCreate"><UserPlus :size="16" />Nuevo usuario</button>
             </div>
         </div>
         <p class="muted">Administradores: acceso total y gestión de usuarios. Vendedores: reservan mesas y ven o cancelan solo las suyas.</p>
@@ -19,8 +19,8 @@
                 <span class="role-badge" :class="u.role">{{ ROLE_LABELS[u.role] }}</span>
                 <span class="user-state">{{ u.active ? 'Activo' : 'Inactivo' }}</span>
                 <div class="user-buttons">
-                    <button title="Cambiar contraseña" @click="changePassword(u)"><KeyRound :size="15" />Contraseña</button>
-                    <button title="Cambiar rol" @click="changeRole(u)"><ShieldCheck :size="15" />Rol</button>
+                    <button title="Cambiar contraseña" @click="openPassword(u)"><KeyRound :size="15" />Contraseña</button>
+                    <button title="Cambiar rol" @click="openRole(u)"><ShieldCheck :size="15" />Rol</button>
                     <button :title="u.active ? 'Desactivar' : 'Activar'" @click="toggleActive(u)">
                         <Power :size="15" />{{ u.active ? 'Desactivar' : 'Activar' }}
                     </button>
@@ -28,15 +28,17 @@
             </div>
             <p v-if="!users.length && !loading" class="muted">No hay usuarios.</p>
         </div>
+        <UserDialog :dlg="dlg" :form="form" :busy="busy" @close="dlg = null" @submit="submit" />
     </section>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, reactive, ref } from 'vue';
 import { KeyRound, Power, RefreshCw, ShieldCheck, UserPlus } from 'lucide-vue-next';
+import UserDialog from './UserDialog.vue';
 import userService from '../../services/userService';
 import { ROLE_LABELS } from '../../stores/auth';
-import { confirmBox, newUserBox, notify, passwordBox, roleBox } from '../../utils/alert';
+import { alertBox, confirmBox, notify } from '../../utils/alert';
 
 const users = ref([]);
 const loading = ref(true);
@@ -56,33 +58,47 @@ const load = async () => {
     }
 };
 
-// Ejecuta una llamada y devuelve { ok } o { ok: false, message } (para mostrarlo dentro del SweetAlert).
-const run = async (fn, fallback) => {
+const dlg = ref(null); // { kind: 'create' | 'password' | 'role', user? }
+const form = reactive({ fullName: '', username: '', password: '', role: 'vendedor' });
+const busy = ref(false);
+
+const openCreate = () => {
+    Object.assign(form, { fullName: '', username: '', password: '', role: 'vendedor' });
+    dlg.value = { kind: 'create' };
+};
+const openPassword = (u) => {
+    form.password = '';
+    dlg.value = { kind: 'password', user: u };
+};
+const openRole = (u) => {
+    form.role = u.role;
+    dlg.value = { kind: 'role', user: u };
+};
+
+const submit = async () => {
+    if (busy.value || !dlg.value) return;
+    const { kind, user } = dlg.value;
+    const calls = {
+        create: [() => userService.create({ fullName: form.fullName.trim(), username: form.username.trim(), password: form.password, role: form.role }), 'Usuario creado.'],
+        password: [() => userService.update(user?.id, { password: form.password }), 'Contraseña actualizada.'],
+        role: [() => userService.update(user?.id, { role: form.role }), 'Rol actualizado.'],
+    };
+    const [call, okText] = calls[kind];
+    busy.value = true;
     try {
-        await fn();
-        return { ok: true };
+        await call();
+        dlg.value = null;
+        notify('success', okText);
+        load();
     } catch (err) {
-        return { ok: false, message: errorMessage(err, fallback) };
-    }
-};
-
-const create = async () => {
-    if (await newUserBox((data) => run(() => userService.create(data), 'No se pudo crear el usuario.'))) {
-        notify('success', 'Usuario creado.');
-        load();
-    }
-};
-
-const changePassword = async (u) => {
-    if (await passwordBox(u.fullName, (password) => run(() => userService.update(u.id, { password }), 'No se pudo cambiar la contraseña.'))) {
-        notify('success', 'Contraseña actualizada.');
-    }
-};
-
-const changeRole = async (u) => {
-    if (await roleBox(u.fullName, u.role, (role) => run(() => userService.update(u.id, { role }), 'No se pudo cambiar el rol.'))) {
-        notify('success', 'Rol actualizado.');
-        load();
+        // Se cierra el cuadro para que el aviso quede visible; luego se reabre con lo escrito.
+        const keep = dlg.value;
+        dlg.value = null;
+        await nextTick();
+        await alertBox('error', 'No se pudo guardar', errorMessage(err, 'Revisa los datos e intenta de nuevo.'));
+        dlg.value = keep;
+    } finally {
+        busy.value = false;
     }
 };
 
@@ -94,12 +110,12 @@ const toggleActive = async (u) => {
         next ? 'Sí, activar' : 'Sí, desactivar'
     );
     if (!ok) return;
-    const res = await run(() => userService.update(u.id, { active: next }), 'No se pudo actualizar el usuario.');
-    if (res.ok) {
+    try {
+        await userService.update(u.id, { active: next });
         notify('success', next ? 'Usuario activado.' : 'Usuario desactivado.');
         load();
-    } else {
-        notify('error', res.message);
+    } catch (err) {
+        notify('error', errorMessage(err, 'No se pudo actualizar el usuario.'));
     }
 };
 

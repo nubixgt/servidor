@@ -37,27 +37,15 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Sans',Arial,sans-s
 .swal2-container{z-index:2000}
 .swal2-popup.swal-sanafer{width:30em;max-width:calc(100vw - 32px)}
 .swal2-popup.swal-sanafer .swal2-title{font-family:Georgia,serif;font-weight:400}
-.swal2-popup.swal-sanafer .swal2-input{background:#091323;border:1px solid #3a5479;color:#e1edff}
-.swal2-popup.swal-sanafer .swal2-input::placeholder{color:#8ba0be}
-.swal2-popup.swal-sanafer .swal2-input-label{font-size:12px;font-weight:600}
 .swal-text{font-size:14px;color:#a3b7d4;line-height:1.7;margin:0}
-.swal-note{font-size:12px;color:#9eb2cf;line-height:1.6;margin:14px 0 0}
-.swal-total{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;margin-top:16px;border-top:1px dashed #38506f;border-bottom:1px dashed #38506f}
-.swal-total span{font-size:12px;color:#a8bbd5}
-.swal-total strong{font-size:24px}
 .swal-code{background:#152d4e;border:1px dashed #496fa0;color:#a3c6f6;padding:16px;font-size:10px;letter-spacing:2px;margin-top:18px}
 .swal-code span{display:block;font-family:monospace;font-size:20px;color:#c8e1ff;margin-top:6px}
-.swal-steps{text-align:left}
-.swal-steps p{font-size:13px;color:#a1b5d1;line-height:1.7;margin:14px 0}
-.swal-steps strong{display:block;color:#c4dcff;margin-bottom:3px}
 /* Login */
 .login-page{min-height:calc(100vh - 60px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
-.login-logo{width:min(200px,50vw);height:auto;margin-bottom:10px}
+
 .login-page h1{margin:0}
 .login-page p{margin:0 0 18px;color:var(--muted);font-size:13px}
-.login-open{max-width:240px}
-.swal2-popup.swal-sanafer .swal2-select{background:#091323;border:1px solid #3a5479;color:#e1edff;margin-top:1em}
-.swal2-popup.swal-sanafer .swal2-validation-message{background:#152d4e;color:#f2a49d}
+
 /* Encabezado: usuario y salir */
 .header-actions{display:flex;align-items:center;gap:14px}
 .user-chip{display:flex;align-items:center;gap:8px;color:#d3e2f8;font-size:12px;line-height:1.25;text-align:left}
@@ -84,3 +72,22 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Sans',Arial,sans-s
   .user-state{display:none}
   .user-buttons{grid-column:1/-1;justify-content:flex-start}
 }
+.name-field select{padding:14px 12px;background:#091323;border:1px solid #3a5479;border-radius:6px;color:#e1edff;font-size:13px;outline-color:#699eef}
+.login-card{width:min(400px,100%);padding:34px;border:1px solid #344d72;border-radius:14px;background:#111d30;box-shadow:0 30px 120px #0008;display:flex;flex-direction:column}
+.login-card .login-logo{align-self:center;width:130px;height:auto}
+.login-card .eyebrow{justify-content:center;margin-top:10px}
+.login-card h1{text-align:center;font-size:36px;margin:8px 0 4px}
+.login-card .name-field{margin:14px 0 4px}
+.login-card .primary{margin-top:20px;justify-content:center}
+/* Cuadros redondeados (SweetAlert, cuadros normales y login) */
+.swal2-popup.swal-sanafer{border-radius:22px}
+.swal2-popup.swal2-toast.swal-sanafer{border-radius:16px}
+.swal2-popup.swal-sanafer .swal2-styled{border-radius:12px;padding:.7em 1.4em}
+.swal2-popup.swal-sanafer .swal2-timer-progress-bar-container{border-radius:0 0 16px 16px;overflow:hidden}
+.swal-code{border-radius:14px}
+dialog{border-radius:22px;overflow:hidden}
+.login-card{border-radius:22px}
+dialog .primary,dialog .secondary,.login-card .primary{border-radius:12px}
+.name-field input,.name-field select{border-radius:12px}
+.close-modal{border-radius:50%}
+.confirm-total{border-radius:0}
