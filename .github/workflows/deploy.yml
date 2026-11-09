@@ -107,6 +107,11 @@ jobs:
           npm install
           npm run build
 
+      - name: 📦 Install & Build Frontend (VentaEntradas)
+        run: |
+          cd VentaEntradas/Frontend
+          npm install
+          npm run build
 
 
       - name: 🔐 Setup SSH
@@ -126,6 +131,9 @@ jobs:
             --exclude 'VISAN_SYS/storage/' \
             --exclude 'cydplanicador/' \
             --exclude 'power/' \
+            --exclude 'VentaEntradas/Diseno/' \
+            --exclude 'VentaEntradas/Database/' \
+            --exclude 'VentaEntradas/Backend/config/database.php' \
             --exclude '**/uploads/' \
             --exclude '**/Uploads/' \
             --exclude '**/config.local.php' \
