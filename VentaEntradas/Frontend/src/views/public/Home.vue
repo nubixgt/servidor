@@ -127,7 +127,7 @@
                 <article v-for="rs in visibleGroups" :key="rs[0].bookingId" class="booking-card">
                     <div class="booking-card-top">
                         <span><i class="live-dot" />Confirmada</span>
-                        <span>#{{ rs[0].bookingId.slice(0, 8).toUpperCase() }}</span>
+                        <span>{{ bookingCode(rs[0].bookingId) }}</span>
                     </div>
                     <h3>{{ rs[0].name }}</h3>
                     <div class="booking-chips"><span v-for="r in rs" :key="r.tableId">A{{ r.tableId }}</span></div>
@@ -135,9 +135,10 @@
                     <p v-if="auth.isAdmin" class="booked-by"><UserRound :size="15" />Registró: {{ rs[0].userName || 'Sin registro' }}</p>
                     <div class="booking-card-bottom">
                         <small>{{ new Date(rs[0].createdAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Guatemala' }) }}</small>
-                        <button @click="cancel(rs)">
-                            <Trash2 :size="14" />Cancelar reserva
-                        </button>
+                        <div class="booking-card-actions">
+                            <button class="pdf-button" @click="downloadPdf(rs)"><FileDown :size="14" />PDF</button>
+                            <button @click="cancel(rs)"><Trash2 :size="14" />Cancelar reserva</button>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -168,7 +169,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { ArrowRight, ChevronRight, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
+import { ArrowRight, ChevronRight, FileDown, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
 import { useAuthStore } from '../../stores/auth';
 import { useReservationsStore } from '../../stores/reservations';
 
@@ -177,6 +178,7 @@ import { categories, money, tableById, tables, TOTAL_TABLES } from '../../utils/
 import VenueMap from '../../components/sanafer/VenueMap.vue';
 import BookingDialog from '../../components/sanafer/BookingDialog.vue';
 import UsersPanel from '../../components/sanafer/UsersPanel.vue';
+import { bookingCode, downloadReceipt } from '../../utils/receipt';
 import { cancelBookingBox, confirmBox, notify, successBox } from '../../utils/alert';
 import logo from '../../assets/images/sanafer-2026.png';
 
@@ -237,12 +239,30 @@ const book = async () => {
     modal.value = null;
     await nextTick();
     if (res.ok) {
+        const holder = name.value.trim();
         selected.value = [];
         name.value = '';
+        // Descarga automática del comprobante (la reserva ya quedó guardada aunque falle el PDF).
+        try {
+            await downloadReceipt({ bookingId: res.bookingId, name: holder, tableIds: ids, total: res.total ?? total.value, createdAt: res.createdAt });
+        } catch (e) {
+            console.error(e);
+            notify('warning', 'La reserva se guardó, pero no se pudo generar el PDF. Descárgalo desde Reservas.');
+        }
         if (await successBox(ids, res.bookingId)) tab.value = 'reservations';
     } else {
         // La selección y el nombre se conservan para reintentar.
         notify('error', res.message);
+    }
+};
+
+// Comprobante de una reserva existente (por si el cliente lo perdió).
+const downloadPdf = async (rs) => {
+    try {
+        await downloadReceipt({ bookingId: rs[0].bookingId, name: rs[0].name, tableIds: rs.map((r) => r.tableId), total: groupTotal(rs), createdAt: rs[0].createdAt });
+    } catch (e) {
+        console.error(e);
+        notify('error', 'No se pudo generar el PDF. Intenta de nuevo.');
     }
 };
 

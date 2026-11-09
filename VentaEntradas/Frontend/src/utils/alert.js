@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { bookingCode } from './receipt';
 
 // SweetAlert2 con el tema azul/negro de SANAFER.
 // Usar estas funciones en lugar de alert() / confirm() / prompt() del navegador.
@@ -48,7 +49,8 @@ export const successBox = async (ids, bookingId) => {
         icon: 'success',
         title: '¡Nos vemos en la pista!',
         html: `<p class="swal-text">Las mesas ${idsText(ids)} quedaron reservadas y aparecen como ocupadas.</p>
-            <div class="swal-code">RESERVA<span>#${bookingId.slice(0, 8).toUpperCase()}</span></div>`,
+            <div class="swal-code">CÓDIGO DE RESERVA<span>${bookingCode(bookingId)}</span></div>
+            <p class="swal-text">Se descargó tu comprobante en PDF. Si no, descárgalo desde Reservas.</p>`,
         showCancelButton: true,
         confirmButtonText: 'Ver mi reserva',
         cancelButtonText: 'Volver al mapa',

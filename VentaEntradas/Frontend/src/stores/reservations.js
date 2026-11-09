@@ -37,7 +37,7 @@ export const useReservationsStore = defineStore('reservations', () => {
         try {
             const { data } = await reservationService.create(tableIds, name);
             await load();
-            return { ok: true, bookingId: data.bookingId };
+            return { ok: true, bookingId: data.bookingId, createdAt: data.createdAt, total: data.total };
         } catch (err) {
             if (err.response) {
                 await load();
