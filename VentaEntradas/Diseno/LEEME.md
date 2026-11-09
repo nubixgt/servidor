@@ -106,5 +106,24 @@ Si cambias a MySQL, adapta el SQL y el acceso a datos. Mantén `table_id` como c
 
 ## Referencia de la entrega
 
-Código de origen: c315289b095eac378b8c15501185cc35976fda4d.
+Código de origen: d02d47c6611658e159c9d6085037a02fa0f136b8.
 Los archivos funcionales y visuales coinciden con la versión publicada. Solo se adaptaron la documentación, el nombre del paquete y el comando auxiliar `install:ci` para la copia descargable; se eliminó la vinculación al sitio publicado.
+
+
+## Nueva pantalla de inicio de sesión
+
+Abre `/login` o usa el botón «Iniciar sesión» en el encabezado del mapa.
+
+Archivos nuevos:
+
+- `app/login/page.tsx`: ruta y título de la pantalla.
+- `app/login/login-screen.tsx`: formulario e interacciones.
+- `app/login/login.css`: diseño adaptable azul y negro.
+
+El formulario incluye usuario o correo, contraseña, botón para mostrar u ocultar la contraseña, validación de campos obligatorios, orientación para recuperar el acceso y enlaces al mapa.
+
+Es una pantalla de demostración: no autentica usuarios, no crea sesiones, no envía correos de recuperación ni guarda o envía contraseñas. Al pulsar «Iniciar sesión» con ambos campos llenos, informa que el acceso todavía no está habilitado. No protege la página de reservas.
+
+### Conexión a tu sistema de usuarios
+
+En `app/login/login-screen.tsx`, sustituye `handleSubmit` por la llamada a tu API de autenticación. El formulario usa los nombres `username` y `password`. Muestra el error del servidor en `notice`; redirige al mapa únicamente cuando el servidor confirme la sesión. Aplica los permisos en las rutas y API del servidor, no solo ocultando enlaces del frontend. Cuando la autenticación esté implementada, retira la nota «Vista previa» y conecta la recuperación de contraseña a tu flujo real.
