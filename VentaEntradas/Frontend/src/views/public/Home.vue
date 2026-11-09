@@ -125,7 +125,7 @@
                     <div class="booking-chips"><span v-for="r in rs" :key="r.tableId">A{{ r.tableId }}</span></div>
                     <p><Users :size="15" />{{ rs.length * 8 }} entradas · {{ money(groupTotal(rs)) }}</p>
                     <div class="booking-card-bottom">
-                        <small>{{ new Date(rs[0].createdAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short' }) }}</small>
+                        <small>{{ new Date(rs[0].createdAt).toLocaleString('es-GT', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Guatemala' }) }}</small>
                         <button @click="modal = { kind: 'cancel', bookingId: rs[0].bookingId, ids: rs.map((r) => r.tableId) }">
                             <Trash2 :size="14" />Cancelar reserva
                         </button>

@@ -24,7 +24,7 @@ export const useReservationsStore = defineStore('reservations', () => {
             const { data } = await reservationService.getAll();
             reservations.value = data;
             error.value = '';
-            lastUpdate.value = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+            lastUpdate.value = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Guatemala' });
         } catch {
             error.value = 'No pudimos actualizar la disponibilidad. Reintenta antes de reservar.';
         } finally {
