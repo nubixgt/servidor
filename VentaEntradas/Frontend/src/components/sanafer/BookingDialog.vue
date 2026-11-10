@@ -11,12 +11,15 @@
                     <label class="name-field">Nombre de la reserva
                         <input v-model="name" autofocus minlength="2" maxlength="100" required placeholder="Nombre y apellido" autocomplete="name" :disabled="busy" />
                     </label>
+                    <label class="name-field">Teléfono
+                        <input :value="phone" @input="onPhone" inputmode="numeric" maxlength="9" pattern="\d{4}-\d{4}" required placeholder="0000-0000" autocomplete="tel-national" :disabled="busy" />
+                    </label>
                     <div class="confirm-total">
                         <span>{{ selected.length }} {{ selected.length === 1 ? 'mesa' : 'mesas' }} · 8 entradas por mesa</span>
                         <strong>{{ money(total) }}</strong>
                     </div>
                     <p class="dialog-note">Al confirmar, estas mesas quedarán ocupadas. No se procesa ningún pago.</p>
-                    <button class="primary" :disabled="busy || !selected.length || name.trim().length < 2 || !!error">
+                    <button class="primary" :disabled="busy || !selected.length || name.trim().length < 2 || !/^\d{4}-\d{4}$/.test(phone) || !!error">
                         {{ busy ? 'Confirmando…' : 'Confirmar reserva' }}<ArrowRight :size="18" />
                     </button>
                 </form>
@@ -50,6 +53,14 @@ const props = defineProps({
 });
 const emit = defineEmits(['close', 'book']);
 const name = defineModel('name', { type: String, default: '' });
+const phone = defineModel('phone', { type: String, default: '' });
+
+// Solo dígitos, máximo 8, con guion automático: 0000-0000
+const onPhone = (e) => {
+    const d = e.target.value.replace(/\D/g, '').slice(0, 8);
+    phone.value = d.length > 4 ? `${d.slice(0, 4)}-${d.slice(4)}` : d;
+    e.target.value = phone.value;
+};
 
 const dialog = ref(null);
 

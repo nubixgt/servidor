@@ -1,6 +1,7 @@
 // Comprobante de reserva en PDF (se genera en el navegador, no pasa por el servidor).
 // Diseño basado en src/assets/images/ImagenReservaMesa.png (1024 x 1536 px).
 import logoUrl from '../assets/images/sanafer-2026.png';
+import infoUrl from '../assets/images/InfoEventoPDF.jpeg';
 
 export const bookingCode = (bookingId) => 'RSV-' + String(bookingId).slice(0, 8).toUpperCase();
 
@@ -22,6 +23,8 @@ const C = {
 };
 
 const TZ = 'America/Guatemala';
+const INFO_W = 964; // la imagen informativa ocupa el ancho de las bandas
+const INFO_H = Math.round((INFO_W * 600) / 1500); // proporción de InfoEventoPDF.jpeg (1500 x 600)
 
 const dateParts = (iso) => {
     const parts = Object.fromEntries(
@@ -37,12 +40,13 @@ const money = (n) => 'Q ' + Number(n).toLocaleString('en-US', { minimumFractionD
 
 /**
  * Dibuja el comprobante en `doc` (una instancia nueva de jsPDF creada con `createDoc`).
- * data: { bookingId, name, tableIds:number[], total:number, createdAt:ISO }
+ * data: { bookingId, name, phone?, tableIds:number[], total:number, createdAt:ISO }
  */
-export function drawReceipt(doc, data, logoDataUrl) {
+export function drawReceipt(doc, data, logoDataUrl, infoDataUrl) {
     const ids = [...data.tableIds].sort((a, b) => a - b);
     const labels = ids.map((i) => 'A' + i);
-    const { date, time } = dateParts(data.createdAt);
+    const { date } = dateParts(data.createdAt);
+    const phone = data.phone ? String(data.phone) : '';
 
     // Ajusta el tamaño de letra para que el texto quepa en `maxPx`.
     const fit = (text, sizePx, maxPx, minPx = 20) => {
@@ -87,8 +91,8 @@ export function drawReceipt(doc, data, logoDataUrl) {
     const rows = [
         { label: 'Titular', lines: nameLines, size: 29 },
         { label: ids.length === 1 ? 'Mesa' : 'Mesas', lines: mesasLines, size: 27 },
+        ...(phone ? [{ label: 'Teléfono', lines: [phone], size: 29 }] : []),
         { label: 'Fecha de reserva', lines: [date], size: 29 },
-        { label: 'Hora', lines: [time], size: 29 },
     ];
     const rowH = (r) => 57 + (r.lines.length - 1) * 31;
     const rowsHeight = rows.reduce((n, r) => n + rowH(r), 0);
@@ -96,7 +100,7 @@ export function drawReceipt(doc, data, logoDataUrl) {
     // Altura total de la página según el contenido
     const tableTop = 826;
     const totalTop = tableTop + 28 + rowsHeight + 33;
-    const H_PX = totalTop + 446;
+    const H_PX = totalTop + 120 + 30 + INFO_H + 40;
     doc.internal.pageSize.height = px(H_PX);
     doc.internal.pageSize.width = W;
     const pageH = px(H_PX);
@@ -164,25 +168,9 @@ export function drawReceipt(doc, data, logoDataUrl) {
     const totalSize = fit(totalStr, 104, 455, 50);
     text(totalStr, 955, totalTop + 84, { size: totalSize, style: 'bold', color: '#ffffff', align: 'right' });
 
-    // --- Nota y aviso ---
+    // --- Imagen informativa del evento ---
     const n = totalTop + 120; // fin de la banda
-    doc.setDrawColor(C.ink);
-    doc.setLineWidth(px(5));
-    doc.roundedRect(px(82), px(n + 30), px(76), px(98), px(8), px(8), 'S');
-    [n + 66, n + 83, n + 100].forEach((ly, i) => line(98, ly, i === 2 ? 128 : 142, ly, C.ink, 5));
-    line(201, n + 32, 201, n + 125, C.navy, 2);
-    text('Conserva este comprobante.', 235, n + 62, { size: 35, style: 'bolditalic', color: C.ink });
-    text('Ten a mano tu código de reserva al comunicarte', 237, n + 100, { size: 28, color: C.text });
-    text('con la organización.', 237, n + 134, { size: 28, color: C.text });
-
-    line(40, n + 185, 983, n + 185, C.navy, 2);
-    doc.setDrawColor(C.red);
-    doc.setLineWidth(px(7));
-    doc.circle(px(125), px(n + 258), px(40), 'S');
-    doc.line(px(97), px(n + 230), px(153), px(n + 286));
-    rect(113, n + 248, 24, 22, C.ink);
-    line(201, n + 228, 201, n + 290, C.navy, 2);
-    text('No se permite el ingreso de bebidas ni alimentos.', 238, n + 268, { size: 29, style: 'bold', color: C.ink });
+    if (infoDataUrl) doc.addImage(infoDataUrl, 'JPEG', px(30), px(n + 30), px(INFO_W), px(INFO_H));
 
     return doc;
 }
@@ -217,10 +205,28 @@ const loadLogo = () => {
     return logoCache;
 };
 
+let infoCache;
+// Imagen informativa (fecha, artistas, patrocinadores). Si no carga, el PDF se genera sin ella.
+const loadInfo = () => {
+    infoCache ??= new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/jpeg', 0.9));
+        };
+        img.onerror = () => resolve(null);
+        img.src = infoUrl;
+    });
+    return infoCache;
+};
+
 /** Genera y descarga el PDF. data: { bookingId, name, tableIds, total, createdAt } */
 export async function downloadReceipt(data) {
-    const [{ jsPDF }, logo] = await Promise.all([import('jspdf'), loadLogo()]);
+    const [{ jsPDF }, logo, info] = await Promise.all([import('jspdf'), loadLogo(), loadInfo()]);
     const doc = new jsPDF({ unit: 'mm', format: [W, 230], orientation: 'portrait', compress: true });
-    drawReceipt(doc, data, logo);
+    drawReceipt(doc, data, logo, info);
     doc.save(`Reserva-${bookingCode(data.bookingId)}.pdf`);
 }

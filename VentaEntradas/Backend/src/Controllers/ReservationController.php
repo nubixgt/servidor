@@ -10,8 +10,8 @@ use App\Exceptions\ReservationException;
 use App\Utils\Auth;
 
 // Requiere sesión (JWT). Contrato base (ver Diseno/LEEME.md):
-//   GET    /reservations                      -> [{ tableId, bookingId, name, createdAt }]
-//   POST   /reservations  { tableIds, name }  -> 201 { bookingId, tableIds, createdAt } | 400/409 { error }
+//   GET    /reservations                      -> [{ tableId, bookingId, name, phone, createdAt }]
+//   POST   /reservations  { tableIds, name, phone }  -> 201 { bookingId, tableIds, createdAt } | 400/409 { error }
 //   DELETE /reservations  { bookingId }       -> 200 { ok: true } | 400/404 { error }
 class ReservationController extends Controller
 {

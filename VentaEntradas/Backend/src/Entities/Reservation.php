@@ -11,7 +11,8 @@ class Reservation
         public ?int $userId = null,
         public ?string $userName = null, // nombre completo de quien registró
         public ?string $category = null,
-        public ?float $price = null // quetzales
+        public ?float $price = null, // quetzales
+        public ?string $phone = null // 0000-0000
     ) {
     }
 }

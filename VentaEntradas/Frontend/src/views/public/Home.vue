@@ -156,6 +156,7 @@
 
     <BookingDialog
         v-model:name="name"
+        v-model:phone="phone"
         :modal="modal"
         :selected="selected"
         :total="total"
@@ -191,6 +192,7 @@ const router = useRouter();
 const tab = ref('map');
 const selected = ref([]);
 const name = ref('');
+const phone = ref('');
 const modal = ref(null);
 const busy = ref(false);
 
@@ -233,18 +235,20 @@ const book = async () => {
     if (busy.value) return;
     busy.value = true;
     const ids = [...selected.value];
-    const res = await store.book(ids, name.value);
+    const res = await store.book(ids, name.value, phone.value);
     busy.value = false;
     // Se cierra el cuadro antes del aviso para que SweetAlert quede visible encima.
     modal.value = null;
     await nextTick();
     if (res.ok) {
         const holder = name.value.trim();
+        const holderPhone = phone.value;
         selected.value = [];
         name.value = '';
+        phone.value = '';
         // Descarga automática del comprobante (la reserva ya quedó guardada aunque falle el PDF).
         try {
-            await downloadReceipt({ bookingId: res.bookingId, name: holder, tableIds: ids, total: res.total ?? total.value, createdAt: res.createdAt });
+            await downloadReceipt({ bookingId: res.bookingId, name: holder, phone: holderPhone, tableIds: ids, total: res.total ?? total.value, createdAt: res.createdAt });
         } catch (e) {
             console.error(e);
             notify('warning', 'La reserva se guardó, pero no se pudo generar el PDF. Descárgalo desde Reservas.');
@@ -259,7 +263,7 @@ const book = async () => {
 // Comprobante de una reserva existente (por si el cliente lo perdió).
 const downloadPdf = async (rs) => {
     try {
-        await downloadReceipt({ bookingId: rs[0].bookingId, name: rs[0].name, tableIds: rs.map((r) => r.tableId), total: groupTotal(rs), createdAt: rs[0].createdAt });
+        await downloadReceipt({ bookingId: rs[0].bookingId, name: rs[0].name, phone: rs[0].phone, tableIds: rs.map((r) => r.tableId), total: groupTotal(rs), createdAt: rs[0].createdAt });
     } catch (e) {
         console.error(e);
         notify('error', 'No se pudo generar el PDF. Intenta de nuevo.');

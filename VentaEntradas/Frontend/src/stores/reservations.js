@@ -33,9 +33,9 @@ export const useReservationsStore = defineStore('reservations', () => {
     }
 
     // Devuelve { ok, bookingId } o { ok: false, message }
-    async function book(tableIds, name) {
+    async function book(tableIds, name, phone) {
         try {
-            const { data } = await reservationService.create(tableIds, name);
+            const { data } = await reservationService.create(tableIds, name, phone);
             await load();
             return { ok: true, bookingId: data.bookingId, createdAt: data.createdAt, total: data.total };
         } catch (err) {

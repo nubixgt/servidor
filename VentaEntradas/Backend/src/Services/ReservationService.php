@@ -38,6 +38,7 @@ class ReservationService
                 'tableId' => $r->tableId,
                 'bookingId' => $r->bookingId,
                 'name' => $visible ? $r->name : '',
+                'phone' => $visible ? $r->phone : null,
                 'createdAt' => $r->createdAt,
                 'userId' => $visible ? $r->userId : null,
                 'userName' => $visible ? $r->userName : null,
@@ -53,12 +54,14 @@ class ReservationService
         $ids = $dto->tableIds;
         $name = is_string($dto->name) ? trim($dto->name) : '';
         $len = mb_strlen($name);
+        $phone = is_string($dto->phone) ? trim($dto->phone) : '';
 
         $valid = is_array($ids)
             && count($ids) > 0
             && count($ids) <= self::TOTAL_TABLES
             && count(array_unique($ids)) === count($ids)
-            && $len >= 2 && $len <= 100;
+            && $len >= 2 && $len <= 100
+            && preg_match('/^\d{4}-\d{4}$/', $phone) === 1;
 
         if ($valid) {
             foreach ($ids as $id) {
@@ -70,7 +73,7 @@ class ReservationService
         }
 
         if (!$valid) {
-            throw new ReservationException('Ingresa un nombre y selecciona al menos una mesa.', 400);
+            throw new ReservationException('Ingresa un nombre, un teléfono válido (0000-0000) y selecciona al menos una mesa.', 400);
         }
 
         // El monto lo calcula el servidor, no el navegador.
@@ -87,7 +90,7 @@ class ReservationService
         $createdAt = gmdate('Y-m-d H:i:s');
 
         try {
-            $this->repository->createBooking($bookingId, $rows, $name, $user['id'], $createdAt);
+            $this->repository->createBooking($bookingId, $rows, $name, $phone, $user['id'], $createdAt);
         } catch (PDOException $e) {
             if ($e->getCode() === '23000') {
                 throw new ReservationException('Una de las mesas acaba de ser ocupada. Actualizamos el mapa para que elijas otra.', 409);

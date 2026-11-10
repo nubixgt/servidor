@@ -8,8 +8,8 @@ export default {
     getAll() {
         return api.get('/reservations');
     },
-    create(tableIds, name) {
-        return api.post('/reservations', { tableIds, name });
+    create(tableIds, name, phone) {
+        return api.post('/reservations', { tableIds, name, phone });
     },
     cancel(bookingId) {
         return api.delete('/reservations', { data: { bookingId } });

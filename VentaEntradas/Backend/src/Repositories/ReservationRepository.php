@@ -19,7 +19,7 @@ class ReservationRepository
     public function findAll(): array
     {
         $stmt = $this->pdo->query(
-            'SELECT r.table_id, r.booking_id, r.name, r.created_at, r.user_id, r.category, r.price, u.full_name AS user_name
+            'SELECT r.table_id, r.booking_id, r.name, r.created_at, r.user_id, r.category, r.price, r.phone, u.full_name AS user_name
              FROM reservations r
              LEFT JOIN users u ON u.id = r.user_id
              ORDER BY r.created_at DESC, r.table_id ASC'
@@ -34,7 +34,8 @@ class ReservationRepository
                 $r['user_id'] !== null ? (int) $r['user_id'] : null,
                 $r['user_name'],
                 $r['category'],
-                $r['price'] !== null ? (float) $r['price'] : null
+                $r['price'] !== null ? (float) $r['price'] : null,
+                $r['phone']
             ),
             $stmt->fetchAll()
         );
@@ -45,16 +46,16 @@ class ReservationRepository
      * $rows: [['tableId' => int, 'category' => string, 'price' => int|float], ...]
      * Lanza PDOException (SQLSTATE 23000) si alguna mesa ya está ocupada.
      */
-    public function createBooking(string $bookingId, array $rows, string $name, int $userId, string $createdAt): void
+    public function createBooking(string $bookingId, array $rows, string $name, string $phone, int $userId, string $createdAt): void
     {
         $this->pdo->beginTransaction();
         try {
             $stmt = $this->pdo->prepare(
-                'INSERT INTO reservations (table_id, booking_id, name, user_id, category, price, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO reservations (table_id, booking_id, name, phone, user_id, category, price, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
             );
             foreach ($rows as $row) {
-                $stmt->execute([$row['tableId'], $bookingId, $name, $userId, $row['category'], $row['price'], $createdAt]);
+                $stmt->execute([$row['tableId'], $bookingId, $name, $phone, $userId, $row['category'], $row['price'], $createdAt]);
             }
             $this->pdo->commit();
         } catch (PDOException $e) {
