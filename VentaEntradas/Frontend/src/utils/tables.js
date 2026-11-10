@@ -21,13 +21,13 @@ add(5, 177, 310, 'platino'); add(4, 242, 310, 'platino'); add(3, 307, 310, 'plat
 
 for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 5; col++) {
-        add(9 + row * 5 + col, 214 + col * 85, 452 + row * 58, row === 0 ? 'platino' : row < 3 ? 'vip' : 'preferencia');
+        add(9 + row * 5 + col, 214 + col * 85, 452 + row * 58, row < 2 ? 'platino' : row < 4 ? 'vip' : 'preferencia');
     }
 }
 
 for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 6; col++) {
-        add(69 - row * 6 + col, 790 + col * 85, 452 + row * 58, row === 0 ? (col < 4 ? 'platino' : 'vip') : row < 3 ? 'vip' : 'preferencia');
+        add(69 - row * 6 + col, 790 + col * 85, 452 + row * 58, row < 2 ? 'platino' : row < 4 ? 'vip' : 'preferencia');
     }
 }
 
