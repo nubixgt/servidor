@@ -73,8 +73,6 @@ const summaryLines = (rep) => [
     ['Reservas confirmadas', rep.bookingCount],
     ['Mesas vendidas', `${rep.soldTables} de ${rep.totalTables}`],
     ['Mesas disponibles', rep.availableTables],
-    ['Entradas vendidas', rep.soldTickets],
-    ['Entradas disponibles', rep.availableTickets],
 ];
 
 const save = (blob, filename) => {
@@ -114,13 +112,13 @@ export async function downloadReportExcel(reservations) {
 
     // Hoja 2: por localidad
     const s2 = wb.addWorksheet('Por localidad');
-    s2.columns = [{ header: 'Localidad', width: 18 }, { header: 'Precio por mesa', width: 18 }, { header: 'Mesas vendidas', width: 16 }, { header: 'Entradas vendidas', width: 18 }, { header: 'Total', width: 18 }];
-    rep.byCategory.forEach((c) => s2.addRow([c.name, categories[c.key].price, c.tables, c.tickets, c.total]));
-    const tot2 = s2.addRow(['TOTAL', '', rep.soldTables, rep.soldTickets, rep.total]);
+    s2.columns = [{ header: 'Localidad', width: 18 }, { header: 'Precio por mesa', width: 18 }, { header: 'Mesas vendidas', width: 16 }, { header: 'Total', width: 18 }];
+    rep.byCategory.forEach((c) => s2.addRow([c.name, categories[c.key].price, c.tables, c.total]));
+    const tot2 = s2.addRow(['TOTAL', '', rep.soldTables, rep.total]);
     tot2.font = { bold: true };
     style(s2, 1);
     s2.getColumn(2).numFmt = MONEY;
-    s2.getColumn(5).numFmt = MONEY;
+    s2.getColumn(4).numFmt = MONEY;
 
     // Hoja 3: por vendedor
     const s3 = wb.addWorksheet('Por vendedor');
@@ -197,12 +195,9 @@ export async function downloadReportPdf(reservations) {
         });
     };
 
-    section('Ventas por localidad', ['Localidad', 'Precio por mesa', 'Mesas', 'Entradas', 'Total'],
-        rep.byCategory.map((c) => [c.name, money(categories[c.key].price), c.tables, c.tickets, money(c.total)]),
-        ['TOTAL', '', rep.soldTables, rep.soldTickets, money(rep.total)]);
-
-    section('Ventas por vendedor', ['Vendedor', 'Reservas', 'Mesas', 'Entradas', 'Total'],
-        rep.bySeller.map((s) => [s.name, s.bookings, s.tables, s.tickets, money(s.total)]));
+    section('Ventas por localidad', ['Localidad', 'Precio por mesa', 'Mesas', 'Total'],
+        rep.byCategory.map((c) => [c.name, money(categories[c.key].price), c.tables, money(c.total)]),
+        ['TOTAL', '', rep.soldTables, money(rep.total)]);
 
     section('Detalle de reservas', ['Código', 'Titular', 'Mesas', 'Total', 'Registró', 'Fecha'],
         rep.bookings.map((b) => [b.code, b.name, b.tables.map((i) => 'A' + i).join(', '), money(b.total), b.seller, fmtDate(b.createdAt)]));
