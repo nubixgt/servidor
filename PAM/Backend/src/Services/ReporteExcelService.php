@@ -164,9 +164,8 @@ class ReporteExcelService
         [$sel, $joins] = ReporteColumnas::sql($cols);
         $muestra = [];
         foreach (array_chunk($lectura['dpis'], 100) as $lote) {
-            foreach ($this->repository->filasPorDpi($sel, $joins, $lote, $ambito, $ap) as $f) {
-                unset($f['_dpi']);
-                $muestra[] = $this->enmascarar($u, $cols, array_values($f));
+            foreach ($this->filasEnOrden($sel, $joins, $lote, $ambito, $ap, $cols) as $f) {
+                $muestra[] = $this->enmascarar($u, $cols, $f['fila']);
                 if (count($muestra) >= self::TAM_PAGINA) {
                     break 2;
                 }
@@ -208,13 +207,14 @@ class ReporteExcelService
             $encontrados = [];
             $n = 0;
             foreach (array_chunk($lectura['dpis'], self::LOTE_DPI) as $lote) {
-                foreach ($this->repository->filasPorDpi($sel, $joins, $lote, $ambito, $ap) as $f) {
-                    $encontrados[$f['_dpi']] = true;
-                    unset($f['_dpi']);
-                    if (++$n > $limite) {
-                        throw new HttpException('El resultado supera el máximo de ' . number_format($limite, 0, ',', '.') . ' filas por exportación para su rol. Divida el archivo de DPI.', 413);
+                foreach ($this->filasEnOrden($sel, $joins, $lote, $ambito, $ap, $cols) as $f) {
+                    if ($f['encontrado']) {
+                        $encontrados[$f['dpi']] = true;
+                        if (++$n > $limite) {
+                            throw new HttpException('El resultado supera el máximo de ' . number_format($limite, 0, ',', '.') . ' filas por exportación para su rol. Divida el archivo de DPI.', 413);
+                        }
                     }
-                    $w->filaGrupo($g, $this->enmascarar($u, $cols, array_values($f)));
+                    $w->filaGrupo($g, $this->enmascarar($u, $cols, $f['fila']));
                 }
             }
             $faltan = 0;
@@ -295,6 +295,36 @@ class ReporteExcelService
     }
 
     // ================================================================================== internos
+    /**
+     * Filas del lote en el mismo orden en que los DPI aparecen en el Excel cargado.
+     * Un DPI sin expediente produce una fila con «sin registro».
+     * @return \Generator<array{dpi: string, encontrado: bool, fila: array}>
+     */
+    private function filasEnOrden(string $sel, string $joins, array $lote, string $ambito, array $ap, array $cols): \Generator
+    {
+        $porDpi = [];
+        foreach ($this->repository->filasPorDpi($sel, $joins, $lote, $ambito, $ap) as $f) {
+            $d = (string) $f['_dpi'];
+            unset($f['_dpi']);
+            $porDpi[$d][] = array_values($f);
+        }
+        $iDpi = array_search('dpi', $cols, true);
+        foreach ($lote as $dpi) {
+            $dpi = (string) $dpi;
+            if (isset($porDpi[$dpi])) {
+                foreach ($porDpi[$dpi] as $fila) {
+                    yield ['dpi' => $dpi, 'encontrado' => true, 'fila' => $fila];
+                }
+                continue;
+            }
+            $fila = array_fill(0, count($cols), 'sin registro');
+            if ($iDpi !== false) {
+                $fila[$iDpi] = $dpi;
+            }
+            yield ['dpi' => $dpi, 'encontrado' => false, 'fila' => $fila];
+        }
+    }
+
     private function exigirExportar(Usuario $u): void
     {
         if (!$u->puede('reportes.exportar')) {
