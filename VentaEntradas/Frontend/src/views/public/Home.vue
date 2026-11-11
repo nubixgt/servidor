@@ -111,7 +111,13 @@
         <section v-else-if="tab === 'reservations'" class="reservations-view">
             <div class="section-top">
                 <div><span class="section-number">02 /</span><h2>Reservas del evento</h2></div>
-                <button class="secondary" @click="store.load"><RefreshCw :size="16" />Actualizar</button>
+                <div class="users-actions">
+                    <template v-if="auth.isAdmin">
+                        <button class="secondary" :disabled="!store.reservations.length || reporting" @click="downloadReport('excel')"><FileSpreadsheet :size="16" />Reporte Excel</button>
+                        <button class="secondary" :disabled="!store.reservations.length || reporting" @click="downloadReport('pdf')"><FileDown :size="16" />Reporte PDF</button>
+                    </template>
+                    <button class="secondary" @click="store.load"><RefreshCw :size="16" />Actualizar</button>
+                </div>
             </div>
             <p class="muted">{{ auth.isAdmin ? 'Consulta todas las reservas y libera una si se cancela.' : 'Aquí aparecen las reservas que tú registraste.' }}</p>
             <p v-if="store.error" role="alert" class="error">{{ store.error }}</p>
@@ -170,7 +176,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { ArrowRight, ChevronRight, FileDown, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
+import { ArrowRight, ChevronRight, FileDown, FileSpreadsheet, Info, LogOut, RefreshCw, Ticket, Trash2, UserRound, Users, X } from 'lucide-vue-next';
 import { useAuthStore } from '../../stores/auth';
 import { useReservationsStore } from '../../stores/reservations';
 
@@ -180,6 +186,7 @@ import VenueMap from '../../components/sanafer/VenueMap.vue';
 import BookingDialog from '../../components/sanafer/BookingDialog.vue';
 import UsersPanel from '../../components/sanafer/UsersPanel.vue';
 import { bookingCode, downloadReceipt } from '../../utils/receipt';
+import { downloadReportExcel, downloadReportPdf } from '../../utils/report';
 import { cancelBookingBox, confirmBox, notify, successBox } from '../../utils/alert';
 import logo from '../../assets/images/sanafer-2026.png';
 
@@ -267,6 +274,21 @@ const downloadPdf = async (rs) => {
     } catch (e) {
         console.error(e);
         notify('error', 'No se pudo generar el PDF. Intenta de nuevo.');
+    }
+};
+
+// Reporte de ventas (solo administrador): el servidor solo entrega todos los datos a ese rol.
+const reporting = ref(false);
+const downloadReport = async (kind) => {
+    if (!auth.isAdmin || reporting.value) return;
+    reporting.value = true;
+    try {
+        await (kind === 'excel' ? downloadReportExcel : downloadReportPdf)(store.reservations);
+    } catch (e) {
+        console.error(e);
+        notify('error', 'No se pudo generar el reporte. Intenta de nuevo.');
+    } finally {
+        reporting.value = false;
     }
 };
 
