@@ -90,7 +90,11 @@ function applyFixed(tree, fixed) {
     const f = fixed.blocks[bi];
     if (!f) return;
     b.start_date = f.start_date; b.end_date = f.end_date;
-    if (f.due_end) b.evaluation.due_date = f.due_end;
+    // La fecha de entrega la elige el docente dentro del rango del calendario; si no hay o queda fuera, se usa el último día.
+    if (f.due_end) {
+      const d = b.evaluation.due_date;
+      if (!d || d < (f.due_start || f.due_end) || d > f.due_end) b.evaluation.due_date = f.due_end;
+    }
     b.weeks.forEach((w, wi) => { const c = f.weeks[wi]; if (c) { w.start_date = c.start_date; w.end_date = c.end_date; } });
   });
   const m = fixed.mejoramiento;

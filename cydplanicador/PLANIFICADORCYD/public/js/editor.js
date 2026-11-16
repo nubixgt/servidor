@@ -315,7 +315,7 @@
           const f = fx.blocks[bi];
           if (!f) return;
           b.start_date = f.start_date; b.end_date = f.end_date;
-          if (f.due_end) b.evaluation.due_date = f.due_end;
+          if (f.due_end) { const d = b.evaluation.due_date; if (!d || d < (f.due_start || f.due_end) || d > f.due_end) b.evaluation.due_date = f.due_end; }
           b.weeks.forEach((w, wi) => { const c = f.weeks[wi]; if (c) { w.start_date = c.start_date; w.end_date = c.end_date; } });
         });
         const m = fx.mejoramiento;
@@ -613,8 +613,8 @@
                   <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, part: 'evaluacion', field: 'total_points' })" :msg="m"></field-err></div>
                 <div v-else class="field"><span class="label">Punteo total</span><div style="padding:9px 0;font-weight:600">{{ evalTotal(b.evaluation) ?? '—' }} <small class="muted">(suma de criterios)</small></div></div>
                 <div class="field"><label :for="'b-' + b.id + '-ev-due_date'">Fecha de entrega</label>
-                  <input :id="'b-' + b.id + '-ev-due_date'" type="date" v-model="b.evaluation.due_date" :disabled="!!(fixedBlock(bi) && fixedBlock(bi).due_end)">
-                  <span v-if="fixedBlock(bi) && fixedBlock(bi).due_end" class="hint">🔒 Entrega de tarea: del {{ fmtDate(fixedBlock(bi).due_start) }} al {{ fmtDate(fixedBlock(bi).due_end) }}.</span>
+                  <input :id="'b-' + b.id + '-ev-due_date'" type="date" v-model="b.evaluation.due_date" :min="fixedBlock(bi) && fixedBlock(bi).due_start || null" :max="fixedBlock(bi) && fixedBlock(bi).due_end || null">
+                  <span v-if="fixedBlock(bi) && fixedBlock(bi).due_end" class="hint">Elija el día de entrega dentro del período fijado: del {{ fmtDate(fixedBlock(bi).due_start) }} al {{ fmtDate(fixedBlock(bi).due_end) }}.</span>
                   <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, part: 'evaluacion', field: 'due_date' })" :msg="m"></field-err></div>
               </div>
             </div>
