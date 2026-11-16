@@ -34,7 +34,7 @@
     data: () => ({
       store, loading: true, error: '', general: null, tree: null, version: 0, status: '', readyAt: null,
       validation: { issues: [], completeness: 0, errors: 0 }, documents: [], readonly: false,
-      tab: 'generales', openBlocks: {}, openWeeks: {}, unlocked: false, showErrors: false,
+      tab: 'generales', changingType: false, openBlocks: {}, openWeeks: {}, unlocked: false, showErrors: false,
       save: { state: 'idle', at: null, message: '' }, saving: false, savePromise: null, again: false, changeNo: 0, timer: null, suppress: false,
       restore: null, history: null, EXTRAS, TABS, ORD, u: CYD.url,
     }),
@@ -291,6 +291,20 @@
       focus(id) { this.$nextTick(() => { const el = document.getElementById(id); if (el) { el.focus(); } }); },
       // -------------------------------------------------- bloques
       // -------------------------------------------------- fechas fijas (calendario del colegio según la modalidad del curso)
+      async changePlanType(v) {
+        const prev = this.general.plan_type;
+        if (v === prev) return;
+        const ok = await confirm({ title: 'Cambiar modalidad', body: [`El grupo pasará a ${v === 'fds' ? 'plan fin de semana' : 'plan diario'} y las fechas de bloques, semanas y entregas se reemplazarán por las del calendario fijo.`, 'Los contenidos no se modifican.'], confirmText: 'Cambiar modalidad' });
+        if (!ok) { this.general.plan_type = prev; this.$forceUpdate(); return; }
+        this.changingType = true;
+        try {
+          if (this.save.state === 'dirty') await this.doSave(true);
+          this.apply(await api('PUT', `/api/plans/${this.planId}/plan-type`, { plan_type: v }));
+          await this.doSave(true);
+          toast('Modalidad actualizada y fechas fijas aplicadas.', 'ok');
+        } catch (e) { toast(e.message, 'error'); this.general.plan_type = prev; this.$forceUpdate(); }
+        finally { this.changingType = false; }
+      },
       fixedBlock(bi) { const f = this.general && this.general.fixed; return f ? f.blocks[bi] : null; },
       fixedWeeksFull(b, bi) { const f = this.fixedBlock(bi); return !!f && b.weeks.length >= f.weeks.length; },
       lockedExtra(kind) { const f = this.general && this.general.fixed; return kind === 'mejoramiento' && !!(f && f.mejoramiento && f.mejoramiento.due_start && f.mejoramiento.due_end); },
@@ -479,6 +493,10 @@
           <dt>Grado</dt><dd>{{ general.grade_name }}</dd>
           <dt>Sección</dt><dd>{{ general.section_name }}</dd>
           <dt>Bimestre</dt><dd>{{ ORD[general.bimester_number] }} bimestre</dd>
+          <dt>Modalidad</dt><dd>
+            <select id="plan-type" :value="general.plan_type" :disabled="!editable || changingType" @change="changePlanType($event.target.value)" aria-label="Modalidad del plan" style="max-width:240px">
+              <option value="diario">Plan diario</option><option value="fds">Plan fin de semana</option></select>
+            <span class="hint" style="display:block">Define el calendario de fechas fijas de este grupo en todos los bimestres.{{ general.fixed ? '' : ' Aún no hay fechas fijas cargadas para este bimestre y modalidad.' }}</span></dd>
           <dt>Fechas del bimestre</dt><dd>{{ general.bimester_start ? fmtDate(general.bimester_start) + ' al ' + fmtDate(general.bimester_end) : 'Pendientes de configurar por la administración' }}</dd>
         </dl>
         <div class="divider"></div>

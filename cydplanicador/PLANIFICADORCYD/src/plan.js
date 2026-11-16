@@ -38,7 +38,7 @@ function planContextRow(planId) {
     SELECT p.id, p.status, p.version, p.include_pages, p.observations, p.ready_at, p.created_at,
            p.updated_at, p.pdf_hash, p.assignment_id, p.bimester_id, p.school_year_id,
            a.user_id AS teacher_id, u.full_name AS teacher_name,
-           c.id AS course_id, c.name AS course_name, c.plan_type, g.id AS grade_id, g.name AS grade_name, g.level AS grade_level,
+           c.id AS course_id, c.name AS course_name, a.plan_type, g.id AS grade_id, g.name AS grade_name, g.level AS grade_level,
            s.id AS section_id, s.name AS section_name,
            b.number AS bimester_number, b.start_date AS bimester_start, b.end_date AS bimester_end,
            y.name AS school_year_name

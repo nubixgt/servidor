@@ -637,6 +637,20 @@ function createApp() {
     res.json(planPayload(ctx, req.user));
   }));
 
+  // Modalidad del grupo (plan diario / fin de semana): la elige el docente y rige las fechas fijas de todos sus bimestres.
+  api.put('/plans/:id/plan-type', teacherOnly, wrap((req, res) => {
+    const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'), { write: true });
+    const planType = req.body.plan_type;
+    if (!['diario', 'fds'].includes(planType)) throw new HttpError(422, 'Modalidad no válida.');
+    if (planType !== ctx.plan_type) {
+      const ready = db().prepare("SELECT COUNT(*) n FROM plans WHERE assignment_id = ? AND status = 'listo'").get(ctx.assignment_id).n;
+      if (ready) throw new HttpError(409, 'Este grupo tiene planificaciones marcadas como listas. Use “Editar planificación” en ellas antes de cambiar la modalidad.');
+      db().prepare('UPDATE assignments SET plan_type = ? WHERE id = ?').run(planType, ctx.assignment_id);
+      P.audit(req.user, 'cambiar_modalidad', 'asignacion', ctx.assignment_id, ctx.id, { de: ctx.plan_type, a: planType });
+    }
+    res.json(planPayload(P.planContext(ctx.id), req.user));
+  }));
+
   api.put('/plans/:id', teacherOnly, wrap((req, res) => {
     const id = intParam(req.params.id, 'id');
     P.assertAccess(req.user, id, { write: true });
@@ -987,7 +1001,7 @@ function createApp() {
 
   // Catálogo de cursos (administración)
   admin.get('/courses', (req, res) => {
-    res.json(db().prepare(`SELECT c.id, c.name, c.active, c.plan_type, c.created_at, u.full_name AS created_by_name,
+    res.json(db().prepare(`SELECT c.id, c.name, c.active, c.created_at, u.full_name AS created_by_name,
       (SELECT COUNT(*) FROM assignments a WHERE a.course_id = c.id) AS assignments,
       (SELECT COUNT(DISTINCT user_id) FROM assignments a WHERE a.course_id = c.id) AS teachers
       FROM courses c LEFT JOIN users u ON u.id = c.created_by ORDER BY c.name`).all());
@@ -998,10 +1012,9 @@ function createApp() {
     if (U.nameKey(name).length < 2) throw new HttpError(422, 'Escriba el nombre del curso.');
     const old = db().prepare('SELECT name FROM courses WHERE id = ?').get(id);
     if (!old) throw new HttpError(404, 'El curso no existe.');
-    const planType = req.body.plan_type === 'fds' ? 'fds' : 'diario';
-    try { db().prepare('UPDATE courses SET name = ?, name_key = ?, active = ?, plan_type = ? WHERE id = ?').run(name, U.nameKey(name), req.body.active ? 1 : 0, planType, id); }
+    try { db().prepare('UPDATE courses SET name = ?, name_key = ?, active = ? WHERE id = ?').run(name, U.nameKey(name), req.body.active ? 1 : 0, id); }
     catch (e) { if (String(e.code).startsWith('SQLITE_CONSTRAINT')) throw new HttpError(422, 'Ya existe otro curso con ese nombre.'); throw e; }
-    P.audit(req.user, 'actualizar_curso_admin', 'curso', id, null, { de: old.name, a: name, active: !!req.body.active, plan_type: planType });
+    P.audit(req.user, 'actualizar_curso_admin', 'curso', id, null, { de: old.name, a: name, active: !!req.body.active });
     res.json({ ok: true });
   }));
   admin.delete('/courses/:id', wrap((req, res) => {

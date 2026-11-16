@@ -214,7 +214,7 @@
     },
     template: `
     <div>
-      <div class="page-head"><div><h1>Fechas fijas de actividades</h1><p>Fechas de cada actividad (bloque), de entrega de tarea y de mejoramiento, según la modalidad del curso. Los docentes no pueden modificarlas: las semanas de cada actividad se calculan automáticamente a partir de estas fechas. Deje una fila vacía para que esa actividad use fechas libres.</p></div><year-select></year-select></div>
+      <div class="page-head"><div><h1>Fechas fijas de actividades</h1><p>Fechas de cada actividad (bloque), de entrega de tarea y de mejoramiento, según la modalidad del curso. El docente elige en cada plan si su grupo es plan diario o de fin de semana; no puede modificar estas fechas: las semanas de cada actividad se calculan automáticamente a partir de estas fechas. Deje una fila vacía para que esa actividad use fechas libres.</p></div><year-select></year-select></div>
       ${adminNav}
       <div v-if="!store.years.length" class="alert warn"><span class="ic">ℹ</span><span>Primero cree un ciclo escolar.</span></div>
       <section v-else class="card">
@@ -314,7 +314,7 @@
     methods: {
       fmtDateTime,
       async load() { this.list = await api('GET', '/api/admin/courses'); },
-      start(c) { this.editing = c.id; this.f = { name: c.name, active: !!c.active, plan_type: c.plan_type || 'diario' }; },
+      start(c) { this.editing = c.id; this.f = { name: c.name, active: !!c.active }; },
       async save(c) {
         if (this.f.name !== c.name && c.teachers > 0 && !await confirm({ title: 'Renombrar curso compartido', body: [`“${c.name}” lo usan ${c.teachers} docente(s). El nuevo nombre se verá en sus planificaciones y en las hojas que se generen desde ahora. Las hojas ya generadas no cambian.`], confirmText: 'Renombrar' })) return;
         try { await api('PUT', `/api/admin/courses/${c.id}`, this.f); this.editing = null; this.load(); toast('Curso actualizado.', 'ok'); } catch (e) { toast(e.message, 'error'); }
@@ -326,15 +326,14 @@
     },
     template: `
     <div>
-      <div class="page-head"><div><h1>Catálogo compartido de cursos</h1><p>Los docentes crean cursos cuando no existen; la administración corrige nombres, define si el curso es de plan diario o de fin de semana (determina las fechas fijas del plan) o desactiva cursos. No se fusionan cursos automáticamente.</p></div></div>
+      <div class="page-head"><div><h1>Catálogo compartido de cursos</h1><p>Los docentes crean cursos cuando no existen; la administración corrige nombres o desactiva cursos. No se fusionan cursos automáticamente.</p></div></div>
       ${adminNav}
       <section class="card">
         <div class="card-head"><input type="search" v-model="q" placeholder="Buscar curso…" style="max-width:320px" aria-label="Buscar curso"><span class="muted">{{ filtered.length }} curso(s)</span></div>
         <div class="table-wrap"><table class="data cards">
-          <thead><tr><th>Curso</th><th>Modalidad</th><th>Docentes</th><th>Asignaciones</th><th>Creado por</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+          <thead><tr><th>Curso</th><th>Docentes</th><th>Asignaciones</th><th>Creado por</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
           <tbody><tr v-for="c in filtered" :key="c.id">
             <td data-label="Curso"><input v-if="editing === c.id" type="text" v-model="f.name"><b v-else>{{ c.name }}</b></td>
-            <td data-label="Modalidad"><select v-if="editing === c.id" v-model="f.plan_type" aria-label="Modalidad del curso"><option value="diario">Plan diario</option><option value="fds">Plan fin de semana</option></select><span v-else class="badge" :class="c.plan_type === 'fds' ? 'draft' : 'ready'">{{ c.plan_type === 'fds' ? 'Fin de semana' : 'Diario' }}</span></td>
             <td data-label="Docentes">{{ c.teachers }}</td><td data-label="Asignaciones">{{ c.assignments }}</td>
             <td data-label="Creado por"><small>{{ c.created_by_name || '—' }}<br>{{ fmtDateTime(c.created_at) }}</small></td>
             <td data-label="Estado"><label v-if="editing === c.id" class="check"><input type="checkbox" v-model="f.active"> Activo</label><span v-else class="badge" :class="c.active ? 'ready' : 'none'">{{ c.active ? 'Activo' : 'Inactivo' }}</span></td>
