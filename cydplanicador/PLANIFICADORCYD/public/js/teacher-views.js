@@ -5,29 +5,47 @@
 
   // ================================================================ Resumen
   CYD.components['view-dashboard'] = {
-    data: () => ({ store, ORD, data: null, loading: true, error: '', q: { assignment: '', bimester: '' }, busy: false, dup: null }),
+    data: () => ({ store, ORD, data: null, loading: true, error: '', q: { assignment: '', bimester: '', mode: (() => { try { return localStorage.getItem('cyd-modalidad') || ''; } catch { return ''; } })() }, busy: false, dup: null }),
     computed: {
       year() { return store.years.find(y => y.id === store.yearId); },
       rows() { return this.data ? this.data.rows : []; },
       bims() { return this.data ? this.data.bimesters : []; },
       activeRows() { return this.rows.filter(r => r.active); },
+      // Filtro por modalidad del inicio ('' = todas)
+      byMode() { return this.rows.filter(r => !this.q.mode || r.plan_type === this.q.mode); },
+      activeByMode() { return this.byMode.filter(r => r.active); },
       stats() {
         const c = { sin_iniciar: 0, borrador: 0, listo: 0 };
         this.activeRows.forEach(r => r.bimesters.forEach(b => { c[b.status]++; }));
         return c;
       },
     },
-    watch: { 'store.yearId'() { this.load(); } },
+    watch: {
+      'store.yearId'() { this.load(); },
+      'q.mode'(v) {
+        try { localStorage.setItem('cyd-modalidad', v); } catch { /* sin almacenamiento */ }
+        if (!this.activeByMode.some(r => r.assignment_id === this.q.assignment)) this.q.assignment = this.activeByMode.length === 1 ? this.activeByMode[0].assignment_id : '';
+      },
+    },
     mounted() { this.load(); },
     methods: {
+      modeLabel: m => (m === 'fds' ? 'Plan fin de semana' : 'Plan diario'),
+      async setMode(r, v) {
+        if (v === r.plan_type) return;
+        try {
+          await api('PUT', `/api/me/assignments/${r.assignment_id}/plan-type`, { plan_type: v });
+          toast(`${r.course_name} (${r.grade_name} · ${r.section_name}) pasó a ${this.modeLabel(v).toLowerCase()}.`, 'ok');
+          await this.load();
+        } catch (e) { toast(e.message, 'error'); await this.load(); }
+      },
       async load() {
         if (!store.yearId) { this.loading = false; this.data = null; return; }
         this.loading = true; this.error = '';
         try {
           this.data = await api('GET', `/api/me/dashboard?school_year_id=${store.yearId}`);
           // Preselección cuando sólo existe una opción
-          if (this.activeRows.length === 1) this.q.assignment = this.activeRows[0].assignment_id;
-          else if (!this.activeRows.some(r => r.assignment_id === this.q.assignment)) this.q.assignment = '';
+          if (this.activeByMode.length === 1) this.q.assignment = this.activeByMode[0].assignment_id;
+          else if (!this.activeByMode.some(r => r.assignment_id === this.q.assignment)) this.q.assignment = '';
           if (this.bims.length === 1) this.q.bimester = this.bims[0].id;
           else if (!this.q.bimester) {
             const today = new Date().toISOString().slice(0, 10);
@@ -100,9 +118,11 @@
           <section class="card glass" style="margin-bottom:18px" aria-label="Abrir planificación">
             <form class="quick" @submit.prevent="q.assignment && q.bimester && open(q.assignment, q.bimester)">
               <div class="field"><label>Ciclo escolar</label><input type="text" :value="year && year.name" disabled></div>
+              <div class="field"><label for="qm">Modalidad</label>
+                <select id="qm" v-model="q.mode"><option value="">Todas</option><option value="diario">Plan diario</option><option value="fds">Plan fin de semana</option></select></div>
               <div class="field"><label for="qa">Curso y grupo</label>
-                <select id="qa" v-model="q.assignment"><option value="" disabled>Seleccione…</option>
-                  <option v-for="r in activeRows" :value="r.assignment_id">{{ label(r) }}</option></select></div>
+                <select id="qa" v-model="q.assignment"><option value="" disabled>{{ activeByMode.length ? 'Seleccione…' : 'Sin grupos en esta modalidad' }}</option>
+                  <option v-for="r in activeByMode" :value="r.assignment_id">{{ label(r) }}</option></select></div>
               <div class="field"><label for="qb">Bimestre</label>
                 <select id="qb" v-model="q.bimester"><option value="" disabled>Seleccione…</option>
                   <option v-for="b in bims" :value="b.id">{{ ORD[b.number] }} bimestre</option></select></div>
@@ -129,9 +149,13 @@
           </section>
 
           <div class="stack">
-            <article v-for="r in rows" :key="r.assignment_id" class="card assign-card">
+            <div v-if="!byMode.length" class="card"><div class="empty"><span class="ic">📚</span><p>No tiene grupos de {{ modeLabel(q.mode).toLowerCase() }}. Cambie el filtro a «Todas» o asigne la modalidad en el grupo correspondiente.</p></div></div>
+            <article v-for="r in byMode" :key="r.assignment_id" class="card assign-card">
               <div class="assign-head">
                 <div><h3>{{ r.course_name }}</h3><div class="muted" style="font-size:.88rem">{{ r.grade_name }} · Sección {{ r.section_name }}</div></div>
+                <label class="row" style="gap:6px;font-size:.85rem"><span class="muted">Modalidad</span>
+                  <select :value="r.plan_type" @change="setMode(r, $event.target.value)" :aria-label="'Modalidad de ' + r.course_name + ', ' + r.grade_name + ' ' + r.section_name" style="max-width:190px">
+                    <option value="diario">Plan diario</option><option value="fds">Plan fin de semana</option></select></label>
                 <span v-if="!r.active" class="badge none" title="Se conservan sus planificaciones; reactívela en Mis cursos para crear nuevas">Asignación desactivada</span>
               </div>
               <div class="bim-grid">

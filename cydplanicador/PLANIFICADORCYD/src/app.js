@@ -541,7 +541,7 @@ function createApp() {
   }));
 
   function dashboardRows({ userId, yearId }) {
-    const rows = db().prepare(`SELECT a.id AS assignment_id, a.user_id, a.active, u.full_name AS teacher_name, u.active AS teacher_active,
+    const rows = db().prepare(`SELECT a.id AS assignment_id, a.user_id, a.active, a.plan_type, u.full_name AS teacher_name, u.active AS teacher_active,
         c.name AS course_name, g.name AS grade_name, s.name AS section_name
       FROM assignments a JOIN users u ON u.id = a.user_id JOIN courses c ON c.id = a.course_id JOIN grades g ON g.id = a.grade_id
       JOIN sections s ON s.id = a.section_id
@@ -638,17 +638,24 @@ function createApp() {
   }));
 
   // Modalidad del grupo (plan diario / fin de semana): la elige el docente y rige las fechas fijas de todos sus bimestres.
+  function setPlanType(user, assignmentId, planType, planId = null) {
+    if (!['diario', 'fds'].includes(planType)) throw new HttpError(422, 'Modalidad no válida.');
+    const a = db().prepare('SELECT id, plan_type FROM assignments WHERE id = ? AND user_id = ?').get(assignmentId, user.id);
+    if (!a) throw new HttpError(404, 'La asignación no existe.');
+    if (planType === a.plan_type) return;
+    const ready = db().prepare("SELECT COUNT(*) n FROM plans WHERE assignment_id = ? AND status = 'listo'").get(a.id).n;
+    if (ready) throw new HttpError(409, 'Este grupo tiene planificaciones marcadas como listas. Use “Editar planificación” en ellas antes de cambiar la modalidad.');
+    db().prepare('UPDATE assignments SET plan_type = ? WHERE id = ?').run(planType, a.id);
+    P.audit(user, 'cambiar_modalidad', 'asignacion', a.id, planId, { de: a.plan_type, a: planType });
+  }
   api.put('/plans/:id/plan-type', teacherOnly, wrap((req, res) => {
     const ctx = P.assertAccess(req.user, intParam(req.params.id, 'id'), { write: true });
-    const planType = req.body.plan_type;
-    if (!['diario', 'fds'].includes(planType)) throw new HttpError(422, 'Modalidad no válida.');
-    if (planType !== ctx.plan_type) {
-      const ready = db().prepare("SELECT COUNT(*) n FROM plans WHERE assignment_id = ? AND status = 'listo'").get(ctx.assignment_id).n;
-      if (ready) throw new HttpError(409, 'Este grupo tiene planificaciones marcadas como listas. Use “Editar planificación” en ellas antes de cambiar la modalidad.');
-      db().prepare('UPDATE assignments SET plan_type = ? WHERE id = ?').run(planType, ctx.assignment_id);
-      P.audit(req.user, 'cambiar_modalidad', 'asignacion', ctx.assignment_id, ctx.id, { de: ctx.plan_type, a: planType });
-    }
+    setPlanType(req.user, ctx.assignment_id, req.body.plan_type, ctx.id);
     res.json(planPayload(P.planContext(ctx.id), req.user));
+  }));
+  api.put('/me/assignments/:id/plan-type', teacherOnly, wrap((req, res) => {
+    setPlanType(req.user, intParam(req.params.id, 'id'), req.body.plan_type);
+    res.json({ ok: true });
   }));
 
   api.put('/plans/:id', teacherOnly, wrap((req, res) => {
