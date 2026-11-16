@@ -104,7 +104,7 @@
             if (x.applies && (x.total_points === null || x.total_points === undefined)) x.total_points = e.defaultPoints;
           }
         }
-        this.general = p.general; this.tree = p.tree; this.version = p.general.version; this.status = p.general.status;
+        this.general = p.general; this.tree = p.tree; this.applyFixed(); this.version = p.general.version; this.status = p.general.status;
         this.readyAt = p.general.ready_at; this.validation = p.validation; this.documents = p.documents; this.readonly = p.readonly;
         this.save = { state: 'idle', at: p.general.updated_at, message: '' };
         if (this.status !== 'listo') this.unlocked = false;
@@ -178,7 +178,7 @@
         if (b.version !== this.version) body.push('Atención: la planificación fue modificada después de esa copia (en otra pestaña o equipo). Si recupera la copia, esos cambios posteriores se sobrescribirán.');
         if (!await confirm({ title: 'Recuperar cambios no guardados', body, confirmText: 'Recuperar copia', danger: b.version !== this.version })) return;
         this.restore = null;
-        this.tree = b.tree;
+        this.tree = b.tree; this.applyFixed();
       },
       discardRestore() { this.restore = null; try { localStorage.removeItem(this.backupKey()); } catch { /* */ } },
       async unlock() {
@@ -290,9 +290,29 @@
       move,
       focus(id) { this.$nextTick(() => { const el = document.getElementById(id); if (el) { el.focus(); } }); },
       // -------------------------------------------------- bloques
+      // -------------------------------------------------- fechas fijas (calendario del colegio según la modalidad del curso)
+      fixedBlock(bi) { const f = this.general && this.general.fixed; return f ? f.blocks[bi] : null; },
+      fixedWeeksFull(b, bi) { const f = this.fixedBlock(bi); return !!f && b.weeks.length >= f.weeks.length; },
+      lockedExtra(kind) { const f = this.general && this.general.fixed; return kind === 'mejoramiento' && !!(f && f.mejoramiento && f.mejoramiento.due_start && f.mejoramiento.due_end); },
+      applyFixed() {
+        const fx = this.general && this.general.fixed;
+        if (!fx || !this.tree) return;
+        this.tree.blocks.forEach((b, bi) => {
+          const f = fx.blocks[bi];
+          if (!f) return;
+          b.start_date = f.start_date; b.end_date = f.end_date;
+          if (f.due_end) b.evaluation.due_date = f.due_end;
+          b.weeks.forEach((w, wi) => { const c = f.weeks[wi]; if (c) { w.start_date = c.start_date; w.end_date = c.end_date; } });
+        });
+        const m = fx.mejoramiento;
+        if (m && m.due_start && m.due_end) {
+          const x = this.tree.extras.mejoramiento;
+          x.due_date = null; x.due_text = `${fmtDate(m.due_start)} al ${fmtDate(m.due_end)}`;
+        }
+      },
       addBlock() {
         const b = newBlock();
-        this.tree.blocks.push(b);
+        this.tree.blocks.push(b); this.applyFixed();
         this.openBlocks[b.id] = true;
         this.focus(`b-${b.id}-start`);
         this.$nextTick(() => { const el = document.getElementById(`blk-${b.id}`); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
@@ -311,7 +331,7 @@
         if (!await confirm({ title: 'Eliminar bloque mensual', body, confirmText: 'Eliminar bloque', danger: true })) return;
         this.tree.blocks.splice(i, 1);
       },
-      moveBlock(i, d) { move(this.tree.blocks, i, d); },
+      moveBlock(i, d) { move(this.tree.blocks, i, d); this.applyFixed(); },
       // -------------------------------------------------- evaluación
       async setMode(ev, mode) {
         if (ev.scoring_mode === mode) return;
@@ -327,7 +347,7 @@
       addCriterion(ev, prefix) { const c = newCriterion(); ev.criteria.push(c); this.focus(`${prefix}${c.id}`); },
       // -------------------------------------------------- semanas
       addWeek(b) {
-        const w = newWeek(); b.weeks.push(w); this.openWeeks[w.id] = true;
+        const w = newWeek(); b.weeks.push(w); this.applyFixed(); this.openWeeks[w.id] = true;
         this.focus(`w-${w.id}-start`);
       },
       toggleWeek(w) { this.openWeeks[w.id] = !this.weekOpen(w); },
@@ -335,6 +355,7 @@
       async moveWeek(b, i, d) {
         const j = i + d;
         if (j < 0 || j >= b.weeks.length) return;
+        if (this.fixedBlock(this.tree.blocks.indexOf(b))) { move(b.weeks, i, d); this.applyFixed(); return; }
         const test = b.weeks.slice(); const [x] = test.splice(i, 1); test.splice(j, 0, x);
         const seq = [];
         this.tree.blocks.forEach(bb => (bb === b ? test : bb.weeks).forEach(w => seq.push(w)));
@@ -353,7 +374,7 @@
       async removeWeek(b, i) {
         const w = b.weeks[i];
         if ((w.contents.length || w.start_date) && !await confirm({ title: `Eliminar semana ${this.weekNumbers[w.id]}`, body: [`Se eliminará la semana con ${w.contents.length} contenido(s) y sus actividades de aprendizaje.`, 'Las semanas siguientes se renumerarán.'], confirmText: 'Eliminar semana', danger: true })) return;
-        b.weeks.splice(i, 1);
+        b.weeks.splice(i, 1); this.applyFixed();
       },
       // -------------------------------------------------- contenidos
       addContent(w) { const c = newContent(); w.contents.push(c); this.focus(`c-${c.id}-topic`); },
@@ -529,10 +550,11 @@
             <ul><li v-for="(i, k) in blockIssues(b)" :key="k"><a href="#" @click.prevent="goTo(i.target)">{{ i.message }}</a></li></ul></div></div>
           <div class="grid g2">
             <div class="field" :id="'b-' + b.id + '-dates'"><label :for="'b-' + b.id + '-start'">Fecha de inicio</label>
-              <input :id="'b-' + b.id + '-start'" type="date" v-model="b.start_date" :min="general.bimester_start" :max="general.bimester_end"></div>
+              <input :id="'b-' + b.id + '-start'" type="date" v-model="b.start_date" :min="general.bimester_start" :max="general.bimester_end" :disabled="!!fixedBlock(bi)"></div>
             <div class="field"><label :for="'b-' + b.id + '-end'">Fecha de finalización</label>
-              <input :id="'b-' + b.id + '-end'" type="date" v-model="b.end_date" :min="b.start_date || general.bimester_start" :max="general.bimester_end"></div>
+              <input :id="'b-' + b.id + '-end'" type="date" v-model="b.end_date" :min="b.start_date || general.bimester_start" :max="general.bimester_end" :disabled="!!fixedBlock(bi)"></div>
           </div>
+          <p v-if="fixedBlock(bi)" class="hint" style="margin:0">🔒 Fechas fijas del colegio ({{ general.fixed.plan_type === 'fds' ? 'plan fin de semana' : 'plan diario' }}) para la Actividad {{ bi + 1 }}. Las semanas se ajustan automáticamente.</p>
           <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, field: 'dates' })" :msg="m"></field-err>
           <p class="hint" style="margin:0">El bloque puede abarcar días de otro mes calendario si así organiza la planificación (siempre dentro del bimestre).</p>
 
@@ -573,7 +595,8 @@
                   <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, part: 'evaluacion', field: 'total_points' })" :msg="m"></field-err></div>
                 <div v-else class="field"><span class="label">Punteo total</span><div style="padding:9px 0;font-weight:600">{{ evalTotal(b.evaluation) ?? '—' }} <small class="muted">(suma de criterios)</small></div></div>
                 <div class="field"><label :for="'b-' + b.id + '-ev-due_date'">Fecha de entrega</label>
-                  <input :id="'b-' + b.id + '-ev-due_date'" type="date" v-model="b.evaluation.due_date">
+                  <input :id="'b-' + b.id + '-ev-due_date'" type="date" v-model="b.evaluation.due_date" :disabled="!!(fixedBlock(bi) && fixedBlock(bi).due_end)">
+                  <span v-if="fixedBlock(bi) && fixedBlock(bi).due_end" class="hint">🔒 Entrega de tarea: del {{ fmtDate(fixedBlock(bi).due_start) }} al {{ fmtDate(fixedBlock(bi).due_end) }}.</span>
                   <field-err v-for="m in issuesWhere({ section: 'bloques', blockId: b.id, part: 'evaluacion', field: 'due_date' })" :msg="m"></field-err></div>
               </div>
             </div>
@@ -589,10 +612,10 @@
                 <span class="week-no">Semana {{ weekNumbers[w.id] }}</span>
                 <div class="row" :id="'w-' + w.id + '-dates'" style="flex:1;gap:6px">
                   <label class="sr-only" :for="'w-' + w.id + '-start'">Inicio de la semana {{ weekNumbers[w.id] }}</label>
-                  <input :id="'w-' + w.id + '-start'" type="date" v-model="w.start_date" :min="b.start_date" :max="b.end_date" style="max-width:170px">
+                  <input :id="'w-' + w.id + '-start'" type="date" v-model="w.start_date" :min="b.start_date" :max="b.end_date" style="max-width:170px" :disabled="!!(fixedBlock(bi) && fixedBlock(bi).weeks[wi])">
                   <span class="muted">a</span>
                   <label class="sr-only" :for="'w-' + w.id + '-end'">Fin de la semana {{ weekNumbers[w.id] }}</label>
-                  <input :id="'w-' + w.id + '-end'" type="date" v-model="w.end_date" :min="w.start_date || b.start_date" :max="b.end_date" style="max-width:170px">
+                  <input :id="'w-' + w.id + '-end'" type="date" v-model="w.end_date" :min="w.start_date || b.start_date" :max="b.end_date" style="max-width:170px" :disabled="!!(fixedBlock(bi) && fixedBlock(bi).weeks[wi])">
                 </div>
                 <span class="pill">{{ w.contents.length }} cont. · <b>{{ weekPeriods(w) }}</b> per.</span>
                 <div class="row" style="gap:2px">
@@ -644,7 +667,7 @@
                 <button class="btn soft" style="margin-top:10px" @click="addContent(w)">＋ Agregar contenido</button>
               </div>
             </div>
-            <button class="btn" style="margin-top:12px" @click="addWeek(b)">＋ Agregar semana</button>
+            <button class="btn" style="margin-top:12px" @click="addWeek(b)" :disabled="fixedWeeksFull(b, bi)" :title="fixedWeeksFull(b, bi) ? 'El calendario fijo no tiene más semanas para esta actividad' : ''">＋ Agregar semana</button>
           </div>
           <div class="divider"></div>
           <div class="row between">
@@ -681,9 +704,9 @@
                 <div class="field"><span class="label">Punteo total</span><div class="fixed-val"><b>5</b> puntos <small class="muted">(predeterminado)</small></div></div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
-                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date"></div>
+                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date" :disabled="lockedExtra(e.kind)"></div>
                   <div class="field"><label :for="'x-' + e.kind + '-duetext'">o período en texto</label>
-                    <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre">
+                    <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre" :disabled="lockedExtra(e.kind)">
                     <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>
                 </div>
                 <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>
@@ -717,9 +740,9 @@
                 </div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
-                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date"></div>
+                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date" :disabled="lockedExtra(e.kind)"></div>
                   <div class="field"><label :for="'x-' + e.kind + '-duetext'">o período en texto</label>
-                    <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre">
+                    <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre" :disabled="lockedExtra(e.kind)">
                     <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>
                 </div>
                 <field-err v-for="m in issuesWhere({ section: 'apartados', kind: e.kind, field: 'due' })" :msg="m"></field-err>

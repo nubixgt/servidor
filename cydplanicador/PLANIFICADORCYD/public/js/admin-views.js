@@ -5,7 +5,7 @@
 
   const adminNav = `
     <nav class="tabs" aria-label="Administración" style="margin-bottom:16px">
-      <a v-for="t in [['/admin','Seguimiento'],['/admin/institucion','Institución'],['/admin/ciclos','Ciclos y bimestres'],['/admin/grados','Grados y secciones'],['/admin/cursos','Catálogo de cursos'],['/admin/docentes','Docentes'],['/admin/usuarios','Usuarios'],['/admin/bitacora','Bitácora']]"
+      <a v-for="t in [['/admin','Seguimiento'],['/admin/institucion','Institución'],['/admin/ciclos','Ciclos y bimestres'],['/admin/fechas','Fechas fijas'],['/admin/grados','Grados y secciones'],['/admin/cursos','Catálogo de cursos'],['/admin/docentes','Docentes'],['/admin/usuarios','Usuarios'],['/admin/bitacora','Bitácora']]"
         :href="'#' + t[0]" class="btn sm" :class="store.route.path === t[0] ? 'soft' : 'ghost'" :aria-current="store.route.path === t[0] ? 'page' : null">{{ t[1] }}</a>
     </nav>`;
 
@@ -180,6 +180,66 @@
     </div>`,
   };
 
+  // ================================================================ Fechas fijas
+  const SLOT_LABEL = { act1: 'Actividad 1', act2: 'Actividad 2', act3: 'Actividad 3', mejoramiento: 'Actividad de mejoramiento' };
+  CYD.components['view-admin-fixed'] = {
+    data: () => ({ store, type: 'diario', rows: [], loading: false, busy: false }),
+    watch: { 'store.yearId'() { this.load(); } },
+    mounted() { this.load(); },
+    computed: {
+      groups() {
+        return [1, 2, 3, 4].map(n => ({ n, rows: this.rows.filter(r => r.plan_type === this.type && r.bimester === n) }));
+      },
+    },
+    methods: {
+      ORD: n => ORD[n], label: k => SLOT_LABEL[k],
+      async load() {
+        if (!store.yearId) return;
+        this.loading = true;
+        try {
+          const saved = await api('GET', `/api/admin/fixed-dates?year=${store.yearId}`);
+          const rows = [];
+          for (const pt of ['diario', 'fds']) for (let n = 1; n <= 4; n++) for (const slot of ['act1', 'act2', 'act3', 'mejoramiento']) {
+            const f = saved.find(r => r.plan_type === pt && r.bimester === n && r.slot === slot);
+            rows.push({ plan_type: pt, bimester: n, slot, start_date: f ? f.start_date : null, end_date: f ? f.end_date : null, due_start: f ? f.due_start : null, due_end: f ? f.due_end : null });
+          }
+          this.rows = rows;
+        } finally { this.loading = false; }
+      },
+      async save() {
+        this.busy = true;
+        try { await api('PUT', '/api/admin/fixed-dates', { year: store.yearId, rows: this.rows }); toast('Fechas fijas guardadas. Se aplicarán al guardar o abrir cada planificación.', 'ok'); await this.load(); }
+        catch (e) { toast(e.message, 'error'); } finally { this.busy = false; }
+      },
+    },
+    template: `
+    <div>
+      <div class="page-head"><div><h1>Fechas fijas de actividades</h1><p>Fechas de cada actividad (bloque), de entrega de tarea y de mejoramiento, según la modalidad del curso. Los docentes no pueden modificarlas: las semanas de cada actividad se calculan automáticamente a partir de estas fechas. Deje una fila vacía para que esa actividad use fechas libres.</p></div><year-select></year-select></div>
+      ${adminNav}
+      <div v-if="!store.years.length" class="alert warn"><span class="ic">ℹ</span><span>Primero cree un ciclo escolar.</span></div>
+      <section v-else class="card">
+        <div class="card-head"><div class="row">
+          <label class="check" :class="{ on: type === 'diario' }"><input type="radio" value="diario" v-model="type"> Plan diario</label>
+          <label class="check" :class="{ on: type === 'fds' }"><input type="radio" value="fds" v-model="type"> Plan fin de semana</label></div>
+          <button class="btn primary" @click="save" :disabled="busy || loading">Guardar fechas</button></div>
+        <div class="card-body stack">
+          <div v-for="g in groups" :key="g.n" class="stack" style="background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px">
+            <b>{{ ORD(g.n) }} bimestre</b>
+            <div class="table-wrap"><table class="data">
+              <thead><tr><th>Actividad</th><th>Inicio</th><th>Fin</th><th>Entrega: desde</th><th>Entrega: hasta</th></tr></thead>
+              <tbody><tr v-for="r in g.rows" :key="r.slot">
+                <td>{{ label(r.slot) }}</td>
+                <td><input v-if="r.slot !== 'mejoramiento'" type="date" v-model="r.start_date" :aria-label="label(r.slot) + ' inicio'"><span v-else class="muted">—</span></td>
+                <td><input v-if="r.slot !== 'mejoramiento'" type="date" v-model="r.end_date" :min="r.start_date" :aria-label="label(r.slot) + ' fin'"><span v-else class="muted">—</span></td>
+                <td><input type="date" v-model="r.due_start" :aria-label="label(r.slot) + ' entrega desde'"></td>
+                <td><input type="date" v-model="r.due_end" :min="r.due_start" :aria-label="label(r.slot) + ' entrega hasta'"></td>
+              </tr></tbody></table></div>
+          </div>
+        </div>
+      </section>
+    </div>`,
+  };
+
   // ================================================================ Grados y secciones
   CYD.components['view-admin-grades'] = {
     data: () => ({ store, grades: [], f: { name: '', level: '', sort_order: 0 }, sec: {} }),
@@ -254,7 +314,7 @@
     methods: {
       fmtDateTime,
       async load() { this.list = await api('GET', '/api/admin/courses'); },
-      start(c) { this.editing = c.id; this.f = { name: c.name, active: !!c.active }; },
+      start(c) { this.editing = c.id; this.f = { name: c.name, active: !!c.active, plan_type: c.plan_type || 'diario' }; },
       async save(c) {
         if (this.f.name !== c.name && c.teachers > 0 && !await confirm({ title: 'Renombrar curso compartido', body: [`“${c.name}” lo usan ${c.teachers} docente(s). El nuevo nombre se verá en sus planificaciones y en las hojas que se generen desde ahora. Las hojas ya generadas no cambian.`], confirmText: 'Renombrar' })) return;
         try { await api('PUT', `/api/admin/courses/${c.id}`, this.f); this.editing = null; this.load(); toast('Curso actualizado.', 'ok'); } catch (e) { toast(e.message, 'error'); }
@@ -266,14 +326,15 @@
     },
     template: `
     <div>
-      <div class="page-head"><div><h1>Catálogo compartido de cursos</h1><p>Los docentes crean cursos cuando no existen; la administración corrige nombres o desactiva cursos. No se fusionan cursos automáticamente.</p></div></div>
+      <div class="page-head"><div><h1>Catálogo compartido de cursos</h1><p>Los docentes crean cursos cuando no existen; la administración corrige nombres, define si el curso es de plan diario o de fin de semana (determina las fechas fijas del plan) o desactiva cursos. No se fusionan cursos automáticamente.</p></div></div>
       ${adminNav}
       <section class="card">
         <div class="card-head"><input type="search" v-model="q" placeholder="Buscar curso…" style="max-width:320px" aria-label="Buscar curso"><span class="muted">{{ filtered.length }} curso(s)</span></div>
         <div class="table-wrap"><table class="data cards">
-          <thead><tr><th>Curso</th><th>Docentes</th><th>Asignaciones</th><th>Creado por</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+          <thead><tr><th>Curso</th><th>Modalidad</th><th>Docentes</th><th>Asignaciones</th><th>Creado por</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead>
           <tbody><tr v-for="c in filtered" :key="c.id">
             <td data-label="Curso"><input v-if="editing === c.id" type="text" v-model="f.name"><b v-else>{{ c.name }}</b></td>
+            <td data-label="Modalidad"><select v-if="editing === c.id" v-model="f.plan_type" aria-label="Modalidad del curso"><option value="diario">Plan diario</option><option value="fds">Plan fin de semana</option></select><span v-else class="badge" :class="c.plan_type === 'fds' ? 'draft' : 'ready'">{{ c.plan_type === 'fds' ? 'Fin de semana' : 'Diario' }}</span></td>
             <td data-label="Docentes">{{ c.teachers }}</td><td data-label="Asignaciones">{{ c.assignments }}</td>
             <td data-label="Creado por"><small>{{ c.created_by_name || '—' }}<br>{{ fmtDateTime(c.created_at) }}</small></td>
             <td data-label="Estado"><label v-if="editing === c.id" class="check"><input type="checkbox" v-model="f.active"> Activo</label><span v-else class="badge" :class="c.active ? 'ready' : 'none'">{{ c.active ? 'Activo' : 'Inactivo' }}</span></td>

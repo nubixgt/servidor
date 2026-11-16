@@ -900,6 +900,38 @@ function createApp() {
     res.json({ ok: true });
   }));
 
+  // Fechas fijas por modalidad (plan diario / plan fin de semana)
+  admin.get('/fixed-dates', wrap((req, res) => {
+    const year = intParam(req.query.year, 'ciclo');
+    res.json(db().prepare('SELECT plan_type, bimester, slot, start_date, end_date, due_start, due_end FROM fixed_dates WHERE school_year_id = ? ORDER BY plan_type, bimester, slot').all(year));
+  }));
+  admin.put('/fixed-dates', wrap((req, res) => {
+    const year = intParam(req.body.year, 'ciclo');
+    if (!db().prepare('SELECT id FROM school_years WHERE id = ?').get(year)) throw new HttpError(404, 'El ciclo no existe.');
+    const rows = Array.isArray(req.body.rows) ? req.body.rows : [];
+    if (rows.length > 100) throw new HttpError(422, 'Demasiadas filas.');
+    const d = v => { if (v === null || v === undefined || v === '') return null; if (!U.isDate(v)) throw new HttpError(422, 'Hay una fecha no válida.'); return v; };
+    const clean = rows.map(r => {
+      const x = { plan_type: r.plan_type, bimester: Number(r.bimester), slot: r.slot, s: d(r.start_date), e: d(r.end_date), ds: d(r.due_start), de: d(r.due_end) };
+      if (!['diario', 'fds'].includes(x.plan_type) || ![1, 2, 3, 4].includes(x.bimester) || !['act1', 'act2', 'act3', 'mejoramiento'].includes(x.slot)) throw new HttpError(422, 'Fila no válida.');
+      const nm = `${x.plan_type === 'fds' ? 'Fin de semana' : 'Diario'}, bimestre ${x.bimester}, ${x.slot === 'mejoramiento' ? 'mejoramiento' : 'actividad ' + x.slot.slice(3)}`;
+      if (x.s && x.e && x.s > x.e) throw new HttpError(422, `${nm}: el inicio es posterior al fin.`);
+      if (x.ds && x.de && x.ds > x.de) throw new HttpError(422, `${nm}: el inicio de entrega es posterior al fin.`);
+      return x;
+    });
+    db().transaction(() => {
+      const up = db().prepare(`INSERT INTO fixed_dates(school_year_id, plan_type, bimester, slot, start_date, end_date, due_start, due_end) VALUES (?,?,?,?,?,?,?,?)
+        ON CONFLICT(school_year_id, plan_type, bimester, slot) DO UPDATE SET start_date = excluded.start_date, end_date = excluded.end_date, due_start = excluded.due_start, due_end = excluded.due_end`);
+      const del = db().prepare('DELETE FROM fixed_dates WHERE school_year_id = ? AND plan_type = ? AND bimester = ? AND slot = ?');
+      for (const x of clean) {
+        if (!x.s && !x.e && !x.ds && !x.de) del.run(year, x.plan_type, x.bimester, x.slot);
+        else up.run(year, x.plan_type, x.bimester, x.slot, x.s, x.e, x.ds, x.de);
+      }
+    })();
+    P.audit(req.user, 'actualizar_fechas_fijas', 'ciclo', year, null, { filas: clean.length });
+    res.json({ ok: true });
+  }));
+
   // Grados y secciones
   admin.post('/grades', wrap((req, res) => {
     const name = U.cleanName(str(req.body.name, 80));
@@ -955,7 +987,7 @@ function createApp() {
 
   // Catálogo de cursos (administración)
   admin.get('/courses', (req, res) => {
-    res.json(db().prepare(`SELECT c.id, c.name, c.active, c.created_at, u.full_name AS created_by_name,
+    res.json(db().prepare(`SELECT c.id, c.name, c.active, c.plan_type, c.created_at, u.full_name AS created_by_name,
       (SELECT COUNT(*) FROM assignments a WHERE a.course_id = c.id) AS assignments,
       (SELECT COUNT(DISTINCT user_id) FROM assignments a WHERE a.course_id = c.id) AS teachers
       FROM courses c LEFT JOIN users u ON u.id = c.created_by ORDER BY c.name`).all());
@@ -966,9 +998,10 @@ function createApp() {
     if (U.nameKey(name).length < 2) throw new HttpError(422, 'Escriba el nombre del curso.');
     const old = db().prepare('SELECT name FROM courses WHERE id = ?').get(id);
     if (!old) throw new HttpError(404, 'El curso no existe.');
-    try { db().prepare('UPDATE courses SET name = ?, name_key = ?, active = ? WHERE id = ?').run(name, U.nameKey(name), req.body.active ? 1 : 0, id); }
+    const planType = req.body.plan_type === 'fds' ? 'fds' : 'diario';
+    try { db().prepare('UPDATE courses SET name = ?, name_key = ?, active = ?, plan_type = ? WHERE id = ?').run(name, U.nameKey(name), req.body.active ? 1 : 0, planType, id); }
     catch (e) { if (String(e.code).startsWith('SQLITE_CONSTRAINT')) throw new HttpError(422, 'Ya existe otro curso con ese nombre.'); throw e; }
-    P.audit(req.user, 'actualizar_curso_admin', 'curso', id, null, { de: old.name, a: name, active: !!req.body.active });
+    P.audit(req.user, 'actualizar_curso_admin', 'curso', id, null, { de: old.name, a: name, active: !!req.body.active, plan_type: planType });
     res.json({ ok: true });
   }));
   admin.delete('/courses/:id', wrap((req, res) => {

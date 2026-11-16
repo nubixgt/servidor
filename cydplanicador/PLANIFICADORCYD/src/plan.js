@@ -28,11 +28,17 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 // ------------------------------------------------------------------ contexto
 /** Datos generales de un plan (asignación, curso, grado, sección, bimestre, docente). */
 function planContext(planId) {
+  const ctx = planContextRow(planId);
+  if (ctx) ctx.fixed = fixedCalendar(ctx);
+  return ctx;
+}
+
+function planContextRow(planId) {
   return db().prepare(`
     SELECT p.id, p.status, p.version, p.include_pages, p.observations, p.ready_at, p.created_at,
            p.updated_at, p.pdf_hash, p.assignment_id, p.bimester_id, p.school_year_id,
            a.user_id AS teacher_id, u.full_name AS teacher_name,
-           c.id AS course_id, c.name AS course_name, g.id AS grade_id, g.name AS grade_name, g.level AS grade_level,
+           c.id AS course_id, c.name AS course_name, c.plan_type, g.id AS grade_id, g.name AS grade_name, g.level AS grade_level,
            s.id AS section_id, s.name AS section_name,
            b.number AS bimester_number, b.start_date AS bimester_start, b.end_date AS bimester_end,
            y.name AS school_year_name
@@ -45,6 +51,54 @@ function planContext(planId) {
     JOIN bimesters b ON b.id = p.bimester_id
     JOIN school_years y ON y.id = p.school_year_id
     WHERE p.id = ?`).get(planId);
+}
+
+// ------------------------------------------------------------------ fechas fijas
+const SLOTS = ['act1', 'act2', 'act3'];
+const addDays = (iso, n) => { const t = new Date(`${iso}T00:00:00Z`); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
+
+/** Semanas de un bloque: tramos de 7 días a partir del inicio, el último recortado al fin del bloque. */
+function weekChunks(start, end) {
+  const out = [];
+  if (!start || !end || start > end) return out;
+  for (let s = start; s <= end; s = addDays(s, 7)) out.push({ start_date: s, end_date: addDays(s, 6) < end ? addDays(s, 6) : end });
+  return out;
+}
+
+/**
+ * Calendario fijo de la modalidad del curso (plan diario o fin de semana) para el bimestre del plan.
+ * Devuelve null si el administrador no cargó fechas para ese ciclo/modalidad/bimestre.
+ */
+function fixedCalendar(ctx) {
+  const rows = db().prepare('SELECT slot, start_date, end_date, due_start, due_end FROM fixed_dates WHERE school_year_id = ? AND plan_type = ? AND bimester = ?')
+    .all(ctx.school_year_id, ctx.plan_type, ctx.bimester_number);
+  if (!rows.length) return null;
+  const by = Object.fromEntries(rows.map(r => [r.slot, r]));
+  return {
+    plan_type: ctx.plan_type,
+    blocks: SLOTS.map(k => by[k] ? { ...by[k], weeks: weekChunks(by[k].start_date, by[k].end_date) } : null),
+    mejoramiento: by.mejoramiento || null,
+  };
+}
+
+const fmtShort = d => { const [y, m, dd] = d.split('-'); return `${dd}/${m}/${y}`; };
+
+/** Impone las fechas del calendario fijo sobre el árbol (bloque N = Actividad N). Modifica el árbol. */
+function applyFixed(tree, fixed) {
+  if (!fixed) return tree;
+  tree.blocks.forEach((b, bi) => {
+    const f = fixed.blocks[bi];
+    if (!f) return;
+    b.start_date = f.start_date; b.end_date = f.end_date;
+    if (f.due_end) b.evaluation.due_date = f.due_end;
+    b.weeks.forEach((w, wi) => { const c = f.weeks[wi]; if (c) { w.start_date = c.start_date; w.end_date = c.end_date; } });
+  });
+  const m = fixed.mejoramiento;
+  if (m && m.due_start && m.due_end && tree.extras && tree.extras.mejoramiento) {
+    tree.extras.mejoramiento.due_date = null;
+    tree.extras.mejoramiento.due_text = `${fmtShort(m.due_start)} al ${fmtShort(m.due_end)}`;
+  }
+  return tree;
 }
 
 /** Verifica acceso: el docente sólo a sus planes; el administrador a todos (lectura/seguimiento). */
@@ -95,10 +149,12 @@ function loadTree(planId) {
   extras.mejoramiento.activity = MEJORAMIENTO_TEXT;
   // Acciones adicionales del plan de mejoramiento (la primera acción es el apartado «Actividad de mejoramiento»)
   const improvement_actions = d.prepare('SELECT id, description, strategies, students, action_date FROM improvement_actions WHERE plan_id = ? ORDER BY position').all(planId);
-  return {
+  const tree = {
     include_pages: !!plan.include_pages, observations: plan.observations,
     competencies, indicators, blocks, extras, improvement_actions,
   };
+  const ctx = planContext(planId);
+  return applyFixed(tree, ctx && ctx.fixed);
 }
 
 function emptyExtra() {
@@ -247,6 +303,8 @@ function saveTree(planId, tree, expectedVersion, user, { allowReadyEdit = false 
   const d = db();
   let result;
   d.transaction(() => {
+    const pctx = planContext(planId);
+    if (pctx) applyFixed(tree, pctx.fixed);
     const p = d.prepare('SELECT version, status, pdf_hash FROM plans WHERE id = ?').get(planId);
     if (!p) throw new HttpError(404, 'La planificación no existe.');
     if (p.version !== expectedVersion) {
@@ -397,6 +455,8 @@ function validate(tree, ctx) {
       req(ev.total_points !== null && ev.total_points !== undefined, `${name}: indique el punteo total de la evaluación.`, { ...tE, field: 'total_points' });
     }
     // Semanas
+    const fb = ctx.fixed && ctx.fixed.blocks[bi];
+    if (fb && b.weeks.length > fb.weeks.length) err(`${name}: el calendario fijo sólo tiene ${fb.weeks.length} semana(s) para este bloque. Elimine las semanas sobrantes.`, { ...tB, part: 'semanas' });
     req(b.weeks.length > 0, `${name}: agregue al menos una semana.`, { ...tB, part: 'semanas' });
     b.weeks.forEach(w => {
       weekNo += 1;
@@ -493,6 +553,6 @@ function pdfHash(tree) {
 }
 
 module.exports = {
-  EXTRA_KINDS, EXTRA_LABELS, MEJORAMIENTO_TEXT, planContext, assertAccess, loadTree, sanitize, cloneTree, saveTree, validate,
+  EXTRA_KINDS, EXTRA_LABELS, MEJORAMIENTO_TEXT, planContext, fixedCalendar, applyFixed, assertAccess, loadTree, sanitize, cloneTree, saveTree, validate,
   periodTotals, evaluationTotal, pdfProjection, pdfHash, audit, fmt,
 };

@@ -68,7 +68,7 @@ CYD.url = u => (typeof u === 'string' && u.startsWith('/') ? CYD.base + u : u);
     ['/cambiar-contrasena', 'force-password'],
     ['/inicio', 'dashboard'], ['/asignaciones', 'assignments'], ['/perfil', 'profile'], ['/cursos', 'courses'],
     ['/plan/:id/hoja', 'sheet'], ['/plan/:id/plan-bimestral', 'plan-pdf'], ['/plan/:id', 'editor'],
-    ['/admin', 'admin-plans'], ['/admin/institucion', 'admin-institution'], ['/admin/ciclos', 'admin-years'],
+    ['/admin', 'admin-plans'], ['/admin/institucion', 'admin-institution'], ['/admin/ciclos', 'admin-years'], ['/admin/fechas', 'admin-fixed'],
     ['/admin/grados', 'admin-grades'], ['/admin/cursos', 'admin-courses'], ['/admin/docentes', 'admin-teachers'], ['/admin/usuarios', 'admin-users'],
     ['/admin/bitacora', 'admin-audit'],
   ];
