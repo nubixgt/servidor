@@ -321,7 +321,8 @@
         const m = fx.mejoramiento;
         if (m && m.due_start && m.due_end) {
           const x = this.tree.extras.mejoramiento;
-          x.due_date = null; x.due_text = `${fmtDate(m.due_start)} al ${fmtDate(m.due_end)}`;
+          if (x.due_date && x.due_date >= m.due_start && x.due_date <= m.due_end) x.due_text = '';
+          else { x.due_date = null; x.due_text = `${fmtDate(m.due_start)} al ${fmtDate(m.due_end)}`; }
         }
       },
       addBlock() {
@@ -722,7 +723,8 @@
                 <div class="field"><span class="label">Punteo total</span><div class="fixed-val"><b>5</b> puntos <small class="muted">(predeterminado)</small></div></div>
                 <div class="grid g2" :id="'x-' + e.kind + '-due'">
                   <div class="field"><label :for="'x-' + e.kind + '-date'">Fecha de entrega o aplicación</label>
-                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date" :disabled="lockedExtra(e.kind)"></div>
+                    <input :id="'x-' + e.kind + '-date'" type="date" v-model="x.due_date" :min="lockedExtra(e.kind) ? general.fixed.mejoramiento.due_start : null" :max="lockedExtra(e.kind) ? general.fixed.mejoramiento.due_end : null">
+                    <span v-if="lockedExtra(e.kind)" class="hint">Elija un día dentro del período fijado ({{ fmtDate(general.fixed.mejoramiento.due_start) }} al {{ fmtDate(general.fixed.mejoramiento.due_end) }}) o deje vacío para mostrar todo el período.</span></div>
                   <div class="field"><label :for="'x-' + e.kind + '-duetext'">o período en texto</label>
                     <input :id="'x-' + e.kind + '-duetext'" type="text" v-model="x.due_text" maxlength="120" placeholder="Ej.: período del bimestre" :disabled="lockedExtra(e.kind)">
                     <span class="hint">Si escribe una fecha, se mostrará la fecha.</span></div>

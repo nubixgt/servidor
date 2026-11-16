@@ -99,8 +99,10 @@ function applyFixed(tree, fixed) {
   });
   const m = fixed.mejoramiento;
   if (m && m.due_start && m.due_end && tree.extras && tree.extras.mejoramiento) {
-    tree.extras.mejoramiento.due_date = null;
-    tree.extras.mejoramiento.due_text = `${fmtShort(m.due_start)} al ${fmtShort(m.due_end)}`;
+    // El docente puede elegir un día dentro del rango; si no lo hace, se muestra el rango completo.
+    const x = tree.extras.mejoramiento;
+    if (x.due_date && x.due_date >= m.due_start && x.due_date <= m.due_end) x.due_text = '';
+    else { x.due_date = null; x.due_text = `${fmtShort(m.due_start)} al ${fmtShort(m.due_end)}`; }
   }
   return tree;
 }
