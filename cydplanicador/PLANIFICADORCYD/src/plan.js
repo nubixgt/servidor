@@ -442,7 +442,8 @@ function validate(tree, ctx) {
     const hasDates = req(!!b.start_date && !!b.end_date, `${name}: indique fecha de inicio y de finalización.`, { ...tB, field: 'dates' });
     if (hasDates) {
       if (b.start_date > b.end_date) err(`${name}: la fecha de inicio es posterior a la de finalización.`, { ...tB, field: 'dates' });
-      if (bStart && bEnd && (b.start_date < bStart || b.end_date > bEnd)) err(`${name}: sus fechas deben estar dentro del bimestre (${fmt(bStart)} al ${fmt(bEnd)}).`, { ...tB, field: 'dates' });
+      const fixedB = !!(ctx.fixed && ctx.fixed.blocks[bi]); // fechas impuestas por el colegio: no se validan contra el bimestre
+      if (!fixedB && bStart && bEnd && (b.start_date < bStart || b.end_date > bEnd)) err(`${name}: sus fechas deben estar dentro del bimestre (${fmt(bStart)} al ${fmt(bEnd)}).`, { ...tB, field: 'dates' });
       const prev = tree.blocks[bi - 1];
       if (prev && prev.end_date && prev.start_date && b.start_date <= prev.end_date) err(`${name}: se superpone o está antes del bloque anterior. Revise el orden y las fechas.`, { ...tB, field: 'dates' });
     }
@@ -472,7 +473,7 @@ function validate(tree, ctx) {
       if (wDates) {
         if (w.start_date > w.end_date) err(`${wn}: la fecha de inicio es posterior a la de finalización.`, { ...tW, field: 'dates' });
         if (b.start_date && b.end_date && (w.start_date < b.start_date || w.end_date > b.end_date)) err(`${wn}: sus fechas deben estar dentro del bloque.`, { ...tW, field: 'dates' });
-        if (bStart && bEnd && (w.start_date < bStart || w.end_date > bEnd)) err(`${wn}: sus fechas deben estar dentro del bimestre.`, { ...tW, field: 'dates' });
+        if (!(ctx.fixed && ctx.fixed.blocks[bi]) && bStart && bEnd && (w.start_date < bStart || w.end_date > bEnd)) err(`${wn}: sus fechas deben estar dentro del bimestre.`, { ...tW, field: 'dates' });
         allWeeks.push({ no: weekNo, start: w.start_date, end: w.end_date, target: tW });
       }
       req(w.contents.length > 0, `${wn}: agregue al menos un contenido.`, { ...tW, part: 'contenidos' });
