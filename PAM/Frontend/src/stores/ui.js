@@ -15,6 +15,7 @@ export const useUiStore = defineStore('ui', () => {
     // beneficiarios
     const bq = ref('');
     const bRule = ref(null);
+    const bFc = ref(false); // solo fallecidos confirmados (CUR/RENAP)
     const bSort = ref(['fsol', -1]);
     const bSortManual = ref(false);
 
@@ -27,5 +28,5 @@ export const useUiStore = defineStore('ui', () => {
     const preguntar = ref(false);
     const datosDesactualizados = ref(false);
 
-    return { mapMetric, evoMode, evoOn, cohort, terrSort, terrOpen, moreF, filtrosAbiertos, bq, bRule, bSort, bSortManual, rep, modoImp, menuMin, menuAbierto, preguntar, datosDesactualizados };
+    return { mapMetric, evoMode, evoOn, cohort, terrSort, terrOpen, moreF, filtrosAbiertos, bq, bRule, bFc, bSort, bSortManual, rep, modoImp, menuMin, menuAbierto, preguntar, datosDesactualizados };
 });

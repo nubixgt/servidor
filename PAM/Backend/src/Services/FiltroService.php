@@ -76,6 +76,11 @@ class FiltroService
         if ($fl->f !== null) {
             $sql[] = $fl->f ? 'v.fecha_fallecimiento IS NOT NULL' : 'v.fecha_fallecimiento IS NULL';
         }
+        if ($fl->fc !== null) {
+            // fallecimiento confirmado: resolución de suspensión por fallecimiento (RENAP) en el detalle CUR
+            $sql[] = ($fl->fc ? 'EXISTS' : 'NOT EXISTS')
+                . ' (SELECT 1 FROM core_cur_detalle cd WHERE cd.expediente_id = v.id AND cd.es_fallecimiento = 1)';
+        }
         if ($fl->a !== null) {
             $sql[] = 'v.banda_edad = ?';
             $p[] = $fl->a;

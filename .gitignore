@@ -39,6 +39,15 @@ cydplanicador/**/backups/
 PAM/*.csv
 PAM/*.xlsx
 PAM/*.zip
+# PAM: bases completas y respaldos (datos personales, pesan GB)
+PAM/*.json
+PAM/*.sql
+PAM/*.tgz
+PAM/enlace_resultado.txt
+PAM/Database/visionwe_PAM.sql
+PAM/Database/*.tgz
+PAM/Database/actualizacion/salida/
+PAM/Database/actualizacion/__pycache__/
 PAM/Backend/storage/
 concretos-oriente/.claude/settings.local.json
 

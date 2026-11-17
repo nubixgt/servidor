@@ -7,12 +7,13 @@ namespace App\DTOs;
  *   e   estado (orden 0-8)      r   familia de la última resolución (0-8; 9 = sin resolución)
  *   n   situación de nómina (0 nunca, 1 activo, 2 egresado)               v   última visita (0 sin, 1 positiva, 2 negativa)
  *   s   con suspensión (0/1)    f   con fallecimiento (0/1)
+ *   fc  fallecimiento confirmado en CUR/RENAP (1 = solo confirmados, 0 = sin confirmar)
  *   a   banda de edad (0 = 65-69 … 5 = 90+)    am  banda mínima          t   antigüedad del trámite (1-6)
  *   regla regla de alerta / calidad            q   texto libre (nombre, DPI, teléfono, expediente)
  */
 class FiltrosDTO
 {
-    public const ENTEROS = ['dep', 'mun', 'anio', 'e', 'r', 'n', 'v', 's', 'f', 'a', 'am', 't'];
+    public const ENTEROS = ['dep', 'mun', 'anio', 'e', 'r', 'n', 'v', 's', 'f', 'fc', 'a', 'am', 't'];
 
     public function __construct(
         public ?int $dep = null,
@@ -24,6 +25,7 @@ class FiltrosDTO
         public ?int $v = null,
         public ?int $s = null,
         public ?int $f = null,
+        public ?int $fc = null,
         public ?int $a = null,
         public ?int $am = null,
         public ?int $t = null,
