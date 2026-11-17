@@ -405,6 +405,35 @@ CREATE TABLE IF NOT EXISTS core_resumen_scope(
   PRIMARY KEY (token, expediente_id)
 ) ENGINE=InnoDB;
 
+-- Detalle CUR (documentos/operaciones por nounico). Alimenta la serie de fallecidos del tablero.
+-- es_fallecimiento = 1: resolución de suspensión por fallecimiento (RENAP) o "Resolución para Fallecidos".
+-- Se llena con Database/actualizacion (convertir.py + 02_cargar.sql + 03_enlazar.sql).
+CREATE TABLE IF NOT EXISTS core_cur_detalle(
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  nounico VARCHAR(30) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  fecha_documento DATETIME NULL,
+  monto DOUBLE NULL,
+  dias INT UNSIGNED NULL,
+  tipo_documento VARCHAR(5) COLLATE utf8mb4_bin NULL,
+  tipo_operacion VARCHAR(5) COLLATE utf8mb4_bin NULL,
+  HabilitaDeshabilita VARCHAR(5) COLLATE utf8mb4_bin NULL,
+  Descripcion_Operacion VARCHAR(150) NULL,
+  periodo_del DATETIME NULL,
+  periodo_al DATETIME NULL,
+  mes_pago DATETIME NULL,
+  vence_pago DATETIME NULL,
+  cur INT UNSIGNED NULL,
+  fechac DATETIME NULL,
+  usuarioc VARCHAR(50) NULL,
+  expediente_id BIGINT UNSIGNED NULL,
+  es_fallecimiento TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  KEY cur_nounico (nounico),
+  KEY cur_exp_id (expediente_id),
+  KEY cur_cur (cur),
+  KEY cur_fall (es_fallecimiento, nounico)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ---------------------------------------------------------------------
 -- 005 · Auditoría inmutable
 -- La API fija por conexión: @pam_usuario_id, @pam_usuario, @pam_ip, @pam_request_id.
@@ -1529,7 +1558,13 @@ BEGIN
     UNION ALL SELECT expediente_id, fecha, 'res' FROM core_resolucion
     UNION ALL SELECT expediente_id, fecha, CASE WHEN tipo = 'ALTA' THEN 'ing' ELSE 'sal' END FROM core_movimiento_nomina
     UNION ALL SELECT id, fecha_suspension, 'susp' FROM core_expediente WHERE fecha_suspension IS NOT NULL
-    UNION ALL SELECT id, fecha_fallecimiento, 'fall' FROM core_expediente WHERE fecha_fallecimiento IS NOT NULL) ev
+    -- Fallecidos: fuente oficial = resoluciones de fallecimiento del CUR, por mes de pago.
+    UNION ALL SELECT expediente_id, mes_pago, 'fall' FROM core_cur_detalle
+              WHERE es_fallecimiento = 1 AND expediente_id IS NOT NULL
+    -- Respaldo: si aún no se ha cargado el CUR, se usa la fecha de fallecimiento del expediente.
+    UNION ALL SELECT id, fecha_fallecimiento, 'fall' FROM core_expediente
+              WHERE fecha_fallecimiento IS NOT NULL
+                AND NOT EXISTS (SELECT 1 FROM core_cur_detalle WHERE es_fallecimiento = 1)) ev
   JOIN core_expediente x ON x.id = ev.expediente_id
   JOIN ref_cat_estado ce ON ce.id = x.estado_id
   WHERE ev.fecha >= '2006-01-01' AND ev.fecha <= CURDATE()

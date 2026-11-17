@@ -20,6 +20,8 @@ Enlaza las 3 bases nuevas con el sistema por la llave **`nounico`**:
    (si da error de `local_infile`: `SET GLOBAL local_infile = 1;`)
 4. `mysql -u USUARIO -p NOMBRE_BASE < Database/actualizacion/03_enlazar.sql`  (varios minutos)
 
+5. `mariadb -u USUARIO -p NOMBRE_BASE < Database/actualizacion/04_fallecidos_tablero.sql`  (tablero: la serie de fallecidos pasa a calcularse con el CUR por año de `mes_pago`; reconstruye los agregados)
+
 Todos los scripts se pueden volver a ejecutar sin duplicar datos. Requiere MySQL 8.0+ / MariaDB 10.6+.
 
 ## Qué hace el enlace (03)
