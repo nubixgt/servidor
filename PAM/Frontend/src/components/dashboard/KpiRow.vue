@@ -84,6 +84,11 @@ const K = computed(() => {
         y('sol', ANIO), y('sol', ANIO - 1), y('ing', ANIO), y('ing', ANIO - 1), y('vpos', ANIO), y('vpos', ANIO - 1),
         y('vneg', ANIO), y('vneg', ANIO - 1), y('fall', ANIO), y('fall', ANIO - 1)];
     const t = T.value;
+    // Fallecidos (CUR): con año seleccionado = fallecidos de ese año; sin año = todos los años.
+    const anioSel = F.y != null ? parseInt(tablero.cube.YS[F.y], 10) : NaN;
+    const fallTotal = Number.isNaN(anioSel)
+        ? (F.y != null ? 0 : Y.fall.reduce((a, b) => a + b, 0))
+        : (Y.fall[anioSel - S.Y0] || 0);
     return [
         { k: 'nom', t: 'En nómina', i: 'wallet', tone: 'var(--ok)', v: t.nom, d: `Ingresos ${PERIODO} ${ANIO}: ${fmt(i26)}`, delta: delta(i26, i25), sp: Y.ing, click: () => filtros.setF('n', 1) },
         { k: 'sol', t: 'Solicitudes', i: 'file', tone: 'var(--s1)', v: t.c, d: `${ANIO} ${PERIODO}: ${fmt(s26)}`, delta: delta(s26, s25, 'nt'), sp: Y.sol, click: () => filtros.setF('e', 1) },
@@ -91,7 +96,7 @@ const K = computed(() => {
         { k: 'vn', t: 'Visitas negativas', i: 'x', tone: 'var(--s2)', v: t.vn, d: `${ANIO} ${PERIODO}: ${fmt(vn26)}`, delta: delta(vn26, vn25, 'dn'), sp: Y.vneg, click: () => filtros.setF('v', 2) },
         { k: 'c', t: 'Total de registros', i: 'db', tone: 'var(--s7)', v: t.c, d: `${fmt(t.c - t.p)} de personas repetidas`, delta: null, sp: cum, click: null },
         { k: 'susp', t: 'Suspendidos', i: 'pause', tone: 'var(--st4)', v: t.susp, d: `${fmt(ag.value.byE[3])} bloqueados además`, delta: null, sp: Y.susp, click: () => filtros.setF('e', 4) },
-        { k: 'fall', t: 'Fallecidos', i: 'minus', tone: 'var(--dead)', v: t.fall, d: `${ANIO} ${PERIODO}: ${fmt(f26)}`, delta: delta(f26, f25, 'dn'), sp: Y.fall, click: () => filtros.setF('f', 1) },
+        { k: 'fall', t: 'Fallecidos', i: 'minus', tone: 'var(--dead)', v: fallTotal, d: `${ANIO} ${PERIODO}: ${fmt(f26)}`, delta: delta(f26, f25, 'dn'), sp: Y.fall, click: () => filtros.setF('f', 1) },
     ];
 });
 
