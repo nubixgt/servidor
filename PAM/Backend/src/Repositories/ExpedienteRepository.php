@@ -94,6 +94,17 @@ class ExpedienteRepository
         return $this->db->all('SELECT m.id, m.tipo, m.fecha, m.motivo, m.origen FROM core_movimiento_nomina m WHERE m.expediente_id = ? ORDER BY m.fecha, m.id', [$eid]);
     }
 
+    /** Estudio socioeconómico más reciente del expediente (null si no tiene). */
+    public function estudioSocioeconomico(int $eid): ?array
+    {
+        return $this->db->one(
+            'SELECT s.sc_NoUnico AS nounico, s.sc_fecha_est AS fecha_estudio, s.sc_ponderacion AS ponderacion,
+                    s.sc_MinPond AS ponderacion_minima, s.lee_escribe, s.nivel_estudio, s.urbano_rural,
+                    s.observaciones, s.sc_usuarioc AS usuario
+             FROM core_estudio_socioeconomico s
+             WHERE s.expediente_id = ? ORDER BY s.sc_fecha_est DESC, s.sc_reg DESC LIMIT 1', [$eid]);
+    }
+
     public function estados(int $eid): array
     {
         $filas = $this->db->all(

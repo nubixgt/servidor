@@ -81,6 +81,11 @@ class FiltroService
             $sql[] = ($fl->fc ? 'EXISTS' : 'NOT EXISTS')
                 . ' (SELECT 1 FROM core_cur_detalle cd WHERE cd.expediente_id = v.id AND cd.es_fallecimiento = 1)';
         }
+        if ($fl->se !== null) {
+            // con estudio socioeconómico cargado (SOcioE), enlazado por nounico
+            $sql[] = ($fl->se ? 'EXISTS' : 'NOT EXISTS')
+                . ' (SELECT 1 FROM core_estudio_socioeconomico se WHERE se.expediente_id = v.id)';
+        }
         if ($fl->a !== null) {
             $sql[] = 'v.banda_edad = ?';
             $p[] = $fl->a;

@@ -123,6 +123,7 @@ class ExpedienteService
             'observaciones' => $repo->observaciones($eid),
             'nomina' => $repo->nomina($eid),
             'estados' => $repo->estados($eid),
+            'estudio_socioeconomico' => $repo->estudioSocioeconomico($eid),
             'eventos' => $repo->eventos($eid),
             'apoderado' => $apoderado,
             'otros_expedientes' => $repo->otrosExpedientes((int) $r['persona_id'], $eid),

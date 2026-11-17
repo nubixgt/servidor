@@ -12,6 +12,9 @@
                 <label class="chip" style="cursor:pointer" title="Expedientes con resolución de suspensión por fallecimiento (RENAP) en el detalle CUR">
                     <input v-model="ui.bFc" type="checkbox"> Solo fallecidos confirmados (CUR)
                 </label>
+                <label class="chip" style="cursor:pointer" title="Expedientes que tienen un estudio socioeconómico cargado">
+                    <input v-model="ui.bSe" type="checkbox"> Con estudio socioeconómico
+                </label>
                 <span v-if="regla" class="chip">Alerta: {{ regla.t }}<button aria-label="Quitar" @click="ui.bRule = null"><Icono name="close" :size="12" /></button></span>
                 <button v-if="auth.puede('solicitud.registrar')" class="btn pri" @click="expediente.abrirForm('nueva')"><Icono name="file" :size="16" /> Nueva solicitud</button>
             </div>
@@ -102,6 +105,7 @@ const params = computed(() => {
         q: ui.bq || undefined,
         regla: ui.bRule || undefined,
         fc: ui.bFc ? 1 : undefined,
+        se: ui.bSe ? 1 : undefined,
         orden: relevancia ? 'relevancia' : ui.bSort[0],
         dir: relevancia ? 'desc' : (ui.bSort[1] < 0 ? 'desc' : 'asc'),
     });

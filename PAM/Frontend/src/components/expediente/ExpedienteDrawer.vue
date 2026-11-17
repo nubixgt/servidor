@@ -52,6 +52,16 @@
                             <b>La persona tiene {{ d.otros_expedientes.length }} expediente(s) más:</b>
                             <template v-for="(o, k) in d.otros_expedientes" :key="o.id">{{ k ? ', ' : ' ' }}<button class="link" @click="e.abrir(o.id)">{{ o.numero || 's/n' }} ({{ fd(o.fecha_solicitud) }})</button></template>
                         </p>
+                        <template v-if="d.estudio_socioeconomico">
+                            <h3 class="sec">Estudio socioeconómico</h3>
+                            <div class="sumgrid" style="margin-bottom:18px">
+                                <div class="sg"><small>Fecha del estudio</small><b>{{ fd(d.estudio_socioeconomico.fecha_estudio) }}</b></div>
+                                <div class="sg"><small>Ponderación</small><b>{{ d.estudio_socioeconomico.ponderacion ?? '—' }} <span class="note">(mínimo {{ d.estudio_socioeconomico.ponderacion_minima ?? '—' }})</span></b></div>
+                                <div class="sg"><small>Lee y escribe</small><b>{{ d.estudio_socioeconomico.lee_escribe === 'S' ? 'Sí' : d.estudio_socioeconomico.lee_escribe === 'N' ? 'No' : '—' }}</b></div>
+                                <div class="sg"><small>Área</small><b>{{ d.estudio_socioeconomico.urbano_rural === 'U' ? 'Urbana' : d.estudio_socioeconomico.urbano_rural === 'R' ? 'Rural' : '—' }}</b></div>
+                            </div>
+                            <p v-if="d.estudio_socioeconomico.observaciones" style="margin:-8px 0 18px;color:var(--ink2)">{{ d.estudio_socioeconomico.observaciones }}</p>
+                        </template>
                         <h3 class="sec">Última observación</h3>
                         <p style="margin:0 0 18px;color:var(--ink2)">
                             <template v-if="x.ult_observacion">{{ x.ult_observacion }} <span class="note">· {{ fd(x.ult_observacion_fecha) }}</span></template>
