@@ -19,6 +19,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Ciclo vigente para el registro: el ciclo activo más reciente.
 const currentYear = () => db().prepare('SELECT id, name FROM school_years WHERE active = 1 ORDER BY name DESC LIMIT 1').get() || null;
 
+/** Los grados "(fin de semana)" usan el calendario fijo de fin de semana desde el inicio; el docente puede cambiarlo. */
+function planTypeForGrade(gradeId) {
+  const g = db().prepare('SELECT name FROM grades WHERE id = ?').get(gradeId);
+  return g && /\(fin de semana\)/i.test(g.name) ? 'fds' : 'diario';
+}
+
 /**
  * Valida las filas de asignación del formulario: cada fila es un curso (existente por id o nuevo por nombre),
  * un grado y una o varias secciones de ese grado. Cada sección seleccionada será una relación independiente.
@@ -102,7 +108,7 @@ function saveAssignmentRows(user, yearId, items) {
         db().prepare('UPDATE assignments SET active = 1 WHERE id = ?').run(prev.id);
         P.audit(user, 'reactivar_asignacion', 'asignacion', prev.id, null, null);
       } else {
-        const info = db().prepare('INSERT INTO assignments(user_id, school_year_id, course_id, grade_id, section_id) VALUES (?,?,?,?,?)').run(user.id, yearId, cid, it.gradeId, s.id);
+        const info = db().prepare('INSERT INTO assignments(user_id, school_year_id, course_id, grade_id, section_id, plan_type) VALUES (?,?,?,?,?,?)').run(user.id, yearId, cid, it.gradeId, s.id, planTypeForGrade(it.gradeId));
         P.audit(user, 'crear_asignacion', 'asignacion', info.lastInsertRowid, null, { courseId: cid, gradeId: it.gradeId, sectionId: s.id, yearId });
       }
       created.push(label);
@@ -487,7 +493,7 @@ function createApp() {
           db().prepare('UPDATE assignments SET active = 1 WHERE id = ?').run(prev.id);
           P.audit(req.user, 'reactivar_asignacion', 'asignacion', prev.id, null, null);
         } else {
-          const info = db().prepare('INSERT INTO assignments(user_id, school_year_id, course_id, grade_id, section_id) VALUES (?,?,?,?,?)').run(req.user.id, yearId, courseId, gradeId, sid);
+          const info = db().prepare('INSERT INTO assignments(user_id, school_year_id, course_id, grade_id, section_id, plan_type) VALUES (?,?,?,?,?,?)').run(req.user.id, yearId, courseId, gradeId, sid, planTypeForGrade(gradeId));
           P.audit(req.user, 'crear_asignacion', 'asignacion', info.lastInsertRowid, null, { courseId, gradeId, sectionId: sid, yearId });
         }
         created.push(sec.name);
