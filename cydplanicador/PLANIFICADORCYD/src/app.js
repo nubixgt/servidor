@@ -19,10 +19,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Ciclo vigente para el registro: el ciclo activo más reciente.
 const currentYear = () => db().prepare('SELECT id, name FROM school_years WHERE active = 1 ORDER BY name DESC LIMIT 1').get() || null;
 
-/** Los grados "(fin de semana)" usan el calendario fijo de fin de semana desde el inicio; el docente puede cambiarlo. */
+/** Los grados "(fin de semana)" o "(FS)" usan el calendario fijo de fin de semana desde el inicio; el docente puede cambiarlo. */
 function planTypeForGrade(gradeId) {
   const g = db().prepare('SELECT name FROM grades WHERE id = ?').get(gradeId);
-  return g && /\(fin de semana\)/i.test(g.name) ? 'fds' : 'diario';
+  return g && /\((fin de semana|fs)\)/i.test(g.name) ? 'fds' : 'diario';
 }
 
 /**
