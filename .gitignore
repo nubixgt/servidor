@@ -57,3 +57,8 @@ power/PaginaLocal/data/
 power/**/user_secure_data/
 power/.garminconnect/
 power/Diseno/node_modules/
+
+# TestBases: el Excel y la carga SQL contienen datos personales (CUI, teléfonos): nunca al repositorio
+TestBases/*.xlsx
+TestBases/Database/03_carga_beneficiarios.sql
+TestBases/Backend/uploads/
