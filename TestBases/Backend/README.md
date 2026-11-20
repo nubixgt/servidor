@@ -26,7 +26,7 @@ El push a `main` despliega solo (`.github/workflows/deploy.yml`). **Lo único ma
 | GET | `/catalogos` | admin, tecnico | Comunidades y comunidades base (para filtros) |
 | GET | `/beneficiarios` | admin, tecnico | Lista paginada. Query: `q`, `comunidad_id`, `comunidad_base_id` (`0` = sin base), `estado`, `resaltado`, `pagina`, `por_pagina` (máx. 100) |
 | GET | `/beneficiarios/resumen` | admin, tecnico | Totales: registros, con comentario, con imagen |
-| POST | `/beneficiarios/{id}/seguimiento` | admin, tecnico | `multipart/form-data`: `comentario` (máx. 2000) e `imagen` (JPG/PNG/WebP, máx. 5 MB) |
+| POST | `/beneficiarios/{id}/seguimiento` | admin, tecnico | `multipart/form-data`: `comentario` (máx. 2000), `imagen` (JPG/PNG/WebP, máx. 5 MB) y `telefono` (8 dígitos; solo si la fila no tenía uno, si no responde 409). Devuelve `{seguimiento, telefono}` |
 | GET | `/beneficiarios/{id}/imagen` | admin, tecnico | Archivo de la imagen (requiere token) |
 | DELETE | `/beneficiarios/{id}/seguimiento/imagen` | **admin** | Elimina la imagen adjunta |
 | GET | `/usuarios` | **admin** | Lista de cuentas y roles disponibles |

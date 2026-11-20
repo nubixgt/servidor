@@ -27,17 +27,18 @@ class BeneficiarioController extends Controller
         Response::success((new BeneficiarioService())->resumen());
     }
 
-    /** Guarda comentario e imagen de una fila (multipart/form-data: comentario, imagen). */
+    /** Guarda comentario, imagen y/o teléfono de una fila (multipart/form-data: comentario, imagen, telefono). */
     #[Route('/beneficiarios/{id}/seguimiento', 'POST')]
     #[Authorize(['admin', 'tecnico'])]
     public function guardarSeguimiento($id)
     {
         $comentario = isset($_POST['comentario']) ? (string) $_POST['comentario'] : null;
         $archivo = $_FILES['imagen'] ?? null;
-        if ($comentario === null && $archivo === null) {
-            throw new HttpException('No se envió ningún comentario ni imagen', 422);
+        $telefono = isset($_POST['telefono']) ? (string) $_POST['telefono'] : null;
+        if ($comentario === null && $archivo === null && $telefono === null) {
+            throw new HttpException('No se envió ningún dato para guardar', 422);
         }
-        $r = (new SeguimientoService())->guardar($this->id($id), Auth::userId(), $comentario, $archivo);
+        $r = (new SeguimientoService())->guardar($this->id($id), Auth::userId(), $comentario, $archivo, $telefono);
         Response::success($r, 'Seguimiento guardado');
     }
 

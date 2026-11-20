@@ -40,6 +40,16 @@
 
             <!-- Contenido -->
             <div class="flex-1 space-y-6 overflow-y-auto px-5 py-5">
+                <section v-if="!fila.telefono">
+                    <label class="etiqueta" for="telefono">Teléfono</label>
+                    <input id="telefono" v-model="telefonoNuevo" class="campo font-mono" type="tel" inputmode="numeric"
+                        autocomplete="off" maxlength="9" placeholder="8 dígitos" @input="soloDigitos" />
+                    <p v-if="errorTelefono" class="mt-1 text-sm text-danger">{{ errorTelefono }}</p>
+                    <p v-else class="mt-1 text-xs text-ink-500">
+                        Este beneficiario no tiene teléfono. Si lo consigues, agrégalo aquí y se guardará en la base de datos.
+                    </p>
+                </section>
+
                 <section>
                     <h3 class="etiqueta">Imagen adjunta</h3>
 
@@ -150,6 +160,8 @@ const emit = defineEmits(['cerrar', 'guardado']);
 
 const comentarioInicial = props.fila.seguimiento.comentario ?? '';
 const comentario = ref(comentarioInicial);
+const telefonoNuevo = ref('');
+const errorTelefono = ref('');
 const campoComentario = ref(null);
 
 const imagenActual = ref(null);       // object URL de la imagen que ya está en el servidor
@@ -162,7 +174,14 @@ const guardando = ref(false);
 const confirmandoQuitar = ref(false);
 
 const vista = computed(() => vistaNueva.value || imagenActual.value);
-const hayCambios = computed(() => !!nuevaImagen.value || comentario.value.trim() !== comentarioInicial.trim());
+const hayCambios = computed(() =>
+    !!nuevaImagen.value || telefonoNuevo.value !== '' || comentario.value.trim() !== comentarioInicial.trim());
+
+// El teléfono solo acepta números, máximo 8 dígitos
+const soloDigitos = () => {
+    telefonoNuevo.value = telefonoNuevo.value.replace(/\D/g, '').slice(0, 8);
+    errorTelefono.value = '';
+};
 
 const liberar = (url) => url && URL.revokeObjectURL(url);
 
@@ -209,14 +228,20 @@ const descartarNueva = () => {
 };
 
 const guardar = async () => {
+    errorTelefono.value = '';
+    if (telefonoNuevo.value !== '' && telefonoNuevo.value.length !== 8) {
+        errorTelefono.value = 'El teléfono debe tener 8 dígitos';
+        return;
+    }
     guardando.value = true;
     try {
-        const seguimiento = await beneficiarioService.guardarSeguimiento(props.fila.id, {
+        const respuesta = await beneficiarioService.guardarSeguimiento(props.fila.id, {
             comentario: comentario.value.trim(),
             imagen: nuevaImagen.value,
+            telefono: telefonoNuevo.value,
         });
-        toast.ok('Seguimiento guardado');
-        emit('guardado', props.fila.id, seguimiento);
+        toast.ok('Cambios guardados');
+        emit('guardado', props.fila.id, respuesta);
         emit('cerrar');
     } catch (e) {
         toast.error(mensajeDeError(e, 'No se pudo guardar'));
@@ -228,13 +253,13 @@ const guardar = async () => {
 const quitar = async () => {
     guardando.value = true;
     try {
-        const seguimiento = await beneficiarioService.quitarImagen(props.fila.id);
+        const respuesta = await beneficiarioService.quitarImagen(props.fila.id);
         liberar(imagenActual.value);
         imagenActual.value = null;
         confirmandoQuitar.value = false;
         toast.ok('Imagen eliminada');
         // el listado actualiza la fila; el panel sigue abierto para editar el comentario
-        emit('guardado', props.fila.id, seguimiento);
+        emit('guardado', props.fila.id, respuesta);
     } catch (e) {
         toast.error(mensajeDeError(e, 'No se pudo eliminar la imagen'));
     } finally {

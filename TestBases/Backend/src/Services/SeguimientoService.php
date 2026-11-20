@@ -5,6 +5,7 @@ use App\Core\HttpException;
 use App\Repositories\BeneficiarioRepository;
 use App\Repositories\SeguimientoRepository;
 use App\Repositories\UsuarioRepository;
+use App\Utils\Database;
 
 /** Comentario + imagen adjunta de cada beneficiario. */
 class SeguimientoService
@@ -23,8 +24,11 @@ class SeguimientoService
         $this->config = require __DIR__ . '/../../config/app.php';
     }
 
-    /** @param array|null $archivo entrada de $_FILES['imagen'] (null si no se envió) */
-    public function guardar(int $beneficiarioId, int $usuarioId, ?string $comentario, ?array $archivo): array
+    /**
+     * @param array|null  $archivo  entrada de $_FILES['imagen'] (null si no se envió)
+     * @param string|null $telefono teléfono a agregar (solo si la fila no tiene uno)
+     */
+    public function guardar(int $beneficiarioId, int $usuarioId, ?string $comentario, ?array $archivo, ?string $telefono = null): array
     {
         $this->exigirBeneficiario($beneficiarioId);
         $usuario = (new UsuarioRepository())->findById($usuarioId);
@@ -40,13 +44,26 @@ class SeguimientoService
             throw new HttpException('El comentario no puede pasar de ' . self::COMENTARIO_MAX . ' caracteres', 422);
         }
 
+        $telefono = $this->normalizarTelefono($telefono);
+        if ($telefono !== null && $this->beneficiarios->telefono($beneficiarioId) !== null) {
+            throw new HttpException('Este beneficiario ya tiene un teléfono registrado', 409);
+        }
+
         $anterior = $this->seguimientos->porBeneficiario($beneficiarioId);
         $imagen = $this->guardarImagen($archivo);
 
+        // Teléfono y seguimiento se guardan juntos o no se guarda nada
+        $pdo = Database::getInstance()->getConnection();
+        $pdo->beginTransaction();
         try {
+            if ($telefono !== null && !$this->beneficiarios->agregarTelefono($beneficiarioId, $telefono, $usuarioId)) {
+                throw new HttpException('Este beneficiario ya tiene un teléfono registrado', 409);
+            }
             $this->seguimientos->guardar($beneficiarioId, $comentario, $imagen, $usuarioId);
             $this->seguimientos->limpiarSiVacio($beneficiarioId);
+            $pdo->commit();
         } catch (\Throwable $e) {
+            $pdo->rollBack();
             if ($imagen) {
                 @unlink($this->ruta($imagen['archivo']));
             }
@@ -57,7 +74,7 @@ class SeguimientoService
             @unlink($this->ruta($anterior['imagen_archivo']));
         }
 
-        return $this->detalle($beneficiarioId);
+        return $this->respuesta($beneficiarioId);
     }
 
     public function quitarImagen(int $beneficiarioId, int $usuarioId): array
@@ -72,7 +89,7 @@ class SeguimientoService
         $this->seguimientos->limpiarSiVacio($beneficiarioId);
         @unlink($this->ruta($actual['imagen_archivo']));
 
-        return $this->detalle($beneficiarioId);
+        return $this->respuesta($beneficiarioId);
     }
 
     /** @return array{ruta: string, mime: string, bytes: int, nombre: string} */
@@ -89,6 +106,12 @@ class SeguimientoService
         return ['ruta' => $ruta, 'mime' => $s['imagen_mime'], 'bytes' => (int) $s['imagen_bytes'], 'nombre' => $s['imagen_nombre']];
     }
 
+    /** Lo que el frontend necesita para refrescar la fila: seguimiento y teléfono vigente. */
+    private function respuesta(int $beneficiarioId): array
+    {
+        return ['seguimiento' => $this->detalle($beneficiarioId), 'telefono' => $this->beneficiarios->telefono($beneficiarioId)];
+    }
+
     private function detalle(int $beneficiarioId): array
     {
         $s = $this->seguimientos->porBeneficiario($beneficiarioId);
@@ -98,6 +121,19 @@ class SeguimientoService
             'actualizado_en' => $s['actualizado_en'] ?? null,
             'actualizado_por' => $s['actualizado_por'] ?? null,
         ];
+    }
+
+    /** Deja solo los dígitos. null si viene vacío; 422 si no son 8 dígitos. */
+    private function normalizarTelefono(?string $valor): ?string
+    {
+        $digitos = preg_replace('/\D/', '', (string) $valor);
+        if ($digitos === '') {
+            return null;
+        }
+        if (strlen($digitos) !== 8) {
+            throw new HttpException('El teléfono debe tener 8 dígitos', 422);
+        }
+        return $digitos;
     }
 
     private function exigirBeneficiario(int $id): void

@@ -93,10 +93,10 @@ class UsuarioService
         if ($destino->rol === 'admin' && $destino->activo && $this->usuarios->adminsActivos($id) === 0) {
             throw new HttpException('Debe quedar al menos un administrador activo', 422);
         }
-        // Quien ya dejó comentarios o imágenes no se borra: se perdería quién los hizo
+        // Quien ya dejó comentarios, imágenes o teléfonos no se borra: se perdería quién los hizo
         if ($this->usuarios->tieneSeguimientos($id)) {
             throw new HttpException(
-                'Este usuario ya registró seguimientos y no se puede eliminar. Desactívalo para impedir su acceso.',
+                'Este usuario ya registró información (seguimientos o teléfonos) y no se puede eliminar. Desactívalo para impedir su acceso.',
                 409
             );
         }

@@ -120,9 +120,12 @@ const limpiar = () => {
 };
 
 /** Refleja lo guardado en la fila sin recargar toda la tabla. */
-const alGuardar = (id, seguimiento) => {
+const alGuardar = (id, { seguimiento, telefono }) => {
     const fila = datos.items.find(f => f.id === id);
-    if (fila) fila.seguimiento = seguimiento;
+    if (fila) {
+        fila.seguimiento = seguimiento;
+        fila.telefono = telefono;
+    }
     cargarResumen();
 };
 

@@ -74,8 +74,9 @@ class UsuarioRepository
     {
         return $this->pdo->query(
             "SELECT u.id, u.usuario, u.nombre_completo, u.activo, u.ultimo_acceso, u.creado_en, r.codigo AS rol,
-                    (SELECT COUNT(*) FROM seguimientos s
-                     WHERE s.creado_por = u.id OR s.actualizado_por = u.id) AS seguimientos
+                    ((SELECT COUNT(*) FROM seguimientos s
+                      WHERE s.creado_por = u.id OR s.actualizado_por = u.id)
+                     + (SELECT COUNT(*) FROM beneficiarios b WHERE b.telefono_agregado_por = u.id)) AS seguimientos
              FROM usuarios u
              JOIN roles r ON r.id = u.rol_id
              ORDER BY u.usuario"
@@ -141,9 +142,10 @@ class UsuarioRepository
     public function tieneSeguimientos(int $id): bool
     {
         $stmt = $this->pdo->prepare(
-            "SELECT 1 FROM seguimientos WHERE creado_por = :id OR actualizado_por = :id2 LIMIT 1"
+            "SELECT EXISTS(SELECT 1 FROM seguimientos WHERE creado_por = :id OR actualizado_por = :id2)
+                 OR EXISTS(SELECT 1 FROM beneficiarios WHERE telefono_agregado_por = :id3)"
         );
-        $stmt->execute(['id' => $id, 'id2' => $id]);
+        $stmt->execute(['id' => $id, 'id2' => $id, 'id3' => $id]);
         return (bool) $stmt->fetchColumn();
     }
 }

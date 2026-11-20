@@ -61,6 +61,26 @@ class BeneficiarioRepository
         return (bool) $stmt->fetchColumn();
     }
 
+    public function telefono(int $id): ?string
+    {
+        $stmt = $this->pdo->prepare("SELECT telefono FROM beneficiarios WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $t = $stmt->fetchColumn();
+        return $t === false || $t === null ? null : (string) $t;
+    }
+
+    /** Solo escribe si la fila no tenía teléfono. false = alguien ya lo había agregado. */
+    public function agregarTelefono(int $id, string $telefono, int $usuarioId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE beneficiarios
+             SET telefono = :t, telefono_agregado_por = :u, telefono_agregado_en = NOW()
+             WHERE id = :id AND telefono IS NULL"
+        );
+        $stmt->execute(['t' => $telefono, 'u' => $usuarioId, 'id' => $id]);
+        return $stmt->rowCount() === 1;
+    }
+
     public function resumen(): array
     {
         return $this->pdo->query(

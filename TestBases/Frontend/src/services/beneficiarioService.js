@@ -10,11 +10,16 @@ export default {
     catalogos() {
         return api.get('/catalogos').then(r => r.data.data);
     },
-    /** Guarda comentario y/o imagen de una fila. `imagen` es un File o null (no tocar). */
-    guardarSeguimiento(id, { comentario, imagen }) {
+    /**
+     * Guarda comentario, imagen y/o teléfono de una fila. `imagen` es un File o null (no tocar);
+     * `telefono` solo se envía cuando la fila no tenía uno.
+     * Responde { seguimiento, telefono }.
+     */
+    guardarSeguimiento(id, { comentario, imagen, telefono }) {
         const datos = new FormData();
         datos.append('comentario', comentario ?? '');
         if (imagen) datos.append('imagen', imagen);
+        if (telefono) datos.append('telefono', telefono);
         return api.post(`/beneficiarios/${id}/seguimiento`, datos).then(r => r.data.data);
     },
     quitarImagen(id) {
