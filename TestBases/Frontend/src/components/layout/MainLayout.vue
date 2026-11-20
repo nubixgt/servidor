@@ -7,6 +7,14 @@
                         <TableCellsIcon class="h-4 w-4 text-brand-200" />
                     </span>
                     <span class="text-sm font-semibold tracking-wide">Registro de Beneficiarios</span>
+
+                    <nav class="ml-6 hidden items-center gap-1 sm:flex">
+                        <router-link v-for="enlace in enlaces" :key="enlace.nombre" :to="{ name: enlace.nombre }"
+                            class="rounded px-3 py-1.5 text-sm text-ink-300 transition-colors hover:bg-white/10 hover:text-white"
+                            active-class="!bg-white/10 !text-white">
+                            {{ enlace.texto }}
+                        </router-link>
+                    </nav>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -31,12 +39,18 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowRightOnRectangleIcon, TableCellsIcon } from '@heroicons/vue/20/solid';
 import { useAuthStore } from '../../stores/auth';
 
 const auth = useAuthStore();
 const router = useRouter();
+
+const enlaces = computed(() => [
+    { nombre: 'Beneficiarios', texto: 'Beneficiarios' },
+    ...(auth.esAdmin ? [{ nombre: 'Usuarios', texto: 'Usuarios' }] : []),
+]);
 
 const salir = () => {
     auth.limpiar();

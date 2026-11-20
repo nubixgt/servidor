@@ -29,12 +29,17 @@ El push a `main` despliega solo (`.github/workflows/deploy.yml`). **Lo único ma
 | POST | `/beneficiarios/{id}/seguimiento` | admin, tecnico | `multipart/form-data`: `comentario` (máx. 2000) e `imagen` (JPG/PNG/WebP, máx. 5 MB) |
 | GET | `/beneficiarios/{id}/imagen` | admin, tecnico | Archivo de la imagen (requiere token) |
 | DELETE | `/beneficiarios/{id}/seguimiento/imagen` | **admin** | Elimina la imagen adjunta |
+| GET | `/usuarios` | **admin** | Lista de cuentas y roles disponibles |
+| POST | `/usuarios` | **admin** | Crea cuenta: `{usuario, nombre, rol, clave, activo}` |
+| PUT | `/usuarios/{id}` | **admin** | Edita; `clave` solo si se quiere cambiar (también levanta el bloqueo) |
+| DELETE | `/usuarios/{id}` | **admin** | Elimina; se rechaza si la cuenta ya registró seguimientos (se desactiva en su lugar) |
 
 Respuestas: `{status: "success"|"error", message, data}`. Errores esperados llevan su código HTTP (401, 403, 404, 413, 415, 422, 429).
 
 ## Seguridad
 
 - Contraseñas con `password_hash` (bcrypt). 5 intentos fallidos bloquean la cuenta 15 min (`LOGIN_MAX_INTENTOS`, `LOGIN_BLOQUEO_MIN`).
+- Rol y estado se leen de la BD en cada petición: desactivar o cambiar de rol a alguien surte efecto de inmediato. No se puede desactivar/eliminar la propia cuenta ni dejar el sistema sin administradores activos.
 - Token JWT HS256 firmado con `JWT_SECRET` (nunca en el código), vence a las 8 h (`ACCESS_TTL_MIN`).
 - Las imágenes no se sirven por URL directa: `uploads/` está bloqueada y solo se entregan por `/beneficiarios/{id}/imagen` con token. El tipo de archivo se verifica por contenido, y se guarda con nombre aleatorio.
 - `src/`, `config/`, `uploads/` y los archivos ocultos (`.env`) están bloqueados en `.htaccess`.

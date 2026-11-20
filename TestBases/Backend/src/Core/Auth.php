@@ -1,6 +1,7 @@
 <?php
 namespace App\Core;
 
+use App\Repositories\UsuarioRepository;
 use App\Utils\JwtUtils;
 
 /** Lee y valida el token Bearer de la petición actual. */
@@ -38,6 +39,15 @@ class Auth
         if (!isset($payload['exp']) || $payload['exp'] < time()) {
             throw new HttpException('La sesión expiró, inicia sesión de nuevo', 401);
         }
+
+        // El rol y el estado se toman de la BD, no del token: si un administrador desactiva
+        // o cambia de rol a alguien, el cambio aplica en su siguiente petición.
+        $usuario = (new UsuarioRepository())->findById((int) $payload['sub']);
+        if ($usuario === null || !$usuario->activo) {
+            throw new HttpException('Sesión inválida', 401);
+        }
+        $payload['role'] = $usuario->rol;
+
         return self::$payload = $payload;
     }
 

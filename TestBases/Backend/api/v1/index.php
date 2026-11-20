@@ -5,6 +5,7 @@ use App\Core\Router;
 use App\Controllers\AuthController;
 use App\Controllers\BeneficiarioController;
 use App\Controllers\CatalogoController;
+use App\Controllers\UsuarioController;
 use App\Utils\Response;
 
 // Backend/api/v1/index.php
@@ -49,6 +50,7 @@ $router = new Router();
 $router->registerController(AuthController::class);
 $router->registerController(CatalogoController::class);
 $router->registerController(BeneficiarioController::class);
+$router->registerController(UsuarioController::class);
 
 // 6. Dispatch
 try {

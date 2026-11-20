@@ -23,6 +23,12 @@ const routes = [
                 component: () => import('../views/beneficiarios/Listado.vue'),
                 meta: { title: 'Beneficiarios' }
             },
+            {
+                path: 'usuarios',
+                name: 'Usuarios',
+                component: () => import('../views/usuarios/Usuarios.vue'),
+                meta: { title: 'Usuarios', soloAdmin: true }
+            },
         ]
     },
     { path: '/:pathMatch(.*)*', redirect: '/' }
@@ -47,6 +53,9 @@ router.beforeEach(async (to) => {
 
     if (to.meta.requiresAuth && !auth.autenticado) {
         return { name: 'Login' };
+    }
+    if (to.meta.soloAdmin && !auth.esAdmin) {
+        return { name: 'Beneficiarios' };
     }
     if (to.name === 'Login' && auth.autenticado) {
         return { name: 'Beneficiarios' };

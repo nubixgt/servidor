@@ -67,4 +67,83 @@ class UsuarioRepository
         $stmt->execute(['id' => $id]);
         return (int) $stmt->fetchColumn();
     }
+
+    // ---- Administración de usuarios ----
+
+    public function listar(): array
+    {
+        return $this->pdo->query(
+            "SELECT u.id, u.usuario, u.nombre_completo, u.activo, u.ultimo_acceso, u.creado_en, r.codigo AS rol,
+                    (SELECT COUNT(*) FROM seguimientos s
+                     WHERE s.creado_por = u.id OR s.actualizado_por = u.id) AS seguimientos
+             FROM usuarios u
+             JOIN roles r ON r.id = u.rol_id
+             ORDER BY u.usuario"
+        )->fetchAll();
+    }
+
+    public function crear(string $rol, string $usuario, string $claveHash, string $nombre, bool $activo): int
+    {
+        $this->pdo->prepare(
+            "INSERT INTO usuarios (rol_id, usuario, clave_hash, nombre_completo, activo)
+             VALUES ((SELECT id FROM roles WHERE codigo = :rol), :usuario, :hash, :nombre, :activo)"
+        )->execute([
+            'rol' => $rol, 'usuario' => $usuario, 'hash' => $claveHash,
+            'nombre' => $nombre, 'activo' => (int) $activo,
+        ]);
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function actualizar(int $id, string $rol, string $usuario, string $nombre, bool $activo): void
+    {
+        $this->pdo->prepare(
+            "UPDATE usuarios
+             SET rol_id = (SELECT id FROM roles WHERE codigo = :rol),
+                 usuario = :usuario, nombre_completo = :nombre, activo = :activo
+             WHERE id = :id"
+        )->execute([
+            'rol' => $rol, 'usuario' => $usuario, 'nombre' => $nombre,
+            'activo' => (int) $activo, 'id' => $id,
+        ]);
+    }
+
+    /** Cambia la clave y levanta cualquier bloqueo por intentos fallidos. */
+    public function cambiarClave(int $id, string $claveHash): void
+    {
+        $this->pdo->prepare(
+            "UPDATE usuarios SET clave_hash = :hash, intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = :id"
+        )->execute(['hash' => $claveHash, 'id' => $id]);
+    }
+
+    public function eliminar(int $id): void
+    {
+        $this->pdo->prepare("DELETE FROM usuarios WHERE id = :id")->execute(['id' => $id]);
+    }
+
+    public function nombreEnUso(string $usuario, ?int $exceptoId = null): bool
+    {
+        $stmt = $this->pdo->prepare("SELECT 1 FROM usuarios WHERE usuario = :u AND id <> :id");
+        $stmt->execute(['u' => $usuario, 'id' => $exceptoId ?? 0]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /** Administradores activos, sin contar a $exceptoId. */
+    public function adminsActivos(int $exceptoId): int
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM usuarios u JOIN roles r ON r.id = u.rol_id
+             WHERE r.codigo = 'admin' AND u.activo = 1 AND u.id <> :id"
+        );
+        $stmt->execute(['id' => $exceptoId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function tieneSeguimientos(int $id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT 1 FROM seguimientos WHERE creado_por = :id OR actualizado_por = :id2 LIMIT 1"
+        );
+        $stmt->execute(['id' => $id, 'id2' => $id]);
+        return (bool) $stmt->fetchColumn();
+    }
 }
