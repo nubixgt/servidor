@@ -15,15 +15,11 @@
             </thead>
 
             <tbody>
-                <tr v-for="f in filas" :key="f.id"
-                    class="cursor-pointer border-b border-rule/70 transition-colors hover:bg-brand-50/60"
-                    :class="{ 'bg-brand-50': f.id === seleccionadoId }" @click="$emit('abrir', f)">
-                    <td class="relative px-3 py-2 text-right font-mono text-ink-500">
-                        <span v-if="f.resaltado !== 'ninguno'" class="absolute inset-y-0 left-0 w-[3px]"
-                            :class="f.resaltado === 'rojo' ? 'bg-danger' : 'bg-amber'"
-                            :title="`Fila marcada en ${f.resaltado === 'rojo' ? 'rojo' : 'ámbar'} en el Excel`"></span>
-                        {{ f.numero }}
-                    </td>
+                <tr v-for="f in filas" :key="f.id" class="cursor-pointer border-b transition-colors"
+                    :class="[claseFila(f), { 'outline outline-2 -outline-offset-2 outline-ink-900': f.id === seleccionadoId && f.resaltado !== 'ninguno' }]"
+                    :title="f.resaltado === 'ninguno' ? null : `Fila marcada en ${f.resaltado === 'rojo' ? 'rojo' : 'ámbar'} en el Excel`"
+                    @click="$emit('abrir', f)">
+                    <td class="px-3 py-2 text-right font-mono text-ink-500">{{ f.numero }}</td>
                     <td class="px-3 py-2 text-ink-600">{{ f.comunidad }}</td>
                     <td class="px-3 py-2 font-medium text-ink-900">{{ f.nombre }}</td>
                     <td class="whitespace-nowrap px-3 py-2 font-mono text-ink-700">{{ cui(f.cui) }}</td>
@@ -46,7 +42,7 @@
                         <span v-else class="text-ink-300">Sin seguimiento</span>
                     </td>
                     <td class="px-3 py-2 text-right">
-                        <button class="rounded p-1 text-ink-400 hover:bg-white hover:text-brand-700"
+                        <button class="rounded p-1 text-ink-400 hover:bg-black/10 hover:text-brand-700"
                             :aria-label="`Abrir seguimiento de ${f.nombre}`" @click.stop="$emit('abrir', f)">
                             <PencilSquareIcon class="h-4 w-4" />
                         </button>
@@ -72,10 +68,22 @@
 import { PencilSquareIcon, PhotoIcon } from '@heroicons/vue/20/solid';
 import { cui, telefono } from '../../utils/formato';
 
-defineProps({
+const props = defineProps({
     filas: { type: Array, required: true },
     cargando: { type: Boolean, default: false },
     seleccionadoId: { type: Number, default: null },
 });
 defineEmits(['abrir']);
+
+// Las filas marcadas en el Excel se pintan completas. Rojo: texto blanco (como en el Excel);
+// todo lo de adentro se fuerza a blanco para que los grises no se pierdan sobre el rojo.
+const claseFila = (f) => {
+    if (f.resaltado === 'rojo') {
+        return 'border-[#8f0000] bg-[#c00000] hover:bg-[#a80000] [&_*]:!text-white';
+    }
+    if (f.resaltado === 'ambar') {
+        return 'border-amber/30 bg-[#ffc000]/45 hover:bg-[#ffc000]/65';
+    }
+    return ['border-rule/70 hover:bg-brand-50/60', f.id === props.seleccionadoId ? 'bg-brand-50' : ''];
+};
 </script>
